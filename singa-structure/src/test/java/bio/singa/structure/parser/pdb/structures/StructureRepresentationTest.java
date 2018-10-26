@@ -7,7 +7,7 @@ import bio.singa.structure.parser.pdb.structures.tokens.AtomToken;
 import bio.singa.structure.parser.pdb.structures.tokens.ChainTerminatorToken;
 import bio.singa.structure.parser.pdb.structures.tokens.HeaderToken;
 import bio.singa.structure.parser.pdb.structures.tokens.TitleToken;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -15,12 +15,12 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author cl
  */
-public class StructureRepresentationTest {
+class StructureRepresentationTest {
 
     private static int currentLine = 0;
     private static String currentExpected;
@@ -73,11 +73,11 @@ public class StructureRepresentationTest {
     }
 
     private static void assertLineEquals(String expected, String actual) {
-        assertEquals("Assertion failed in line " + currentLine + ".\nExpected line : " + currentExpected + "\nActual line   : " + currentActual, expected, actual);
+        assertEquals(expected, actual, "Assertion failed in line " + currentLine + ".\nExpected line : " + currentExpected + "\nActual line   : " + currentActual);
     }
 
     @Test
-    public void shouldRepresentSingleChain() throws IOException {
+    void shouldRepresentSingleChain() throws IOException {
         String fileLocation = Resources.getResourceAsFileLocation("1brr_single_chain.pdb");
         List<String> expectedLines = Files.readAllLines(Paths.get(fileLocation));
         Structure structure = StructureParser.local()
@@ -89,7 +89,7 @@ public class StructureRepresentationTest {
     }
 
     @Test
-    public void shouldRepresentMultipleChains() throws IOException {
+    void shouldRepresentMultipleChains() throws IOException {
         String fileLocation = Resources.getResourceAsFileLocation("1brr_multi_chain.pdb");
         List<String> expectedLines = Files.readAllLines(Paths.get(fileLocation));
         Structure structure = StructureParser.local()
@@ -101,7 +101,7 @@ public class StructureRepresentationTest {
     }
 
     @Test
-    public void shouldRepresentMultipleModels() throws IOException {
+    void shouldRepresentMultipleModels() throws IOException {
         String fileLocation = Resources.getResourceAsFileLocation("5ie8_multi_model.pdb");
         List<String> expectedLines = Files.readAllLines(Paths.get(fileLocation));
         Structure structure = StructureParser.local()
@@ -113,7 +113,7 @@ public class StructureRepresentationTest {
     }
 
     @Test
-    public void shouldRepresentLeaves() throws IOException {
+    void shouldRepresentLeaves() throws IOException {
         String fileLocation = Resources.getResourceAsFileLocation("1GL0_HDS_intra_E-H57_E-D102_E-S195.pdb");
         List<String> expectedLines = Files.readAllLines(Paths.get(fileLocation));
         Structure structure = StructureParser.local()

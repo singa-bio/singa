@@ -22,7 +22,7 @@ import bio.singa.simulation.model.modules.displacement.VesicleLayer;
 import bio.singa.simulation.model.sections.CellRegion;
 import bio.singa.simulation.model.sections.CellTopology;
 import bio.singa.simulation.model.simulation.Simulation;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import tec.uom.se.ComparableQuantity;
 import tec.uom.se.quantity.Quantities;
 
@@ -32,7 +32,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import static bio.singa.features.model.FeatureOrigin.MANUALLY_ANNOTATED;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static tec.uom.se.AbstractUnit.ONE;
 import static tec.uom.se.unit.MetricPrefix.MICRO;
 import static tec.uom.se.unit.MetricPrefix.NANO;
@@ -42,11 +42,11 @@ import static tec.uom.se.unit.Units.SECOND;
 /**
  * @author cl
  */
-public class VesicleFusionTest {
+class VesicleFusionTest {
 
 
     @Test
-    public void shouldSimulateFusionTethering() {
+    void shouldSimulateFusionTethering() {
         // setup simulation
         Simulation simulation = new Simulation();
         final double simulationExtend = 100;

@@ -13,32 +13,36 @@ import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.sections.CellRegion;
 import bio.singa.simulation.model.sections.CellTopology;
 import bio.singa.simulation.model.simulation.Simulation;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import tec.uom.se.quantity.Quantities;
 
 import javax.measure.Quantity;
 
 import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static bio.singa.simulation.features.DefaultFeatureSources.BINESH2015;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static tec.uom.se.unit.MetricPrefix.MICRO;
 import static tec.uom.se.unit.Units.METRE;
 
 /**
  * @author cl
  */
-public class SingleFileChannelMembraneTransportTest {
+class SingleFileChannelMembraneTransportTest {
 
-    @After
-    @Before
-    public void cleanUp() {
+    @BeforeAll
+    static void initialize() {
+        Environment.reset();
+    }
+
+    @AfterEach
+    void cleanUp() {
         Environment.reset();
     }
 
     @Test
-    public void shouldSimulateChannelDiffusion() {
+    void shouldSimulateChannelDiffusion() {
         Environment.setNodeDistance(Quantities.getQuantity(1, MICRO(METRE)));
         Simulation simulation = new Simulation();
         // setup species

@@ -17,9 +17,9 @@ import bio.singa.simulation.model.modules.displacement.VesicleLayer;
 import bio.singa.simulation.model.sections.CellRegion;
 import bio.singa.simulation.model.sections.CellTopology;
 import bio.singa.simulation.model.simulation.Simulation;
-import org.junit.After;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tec.uom.se.quantity.Quantities;
@@ -33,7 +33,7 @@ import static bio.singa.features.model.FeatureOrigin.MANUALLY_ANNOTATED;
 import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static bio.singa.simulation.model.modules.displacement.implementations.EndocytosisActinBoost.DEFAULT_CLATHRIN_DEPOLYMERIZATION_RATE;
 import static bio.singa.simulation.model.sections.CellSubsection.SECTION_A;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static tec.uom.se.AbstractUnit.ONE;
 import static tec.uom.se.unit.MetricPrefix.MILLI;
 import static tec.uom.se.unit.MetricPrefix.NANO;
@@ -42,17 +42,22 @@ import static tec.uom.se.unit.Units.*;
 /**
  * @author cl
  */
-public class ReactionTest {
+class ReactionTest {
 
     private static final Logger logger = LoggerFactory.getLogger(ReactionTest.class);
 
-    @After
-    public void cleanUp() {
+    @BeforeAll
+    static void initialize() {
+        Environment.reset();
+    }
+
+    @AfterEach
+    void cleanUp() {
         Environment.reset();
     }
 
     @Test
-    public void testEnzymeReaction() {
+    void testEnzymeReaction() {
         // SABIO Entry ID: 28851
         // Kinetic properties of fructose bisphosphate aldolase from Trypanosoma brucei compared to aldolase from rabbit
         // muscle and Staphylococcus aureus.
@@ -109,7 +114,7 @@ public class ReactionTest {
                 assertEquals(0.50, node.getConcentrationContainer().get(SECTION_A, fp).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-2);
                 assertEquals(0.49, node.getConcentrationContainer().get(SECTION_A, gp).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-2);
                 assertEquals(0.49, node.getConcentrationContainer().get(SECTION_A, ga).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-2);
-                assertEquals(0.01, node.getConcentrationContainer().get(SECTION_A, aldolase).to(MOLE_PER_LITRE).getValue().doubleValue(), 0);
+                assertEquals(0.01, node.getConcentrationContainer().get(SECTION_A, aldolase).to(MOLE_PER_LITRE).getValue().doubleValue());
                 firstCheckpointPassed = true;
             }
         }
@@ -117,12 +122,12 @@ public class ReactionTest {
         assertEquals(0.0, node.getConcentrationContainer().get(SECTION_A, fp).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
         assertEquals(1.0, node.getConcentrationContainer().get(SECTION_A, gp).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
         assertEquals(1.0, node.getConcentrationContainer().get(SECTION_A, ga).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
-        assertEquals(0.01, node.getConcentrationContainer().get(SECTION_A, aldolase).to(MOLE_PER_LITRE).getValue().doubleValue(), 0);
+        assertEquals(0.01, node.getConcentrationContainer().get(SECTION_A, aldolase).to(MOLE_PER_LITRE).getValue().doubleValue());
         logger.info("Second and final checkpoint (at {}) reached successfully.", simulation.getElapsedTime().to(MILLI(SECOND)));
     }
 
     @Test
-    public void testEquilibriumReaction() {
+    void testEquilibriumReaction() {
         logger.info("Testing Equilibrium Reaction Module.");
         // create simulation
         Simulation simulation = new Simulation();
@@ -180,7 +185,7 @@ public class ReactionTest {
     }
 
     @Test
-    public void testNthOrderReaction() {
+    void testNthOrderReaction() {
         logger.info("Testing Nth Order Reaction Module.");
         // create simulation
         Simulation simulation = new Simulation();
@@ -238,7 +243,7 @@ public class ReactionTest {
     }
 
    @Test
-   public void testDecayInMembrane() {
+   void testDecayInMembrane() {
        logger.info("Testing Decay in Membrane.");
        // create simulation
        Simulation simulation = new Simulation();
@@ -281,39 +286,5 @@ public class ReactionTest {
        }
 
    }
-
-
-    @Test
-    @Ignore
-    public void shouldPerformCalciumOscillationExample() {
-        // FIXME currently there are no relations to time and space when working with dynamic reactions
-        // FIXME every parameter should be scaled individually instead of applying some arbitrary scale
-        // it should be recognized which reaction rate is required and they should be transformed to the corresponding
-        // scales
-//        logger.info("Testing Dynamic Reaction Module.");
-//        Simulation simulation = SimulationExamples.createSimulationFromSBML();
-//
-//        SmallMolecule x = new SmallMolecule.Builder("X").build();
-//        AutomatonNode node = simulation.getGraph().getNodes().iterator().next();
-//        logger.info("Starting simulation ...");
-//        Quantity<Time> currentTime;
-//        Quantity<Time> firstCheckpoint = Quantities.getQuantity(169.0, MILLI(SECOND));
-//        boolean firstCheckpointPassed = false;
-//        Quantity<Time> secondCheckpoint = Quantities.getQuantity(351.0, MILLI(SECOND));
-//        // run simulation
-//        while ((currentTime = simulation.getElapsedTime().to(MILLI(SECOND))).getValue().doubleValue() < secondCheckpoint.getValue().doubleValue()) {
-//            simulation.nextEpoch();
-//            if (!firstCheckpointPassed && currentTime.getValue().doubleValue() > firstCheckpoint.getValue().doubleValue()) {
-//                logger.info("First checkpoint reached at {}.", simulation.getElapsedTime().to(SECOND));
-//                assertEquals(0.2958, node.getConcentrationContainer().get(INNER, x).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-4);
-//                firstCheckpointPassed = true;
-//            }
-//        }
-//
-//        // check final values
-//        assertEquals(0.2975, node.getConcentrationContainer().get(INNER, x).getValue().doubleValue(), 1e-4);
-//        logger.info("Second and final checkpoint (at {}) reached successfully.", simulation.getElapsedTime().to(SECOND));
-
-    }
 
 }

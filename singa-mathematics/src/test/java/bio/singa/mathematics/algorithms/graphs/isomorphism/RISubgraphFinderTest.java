@@ -5,19 +5,19 @@ import bio.singa.mathematics.graphs.model.DirectedEdge;
 import bio.singa.mathematics.graphs.model.DirectedGraph;
 import bio.singa.mathematics.graphs.model.GenericNode;
 import bio.singa.mathematics.vectors.Vector2D;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author fk
  */
-public class RISubgraphFinderTest {
+class RISubgraphFinderTest {
 
     private DirectedGraph<GenericNode<String>> patternGraph;
     private DirectedGraph<GenericNode<String>> targetGraph;
@@ -136,14 +136,14 @@ public class RISubgraphFinderTest {
         return targetGraph;
     }
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         patternGraph = createPatternGraph();
         targetGraph = createTargetGraph();
     }
 
     @Test
-    public void shouldFindFullSubgraph() {
+    void shouldFindFullSubgraph() {
         RISubgraphFinder<GenericNode<String>, DirectedEdge<GenericNode<String>>, Vector2D, Integer, DirectedGraph<GenericNode<String>>> finder
                 = new RISubgraphFinder<>(patternGraph, targetGraph, (a, b) -> a.getContent().equals(b.getContent()), (a, b) -> true);
         List<GenericNode<String>> solution = Stream.of(targetGraph.getNode(7), targetGraph.getNode(4),
@@ -158,7 +158,7 @@ public class RISubgraphFinderTest {
     }
 
     @Test
-    public void shouldFindPartialSubgraph() {
+    void shouldFindPartialSubgraph() {
         targetGraph.removeNode(7);
         RISubgraphFinder<GenericNode<String>, DirectedEdge<GenericNode<String>>, Vector2D, Integer, DirectedGraph<GenericNode<String>>> finder
                 = new RISubgraphFinder<>(patternGraph, targetGraph, (a, b) -> a.getContent().equals(b.getContent()), (a, b) -> true, 4);
@@ -170,4 +170,5 @@ public class RISubgraphFinderTest {
         assertEquals(solution, finder.getPartialMatches().get(4).get(0));
 
     }
+
 }

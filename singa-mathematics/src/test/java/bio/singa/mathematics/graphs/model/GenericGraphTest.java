@@ -1,24 +1,22 @@
 package bio.singa.mathematics.graphs.model;
 
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 import java.util.Optional;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author cl
  */
-public class GenericGraphTest {
+class GenericGraphTest {
 
     private static GenericGraph<String> genericGraph;
 
-    @BeforeClass
-    public static void initializeGraph() {
+    @BeforeAll
+    static void initializeGraph() {
         genericGraph = new GenericGraph<>();
         genericGraph.addNode("N1");
         genericGraph.addNode("N2");
@@ -27,7 +25,7 @@ public class GenericGraphTest {
     }
 
     @Test
-    public void shouldAddAndConnectNodes() {
+    void shouldAddAndConnectNodes() {
         Optional<GenericNode<String>> n1 = genericGraph.getNodeWithContent("N1");
         Optional<GenericNode<String>> n3 = genericGraph.getNodeWithContent("N3");
         // verify n1
@@ -38,7 +36,7 @@ public class GenericGraphTest {
             GenericNode<String> neighbour = genericNode.getNeighbours().iterator().next();
             assertEquals("N3", neighbour.getContent());
         } else {
-            Assert.fail("Node could not be retrieved from graph.");
+            fail("Node could not be retrieved from graph.");
         }
         // verify n2
         if (n3.isPresent()) {
@@ -48,7 +46,7 @@ public class GenericGraphTest {
             GenericNode<String> neighbour = genericNode.getNeighbours().iterator().next();
             assertEquals("N1", neighbour.getContent());
         } else {
-            Assert.fail("Node could not be retrieved from graph.");
+            fail("Node could not be retrieved from graph.");
         }
         // verify edge between them
         Collection<GenericEdge<String>> edges = genericGraph.getEdges();
@@ -59,7 +57,7 @@ public class GenericGraphTest {
     }
 
     @Test
-    public void shouldCopyCorrectly() {
+    void shouldCopyCorrectly() {
         GenericGraph<String> genericGraphCopy = genericGraph.getCopy();
         Optional<GenericNode<String>> originalOptional = genericGraph.getNodeWithContent("N1");
         Optional<GenericNode<String>> copyOptional = genericGraphCopy.getNodeWithContent("N1");
@@ -67,11 +65,11 @@ public class GenericGraphTest {
         if (originalOptional.isPresent() && copyOptional.isPresent()) {
             GenericNode<String> copy = copyOptional.get();
             GenericNode<String> original = originalOptional.get();
-            assertFalse(copy == original);
+            assertNotSame(copy, original);
             assertEquals(copy, original);
             assertEquals(copy.getContent(), original.getContent());
         } else {
-            Assert.fail("Node could not be retrieved from graph.");
+            fail("Node could not be retrieved from graph.");
         }
         // verify edge between them
         Collection<GenericEdge<String>> edges = genericGraphCopy.getEdges();
@@ -82,7 +80,7 @@ public class GenericGraphTest {
     }
 
     @Test
-    public void shouldRemoveEdges() {
+    void shouldRemoveEdges() {
         GenericGraph<String> genericGraphCopy = genericGraph.getCopy();
         Optional<GenericNode<String>> n1Optional = genericGraphCopy.getNodeWithContent("N1");
         if (n1Optional.isPresent()) {
@@ -93,10 +91,10 @@ public class GenericGraphTest {
                 GenericNode<String> n3 = n3Optional.get();
                 assertEquals(0, n3.getNeighbours().size());
             } else {
-                Assert.fail("Node could not be retrieved from graph.");
+                fail("Node could not be retrieved from graph.");
             }
         } else {
-            Assert.fail("Node could not be retrieved from graph.");
+            fail("Node could not be retrieved from graph.");
         }
     }
 

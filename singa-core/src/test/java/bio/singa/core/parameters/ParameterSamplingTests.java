@@ -1,17 +1,16 @@
 package bio.singa.core.parameters;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class ParameterSamplingTests {
+class ParameterSamplingTests {
 
     @Test
-    public void testMixedParameterRetrieval() {
+    void testMixedParameterRetrieval() {
         DoubleParameter doubleParameter = new DoubleParameter("A", 0.0, 10.0);
         ParameterValue<Double> doubleParameterValue = new ParameterValue<>(doubleParameter, 3.0);
         BooleanParameter booleanParameter = new BooleanParameter("B");
@@ -29,32 +28,32 @@ public class ParameterSamplingTests {
     }
 
     @Test
-    public void testDoubleParameterValueSampling() {
+    void testDoubleParameterValueSampling() {
         DoubleParameter parameter = new DoubleParameter("A", 0.0, 10.0);
         UniqueParameterList<Double> actual = ParameterSampler.sample(parameter, 11);
         List<Double> expected = Arrays.asList(0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0);
         for (int i = 0; i < expected.size(); i++) {
-            assertEquals(expected.get(i), actual.getValues().get(i).getValue(), 0.0);
+            assertEquals(expected.get(i), actual.getValues().get(i).getValue());
         }
     }
 
     @Test
-    public void testIntegerParameterValueSampling() {
+    void testIntegerParameterValueSampling() {
         IntegerParameter parameter = new IntegerParameter("B", 0, 10);
         UniqueParameterList<Integer> actual = ParameterSampler.sample(parameter, 11);
         List<Integer> expected = Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
         for (int i = 0; i < expected.size(); i++) {
-            assertEquals(expected.get(i), actual.getValues().get(i).getValue(), 0.0);
+            assertEquals(expected.get(i), actual.getValues().get(i).getValue());
         }
     }
 
     @Test
-    public void testBooleanParameterValueSampling() {
+    void testBooleanParameterValueSampling() {
         BooleanParameter parameter = new BooleanParameter("C");
         UniqueParameterList<Boolean> actual = ParameterSampler.sample(parameter);
         List<Boolean> expected = Arrays.asList(true, false);
-        assertTrue(actual.getValues().get(0).getValue() == expected.get(0));
-        assertTrue(actual.getValues().get(1).getValue() == expected.get(1));
+        assertSame(actual.getValues().get(0).getValue(), expected.get(0));
+        assertSame(actual.getValues().get(1).getValue(), expected.get(1));
     }
 
 }

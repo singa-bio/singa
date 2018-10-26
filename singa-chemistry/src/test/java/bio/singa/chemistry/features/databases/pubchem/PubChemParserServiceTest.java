@@ -6,27 +6,26 @@ import bio.singa.chemistry.features.smiles.Smiles;
 import bio.singa.features.identifiers.ChEBIIdentifier;
 import bio.singa.features.identifiers.InChIKey;
 import bio.singa.structure.features.molarmass.MolarMass;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author cl
  */
-public class PubChemParserServiceTest {
+class PubChemParserServiceTest {
 
     @Test
-    public void shouldParseSpecies() {
+    void shouldParseSpecies() {
         SmallMolecule species = PubChemParserService.parse("CID:962");
         // name
         assertEquals("water", species.getName().toLowerCase());
         // molar mass
-        assertEquals(18.015, species.getFeature(MolarMass.class).getValue().doubleValue(), 0.0);
+        assertEquals(18.015, species.getFeature(MolarMass.class).getValue().doubleValue());
         // molar mass
         assertEquals("O", species.getFeature(Smiles.class).getFeatureContent());
         // logP
-        Assert.assertEquals(-1.38, species.getFeature(LogP.class).getFeatureContent(), 0.0);
+        assertEquals(-1.38, species.getFeature(LogP.class).getFeatureContent().doubleValue());
         // ChEBI identifier
         assertEquals("CHEBI:25805", species.getFeature(ChEBIIdentifier.class).getIdentifier());
         // InChIKey
@@ -34,7 +33,7 @@ public class PubChemParserServiceTest {
     }
 
     @Test
-    public void shouldResolveInChIKey() {
+    void shouldResolveInChIKey() {
         SmallMolecule species = new SmallMolecule.Builder("CID:5957").name("ATP").build();
         InChIKey feature = species.getFeature(InChIKey.class);
         assertEquals("ZKHQWZAMYRWXGA-KQYNXXCUSA-N", feature.getIdentifier());

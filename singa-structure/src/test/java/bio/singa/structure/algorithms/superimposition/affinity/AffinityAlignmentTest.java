@@ -8,9 +8,8 @@ import bio.singa.structure.model.oak.OakAminoAcid;
 import bio.singa.structure.model.oak.StructuralMotif;
 import bio.singa.structure.parser.pdb.structures.StructureParser;
 import bio.singa.structure.parser.pdb.structures.StructureParserOptions;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -18,15 +17,18 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 /**
  * @author cl
  */
-public class AffinityAlignmentTest {
+class AffinityAlignmentTest {
 
     private List<StructuralMotif> input;
 
-    @Before
-    public void setUp() throws Exception {
+    @BeforeEach
+    void initialize() throws Exception {
         StructureParserOptions structureParserOptions = new StructureParserOptions();
         structureParserOptions.inferIdentifierFromFileName(true);
         input = Files.list(Paths.get(Resources.getResourceAsFileLocation("consensus_alignment")))
@@ -41,22 +43,23 @@ public class AffinityAlignmentTest {
     }
 
     @Test
-    public void shouldRunAffinityAlignment() {
+    void shouldRunAffinityAlignment() {
         AffinityAlignment affinityAlignment = AffinityAlignment.create()
                 .inputStructuralMotifs(input)
                 .run();
-        Assert.assertEquals(3, affinityAlignment.getClusters().size());
-        Assert.assertEquals(input.size(), affinityAlignment.getClusters().values().stream()
+        assertEquals(3, affinityAlignment.getClusters().size());
+        assertEquals(input.size(), affinityAlignment.getClusters().values().stream()
                 .mapToInt(Collection::size)
                 .sum());
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldFailWithInputOfDifferentSize() {
+    @Test
+    void shouldFailWithInputOfDifferentSize() {
         input.get(0).addLeafSubstructure(new OakAminoAcid(new LeafIdentifier(0), AminoAcidFamily.ALANINE));
-        AffinityAlignment.create()
-                .inputStructuralMotifs(input)
-                .run();
+        assertThrows(IllegalArgumentException.class,
+                () -> AffinityAlignment.create()
+                        .inputStructuralMotifs(input)
+                        .run());
     }
 
 }

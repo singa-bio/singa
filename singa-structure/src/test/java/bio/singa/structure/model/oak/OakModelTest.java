@@ -4,26 +4,26 @@ import bio.singa.mathematics.vectors.Vector3D;
 import bio.singa.structure.model.identifiers.LeafIdentifier;
 import bio.singa.structure.model.interfaces.*;
 import bio.singa.structure.parser.pdb.structures.StructureParser;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author cl
  */
-public class OakModelTest {
+class OakModelTest {
 
     private static OakModel firstModel;
     private static OakModel secondModel;
     private static OakModel modelToModify;
     private static Model anotherModelToModify;
 
-    @BeforeClass
-    public static void prepareData() {
+    @BeforeAll
+    static void prepareData() {
         Structure structure2N5E = StructureParser.pdb().pdbIdentifier("2N5E").parse();
         firstModel = (OakModel) structure2N5E.getFirstModel();
         secondModel = (OakModel) structure2N5E.getModel(2).get();
@@ -32,25 +32,25 @@ public class OakModelTest {
     }
 
     @Test
-    public void getIdentifier() {
+    void getIdentifier() {
         assertEquals(1, (int) firstModel.getModelIdentifier());
         assertEquals(2, (int) secondModel.getModelIdentifier());
     }
 
     @Test
-    public void getAllChains() {
+    void getAllChains() {
         final List<Chain> allChains = firstModel.getAllChains();
         assertEquals(2, allChains.size());
     }
 
     @Test
-    public void getFirstChain() {
+    void getFirstChain() {
         final Chain firstChain = firstModel.getFirstChain();
         assertEquals("A", firstChain.getChainIdentifier());
     }
 
     @Test
-    public void getChain() {
+    void getChain() {
         final Optional<Chain> chain = firstModel.getChain("B");
         if (!chain.isPresent()) {
             fail("Optional chain was empty.");
@@ -59,13 +59,13 @@ public class OakModelTest {
     }
 
     @Test
-    public void getAllLeafSubstructures() {
+    void getAllLeafSubstructures() {
         final List<LeafSubstructure<?>> leafSubstructures = secondModel.getAllLeafSubstructures();
         assertEquals(334, leafSubstructures.size());
     }
 
     @Test
-    public void getLeafSubstructure() {
+    void getLeafSubstructure() {
         Optional<LeafSubstructure<?>> leafSubstructure = firstModel.getLeafSubstructure(new LeafIdentifier("2N5E", 1, "B", 64));
         if (!leafSubstructure.isPresent()) {
             fail("Optional leaf substructure was empty.");
@@ -78,7 +78,7 @@ public class OakModelTest {
 
 
     @Test
-    public void addChain() {
+    void addChain() {
         final int expected = modelToModify.getAllChains().size() + 1;
         modelToModify.addChain(new OakChain("C"));
         final int actual = modelToModify.getAllChains().size();
@@ -87,7 +87,7 @@ public class OakModelTest {
 
 
     @Test
-    public void removeLeafSubstructure() {
+    void removeLeafSubstructure() {
         final int expected = modelToModify.getNumberOfLeafSubstructures() - 1;
         final boolean response = modelToModify.removeLeafSubstructure(new LeafIdentifier("2N5E", 3, "B", 64));
         if (!response) {
@@ -98,7 +98,7 @@ public class OakModelTest {
     }
 
     @Test
-    public void getAtom() {
+    void getAtom() {
         // ATOM     17  OG1 THR A  56       5.624   2.561  -0.853  1.00  0.00           O
         final Optional<Atom> atom = secondModel.getAtom(17);
         if (!atom.isPresent()) {
@@ -109,7 +109,7 @@ public class OakModelTest {
     }
 
     @Test
-    public void removeAtom() {
+    void removeAtom() {
         final int expected = modelToModify.getAllAtoms().size() - 1;
         modelToModify.removeAtom(17);
         final int actual = modelToModify.getAllAtoms().size();
@@ -117,20 +117,20 @@ public class OakModelTest {
     }
 
     @Test
-    public void getCopy() {
+    void getCopy() {
         final OakModel firstModelCopy = firstModel.getCopy();
-        assertTrue(firstModel != firstModelCopy);
-        assertTrue(firstModel.equals(firstModelCopy));
+        assertNotSame(firstModel, firstModelCopy);
+        assertEquals(firstModel, firstModelCopy);
     }
 
     @Test
-    public void getAllChainIdentifiers() {
+    void getAllChainIdentifiers() {
         int actual = firstModel.getAllChainIdentifiers().size();
         assertEquals(2, actual);
     }
 
     @Test
-    public void removeChain() {
+    void removeChain() {
         final int expectedChains = anotherModelToModify.getAllChainIdentifiers().size() - 1;
         final int expectedLeafs = anotherModelToModify.getNumberOfLeafSubstructures() - 167;
         anotherModelToModify.removeChain("A");

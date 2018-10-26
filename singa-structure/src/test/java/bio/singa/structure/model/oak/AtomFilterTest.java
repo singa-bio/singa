@@ -6,23 +6,23 @@ import bio.singa.structure.model.interfaces.Atom;
 import bio.singa.structure.model.interfaces.Structure;
 import bio.singa.structure.parser.pdb.structures.StructureParser;
 import bio.singa.structure.parser.pdb.structures.StructureParserOptions;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author fk
  */
-public class AtomFilterTest {
+class AtomFilterTest {
 
     @Test
-    public void shouldApplyAtomFilter() {
+    void shouldApplyAtomFilter() {
 
         StructureParserOptions options = new StructureParserOptions();
         options.omitHydrogens(true);
@@ -45,27 +45,27 @@ public class AtomFilterTest {
 
         // check backbone atoms
         assertEquals(4, backboneAtoms.size());
-        assertTrue(backboneAtoms.stream().filter(atom -> Objects.equals(atom.getAtomName(), AtomName.N.getName())).count() == 1);
-        assertTrue(backboneAtoms.stream().filter(atom -> Objects.equals(atom.getAtomName(), AtomName.CA.getName())).count() == 1);
-        assertTrue(backboneAtoms.stream().filter(atom -> Objects.equals(atom.getAtomName(), AtomName.C.getName())).count() == 1);
-        assertTrue(backboneAtoms.stream().filter(atom -> Objects.equals(atom.getAtomName(), AtomName.O.getName())).count() == 1);
+        assertEquals(1, backboneAtoms.stream().filter(atom -> Objects.equals(atom.getAtomName(), AtomName.N.getName())).count());
+        assertEquals(1, backboneAtoms.stream().filter(atom -> Objects.equals(atom.getAtomName(), AtomName.CA.getName())).count());
+        assertEquals(1, backboneAtoms.stream().filter(atom -> Objects.equals(atom.getAtomName(), AtomName.C.getName())).count());
+        assertEquals(1, backboneAtoms.stream().filter(atom -> Objects.equals(atom.getAtomName(), AtomName.O.getName())).count());
 
         // check sidechain atoms
-        assertTrue(sideChainAtoms.size() == 3);
-        assertTrue(sideChainAtoms.stream().filter(atom -> Objects.equals(atom.getAtomName(), AtomName.CB.getName())).count() == 1);
-        assertTrue(sideChainAtoms.stream().filter(atom -> Objects.equals(atom.getAtomName(), AtomName.CG1.getName())).count() == 1);
-        assertTrue(sideChainAtoms.stream().filter(atom -> Objects.equals(atom.getAtomName(), AtomName.CG2.getName())).count() == 1);
+        assertEquals(3, sideChainAtoms.size());
+        assertEquals(1, sideChainAtoms.stream().filter(atom -> Objects.equals(atom.getAtomName(), AtomName.CB.getName())).count());
+        assertEquals(1, sideChainAtoms.stream().filter(atom -> Objects.equals(atom.getAtomName(), AtomName.CG1.getName())).count());
+        assertEquals(1, sideChainAtoms.stream().filter(atom -> Objects.equals(atom.getAtomName(), AtomName.CG2.getName())).count());
     }
 
     @Test
-    public void shouldApplyAtomFilterByNames() {
+    void shouldApplyAtomFilterByNames() {
         AminoAcid aminoAcid = AminoAcidFamily.METHIONINE.getPrototype();
         Predicate<Atom> atomFilter = StructuralEntityFilter.AtomFilter.hasAtomNames("CA", "SD");
         List<Atom> filteredAtoms = aminoAcid.getAllAtoms().stream()
                 .filter(atomFilter)
                 .collect(Collectors.toList());
-        assertTrue(filteredAtoms.size() == 2);
-        assertTrue(filteredAtoms.stream().filter(atom -> Objects.equals(atom.getAtomName(), AtomName.CA.getName())).count() == 1);
-        assertTrue(filteredAtoms.stream().filter(atom -> Objects.equals(atom.getAtomName(), AtomName.SD.getName())).count() == 1);
+        assertEquals(2, filteredAtoms.size());
+        assertEquals(1, filteredAtoms.stream().filter(atom -> Objects.equals(atom.getAtomName(), AtomName.CA.getName())).count());
+        assertEquals(1, filteredAtoms.stream().filter(atom -> Objects.equals(atom.getAtomName(), AtomName.SD.getName())).count());
     }
 }

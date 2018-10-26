@@ -4,14 +4,14 @@ import bio.singa.features.identifiers.ENAAccessionNumber;
 import bio.singa.sequence.model.NucleotideSequence;
 import bio.singa.sequence.model.ProteinSequence;
 import bio.singa.sequence.model.SequenceContainer;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class ENAParserServiceTest {
+class ENAParserServiceTest {
 
     @Test
-    public void shouldParseNucleotideSequence() {
+    void shouldParseNucleotideSequence() {
         // parse sequence
         SequenceContainer sequenceContainer = ENAParserService.parseGeneTranslationPair(new ENAAccessionNumber("CAA37856.1"));
         NucleotideSequence gene = sequenceContainer.getGene();

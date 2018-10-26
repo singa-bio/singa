@@ -1,16 +1,16 @@
 package bio.singa.structure.algorithms.superimposition.scores;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * @author cl
  */
-public class SubstitutionMatrixTest {
+class SubstitutionMatrixTest {
 
     @Test
-    public void getMatrix() {
+    void getMatrix() {
         assertNotNull(SubstitutionMatrix.BLOSUM_45.getMatrix());
     }
 

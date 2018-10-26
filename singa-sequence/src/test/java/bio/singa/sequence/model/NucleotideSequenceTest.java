@@ -2,16 +2,16 @@ package bio.singa.sequence.model;
 
 import bio.singa.structure.model.interfaces.Structure;
 import bio.singa.structure.parser.pdb.structures.StructureParser;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author fk
  */
-public class NucleotideSequenceTest {
+class NucleotideSequenceTest {
     @Test
-    public void shouldCreateNucleotideSequence() {
+    void shouldCreateNucleotideSequence() {
         Structure structure = StructureParser.mmtf()
                 .pdbIdentifier("1c0a")
                 .parse();

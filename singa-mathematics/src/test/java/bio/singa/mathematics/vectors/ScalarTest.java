@@ -1,98 +1,98 @@
 package bio.singa.mathematics.vectors;
 
 import bio.singa.mathematics.matrices.Matrix;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class ScalarTest {
+class ScalarTest {
 
-    Scalar firstScalar;
-    Scalar secondScalar;
+    private Scalar firstScalar;
+    private Scalar secondScalar;
 
-    @Before
-    public void initialize() {
+    @BeforeEach
+    void initialize() {
         firstScalar = new Scalar(4.0);
         secondScalar = new Scalar(7.0);
     }
 
     @Test
-    public void testAddCalculation() {
+    void testAddCalculation() {
         Scalar actual = firstScalar.add(secondScalar);
-        assertEquals(11.0, actual.getValue(), 0.0);
+        assertEquals(11.0, actual.getValue());
     }
 
     @Test
-    public void testSubtractCalculation() {
+    void testSubtractCalculation() {
         Scalar actual = firstScalar.subtract(secondScalar);
-        assertEquals(-3.0, actual.getValue(), 0.0);
+        assertEquals(-3.0, actual.getValue());
     }
 
     @Test
-    public void testAdditivelyInvertCalculation() {
+    void testAdditivelyInvertCalculation() {
         Scalar actual = firstScalar.additivelyInvert();
-        assertEquals(-4.0, actual.getValue(), 0.0);
+        assertEquals(-4.0, actual.getValue());
     }
 
     @Test
-    public void testAdditivelyInvertElementCalculation() {
+    void testAdditivelyInvertElementCalculation() {
         Scalar actual = secondScalar.additiveleyInvertElement(0);
-        assertEquals(-7.0, actual.getValue(), 0.0);
-    }
-
-    @Test(expected = IndexOutOfBoundsException.class)
-    public void shouldNotInvert() {
-        Scalar actual = secondScalar.additiveleyInvertElement(1);
-        assertNull(actual);
+        assertEquals(-7.0, actual.getValue());
     }
 
     @Test
-    public void testMultiplicationCalculation() {
+    void shouldNotInvert() {
+        assertThrows(IndexOutOfBoundsException.class,
+                () -> secondScalar.additiveleyInvertElement(1));
+    }
+
+    @Test
+    void testMultiplicationCalculation() {
         Scalar actual = firstScalar.multiply(secondScalar);
-        assertEquals(28.0, actual.getValue(), 0.0);
+        assertEquals(28.0, actual.getValue());
     }
 
     @Test
-    public void testDivisionCalculation() {
+    void testDivisionCalculation() {
         Scalar actual = firstScalar.divide(secondScalar);
-        assertEquals(4.0 / 7.0, actual.getValue(), 0.0);
+        assertEquals(4.0 / 7.0, actual.getValue());
     }
 
     @Test
-    public void testNormalizationCalculation() {
+    void testNormalizationCalculation() {
         Scalar actual = firstScalar.normalize();
-        assertEquals(4.0, actual.getValue(), 0.0);
+        assertEquals(4.0, actual.getValue());
     }
 
     @Test
-    public void testDotProductCalculation() {
+    void testDotProductCalculation() {
         double actual = firstScalar.dotProduct(secondScalar);
-        assertEquals(28.0, actual, 0.0);
+        assertEquals(28.0, actual);
     }
 
     @Test
-    public void testDyadicProductCalculation() {
+    void testDyadicProductCalculation() {
         Matrix actual = firstScalar.dyadicProduct(secondScalar);
         assertTrue(Arrays.deepEquals(new double[][]{{28}}, actual.getElements()));
     }
 
     @Test
-    public void testMagnitudeCalculation() {
+    void testMagnitudeCalculation() {
         double actual = firstScalar.getMagnitude();
-        assertEquals(4.0, actual, 0.0);
+        assertEquals(4.0, actual);
     }
 
     @Test
-    public void testDistanceCalculation() {
+    void testDistanceCalculation() {
         double actual = firstScalar.distanceTo(secondScalar);
-        assertEquals(3.0, actual, 0.0);
+        assertEquals(3.0, actual);
     }
 
     @Test
-    public void testDimensionString() {
+    void testDimensionString() {
         String actual = firstScalar.getDimensionAsString();
         assertEquals("1D", actual);
     }

@@ -20,7 +20,7 @@ import bio.singa.simulation.model.modules.concentration.imlementations.NthOrderR
 import bio.singa.simulation.model.modules.displacement.implementations.EndocytosisActinBoost;
 import bio.singa.simulation.model.sections.CellRegion;
 import bio.singa.simulation.model.simulation.Simulation;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import tec.uom.se.ComparableQuantity;
 import tec.uom.se.quantity.Quantities;
 import tec.uom.se.unit.ProductUnit;
@@ -29,7 +29,7 @@ import javax.measure.quantity.Area;
 import javax.measure.quantity.Length;
 import java.util.List;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static tec.uom.se.unit.MetricPrefix.MICRO;
 import static tec.uom.se.unit.MetricPrefix.MILLI;
 import static tec.uom.se.unit.MetricPrefix.NANO;
@@ -39,10 +39,10 @@ import static tec.uom.se.unit.Units.SECOND;
 /**
  * @author cl
  */
-public class ClathrinMediatedEndocytosisTest {
+class ClathrinMediatedEndocytosisTest {
 
     @Test
-    public void shouldSimulateEndocytosis() {
+    void shouldSimulateEndocytosis() {
 
         // setup simulation
         Simulation simulation = new Simulation();

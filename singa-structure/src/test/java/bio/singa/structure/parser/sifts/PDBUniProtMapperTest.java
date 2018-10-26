@@ -1,19 +1,19 @@
 package bio.singa.structure.parser.sifts;
 
 import bio.singa.features.identifiers.UniProtIdentifier;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author cl
  */
-public class PDBUniProtMapperTest {
+class PDBUniProtMapperTest {
 
     @Test
-    public void shouldMapChainsToUniProt() {
+    void shouldMapChainsToUniProt() {
         Map<String, UniProtIdentifier> map = PDBUniProtMapper.map("4hhb");
         assertEquals("P69905", map.get("A").getIdentifier());
         assertEquals("P68871", map.get("B").getIdentifier());

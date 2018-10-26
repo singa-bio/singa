@@ -3,17 +3,17 @@ package bio.singa.chemistry.features.molarvolume;
 import bio.singa.chemistry.entities.SmallMolecule;
 import bio.singa.chemistry.features.databases.chebi.ChEBIParserService;
 import bio.singa.features.quantities.MolarVolume;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author cl
  */
-public class MolarVolumeTest {
+class MolarVolumeTest {
 
     @Test
-    public void shouldUseChEBIToCalculateVolume() {
+    void shouldUseChEBIToCalculateVolume() {
         // values from http://pubs.acs.org/doi/pdf/10.1021/ja00354a007
 
         SmallMolecule ammonia = ChEBIParserService.parse("CHEBI:16134");

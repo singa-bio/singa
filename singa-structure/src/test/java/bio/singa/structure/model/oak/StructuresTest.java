@@ -5,35 +5,35 @@ import bio.singa.mathematics.matrices.LabeledSymmetricMatrix;
 import bio.singa.mathematics.matrices.Matrices;
 import bio.singa.structure.model.interfaces.*;
 import bio.singa.structure.parser.pdb.structures.StructureParser;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author cl
  */
-public class StructuresTest {
+class StructuresTest {
 
     @Test
-    public void calculateDistanceMatrix() {
+    void calculateDistanceMatrix() {
         Chain chain = StructureParser.pdb()
                 .pdbIdentifier("1HRR")
                 .parse()
                 .getFirstChain();
         final LabeledSymmetricMatrix<LeafSubstructure<?>> distanceMatrix = Structures.calculateDistanceMatrix(chain);
         assertTrue(distanceMatrix.getMainDiagonal().isZero());
-        assertEquals(5.461240152199864, distanceMatrix.getElement(5, 3), 0.0);
-        assertEquals(3.792725405298938, distanceMatrix.getElement(17, 18), 0.0);
-        assertEquals(20.372810778093434, distanceMatrix.getElement(23, 11), 0.0);
+        assertEquals(5.461240152199864, distanceMatrix.getElement(5, 3));
+        assertEquals(3.792725405298938, distanceMatrix.getElement(17, 18));
+        assertEquals(20.372810778093434, distanceMatrix.getElement(23, 11));
     }
 
     @Test
-    public void calculateAtomDistanceMatrix() {
+    void calculateAtomDistanceMatrix() {
         Structure structure = StructureParser.pdb()
                 .pdbIdentifier("5kqr")
                 .chainIdentifier("A")
@@ -48,7 +48,7 @@ public class StructuresTest {
     }
 
     @Test
-    public void isAlphaCarbonStructure() {
+    void isAlphaCarbonStructure() {
         Structure alphaCarbonStructure = StructureParser.pdb()
                 .pdbIdentifier("1hrb")
                 .parse();
@@ -56,7 +56,7 @@ public class StructuresTest {
     }
 
     @Test
-    public void isBackboneOnlyStructure() {
+    void isBackboneOnlyStructure() {
         Structure alphaCarbonStructure = StructureParser.pdb()
                 .pdbIdentifier("2plp")
                 .parse();

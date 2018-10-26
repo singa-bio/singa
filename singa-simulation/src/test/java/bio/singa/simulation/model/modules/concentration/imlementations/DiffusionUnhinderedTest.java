@@ -11,9 +11,7 @@ import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.simulation.Simulation;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tec.uom.se.quantity.Quantities;
@@ -21,26 +19,20 @@ import tec.uom.se.quantity.Quantities;
 import javax.measure.Quantity;
 import javax.measure.quantity.Length;
 import javax.measure.quantity.Time;
-import java.util.Arrays;
-import java.util.Collection;
 
 import static bio.singa.chemistry.features.diffusivity.Diffusivity.SQUARE_CENTIMETRE_PER_SECOND;
 import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static bio.singa.simulation.model.sections.CellSubsection.SECTION_A;
 import static org.junit.Assert.assertEquals;
-import static org.junit.runners.Parameterized.Parameter;
-import static org.junit.runners.Parameterized.Parameters;
 import static tec.uom.se.unit.MetricPrefix.MICRO;
 import static tec.uom.se.unit.MetricPrefix.NANO;
 import static tec.uom.se.unit.Units.METRE;
 import static tec.uom.se.unit.Units.SECOND;
 
-
 /**
  * @author cl
  */
-@RunWith(Parameterized.class)
-public class DiffusionUnhinderedTest {
+class DiffusionUnhinderedTest {
 
     private static final Logger logger = LoggerFactory.getLogger(DiffusionUnhinderedTest.class);
 
@@ -62,35 +54,43 @@ public class DiffusionUnhinderedTest {
             .assignFeature(new Diffusivity(Quantities.getQuantity(1.09E-05, SQUARE_CENTIMETRE_PER_SECOND), FeatureOrigin.MANUALLY_ANNOTATED))
             .build();
 
-    @Parameter(0)
-    public SmallMolecule species;
-    @Parameter(1)
-    public int numberOfNodes;
-    @Parameter(2)
-    public Quantity<Time> expectedOutcome;
-
-    @Parameters
-    public static Collection<Object[]> data() {
-        return Arrays.asList(new Object[][]{
-                /* species, number of nodes (node distance), expected result */
-                /* test different numbers of nodes (10, 20, 30)*/
-                /* 0 */ {hydrogen, 10, Quantities.getQuantity(130, MICRO(SECOND))},
-                /* 1 */ {hydrogen, 20, Quantities.getQuantity(134, MICRO(SECOND))},
-                /* 2 */ {hydrogen, 30, Quantities.getQuantity(134, MICRO(SECOND))},
-                /* test different species (ammonia, benzene)*/
-                /* 3 */ {ammonia, 30, Quantities.getQuantity(260, MICRO(SECOND))},
-                /* 4 */ {benzene, 30, Quantities.getQuantity(544, MICRO(SECOND))}
-        });
+    @Test
+    void shouldReachCorrectHalfLife1() {
+        // setup and run simulation
+        Simulation simulation = setUpSimulation(10, hydrogen);
+        Quantity<Time> actualHalfLifeTime = runSimulation(simulation, 10, hydrogen);
+        // test results
+        assertEquals(Quantities.getQuantity(130, MICRO(SECOND)).getValue().doubleValue(), actualHalfLifeTime.getValue().doubleValue(), 1);
+        Environment.reset();
     }
 
     @Test
-    public void shouldReachCorrectHalfLife() {
-        logger.info("Performing free diffusion test for {} with {}x{} nodes ...", species.getName(), numberOfNodes, numberOfNodes);
+    void shouldReachCorrectHalfLife2() {
         // setup and run simulation
-        Simulation simulation = setUpSimulation(numberOfNodes, species);
-        Quantity<Time> actualHalfLifeTime = runSimulation(simulation, numberOfNodes, species);
+        Simulation simulation = setUpSimulation(20, hydrogen);
+        Quantity<Time> actualHalfLifeTime = runSimulation(simulation, 20, hydrogen);
         // test results
-        assertEquals(expectedOutcome.getValue().doubleValue(), actualHalfLifeTime.getValue().doubleValue(), 1);
+        assertEquals(Quantities.getQuantity(134, MICRO(SECOND)).getValue().doubleValue(), actualHalfLifeTime.getValue().doubleValue(), 1);
+        Environment.reset();
+    }
+
+    @Test
+    void shouldReachCorrectHalfLife3() {
+        // setup and run simulation
+        Simulation simulation = setUpSimulation(30, ammonia);
+        Quantity<Time> actualHalfLifeTime = runSimulation(simulation, 30, ammonia);
+        // test results
+        assertEquals(Quantities.getQuantity(260, MICRO(SECOND)).getValue().doubleValue(), actualHalfLifeTime.getValue().doubleValue(), 1);
+        Environment.reset();
+    }
+
+    @Test
+    void shouldReachCorrectHalfLife4() {
+        // setup and run simulation
+        Simulation simulation = setUpSimulation(30, benzene);
+        Quantity<Time> actualHalfLifeTime = runSimulation(simulation, 30, benzene);
+        // test results
+        assertEquals(Quantities.getQuantity(544, MICRO(SECOND)).getValue().doubleValue(), actualHalfLifeTime.getValue().doubleValue(), 1);
         Environment.reset();
     }
 
@@ -134,6 +134,5 @@ public class DiffusionUnhinderedTest {
         logger.info("Half life time of {} reached at {}.", species.getName(), simulation.getElapsedTime().to(MICRO(SECOND)));
         return simulation.getElapsedTime().to(MICRO(SECOND));
     }
-
 
 }

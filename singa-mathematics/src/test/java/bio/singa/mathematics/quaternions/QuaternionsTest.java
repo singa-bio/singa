@@ -1,19 +1,20 @@
 package bio.singa.mathematics.quaternions;
 
 import bio.singa.mathematics.vectors.Vector3D;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+
 /**
  * @author fk
  */
-public class QuaternionsTest {
+class QuaternionsTest {
 
     @Test
-    public void shouldCalculateRelativeOrientation() {
+    void shouldCalculateRelativeOrientation() {
         List<Vector3D> reference = new ArrayList<>();
         reference.add(new Vector3D(-1.31335947229961, 6.132195247750678, 26.597580121882984));
         reference.add(new Vector3D(11.135460599181105, -1.3011346522772929, 10.142414202778763));
@@ -29,7 +30,7 @@ public class QuaternionsTest {
         candidate.add(new Vector3D(-27.072433167634635, -24.80268409843388, 26.228840887711037));
 
         Quaternion quaternion = Quaternions.relativeOrientation(reference, candidate);
-        Assert.assertArrayEquals(new double[]{-0.314536338481798, -0.21739989933815962,
+        assertArrayEquals(new double[]{-0.314536338481798, -0.21739989933815962,
                 -0.5963273276405343, -0.7058313494393125}, quaternion.getElements(), 1E-6);
     }
 }

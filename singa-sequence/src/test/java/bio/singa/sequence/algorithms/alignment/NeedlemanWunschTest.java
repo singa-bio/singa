@@ -4,15 +4,15 @@ import bio.singa.sequence.model.ProteinSequence;
 import bio.singa.structure.algorithms.superimposition.scores.SubstitutionMatrix;
 import bio.singa.structure.model.interfaces.Structure;
 import bio.singa.structure.parser.pdb.structures.StructureParser;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author fk
  */
-public class NeedlemanWunschTest {
+class NeedlemanWunschTest {
 
     @Test
-    public void shouldComputeAlignment() {
+    void shouldComputeAlignment() {
 
         Structure first = StructureParser.pdb()
                 .pdbIdentifier("1n3l")

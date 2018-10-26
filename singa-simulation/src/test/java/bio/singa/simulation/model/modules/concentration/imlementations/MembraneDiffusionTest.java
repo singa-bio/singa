@@ -16,8 +16,9 @@ import bio.singa.simulation.model.modules.displacement.Vesicle;
 import bio.singa.simulation.model.modules.displacement.VesicleLayer;
 import bio.singa.simulation.model.sections.CellTopology;
 import bio.singa.simulation.model.simulation.Simulation;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import tec.uom.se.ComparableQuantity;
 import tec.uom.se.quantity.Quantities;
 import tec.uom.se.unit.ProductUnit;
@@ -34,8 +35,8 @@ import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static bio.singa.simulation.model.sections.CellRegion.CYTOSOL_A;
 import static bio.singa.simulation.model.sections.CellRegion.MEMBRANE;
 import static bio.singa.simulation.model.sections.CellTopology.INNER;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static tec.uom.se.unit.MetricPrefix.MICRO;
 import static tec.uom.se.unit.MetricPrefix.NANO;
 import static tec.uom.se.unit.Units.METRE;
@@ -44,20 +45,25 @@ import static tec.uom.se.unit.Units.SECOND;
 /**
  * @author cl
  */
-public class MembraneDiffusionTest {
+class MembraneDiffusionTest {
 
-    private SmallMolecule water = new SmallMolecule.Builder("water")
+    private final SmallMolecule water = new SmallMolecule.Builder("water")
             .name("water")
             .assignFeature(new MembranePermeability(Quantities.getQuantity(3.5E-03, CENTIMETRE_PER_SECOND), FeatureOrigin.MANUALLY_ANNOTATED))
             .build();
 
-    @After
-    public void cleanUp() {
+    @BeforeAll
+    static void initialize() {
+        Environment.reset();
+    }
+
+    @AfterEach
+    void cleanUp() {
         Environment.reset();
     }
 
     @Test
-    public void shouldSimulateMembraneDiffusion() {
+    void shouldSimulateMembraneDiffusion() {
         Environment.reset();
         Simulation simulation = new Simulation();
 
@@ -87,7 +93,7 @@ public class MembraneDiffusionTest {
     }
 
     @Test
-    public void testConversionOfArea() {
+    void testConversionOfArea() {
 
         setNodeDistance(Quantities.getQuantity(2, MICRO(METRE)));
         setTimeStep(Quantities.getQuantity(1, MICRO(SECOND)));
@@ -105,7 +111,7 @@ public class MembraneDiffusionTest {
     }
 
     @Test
-    public void shouldDiffuseFromVesicle() {
+    void shouldDiffuseFromVesicle() {
 
         ComparableQuantity<Length> systemExtend = Quantities.getQuantity(20, MICRO(METRE));
         Environment.setSystemExtend(systemExtend);

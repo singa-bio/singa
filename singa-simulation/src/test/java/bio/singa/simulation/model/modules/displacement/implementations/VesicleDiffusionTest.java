@@ -7,13 +7,13 @@ import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.modules.displacement.Vesicle;
 import bio.singa.simulation.model.modules.displacement.VesicleLayer;
 import bio.singa.simulation.model.simulation.Simulation;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import tec.uom.se.ComparableQuantity;
 import tec.uom.se.quantity.Quantities;
 
 import javax.measure.quantity.Length;
 
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static tec.uom.se.unit.MetricPrefix.MICRO;
 import static tec.uom.se.unit.MetricPrefix.NANO;
 import static tec.uom.se.unit.Units.METRE;
@@ -22,10 +22,10 @@ import static tec.uom.se.unit.Units.SECOND;
 /**
  * @author cl
  */
-public class VesicleDiffusionTest {
+class VesicleDiffusionTest {
 
     @Test
-    public void testVesicleDiffusion() {
+    void testVesicleDiffusion() {
 
         ComparableQuantity<Length> systemExtend = Quantities.getQuantity(20, MICRO(METRE));
         Environment.setSystemExtend(systemExtend);

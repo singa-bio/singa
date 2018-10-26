@@ -8,21 +8,21 @@ import bio.singa.structure.model.oak.StructuralEntityFilter;
 import bio.singa.structure.model.oak.StructuralMotif;
 import bio.singa.structure.model.oak.StructuralMotifs;
 import bio.singa.structure.parser.pdb.structures.StructureParser;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author fk
  */
-public class Fit3DSiteAlignmentTest {
+class Fit3DSiteAlignmentTest {
 
     private StructuralMotif bindingSite1;
     private StructuralMotif bindingSite2;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void initialize() {
         Structure bindingSiteStructure1 = StructureParser.local()
                 .fileLocation(Resources.getResourceAsFileLocation("truncated_1asz_A_renum.pdb"))
                 .everything()
@@ -36,7 +36,7 @@ public class Fit3DSiteAlignmentTest {
     }
 
     @Test
-    public void shouldCreateBindingSiteAlignment() {
+    void shouldCreateBindingSiteAlignment() {
         Fit3D fit3d = Fit3DBuilder.create()
                 .site(bindingSite1)
                 .vs(bindingSite2)
@@ -54,7 +54,7 @@ public class Fit3DSiteAlignmentTest {
     }
 
     @Test
-    public void shouldAlignBindingSitesKuhnMunkres() {
+    void shouldAlignBindingSitesKuhnMunkres() {
         Fit3D fit3d = Fit3DBuilder.create()
                 .site(bindingSite1)
                 .vs(bindingSite2)
@@ -64,7 +64,7 @@ public class Fit3DSiteAlignmentTest {
     }
 
     @Test
-    public void shouldCreateGutteridgeBindingSiteAlignment() {
+    void shouldCreateGutteridgeBindingSiteAlignment() {
         // exchanges have only be added for one of the sites because they are transitive
         StructuralMotifs.assignComplexExchanges(bindingSite1, MatcherFamily.GUTTERIDGE);
         Fit3D fit3d = Fit3DBuilder.create()

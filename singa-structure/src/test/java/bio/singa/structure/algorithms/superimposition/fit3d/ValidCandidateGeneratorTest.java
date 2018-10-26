@@ -7,19 +7,19 @@ import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.interfaces.Structure;
 import bio.singa.structure.model.oak.StructuralMotif;
 import bio.singa.structure.parser.pdb.structures.StructureParser;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author fk
  */
-public class ValidCandidateGeneratorTest {
+class ValidCandidateGeneratorTest {
 
     @Test
-    public void shouldGenerateValidCandidates() {
+    void shouldGenerateValidCandidates() {
 
         Structure structure = StructureParser.pdb()
                 .pdbIdentifier("1a0j")

@@ -16,8 +16,9 @@ import bio.singa.simulation.model.sections.CellTopology;
 import bio.singa.simulation.model.sections.ConcentrationContainer;
 import bio.singa.simulation.model.simulation.Simulation;
 import bio.singa.structure.features.molarmass.MolarMass;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tec.uom.se.quantity.Quantities;
@@ -29,25 +30,26 @@ import static bio.singa.features.parameters.Environment.getConcentrationUnit;
 import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static bio.singa.simulation.model.sections.CellSubsection.SECTION_A;
 import static bio.singa.simulation.model.sections.CellTopology.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static tec.uom.se.unit.MetricPrefix.MILLI;
 import static tec.uom.se.unit.Units.*;
 
 /**
  * @author cl
  */
-public class ComplexBuildingReactionTest {
+class ComplexBuildingReactionTest {
 
     private static final Logger logger = LoggerFactory.getLogger(ComplexBuildingReactionTest.class);
 
-    @After
-    public void cleanUp() {
+    @AfterEach
+    @BeforeEach
+    void cleanUp() {
         Environment.reset();
     }
 
     @Test
-    public void minimalSetUpTest() {
+    void minimalSetUpTest() {
         Environment.reset();
         logger.info("Testing section changing binding (minimal setup).");
         // the rate constants
@@ -110,7 +112,7 @@ public class ComplexBuildingReactionTest {
     }
 
     @Test
-    public void testPrazosinExample() {
+    void testPrazosinExample() {
         Environment.reset();
         Environment.setNodeDistance(Quantities.getQuantity(1.0, MILLI(METRE)));
         logger.info("Testing Monovalent Receptor Binding.");
@@ -179,7 +181,7 @@ public class ComplexBuildingReactionTest {
     }
 
     @Test
-    public void testMembraneAbsorption() {
+    void testMembraneAbsorption() {
         Environment.reset();
         logger.info("Testing section changing binding (membrane absorption).");
         // the rate constants
@@ -232,7 +234,7 @@ public class ComplexBuildingReactionTest {
     }
 
     @Test
-    public void shouldReactInsideAndOutside() {
+    void shouldReactInsideAndOutside() {
         Environment.reset();
         logger.info("Testing section changing binding (inside and outside reactions).");
 

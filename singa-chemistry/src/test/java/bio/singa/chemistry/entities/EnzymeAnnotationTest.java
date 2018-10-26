@@ -3,17 +3,17 @@ package bio.singa.chemistry.entities;
 import bio.singa.chemistry.annotations.Annotation;
 import bio.singa.chemistry.annotations.AnnotationType;
 import bio.singa.features.identifiers.PubChemIdentifier;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
 /**
  * @author cl
  */
-public class EnzymeAnnotationTest {
+class EnzymeAnnotationTest {
 
     @Test
-    public void shouldCreateAnnotation() {
+    void shouldCreateAnnotation() {
         Enzyme enzyme = new Enzyme.Builder("P05062")
                 .name("Fructose-bisphosphate aldolase B")
                 .build();

@@ -8,26 +8,26 @@ import bio.singa.structure.model.molecules.MoleculeGraph;
 import bio.singa.structure.model.molecules.MoleculeGraphs;
 import bio.singa.structure.model.oak.OakLeafSubstructure;
 import bio.singa.structure.parser.pdb.structures.StructureParser;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author fk
  */
-public class MoleculeIsomorphismFinderTest {
+class MoleculeIsomorphismFinderTest {
 
-    private MoleculeGraph targetGraph;
+    private static MoleculeGraph targetGraph;
 
-    @Before
-    public void setUp() {
+    @BeforeAll
+    static void initialize() {
         List<LeafSubstructure<?>> targetLeafSubstructure = StructureParser.local()
                 .fileLocation(Resources.getResourceAsFileLocation("atp.pdb"))
                 .parse().getAllLeafSubstructures();
@@ -35,7 +35,7 @@ public class MoleculeIsomorphismFinderTest {
     }
 
     @Test
-    public void shouldFindAdeninePattern() {
+    void shouldFindAdeninePattern() {
 
         Set<Integer> correctIdentifiers = Stream.of(31, 30, 29, 26, 25, 21, 17, 13, 27, 28)
                 .collect(Collectors.toSet());
@@ -64,7 +64,7 @@ public class MoleculeIsomorphismFinderTest {
     }
 
     @Test
-    public void shouldFindExtendedAdeninePattern() {
+    void shouldFindExtendedAdeninePattern() {
 
         Set<Integer> correctIdentifiers = Stream.of(31, 30, 29, 26, 25, 21, 17, 13, 27, 28, 12)
                 .collect(Collectors.toSet());
@@ -89,7 +89,7 @@ public class MoleculeIsomorphismFinderTest {
     }
 
     @Test
-    public void shouldFindRingPattern() {
+    void shouldFindRingPattern() {
 
         Set<Integer> correctIdentifiers1 = Stream.of(21, 25, 26, 27, 13, 17, 31)
                 .collect(Collectors.toSet());

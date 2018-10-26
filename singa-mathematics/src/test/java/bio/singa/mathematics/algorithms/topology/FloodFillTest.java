@@ -2,18 +2,18 @@ package bio.singa.mathematics.algorithms.topology;
 
 import bio.singa.mathematics.topology.grids.rectangular.RectangularCoordinate;
 import bio.singa.mathematics.topology.grids.rectangular.RectangularGrid;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author cl
  */
-public class FloodFillTest {
+class FloodFillTest {
 
 
     @Test
-    public void shouldFillCentre() {
+    void shouldFillCentre() {
         // initialize
         RectangularGrid<Integer> grid = new RectangularGrid<>(10, 10);
         for (int row = 0; row < 10; row++) {

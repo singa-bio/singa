@@ -7,83 +7,84 @@ import bio.singa.mathematics.metrics.implementations.MinkowskiMetric;
 import bio.singa.mathematics.metrics.model.Metric;
 import bio.singa.mathematics.metrics.model.VectorMetricProvider;
 import bio.singa.mathematics.vectors.RegularVector;
+import bio.singa.mathematics.vectors.Vector;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.mathematics.vectors.Vector3D;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.util.*;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class MetricTest {
+class MetricTest {
 
-    private Metric<Collection<String>> jaccard;
+    private static Metric<Collection<String>> jaccard;
 
-    @Before
-    public void initObjects() {
+    @BeforeAll
+    static void initialize() {
         jaccard = new JaccardMetric<>();
     }
 
     @Test
-    public void testManhattanMetric() {
+    void testManhattanMetric() {
         Vector2D first = new Vector2D(0.0, 1.0);
         Vector2D second = new Vector2D(2.0, 5.0);
         double manhattenDistance = VectorMetricProvider.MANHATTAN_METRIC.calculateDistance(first, second);
-        assertEquals(6.0, manhattenDistance, 0.0);
+        assertEquals(6.0, manhattenDistance);
     }
 
     @Test
-    public void testEucledianMetric() {
+    void testEucledianMetric() {
         Vector2D first = new Vector2D(0.0, 0.0);
         Vector2D second = new Vector2D(1.0, 1.0);
         double euclideanDistance = VectorMetricProvider.EUCLIDEAN_METRIC.calculateDistance(first, second);
-        assertEquals(Math.sqrt(2), euclideanDistance, 0.0);
+        assertEquals(Math.sqrt(2), euclideanDistance);
     }
 
     @Test
-    public void testChebychefMetric() {
+    void testChebychefMetric() {
         Vector2D first = new Vector2D(0.0, 1.0);
         Vector2D second = new Vector2D(1.0, 5.0);
         double chebychefDistance = VectorMetricProvider.CHEBYCHEV_METRIC.calculateDistance(first, second);
-        assertEquals(4.0, chebychefDistance, 0.0);
+        assertEquals(4.0, chebychefDistance);
     }
 
     @Test
-    public void testCosineSimilarity() {
+    void testCosineSimilarity() {
         Vector2D first = new Vector2D(-2.0, 1.0);
         Vector2D second = new Vector2D(1.0, 5.0);
         double cosineSimilarity = VectorMetricProvider.COSINE_SIMILARITY.calculateDistance(first, second);
-        assertEquals(0.2631174057921088, cosineSimilarity, 0.0);
+        assertEquals(0.2631174057921088, cosineSimilarity);
     }
 
     @Test
-    public void testAngularDistance() {
+    void testAngularDistance() {
         Vector2D first = new Vector2D(-2.0, 1.0);
         Vector2D second = new Vector2D(1.0, 5.0);
         double angularDistance = VectorMetricProvider.ANGULAR_DISTANCE.calculateDistance(first, second);
-        assertEquals(0.584750659461432, angularDistance, 0.0);
+        assertEquals(0.584750659461432, angularDistance);
     }
 
     @Test
-    public void testMinkowskiMetricWithPLessThanOne() {
+    void testMinkowskiMetricWithPLessThanOne() {
         Vector2D first = new Vector2D(0.0, 0.0);
         Vector2D second = new Vector2D(1.0, 1.0);
         Metric<Vector2D> minkowski = new MinkowskiMetric<>(0.5);
         minkowski.calculateDistance(first, second);
     }
 
-    @Test(expected = IncompatibleDimensionsException.class)
-    public void testMinkowskiMetricWithVectorsOfDifferentDimension() {
+    @Test
+    void testMinkowskiMetricWithVectorsOfDifferentDimension() {
         RegularVector first = new RegularVector(1.0, 1.0, 1.0);
         RegularVector second = new RegularVector(1.0, 1.0);
-        Metric<RegularVector> minkowski = new MinkowskiMetric<>(2);
-        minkowski.calculateDistance(first, second);
+        MinkowskiMetric<Vector> minkowski = new MinkowskiMetric<>(2);
+        assertThrows(IncompatibleDimensionsException.class,
+                () -> minkowski.calculateDistance(first, second));
     }
 
     @Test
-    public void testJaccardMetric() {
+    void testJaccardMetric() {
         Set<String> first = new HashSet<>();
         first.add("Apple");
         first.add("Pear");
@@ -95,19 +96,19 @@ public class MetricTest {
         second.add("Tomato");
 
         double jaccardDistance = jaccard.calculateDistance(first, second);
-        assertEquals(0.8, jaccardDistance, 0.0);
+        assertEquals(0.8, jaccardDistance);
     }
 
     @Test
-    public void testJaccardMetricWithEmptySet() {
+    void testJaccardMetricWithEmptySet() {
         Set<String> first = new HashSet<>();
         Set<String> second = new HashSet<>();
         double jaccardDistance = jaccard.calculateDistance(first, second);
-        assertEquals(1.0, jaccardDistance, 0.0);
+        assertEquals(1.0, jaccardDistance);
     }
 
     @Test
-    public void testPairwiseDistanceCalculation() {
+    void testPairwiseDistanceCalculation() {
         List<Vector3D> vectors = new ArrayList<>();
         vectors.add(new Vector3D(0.0, 0.0, 0.0));
         vectors.add(new Vector3D(1.0, 0.0, 0.0));

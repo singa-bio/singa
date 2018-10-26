@@ -4,9 +4,10 @@ import bio.singa.mathematics.graphs.model.Edge;
 import bio.singa.mathematics.graphs.model.Graph;
 import bio.singa.mathematics.graphs.model.Node;
 import bio.singa.mathematics.vectors.Vector;
-import org.junit.Assert;
 
 import java.util.Collection;
+
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * @author cl
@@ -27,7 +28,7 @@ public class GraphAssertion {
                 }
             }
             if (!contained) {
-                Assert.fail("The graph was expected to contain a node with the identifier <" + identifier + ">, but no node with this identifier could be found.");
+                fail("The graph was expected to contain a node with the identifier <" + identifier + ">, but no node with this identifier could be found.");
             }
         }
 

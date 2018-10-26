@@ -3,93 +3,92 @@ package bio.singa.mathematics.vectors;
 import bio.singa.mathematics.exceptions.IncompatibleDimensionsException;
 import bio.singa.mathematics.matrices.RegularMatrix;
 import bio.singa.mathematics.metrics.model.VectorMetricProvider;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class VectorTest {
+class VectorTest {
 
-    private RegularVector first4DVector;
-    private RegularVector first2DVector;
-    private RegularVector second2DVector;
-    private RegularVector first3DVector;
-    private double scalar;
+    private static RegularVector first4DVector;
+    private static RegularVector first2DVector;
+    private static RegularVector second2DVector;
+    private static RegularVector first3DVector;
 
-    @Before
-    public void initialize() {
+    @BeforeAll
+    static void initialize() {
         first4DVector = new RegularVector(10.0, 20.0, 30.0, 40.0);
         first3DVector = new RegularVector(20.0, 30.0, 40.0);
         first2DVector = new RegularVector(15.0, 25.0);
         second2DVector = new RegularVector(2.0, 3.0);
-        scalar = 2.0;
     }
 
     @Test
-    public void testToString() {
+    void testToString() {
         assertEquals(first4DVector.toString(), "Vector 4D (10.0, 20.0, 30.0, 40.0)");
         assertEquals(first2DVector.toString(), "Vector 2D (15.0, 25.0)");
     }
 
-    @Test(expected = IncompatibleDimensionsException.class)
-    public void testIncompatibleDimensionsException() throws IncompatibleDimensionsException {
-        first4DVector.distanceTo(first2DVector);
+    @Test
+    void testIncompatibleDimensionsException() throws IncompatibleDimensionsException {
+        assertThrows(IncompatibleDimensionsException.class,
+                () -> first4DVector.distanceTo(first2DVector));
     }
 
     @Test
-    public void shouldConvertRegularTo2D() {
+    void shouldConvertRegularTo2D() {
         Vector2D actual = first2DVector.as(Vector2D.class);
         assertEquals("Vector2D", actual.getClass().getSimpleName());
     }
 
     @Test
-    public void shouldNotConvertRegularTo2D() {
+    void shouldNotConvertRegularTo2D() {
         Vector2D actual = first3DVector.as(Vector2D.class);
         assertNull(actual);
     }
 
     @Test
-    public void shouldConvertRegularTo3D() {
+    void shouldConvertRegularTo3D() {
         Vector3D actual = first3DVector.as(Vector3D.class);
         assertEquals("Vector3D", actual.getClass().getSimpleName());
     }
 
     @Test
-    public void shouldNotConvertRegularTo3D() {
+    void shouldNotConvertRegularTo3D() {
         Vector3D actual = first2DVector.as(Vector3D.class);
         assertNull(actual);
     }
 
     @Test
-    public void testDyadicProduct() {
+    void testDyadicProduct() {
         RegularMatrix dyadicProduct = first2DVector.dyadicProduct(second2DVector);
         assertTrue(Arrays.deepEquals(new double[][]{{30.0, 45.0}, {50.0, 75.0}}, dyadicProduct.getElements()));
     }
 
     @Test
-    public void testDistanceCalculationWithDifferentMetic() {
+    void testDistanceCalculationWithDifferentMetic() {
         double actual = first2DVector.distanceTo(second2DVector, VectorMetricProvider.MANHATTAN_METRIC);
-        assertEquals(35.0, actual, 0.0);
+        assertEquals(35.0, actual);
     }
 
     @Test
-    public void calculateCentroid() {
+    void calculateCentroid() {
         Vector v1 = new Vector3D(0, 1, 2);
         Vector v2 = new Vector3D(2, -2, 2);
         Vector v3 = new Vector3D(1, 4, -4);
         Vector actual = Vectors.getCentroid(Arrays.asList(v1, v2, v3));
-        assertArrayEquals(new double[]{1.0, 1.0, 0.0}, actual.getElements(), 0.0);
+        assertArrayEquals(new double[]{1.0, 1.0, 0.0}, actual.getElements());
     }
 
     @Test
-    public void calculate3DCentroid() {
+    void calculate3DCentroid() {
         Vector3D v1 = new Vector3D(0, 1, 2);
         Vector3D v2 = new Vector3D(2, -2, 2);
         Vector3D v3 = new Vector3D(1, 4, -4);
         Vector actual = Vectors3D.getCentroid(Arrays.asList(v1, v2, v3));
-        assertArrayEquals(new double[]{1.0, 1.0, 0.0}, actual.getElements(), 0.0);
+        assertArrayEquals(new double[]{1.0, 1.0, 0.0}, actual.getElements());
     }
 
 }

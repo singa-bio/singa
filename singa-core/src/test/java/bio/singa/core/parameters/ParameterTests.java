@@ -1,22 +1,22 @@
 package bio.singa.core.parameters;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class ParameterTests {
+class ParameterTests {
 
     @Test
-    public void testParameterCreation() {
+    void testParameterCreation() {
         DoubleParameter param = new DoubleParameter("A", 0.0, 10.0);
         assertEquals("A", param.getName());
-        assertEquals(0.0, param.getLowerBound(), 0.0);
-        assertEquals(10.0, param.getUpperBound(), 0.0);
+        assertEquals(0.0, param.getLowerBound().doubleValue());
+        assertEquals(10.0, param.getUpperBound().doubleValue());
     }
 
     @Test
-    public void testParameterRangeTest() {
+    void testParameterRangeTest() {
         DoubleParameter param = new DoubleParameter("A", 0.0, 10.0);
         assertTrue(param.isInRange(0.0));
         assertTrue(param.isInRange(5.0));

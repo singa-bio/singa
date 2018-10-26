@@ -1,12 +1,12 @@
 package bio.singa.chemistry.features.reactions;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import tec.uom.se.quantity.Quantities;
 import tec.uom.se.unit.ProductUnit;
 
 import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static tec.uom.se.AbstractUnit.ONE;
 import static tec.uom.se.unit.MetricPrefix.*;
 import static tec.uom.se.unit.Units.*;
@@ -14,14 +14,14 @@ import static tec.uom.se.unit.Units.*;
 /**
  * @author cl
  */
-public class RateConstantTest {
+class RateConstantTest {
 
     private static RateConstant zeroOrder;
     private static RateConstant firstOrder;
     private static RateConstant secondOder;
 
-    @BeforeClass
-    public static void createRates() {
+    @BeforeAll
+    static void initialize() {
         zeroOrder = RateConstant.create(1.0)
                 .forward()
                 .zeroOrder()
@@ -42,7 +42,7 @@ public class RateConstantTest {
     }
 
     @Test
-    public void scaleZeroOrderRate() {
+    void scaleZeroOrderRate() {
         // scale to 10 seconds
         zeroOrder.scale(Quantities.getQuantity(10, SECOND));
         // / 10e-9 from nano mole per litre to mole per litre
@@ -54,18 +54,18 @@ public class RateConstantTest {
     }
 
     @Test
-    public void scaleFirstOrderRate() {
+    void scaleFirstOrderRate() {
         // scale to one minute
         // independent from concentration
         firstOrder.scale(Quantities.getQuantity(1, MINUTE));
         // * 60 from 1 minute (60) seconds
         // = 120 1/min
         assertEquals(new ProductUnit<>(ONE.divide(MINUTE)), firstOrder.getScaledQuantity().getUnit());
-        assertEquals(120.0, firstOrder.getScaledQuantity().getValue().doubleValue(), 0.0);
+        assertEquals(120.0, firstOrder.getScaledQuantity().getValue().doubleValue());
     }
 
     @Test
-    public void scaleSecondOrderRate() {
+    void scaleSecondOrderRate() {
         // scale to one milli second
         secondOder.scale(Quantities.getQuantity(1, MILLI(SECOND)));
         // * 0.001 from milli mole to mole
@@ -74,7 +74,7 @@ public class RateConstantTest {
         // * 10E-12 from litre to um3
         // = 0.05 l/mol*ms
         assertEquals(new ProductUnit<>(MICRO(METRE).pow(3).divide(NANO(MOLE).multiply(MILLI(SECOND)))), secondOder.getScaledQuantity().getUnit());
-        assertEquals(5.0E4, secondOder.getScaledQuantity().getValue().doubleValue(), 0.0);
+        assertEquals(5.0E4, secondOder.getScaledQuantity().getValue().doubleValue());
     }
 
 }
