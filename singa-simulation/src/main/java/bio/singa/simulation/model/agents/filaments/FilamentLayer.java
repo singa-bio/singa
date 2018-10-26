@@ -2,7 +2,9 @@ package bio.singa.simulation.model.agents.filaments;
 
 import bio.singa.mathematics.geometry.edges.LineSegment;
 import bio.singa.mathematics.geometry.faces.Rectangle;
+import bio.singa.mathematics.metrics.model.VectorMetricProvider;
 import bio.singa.mathematics.vectors.Vector2D;
+import bio.singa.mathematics.vectors.Vectors;
 import bio.singa.simulation.model.agents.membranes.Membrane;
 import bio.singa.simulation.model.agents.membranes.MembraneLayer;
 import bio.singa.simulation.model.agents.membranes.MembraneSegment;
@@ -11,7 +13,9 @@ import bio.singa.simulation.model.simulation.Simulation;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 
 import static bio.singa.simulation.model.agents.filaments.SkeletalFilament.FilamentBehaviour.STAGNANT;
 
@@ -32,22 +36,32 @@ public class FilamentLayer {
         this.membraneLayer = membraneLayer;
     }
 
-    public void spawnFilament(Membrane membrane) {
-        List<MembraneSegment> segments = new ArrayList<>(membrane.getSegments());
+    public void spawnFilament(Membrane sourceMembrane, Membrane targetMembrane) {
+        List<MembraneSegment> segments = new ArrayList<>(sourceMembrane.getSegments());
         // choose random line segment from the given membrane
-        LineSegment lineSegment = segments.get(ThreadLocalRandom.current().nextInt(0, segments.size())).getSegment();
-        // add corresponding filament
-        if (lineSegment.isHorizontal()) {
-            addVerticalFilament(lineSegment);
-        } else if (lineSegment.isVertical()) {
-            addHorizontalFilament(lineSegment);
-        } else {
-            addPerpendicularFilament(lineSegment);
+        // TODO should not choose first but specified region
+        List<Vector2D> targetPoints = targetMembrane.getSegments().stream()
+                .map(MembraneSegment::getStartingPoint)
+                .collect(Collectors.toList());
+
+        List<Vector2D> sourcePoints = sourceMembrane.getSegments().stream()
+                .map(MembraneSegment::getStartingPoint)
+                .collect(Collectors.toList());
+
+        Vector2D centroid = Vectors.getCentroid(sourcePoints).as(Vector2D.class);
+        LineSegment segment = segments.get(ThreadLocalRandom.current().nextInt(0, segments.size())).getSegment();
+        Vector2D initialPosition = segment.getRandomPoint();
+        while (initialPosition.isRightOf(centroid)) {
+            segment = segments.get(ThreadLocalRandom.current().nextInt(0, segments.size())).getSegment();
+            initialPosition = segment.getRandomPoint();
         }
+
+        Map.Entry<Vector2D, Double> entry = VectorMetricProvider.EUCLIDEAN_METRIC.calculateClosestDistance(targetPoints, initialPosition);
+        addFilament(initialPosition, initialPosition.subtract(entry.getKey()).normalize());
     }
 
-    public void spawnHorizontalFilament(Membrane membrane) {
-        List<MembraneSegment> segments = new ArrayList<>(membrane.getSegments());
+    public void spawnHorizontalFilament(Membrane sourceMembrane) {
+        List<MembraneSegment> segments = new ArrayList<>(sourceMembrane.getSegments());
         // choose random line segment from the given membrane
         LineSegment lineSegment = segments.get(ThreadLocalRandom.current().nextInt(0, segments.size())).getSegment();
         // add corresponding filament

@@ -174,6 +174,7 @@ public class Simulation {
             // if no maximal time step is given or time step is not already maximal
             if (maximalTimeStep == null || UnitRegistry.getTime().to(maximalTimeStep.getUnit()).getValue().doubleValue() < maximalTimeStep.getValue().doubleValue()) {
                 // if error was below tolerance threshold (10 percent of epsilon)
+                // TODO evaluate if the sign is right (< instead of >)
                 if (scheduler.getRecalculationCutoff() - scheduler.getLargestError().getValue() > 0.1 * scheduler.getRecalculationCutoff()) {
                     // try larger time step next time
                     scheduler.increaseTimeStep();

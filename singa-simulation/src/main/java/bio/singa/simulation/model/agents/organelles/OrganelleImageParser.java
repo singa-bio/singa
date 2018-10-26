@@ -6,7 +6,10 @@ import bio.singa.mathematics.geometry.faces.VertexPolygon;
 import bio.singa.mathematics.geometry.model.Polygon;
 import bio.singa.mathematics.matrices.Matrices;
 import bio.singa.mathematics.matrices.SymmetricMatrix;
+import bio.singa.mathematics.topology.grids.rectangular.RectangularDirection;
 import bio.singa.mathematics.vectors.Vector2D;
+import bio.singa.mathematics.vectors.Vectors;
+import bio.singa.simulation.model.agents.filaments.SkeletalFilament;
 import tec.uom.se.quantity.Quantities;
 
 import javax.imageio.ImageIO;
@@ -16,6 +19,8 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 
 import static bio.singa.mathematics.metrics.model.VectorMetricProvider.EUCLIDEAN_METRIC;
@@ -56,6 +61,54 @@ public class OrganelleImageParser {
         return new OrganelleTemplate(parser.scale, parser.polygon, parser.groups);
     }
 
+    public static FilamentTemplate getFilaments(Path imageFolder, String baseFileName, RectangularDirection plusDirection) {
+
+        List<Path> filamentFiles = new ArrayList<>();
+
+        // if directory
+        if (Files.isDirectory(imageFolder)) {
+            // get all images that match the base name
+            try {
+                Files.walk(imageFolder)
+                        .filter(path -> path.getFileName().toString().startsWith(baseFileName))
+                        .forEach(filamentFiles::add);
+            } catch (IOException e) {
+                throw new UncheckedIOException("Filament image could not be parsed.", e);
+            }
+        } else {
+            throw new IllegalArgumentException("Image folder " + imageFolder + " is no folder.");
+        }
+
+        Collections.sort(filamentFiles);
+
+        Quantity<Length> scale = null;
+        List<SkeletalFilament> filaments = new ArrayList<>();
+
+        // for each image path
+        for (Path imagePath : filamentFiles) {
+            // get image
+            BufferedImage image;
+            try {
+                image = ImageIO.read(Files.newInputStream(imagePath));
+            } catch (IOException e) {
+                throw new UncheckedIOException("Template image " + imagePath + " could not be parsed.", e);
+            }
+
+            // create polygon from trace
+            OrganelleImageParser parser = new OrganelleImageParser(image);
+            parser.createTrace();
+            // if there are black scale pixels
+            if (!parser.scalePixels.isEmpty() && scale == null) {
+                parser.determineScale();
+                scale = parser.scale;
+            }
+            // sort and connect
+            List<Vector2D> vectors = Vectors.sortByCloseness(parser.groups.values().iterator().next(), plusDirection);
+            filaments.add(new SkeletalFilament(vectors, plusDirection));
+        }
+        return new FilamentTemplate(filaments, scale);
+    }
+
     public OrganelleImageParser(BufferedImage templateImage) {
         this.templateImage = templateImage;
         templatePixels = new ArrayList<>();
@@ -88,7 +141,7 @@ public class OrganelleImageParser {
                         scalePixels.add(new Vector2D(col, row));
                     } else {
                         // colored pixels will be traced and assigned to groups
-                        Vector2D vector = new Vector2D(col-5, row-5);
+                        Vector2D vector = new Vector2D(col - 5, row - 5);
                         templatePixels.add(vector);
                         addToGroup(rgb, vector);
                     }

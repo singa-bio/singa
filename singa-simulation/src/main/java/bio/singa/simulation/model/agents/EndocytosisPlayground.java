@@ -8,11 +8,13 @@ import bio.singa.chemistry.entities.Protein;
 import bio.singa.features.identifiers.UniProtIdentifier;
 import bio.singa.features.parameters.Environment;
 import bio.singa.javafx.renderer.Renderer;
+import bio.singa.mathematics.geometry.edges.SimpleLineSegment;
 import bio.singa.mathematics.geometry.faces.Rectangle;
-import bio.singa.mathematics.geometry.faces.VertexPolygon;
 import bio.singa.mathematics.geometry.model.Polygon;
 import bio.singa.mathematics.topology.grids.rectangular.RectangularDirection;
 import bio.singa.mathematics.vectors.Vector2D;
+import bio.singa.simulation.model.agents.filaments.FilamentLayer;
+import bio.singa.simulation.model.agents.filaments.SkeletalFilament;
 import bio.singa.simulation.model.agents.membranes.Membrane;
 import bio.singa.simulation.model.agents.membranes.MembraneFactory;
 import bio.singa.simulation.model.agents.membranes.MembraneLayer;
@@ -40,6 +42,7 @@ import tec.uom.se.ComparableQuantity;
 import tec.uom.se.quantity.Quantities;
 
 import javax.measure.quantity.Length;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -52,11 +55,9 @@ import static tec.uom.se.unit.Units.METRE;
 public class EndocytosisPlayground extends Application implements Renderer {
 
     private Canvas canvas;
-    private Rectangle rectangle;
-    private OrganelleTemplate template;
     private AutomatonGraph graph;
     private MembraneLayer membranes;
-    private VertexPolygon polygon;
+    private FilamentLayer filaments;
 
     public static void main(String[] args) {
         launch();
@@ -73,22 +74,23 @@ public class EndocytosisPlayground extends Application implements Renderer {
         Environment.setSystemExtend(systemExtend);
         Environment.setSimulationExtend(simulationExtend);
         Environment.setNodeSpacingToDiameter(systemExtend, nodesHorizontal);
+        Rectangle rectangle = new Rectangle(simulationExtend, simulationExtend);
 
         Simulation simulation = new Simulation();
         graph = AutomatonGraphs.createRectangularAutomatonGraph(nodesHorizontal, nodesVertical);
         simulation.setGraph(graph);
+        simulation.setSimulationRegion(rectangle);
         simulation.initializeGraph();
         simulation.initializeSpatialRepresentations();
 
         canvas = new Canvas(simulationExtend, simulationExtend);
-        rectangle = new Rectangle(simulationExtend, simulationExtend);
         BorderPane root = new BorderPane();
         root.setCenter(canvas);
 
-        template = OrganelleImageParser.getOrganelleTemplate("organelle_templates/endocytossis_system.png");
+        OrganelleTemplate template = OrganelleImageParser.getOrganelleTemplate("organelle_templates/endocytossis_system.png");
+        template.initializeGroup(-65536, OrganelleTypes.CELL.getMembraneRegion());
         template.initializeGroup(-16711936, OrganelleTypes.EARLY_ENDOSOME.getMembraneRegion());
         template.initializeGroup(-16776968, OrganelleTypes.EARLY_ENDOSOME.getMembraneRegion());
-        template.initializeGroup(-65536, OrganelleTypes.CELL.getMembraneRegion());
         template.reduce();
         template.mapToSystemExtend();
 
@@ -102,6 +104,11 @@ public class EndocytosisPlayground extends Application implements Renderer {
         membranes.addMembrane(endosome1);
         membranes.addMembrane(endosome2);
 
+        filaments = new FilamentLayer(simulation, membranes);
+        for (int i = 0; i < 7; i++) {
+            filaments.spawnFilament(endosome2, membrane);
+            filaments.spawnFilament(endosome1, membrane);
+        }
 
         // setup species for clathrin decay
         ChemicalEntity clathrinHeavyChain = new Protein.Builder("Clathrin heavy chain")
@@ -161,10 +168,6 @@ public class EndocytosisPlayground extends Application implements Renderer {
                 .addSubstrate(clathrinTriskelion)
                 .build();
 
-
-
-
-
         Scene scene = new Scene(root);
         primaryStage.setScene(scene);
         primaryStage.show();
@@ -172,6 +175,7 @@ public class EndocytosisPlayground extends Application implements Renderer {
         AnimationTimer animationTimer = new AnimationTimer() {
             @Override
             public void handle(long now) {
+                filaments.nextEpoch();
                 render();
             }
         };
@@ -205,6 +209,25 @@ public class EndocytosisPlayground extends Application implements Renderer {
                 for (MembraneSegment segment : segments) {
                     getGraphicsContext().setLineWidth(3);
                     strokeLineSegment(segment);
+                }
+            }
+        }
+
+        // draw filaments
+        getGraphicsContext().setStroke(Color.BLACK);
+        if (filaments != null) {
+            for (SkeletalFilament skeletalFilament : filaments.getFilaments()) {
+                if (skeletalFilament.getSegments().size() > 1) {
+                    Vector2D previous = skeletalFilament.getSegments().getLast();
+                    Iterator<Vector2D> vector2DIterator = skeletalFilament.getSegments().descendingIterator();
+                    while (vector2DIterator.hasNext()) {
+                        Vector2D current = vector2DIterator.next();
+                        if (current != previous) {
+                            SimpleLineSegment lineSegment = new SimpleLineSegment(previous, current);
+                            strokeLineSegment(lineSegment);
+                        }
+                        previous = current;
+                    }
                 }
             }
         }

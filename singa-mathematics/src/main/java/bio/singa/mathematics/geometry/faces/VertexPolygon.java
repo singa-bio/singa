@@ -163,7 +163,7 @@ public class VertexPolygon implements Polygon {
     public Set<Vector2D> reduce() {
         List<Vector2D> reducedVectors = new ArrayList<>();
         Set<Vector2D> removedVectors = new HashSet<>();
-        for (int index = 0; index < vertices.size(); index++) {
+        for (int index = 0; index < vertices.size() - 1; index++) {
             if (index % 2 == 0) {
                 reducedVectors.add(vertices.get(index));
             } else {

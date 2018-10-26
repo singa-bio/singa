@@ -9,6 +9,7 @@ import bio.singa.mathematics.geometry.faces.VertexPolygon;
 import bio.singa.mathematics.geometry.model.Polygon;
 import bio.singa.mathematics.topology.grids.rectangular.RectangularDirection;
 import bio.singa.mathematics.vectors.Vector2D;
+import bio.singa.mathematics.vectors.Vectors;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.sections.CellRegion;
@@ -18,7 +19,7 @@ import org.slf4j.LoggerFactory;
 import java.util.*;
 
 import static bio.singa.mathematics.geometry.model.Polygon.*;
-import static bio.singa.mathematics.metrics.model.VectorMetricProvider.EUCLIDEAN_METRIC;
+import static bio.singa.mathematics.topology.grids.rectangular.RectangularDirection.*;
 
 /**
  * @author cl
@@ -38,8 +39,14 @@ public class MembraneFactory {
         MembraneFactory factory = new MembraneFactory(vectors, graph, regions);
         factory.direction = innerDirection;
         factory.initializeMembrane(innerRegion, membraneRegion);
-        List<Vector2D> sortedVectors = factory.sortLinearVectors();
-        List<LineSegment> segments = factory.connectLinearVectors(sortedVectors);
+        RectangularDirection vectorDirection;
+        if (innerDirection == NORTH || innerDirection == SOUTH) {
+            vectorDirection = WEST;
+        } else {
+            vectorDirection = NORTH;
+        }
+        List<Vector2D> sortedVectors = Vectors.sortByCloseness(factory.membraneVectors, vectorDirection);
+        List<LineSegment> segments = Vectors.connectToSegments(sortedVectors);
         factory.associateToGraph(segments);
         factory.fillInternalNodes();
         factory.createPolygonForLinearMembrane(globalClipper, sortedVectors);
@@ -69,41 +76,6 @@ public class MembraneFactory {
         membrane.setInnerRegion(innerRegion);
         membrane.setMembraneRegion(membraneRegion);
     }
-
-    private List<Vector2D> sortLinearVectors() {
-        TreeSet<Vector2D> sortedCopy = new TreeSet<>(Comparator.comparingDouble(Vector2D::getY).thenComparing(Vector2D::getX));
-        sortedCopy.addAll(membraneVectors);
-        final Vector2D first = sortedCopy.iterator().next();
-        List<Vector2D> copy = new ArrayList<>(membraneVectors);
-        List<Vector2D> result = new ArrayList<>();
-        result.add(first);
-        copy.remove(first);
-        Vector2D previous = first;
-        // for each vector (and omit last connection)
-        while (copy.size() > 1) {
-            // determine closest neighbour
-            Map.Entry<Vector2D, Double> entry = EUCLIDEAN_METRIC.calculateClosestDistance(copy, previous);
-            // add line segment
-            Vector2D next = entry.getKey();
-            result.add(next);
-            copy.remove(next);
-            previous = next;
-        }
-        return result;
-    }
-
-    private List<LineSegment> connectLinearVectors(List<Vector2D> vectors) {
-        Iterator<Vector2D> iterator = vectors.iterator();
-        Vector2D previous = iterator.next();
-        List<LineSegment> lineSegments = new ArrayList<>();
-        while (iterator.hasNext()) {
-            Vector2D next = iterator.next();
-            lineSegments.add(new SimpleLineSegment(previous, next));
-            previous = next;
-        }
-        return lineSegments;
-    }
-
 
     private Polygon connectPolygonVectors(Collection<Vector2D> vectors) {
         return new VertexPolygon(vectors);
