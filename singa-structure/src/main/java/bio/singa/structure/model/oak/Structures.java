@@ -5,6 +5,7 @@ import bio.singa.mathematics.geometry.bodies.Sphere;
 import bio.singa.mathematics.matrices.LabeledSymmetricMatrix;
 import bio.singa.mathematics.matrices.Matrices;
 import bio.singa.mathematics.metrics.model.VectorMetricProvider;
+import bio.singa.mathematics.vectors.Vectors;
 import bio.singa.structure.model.interfaces.*;
 
 import java.util.ArrayList;
@@ -127,5 +128,18 @@ public class Structures {
             spheres.add(new Sphere(atom.getPosition(), atom.getElement().getVanDerWaalsRadius().getValue().doubleValue()));
         }
         return spheres;
+    }
+
+    /**
+     * Calculated the torsion angle between the given {@link Atom}s. The order of the given atoms is important.
+     *
+     * @param a {@link Atom} 1.
+     * @param b {@link Atom} 2.
+     * @param c {@link Atom} 3.
+     * @param d {@link Atom} 4.
+     * @return The torsion angle in degrees.
+     */
+    public static double calculateTorsionAngle(Atom a, Atom b, Atom c, Atom d) {
+        return Vectors.dihedralAngle(a.getPosition(), b.getPosition(), c.getPosition(), d.getPosition());
     }
 }

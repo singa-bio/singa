@@ -218,7 +218,7 @@ public class SphereVolumeEstimaton {
                 int y2 = scaledY[i] - w;
                 int ix1 = scaledX[i] + scaledX[i] - x;
                 for (int iy = y2; iy < y1; iy++) {
-                    // TODO ust setFromTo to do this
+                    // TODO use setFromTo to do this
                     xyBitPlane.setBit(x, iy);
                     xyBitPlane.setBit(ix1, iy);
                 }

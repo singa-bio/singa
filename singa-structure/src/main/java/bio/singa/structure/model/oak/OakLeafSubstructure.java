@@ -78,7 +78,7 @@ public abstract class OakLeafSubstructure<FamilyType extends StructuralFamily> i
      */
     public OakLeafSubstructure(OakLeafSubstructure<FamilyType> leafSubstructure) {
         // initialize variables
-        this(leafSubstructure.leafIdentifier, leafSubstructure.family);
+        this(leafSubstructure.leafIdentifier, leafSubstructure.family, leafSubstructure.divergingThreeLetterCode);
         // copy and add all atoms
         for (OakAtom atom : leafSubstructure.atoms.values()) {
             atoms.put(atom.getAtomIdentifier(), atom.getCopy());

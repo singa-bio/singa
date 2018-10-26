@@ -36,9 +36,9 @@ public class Vectors {
         return true;
     }
 
-    public static List<Vector2D> generateMultipleRandom2DVectors(int numberOfVcetors, Rectangle rectangle) {
-        ArrayList<Vector2D> vectors = new ArrayList<>(numberOfVcetors);
-        for (int i = 0; i < numberOfVcetors; i++) {
+    public static List<Vector2D> generateMultipleRandom2DVectors(int numberOfVectors, Rectangle rectangle) {
+        ArrayList<Vector2D> vectors = new ArrayList<>(numberOfVectors);
+        for (int i = 0; i < numberOfVectors; i++) {
             vectors.add(generateRandom2DVector(rectangle));
         }
         return vectors;
@@ -111,30 +111,30 @@ public class Vectors {
     }
 
     /**
-     * Returns the standard deviation of an {@link Vector}s elements.
+     * Returns the variance of an {@link Vector}s elements.
      *
      * @param vector The {@link Vector} that holds the values.
      * @return The standard deviation of all {@link Vector} elements.
      */
-    public static double getStandardDeviation(Vector vector) {
+    public static double getVariance(Vector vector) {
         double mean = getAverage(vector);
         double dv = 0D;
         for (double d : vector.getElements()) {
             double dm = d - mean;
             dv += dm * dm;
         }
-        return Math.sqrt(dv / (vector.getDimension() - 1));
+        return dv / (vector.getDimension() - 1);
     }
 
+
     /**
-     * Returns the variance of an {@link Vector}s elements.
+     * Returns the standard deviation of an {@link Vector}s elements.
      *
      * @param vector The {@link Vector} that holds the values.
-     * @return The variance of all {@link Vector} elements.
+     * @return The standard deviation of all {@link Vector} elements.
      */
-    public static double getVariance(Vector vector) {
-        double standardDeviation = getStandardDeviation(vector);
-        return standardDeviation * standardDeviation;
+    public static double getStandardDeviation(Vector vector) {
+        return Math.sqrt(getVariance(vector));
     }
 
     /**
@@ -271,6 +271,7 @@ public class Vectors {
      * the collection.
      *
      * @param vectors The vectors to calculate the centroid from.
+     * @param <VectorType> The type of the vector.
      * @return The centroid.
      */
     public static <VectorType extends Vector> Vector getCentroid(Collection<VectorType> vectors) {
@@ -364,4 +365,33 @@ public class Vectors {
     }
 
 
+    /**
+     * Calculates the dihedral angle between the two planes defined by (a,b,c) and (b,c,d)
+     *
+     * @param a Point of plane 1.
+     * @param b Point of plane 1 and 2.
+     * @param c Point of plane 1 and 2.
+     * @param d Point of plane 2.
+     * @return The dihedral angle in degrees.
+     */
+    public static double dihedralAngle(Vector3D a, Vector3D b, Vector3D c, Vector3D d) {
+
+        Vector3D ab = a.subtract(b);
+        Vector3D cb = c.subtract(b);
+        Vector3D bc = b.subtract(c);
+        Vector3D dc = d.subtract(c);
+
+        Vector3D abc = ab.crossProduct(cb);
+        Vector3D bcd = bc.crossProduct(dc);
+
+        double angle = abc.angleToInDegrees(bcd);
+
+        Vector vector = abc.crossProduct(bcd);
+        double v = cb.dotProduct(vector);
+        if (v < 0.0) {
+            return -angle;
+        } else {
+            return angle;
+        }
+    }
 }

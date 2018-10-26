@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -19,10 +20,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 class RISubgraphFinderTest {
 
-    private DirectedGraph<GenericNode<String>> patternGraph;
-    private DirectedGraph<GenericNode<String>> targetGraph;
+    private DirectedGraph<GenericNode<String>> pattern1;
+    private DirectedGraph<GenericNode<String>> target1;
 
-    private static DirectedGraph<GenericNode<String>> createPatternGraph() {
+    private DirectedGraph<GenericNode<String>> pattern2;
+    private DirectedGraph<GenericNode<String>> target2;
+
+    private static DirectedGraph<GenericNode<String>> createFirstPatternGraph() {
         DirectedGraph<GenericNode<String>> patternGraph = new DirectedGraph<>();
         GenericNode<String> patternNode0 = new GenericNode<>(patternGraph.nextNodeIdentifier(), "0");
         patternGraph.addNode(patternNode0);
@@ -34,7 +38,6 @@ class RISubgraphFinderTest {
         patternGraph.addNode(patternNode6);
         GenericNode<String> patternNode7 = new GenericNode<>(patternGraph.nextNodeIdentifier(), "7");
         patternGraph.addNode(patternNode7);
-
 
         patternGraph.addEdgeBetween(patternNode0, patternNode3);
         patternGraph.addEdgeBetween(patternNode3, patternNode0);
@@ -54,7 +57,7 @@ class RISubgraphFinderTest {
         return patternGraph;
     }
 
-    private static DirectedGraph<GenericNode<String>> createTargetGraph() {
+    private static DirectedGraph<GenericNode<String>> createFirstTargetGraph() {
         DirectedGraph<GenericNode<String>> targetGraph = new DirectedGraph<>();
         GenericNode<String> targetNode0 = new GenericNode<>(targetGraph.nextNodeIdentifier(), "0");
         targetGraph.addNode(targetNode0);
@@ -136,18 +139,56 @@ class RISubgraphFinderTest {
         return targetGraph;
     }
 
-    @BeforeEach
-    void setUp() {
-        patternGraph = createPatternGraph();
-        targetGraph = createTargetGraph();
+    private static DirectedGraph<GenericNode<String>> createSecondPatternGraph() {
+        DirectedGraph<GenericNode<String>> pattern = new DirectedGraph<>();
+
+        GenericNode<String> a = new GenericNode<>(pattern.nextNodeIdentifier(), "A");
+        pattern.addNode(a);
+        GenericNode<String> b = new GenericNode<>(pattern.nextNodeIdentifier(), "B");
+        pattern.addNode(b);
+        GenericNode<String> c = new GenericNode<>(pattern.nextNodeIdentifier(), "C");
+        pattern.addNode(c);
+
+        pattern.addEdgeBetween(a,b);
+        pattern.addEdgeBetween(c,b);
+        return pattern;
+    }
+
+    private static DirectedGraph<GenericNode<String>> createSecondTargetGraph() {
+        DirectedGraph<GenericNode<String>> target = new DirectedGraph<>();
+
+        GenericNode<String> ta = new GenericNode<>(target.nextNodeIdentifier(), "A");
+        target.addNode(ta);
+        GenericNode<String> tb = new GenericNode<>(target.nextNodeIdentifier(), "B");
+        target.addNode(tb);
+        GenericNode<String> tc = new GenericNode<>(target.nextNodeIdentifier(), "C");
+        target.addNode(tc);
+        GenericNode<String> td = new GenericNode<>(target.nextNodeIdentifier(), "D");
+        target.addNode(td);
+
+        target.addEdgeBetween(ta, tb);
+        target.addEdgeBetween(tc, tb);
+        target.addEdgeBetween(td, tc);
+        target.addEdgeBetween(tb, td);
+        return target;
+    }
+
+
+    @Before
+    public void setUp() {
+        pattern1 = createFirstPatternGraph();
+        target1 = createFirstTargetGraph();
+        pattern2 = createSecondPatternGraph();
+        target2 = createSecondTargetGraph();
+
     }
 
     @Test
     void shouldFindFullSubgraph() {
         RISubgraphFinder<GenericNode<String>, DirectedEdge<GenericNode<String>>, Vector2D, Integer, DirectedGraph<GenericNode<String>>> finder
-                = new RISubgraphFinder<>(patternGraph, targetGraph, (a, b) -> a.getContent().equals(b.getContent()), (a, b) -> true);
-        List<GenericNode<String>> solution = Stream.of(targetGraph.getNode(7), targetGraph.getNode(4),
-                targetGraph.getNode(0), targetGraph.getNode(3), targetGraph.getNode(6))
+                = new RISubgraphFinder<>(pattern1, target1, (a, b) -> a.getContent().equals(b.getContent()), (a, b) -> true);
+        List<GenericNode<String>> solution = Stream.of(target1.getNode(7), target1.getNode(4),
+                target1.getNode(0), target1.getNode(3), target1.getNode(6))
                 .collect(Collectors.toList());
         List<List<GenericNode<String>>> matches = finder.getFullMatches();
         assertEquals(1, matches.size());
@@ -158,17 +199,35 @@ class RISubgraphFinderTest {
     }
 
     @Test
+    public void shouldFindPartialSubgraph() {
+        target1.removeNode(7);
     void shouldFindPartialSubgraph() {
         targetGraph.removeNode(7);
         RISubgraphFinder<GenericNode<String>, DirectedEdge<GenericNode<String>>, Vector2D, Integer, DirectedGraph<GenericNode<String>>> finder
-                = new RISubgraphFinder<>(patternGraph, targetGraph, (a, b) -> a.getContent().equals(b.getContent()), (a, b) -> true, 4);
+                = new RISubgraphFinder<>(pattern1, target1, (a, b) -> a.getContent().equals(b.getContent()), (a, b) -> true, 4);
         assertEquals(0, finder.getFullMatches().size());
-        List<GenericNode<String>> solution = Stream.of(targetGraph.getNode(4), targetGraph.getNode(0),
-                targetGraph.getNode(3), targetGraph.getNode(6))
+        List<GenericNode<String>> solution = Stream.of(target1.getNode(4), target1.getNode(0),
+                target1.getNode(3), target1.getNode(6))
                 .collect(Collectors.toList());
         assertEquals(1, finder.getPartialMatches().size());
         assertEquals(solution, finder.getPartialMatches().get(4).get(0));
+    }
 
+    @Test
+    public void shouldFindFullDirectedMatch() {
+        BiFunction<GenericNode<String>, GenericNode<String>, Boolean> nodeConditionExtractor =
+                (first, second) -> first.getContent().equals(second.getContent());
+
+        // TODO the directed edge should be considered (or is it considered implicitly)
+        BiFunction<DirectedEdge<GenericNode<String>>, DirectedEdge<GenericNode<String>>, Boolean> edgeConditionExtractor = (first,second) -> {
+            // (first, second) -> nodeConditionExtractor.apply(first.getSource(), second.getSource()) && nodeConditionExtractor.apply(first.getTarget(), second.getTarget());
+            return true;
+        };
+
+        RISubgraphFinder<GenericNode<String>, DirectedEdge<GenericNode<String>>, Vector2D, Integer, DirectedGraph<GenericNode<String>>> finder
+                = new RISubgraphFinder<>(pattern2, target2, nodeConditionExtractor, edgeConditionExtractor);
+
+        assertEquals(1, finder.getFullMatches().size());
     }
 
 }

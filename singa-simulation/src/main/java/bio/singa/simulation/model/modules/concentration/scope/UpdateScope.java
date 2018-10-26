@@ -29,6 +29,7 @@ public interface UpdateScope {
     /**
      * Calculates the given updatable. If it is required to calculate other updatables to evaluate the state of this
      * updatable this will be done depending on the implementation of the scope.
+     * @param updatable The updatable.
      */
     void processUpdatable(Updatable updatable);
 

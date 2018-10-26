@@ -2,6 +2,8 @@ package bio.singa.javafx.renderer.graphs;
 
 import javafx.scene.paint.Color;
 
+import java.util.function.Function;
+
 /**
  * The default rendering options for any graph. Supported options are:
  * <ul>
@@ -17,12 +19,13 @@ import javafx.scene.paint.Color;
  * <li> background color (default = {@link Color#WHITE})
  * </ul>
  */
-public class GraphRenderOptions {
+public class GraphRenderOptions<NodeType> {
 
     private double nodeDiameter = 15;
     private Color nodeColor = Color.SEAGREEN;
     private boolean displayingNodes = true;
-
+    private Color nodeOutlineColor = Color.DIMGRAY;
+    private double nodeOutlineThickness = 3;
     private Color edgeColor = Color.DIMGRAY;
     private double edgeThickness = 3;
     private boolean displayingEdges = true;
@@ -30,8 +33,26 @@ public class GraphRenderOptions {
     private Color identifierTextColor = Color.BLACK;
     // private Font identifierFont;
     private boolean displayingIdentifierText = false;
+    private Function<NodeType, String> textExtractor;
+    private boolean displayText = false;
 
     private Color backgroundColor = Color.WHITE;
+
+    public double getNodeOutlineThickness() {
+        return nodeOutlineThickness;
+    }
+
+    public void setNodeOutlineThickness(double nodeOutlineThickness) {
+        this.nodeOutlineThickness = nodeOutlineThickness;
+    }
+
+    public Color getNodeOutlineColor() {
+        return nodeOutlineColor;
+    }
+
+    public void setNodeOutlineColor(Color nodeOutlineColor) {
+        this.nodeOutlineColor = nodeOutlineColor;
+    }
 
     public double getNodeDiameter() {
         return nodeDiameter;
@@ -97,12 +118,20 @@ public class GraphRenderOptions {
         this.backgroundColor = backgroundColor;
     }
 
-    public boolean isDisplayingIdentifierText() {
-        return displayingIdentifierText;
+    public Function<NodeType, String> getTextExtractor() {
+        return textExtractor;
     }
 
-    public void setDisplayingIdentifierText(boolean displayingIdentifierText) {
-        this.displayingIdentifierText = displayingIdentifierText;
+    public void setTextExtractor(Function<NodeType, String> textExtractor) {
+        this.textExtractor = textExtractor;
+    }
+
+    public boolean isDisplayText() {
+        return displayText;
+    }
+
+    public void setDisplayText(boolean displayText) {
+        this.displayText = displayText;
     }
 
 }

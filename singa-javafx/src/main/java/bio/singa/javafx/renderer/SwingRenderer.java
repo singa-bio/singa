@@ -6,27 +6,26 @@ import bio.singa.mathematics.geometry.edges.Parabola;
 import bio.singa.mathematics.geometry.edges.SimpleLineSegment;
 import bio.singa.mathematics.geometry.faces.Circle;
 import bio.singa.mathematics.geometry.faces.Rectangle;
-import bio.singa.mathematics.geometry.faces.VertexPolygon;
 import bio.singa.mathematics.geometry.model.Polygon;
 import bio.singa.mathematics.vectors.Vector2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Paint;
-import javafx.scene.text.Text;
-import javafx.scene.text.TextAlignment;
 
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 
 /**
  * The renderer interface supplies default methods to draw in a {@link GraphicsContext} method.
  */
-public interface Renderer {
+public interface SwingRenderer {
 
     /**
      * Returns the assigned GraphicContext.
      *
      * @return The assigned GraphicContext.
      */
-    GraphicsContext getGraphicsContext();
+    Graphics2D getGraphicsContext();
 
     double getDrawingWidth();
 
@@ -43,10 +42,10 @@ public interface Renderer {
      */
     default void fillPoint(Vector2D point, double radius) {
         getGraphicsContext().fillOval(
-                point.getX() - radius,
-                point.getY() - radius,
-                radius * 2.0,
-                radius * 2.0);
+                ((int) (point.getX() - radius)),
+                ((int) (point.getY() - radius)),
+                ((int) (radius * 2.0)),
+                ((int) (radius * 2.0)));
     }
 
     /**
@@ -60,23 +59,23 @@ public interface Renderer {
      * @param point The position of the point.
      */
     default void fillPoint(Vector2D point) {
-        fillPoint(point, getGraphicsContext().getLineWidth() * 2.0);
+        fillPoint(point, ((BasicStroke) getGraphicsContext().getStroke()).getLineWidth() * 2.0);
     }
 
     default void strokeCircle(Circle circle) {
-        getGraphicsContext().strokeOval(
-                circle.getMidpoint().getX() - circle.getRadius(),
-                circle.getMidpoint().getY() - circle.getRadius(),
-                circle.getRadius() * 2.0,
-                circle.getRadius() * 2.0);
+        getGraphicsContext().drawOval(
+                ((int) (circle.getMidpoint().getX() - circle.getRadius())),
+                ((int) (circle.getMidpoint().getY() - circle.getRadius())),
+                ((int) (circle.getRadius() * 2.0)),
+                ((int) (circle.getRadius() * 2.0)));
     }
 
     default void strokeCircle(Vector2D midpoint, double radius) {
-        getGraphicsContext().strokeOval(
-                midpoint.getX() - radius,
-                midpoint.getY() - radius,
-                radius * 2.0,
-                radius * 2.0);
+        getGraphicsContext().drawOval(
+                ((int) (midpoint.getX() - radius)),
+                ((int) (midpoint.getY() - radius)),
+                ((int) (radius * 2.0)),
+                ((int) (radius * 2.0)));
     }
 
     default void fillCircle(Circle circle) {
@@ -94,9 +93,9 @@ public interface Renderer {
      * @param vectors The points to be connected with a line.
      */
     default void connectPoints(Collection<Vector2D> vectors) {
-        getGraphicsContext().strokePolyline(
-                vectors.stream().mapToDouble(Vector2D::getX).toArray(),
-                vectors.stream().mapToDouble(Vector2D::getY).toArray(),
+        getGraphicsContext().drawPolyline(
+                vectors.stream().mapToInt(vector2D -> (int) vector2D.getX()).toArray(),
+                vectors.stream().mapToInt(vector2D -> (int) vector2D.getY()).toArray(),
                 vectors.size()
         );
     }
@@ -113,7 +112,7 @@ public interface Renderer {
      * @param end The ending point.
      */
     default void strokeStraight(Vector2D start, Vector2D end) {
-        getGraphicsContext().strokeLine(start.getX(), start.getY(), end.getX(), end.getY());
+        getGraphicsContext().drawLine(((int) start.getX()), ((int) start.getY()), ((int) end.getX()), ((int) end.getY()));
     }
 
     /**
@@ -142,9 +141,7 @@ public interface Renderer {
      * @param lineSegment The line segment.
      */
     default void dashLineSegment(SimpleLineSegment lineSegment, double... dashes) {
-        getGraphicsContext().setLineDashes(dashes);
-        strokeStraight(lineSegment.getStartingPoint(), lineSegment.getEndingPoint());
-        getGraphicsContext().setLineDashes(null);
+        throw new UnsupportedOperationException("Unsupported for swing rendering");
     }
 
     /**
@@ -267,11 +264,14 @@ public interface Renderer {
      * @param center The point to center onto.
      */
     default void strokeTextCenteredOnPoint(String text, Vector2D center) {
-        final TextAlignment initialTextAlign = getGraphicsContext().getTextAlign();
-        getGraphicsContext().setTextAlign(TextAlignment.CENTER);
-        double height = new Text(text).getLayoutBounds().getHeight()/4.0;
-        getGraphicsContext().fillText(text, center.getX(), center.getY()+height);
-        getGraphicsContext().setTextAlign(initialTextAlign);
+        // Get the FontMetrics
+        FontMetrics metrics = getGraphicsContext().getFontMetrics(getGraphicsContext().getFont());
+        // Determine the X coordinate for the text
+        int x = (int) (center.getX() - metrics.stringWidth(text) / 2.0);
+        // Determine the Y coordinate for the text (note we add the ascent, as in java 2d 0 is top of the screen)
+        int y = (int) (center.getY() - metrics.getHeight() / 2.0 + metrics.getAscent());
+        // Draw the String
+        getGraphicsContext().drawString(text, x, y);
     }
 
     /**
@@ -283,11 +283,11 @@ public interface Renderer {
      */
     default void fillRectangle(Vector2D topLeftCorner, Vector2D bottomRightCorner) {
         Rectangle rectangle = new Rectangle(topLeftCorner, bottomRightCorner);
-        getGraphicsContext().fillRect(topLeftCorner.getX(), topLeftCorner.getY(), rectangle.getHeight(), rectangle.getWidth());
+        getGraphicsContext().fillRect(((int) topLeftCorner.getX()), ((int) topLeftCorner.getY()), ((int) rectangle.getHeight()), ((int) rectangle.getWidth()));
     }
 
     default void strokeRectangle(Rectangle rectangle) {
-        getGraphicsContext().strokeRect(rectangle.getTopLeftVertex().getX(), rectangle.getTopLeftVertex().getY(), rectangle.getHeight(), rectangle.getWidth());
+        getGraphicsContext().drawRect(((int) rectangle.getTopLeftVertex().getX()), ((int) rectangle.getTopLeftVertex().getY()), ((int) rectangle.getHeight()), ((int) rectangle.getWidth()));
     }
 
     /**
@@ -310,47 +310,8 @@ public interface Renderer {
         } else {
             rectangle = new Rectangle(secondCorner, firstCorner);
         }
-        getGraphicsContext().fillRect(rectangle.getTopLeftVertex().getX(), rectangle.getTopLeftVertex().getY(), rectangle.getHeight(), rectangle.getWidth());
+        getGraphicsContext().fillRect(((int) rectangle.getTopLeftVertex().getX()), ((int) rectangle.getTopLeftVertex().getY()), ((int) rectangle.getHeight()), ((int) rectangle.getWidth()));
         return rectangle;
-    }
-
-
-    default void strokeLineSegmentWithArrow(LineSegment lineSegment) {
-        Vector2D tail = lineSegment.getStartingPoint();
-        Vector2D head = lineSegment.getEndingPoint();
-
-        double arrowLength = 12;
-
-        double tipX = head.getX();
-        double tipY = tail.getY();
-
-        double tailX = tail.getX();
-        double tailY = tail.getY();
-
-        double dx = tipX - tailX;
-        double dy = tipY - tailY;
-
-        double theta = Math.atan2(dy, dx);
-
-        double rad = Math.toRadians(25); //35 angle, can be adjusted
-        double x = tipX - arrowLength * Math.cos(theta + rad);
-        double y = tipY - arrowLength * Math.sin(theta + rad);
-
-        double phi2 = Math.toRadians(-25);//-35 angle, can be adjusted
-        double x2 = tipX - arrowLength * Math.cos(theta + phi2);
-        double y2 = tipY - arrowLength * Math.sin(theta + phi2);
-
-        double[] arrowYs = new double[3];
-        arrowYs[0] = tipY;
-        arrowYs[1] = y;
-        arrowYs[2] = y2;
-
-        double[] arrowXs = new double[3];
-        arrowXs[0] = tipX;
-        arrowXs[1] = x;
-        arrowXs[2] = x2;
-        strokeStraight(tail, head);
-        getGraphicsContext().fillPolygon(arrowXs, arrowYs, 3);
     }
 
     /**
@@ -361,32 +322,36 @@ public interface Renderer {
      */
     default void fillPolygon(Polygon polygon) {
         int numberOfVertices = polygon.getNumberOfVertices();
-        double[] xPositions = new double[numberOfVertices];
-        double[] yPositions = new double[numberOfVertices];
+        int[] xPositions = new int[numberOfVertices];
+        int[] yPositions = new int[numberOfVertices];
         List<Vector2D> vertices = polygon.getVertices();
         for (int index = 0; index < vertices.size(); index++) {
             Vector2D vertex = vertices.get(index);
-            xPositions[index] = vertex.getX();
-            yPositions[index] = vertex.getY();
+            xPositions[index] = (int) vertex.getX();
+            yPositions[index] = (int) vertex.getY();
         }
         getGraphicsContext().fillPolygon(xPositions, yPositions, numberOfVertices);
     }
 
-    default void fillPolygon(Vector2D... vertices) {
-        fillPolygon(new VertexPolygon(vertices));
-    }
-
     default void strokePolygon(Polygon polygon) {
         int numberOfVertices = polygon.getNumberOfVertices();
-        double[] xPositions = new double[numberOfVertices];
-        double[] yPositions = new double[numberOfVertices];
+        int[] xPositions = new int[numberOfVertices];
+        int[] yPositions = new int[numberOfVertices];
         List<Vector2D> vertices = polygon.getVertices();
         for (int index = 0; index < vertices.size(); index++) {
             Vector2D vertex = vertices.get(index);
-            xPositions[index] = vertex.getX();
-            yPositions[index] = vertex.getY();
+            xPositions[index] = (int) vertex.getX();
+            yPositions[index] = (int) vertex.getY();
         }
-        getGraphicsContext().strokePolygon(xPositions, yPositions, numberOfVertices);
+        getGraphicsContext().drawPolygon(xPositions, yPositions, numberOfVertices);
     }
+
+    default Color toAWTColor(javafx.scene.paint.Color fxColor) {
+        return new java.awt.Color((float) fxColor.getRed(),
+                (float) fxColor.getGreen(),
+                (float) fxColor.getBlue(),
+                (float) fxColor.getOpacity());
+    }
+
 
 }

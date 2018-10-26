@@ -29,6 +29,8 @@ class NeedlemanWunschTest {
         ProteinSequence secondSequence = ProteinSequence.of(second.getAllLeafSubstructures());
 
         NeedlemanWunschAlignment alignment = new NeedlemanWunschAlignment(SubstitutionMatrix.BLOSUM_45, firstSequence, secondSequence);
+        System.out.println(alignment.getAlignedFirstSequence());
+        System.out.println(alignment.getAlignedSecondSequence());
 
     }
 }
