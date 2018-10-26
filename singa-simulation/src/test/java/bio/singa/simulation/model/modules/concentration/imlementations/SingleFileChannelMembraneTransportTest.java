@@ -32,9 +32,13 @@ import static tec.uom.se.unit.Units.METRE;
  */
 class SingleFileChannelMembraneTransportTest {
 
-    @After
-    @Before
-    public void cleanUp() {
+    @BeforeAll
+    static void initialize() {
+        UnitRegistry.reinitialize();
+    }
+
+    @AfterEach
+    void cleanUp() {
         UnitRegistry.reinitialize();
     }
 

@@ -1,5 +1,6 @@
 package bio.singa.chemistry.features.reactions;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import bio.singa.features.units.UnitRegistry;
@@ -23,6 +24,7 @@ class RateConstantTest {
 
     @BeforeAll
     static void initialize() {
+        UnitRegistry.reinitialize();
         zeroOrder = RateConstant.create(1.0)
                 .forward()
                 .zeroOrder()
@@ -42,9 +44,8 @@ class RateConstantTest {
                 .build();
     }
 
-    @Before
-    @After
-    public void cleanUp() {
+    @AfterEach
+    void cleanUp() {
         UnitRegistry.reinitialize();
     }
 

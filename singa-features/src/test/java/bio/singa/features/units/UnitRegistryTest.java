@@ -1,9 +1,9 @@
 package bio.singa.features.units;
 
 import bio.singa.features.quantities.MolarConcentration;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import tec.uom.se.ComparableQuantity;
 import tec.uom.se.quantity.Quantities;
 import tec.uom.se.unit.ProductUnit;
@@ -12,25 +12,27 @@ import javax.measure.Quantity;
 
 import static bio.singa.features.units.UnitProvider.MICRO_MOLE_PER_LITRE;
 import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
-import static org.junit.Assert.assertEquals;
-import static tec.uom.se.unit.MetricPrefix.CENTI;
-import static tec.uom.se.unit.MetricPrefix.MICRO;
-import static tec.uom.se.unit.MetricPrefix.NANO;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static tec.uom.se.unit.MetricPrefix.*;
 import static tec.uom.se.unit.Units.*;
 
 /**
  * @author cl
  */
-public class UnitRegistryTest {
+class UnitRegistryTest {
 
-    @Before
-    @After
-    public void cleanUpRegistry() {
+    @BeforeAll
+    static void initialize() {
+        UnitRegistry.reinitialize();
+    }
+
+    @AfterEach
+    void cleanUp() {
         UnitRegistry.reinitialize();
     }
 
     @Test
-    public void shouldConvertUnit() {
+    void shouldConvertUnit() {
         // time
         Quantity<?> time = UnitRegistry.convert(Quantities.getQuantity(1.0, MINUTE));
         assertEquals(Quantities.getQuantity(6.0E7, UnitRegistry.DEFAULT_TIME.getUnit()), time);
@@ -52,7 +54,7 @@ public class UnitRegistryTest {
     }
 
     @Test
-    public void shouldScale() {
+    void shouldScale() {
         // time
         Quantity<?> first = UnitRegistry.scale(Quantities.getQuantity(1.0, MINUTE));
         assertEquals(Quantities.getQuantity(6.0E7, UnitRegistry.DEFAULT_TIME.getUnit()), first);
@@ -69,7 +71,7 @@ public class UnitRegistryTest {
     }
 
     @Test
-    public void getTransformedMolarConcentration() {
+    void getTransformedMolarConcentration() {
         final ComparableQuantity<MolarConcentration> molePerLitre = Quantities.getQuantity(1, MOLE_PER_LITRE);
         final ComparableQuantity<MolarConcentration> molePerCubicMicroMetre = molePerLitre.to(new ProductUnit<>(NANO(MOLE).divide(MICRO(METRE).multiply(MICRO(METRE).multiply(MICRO(METRE))))));
         assertEquals(molePerCubicMicroMetre, UnitRegistry.scale(molePerLitre));

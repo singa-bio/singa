@@ -5,12 +5,15 @@ import bio.singa.chemistry.features.diffusivity.Diffusivity;
 import bio.singa.features.model.FeatureOrigin;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.quantities.MolarConcentration;
+import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.graphs.model.Graphs;
 import bio.singa.mathematics.topology.grids.rectangular.RectangularCoordinate;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.simulation.Simulation;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +26,8 @@ import javax.measure.quantity.Time;
 import static bio.singa.chemistry.features.diffusivity.Diffusivity.SQUARE_CENTIMETRE_PER_SECOND;
 import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static bio.singa.simulation.model.sections.CellSubsection.SECTION_A;
-import static org.junit.Assert.assertEquals;
+import static bio.singa.simulation.model.sections.CellTopology.INNER;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static tec.uom.se.unit.MetricPrefix.MICRO;
 import static tec.uom.se.unit.MetricPrefix.NANO;
 import static tec.uom.se.unit.Units.METRE;
@@ -53,6 +57,16 @@ class DiffusionUnhinderedTest {
             .name("benzene")
             .assignFeature(new Diffusivity(Quantities.getQuantity(1.09E-05, SQUARE_CENTIMETRE_PER_SECOND), FeatureOrigin.MANUALLY_ANNOTATED))
             .build();
+
+    @BeforeAll
+    static void initialize() {
+        UnitRegistry.reinitialize();
+    }
+
+    @AfterEach
+    void cleanUp() {
+        UnitRegistry.reinitialize();
+    }
 
     @Test
     void shouldReachCorrectHalfLife1() {
@@ -101,10 +115,11 @@ class DiffusionUnhinderedTest {
         AutomatonGraph graph = AutomatonGraphs.useStructureFrom(Graphs.buildGridGraph(numberOfNodes, numberOfNodes));
         // initialize species in graph with desired concentration leaving the right "half" empty
         for (AutomatonNode node : graph.getNodes()) {
+            node.getConcentrationContainer().initializeSubsection(SECTION_A, INNER);
             if (node.getIdentifier().getColumn() < (graph.getNumberOfColumns() / 2)) {
-                node.getConcentrationContainer().set(SECTION_A, species, 1.0);
+                node.getConcentrationContainer().initialize(SECTION_A, species, Quantities.getQuantity(1.0, MOLE_PER_LITRE));
             } else {
-                node.getConcentrationContainer().set(SECTION_A, species, 0.0);
+                node.getConcentrationContainer().initialize(SECTION_A, species, Quantities.getQuantity(0.0, MOLE_PER_LITRE));
             }
         }
         // setup simulation
@@ -122,7 +137,6 @@ class DiffusionUnhinderedTest {
     private Quantity<Time> runSimulation(Simulation simulation, int numberOfNodes, SmallMolecule species) {
         // returns the node in the middle on the right
         RectangularCoordinate coordinate = new RectangularCoordinate(numberOfNodes - 1, (numberOfNodes / 2) - 1);
-        simulation.getGraph().getNode(coordinate).setObserved(true);
         // simulate until half life concentration has been reached
         double currentConcentration = 0.0;
         while (currentConcentration < 0.25) {

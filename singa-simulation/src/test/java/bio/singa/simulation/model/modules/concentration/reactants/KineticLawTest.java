@@ -9,13 +9,13 @@ import bio.singa.simulation.model.parameters.Parameter;
 import bio.singa.simulation.model.sections.CellSubsection;
 import bio.singa.simulation.model.sections.CellTopology;
 import bio.singa.simulation.model.sections.ConcentrationContainer;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import tec.uom.se.quantity.Quantities;
 
 import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static tec.uom.se.unit.MetricPrefix.MICRO;
 import static tec.uom.se.unit.Units.SECOND;
 
@@ -24,9 +24,13 @@ import static tec.uom.se.unit.Units.SECOND;
  */
 public class KineticLawTest {
 
-    @After
-    @Before
-    public void cleanUp() {
+    @BeforeAll
+    static void initialize() {
+        UnitRegistry.reinitialize();
+    }
+
+    @AfterEach
+    void cleanUp() {
         UnitRegistry.reinitialize();
     }
 
@@ -49,7 +53,7 @@ public class KineticLawTest {
         cc.initializeSubsection(CellSubsection.SECTION_A, CellTopology.INNER);
         cc.initialize(CellSubsection.SECTION_A, atp, Quantities.getQuantity(1, MOLE_PER_LITRE));
         // assertion
-        assertEquals(0.999999, kl.calculateVelocity(cc, false), 0.0);
+        assertEquals(0.999999, kl.calculateVelocity(cc, false));
     }
 
     @Test
@@ -65,7 +69,7 @@ public class KineticLawTest {
         // exemplary concentration container
         ConcentrationContainer cc = new ConcentrationContainer();
         // assertion
-        assertEquals(1.0000011, kl.calculateVelocity(cc, false), 0.0);
+        assertEquals(1.0000011, kl.calculateVelocity(cc, false));
     }
 
 

@@ -1,8 +1,9 @@
 package bio.singa.features.quantities;
 
-import bio.singa.features.parameters.Environment;
-import org.junit.jupiter.api.Test;
 import bio.singa.features.units.UnitRegistry;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import tec.uom.se.ComparableQuantity;
 import tec.uom.se.quantity.Quantities;
 
@@ -23,9 +24,13 @@ import static tec.uom.se.unit.Units.MOLE;
  */
 class MolarConcentrationTest {
 
-    @Before
-    @After
-    public void cleanUpRegistry() {
+    @BeforeAll
+    static void initialize() {
+        UnitRegistry.reinitialize();
+    }
+
+    @AfterEach
+    void cleanUp() {
         UnitRegistry.reinitialize();
     }
 

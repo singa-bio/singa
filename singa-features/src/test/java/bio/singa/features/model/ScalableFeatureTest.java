@@ -1,10 +1,11 @@
 package bio.singa.features.model;
 
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 
 import javax.measure.Unit;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static tec.uom.se.AbstractUnit.ONE;
 import static tec.uom.se.unit.MetricPrefix.CENTI;
 import static tec.uom.se.unit.MetricPrefix.NANO;

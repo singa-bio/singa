@@ -3,6 +3,7 @@ package bio.singa.simulation.model.sections;
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.chemistry.entities.SmallMolecule;
 import bio.singa.features.parameters.Environment;
+import bio.singa.features.units.UnitRegistry;
 import org.junit.jupiter.api.Test;
 import tec.uom.se.quantity.Quantities;
 
@@ -122,8 +123,6 @@ class ConcentrationContainerTest {
 
     @Test
     void shouldSetAndGetInCorrectUnit() {
-        Environment.setNodeDistance(Quantities.getQuantity(1.0, MICRO(METRE)));
-    public void shouldSetAndGetInCorrectUnit() {
         UnitRegistry.setSpace(Quantities.getQuantity(1.0, MICRO(METRE)));
         ConcentrationContainer containerA = new ConcentrationContainer();
         containerA.initializeSubsection(subsectionA, INNER);

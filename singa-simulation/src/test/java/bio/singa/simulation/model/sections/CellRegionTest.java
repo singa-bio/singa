@@ -5,7 +5,6 @@ import bio.singa.chemistry.entities.SmallMolecule;
 import bio.singa.features.parameters.Environment;
 import org.junit.jupiter.api.Test;
 import bio.singa.features.units.UnitRegistry;
-import org.junit.Test;
 import tec.uom.se.quantity.Quantities;
 
 import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;

@@ -2,17 +2,16 @@ package bio.singa.simulation.model.parameters;
 
 import bio.singa.chemistry.features.diffusivity.Diffusivity;
 import bio.singa.features.model.FeatureOrigin;
-import bio.singa.features.parameters.Environment;
 import bio.singa.features.units.UnitRegistry;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import tec.uom.se.quantity.Quantities;
 
 import javax.measure.Quantity;
 import javax.measure.Unit;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static tec.uom.se.AbstractUnit.ONE;
 import static tec.uom.se.unit.MetricPrefix.*;
 import static tec.uom.se.unit.Units.*;
@@ -22,9 +21,13 @@ import static tec.uom.se.unit.Units.*;
  */
 public class FeatureManagerTest {
 
-    @Before
-    @After
-    public void resetEnvironment() {
+    @BeforeAll
+    static void initialize() {
+        UnitRegistry.reinitialize();
+    }
+
+    @AfterEach
+    void cleanUp() {
         UnitRegistry.reinitialize();
     }
 
@@ -32,28 +35,28 @@ public class FeatureManagerTest {
     public void shouldConvertConcentration() {
         Unit<?> sourceUnit = MOLE.divide(MICRO(METRE).pow(3));
         Quantity<?> sourceQuantity = Quantities.getQuantity(2e-20, sourceUnit);
-        assertEquals(2.0E-11, UnitRegistry.convert(sourceQuantity).getValue().doubleValue(), 0.0);
+        assertEquals(2.0E-11, UnitRegistry.convert(sourceQuantity).getValue().doubleValue());
     }
 
     @Test
     public void shouldConvertDistance() {
         Unit<?> sourceUnit = CENTI(METRE);
         Quantity<?> sourceQuantity = Quantities.getQuantity(2, sourceUnit);
-        assertEquals(20000.0, UnitRegistry.convert(sourceQuantity).getValue().doubleValue(), 0.0);
+        assertEquals(20000.0, UnitRegistry.convert(sourceQuantity).getValue().doubleValue());
     }
 
     @Test
     public void shouldConvertArea() {
         Unit<?> sourceUnit = CENTI(METRE).pow(2);
         Quantity<?> sourceQuantity = Quantities.getQuantity(3, sourceUnit);
-        assertEquals(3.0E8, UnitRegistry.convert(sourceQuantity).getValue().doubleValue(), 0.0);
+        assertEquals(3.0E8, UnitRegistry.convert(sourceQuantity).getValue().doubleValue());
     }
 
     @Test
     public void shouldConvertVolume() {
         Unit<?> sourceUnit = CENTI(METRE).pow(3);
         Quantity<?> sourceQuantity = Quantities.getQuantity(1.5, sourceUnit);
-        assertEquals(1.5E12, UnitRegistry.convert(sourceQuantity).getValue().doubleValue(), 0.0);
+        assertEquals(1.5E12, UnitRegistry.convert(sourceQuantity).getValue().doubleValue());
     }
 
     @Test
@@ -67,7 +70,7 @@ public class FeatureManagerTest {
     public void shouldConvertFirstOrderRate() {
         Unit<?> sourceUnit = ONE.divide(MINUTE);
         Quantity<?> sourceQuantity = Quantities.getQuantity(0.6, sourceUnit);
-        assertEquals(1E-8, UnitRegistry.convert(sourceQuantity).getValue().doubleValue(), 0);
+        assertEquals(1E-8, UnitRegistry.convert(sourceQuantity).getValue().doubleValue());
     }
 
     @Test
@@ -81,17 +84,15 @@ public class FeatureManagerTest {
     public void shouldScaleToEnvironment() {
         Diffusivity diffusivity = new Diffusivity(1, FeatureOrigin.MANUALLY_ANNOTATED);
         Quantity<?> first = UnitRegistry.scale(diffusivity);
-        assertEquals(100.0, first.getValue().doubleValue(), 0.0);
+        assertEquals(100.0, first.getValue().doubleValue());
 
         UnitRegistry.setTime(Quantities.getQuantity(0.5, MILLI(SECOND)));
         Quantity<?> second = UnitRegistry.scale(diffusivity);
-        assertEquals(50000.0, second.getValue().doubleValue(), 0.0);
+        assertEquals(50000.0, second.getValue().doubleValue());
 
         UnitRegistry.setSpace(Quantities.getQuantity(2, MILLI(METRE)));
         Quantity<?> third = UnitRegistry.scale(diffusivity);
-        assertEquals(0.0125, third.getValue().doubleValue(), 0.0);
-
-        Environment.reset();
+        assertEquals(0.0125, third.getValue().doubleValue());
     }
 
 }
