@@ -9,6 +9,8 @@ import bio.singa.mathematics.metrics.implementations.MinkowskiMetric;
 import bio.singa.mathematics.metrics.model.Metric;
 import bio.singa.mathematics.metrics.model.Metrizable;
 import bio.singa.mathematics.metrics.model.VectorMetricProvider;
+import bio.singa.mathematics.transformations.model.Transformable;
+import bio.singa.mathematics.transformations.model.Transformation;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.function.BiConsumer;
@@ -23,7 +25,7 @@ import static bio.singa.mathematics.metrics.model.VectorMetricProvider.EUCLIDEAN
  *
  * @author cl
  */
-public interface Vector extends Ring<Vector>, MultiDimensional<Vector>, Divisible<Vector>, Metrizable<Vector> {
+public interface Vector extends Ring<Vector>, MultiDimensional<Vector>, Divisible<Vector>, Metrizable<Vector>, Transformable<Vector> {
 
     <VectorType extends Vector> VectorType as(Class<VectorType> matrixClass);
 
@@ -217,4 +219,8 @@ public interface Vector extends Ring<Vector>, MultiDimensional<Vector>, Divisibl
         return true;
     }
 
+    @Override
+    default Vector applyTransformation(Transformation<Vector> transformation) {
+        return transformation.applyTo(this);
+    }
 }

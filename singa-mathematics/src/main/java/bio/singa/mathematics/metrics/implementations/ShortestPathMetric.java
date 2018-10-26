@@ -31,8 +31,7 @@ public class ShortestPathMetric implements Metric<Node<?, ?, ?>> {
         // registers distances of the nodes that have already been processed
         Map<Node<?, ?, ?>, Integer> distance = new HashMap<>(graph.getNodes().size());
 
-        // degenerate case: graph does not contain one or both of the requested
-        // nodes
+        // degenerate case: graph does not contain one or both of the requested nodes
         if (!(graph.containsNode(first) && graph.containsNode(second))) {
             throw new DegenerateCaseException("The graph has to contain both nodes " + first + " and " + second
                     + " in order to calculate the shortest path between both.");
@@ -54,7 +53,7 @@ public class ShortestPathMetric implements Metric<Node<?, ?, ?>> {
             for (Node<?, ?, ?> adjacentNode : currentNode.getNeighbours()) {
                 // distance has already been determined
                 if (!distance.containsKey(adjacentNode)) {
-                    // until first2DVector node has been found
+                    // until first node has been found
                     if (adjacentNode.equals(second)) {
                         return distance.get(currentNode) + 1;
                     }

@@ -4,6 +4,8 @@ import bio.singa.core.utility.Pair;
 import bio.singa.mathematics.concepts.MultiDimensional;
 import bio.singa.mathematics.concepts.Ring;
 import bio.singa.mathematics.exceptions.IncompatibleDimensionsException;
+import bio.singa.mathematics.transformations.model.Transformable;
+import bio.singa.mathematics.transformations.model.Transformation;
 import bio.singa.mathematics.vectors.RegularVector;
 import bio.singa.mathematics.vectors.Vector;
 
@@ -20,7 +22,7 @@ import java.util.stream.DoubleStream;
  *
  * @author cl
  */
-public interface Matrix extends MultiDimensional<Matrix>, Ring<Matrix> {
+public interface Matrix extends MultiDimensional<Matrix>, Ring<Matrix>, Transformable<Matrix> {
 
     /**
      * Converts this matrix into a specific implementation. This only works if the "form" of this class is suitable to
@@ -230,6 +232,11 @@ public interface Matrix extends MultiDimensional<Matrix>, Ring<Matrix> {
     default boolean hasSameDimensions(Matrix matrix) {
         return getRowDimension() == matrix.getRowDimension()
                 && getColumnDimension() == matrix.getColumnDimension();
+    }
+
+    @Override
+    default Matrix applyTransformation(Transformation<Matrix> transformation) {
+        return transformation.applyTo(this);
     }
 
 }
