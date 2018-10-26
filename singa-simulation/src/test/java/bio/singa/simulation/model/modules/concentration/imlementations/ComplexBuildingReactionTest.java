@@ -7,6 +7,7 @@ import bio.singa.features.identifiers.UniProtIdentifier;
 import bio.singa.features.model.FeatureOrigin;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.quantities.MolarConcentration;
+import bio.singa.features.units.UnitRegistry;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.graphs.AutomatonNode;
@@ -26,7 +27,6 @@ import tec.uom.se.quantity.Quantities;
 import javax.measure.Quantity;
 import javax.measure.quantity.Time;
 
-import static bio.singa.features.parameters.Environment.getConcentrationUnit;
 import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static bio.singa.simulation.model.sections.CellSubsection.SECTION_A;
 import static bio.singa.simulation.model.sections.CellTopology.*;
@@ -45,7 +45,7 @@ class ComplexBuildingReactionTest {
     @AfterEach
     @BeforeEach
     void cleanUp() {
-        Environment.reset();
+        UnitRegistry.reinitialize();
     }
 
     @Test
@@ -89,23 +89,23 @@ class ComplexBuildingReactionTest {
         membraneNode.getConcentrationContainer().set(MEMBRANE, binder, 1.0);
         membraneNode.getConcentrationContainer().set(MEMBRANE, complex, 1.0);
 
-        // forewared and backward reactions should cancel each other out
+        // forward and backward reactions should cancel each other out
         Quantity<MolarConcentration> empty = Environment.emptyConcentration();
-        Quantity<MolarConcentration> one = Quantities.getQuantity(1.0, MOLE_PER_LITRE).to(Environment.getConcentrationUnit());
+        Quantity<MolarConcentration> one =  UnitRegistry.concentration(1.0, MOLE_PER_LITRE);
         for (int i = 0; i < 10; i++) {
             ConcentrationContainer container = membraneNode.getConcentrationContainer();
 
-            assertEquals(container.get(CellTopology.INNER, bindee), empty);
-            assertEquals(container.get(CellTopology.INNER, binder), empty);
-            assertEquals(container.get(CellTopology.INNER, complex), empty);
+            assertEquals(empty, container.get(CellTopology.INNER, bindee));
+            assertEquals(empty, container.get(CellTopology.INNER, binder));
+            assertEquals(empty, container.get(CellTopology.INNER, complex));
 
-            assertEquals(container.get(CellTopology.MEMBRANE, bindee), empty);
-            assertEquals(container.get(CellTopology.MEMBRANE, binder), one);
-            assertEquals(container.get(CellTopology.MEMBRANE, complex), one);
+            assertEquals(empty, container.get(CellTopology.MEMBRANE, bindee));
+            assertEquals(one, container.get(CellTopology.MEMBRANE, binder));
+            assertEquals(one, container.get(CellTopology.MEMBRANE, complex));
 
-            assertEquals(container.get(CellTopology.OUTER, bindee), one);
-            assertEquals(container.get(CellTopology.OUTER, binder), empty);
-            assertEquals(container.get(CellTopology.OUTER, complex), empty);
+            assertEquals(one, container.get(CellTopology.OUTER, bindee));
+            assertEquals(empty, container.get(CellTopology.OUTER, binder));
+            assertEquals(empty, container.get(CellTopology.OUTER, complex));
 
             simulation.nextEpoch();
         }
@@ -114,7 +114,7 @@ class ComplexBuildingReactionTest {
     @Test
     void testPrazosinExample() {
         Environment.reset();
-        Environment.setNodeDistance(Quantities.getQuantity(1.0, MILLI(METRE)));
+        UnitRegistry.setSpace(Quantities.getQuantity(1.0, MILLI(METRE)));
         logger.info("Testing Monovalent Receptor Binding.");
 
         // see Receptors (Lauffenburger) p. 30
@@ -142,8 +142,8 @@ class ComplexBuildingReactionTest {
         // concentrations
         AutomatonNode membraneNode = automatonGraph.getNode(0, 0);
         membraneNode.setCellRegion(CellRegion.MEMBRANE);
-        membraneNode.getConcentrationContainer().set(SECTION_A, ligand, Quantities.getQuantity(0.1, MOLE_PER_LITRE).to(getConcentrationUnit()));
-        membraneNode.getConcentrationContainer().set(CellSubsection.MEMBRANE, receptor, Quantities.getQuantity(0.1, MOLE_PER_LITRE).to(getConcentrationUnit()));
+        membraneNode.getConcentrationContainer().set(SECTION_A, ligand, UnitRegistry.concentration(0.1, MOLE_PER_LITRE));
+        membraneNode.getConcentrationContainer().set(CellSubsection.MEMBRANE, receptor, UnitRegistry.concentration(0.1, MOLE_PER_LITRE));
 
         // create and add module
         ComplexBuildingReaction reaction = ComplexBuildingReaction.inSimulation(simulation)

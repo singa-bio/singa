@@ -5,6 +5,7 @@ import bio.singa.chemistry.entities.ComplexedChemicalEntity;
 import bio.singa.chemistry.entities.Protein;
 import bio.singa.features.identifiers.UniProtIdentifier;
 import bio.singa.features.parameters.Environment;
+import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.geometry.faces.Rectangle;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.simulation.features.BuddingRate;
@@ -52,8 +53,8 @@ class ClathrinMediatedEndocytosisTest {
         ComparableQuantity<Length> systemExtend = Quantities.getQuantity(10, MICRO(METRE));
         Environment.setSystemExtend(systemExtend);
         Environment.setSimulationExtend(simulationExtend);
-        Environment.setNodeDistance(systemExtend);
-        Environment.setTimeStep(Quantities.getQuantity(1, MILLI(SECOND)));
+        UnitRegistry.setSpace(systemExtend);
+        UnitRegistry.setTime(Quantities.getQuantity(1, MILLI(SECOND)));
 
         // setup graph
         AutomatonGraph graph = AutomatonGraphs.singularGraph();

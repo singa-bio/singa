@@ -2,6 +2,7 @@ package bio.singa.features.quantities;
 
 import bio.singa.features.parameters.Environment;
 import org.junit.jupiter.api.Test;
+import bio.singa.features.units.UnitRegistry;
 import tec.uom.se.ComparableQuantity;
 import tec.uom.se.quantity.Quantities;
 
@@ -13,14 +14,20 @@ import javax.measure.quantity.Volume;
 import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static tec.uom.se.AbstractUnit.ONE;
-import static tec.uom.se.unit.MetricPrefix.MICRO;
 import static tec.uom.se.unit.MetricPrefix.MILLI;
-import static tec.uom.se.unit.Units.*;
+import static tec.uom.se.unit.Units.CUBIC_METRE;
+import static tec.uom.se.unit.Units.MOLE;
 
 /**
  * @author cl
  */
 class MolarConcentrationTest {
+
+    @Before
+    @After
+    public void cleanUpRegistry() {
+        UnitRegistry.reinitialize();
+    }
 
     @Test
     void addQuantity() {
@@ -94,8 +101,7 @@ class MolarConcentrationTest {
     @Test
     void concentrationToMolecules() {
         MolarConcentration molePerLitre = new MolarConcentration(0.1, MOLE_PER_LITRE);
-        Environment.setNodeDistance(Quantities.getQuantity(1, MICRO(METRE)));
-        Quantity<Volume> volume = Quantities.getQuantity(1.0, Environment.getVolumeUnit());
+        Quantity<Volume> volume = Quantities.getQuantity(1.0, UnitRegistry.getVolumeUnit());
         Quantity<Dimensionless> actualResult = MolarConcentration.concentrationToMolecules(molePerLitre, volume);
         Quantity<Dimensionless> expectedResult = Quantities.getQuantity(6.022140857000001E7, ONE);
         assertEquals(expectedResult, actualResult);

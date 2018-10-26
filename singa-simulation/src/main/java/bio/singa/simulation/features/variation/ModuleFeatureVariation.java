@@ -1,0 +1,49 @@
+package bio.singa.simulation.features.variation;
+
+import bio.singa.features.model.Feature;
+import bio.singa.features.model.FeatureOrigin;
+import bio.singa.simulation.model.modules.UpdateModule;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+
+/**
+ * @author cl
+ */
+public class ModuleFeatureVariation<FeatureType> extends Variation<FeatureType> {
+
+    private final UpdateModule module;
+
+    private final Class<? extends Feature<FeatureType>> featureClass;
+
+    public ModuleFeatureVariation(UpdateModule module, Class<? extends Feature<FeatureType>> featureClass) {
+        this.module = module;
+        this.featureClass = featureClass;
+    }
+
+    public UpdateModule getModule() {
+        return module;
+    }
+
+    public Class<? extends Feature<FeatureType>> getFeatureClass() {
+        return featureClass;
+    }
+
+    @Override
+    public ModuleFeatureVariationEntry create(Object featureType) {
+        try {
+            Constructor<? extends Feature<FeatureType>> constructor = featureClass.getConstructor(featureType.getClass(), FeatureOrigin.class);
+            Feature<FeatureType> feature = constructor.newInstance(featureType, new FeatureOrigin(FeatureOrigin.OriginType.PREDICTION, "Variation", "Parameter variation"));
+            return new ModuleFeatureVariationEntry(module, feature);
+        } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            throw new IllegalStateException("Unable to create Feature.", e);
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "Feature:" +
+                " E = " + module.toString() +
+                " F = " + featureClass.getSimpleName();
+    }
+}

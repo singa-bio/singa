@@ -1,6 +1,7 @@
 package bio.singa.features.identifiers;
 
 import bio.singa.features.identifiers.model.AbstractIdentifier;
+import bio.singa.features.model.FeatureOrigin;
 
 import java.util.regex.Pattern;
 
@@ -27,6 +28,10 @@ public class UniProtIdentifier extends AbstractIdentifier<UniProtIdentifier> {
      */
     public UniProtIdentifier(String identifier) throws IllegalArgumentException {
         super(identifier, PATTERN);
+    }
+
+    public UniProtIdentifier(String identifier, FeatureOrigin origin) throws IllegalArgumentException {
+        super(identifier, PATTERN, origin);
     }
 
     @Override

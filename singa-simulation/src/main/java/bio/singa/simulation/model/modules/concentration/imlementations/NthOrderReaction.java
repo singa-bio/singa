@@ -61,7 +61,7 @@ public class NthOrderReaction extends Reaction {
             return scaledReactionRate.getValue().doubleValue();
         }
         // concentrations of substrates that influence the reaction
-        double concentration = determineEffectiveConcentration(concentrationContainer, ReactantRole.DECREASING);
+        double concentration = determineEffectiveConcentration(concentrationContainer, ReactantRole.SUBSTRATE);
         // calculate acceleration
         return concentration * getScaledReactionRate().getValue().doubleValue();
     }

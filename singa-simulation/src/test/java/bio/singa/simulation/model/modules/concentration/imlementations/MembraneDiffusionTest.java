@@ -5,6 +5,7 @@ import bio.singa.chemistry.features.permeability.MembranePermeability;
 import bio.singa.features.model.FeatureOrigin;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.quantities.MolarConcentration;
+import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.simulation.model.agents.membranes.Membrane;
 import bio.singa.simulation.model.agents.membranes.MembraneLayer;
@@ -30,8 +31,8 @@ import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static bio.singa.chemistry.features.permeability.MembranePermeability.CENTIMETRE_PER_SECOND;
-import static bio.singa.features.parameters.Environment.*;
 import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
+import static bio.singa.features.units.UnitRegistry.*;
 import static bio.singa.simulation.model.sections.CellRegion.CYTOSOL_A;
 import static bio.singa.simulation.model.sections.CellRegion.MEMBRANE;
 import static bio.singa.simulation.model.sections.CellTopology.INNER;
@@ -54,12 +55,12 @@ class MembraneDiffusionTest {
 
     @BeforeAll
     static void initialize() {
-        Environment.reset();
+        UnitRegistry.reinitialize();
     }
 
     @AfterEach
     void cleanUp() {
-        Environment.reset();
+        UnitRegistry.reinitialize();
     }
 
     @Test
@@ -95,18 +96,18 @@ class MembraneDiffusionTest {
     @Test
     void testConversionOfArea() {
 
-        setNodeDistance(Quantities.getQuantity(2, MICRO(METRE)));
-        setTimeStep(Quantities.getQuantity(1, MICRO(SECOND)));
+        setSpace(Quantities.getQuantity(2, MICRO(METRE)));
+        setTime(Quantities.getQuantity(1, MICRO(SECOND)));
 
         MembranePermeability membranePermeability = new MembranePermeability(Quantities.getQuantity(3.5E-03, CENTIMETRE_PER_SECOND), FeatureOrigin.MANUALLY_ANNOTATED);
         membranePermeability.scale();
         Quantity<MembranePermeability> scaledQuantity = membranePermeability.getScaledQuantity();
-        ProductUnit<MolarConcentration> unit = new ProductUnit<>(Units.MOLE.divide(Environment.getSubsectionVolume().getUnit()));
+        ProductUnit<MolarConcentration> unit = new ProductUnit<>(Units.MOLE.divide(getVolume().getUnit()));
         Quantity<MolarConcentration> concentration = Quantities.getQuantity(0.1, MOLE_PER_LITRE).to(unit);
 
-        double result = scaledQuantity.getValue().doubleValue() * concentration.getValue().doubleValue() * Environment.getSubsectionArea().getValue().doubleValue();
+        double result = scaledQuantity.getValue().doubleValue() * concentration.getValue().doubleValue() * getArea().getValue().doubleValue();
 
-        assertEquals(1.4E-5, Quantities.getQuantity(result, unit).to(MOLE_PER_LITRE).getValue().doubleValue(), 1.0E-16);
+        assertEquals(7.0E-6, Quantities.getQuantity(result, unit).to(MOLE_PER_LITRE).getValue().doubleValue(), 1.0E-16);
 
     }
 
@@ -124,7 +125,7 @@ class MembraneDiffusionTest {
                 new Vector2D(20, 20),
                 Quantities.getQuantity(ThreadLocalRandom.current()
                         .nextDouble(100, 200), NANO(METRE))
-                        .to(Environment.getNodeDistance().getUnit()));
+                        .to(UnitRegistry.getSpaceUnit()));
 
         vesicle.getConcentrationContainer().set(INNER, water, 50.0);
 

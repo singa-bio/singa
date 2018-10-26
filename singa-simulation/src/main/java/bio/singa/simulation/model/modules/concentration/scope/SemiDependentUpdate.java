@@ -18,7 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Independent Updatable {@link ConcentrationBasedModule}s require the integer state of a subset of updatables.
+ * Semidependent Updatable {@link ConcentrationBasedModule}s require the integer state of a subset of updatables.
  * For example {@link MembraneDiffusion} might happen between a {@link Vesicle} and an {@link AutomatonNode}, therefore
  * at least two updatables are changed during calculation. Half step deltas can be calculated independently but, more
  * half deltas need to be stored to evaluate the error of the computation.

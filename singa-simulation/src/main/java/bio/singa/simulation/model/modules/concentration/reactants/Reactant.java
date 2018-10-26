@@ -1,15 +1,21 @@
 package bio.singa.simulation.model.modules.concentration.reactants;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
+import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.simulation.model.modules.concentration.imlementations.Reaction;
 import bio.singa.simulation.model.sections.CellTopology;
 
+import javax.measure.Unit;
+
 /**
- * A {@code Reactant} encapsulates a {@link ChemicalEntity} for the use in {@link Reaction}s. This abstract class has
- * currently two implementations {@link StoichiometricReactant}s are Reactants that are consumed or produced during the
- * reaction. {@link CatalyticReactant}s are influencing the velocity (reaction rate), but are not consumed or produced.
+ * A {@code Reactant} encapsulates a {@link ChemicalEntity} for the use in {@link Reaction}s.
+ * {@link ReactantRole#CATALYTIC} reactants influence the velocity (reaction rate), but are not consumed or produced.
+ * {@link ReactantRole#SUBSTRATE}s or {@link ReactantRole#PRODUCT} are consumed or produced during the reaction. A
+ * stoichiometric Reactant can be rate determining and has an associated stoichiometric number and/or reaction order. In
+ * Reactions that are not elementary reactions, the reaction order is used to determine the velocity of a reaction. In
+ * elementary reactions the stoichiometric number is used to this end.
  */
-public abstract class Reactant {
+public class Reactant {
 
     /**
      * The referenced entity.
@@ -21,23 +27,66 @@ public abstract class Reactant {
      */
     private ReactantRole role;
 
-    private CellTopology prefferedTopology;
+    /**
+     * The number of molecules required for one reaction.
+     */
+    private double stoichiometricNumber = 1;
+
+    /**
+     * The reaction order of the reactant.
+     */
+    private double reactionOrder = 1;
+
+    /**
+     * The preferred topology of the reactant
+     */
+    private CellTopology preferredTopology = CellTopology.INNER;
+
+    /**
+     * The preferred concentration unit that is used for this reactant in the expression.
+     */
+    private Unit<MolarConcentration>  preferredConcentrationUnit;
 
     /**
      * Creates a new reactant.
+     *
      * @param entity The referenced entity.
      * @param role The reactants role.
      */
-    Reactant(ChemicalEntity entity, ReactantRole role) {
+    public Reactant(ChemicalEntity entity, ReactantRole role) {
         this.entity = entity;
         this.role = role;
-        prefferedTopology = CellTopology.INNER;
     }
 
-    public Reactant(ChemicalEntity entity, ReactantRole role, CellTopology prefferedTopology) {
-        this.entity = entity;
-        this.role = role;
-        this.prefferedTopology = prefferedTopology;
+    public Reactant(ChemicalEntity entity, ReactantRole role, CellTopology preferredTopology) {
+        this(entity, role);
+        this.preferredTopology = preferredTopology;
+    }
+
+    public Reactant(ChemicalEntity entity, ReactantRole role, double stoichiometricNumber) {
+        this(entity, role);
+        this.stoichiometricNumber = stoichiometricNumber;
+    }
+
+    public Reactant(ChemicalEntity entity, ReactantRole role, Unit<MolarConcentration>  preferredConcentrationUnit) {
+        this(entity, role);
+        this.preferredConcentrationUnit = preferredConcentrationUnit;
+    }
+
+    public Reactant(ChemicalEntity chemicalEntity, ReactantRole role, CellTopology topology, double stoichiometricNumber) {
+        this(chemicalEntity, role, topology);
+        this.stoichiometricNumber = stoichiometricNumber;
+    }
+
+    public Reactant(ChemicalEntity entity, ReactantRole role, CellTopology preferredTopology, double stoichiometricNumber, double reactionOrder) {
+        this(entity, role, preferredTopology);
+        this.stoichiometricNumber = stoichiometricNumber;
+        this.reactionOrder = reactionOrder;
+    }
+
+    public Reactant(ChemicalEntity entity, ReactantRole role, double stoichiometricNumber, double reactionOrder) {
+        this(entity, role, stoichiometricNumber);
+        this.reactionOrder = reactionOrder;
     }
 
     /**
@@ -76,11 +125,60 @@ public abstract class Reactant {
         this.role = role;
     }
 
-    public CellTopology getPrefferedTopology() {
-        return prefferedTopology;
+    public CellTopology getPreferredTopology() {
+        return preferredTopology;
     }
 
-    public void setPrefferedTopology(CellTopology prefferedTopology) {
-        this.prefferedTopology = prefferedTopology;
+    public void setPreferredTopology(CellTopology preferredTopology) {
+        this.preferredTopology = preferredTopology;
     }
+
+    public Unit<MolarConcentration> getPreferredConcentrationUnit() {
+        return preferredConcentrationUnit;
+    }
+
+    public void setPreferredConcentrationUnit(Unit<MolarConcentration> preferredConcentrationUnit) {
+        this.preferredConcentrationUnit = preferredConcentrationUnit;
+    }
+
+    /**
+     * Returns the stoichiometric number (the number of molecules required for one reaction.).
+     *
+     * @return the stoichiometric number.
+     */
+    public double getStoichiometricNumber() {
+        return stoichiometricNumber;
+    }
+
+    /**
+     * Returns the reaction order.
+     *
+     * @return The reaction order.
+     */
+    public double getReactionOrder() {
+        return reactionOrder;
+    }
+
+    /**
+     * Returns true if this reactant is a substrate.
+     *
+     * @return true if this reactant is a substrate.
+     */
+    public boolean isSubstrate() {
+        return getRole() == ReactantRole.SUBSTRATE;
+    }
+
+    /**
+     * Returns true if this reactant is a product.
+     *
+     * @return true if this reactant is a product.
+     */
+    public boolean isProduct() {
+        return getRole() == ReactantRole.PRODUCT;
+    }
+
+    public boolean isCatalyst() {
+        return getRole() == ReactantRole.CATALYTIC;
+    }
+
 }

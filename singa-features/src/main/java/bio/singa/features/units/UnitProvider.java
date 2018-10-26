@@ -23,6 +23,7 @@ import static tec.uom.se.unit.Units.*;
 public final class UnitProvider {
 
     public static List<Unit<Time>> TIME_UNITS = new ArrayList<>();
+
     static {
         TIME_UNITS.add(NANO(SECOND));
         TIME_UNITS.add(MICRO(SECOND));
@@ -41,8 +42,10 @@ public final class UnitProvider {
      * volume.
      */
     public static final Unit<MolarConcentration> MOLE_PER_LITRE = MOLE.divide(LITRE).asType(MolarConcentration.class);
-    public static final Unit<MolarConcentration> MICRO_MOLE_PER_LITRE = MICRO(MOLE).divide(LITRE).asType(MolarConcentration.class);
+    public static final Unit<MolarConcentration> PICO_MOLE_PER_LITRE = NANO(MOLE).divide(LITRE).asType(MolarConcentration.class);
     public static final Unit<MolarConcentration> NANO_MOLE_PER_LITRE = NANO(MOLE).divide(LITRE).asType(MolarConcentration.class);
+    public static final Unit<MolarConcentration> MICRO_MOLE_PER_LITRE = MICRO(MOLE).divide(LITRE).asType(MolarConcentration.class);
+    public static final Unit<MolarConcentration> MILLI_MOLE_PER_LITRE = MILLI(MOLE).divide(LITRE).asType(MolarConcentration.class);
     public static final Unit<MolarConcentration> MOLE_PER_CUBIC_MICROMETRE = MOLE.divide(MICRO(METRE).pow(3)).asType(MolarConcentration.class);
 
     /**

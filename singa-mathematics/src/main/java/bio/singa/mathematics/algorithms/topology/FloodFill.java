@@ -20,7 +20,6 @@ public class FloodFill {
      * @param wallPredicate The predicate, returning true if the value shall be considered as a wall.
      * @param replacementConsumer The modification that should be made to valid values.
      * @param recurrencePredicate The predicate, returning true if the modifications for the replacement have already been applied.
-     *
      * @param <ValueType> The kind of value.
      * @param <DirectionType> The kind of directions.
      * @param <CoordinateType> The kind of coordinates.
@@ -45,7 +44,9 @@ public class FloodFill {
         replacementConsumer.accept(pourPosition);
         // flow to neighbours
         for (CoordinateType coordinate : pourPosition.getListOfNeighbours()) {
-            fill(grid, coordinate, wallPredicate, replacementConsumer, recurrencePredicate);
+            if (grid.isInRange(coordinate)) {
+                fill(grid, coordinate, wallPredicate, replacementConsumer, recurrencePredicate);
+            }
         }
     }
 

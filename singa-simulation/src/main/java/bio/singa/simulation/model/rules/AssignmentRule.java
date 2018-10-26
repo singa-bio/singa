@@ -1,10 +1,8 @@
 package bio.singa.simulation.model.rules;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
-import bio.singa.features.parameters.Environment;
 import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.simulation.model.graphs.AutomatonNode;
-import bio.singa.simulation.model.parameters.SimulationParameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,14 +17,14 @@ public class AssignmentRule {
 
     private static final Logger logger = LoggerFactory.getLogger(AssignmentRule.class);
 
-    private final AppliedExpression expression;
+    // private final AppliedExpression expression;
 
     private ChemicalEntity targetEntity;
     private Map<ChemicalEntity, String> entityReference;
 
-    public AssignmentRule(ChemicalEntity targetEntity, AppliedExpression expression) {
+    public AssignmentRule(ChemicalEntity targetEntity) {
         this.targetEntity = targetEntity;
-        this.expression = expression;
+        // this.expression = expression;
         entityReference = new HashMap<>();
     }
 
@@ -41,7 +39,7 @@ public class AssignmentRule {
     public void referenceChemicalEntityToParameter(String parameterIdentifier, ChemicalEntity entity) {
         entityReference.put(entity, parameterIdentifier);
         // FIXME this is not done correctly
-        expression.setParameter(new SimulationParameter<>(parameterIdentifier, Environment.emptyConcentration()));
+        // expression.setParameter(new Parameter<>(parameterIdentifier, Environment.emptyConcentration()));
     }
 
     public Map<ChemicalEntity, String> getEntityReference() {
@@ -57,11 +55,11 @@ public class AssignmentRule {
         for (Map.Entry<ChemicalEntity, String> entry : entityReference.entrySet()) {
             final Quantity<MolarConcentration> concentration = node.getConcentration(node.getConcentrationContainer().getInnerSubsection(), entry.getKey());
             final String parameterName = entityReference.get(entry.getKey());
-            expression.acceptValue(parameterName, concentration.getValue().doubleValue());
+            // expression.acceptValue(parameterName, concentration.getValue().doubleValue());
         }
-        Quantity<?> concentration = expression.evaluate();
-        logger.debug("Initialized concentration of {} to {}.", targetEntity.getIdentifier(), concentration);
-        node.getConcentrationContainer().set(node.getConcentrationContainer().getInnerSubsection(), targetEntity, concentration.getValue().doubleValue());
+        // Quantity<?> concentration = expression.evaluate();
+        // logger.debug("Initialized concentration of {} to {}.", targetEntity.getIdentifier(), concentration);
+        // node.getConcentrationContainer().set(node.getConcentrationContainer().getInnerSubsection(), targetEntity, concentration.getValue().doubleValue());
     }
 
 }

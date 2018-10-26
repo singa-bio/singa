@@ -14,6 +14,11 @@
     <artifactId>singa-features</artifactId>
     <version>0.4.2</version>
     <packaging>jar</packaging>
+    <description>
+        The features package of SiNGA allows for automated retrieval and annotation of features to arbitrary data
+        structures. This package also provides common units for biological features as well as common identifier
+        patterns for biological databases.
+    </description>
 
     <dependencies>
         <dependency>

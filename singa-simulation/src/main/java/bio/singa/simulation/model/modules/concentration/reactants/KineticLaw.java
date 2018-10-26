@@ -1,110 +1,188 @@
 package bio.singa.simulation.model.modules.concentration.reactants;
 
-import bio.singa.chemistry.entities.ChemicalEntity;
-import bio.singa.features.parameters.Environment;
+import bio.singa.features.model.FeatureOrigin;
+import bio.singa.features.model.ScalableFeature;
+import bio.singa.features.model.ScalableQuantityFeature;
 import bio.singa.features.quantities.MolarConcentration;
-import bio.singa.simulation.model.parameters.SimulationParameter;
-import bio.singa.simulation.model.rules.AppliedExpression;
-import bio.singa.simulation.model.sections.CellSubsection;
+import bio.singa.simulation.exceptions.ModuleCalculationException;
+import bio.singa.simulation.model.parameters.Parameter;
 import bio.singa.simulation.model.sections.ConcentrationContainer;
+import tec.uom.se.quantity.Quantities;
+import uk.co.cogitolearning.cogpar.*;
 
 import javax.measure.Quantity;
 import java.util.HashMap;
 import java.util.Map;
 
+import static tec.uom.se.AbstractUnit.ONE;
+
 /**
- * Dynamic kinetic laws allow for the definition of reaction kinetics based on equations. Equations are supplied to the
- * Kinetic law as {@link AppliedExpression}s.
+ * Dynamic kinetic laws allow for the definition of reaction kinetics based on equations.
  *
  * @author cl
  */
 public class KineticLaw {
 
     /**
-     * The expression that is calculated when determining the speed of the reaction.
+     * The expression that is evaluated.
      */
-    private final AppliedExpression expression;
+    private final ExpressionNode expression;
 
     /**
-     * The chemical entities relevant for the kinetic law an their corresponding parameters in the expression.
+     * The original string of the expression.
      */
-    private final Map<ChemicalEntity, String> entityReference;
+    private final String expressionString;
 
     /**
-     * The cell section the kinetic law is currently applied in (to determine the relevant concentrations).
+     * The features influencing the reaction.
      */
-    private CellSubsection currentCellSection;
+    private Map<String, ScalableQuantityFeature> featureMap;
 
     /**
-     * The scale is adjusted to account for changes in time steps.
+     * The parameters remaining constant in the course of the simulation.
      */
-    private Double appliedScale = 1.0;
+    private Map<String, Parameter> parameterMap;
 
     /**
-     * Creates a new dynamic kinetic law with the applied expression.
-     * @param expression The expression.
+     * The reactants involved in the reaction.
      */
-    public KineticLaw(AppliedExpression expression) {
-        this.expression = expression;
-        entityReference = new HashMap<>();
+    private Map<String, Reactant> concentrationMap;
+
+    public KineticLaw(String kineticLawString) {
+        ExpressionParser parser = new ExpressionParser();
+        expressionString = kineticLawString;
+        expression = parser.parse(kineticLawString);
+        featureMap = new HashMap<>();
+        concentrationMap = new HashMap<>();
+        parameterMap = new HashMap<>();
     }
 
-    /**
-     * Returns the actual expression use to calculate this kinetic law.
-     * @return The actual expression use to calculate this kinetic law.
-     */
-    public AppliedExpression getExpression() {
-        return expression;
+    public void referenceReactant(String parameterIdentifier, Reactant reactant) {
+        concentrationMap.put(parameterIdentifier, reactant);
     }
 
-    /**
-     * Assigns a parameter of the expression to the concentration of a chemical species.
-     * @param parameterIdentifier The identifier of the parameter.
-     * @param entity The entity to be referenced.
-     */
-    public void referenceChemicalEntityToParameter(String parameterIdentifier, ChemicalEntity entity) {
-        entityReference.put(entity, parameterIdentifier);
-        expression.setParameter(new SimulationParameter<>(parameterIdentifier, Environment.emptyConcentration()));
+    public void referenceReactant(Reactant reactant) {
+        concentrationMap.put(reactant.getEntity().getIdentifier().toString(), reactant);
     }
 
-    /**
-     * Sets the scaling factor that is applied to account for changes in the time step size.
-     * @param appliedScale The scaling factor.
-     */
-    public void setAppliedScale(Double appliedScale) {
-        this.appliedScale = appliedScale;
+    public void referenceFeature(String parameterIdentifier, ScalableQuantityFeature feature) {
+        featureMap.put(parameterIdentifier, feature);
     }
 
-    /**
-     * Returns the current cell section the kinetic law is applied to.
-     * @return The current cell section the kinetic law is applied to.
-     */
-    public CellSubsection getCurrentCellSection() {
-        return currentCellSection;
+    public void referenceFeature(ScalableQuantityFeature feature) {
+        featureMap.put(feature.getSymbol(), feature);
     }
 
-    /**
-     * Sets the current cell section the kinetic law is applied to.
-     * @param currentCellSection The current cell section the kinetic law is applied to.
-     */
-    public void setCurrentCellSection(CellSubsection currentCellSection) {
-        this.currentCellSection = currentCellSection;
+    public void referenceConstant(String parameterIdentifier, double constant) {
+        parameterMap.put(parameterIdentifier, new Parameter<>(parameterIdentifier, Quantities.getQuantity(constant, ONE), FeatureOrigin.MANUALLY_ANNOTATED));
+        expression.accept(new SetVariable(parameterIdentifier, constant));
+    }
+
+    public void referenceConstant(String parameterIdentifier, double constant, FeatureOrigin origin) {
+        parameterMap.put(parameterIdentifier, new Parameter<>(parameterIdentifier, Quantities.getQuantity(constant, ONE), origin));
+        expression.accept(new SetVariable(parameterIdentifier, constant));
+    }
+
+    public void referenceParameter(Parameter<?> parameter) {
+        parameterMap.put(parameter.getIdentifier(), parameter);
+    }
+
+    public Map<String, ScalableQuantityFeature> getFeatureMap() {
+        return featureMap;
+    }
+
+    public void setFeatureMap(Map<String, ScalableQuantityFeature> featureMap) {
+        this.featureMap = featureMap;
+    }
+
+    public Map<String, Reactant> getConcentrationMap() {
+        return concentrationMap;
+    }
+
+    public void setConcentrationMap(Map<String, Reactant> concentrationMap) {
+        this.concentrationMap = concentrationMap;
+    }
+
+    public String getExpressionString() {
+        return expressionString;
+    }
+
+    public Map<String, Parameter> getParameterMap() {
+        return parameterMap;
+    }
+
+    public void setParameterMap(Map<String, Parameter> parameterMap) {
+        this.parameterMap = parameterMap;
+    }
+
+    public void scaleScalableFeatures() {
+        getFeatureMap().values().forEach(ScalableFeature::scale);
+        getParameterMap().values().forEach(Parameter::scale);
     }
 
     /**
      * Calculates the velocity of the reaction based on the entities in the concentration container.
+     *
      * @param concentrationContainer The concentration container.
      * @return The velocity.
      */
-    public double calculateVelocity(ConcentrationContainer concentrationContainer) {
-        // set entity parameters
-        for (Map.Entry<ChemicalEntity, String> entry : entityReference.entrySet()) {
-            final Quantity<MolarConcentration> concentration = concentrationContainer.get(currentCellSection, entry.getKey());
-            final String parameterName = entityReference.get(entry.getKey());
-            expression.acceptValue(parameterName, concentration.getValue().doubleValue());
+    public double calculateVelocity(ConcentrationContainer concentrationContainer, boolean isStrutCalculation) {
+        // set features
+        for (Map.Entry<String, ScalableQuantityFeature> entry : featureMap.entrySet()) {
+            Quantity<?> featureQuantity;
+            if (isStrutCalculation) {
+                featureQuantity = entry.getValue().getHalfScaledQuantity();
+            } else {
+                featureQuantity = entry.getValue().getScaledQuantity();
+            }
+            SetVariable variable = new SetVariable(entry.getKey(), featureQuantity.getValue().doubleValue());
+            expression.accept(variable);
+        }
+        // set parameters
+        for (Map.Entry<String, Parameter> entry : parameterMap.entrySet()) {
+            Quantity<?> parameterQuantity;
+            if (isStrutCalculation) {
+                parameterQuantity = entry.getValue().getHalfScaledQuantity();
+            } else {
+                parameterQuantity = entry.getValue().getScaledQuantity();
+            }
+            SetVariable variable = new SetVariable(entry.getKey(), parameterQuantity.getValue().doubleValue());
+            expression.accept(variable);
+        }
+        // set concentrations
+        for (Map.Entry<String, Reactant> entry : concentrationMap.entrySet()) {
+            Reactant reactant = entry.getValue();
+            Quantity<MolarConcentration> concentration;
+            if (reactant.getPreferredConcentrationUnit() != null) {
+                concentration = concentrationContainer.get(reactant.getPreferredTopology(), reactant.getEntity()).to(reactant.getPreferredConcentrationUnit());
+            } else {
+                concentration = concentrationContainer.get(reactant.getPreferredTopology(), reactant.getEntity());
+            }
+            SetVariable variable = new SetVariable(entry.getKey(), concentration.getValue().doubleValue());
+            expression.accept(variable);
         }
         // calculate
-        return expression.evaluate().getValue().doubleValue() * appliedScale;
+        return evaluate();
+    }
+
+
+    /**
+     * Evaluates the expression and returns the result. If not all parameters have been set or the expression evaluates
+     * to NaN an error is logged.
+     *
+     * @return The result of the evaluated expression.
+     */
+    private double evaluate() {
+        double value;
+        try {
+            value = expression.getValue();
+        } catch (ParserException | EvaluationException e) {
+            throw new ModuleCalculationException("Could not calculate expression" + expressionString + ". " + e.getMessage());
+        }
+        if (Double.isNaN(value)) {
+            throw new ModuleCalculationException("Could not calculate expression for " + expressionString + ", value was NaN.");
+        }
+        return value;
     }
 
 }

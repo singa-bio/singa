@@ -3,7 +3,7 @@ package bio.singa.simulation.model.modules.concentration;
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.features.model.Feature;
 import bio.singa.features.model.ScalableFeature;
-import bio.singa.features.parameters.Environment;
+import bio.singa.features.units.UnitRegistry;
 import bio.singa.simulation.exceptions.NumericalInstabilityException;
 import bio.singa.simulation.model.modules.UpdateModule;
 import bio.singa.simulation.model.modules.concentration.functions.AbstractDeltaFunction;
@@ -427,7 +427,7 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
             // evaluate module state by error
             evaluateModuleState();
         }
-        logger.debug("Optimized local error for {} was {} with time step of {}.", this, supplier.getLargestLocalError().getValue(), Environment.getTimeStep());
+        logger.debug("Optimized local error for {} was {} with time step of {}.", this, supplier.getLargestLocalError().getValue(), UnitRegistry.getTime());
     }
 
     /**
@@ -517,9 +517,8 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
     /**
      * Sets a feature.
      * @param feature The feature.
-     * @param <FeatureType> The class of the feature.
      */
-    public <FeatureType extends Feature> void setFeature(FeatureType feature) {
+    public void setFeature(Feature<?> feature) {
         featureManager.setFeature(feature);
     }
 

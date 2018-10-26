@@ -15,7 +15,6 @@ import java.util.List;
  */
 public class SutherandHodgmanClipping {
 
-    private List<double[]> subject;
     private List<double[]> clipper;
     private List<double[]> result;
 
@@ -29,7 +28,7 @@ public class SutherandHodgmanClipping {
     private SutherandHodgmanClipping(Polygon subjectPolygon, Polygon clipPolygon) {
         // https://rosettacode.org/wiki/Sutherland-Hodgman_polygon_clipping#Java
         // TODO clean up
-        subject = new ArrayList<>();
+        List<double[]> subject = new ArrayList<>();
         for (Vector2D vector2D : subjectPolygon.getVertices()) {
             subject.add(new double[] {vector2D.getX(), vector2D.getY()});
         }

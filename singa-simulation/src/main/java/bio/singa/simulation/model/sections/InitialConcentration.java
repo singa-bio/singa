@@ -8,6 +8,8 @@ import tec.uom.se.quantity.Quantities;
 
 import javax.measure.Quantity;
 
+import java.util.Objects;
+
 import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 
 /**
@@ -91,5 +93,27 @@ public class InitialConcentration {
         }
     }
 
+    @Override
+    public String toString() {
+        return "Concentration:" + (region == null ? " " : " R = "+region.getIdentifier()) +
+                " S = " + subsection.getIdentifier() +
+                " E = " + entity.getIdentifier() +
+                " C = " + concentration;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        InitialConcentration that = (InitialConcentration) o;
+        return Objects.equals(region, that.region) &&
+                Objects.equals(subsection, that.subsection) &&
+                Objects.equals(entity, that.entity);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(region, subsection, entity);
+    }
 
 }

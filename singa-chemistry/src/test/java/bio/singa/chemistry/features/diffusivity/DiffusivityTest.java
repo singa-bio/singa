@@ -56,21 +56,4 @@ class DiffusivityTest {
         assertEquals(Diffusivity.SQUARE_CENTIMETRE_PER_SECOND, feature.getUnit());
     }
 
-    @Test
-    void shouldScaleDiffusivityCorrectly() {
-        Diffusivity diffusivity = new Diffusivity(1, FeatureOrigin.MANUALLY_ANNOTATED);
-        // double time step - double the scaled quantity
-        diffusivity.scale(Quantities.getQuantity(2, SECOND), Quantities.getQuantity(1, CENTI(METRE)));
-        assertEquals(2.0, diffusivity.getScaledQuantity().getValue().doubleValue());
-        // double space step - divide by square of length
-        diffusivity.scale(Quantities.getQuantity(1, SECOND), Quantities.getQuantity(2, CENTI(METRE)));
-        assertEquals(0.25, diffusivity.getScaledQuantity().getValue().doubleValue());
-        // change both (5 * 1/(10*10))
-        diffusivity.scale(Quantities.getQuantity(5, SECOND), Quantities.getQuantity(0.1, CENTI(METRE)));
-        assertEquals(500, diffusivity.getScaledQuantity().getValue().doubleValue());
-        // some other units
-        diffusivity.scale(Quantities.getQuantity(5, MILLI(SECOND)), Quantities.getQuantity(0.1, MILLI(METRE)));
-        assertEquals(50, diffusivity.getScaledQuantity().getValue().doubleValue());
-    }
-
 }

@@ -1,10 +1,15 @@
 package bio.singa.mathematics.vectors;
 
 import bio.singa.mathematics.concepts.Addable;
+import bio.singa.mathematics.geometry.edges.LineSegment;
+import bio.singa.mathematics.geometry.edges.SimpleLineSegment;
 import bio.singa.mathematics.geometry.faces.Rectangle;
+import bio.singa.mathematics.topology.grids.rectangular.RectangularDirection;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
+
+import static bio.singa.mathematics.metrics.model.VectorMetricProvider.EUCLIDEAN_METRIC;
 
 /**
  * This class contains only static utility methods to create and handle different Vectors.
@@ -77,6 +82,51 @@ public class Vectors {
         double y = ThreadLocalRandom.current().nextDouble();
         double z = ThreadLocalRandom.current().nextDouble();
         return new Vector3D(x, y, z);
+    }
+
+
+    public static List<Vector2D> sortByCloseness(Collection<Vector2D> vectors, RectangularDirection startingDirection) {
+        TreeSet<Vector2D> sortedCopy;
+        switch (startingDirection) {
+            case NORTH:
+            case SOUTH:
+                sortedCopy = new TreeSet<>(Comparator.comparingDouble(Vector2D::getY));
+                break;
+            default:
+                sortedCopy = new TreeSet<>(Comparator.comparingDouble(Vector2D::getX));
+                break;
+        }
+
+        sortedCopy.addAll(vectors);
+        final Vector2D first = sortedCopy.iterator().next();
+        List<Vector2D> copy = new ArrayList<>(vectors);
+        List<Vector2D> result = new ArrayList<>();
+        result.add(first);
+        copy.remove(first);
+        Vector2D previous = first;
+        // for each vector (and omit last connection)
+        while (copy.size() > 1) {
+            // determine closest neighbour
+            Map.Entry<Vector2D, Double> entry = EUCLIDEAN_METRIC.calculateClosestDistance(copy, previous);
+            // add line segment
+            Vector2D next = entry.getKey();
+            result.add(next);
+            copy.remove(next);
+            previous = next;
+        }
+        return result;
+    }
+
+    public static List<LineSegment> connectToSegments(List<Vector2D> vectors) {
+        Iterator<Vector2D> iterator = vectors.iterator();
+        Vector2D previous = iterator.next();
+        List<LineSegment> lineSegments = new ArrayList<>();
+        while (iterator.hasNext()) {
+            Vector2D next = iterator.next();
+            lineSegments.add(new SimpleLineSegment(previous, next));
+            previous = next;
+        }
+        return lineSegments;
     }
 
     /**

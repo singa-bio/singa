@@ -4,6 +4,7 @@ import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.features.units.UnitProvider;
+import bio.singa.features.units.UnitRegistry;
 import tec.uom.se.quantity.Quantities;
 
 import javax.measure.Quantity;
@@ -199,7 +200,7 @@ public class ConcentrationContainer {
     }
 
     public void initialize(CellSubsection subsection, ChemicalEntity entity, Quantity<MolarConcentration> concentration) {
-        concentrations.get(subsection).set(entity, concentration.to(Environment.getConcentrationUnit()));
+        concentrations.get(subsection).set(entity, concentration.to(UnitRegistry.getConcentrationUnit()));
     }
 
     /**
@@ -227,7 +228,7 @@ public class ConcentrationContainer {
      * @param concentration The concentration in mol/l
      */
     public void set(CellSubsection subsection, ChemicalEntity entity, double concentration) {
-        set(subsection, entity, Quantities.getQuantity(concentration, MOLE_PER_LITRE).to(subsection.getPreferredConcentrationUnit()));
+        set(subsection, entity, Quantities.getQuantity(concentration, MOLE_PER_LITRE).to(UnitRegistry.getConcentrationUnit()));
     }
 
     /**

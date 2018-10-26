@@ -5,6 +5,7 @@ import bio.singa.chemistry.entities.ComplexedChemicalEntity;
 import bio.singa.core.utility.Pair;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.quantities.MolarConcentration;
+import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.simulation.features.*;
 import bio.singa.simulation.model.agents.membranes.MembraneSegment;
@@ -203,7 +204,7 @@ public class VesicleFusion extends QualitativeModule {
         HashMap<ChemicalEntity, Integer> availableQSnares = new HashMap<>();
         for (ChemicalEntity snare : entitiesToCount) {
             Quantity<MolarConcentration> quantity = updatable.getConcentrationContainer().get(CellTopology.MEMBRANE, snare);
-            int numberOfSnares = MolarConcentration.concentrationToMolecules(quantity, Environment.getSubsectionVolume()).getValue().intValue();
+            int numberOfSnares = MolarConcentration.concentrationToMolecules(quantity, UnitRegistry.getVolume()).getValue().intValue();
             if (numberOfSnares > 0) {
                 availableQSnares.put(snare, numberOfSnares);
             }
@@ -239,7 +240,7 @@ public class VesicleFusion extends QualitativeModule {
             ComplexedChemicalEntity snareComplex = complexes.get(new Pair<>(qSnare, rSnare));
             reserveComplex(vesicle, snareComplex);
             // add deltas
-            Quantity<MolarConcentration> concentrationQuantity = MolarConcentration.moleculesToConcentration(-1.0, Environment.getSubsectionVolume());
+            Quantity<MolarConcentration> concentrationQuantity = MolarConcentration.moleculesToConcentration(-1.0, UnitRegistry.getVolume());
             // rsnare in vesicle
             vesicle.addPotentialDelta(new ConcentrationDelta(this, vesicle.getCellRegion().getMembraneSubsection(), rSnare, concentrationQuantity));
             // qsnare in node
@@ -251,7 +252,7 @@ public class VesicleFusion extends QualitativeModule {
 
     private void reserveComplex(Vesicle vesicle, ComplexedChemicalEntity snareComplex) {
         // reserve one snare
-        Quantity<MolarConcentration> concentrationQuantity = MolarConcentration.moleculesToConcentration(1.0, Environment.getSubsectionVolume());
+        Quantity<MolarConcentration> concentrationQuantity = MolarConcentration.moleculesToConcentration(1.0, UnitRegistry.getVolume());
         if (!occupiedSnares.containsKey(vesicle)) {
             occupiedSnares.put(vesicle, new ConcentrationPool());
         }

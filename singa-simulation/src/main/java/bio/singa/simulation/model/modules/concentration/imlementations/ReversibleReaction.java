@@ -15,8 +15,8 @@ import bio.singa.simulation.model.simulation.Simulation;
 
 import javax.measure.Quantity;
 
-import static bio.singa.simulation.model.modules.concentration.reactants.ReactantRole.DECREASING;
-import static bio.singa.simulation.model.modules.concentration.reactants.ReactantRole.INCREASING;
+import static bio.singa.simulation.model.modules.concentration.reactants.ReactantRole.SUBSTRATE;
+import static bio.singa.simulation.model.modules.concentration.reactants.ReactantRole.PRODUCT;
 
 /**
  * Reversible reactions are {@link Reaction}s where the substrates form products, and products can also from substrates.
@@ -87,8 +87,8 @@ public class ReversibleReaction extends Reaction {
         final Quantity forwardsRateConstant = getScaledForwardsReactionRate();
         final Quantity backwardsRateConstant = getScaledBackwardsReactionRate();
         // concentrations of substrates that influence the reaction
-        double substrateConcentration = determineEffectiveConcentration(concentrationContainer, DECREASING);
-        double productConcentration = determineEffectiveConcentration(concentrationContainer, INCREASING);
+        double substrateConcentration = determineEffectiveConcentration(concentrationContainer, SUBSTRATE);
+        double productConcentration = determineEffectiveConcentration(concentrationContainer, PRODUCT);
         // calculate acceleration
         return substrateConcentration * forwardsRateConstant.getValue().doubleValue() -
                 productConcentration * backwardsRateConstant.getValue().doubleValue();

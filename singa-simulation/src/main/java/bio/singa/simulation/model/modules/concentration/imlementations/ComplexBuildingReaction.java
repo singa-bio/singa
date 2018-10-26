@@ -7,6 +7,7 @@ import bio.singa.chemistry.features.reactions.ForwardsRateConstant;
 import bio.singa.chemistry.features.reactions.RateConstant;
 import bio.singa.features.exceptions.FeatureUnassignableException;
 import bio.singa.features.model.Feature;
+import bio.singa.features.units.UnitRegistry;
 import bio.singa.simulation.model.modules.concentration.*;
 import bio.singa.simulation.model.modules.concentration.functions.UpdatableDeltaFunction;
 import bio.singa.simulation.model.modules.concentration.scope.IndependentUpdate;
@@ -15,13 +16,10 @@ import bio.singa.simulation.model.sections.CellSubsection;
 import bio.singa.simulation.model.sections.CellTopology;
 import bio.singa.simulation.model.sections.ConcentrationContainer;
 import bio.singa.simulation.model.simulation.Simulation;
-import tec.uom.se.quantity.Quantities;
 
 import javax.measure.Quantity;
 import java.util.HashMap;
 import java.util.Map;
-
-import static bio.singa.features.parameters.Environment.getConcentrationUnit;
 
 /**
  * Complex building or breaking reactions are a special kind of {@link ReversibleReaction}. In this kind of reaction
@@ -134,14 +132,14 @@ public class ComplexBuildingReaction extends ConcentrationBasedModule<UpdatableD
         // ligand concentration
         CellSubsection bindeeSubsection = concentrationContainer.getSubsection(bindeeTopology);
         deltas.put(new ConcentrationDeltaIdentifier(supplier.getCurrentUpdatable(), bindeeSubsection, bindee),
-                new ConcentrationDelta(this, bindeeSubsection, bindee, Quantities.getQuantity(-velocity, getConcentrationUnit())));
+                new ConcentrationDelta(this, bindeeSubsection, bindee, UnitRegistry.concentration(-velocity)));
         // unbound receptor concentration
         CellSubsection binderSubsection = concentrationContainer.getSubsection(binderTopology);
         deltas.put(new ConcentrationDeltaIdentifier(supplier.getCurrentUpdatable(), binderSubsection, binder),
-                new ConcentrationDelta(this, binderSubsection, binder, Quantities.getQuantity(-velocity, getConcentrationUnit())));
+                new ConcentrationDelta(this, binderSubsection, binder, UnitRegistry.concentration(-velocity)));
         // bound receptor concentration
         deltas.put(new ConcentrationDeltaIdentifier(supplier.getCurrentUpdatable(), binderSubsection, complex),
-                new ConcentrationDelta(this, binderSubsection, complex, Quantities.getQuantity(velocity, getConcentrationUnit())));
+                new ConcentrationDelta(this, binderSubsection, complex, UnitRegistry.concentration(velocity)));
         return deltas;
     }
 

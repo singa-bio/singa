@@ -123,6 +123,8 @@ class ConcentrationContainerTest {
     @Test
     void shouldSetAndGetInCorrectUnit() {
         Environment.setNodeDistance(Quantities.getQuantity(1.0, MICRO(METRE)));
+    public void shouldSetAndGetInCorrectUnit() {
+        UnitRegistry.setSpace(Quantities.getQuantity(1.0, MICRO(METRE)));
         ConcentrationContainer containerA = new ConcentrationContainer();
         containerA.initializeSubsection(subsectionA, INNER);
         containerA.initializeSubsection(subsectionB, OUTER);

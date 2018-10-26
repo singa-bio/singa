@@ -7,6 +7,7 @@ import bio.singa.chemistry.features.databases.uniprot.UniProtParserService;
 import bio.singa.chemistry.features.permeability.OsmoticPermeability;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.quantities.MolarConcentration;
+import bio.singa.features.units.UnitRegistry;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.graphs.AutomatonNode;
@@ -31,19 +32,15 @@ import static tec.uom.se.unit.Units.METRE;
  */
 class SingleFileChannelMembraneTransportTest {
 
-    @BeforeAll
-    static void initialize() {
-        Environment.reset();
-    }
-
-    @AfterEach
-    void cleanUp() {
-        Environment.reset();
+    @After
+    @Before
+    public void cleanUp() {
+        UnitRegistry.reinitialize();
     }
 
     @Test
     void shouldSimulateChannelDiffusion() {
-        Environment.setNodeDistance(Quantities.getQuantity(1, MICRO(METRE)));
+        UnitRegistry.setSpace(Quantities.getQuantity(1, MICRO(METRE)));
         Simulation simulation = new Simulation();
         // setup species
         // water
@@ -61,7 +58,7 @@ class SingleFileChannelMembraneTransportTest {
         AutomatonNode node = graph.getNode(0, 0);
         node.setCellRegion(CellRegion.MEMBRANE);
         // set concentrations
-        Quantity<MolarConcentration> aqp2Concentration = MolarConcentration.moleculesToConcentration(3700, Environment.getSubsectionVolume());
+        Quantity<MolarConcentration> aqp2Concentration = MolarConcentration.moleculesToConcentration(3700, UnitRegistry.getVolume());
         node.getConcentrationContainer().set(CellTopology.OUTER, water, 50.0);
         node.getConcentrationContainer().set(CellTopology.OUTER, solute, 0.2);
         node.getConcentrationContainer().set(CellTopology.MEMBRANE, aquaporin2, aqp2Concentration);

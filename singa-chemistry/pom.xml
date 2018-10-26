@@ -14,6 +14,10 @@
     <artifactId>singa-chemistry</artifactId>
     <version>0.4.2</version>
     <packaging>jar</packaging>
+    <description>
+        The chemistry package of SiNGA handles aspects that range into chemoinformatics, such as parsing and
+        manipulation of chemical entities as well as their annotation with features.
+    </description>
 
     <dependencies>
         <dependency>

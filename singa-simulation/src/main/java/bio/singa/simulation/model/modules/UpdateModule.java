@@ -28,6 +28,8 @@ public interface UpdateModule {
 
     Collection<Feature<?>> getFeatures();
 
+    void setFeature(Feature<?> feature);
+
     void optimizeTimeStep();
 
     Set<ChemicalEntity> getReferencedEntities();

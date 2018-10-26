@@ -3,8 +3,8 @@ package bio.singa.simulation.model.modules.concentration.imlementations;
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.chemistry.entities.Protein;
 import bio.singa.chemistry.features.permeability.OsmoticPermeability;
-import bio.singa.features.parameters.Environment;
 import bio.singa.features.quantities.MolarConcentration;
+import bio.singa.features.units.UnitRegistry;
 import bio.singa.simulation.features.Cargo;
 import bio.singa.simulation.features.Solutes;
 import bio.singa.simulation.features.Transporter;
@@ -15,7 +15,6 @@ import bio.singa.simulation.model.modules.concentration.specifity.UpdatableSpeci
 import bio.singa.simulation.model.sections.CellTopology;
 import bio.singa.simulation.model.sections.ConcentrationContainer;
 import bio.singa.simulation.model.simulation.Simulation;
-import tec.uom.se.quantity.Quantities;
 
 import java.util.*;
 
@@ -96,11 +95,11 @@ public class SingleFileChannelMembraneTransport extends ConcentrationBasedModule
     private Map<ConcentrationDeltaIdentifier, ConcentrationDelta> calculateDeltas(ConcentrationContainer container) {
         Map<ConcentrationDeltaIdentifier, ConcentrationDelta> deltas = new HashMap<>();
         final double permeability = getScaledFeature(transporter, OsmoticPermeability.class).getValue().doubleValue();
-        final double value = getSoluteDelta(container) * permeability * MolarConcentration.concentrationToMolecules(container.get(CellTopology.MEMBRANE, transporter), Environment.getSubsectionVolume()).getValue().doubleValue();
+        final double value = getSoluteDelta(container) * permeability * MolarConcentration.concentrationToMolecules(container.get(CellTopology.MEMBRANE, transporter), UnitRegistry.getVolume()).getValue().doubleValue();
         deltas.put(new ConcentrationDeltaIdentifier(supplier.getCurrentUpdatable(), container.getInnerSubsection(), cargo),
-                new ConcentrationDelta(this, container.getInnerSubsection(), cargo, Quantities.getQuantity(value, Environment.getConcentrationUnit())));
+                new ConcentrationDelta(this, container.getInnerSubsection(), cargo, UnitRegistry.concentration(value)));
         deltas.put(new ConcentrationDeltaIdentifier(supplier.getCurrentUpdatable(), container.getOuterSubsection(), cargo),
-                new ConcentrationDelta(this, container.getOuterSubsection(), cargo, Quantities.getQuantity(-value, Environment.getConcentrationUnit())));
+                new ConcentrationDelta(this, container.getOuterSubsection(), cargo, UnitRegistry.concentration(-value)));
         return deltas;
     }
 

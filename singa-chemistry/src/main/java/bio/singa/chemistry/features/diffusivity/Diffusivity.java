@@ -5,13 +5,13 @@ import bio.singa.features.model.FeatureOrigin;
 import bio.singa.features.model.ScalableQuantityFeature;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.quantities.NaturalConstants;
+import bio.singa.features.units.UnitRegistry;
 import tec.uom.se.quantity.Quantities;
 import tec.uom.se.unit.ProductUnit;
 
 import javax.measure.Quantity;
 import javax.measure.Unit;
 import javax.measure.quantity.Length;
-import javax.measure.quantity.Time;
 
 import static tec.uom.se.unit.Units.METRE;
 import static tec.uom.se.unit.Units.SECOND;
@@ -31,6 +31,13 @@ public class Diffusivity extends ScalableQuantityFeature<Diffusivity> implements
 
     private static final FeatureOrigin EINSTEIN1905 = new FeatureOrigin(FeatureOrigin.OriginType.PREDICTION, "Strokes-Einstein Equation", "Einstein, Albert. \"Über die von der molekularkinetischen Theorie der Wärme geforderte Bewegung von in ruhenden Flüssigkeiten suspendierten Teilchen.\" Annalen der physik 322.8 (1905): 549-560.");
 
+    /**
+     * Every FeatureProvider that is registered in this method is invoked automatically when the Feature is requested
+     * for the first time.
+     */
+    public static void register() {
+        FeatureRegistry.addProviderForFeature(Diffusivity.class, DiffusivityProvider.class);
+    }
 
     /**
      * The diffusivity can be calculated according to the Stokes–Einstein equation:
@@ -46,8 +53,12 @@ public class Diffusivity extends ScalableQuantityFeature<Diffusivity> implements
         final double upper = NaturalConstants.BOLTZMANN_CONSTANT.getValue().doubleValue() * Environment.getTemperature().getValue().doubleValue();
         final double lower = 6 * Math.PI * Environment.getViscosity().getValue().doubleValue() * radius.to(METRE).getValue().doubleValue();
         Diffusivity diffusivity = new Diffusivity(Quantities.getQuantity(upper / lower, Diffusivity.SQUARE_METRE_PER_SECOND), EINSTEIN1905);
-        diffusivity.scale(Environment.getTimeStep(), Environment.getSystemScale());
+        diffusivity.scale();
         return diffusivity;
+    }
+
+    public static Unit<Diffusivity> getConsistentUnit() {
+        return UnitRegistry.getAreaUnit().divide(UnitRegistry.getTimeUnit()).asType(Diffusivity.class);
     }
 
     public Diffusivity(Quantity<Diffusivity> diffusivityQuantity, FeatureOrigin origin) {
@@ -56,26 +67,6 @@ public class Diffusivity extends ScalableQuantityFeature<Diffusivity> implements
 
     public Diffusivity(double diffusivityQuantity, FeatureOrigin origin) {
         super(Quantities.getQuantity(diffusivityQuantity, SQUARE_CENTIMETRE_PER_SECOND), origin);
-    }
-
-    /**
-     * Every FeatureProvider that is registered in this method is invoked automatically when the Feature is requested
-     * for the first time.
-     */
-    public static void register() {
-        FeatureRegistry.addProviderForFeature(Diffusivity.class, DiffusivityProvider.class);
-    }
-
-    @Override
-    public void scale(Quantity<Time> targetTimeScale, Quantity<Length> targetLengthScale) {
-        // transform to specified unit
-        Quantity<Diffusivity> scaledQuantity = getFeatureContent().to(new ProductUnit<>(targetLengthScale.getUnit().pow(2).divide(targetTimeScale.getUnit())));
-        // denominator
-        Quantity<Diffusivity> denominator = scaledQuantity.divide(targetLengthScale.getValue()).divide(targetLengthScale.getValue());
-        // transform to specified amount
-        this.scaledQuantity = denominator.multiply(targetTimeScale.getValue());
-        // and half of it
-        halfScaledQuantity = denominator.multiply(targetTimeScale.multiply(0.5).getValue());
     }
 
     @Override
@@ -138,8 +129,4 @@ public class Diffusivity extends ScalableQuantityFeature<Diffusivity> implements
         return getFeatureContent().getUnit();
     }
 
-    @Override
-    public String toString() {
-        return SYMBOL+ " = "+getScaledQuantity();
-    }
 }

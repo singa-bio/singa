@@ -8,6 +8,7 @@ import bio.singa.chemistry.entities.Protein;
 import bio.singa.features.identifiers.UniProtIdentifier;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.quantities.MolarConcentration;
+import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.geometry.faces.Rectangle;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.simulation.features.*;
@@ -26,7 +27,6 @@ import org.junit.jupiter.api.Test;
 import tec.uom.se.ComparableQuantity;
 import tec.uom.se.quantity.Quantities;
 
-import javax.measure.quantity.AmountOfSubstance;
 import javax.measure.quantity.Length;
 import java.util.HashSet;
 import java.util.List;
@@ -55,7 +55,7 @@ class VesicleFusionTest {
         ComparableQuantity<Length> systemExtend = Quantities.getQuantity(2, MICRO(METRE));
         Environment.setSystemExtend(systemExtend);
         Environment.setSimulationExtend(simulationExtend);
-        Environment.setTimeStep(Quantities.getQuantity(1, MICRO(SECOND)));
+        UnitRegistry.setTime(Quantities.getQuantity(1, MICRO(SECOND)));
 
         // setup snares for fusion
         Protein vamp2 = new Protein.Builder("VAMP2")
@@ -100,7 +100,7 @@ class VesicleFusionTest {
         AutomatonNode node = graph.getNode(0, 0);
         node.setPosition(new Vector2D(50.0, 50.0));
         node.setCellRegion(CellRegion.MEMBRANE);
-        node.getConcentrationContainer().initialize(CellTopology.MEMBRANE, snareComplex1, MolarConcentration.moleculesToConcentration(10, Environment.getSubsectionVolume()));
+        node.getConcentrationContainer().initialize(CellTopology.MEMBRANE, snareComplex1, MolarConcentration.moleculesToConcentration(10, UnitRegistry.getVolume()));
         simulation.setGraph(graph);
 
         // setup membrane
@@ -112,7 +112,7 @@ class VesicleFusionTest {
         // setup vesicle
         VesicleLayer vesicleLayer = new VesicleLayer(simulation);
         Vesicle vesicle = new Vesicle(new Vector2D(49.0, 49.0), Quantities.getQuantity(100.0, NANO(METRE)));
-        vesicle.getConcentrationContainer().initialize(CellTopology.MEMBRANE, vamp3, MolarConcentration.moleculesToConcentration(10, Environment.getSubsectionVolume()));
+        vesicle.getConcentrationContainer().initialize(CellTopology.MEMBRANE, vamp3, MolarConcentration.moleculesToConcentration(10, UnitRegistry.getVolume()));
         vesicleLayer.addVesicle(vesicle);
         simulation.setVesicleLayer(vesicleLayer);
 
@@ -140,8 +140,8 @@ class VesicleFusionTest {
             simulation.nextEpoch();
         }
 
-        assertEquals(7.0, MolarConcentration.concentrationToMolecules(node.getConcentrationContainer().get(CellTopology.MEMBRANE, vamp3), Environment.getSubsectionVolume()).getValue().doubleValue(), 1e-10);
-        assertEquals(7.0, MolarConcentration.concentrationToMolecules(node.getConcentrationContainer().get(CellTopology.MEMBRANE, snareComplex1), Environment.getSubsectionVolume()).getValue().doubleValue(), 1e-10);
+        assertEquals(7.0, MolarConcentration.concentrationToMolecules(node.getConcentrationContainer().get(CellTopology.MEMBRANE, vamp3), UnitRegistry.getVolume()).getValue().doubleValue(), 1e-10);
+        assertEquals(7.0, MolarConcentration.concentrationToMolecules(node.getConcentrationContainer().get(CellTopology.MEMBRANE, snareComplex1), UnitRegistry.getVolume()).getValue().doubleValue(), 1e-10);
 
     }
 

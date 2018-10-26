@@ -1,6 +1,7 @@
 package bio.singa.simulation.model.modules.displacement.implementations;
 
 import bio.singa.features.parameters.Environment;
+import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
@@ -31,7 +32,7 @@ class VesicleDiffusionTest {
         Environment.setSystemExtend(systemExtend);
         Environment.setSimulationExtend(500);
         Environment.setNodeSpacingToDiameter(systemExtend, 10);
-        Environment.setTimeStep(Quantities.getQuantity(1, MICRO(SECOND)));
+        UnitRegistry.setTime(Quantities.getQuantity(1, MICRO(SECOND)));
 
         Simulation simulation = new Simulation();
 
@@ -39,7 +40,7 @@ class VesicleDiffusionTest {
         Vesicle vesicle = new Vesicle("0",
                 previousPosition,
                 Quantities.getQuantity(150, NANO(METRE))
-                        .to(Environment.getNodeDistance().getUnit()));
+                        .to(UnitRegistry.getSpaceUnit()));
 
         // add vesicle transport layer
         VesicleLayer layer = new VesicleLayer(simulation);

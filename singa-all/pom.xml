@@ -115,15 +115,15 @@
                     </archive>
                 </configuration>
             </plugin>
-            <!-- specify source and target version -->
+            <!-- specify jdk source and target version -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.6.1</version>
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
                 </configuration>
-                <version>3.6.1</version>
             </plugin>
             <!-- attach sources -->
             <plugin>

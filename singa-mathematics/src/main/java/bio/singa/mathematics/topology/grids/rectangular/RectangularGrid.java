@@ -57,6 +57,7 @@ public class RectangularGrid<ValueType> implements DiscreteGrid<ValueType, Recta
         return results;
     }
 
+
     public List<ValueType> getColumn(int columnIndex) {
         if (columnIndex > width - 1) {
             throw new IndexOutOfBoundsException("The row " + columnIndex + " is out of bounds.");
@@ -84,6 +85,11 @@ public class RectangularGrid<ValueType> implements DiscreteGrid<ValueType, Recta
             }
         }
         return false;
+    }
+
+    @Override
+    public boolean isInRange(RectangularCoordinate coordinate) {
+        return coordinate.getColumn() < width && coordinate.getColumn() >= 0 && coordinate.getRow() < height && coordinate.getRow() >= 0;
     }
 
     public int getWidth() {

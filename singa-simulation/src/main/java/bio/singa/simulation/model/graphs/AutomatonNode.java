@@ -1,8 +1,8 @@
 package bio.singa.simulation.model.graphs;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
-import bio.singa.features.parameters.Environment;
 import bio.singa.features.quantities.MolarConcentration;
+import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.geometry.model.Polygon;
 import bio.singa.mathematics.graphs.model.AbstractNode;
 import bio.singa.mathematics.topology.grids.rectangular.RectangularCoordinate;
@@ -12,9 +12,7 @@ import bio.singa.simulation.model.agents.membranes.MembraneSegment;
 import bio.singa.simulation.model.modules.UpdateModule;
 import bio.singa.simulation.model.modules.concentration.ConcentrationDelta;
 import bio.singa.simulation.model.modules.concentration.ConcentrationDeltaManager;
-import bio.singa.simulation.model.sections.CellRegion;
-import bio.singa.simulation.model.sections.CellSubsection;
-import bio.singa.simulation.model.sections.ConcentrationContainer;
+import bio.singa.simulation.model.sections.*;
 import bio.singa.simulation.model.simulation.Updatable;
 import tec.uom.se.quantity.Quantities;
 
@@ -45,7 +43,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
         microtubuleSegments = new HashMap<>();
         subsectionRepresentations = new HashMap<>();
         membraneSegments = new ArrayList<>();
-        cellRegion = CellRegion.CYTOSOL_A;
+        cellRegion = CellRegions.EXTRACELLULAR_REGION;
         updateManager = new ConcentrationDeltaManager(cellRegion.setUpConcentrationContainer());
     }
 
@@ -220,7 +218,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
 
     public Quantity<Area> getMembraneArea() {
         if (membraneArea == null) {
-            membraneArea = Quantities.getQuantity(0.0, Environment.getAreaUnit());
+            membraneArea = Quantities.getQuantity(0.0, UnitRegistry.getAreaUnit());
             for (MembraneSegment membraneSegment : membraneSegments) {
                 membraneArea = membraneArea.add(membraneSegment.getArea());
             }
