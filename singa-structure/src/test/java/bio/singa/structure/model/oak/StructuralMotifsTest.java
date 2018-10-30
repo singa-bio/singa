@@ -5,8 +5,8 @@ import bio.singa.structure.model.families.MatcherFamily;
 import bio.singa.structure.model.interfaces.AminoAcid;
 import bio.singa.structure.model.interfaces.Structure;
 import bio.singa.structure.parser.pdb.structures.StructureParser;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -15,17 +15,18 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author fk
  */
-public class StructuralMotifsTest {
-    private StructuralMotif structuralMotif;
+class StructuralMotifsTest {
 
-    @Before
-    public void setUp() {
+    private static StructuralMotif structuralMotif;
+
+    @BeforeAll
+    static void initialize() {
         Structure motifStructure = StructureParser.local()
                 .fileLocation(Resources.getResourceAsFileLocation("Asn_3m4p.pdb"))
                 .everything()
@@ -34,7 +35,7 @@ public class StructuralMotifsTest {
     }
 
     @Test
-    public void shouldAssignExchanges() {
+    void shouldAssignExchanges() {
         StructuralMotifs.assignComplexExchanges(structuralMotif, MatcherFamily.GUTTERIDGE);
         assertTrue(MatcherFamily.GUTTERIDGE.stream()
                 .map(MatcherFamily::getMembers)
@@ -47,7 +48,7 @@ public class StructuralMotifsTest {
     }
 
     @Test
-    public void shouldCalculateRmsdMatrix() throws IOException {
+    void shouldCalculateRmsdMatrix() throws IOException {
         List<StructuralMotif> input = Files.list(Paths.get(Resources.getResourceAsFileLocation("consensus_alignment")))
                 .map(path -> StructureParser.local()
                         .fileLocation(path.toString())

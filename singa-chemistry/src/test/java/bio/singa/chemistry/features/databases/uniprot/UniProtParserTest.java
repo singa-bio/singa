@@ -6,21 +6,21 @@ import bio.singa.chemistry.entities.Protein;
 import bio.singa.features.identifiers.ENAAccessionNumber;
 import bio.singa.features.identifiers.model.Identifier;
 import bio.singa.features.identifiers.model.IdentifierPatternRegistry;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author cl
  */
-public class UniProtParserTest {
+class UniProtParserTest {
 
     @Test
-    public void shouldParseSampleAccession() {
+    void shouldParseSampleAccession() {
         Protein entity = UniProtParserService.parse("P12345");
         // primary name
         assertEquals("Aspartate aminotransferase, mitochondrial", entity.getName());

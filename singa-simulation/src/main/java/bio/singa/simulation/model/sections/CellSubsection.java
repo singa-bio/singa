@@ -1,14 +1,9 @@
 package bio.singa.simulation.model.sections;
 
 import bio.singa.features.identifiers.GoTerm;
-import bio.singa.features.parameters.Environment;
-import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.simulation.model.simulation.Updatable;
 
-import javax.measure.Unit;
 import java.util.Objects;
-import java.util.Observable;
-import java.util.Observer;
 
 /**
  * A cell subsection organizes the contents of a {@link Updatable}. Each subsection has its own {@link ConcentrationPool}
@@ -16,7 +11,7 @@ import java.util.Observer;
  *
  * @author cl
  */
-public class CellSubsection implements Observer {
+public class CellSubsection {
 
     /**
      * A general membrane subsection.
@@ -41,37 +36,17 @@ public class CellSubsection implements Observer {
     private GoTerm goTerm;
 
     /**
-     * The preferred concentration unit.
-     */
-    private Unit<MolarConcentration> preferredConcentrationUnit;
-
-    /**
      * Creates a new cell subsection with the given identifier and dynamic preferred concentration unit.
      *
      * @param identifier The identifier.
      */
     public CellSubsection(String identifier) {
-        this(identifier, true);
+        this.identifier = identifier;
     }
 
     public CellSubsection(String identifier, GoTerm goTerm) {
         this.identifier = identifier;
         this.goTerm = goTerm;
-    }
-
-    /**
-     * Creates a new cell subsection.
-     *
-     * @param identifier The identifier.
-     * @param dynamicConcentration True if the preferred concentration unit should be updated if subsection volume
-     * changes.
-     */
-    public CellSubsection(String identifier, boolean dynamicConcentration) {
-        this.identifier = identifier;
-        preferredConcentrationUnit = Environment.getConcentrationUnit();
-        if (dynamicConcentration) {
-            Environment.attachObserver(this);
-        }
     }
 
     /**
@@ -95,24 +70,6 @@ public class CellSubsection implements Observer {
         this.goTerm = goTerm;
     }
 
-    /**
-     * Returns the preferred concentration unit for this subsection.
-     *
-     * @return The preferred concentration unit.
-     */
-    public Unit<MolarConcentration> getPreferredConcentrationUnit() {
-        return preferredConcentrationUnit;
-    }
-
-    /**
-     * Sets the preferred concentration unit for this subsection.
-     *
-     * @param preferredConcentrationUnit The preferred concentration unit.
-     */
-    public void setPreferredConcentrationUnit(Unit<MolarConcentration> preferredConcentrationUnit) {
-        this.preferredConcentrationUnit = preferredConcentrationUnit;
-    }
-
     @Override
     public String toString() {
         return identifier;
@@ -131,8 +88,4 @@ public class CellSubsection implements Observer {
         return Objects.hash(identifier);
     }
 
-    @Override
-    public void update(Observable o, Object arg) {
-        setPreferredConcentrationUnit(Environment.getConcentrationUnit());
-    }
 }

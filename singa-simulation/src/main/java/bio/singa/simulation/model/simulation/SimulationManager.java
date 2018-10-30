@@ -2,7 +2,7 @@ package bio.singa.simulation.model.simulation;
 
 import bio.singa.core.events.UpdateEventListener;
 import bio.singa.features.model.QuantityFormatter;
-import bio.singa.features.parameters.Environment;
+import bio.singa.features.units.UnitRegistry;
 import bio.singa.simulation.events.*;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonNode;
@@ -40,6 +40,8 @@ public class SimulationManager extends Task<Simulation> {
 
     private static final boolean DEFAULT_KEEP_PLATFORM_OPEN = false;
 
+    private static ComparableQuantity<Time> REPORT_THRESHOLD = Quantities.getQuantity(1, SECOND);
+
     /**
      * The simulation.
      */
@@ -73,12 +75,13 @@ public class SimulationManager extends Task<Simulation> {
     private long startingTime = System.currentTimeMillis();
 
     private long previousTimeMillis = 0;
-    private Quantity<Time> previousTimeSimulation;
+
+    private Quantity<Time> previousTimeSimulation = Quantities.getQuantity(0.0, UnitRegistry.getTimeUnit());
 
     /**
      * The time for the next update to be issued (in simulation time).
      */
-    private Quantity<Time> scheduledEmitTime = Quantities.getQuantity(0.0, Environment.getTimeStep().getUnit());
+    private Quantity<Time> scheduledEmitTime = Quantities.getQuantity(0.0, UnitRegistry.getTimeUnit());
 
     private Quantity<Time> terminationTime;
 
@@ -237,7 +240,7 @@ public class SimulationManager extends Task<Simulation> {
     protected Simulation call() {
         while (!isCancelled() && terminationCondition.test(simulation)) {
             if (emitCondition.test(simulation)) {
-                logger.info("Emitting event after {} (epoch {}).", QuantityFormatter.formatTime(simulation.getElapsedTime()), simulation.getEpoch());
+                logger.debug("Emitting event after {} (epoch {}).", QuantityFormatter.formatTime(simulation.getElapsedTime()), simulation.getEpoch());
                 emitGraphEvent(simulation);
                 for (Updatable updatable : simulation.getObservedUpdatables()) {
                     emitNodeEvent(simulation, updatable);
@@ -254,22 +257,30 @@ public class SimulationManager extends Task<Simulation> {
     }
 
     private void estimateRuntime() {
+        // calculate time since last report
         long currentTimeMillis = System.currentTimeMillis();
-        ComparableQuantity<Time> currentTimeSimulation = simulation.getElapsedTime().to(MICRO(SECOND));
-        double fractionDone = currentTimeSimulation.getValue().doubleValue() / terminationTime.getValue().doubleValue();
-        long timeRequired = System.currentTimeMillis() - startingTime;
-        long estimatedTimeRemaining = (long) (timeRequired / fractionDone) - timeRequired;
-        if (previousTimeMillis > 0) {
+        long millisSinceLastReport = currentTimeMillis - previousTimeMillis;
+        ComparableQuantity<Time> timeSinceLastReport = Quantities.getQuantity(millisSinceLastReport, MILLI(SECOND));
+        // if it has been 1 second since last report
+        if (timeSinceLastReport.isGreaterThanOrEqualTo(REPORT_THRESHOLD)) {
+            // calculate time remaining
+            ComparableQuantity<Time> currentTimeSimulation = simulation.getElapsedTime().to(MICRO(SECOND));
+            double fractionDone = currentTimeSimulation.getValue().doubleValue() / terminationTime.getValue().doubleValue();
+            long timeRequired = System.currentTimeMillis() - startingTime;
+            long estimatedMillisRemaining = (long) (timeRequired / fractionDone) - timeRequired;
             ComparableQuantity<Time> subtract = currentTimeSimulation.subtract(previousTimeSimulation);
-            double speed = subtract.getValue().doubleValue() / Quantities.getQuantity(currentTimeMillis - previousTimeMillis, MILLI(SECOND)).to(SECOND).getValue().doubleValue();
-            if (Double.isInfinite(speed)) {
-                logger.info("estimated time remaining: " + QuantityFormatter.formatTime(Quantities.getQuantity(estimatedTimeRemaining, MILLI(SECOND))) + ", current simulation speed: [very high] (Simulation Time) per s(Real Time)");
-            } else {
-                logger.info("estimated time remaining: " + QuantityFormatter.formatTime(Quantities.getQuantity(estimatedTimeRemaining, MILLI(SECOND))) + ", current simulation speed: " + QuantityFormatter.formatTime(Quantities.getQuantity(speed, MICRO(SECOND))) + "(Simulation Time) per s(Real Time)");
+            if (previousTimeMillis > 0) {
+                ComparableQuantity<Time> estimatesTimeRemaining = Quantities.getQuantity(estimatedMillisRemaining, MILLI(SECOND));
+                double speed = subtract.getValue().doubleValue() / Quantities.getQuantity(currentTimeMillis - previousTimeMillis, MILLI(SECOND)).to(SECOND).getValue().doubleValue();
+                if (Double.isInfinite(speed)) {
+                    logger.info("estimated time remaining: " + QuantityFormatter.formatTime(estimatesTimeRemaining) + ", current simulation speed: [very high] (Simulation Time) per s(Real Time)");
+                } else {
+                    logger.info("estimated time remaining: " + QuantityFormatter.formatTime(estimatesTimeRemaining) + ", current simulation speed: " + QuantityFormatter.formatTime(Quantities.getQuantity(speed, MICRO(SECOND))) + "(Simulation Time) per s(Real Time)");
+                }
             }
+            previousTimeMillis = currentTimeMillis;
+            previousTimeSimulation = currentTimeSimulation;
         }
-        previousTimeMillis = currentTimeMillis;
-        previousTimeSimulation = currentTimeSimulation;
     }
 
     @Override

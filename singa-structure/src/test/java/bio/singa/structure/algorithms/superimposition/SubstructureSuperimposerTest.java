@@ -14,15 +14,14 @@ import bio.singa.structure.model.interfaces.Structure;
 import bio.singa.structure.model.oak.StructuralEntityFilter;
 import bio.singa.structure.model.oak.StructuralMotif;
 import bio.singa.structure.parser.pdb.structures.StructureParser;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 /**
@@ -30,13 +29,13 @@ import static org.junit.Assert.assertEquals;
  *
  * @author fk
  */
-public class SubstructureSuperimposerTest {
+class SubstructureSuperimposerTest {
 
     private static Chain candidate;
     private static Chain reference;
 
-    @BeforeClass
-    public static void setup() {
+    @BeforeAll
+    static void initialize() {
         Structure motif1 = StructureParser.local()
                 .fileLocation(Resources.getResourceAsFileLocation("motif_HDS_01.pdb"))
                 .parse();
@@ -48,7 +47,7 @@ public class SubstructureSuperimposerTest {
     }
 
     @Test
-    public void shouldCalculateLastHeavySidechainSuperimposition() {
+    void shouldCalculateLastHeavySidechainSuperimposition() {
         SubstructureSuperimposition superimposition = SubstructureSuperimposer
                 .calculateSubstructureSuperimposition(reference, candidate,
                         RepresentationSchemeFactory.createRepresentationScheme(RepresentationSchemeType.LAST_HEAVY_SIDE_CHAIN));
@@ -56,7 +55,7 @@ public class SubstructureSuperimposerTest {
     }
 
     @Test
-    public void shouldCalculateSidechainCentroidSuperimposition() {
+    void shouldCalculateSidechainCentroidSuperimposition() {
         SubstructureSuperimposition superimposition = SubstructureSuperimposer
                 .calculateSubstructureSuperimposition(reference, candidate,
                         RepresentationSchemeFactory.createRepresentationScheme(RepresentationSchemeType.SIDE_CHAIN_CENTROID));
@@ -64,7 +63,7 @@ public class SubstructureSuperimposerTest {
     }
 
     @Test
-    public void shouldCalculateCaSubstructureSuperimposition() {
+    void shouldCalculateCaSubstructureSuperimposition() {
         SubstructureSuperimposition superimposition = SubstructureSuperimposer
                 .calculateSubstructureSuperimposition(reference, candidate, StructuralEntityFilter.AtomFilter.isAlphaCarbon());
         List<LeafSubstructure<?>> reconstructedAndMappedCandidate =
@@ -76,7 +75,7 @@ public class SubstructureSuperimposerTest {
     }
 
     @Test
-    public void shouldCalculateBackboneSubstructureSuperimposition() {
+    void shouldCalculateBackboneSubstructureSuperimposition() {
         SubstructureSuperimposition superimposition = SubstructureSuperimposer
                 .calculateSubstructureSuperimposition(reference, candidate, StructuralEntityFilter.AtomFilter.isBackbone());
         List<LeafSubstructure<?>> reconstructedAndMappedCandidate =
@@ -88,7 +87,7 @@ public class SubstructureSuperimposerTest {
     }
 
     @Test
-    public void shouldCalculateSideChainSubstructureSuperimposition() {
+    void shouldCalculateSideChainSubstructureSuperimposition() {
         SubstructureSuperimposition superimposition = SubstructureSuperimposer
                 .calculateSubstructureSuperimposition(reference, candidate, StructuralEntityFilter.AtomFilter.isSideChain());
         List<LeafSubstructure<?>> reconstructedAndMappedCandidate =
@@ -100,24 +99,26 @@ public class SubstructureSuperimposerTest {
     }
 
     @Test
-    public void shouldCalculateIdealSubstructureSuperimposition() {
+    void shouldCalculateIdealSubstructureSuperimposition() {
         SubstructureSuperimposition superimposition = SubstructureSuperimposer
                 .calculateIdealSubstructureSuperimposition(reference, candidate);
         assertEquals(0.6439715367058053, superimposition.getRmsd(), 1E-9);
     }
 
     @Test
-    public void shouldCalculateKuhnMunkresSubstructureSuperimposition() {
+    void shouldCalculateKuhnMunkresSubstructureSuperimposition() {
         SubstructureSuperimposition superimposition = SubstructureSuperimposer
                 .calculateKuhnMunkresSubstructureSuperimposition(reference, candidate, SubstitutionMatrix.BLOSUM_45, true);
         assertEquals(0.6439715367058053, superimposition.getRmsd(), 1E-9);
     }
 
     @Test
-    public void shouldCalculateMappedFullCandidates() {
+    void shouldCalculateMappedFullCandidates() {
         SubstructureSuperimposition superimposition = SubstructureSuperimposer
                 .calculateIdealSubstructureSuperimposition(reference, candidate, StructuralEntityFilter.AtomFilter.isBackbone());
-        superimposition.getMappedFullCandidate().stream().map(leaf -> leaf.getPdbLines().stream().collect(Collectors.joining("\n"))).forEach(System.out::println);
+        superimposition.getMappedFullCandidate().stream()
+                .map(leaf -> String.join("\n", leaf.getPdbLines()))
+                .forEach(System.out::println);
         assertEquals(24, superimposition.getMappedFullCandidate().stream()
                 .map(LeafSubstructure::getAllAtoms)
                 .mapToLong(Collection::size)
@@ -125,10 +126,10 @@ public class SubstructureSuperimposerTest {
     }
 
     @Test
-    public void shouldCorrectlyApplySubstructureSuperimposition() {
+    void shouldCorrectlyApplySubstructureSuperimposition() {
         SubstructureSuperimposition superimposition = SubstructureSuperimposer
                 .calculateIdealSubstructureSuperimposition(reference, candidate);
-        assertEquals(0.6439715367058053, superimposition.getRmsd(), 0E-9);
+        assertEquals(0.6439715367058053, superimposition.getRmsd(), 1E-9);
         List<LeafSubstructure<?>> mappedCandidate = superimposition.applyTo(candidate.getAllLeafSubstructures());
 
         List<AminoAcid> aminoAcids = candidate.getAllAminoAcids();
@@ -138,7 +139,7 @@ public class SubstructureSuperimposerTest {
     }
 
     @Test
-    public void shouldCorrectlyAlignWithMMTF() {
+    void shouldCorrectlyAlignWithMMTF() {
         Structure first = StructureParser.mmtf()
                 .pdbIdentifier("1cd9")
                 .parse();

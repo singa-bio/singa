@@ -7,25 +7,25 @@ import bio.singa.structure.model.interfaces.Atom;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.interfaces.Structure;
 import bio.singa.structure.parser.pdb.structures.StructureParser;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author cl
  */
-public class OakChainTest {
+class OakChainTest {
 
     private static OakChain firstChain;
     private static OakChain chainToModify;
     private static OakChain anotherChain;
 
-    @BeforeClass
-    public static void prepareData() {
+    @BeforeAll
+    static void initialize() {
         Structure structure2N5E = StructureParser.pdb().pdbIdentifier("2N5E").parse();
         firstChain = (OakChain) structure2N5E.getFirstChain();
         chainToModify = (OakChain) structure2N5E.getFirstModel().getChain("B").get();
@@ -33,18 +33,18 @@ public class OakChainTest {
     }
 
     @Test
-    public void getIdentifier() {
+    void getIdentifier() {
         assertEquals("A", firstChain.getChainIdentifier());
     }
 
     @Test
-    public void getAllLeafSubstructures() {
+    void getAllLeafSubstructures() {
         final List<LeafSubstructure<?>> leafSubstructures = firstChain.getAllLeafSubstructures();
         assertEquals(167, leafSubstructures.size());
     }
 
     @Test
-    public void getLeafSubstructure() {
+    void getLeafSubstructure() {
         Optional<LeafSubstructure<?>> leafSubstructure = firstChain.getLeafSubstructure(new LeafIdentifier("2N5E", 1, "A", 64));
         if (!leafSubstructure.isPresent()) {
             fail("Optional leaf substructure was empty.");
@@ -57,7 +57,7 @@ public class OakChainTest {
 
 
     @Test
-    public void addLeafSubstructure() {
+    void addLeafSubstructure() {
         final int expected = chainToModify.getNumberOfLeafSubstructures() + 1;
         chainToModify.addLeafSubstructure(new OakAminoAcid(new LeafIdentifier("2N5E", 1, "A", 244), AminoAcidFamily.HISTIDINE));
         final int actual = chainToModify.getNumberOfLeafSubstructures();
@@ -65,7 +65,7 @@ public class OakChainTest {
     }
 
     @Test
-    public void addLeafSubstructureToConsecutive() {
+    void addLeafSubstructureToConsecutive() {
         final int expected = chainToModify.getNumberOfLeafSubstructures() + 1;
         final OakAminoAcid newAminoAcid = new OakAminoAcid(new LeafIdentifier("2N5E", 1, "B", 244), AminoAcidFamily.HISTIDINE);
         chainToModify.addLeafSubstructure(newAminoAcid, true);
@@ -75,7 +75,7 @@ public class OakChainTest {
     }
 
     @Test
-    public void removeLeafSubstructure() {
+    void removeLeafSubstructure() {
         final int expected = chainToModify.getNumberOfLeafSubstructures() - 1;
         final boolean response = chainToModify.removeLeafSubstructure(new OakAminoAcid(new LeafIdentifier("2N5E", 1, "B", 243), AminoAcidFamily.HISTIDINE));
         if (!response) {
@@ -86,7 +86,7 @@ public class OakChainTest {
     }
 
     @Test
-    public void getAtom() {
+    void getAtom() {
         // ATOM     17  OG1 THR A  56       5.624   2.561  -0.853  1.00  0.00           O
         final Optional<Atom> atom = firstChain.getAtom(17);
         if (!atom.isPresent()) {
@@ -97,7 +97,7 @@ public class OakChainTest {
     }
 
     @Test
-    public void removeAtom() {
+    void removeAtom() {
         final int expected = chainToModify.getAllAtoms().size() - 1;
         chainToModify.removeAtom(5272);
         final int actual = chainToModify.getAllAtoms().size();
@@ -105,7 +105,7 @@ public class OakChainTest {
     }
 
     @Test
-    public void connectChainBackbone() {
+    void connectChainBackbone() {
         // should have happened at parsing
         final Optional<LeafSubstructure<?>> first = firstChain.getLeafSubstructure(new LeafIdentifier("2N5E", 1, "A", 108));
         final Optional<LeafSubstructure<?>> second = firstChain.getLeafSubstructure(new LeafIdentifier("2N5E", 1, "A", 109));
@@ -124,28 +124,28 @@ public class OakChainTest {
     }
 
     @Test
-    public void getConsecutivePart() {
+    void getConsecutivePart() {
         final int actual = firstChain.getConsecutivePart().size();
         assertEquals(167, actual);
     }
 
     @Test
-    public void getNonConsecutivePart() {
+    void getNonConsecutivePart() {
         final int actual = anotherChain.getNonConsecutivePart().size();
         assertEquals(5, actual);
     }
 
     @Test
-    public void getNextLeafIdentifier() {
+    void getNextLeafIdentifier() {
         final LeafIdentifier actual = anotherChain.getNextLeafIdentifier();
         assertEquals(new LeafIdentifier("1brr", 1, "A", 1004), actual);
     }
 
     @Test
-    public void getCopy() {
+    void getCopy() {
         final OakChain anotherChainCopy = anotherChain.getCopy();
-        assertTrue(anotherChain != anotherChainCopy);
-        assertTrue(anotherChain.equals(anotherChainCopy));
+        assertNotSame(anotherChain, anotherChainCopy);
+        assertEquals(anotherChain, anotherChainCopy);
     }
 
 }

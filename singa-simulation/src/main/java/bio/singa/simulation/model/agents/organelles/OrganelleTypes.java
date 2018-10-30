@@ -5,8 +5,6 @@ import bio.singa.simulation.model.sections.CellRegion;
 import bio.singa.simulation.model.sections.CellSubsection;
 import bio.singa.simulation.model.sections.CellSubsections;
 import bio.singa.simulation.model.sections.CellTopology;
-import bio.singa.simulation.parser.organelles.OrganelleImageParser;
-import bio.singa.simulation.parser.organelles.OrganelleTemplate;
 
 /**
  * @author cl

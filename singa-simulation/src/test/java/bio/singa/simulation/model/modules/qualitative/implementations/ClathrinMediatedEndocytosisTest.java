@@ -5,6 +5,7 @@ import bio.singa.chemistry.entities.ComplexedChemicalEntity;
 import bio.singa.chemistry.entities.Protein;
 import bio.singa.features.identifiers.UniProtIdentifier;
 import bio.singa.features.parameters.Environment;
+import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.geometry.faces.Rectangle;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.simulation.features.BuddingRate;
@@ -20,7 +21,7 @@ import bio.singa.simulation.model.modules.concentration.imlementations.NthOrderR
 import bio.singa.simulation.model.modules.displacement.implementations.EndocytosisActinBoost;
 import bio.singa.simulation.model.sections.CellRegion;
 import bio.singa.simulation.model.simulation.Simulation;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import tec.uom.se.ComparableQuantity;
 import tec.uom.se.quantity.Quantities;
 import tec.uom.se.unit.ProductUnit;
@@ -29,7 +30,7 @@ import javax.measure.quantity.Area;
 import javax.measure.quantity.Length;
 import java.util.List;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static tec.uom.se.unit.MetricPrefix.MICRO;
 import static tec.uom.se.unit.MetricPrefix.MILLI;
 import static tec.uom.se.unit.MetricPrefix.NANO;
@@ -39,10 +40,10 @@ import static tec.uom.se.unit.Units.SECOND;
 /**
  * @author cl
  */
-public class ClathrinMediatedEndocytosisTest {
+class ClathrinMediatedEndocytosisTest {
 
     @Test
-    public void shouldSimulateEndocytosis() {
+    void shouldSimulateEndocytosis() {
 
         // setup simulation
         Simulation simulation = new Simulation();
@@ -52,8 +53,8 @@ public class ClathrinMediatedEndocytosisTest {
         ComparableQuantity<Length> systemExtend = Quantities.getQuantity(10, MICRO(METRE));
         Environment.setSystemExtend(systemExtend);
         Environment.setSimulationExtend(simulationExtend);
-        Environment.setNodeDistance(systemExtend);
-        Environment.setTimeStep(Quantities.getQuantity(1, MILLI(SECOND)));
+        UnitRegistry.setSpace(systemExtend);
+        UnitRegistry.setTime(Quantities.getQuantity(1, MILLI(SECOND)));
 
         // setup graph
         AutomatonGraph graph = AutomatonGraphs.singularGraph();

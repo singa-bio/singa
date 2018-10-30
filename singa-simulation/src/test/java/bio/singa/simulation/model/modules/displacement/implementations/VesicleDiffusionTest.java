@@ -1,19 +1,20 @@
 package bio.singa.simulation.model.modules.displacement.implementations;
 
 import bio.singa.features.parameters.Environment;
+import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.modules.displacement.Vesicle;
 import bio.singa.simulation.model.modules.displacement.VesicleLayer;
 import bio.singa.simulation.model.simulation.Simulation;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import tec.uom.se.ComparableQuantity;
 import tec.uom.se.quantity.Quantities;
 
 import javax.measure.quantity.Length;
 
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static tec.uom.se.unit.MetricPrefix.MICRO;
 import static tec.uom.se.unit.MetricPrefix.NANO;
 import static tec.uom.se.unit.Units.METRE;
@@ -22,16 +23,16 @@ import static tec.uom.se.unit.Units.SECOND;
 /**
  * @author cl
  */
-public class VesicleDiffusionTest {
+class VesicleDiffusionTest {
 
     @Test
-    public void testVesicleDiffusion() {
+    void testVesicleDiffusion() {
 
         ComparableQuantity<Length> systemExtend = Quantities.getQuantity(20, MICRO(METRE));
         Environment.setSystemExtend(systemExtend);
         Environment.setSimulationExtend(500);
         Environment.setNodeSpacingToDiameter(systemExtend, 10);
-        Environment.setTimeStep(Quantities.getQuantity(1, MICRO(SECOND)));
+        UnitRegistry.setTime(Quantities.getQuantity(1, MICRO(SECOND)));
 
         Simulation simulation = new Simulation();
 
@@ -39,7 +40,7 @@ public class VesicleDiffusionTest {
         Vesicle vesicle = new Vesicle("0",
                 previousPosition,
                 Quantities.getQuantity(150, NANO(METRE))
-                        .to(Environment.getNodeDistance().getUnit()));
+                        .to(UnitRegistry.getSpaceUnit()));
 
         // add vesicle transport layer
         VesicleLayer layer = new VesicleLayer(simulation);

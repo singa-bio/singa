@@ -4,16 +4,16 @@ import bio.singa.structure.model.identifiers.LeafIdentifier;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.interfaces.Structure;
 import bio.singa.structure.parser.pdb.structures.StructureParser;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 
 /**
  * @author fk
  */
-public class MoleculeGraphsTest {
+class MoleculeGraphsTest {
     @Test
-    public void shouldConvertStructureGraphToMoleculeGraph() {
+    void shouldConvertStructureGraphToMoleculeGraph() {
 
         Structure structure = StructureParser.pdb()
                 .pdbIdentifier("1C0A")

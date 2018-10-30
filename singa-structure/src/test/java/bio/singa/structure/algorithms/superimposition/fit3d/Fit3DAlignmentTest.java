@@ -15,8 +15,8 @@ import bio.singa.structure.model.oak.StructuralMotif;
 import bio.singa.structure.parser.pdb.structures.StructureParser;
 import bio.singa.structure.parser.plip.InteractionContainer;
 import bio.singa.structure.parser.plip.PlipParser;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -25,21 +25,21 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * A test for the implementation of the Fit3D algorithm.
  *
  * @author fk
  */
-public class Fit3DAlignmentTest {
+class Fit3DAlignmentTest {
 
     private StructuralMotif queryMotif;
-    private Structure target;
+    private  Structure target;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void initialize() {
         target = StructureParser.mmtf()
                 .pdbIdentifier("1GL0")
                 .parse();
@@ -52,7 +52,7 @@ public class Fit3DAlignmentTest {
     }
 
     @Test
-    public void shouldRunFit3DAlignment() {
+    void shouldRunFit3DAlignment() {
         Fit3D fit3d = Fit3DBuilder.create()
                 .query(queryMotif)
                 .target(target.getAllChains().get(0))
@@ -62,7 +62,7 @@ public class Fit3DAlignmentTest {
     }
 
     @Test
-    public void shouldRunFit3DAlignmentWithExchangesAgainstAll() {
+    void shouldRunFit3DAlignmentWithExchangesAgainstAll() {
         queryMotif.addExchangeableFamily(LeafIdentifier.fromSimpleString("E-57"), MatcherFamily.ALL);
         Fit3D fit3d = Fit3DBuilder.create()
                 .query(queryMotif)
@@ -75,7 +75,7 @@ public class Fit3DAlignmentTest {
     }
 
     @Test
-    public void shouldRunFit3DAlignmentBatch() throws IOException {
+    void shouldRunFit3DAlignmentBatch() throws IOException {
         Structure nucleotideTarget = StructureParser.pdb()
                 .pdbIdentifier("2EES")
                 .chainIdentifier("A")
@@ -99,7 +99,7 @@ public class Fit3DAlignmentTest {
 
 
     @Test
-    public void shouldRunFit3DAlignmentWithMMTF() {
+    void shouldRunFit3DAlignmentWithMMTF() {
         Structure target = StructureParser.mmtf()
                 // Structure target = StructureParser.pdb()
                 .pdbIdentifier("4CHA")
@@ -118,7 +118,7 @@ public class Fit3DAlignmentTest {
 
 
     @Test
-    public void shouldRunFit3DAlignmentWithExchanges() {
+    void shouldRunFit3DAlignmentWithExchanges() {
         Structure target = StructureParser.pdb()
                 .pdbIdentifier("2mnr")
                 .everything()
@@ -142,7 +142,7 @@ public class Fit3DAlignmentTest {
     }
 
     @Test
-    public void shouldRunFit3DAlignmentWithExchangesAndFiltering() {
+    void shouldRunFit3DAlignmentWithExchangesAndFiltering() {
         Structure target = StructureParser.pdb()
                 .pdbIdentifier("2mnr")
                 .everything()
@@ -169,7 +169,7 @@ public class Fit3DAlignmentTest {
 
 
     @Test
-    public void shouldRunFit3DAlignmentAndExchangesWithMMTF() {
+    void shouldRunFit3DAlignmentAndExchangesWithMMTF() {
         Structure target = StructureParser.mmtf()
                 .pdbIdentifier("2mnr")
                 .everything()
@@ -194,7 +194,7 @@ public class Fit3DAlignmentTest {
 
 
     @Test
-    public void shouldFindInterMolecularMatches() {
+    void shouldFindInterMolecularMatches() {
         Structure target = StructureParser.pdb()
                 .pdbIdentifier("4CHA")
                 .everything()
@@ -210,7 +210,7 @@ public class Fit3DAlignmentTest {
     }
 
     @Test
-    public void shouldFindInterMolecularMatchesWithMMTF() {
+    void shouldFindInterMolecularMatchesWithMMTF() {
         Structure target = StructureParser.mmtf()
                 .pdbIdentifier("4CHA")
                 .everything()
@@ -226,12 +226,12 @@ public class Fit3DAlignmentTest {
     }
 
     @Test
-    public void shouldGenerateCombinations() {
+    void shouldGenerateCombinations() {
         assertEquals(1L, StreamCombinations.combinations(3, queryMotif.getAllLeafSubstructures()).count());
     }
 
     @Test
-    public void shouldAlignNucleotideMotif() {
+    void shouldAlignNucleotideMotif() {
         Structure nucleotideTarget = StructureParser.pdb()
                 .pdbIdentifier("2EES")
                 .chainIdentifier("A")
@@ -248,7 +248,7 @@ public class Fit3DAlignmentTest {
     }
 
     @Test
-    public void shouldFindLigandContainingMotif() {
+    void shouldFindLigandContainingMotif() {
         Structure queryStructure = StructureParser.pdb()
                 .pdbIdentifier("1ACJ")
                 .everything()
@@ -266,7 +266,7 @@ public class Fit3DAlignmentTest {
     }
 
     @Test
-    public void shouldSkipAlphaCarbonStructureInBatch() {
+    void shouldSkipAlphaCarbonStructureInBatch() {
         queryMotif.addExchangeableFamilyToAll(MatcherFamily.ALL);
         List<String> alphaCarbonStructures = new ArrayList<>();
         alphaCarbonStructures.add("1zlg");
@@ -285,7 +285,7 @@ public class Fit3DAlignmentTest {
     }
 
     @Test
-    public void shouldSkipBackboneStructureInBatch() {
+    void shouldSkipBackboneStructureInBatch() {
         queryMotif.addExchangeableFamilyToAll(MatcherFamily.ALL);
         List<String> alphaCarbonStructures = new ArrayList<>();
         alphaCarbonStructures.add("2plp");
@@ -304,7 +304,7 @@ public class Fit3DAlignmentTest {
     }
 
     @Test
-    public void shouldFindInteractionMotif() {
+    void shouldFindInteractionMotif() {
         InteractionContainer interactionContainer = PlipParser.parse("1k1i",
                 Resources.getResourceAsStream("plip/1k1i.xml"));
         Structure structure = StructureParser.pdb()
@@ -328,7 +328,7 @@ public class Fit3DAlignmentTest {
     }
 
     @Test
-    public void shouldHandleInsertionCodeMotifs() {
+    void shouldHandleInsertionCodeMotifs() {
         Structure structure = StructureParser.pdb()
                 .pdbIdentifier("2w0l")
                 .parse();
@@ -352,7 +352,7 @@ public class Fit3DAlignmentTest {
     }
 
     @Test
-    public void shouldFindInsertionCodeMotifs() {
+    void shouldFindInsertionCodeMotifs() {
         Structure structure = StructureParser.pdb()
                 .pdbIdentifier("1a0j")
                 .parse();
@@ -380,7 +380,7 @@ public class Fit3DAlignmentTest {
     }
 
     @Test
-    public void shouldAnnotateIdentifiers() {
+    void shouldAnnotateIdentifiers() {
         Fit3D fit3d = Fit3DBuilder.create()
                 .query(queryMotif)
                 .target(target.getAllChains().get(0))
@@ -414,7 +414,7 @@ public class Fit3DAlignmentTest {
     }
 
     @Test
-    public void shouldAnnotateIdentifiersInBatch() {
+    void shouldAnnotateIdentifiersInBatch() {
         StructureParser.MultiParser multiParser = StructureParser.mmtf()
                 .chainList(Paths.get(Resources.getResourceAsFileLocation("chain_list_PF00089.txt")), "\t");
         Fit3D fit3d = Fit3DBuilder.create()

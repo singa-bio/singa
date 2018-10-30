@@ -2,20 +2,20 @@ package bio.singa.mathematics.algorithms.geometry;
 
 import bio.singa.mathematics.geometry.bodies.Sphere;
 import bio.singa.mathematics.vectors.Vector3D;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author cl
  */
-public class OttVolumePredictorTest {
+class OttVolumePredictorTest {
 
     @Test
-    public void testVolumePrediction() {
+    void testVolumePrediction() {
         List<Sphere> spheres = new ArrayList<>();
         final Sphere sphere = new Sphere(new Vector3D(0.0, 0.0, 0.0), 1.0);
         spheres.add(sphere);

@@ -1,17 +1,17 @@
 package bio.singa.chemistry.features.smiles;
 
 import bio.singa.chemistry.entities.SmallMolecule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author cl
  */
-public class SmilesTest {
+class SmilesTest {
 
     @Test
-    public void shouldUseChEBIToFetchMolarMass() {
+    void shouldUseChEBIToFetchSmiles() {
         SmallMolecule testSpecies = new SmallMolecule.Builder("CHEBI:29802").build();
         // assign feature
         testSpecies.setFeature(Smiles.class);

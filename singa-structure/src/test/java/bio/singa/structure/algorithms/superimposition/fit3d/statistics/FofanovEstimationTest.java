@@ -9,23 +9,23 @@ import bio.singa.structure.model.oak.StructuralEntityFilter;
 import bio.singa.structure.model.oak.StructuralMotif;
 import bio.singa.structure.parser.pdb.structures.StructureParser;
 import bio.singa.structure.parser.pdb.structures.StructureParserOptions;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.nio.file.Paths;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author cl
  */
-public class FofanovEstimationTest {
+class FofanovEstimationTest {
 
-    private StructuralMotif queryMotif;
-    private StructureParserOptions structureParserOptions;
+    private static StructuralMotif queryMotif;
+    private static StructureParserOptions structureParserOptions;
 
-    @Before
-    public void setUp() {
+    @BeforeAll
+    static void initialize() {
         Structure motifContainingStructure = StructureParser.local()
                 .fileLocation(Resources.getResourceAsFileLocation("1GL0_HDS_intra_E-H57_E-D102_E-S195.pdb"))
                 .parse();
@@ -39,7 +39,7 @@ public class FofanovEstimationTest {
     }
 
     @Test
-    public void shouldCalculatePvalues() {
+    void shouldCalculatePvalues() {
         FofanovEstimation fofanovEstimation = new FofanovEstimation(2.5);
         StructureParser.MultiParser multiParser = StructureParser.mmtf()
                 .chainList(Paths.get(Resources.getResourceAsFileLocation("nrpdb_BLAST_10e80_100.txt")), "_")
@@ -58,7 +58,7 @@ public class FofanovEstimationTest {
     }
 
     @Test
-    public void shouldCalculatePvaluesWithCorrectnessCutoff() {
+    void shouldCalculatePvaluesWithCorrectnessCutoff() {
         double modelCorrectnessCutoff = 3.0;
         double epsilon = FofanovEstimation.determineEpsilon(queryMotif, modelCorrectnessCutoff);
         FofanovEstimation fofanovEstimation = new FofanovEstimation(epsilon, FofanovEstimation.DEFAULT_REFERENCE_SIZE, modelCorrectnessCutoff);

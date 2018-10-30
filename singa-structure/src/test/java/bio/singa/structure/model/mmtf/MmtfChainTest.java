@@ -6,45 +6,45 @@ import bio.singa.structure.model.interfaces.Atom;
 import bio.singa.structure.model.interfaces.Chain;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.interfaces.Structure;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.rcsb.mmtf.decoder.ReaderUtils;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author cl
  */
-public class MmtfChainTest {
+class MmtfChainTest {
 
     private static Chain firstChain;
     private static Chain chainToModify;
     private static Structure structure2N5E;
 
-    @BeforeClass
-    public static void prepareData() throws IOException {
+    @BeforeAll
+    static void initialize() throws IOException {
         structure2N5E = new MmtfStructure(ReaderUtils.getByteArrayFromUrl("2N5E"));
         firstChain = structure2N5E.getFirstChain();
         chainToModify = structure2N5E.getChain(1, "B").get();
     }
 
     @Test
-    public void getIdentifier() {
+    void getIdentifier() {
         assertEquals("A", firstChain.getChainIdentifier());
     }
 
     @Test
-    public void getAllLeafSubstructures() {
+    void getAllLeafSubstructures() {
         final List<LeafSubstructure<?>> leafSubstructures = firstChain.getAllLeafSubstructures();
         assertEquals(167, leafSubstructures.size());
     }
 
     @Test
-    public void getLeafSubstructure() {
+    void getLeafSubstructure() {
         // ATOM    154  N   LEU A  64      13.596   6.125 -14.412  1.00  0.00           N
         // ..
         // ATOM    172 HD23 LEU A  64      11.462   1.727 -16.563  1.00  0.00           H
@@ -60,7 +60,7 @@ public class MmtfChainTest {
     }
 
     @Test
-    public void removeLeafSubstructre() {
+    void removeLeafSubstructre() {
         // ATOM   4357  N   LEU B 174      -7.551  -8.393 -46.127  1.00  0.00           N
         // ...
         // ATOM   4375 HD23 LEU B 174      -3.489  -6.082 -46.198  1.00  0.00           H
@@ -82,7 +82,7 @@ public class MmtfChainTest {
     }
 
     @Test
-    public void getAtom() {
+    void getAtom() {
         // ATOM     32  CD1 PHE A  57       8.392   2.046  -5.789  1.00  0.00           C
         final Optional<Atom> optionalAtom = firstChain.getAtom(32);
         if (!optionalAtom.isPresent()) {
@@ -95,7 +95,7 @@ public class MmtfChainTest {
     }
 
     @Test
-    public void removeAtom() {
+    void removeAtom() {
         // ATOM   3208 HH22 ARG B  83      37.797  27.994 -88.269  1.00  0.00           H
         final int atomIdentifier = 3208;
         Optional<Atom> optionalAtom = chainToModify.getAtom(atomIdentifier);
@@ -115,10 +115,10 @@ public class MmtfChainTest {
     }
 
     @Test
-    public void getCopy() {
+    void getCopy() {
         final Chain chainCopy = chainToModify.getCopy();
-        assertTrue(chainCopy.equals(chainToModify));
-        assertFalse(chainCopy == chainToModify);
+        assertEquals(chainCopy, chainToModify);
+        assertNotSame(chainCopy, chainToModify);
         // ATOM   4815  N   SER B 204      27.480   2.711 -26.221  1.00  0.00           N
         // ...
         // ATOM   4825  HG  SER B 204      26.503   5.742 -27.310  1.00  0.00           H
@@ -127,8 +127,8 @@ public class MmtfChainTest {
         chainCopy.removeLeafSubstructure(leafIdentifier);
         // copy again
         final Chain chainCopyCopy = chainCopy.getCopy();
-        assertTrue(chainCopyCopy.equals(chainCopy));
-        assertFalse(chainCopyCopy == chainCopy);
+        assertEquals(chainCopyCopy, chainCopy);
+        assertNotSame(chainCopyCopy, chainCopy);
         // assert that the copy's copy does not contain the leaf
         Optional<LeafSubstructure<?>> optionalLeafSubstructure = chainCopyCopy.getLeafSubstructure(leafIdentifier);
         assertFalse(optionalLeafSubstructure.isPresent());

@@ -2,20 +2,19 @@ package bio.singa.simulation.model.modules.concentration.imlementations;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.chemistry.features.permeability.MembranePermeability;
-import bio.singa.features.parameters.Environment;
+import bio.singa.features.units.UnitRegistry;
 import bio.singa.simulation.features.Cargo;
+import bio.singa.simulation.model.agents.membranes.Membrane;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.modules.concentration.*;
 import bio.singa.simulation.model.modules.concentration.functions.UpdatableDeltaFunction;
 import bio.singa.simulation.model.modules.concentration.scope.SemiDependentUpdate;
 import bio.singa.simulation.model.modules.concentration.specifity.UpdatableSpecific;
 import bio.singa.simulation.model.modules.displacement.Vesicle;
-import bio.singa.simulation.model.agents.membranes.Membrane;
 import bio.singa.simulation.model.sections.CellTopology;
 import bio.singa.simulation.model.sections.ConcentrationContainer;
 import bio.singa.simulation.model.simulation.Simulation;
 import bio.singa.simulation.model.simulation.Updatable;
-import tec.uom.se.quantity.Quantities;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Area;
@@ -87,8 +86,10 @@ public class MembraneDiffusion extends ConcentrationBasedModule<UpdatableDeltaFu
         } else {
             Quantity<Area> membraneArea = ((AutomatonNode) currentUpdatable).getMembraneArea();
             double value = calculateVelocity(container, container) * membraneArea.getValue().doubleValue();
-            deltas.put(new ConcentrationDeltaIdentifier(currentUpdatable, container.getInnerSubsection(), cargo), new ConcentrationDelta(this, container.getInnerSubsection(), cargo, Quantities.getQuantity(value, Environment.getConcentrationUnit())));
-            deltas.put(new ConcentrationDeltaIdentifier(currentUpdatable, container.getOuterSubsection(), cargo), new ConcentrationDelta(this, container.getOuterSubsection(), cargo, Quantities.getQuantity(-value, Environment.getConcentrationUnit())));
+            deltas.put(new ConcentrationDeltaIdentifier(currentUpdatable, container.getInnerSubsection(), cargo),
+                    new ConcentrationDelta(this, container.getInnerSubsection(), cargo, UnitRegistry.concentration(value)));
+            deltas.put(new ConcentrationDeltaIdentifier(currentUpdatable, container.getOuterSubsection(), cargo),
+                    new ConcentrationDelta(this, container.getOuterSubsection(), cargo, UnitRegistry.concentration(-value)));
         }
         return deltas;
     }
@@ -109,10 +110,10 @@ public class MembraneDiffusion extends ConcentrationBasedModule<UpdatableDeltaFu
             double velocity = calculateVelocity(vesicleContainer, nodeContainer) * area.getValue().doubleValue();
             vesicleUpdate += velocity;
             deltas.put(new ConcentrationDeltaIdentifier(node, nodeContainer.getInnerSubsection(), cargo),
-                    new ConcentrationDelta(this, nodeContainer.getInnerSubsection(), cargo, Quantities.getQuantity(-velocity, Environment.getConcentrationUnit())));
+                    new ConcentrationDelta(this, nodeContainer.getInnerSubsection(), cargo, UnitRegistry.concentration(-velocity)));
         }
         deltas.put(new ConcentrationDeltaIdentifier(vesicle, vesicleContainer.getInnerSubsection(), cargo),
-                new ConcentrationDelta(this, vesicleContainer.getInnerSubsection(), cargo, Quantities.getQuantity(vesicleUpdate, Environment.getConcentrationUnit())));
+                new ConcentrationDelta(this, vesicleContainer.getInnerSubsection(), cargo, UnitRegistry.concentration(vesicleUpdate)));
     }
 
     private double calculateVelocity(ConcentrationContainer innerContainer, ConcentrationContainer outerContainer) {

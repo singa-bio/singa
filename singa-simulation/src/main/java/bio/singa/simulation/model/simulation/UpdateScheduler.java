@@ -1,7 +1,7 @@
 package bio.singa.simulation.model.simulation;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
-import bio.singa.features.parameters.Environment;
+import bio.singa.features.units.UnitRegistry;
 import bio.singa.simulation.model.modules.UpdateModule;
 import bio.singa.simulation.model.modules.concentration.LocalError;
 import bio.singa.simulation.model.modules.concentration.ModuleState;
@@ -148,15 +148,15 @@ public class UpdateScheduler {
     }
 
     public void increaseTimeStep() {
-        Environment.setTimeStep(Environment.getTimeStep().multiply(1.2));
-        logger.debug("Increasing time step to {}.", Environment.getTimeStep());
+        UnitRegistry.setTime(UnitRegistry.getTime().multiply(1.2));
+        logger.debug("Increasing time step to {}.", UnitRegistry.getTime());
         rescaleParameters();
         timestepRescaled = true;
     }
 
     public void decreaseTimeStep() {
-        Environment.setTimeStep(Environment.getTimeStep().multiply(0.8));
-        logger.debug("Decreasing time step to {}.", Environment.getTimeStep());
+        UnitRegistry.setTime(UnitRegistry.getTime().multiply(0.8));
+        logger.debug("Decreasing time step to {}.", UnitRegistry.getTime());
         rescaleParameters();
         timestepRescaled = true;
     }

@@ -5,8 +5,8 @@ import bio.singa.structure.model.interfaces.Chain;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.interfaces.Model;
 import bio.singa.structure.model.interfaces.Structure;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.rcsb.mmtf.decoder.ReaderUtils;
 
 import java.io.IOException;
@@ -14,20 +14,20 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * @author cl
  */
-public class MmtfModelTest {
+class MmtfModelTest {
 
     private static Model firstModel;
     private static Model secondModel;
     private static Model modelToModify;
 
-    @BeforeClass
-    public static void prepareData() throws IOException {
+    @BeforeAll
+    static void initialize() throws IOException {
         Structure structure2N5E = new MmtfStructure(ReaderUtils.getByteArrayFromUrl("2N5E"));
         firstModel = structure2N5E.getFirstModel();
         secondModel = structure2N5E.getModel(2).get();
@@ -35,25 +35,25 @@ public class MmtfModelTest {
     }
 
     @Test
-    public void getIdentifier() {
+    void getIdentifier() {
         assertEquals(1, (int) firstModel.getModelIdentifier());
         assertEquals(2, (int) secondModel.getModelIdentifier());
     }
 
     @Test
-    public void getAllChains() {
+    void getAllChains() {
         final List<Chain> allChains = firstModel.getAllChains();
         assertEquals(2, allChains.size());
     }
 
     @Test
-    public void getFirstChain() {
+    void getFirstChain() {
         final Chain firstChain = firstModel.getFirstChain();
         assertEquals("A", firstChain.getChainIdentifier());
     }
 
     @Test
-    public void getChain() {
+    void getChain() {
         final Optional<Chain> chain = firstModel.getChain("B");
         if (!chain.isPresent()) {
             fail("Optional chain was empty.");
@@ -62,13 +62,13 @@ public class MmtfModelTest {
     }
 
     @Test
-    public void getAllLeafSubstructures() {
+    void getAllLeafSubstructures() {
         final List<LeafSubstructure<?>> leafSubstructures = secondModel.getAllLeafSubstructures();
         assertEquals(334, leafSubstructures.size());
     }
 
     @Test
-    public void getLeafSubstructure() {
+    void getLeafSubstructure() {
         Optional<LeafSubstructure<?>> leafSubstructure = firstModel.getLeafSubstructure(new LeafIdentifier("2N5E", 1, "B", 64));
         if (!leafSubstructure.isPresent()) {
             fail("Optional leaf substructure was empty.");
@@ -80,13 +80,13 @@ public class MmtfModelTest {
     }
 
     @Test
-    public void getAllChainIdentifiers() {
+    void getAllChainIdentifiers() {
         Set<String> allChainIdentifiers = secondModel.getAllChainIdentifiers();
         assertEquals(allChainIdentifiers.size(), 2);
     }
 
     @Test
-    public void removeChain() {
+    void removeChain() {
         final int expectedChains = modelToModify.getAllChainIdentifiers().size() - 1;
         final int expectedLeafs = modelToModify.getNumberOfLeafSubstructures() - 167;
         modelToModify.removeChain("A");

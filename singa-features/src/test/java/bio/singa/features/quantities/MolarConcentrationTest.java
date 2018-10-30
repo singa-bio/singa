@@ -1,7 +1,9 @@
 package bio.singa.features.quantities;
 
-import bio.singa.features.parameters.Environment;
-import org.junit.Test;
+import bio.singa.features.units.UnitRegistry;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import tec.uom.se.ComparableQuantity;
 import tec.uom.se.quantity.Quantities;
 
@@ -11,19 +13,29 @@ import javax.measure.quantity.Dimensionless;
 import javax.measure.quantity.Volume;
 
 import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static tec.uom.se.AbstractUnit.ONE;
-import static tec.uom.se.unit.MetricPrefix.MICRO;
 import static tec.uom.se.unit.MetricPrefix.MILLI;
-import static tec.uom.se.unit.Units.*;
+import static tec.uom.se.unit.Units.CUBIC_METRE;
+import static tec.uom.se.unit.Units.MOLE;
 
 /**
  * @author cl
  */
-public class MolarConcentrationTest {
+class MolarConcentrationTest {
+
+    @BeforeAll
+    static void initialize() {
+        UnitRegistry.reinitialize();
+    }
+
+    @AfterEach
+    void cleanUp() {
+        UnitRegistry.reinitialize();
+    }
 
     @Test
-    public void addQuantity() {
+    void addQuantity() {
         MolarConcentration first = new MolarConcentration(1.0, MOLE_PER_LITRE);
         MolarConcentration second = new MolarConcentration(1.0, MILLI(MOLE_PER_LITRE));
         MolarConcentration actualResult = first.add(second);
@@ -32,7 +44,7 @@ public class MolarConcentrationTest {
     }
 
     @Test
-    public void subtractQuantity() {
+    void subtractQuantity() {
         MolarConcentration first = new MolarConcentration(1.0, MOLE_PER_LITRE);
         MolarConcentration second = new MolarConcentration(1.0, MILLI(MOLE_PER_LITRE));
         MolarConcentration actualResult = first.subtract(second);
@@ -41,7 +53,7 @@ public class MolarConcentrationTest {
     }
 
     @Test
-    public void multiplyQuantity() {
+    void multiplyQuantity() {
         MolarConcentration first = new MolarConcentration(1.0, MOLE_PER_LITRE);
         MolarConcentration second = new MolarConcentration(2.0, MOLE_PER_LITRE);
         ComparableQuantity<?> actualResult = first.multiply(second);
@@ -50,7 +62,7 @@ public class MolarConcentrationTest {
     }
 
     @Test
-    public void multiplyNumber() {
+    void multiplyNumber() {
         MolarConcentration quantity = new MolarConcentration(1.0, MOLE_PER_LITRE);
         MolarConcentration actualResult = quantity.multiply(2.0);
         MolarConcentration expectedResult = new MolarConcentration(2.0, MOLE_PER_LITRE);
@@ -58,7 +70,7 @@ public class MolarConcentrationTest {
     }
 
     @Test
-    public void divideQuantity() {
+    void divideQuantity() {
         MolarConcentration first = new MolarConcentration(1.0, MOLE_PER_LITRE);
         MolarConcentration second = new MolarConcentration(2.0, MOLE_PER_LITRE);
         ComparableQuantity<?> actualResult = first.divide(second);
@@ -67,7 +79,7 @@ public class MolarConcentrationTest {
     }
 
     @Test
-    public void divideNumber() {
+    void divideNumber() {
         MolarConcentration quantity = new MolarConcentration(1.0, MOLE_PER_LITRE);
         MolarConcentration actualResult = quantity.divide(2.0);
         MolarConcentration expectedResult = new MolarConcentration(0.5, MOLE_PER_LITRE);
@@ -75,7 +87,7 @@ public class MolarConcentrationTest {
     }
 
     @Test
-    public void inverse() {
+    void inverse() {
         MolarConcentration quantity = new MolarConcentration(1.0, MOLE_PER_LITRE);
         ComparableQuantity<?> actualResult = quantity.inverse();
         ComparableQuantity<?> expectedResult = Quantities.getQuantity(1.0, ONE.divide(MOLE_PER_LITRE));
@@ -83,7 +95,7 @@ public class MolarConcentrationTest {
     }
 
     @Test
-    public void concentrationToMoles() {
+    void concentrationToMoles() {
         MolarConcentration molePerLitre = new MolarConcentration(1.0, MOLE_PER_LITRE);
         Quantity<Volume> volume = Quantities.getQuantity(2, CUBIC_METRE);
         Quantity<AmountOfSubstance> actualResult = MolarConcentration.concentrationToMoles(molePerLitre,volume);
@@ -92,17 +104,16 @@ public class MolarConcentrationTest {
     }
 
     @Test
-    public void concentrationToMolecules() {
+    void concentrationToMolecules() {
         MolarConcentration molePerLitre = new MolarConcentration(0.1, MOLE_PER_LITRE);
-        Environment.setNodeDistance(Quantities.getQuantity(1, MICRO(METRE)));
-        Quantity<Volume> volume = Quantities.getQuantity(1.0, Environment.getVolumeUnit());
+        Quantity<Volume> volume = Quantities.getQuantity(1.0, UnitRegistry.getVolumeUnit());
         Quantity<Dimensionless> actualResult = MolarConcentration.concentrationToMolecules(molePerLitre, volume);
         Quantity<Dimensionless> expectedResult = Quantities.getQuantity(6.022140857000001E7, ONE);
         assertEquals(expectedResult, actualResult);
     }
 
     @Test
-    public void moleculesToConcentration() {
+    void moleculesToConcentration() {
         Quantity<MolarConcentration> concentration = MolarConcentration.moleculesToConcentration(4000, Quantities.getQuantity(2.0, CUBIC_METRE));
         Quantity<Dimensionless> molecules = MolarConcentration.concentrationToMolecules(concentration, Quantities.getQuantity(1.0, CUBIC_METRE));
         assertEquals(2000, molecules.getValue().doubleValue(), 1e-10);

@@ -1,22 +1,26 @@
 package bio.singa.mathematics.algorithms.superimposition;
 
+import bio.singa.mathematics.matrices.RegularMatrix;
 import bio.singa.mathematics.vectors.Vector3D;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static bio.singa.mathematics.NumberConceptAssertion.assertMatrixEquals;
+import static bio.singa.mathematics.NumberConceptAssertion.assertVectorEquals;
+
 /**
  * @author fk
  */
-public class VectorQuaternionSuperimposerTest {
+class VectorQuaternionSuperimposerTest {
 
-    private List<Vector3D> reference;
-    private List<Vector3D> candidate;
+    private static List<Vector3D> reference;
+    private static List<Vector3D> candidate;
 
-    @Before
-    public void setUp() {
+    @BeforeAll
+    static void initialize() {
         reference = new ArrayList<>();
         reference.add(new Vector3D(-0.9683594722996112, 8.585195247750672, 31.921580121882982));
         reference.add(new Vector3D(11.480460599181104, 1.1518653477227012, 15.466414202778763));
@@ -33,11 +37,11 @@ public class VectorQuaternionSuperimposerTest {
     }
 
     @Test
-    public void calculateSuperimposition() {
-
-//        VectorSuperimposition vectorSuperimposition = VectorSuperimposer.calculateVectorSuperimposition(reference, candidate);
-//        System.out.println(vectorSuperimposition.getTranslation());
-
+    void calculateSuperimposition() {
         VectorSuperimposition vectorSuperimposition = VectorQuaternionSuperimposer.calculateVectorSuperimposition(reference, candidate);
+        assertVectorEquals(new Vector3D(0.34500000000000375, 2.4529999999999923, 5.3240000000000025),
+                vectorSuperimposition.getTranslation(), 0.0);
+        assertMatrixEquals(new RegularMatrix(new double[][] {{0.19,  0.98, 0.07},{-0.71, 0.09, 0.70}, {0.68, -0.18, 0.71}}),
+                vectorSuperimposition.getRotation(), 1e-2);
     }
 }

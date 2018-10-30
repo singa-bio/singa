@@ -5,6 +5,7 @@ import bio.singa.chemistry.entities.SmallMolecule;
 import bio.singa.chemistry.features.diffusivity.Diffusivity;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.quantities.MolarConcentration;
+import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.graphs.model.Graphs;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
@@ -13,8 +14,9 @@ import bio.singa.simulation.model.sections.CellRegion;
 import bio.singa.simulation.model.sections.CellSubsection;
 import bio.singa.simulation.model.simulation.Simulation;
 import bio.singa.structure.features.molarmass.MolarMass;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import tec.uom.se.quantity.Quantities;
 
 import javax.measure.Quantity;
@@ -25,31 +27,31 @@ import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static bio.singa.simulation.model.sections.CellSubsection.SECTION_A;
 import static bio.singa.simulation.model.sections.CellSubsection.SECTION_B;
 import static bio.singa.simulation.model.sections.CellTopology.INNER;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static tec.uom.se.unit.MetricPrefix.NANO;
 import static tec.uom.se.unit.Units.METRE;
 
 /**
  * @author cl
  */
-public class DiffusionAtMembranesTest {
+class DiffusionAtMembranesTest {
 
     // ammonia
-    private static SmallMolecule ammonia = new SmallMolecule.Builder("ammonia")
+    private static final SmallMolecule ammonia = new SmallMolecule.Builder("ammonia")
             .name("ammonia")
             .assignFeature(new Diffusivity(Quantities.getQuantity(2.28E-05, SQUARE_CENTIMETRE_PER_SECOND), MANUALLY_ANNOTATED))
             .build();
 
     // anchored protein
-    private static Protein anchoredProtein = new Protein.Builder("AP")
+    private static final Protein anchoredProtein = new Protein.Builder("AP")
             .name("anchored protein")
             .assignFeature(new MolarMass(1000, MANUALLY_ANNOTATED))
             .setMembraneAnchored(true)
             .build();
 
     // unanchored protein
-    private static Protein globularProtein = new Protein.Builder("GP")
+    private static final Protein globularProtein = new Protein.Builder("GP")
             .name("globular protein")
             .assignFeature(new MolarMass(1000, MANUALLY_ANNOTATED))
             .setMembraneAnchored(false)
@@ -71,13 +73,14 @@ public class DiffusionAtMembranesTest {
         return simulation;
     }
 
-    @After
-    public void cleanUp() {
-        Environment.reset();
+    @AfterEach
+    @BeforeEach
+    void cleanUp() {
+        UnitRegistry.reinitialize();
     }
 
     @Test
-    public void shouldSimulateBlockedDiffusion() {
+    void shouldSimulateBlockedDiffusion() {
         // create simulation
         Simulation simulation = new Simulation();
         // 0-0-0
@@ -108,13 +111,13 @@ public class DiffusionAtMembranesTest {
         assertTrue(leftNode.getConcentration(SECTION_A, ammonia).getValue().doubleValue() > 0.0);
         assertTrue(membraneNode.getConcentration(SECTION_A, ammonia).getValue().doubleValue() > 0.0);
         // right part of the central node and right node should not
-        assertEquals(0.0, membraneNode.getConcentration(CellSubsection.MEMBRANE, ammonia).getValue().doubleValue(), 0.0);
-        assertEquals(0.0, membraneNode.getConcentration(SECTION_B, ammonia).getValue().doubleValue(), 0.0);
-        assertEquals(0.0, rightNode.getConcentration(SECTION_B, ammonia).getValue().doubleValue(), 0.0);
+        assertEquals(0.0, membraneNode.getConcentration(CellSubsection.MEMBRANE, ammonia).getValue().doubleValue());
+        assertEquals(0.0, membraneNode.getConcentration(SECTION_B, ammonia).getValue().doubleValue());
+        assertEquals(0.0, rightNode.getConcentration(SECTION_B, ammonia).getValue().doubleValue());
     }
 
     @Test
-    public void shouldSimulateLargeScaleBlockedDiffusion() {
+    void shouldSimulateLargeScaleBlockedDiffusion() {
         // create simulation
         Simulation simulation = new Simulation();
         // set node distance to diameter
@@ -145,14 +148,14 @@ public class DiffusionAtMembranesTest {
         for (AutomatonNode node : graph.getNodes()) {
             if (node.getIdentifier().getColumn() < (graph.getNumberOfColumns() / 2)) {
                 // nothing should permeate to the lower part
-                assertEquals(0.0, node.getConcentrationContainer().get(SECTION_B, ammonia).getValue().doubleValue(), 0.0);
+                assertEquals(0.0, node.getConcentrationContainer().get(SECTION_B, ammonia).getValue().doubleValue());
             }
         }
 
     }
 
     @Test
-    public void shouldAnchorInMembrane() {
+    void shouldAnchorInMembrane() {
         // create simulation
         Simulation simulation = setupAnchorSimulation();
         // add some protein in cytoplasm
@@ -167,19 +170,19 @@ public class DiffusionAtMembranesTest {
             simulation.nextEpoch();
             // concentration of anchored entity should stay zero in non-membrane node
             Quantity<MolarConcentration> betaGammaConcentration = node2.getConcentration(SECTION_A, anchoredProtein);
-            assertEquals(0.0, betaGammaConcentration.getValue().doubleValue(), 0.0);
+            assertEquals(0.0, betaGammaConcentration.getValue().doubleValue());
             // concentration of globular entity should increase in non-membrane node
             Quantity<MolarConcentration> betaConcentration = node2.getConcentration(SECTION_A, globularProtein);
             assertTrue(betaConcentration.getValue().doubleValue() > 0.0);
             // concentration of anchored entity should stay equal in non-membrane node
             Quantity<MolarConcentration> remainingConcentration = node1.getConcentration(SECTION_A, anchoredProtein);
-            assertEquals(0.1, remainingConcentration.to(MOLE_PER_LITRE).getValue().doubleValue(), 0.0);
+            assertEquals(0.1, remainingConcentration.to(MOLE_PER_LITRE).getValue().doubleValue());
         }
 
     }
 
     @Test
-    public void shouldAbsorbFromCytoplasm() {
+    void shouldAbsorbFromCytoplasm() {
         Simulation simulation = setupAnchorSimulation();
         // add some protein in cytoplasm
         AutomatonNode node1 = simulation.getGraph().getNode(0, 0);
@@ -199,7 +202,7 @@ public class DiffusionAtMembranesTest {
     }
 
     @Test
-    public void shouldReceiveFromNeighbourMembrane() {
+    void shouldReceiveFromNeighbourMembrane() {
         // simulation
         Simulation simulation = new Simulation();
         // create graph

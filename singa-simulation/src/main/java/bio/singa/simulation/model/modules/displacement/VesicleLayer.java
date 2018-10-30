@@ -1,6 +1,7 @@
 package bio.singa.simulation.model.modules.displacement;
 
 import bio.singa.features.parameters.Environment;
+import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.geometry.edges.SimpleLineSegment;
 import bio.singa.mathematics.geometry.faces.Rectangle;
 import bio.singa.mathematics.matrices.LabeledSymmetricMatrix;
@@ -36,7 +37,7 @@ public class VesicleLayer {
     public VesicleLayer(Simulation simulation) {
         this.simulation = simulation;
         vesicles = new ArrayList<>();
-        displacementEpsilon = Environment.getNodeDistance().divide(10);
+        displacementEpsilon = UnitRegistry.getSpace().divide(10);
     }
 
     public Rectangle getSimulationArea() {

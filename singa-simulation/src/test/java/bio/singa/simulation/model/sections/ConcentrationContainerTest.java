@@ -3,7 +3,8 @@ package bio.singa.simulation.model.sections;
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.chemistry.entities.SmallMolecule;
 import bio.singa.features.parameters.Environment;
-import org.junit.Test;
+import bio.singa.features.units.UnitRegistry;
+import org.junit.jupiter.api.Test;
 import tec.uom.se.quantity.Quantities;
 
 import java.util.Map;
@@ -12,23 +13,23 @@ import java.util.Set;
 import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static bio.singa.simulation.model.sections.CellTopology.INNER;
 import static bio.singa.simulation.model.sections.CellTopology.OUTER;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static tec.uom.se.unit.MetricPrefix.MICRO;
 import static tec.uom.se.unit.Units.METRE;
 
 /**
  * @author cl
  */
-public class ConcentrationContainerTest {
+class ConcentrationContainerTest {
 
-    private static CellSubsection subsectionA = new CellSubsection("Test A");
-    private static CellSubsection subsectionB = new CellSubsection("Test B");
+    private static final CellSubsection subsectionA = new CellSubsection("Test A");
+    private static final CellSubsection subsectionB = new CellSubsection("Test B");
 
-    private static ChemicalEntity entityA = SmallMolecule.create("A").build();
-    private static ChemicalEntity entityB = SmallMolecule.create("B").build();
+    private static final ChemicalEntity entityA = SmallMolecule.create("A").build();
+    private static final ChemicalEntity entityB = SmallMolecule.create("B").build();
 
     @Test
-    public void initializeSubsection() {
+    void initializeSubsection() {
         ConcentrationContainer container = new ConcentrationContainer();
         container.initializeSubsection(subsectionA, INNER);
 
@@ -40,7 +41,7 @@ public class ConcentrationContainerTest {
     }
 
     @Test
-    public void putSubsectionPool() {
+    void putSubsectionPool() {
         ConcentrationContainer containerA = new ConcentrationContainer();
         containerA.initializeSubsection(subsectionA, INNER);
 
@@ -59,7 +60,7 @@ public class ConcentrationContainerTest {
     }
 
     @Test
-    public void removeSubsection() {
+    void removeSubsection() {
         ConcentrationContainer containerA = new ConcentrationContainer();
         containerA.initializeSubsection(subsectionA, INNER);
         containerA.initializeSubsection(subsectionB, OUTER);
@@ -70,7 +71,7 @@ public class ConcentrationContainerTest {
     }
 
     @Test
-    public void getReferencedSubSections() {
+    void getReferencedSubSections() {
         ConcentrationContainer containerA = new ConcentrationContainer();
         containerA.initializeSubsection(subsectionA, INNER);
         containerA.initializeSubsection(subsectionB, OUTER);
@@ -79,7 +80,7 @@ public class ConcentrationContainerTest {
     }
 
     @Test
-    public void getPoolsOfConcentration() {
+    void getPoolsOfConcentration() {
         ConcentrationContainer containerA = new ConcentrationContainer();
         containerA.initializeSubsection(subsectionA, INNER);
         containerA.initializeSubsection(subsectionB, OUTER);
@@ -88,7 +89,7 @@ public class ConcentrationContainerTest {
     }
 
     @Test
-    public void getReferencedEntities() {
+    void getReferencedEntities() {
         ConcentrationContainer containerA = new ConcentrationContainer();
         containerA.initializeSubsection(subsectionA, INNER);
         containerA.initializeSubsection(subsectionB, OUTER);
@@ -103,7 +104,7 @@ public class ConcentrationContainerTest {
     }
 
     @Test
-    public void emptyCopy() {
+    void emptyCopy() {
         ConcentrationContainer containerA = new ConcentrationContainer();
         containerA.initializeSubsection(subsectionA, INNER);
         containerA.initializeSubsection(subsectionB, OUTER);
@@ -121,8 +122,8 @@ public class ConcentrationContainerTest {
     }
 
     @Test
-    public void shouldSetAndGetInCorrectUnit() {
-        Environment.setNodeDistance(Quantities.getQuantity(1.0, MICRO(METRE)));
+    void shouldSetAndGetInCorrectUnit() {
+        UnitRegistry.setSpace(Quantities.getQuantity(1.0, MICRO(METRE)));
         ConcentrationContainer containerA = new ConcentrationContainer();
         containerA.initializeSubsection(subsectionA, INNER);
         containerA.initializeSubsection(subsectionB, OUTER);
@@ -130,10 +131,10 @@ public class ConcentrationContainerTest {
         containerA.set(INNER, entityA, 1.0);
         containerA.set(subsectionB, entityB, 0.5);
 
-        assertEquals(1.0, containerA.get(INNER, entityA).to(MOLE_PER_LITRE).getValue().doubleValue(), 0.0);
-        assertEquals(1.0, containerA.get(subsectionA, entityA).to(MOLE_PER_LITRE).getValue().doubleValue(), 0.0);
-        assertEquals(0.5, containerA.get(OUTER, entityB).to(MOLE_PER_LITRE).getValue().doubleValue(), 0.0);
-        assertEquals(0.5, containerA.get(subsectionB, entityB).to(MOLE_PER_LITRE).getValue().doubleValue(), 0.0);
+        assertEquals(1.0, containerA.get(INNER, entityA).to(MOLE_PER_LITRE).getValue().doubleValue());
+        assertEquals(1.0, containerA.get(subsectionA, entityA).to(MOLE_PER_LITRE).getValue().doubleValue());
+        assertEquals(0.5, containerA.get(OUTER, entityB).to(MOLE_PER_LITRE).getValue().doubleValue());
+        assertEquals(0.5, containerA.get(subsectionB, entityB).to(MOLE_PER_LITRE).getValue().doubleValue());
         Environment.reset();
     }
 

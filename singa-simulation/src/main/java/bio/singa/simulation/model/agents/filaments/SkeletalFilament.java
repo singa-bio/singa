@@ -3,6 +3,7 @@ package bio.singa.simulation.model.agents.filaments;
 import bio.singa.mathematics.geometry.edges.Line;
 import bio.singa.mathematics.geometry.faces.Circle;
 import bio.singa.mathematics.geometry.model.Polygon;
+import bio.singa.mathematics.topology.grids.rectangular.RectangularDirection;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.mathematics.vectors.Vectors;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
@@ -52,6 +53,67 @@ public class SkeletalFilament {
         associatedNodes = new HashSet<>();
         segments.add(initialPosition);
         segments.add(initialDirection.normalize().add(initialPosition));
+    }
+
+    public SkeletalFilament(List<Vector2D> segments, RectangularDirection plusDirection) {
+        if (orderingIsReversed(segments, plusDirection)) {
+            Collections.reverse(segments);
+        }
+        this.segments = new LinkedList<>(segments);
+        associatedNodes = new HashSet<>();
+    }
+
+    private boolean orderingIsReversed(List<Vector2D> segments, RectangularDirection plusDirection) {
+        Vector2D front = segments.iterator().next();
+        Vector2D back = segments.get(segments.size() - 1);
+        switch (plusDirection) {
+            case NORTH:
+                return front.isBelow(back);
+            case SOUTH:
+                return front.isAbove(back);
+            case EAST:
+                return front.isLeftOf(back);
+            default:
+                return front.isRightOf(back);
+        }
+    }
+
+    public void associateInGraph(AutomatonGraph graph) {
+        this.graph = graph;
+        for (Vector2D segment : segments) {
+            Circle headRegion = new Circle(segment, 10);
+            // determine associated nodes
+            for (AutomatonNode node : graph.getNodes()) {
+                // get representative region of the node
+                Polygon polygon = node.getSpatialRepresentation();
+                // associate segment to the node with the largest part of the vesicle (midpoint is inside)
+                if (polygon.evaluatePointPosition(segment) >= ON_LINE) {
+                    node.addMicrotubuleSegment(this, segment);
+                }
+                // associate partial containment to other nodes
+                if (!polygon.getIntersections(headRegion).isEmpty()) {
+                    node.addMicrotubuleSegment(this, segment);
+                }
+            }
+        }
+    }
+
+    public void scale(double scalingFactor) {
+        LinkedList<Vector2D> scaledSegments = new LinkedList<>();
+        for (Vector2D vertex : segments) {
+            scaledSegments.add(vertex.multiply(scalingFactor));
+        }
+        segments = scaledSegments;
+    }
+
+    public void reduce() {
+        LinkedList<Vector2D> reducedVectors = new LinkedList<>();
+        for (int index = 0; index < segments.size() - 1; index++) {
+            if (index % 2 == 0) {
+                reducedVectors.add(segments.get(index));
+            }
+        }
+        segments = reducedVectors;
     }
 
     private Vector2D getPreviousSegment(Vector2D segment) {

@@ -7,6 +7,7 @@ import bio.singa.features.identifiers.UniProtIdentifier;
 import bio.singa.features.model.FeatureOrigin;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.quantities.MolarConcentration;
+import bio.singa.features.units.UnitRegistry;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.graphs.AutomatonNode;
@@ -16,8 +17,9 @@ import bio.singa.simulation.model.sections.CellTopology;
 import bio.singa.simulation.model.sections.ConcentrationContainer;
 import bio.singa.simulation.model.simulation.Simulation;
 import bio.singa.structure.features.molarmass.MolarMass;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tec.uom.se.quantity.Quantities;
@@ -25,29 +27,29 @@ import tec.uom.se.quantity.Quantities;
 import javax.measure.Quantity;
 import javax.measure.quantity.Time;
 
-import static bio.singa.features.parameters.Environment.getConcentrationUnit;
 import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static bio.singa.simulation.model.sections.CellSubsection.SECTION_A;
 import static bio.singa.simulation.model.sections.CellTopology.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static tec.uom.se.unit.MetricPrefix.MILLI;
 import static tec.uom.se.unit.Units.*;
 
 /**
  * @author cl
  */
-public class ComplexBuildingReactionTest {
+class ComplexBuildingReactionTest {
 
     private static final Logger logger = LoggerFactory.getLogger(ComplexBuildingReactionTest.class);
 
-    @After
-    public void cleanUp() {
-        Environment.reset();
+    @AfterEach
+    @BeforeEach
+    void cleanUp() {
+        UnitRegistry.reinitialize();
     }
 
     @Test
-    public void minimalSetUpTest() {
+    void minimalSetUpTest() {
         Environment.reset();
         logger.info("Testing section changing binding (minimal setup).");
         // the rate constants
@@ -87,32 +89,32 @@ public class ComplexBuildingReactionTest {
         membraneNode.getConcentrationContainer().set(MEMBRANE, binder, 1.0);
         membraneNode.getConcentrationContainer().set(MEMBRANE, complex, 1.0);
 
-        // forewared and backward reactions should cancel each other out
+        // forward and backward reactions should cancel each other out
         Quantity<MolarConcentration> empty = Environment.emptyConcentration();
-        Quantity<MolarConcentration> one = Quantities.getQuantity(1.0, MOLE_PER_LITRE).to(Environment.getConcentrationUnit());
+        Quantity<MolarConcentration> one =  UnitRegistry.concentration(1.0, MOLE_PER_LITRE);
         for (int i = 0; i < 10; i++) {
             ConcentrationContainer container = membraneNode.getConcentrationContainer();
 
-            assertEquals(container.get(CellTopology.INNER, bindee), empty);
-            assertEquals(container.get(CellTopology.INNER, binder), empty);
-            assertEquals(container.get(CellTopology.INNER, complex), empty);
+            assertEquals(empty, container.get(CellTopology.INNER, bindee));
+            assertEquals(empty, container.get(CellTopology.INNER, binder));
+            assertEquals(empty, container.get(CellTopology.INNER, complex));
 
-            assertEquals(container.get(CellTopology.MEMBRANE, bindee), empty);
-            assertEquals(container.get(CellTopology.MEMBRANE, binder), one);
-            assertEquals(container.get(CellTopology.MEMBRANE, complex), one);
+            assertEquals(empty, container.get(CellTopology.MEMBRANE, bindee));
+            assertEquals(one, container.get(CellTopology.MEMBRANE, binder));
+            assertEquals(one, container.get(CellTopology.MEMBRANE, complex));
 
-            assertEquals(container.get(CellTopology.OUTER, bindee), one);
-            assertEquals(container.get(CellTopology.OUTER, binder), empty);
-            assertEquals(container.get(CellTopology.OUTER, complex), empty);
+            assertEquals(one, container.get(CellTopology.OUTER, bindee));
+            assertEquals(empty, container.get(CellTopology.OUTER, binder));
+            assertEquals(empty, container.get(CellTopology.OUTER, complex));
 
             simulation.nextEpoch();
         }
     }
 
     @Test
-    public void testPrazosinExample() {
+    void testPrazosinExample() {
         Environment.reset();
-        Environment.setNodeDistance(Quantities.getQuantity(1.0, MILLI(METRE)));
+        UnitRegistry.setSpace(Quantities.getQuantity(1.0, MILLI(METRE)));
         logger.info("Testing Monovalent Receptor Binding.");
 
         // see Receptors (Lauffenburger) p. 30
@@ -140,8 +142,8 @@ public class ComplexBuildingReactionTest {
         // concentrations
         AutomatonNode membraneNode = automatonGraph.getNode(0, 0);
         membraneNode.setCellRegion(CellRegion.MEMBRANE);
-        membraneNode.getConcentrationContainer().set(SECTION_A, ligand, Quantities.getQuantity(0.1, MOLE_PER_LITRE).to(getConcentrationUnit()));
-        membraneNode.getConcentrationContainer().set(CellSubsection.MEMBRANE, receptor, Quantities.getQuantity(0.1, MOLE_PER_LITRE).to(getConcentrationUnit()));
+        membraneNode.getConcentrationContainer().set(SECTION_A, ligand, UnitRegistry.concentration(0.1, MOLE_PER_LITRE));
+        membraneNode.getConcentrationContainer().set(CellSubsection.MEMBRANE, receptor, UnitRegistry.concentration(0.1, MOLE_PER_LITRE));
 
         // create and add module
         ComplexBuildingReaction reaction = ComplexBuildingReaction.inSimulation(simulation)
@@ -179,7 +181,7 @@ public class ComplexBuildingReactionTest {
     }
 
     @Test
-    public void testMembraneAbsorption() {
+    void testMembraneAbsorption() {
         Environment.reset();
         logger.info("Testing section changing binding (membrane absorption).");
         // the rate constants
@@ -232,7 +234,7 @@ public class ComplexBuildingReactionTest {
     }
 
     @Test
-    public void shouldReactInsideAndOutside() {
+    void shouldReactInsideAndOutside() {
         Environment.reset();
         logger.info("Testing section changing binding (inside and outside reactions).");
 

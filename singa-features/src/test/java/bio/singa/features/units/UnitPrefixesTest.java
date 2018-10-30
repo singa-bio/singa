@@ -1,18 +1,18 @@
 package bio.singa.features.units;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author cl
  */
-public class UnitPrefixesTest {
+class UnitPrefixesTest {
 
     @Test
-    public void shouldGenerateUnitsWithPrefixes() {
+    void shouldGenerateUnitsWithPrefixes() {
         List<String> unitStrings = UnitPrefixes.generateUnitNamesForPrefixes(UnitPrefix.getDefaultTimePrefixes(), UnitName.SECOND);
         assertEquals("ns", unitStrings.get(0));
         assertEquals("\u00B5s", unitStrings.get(1));

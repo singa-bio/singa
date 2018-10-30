@@ -1,16 +1,16 @@
 package bio.singa.structure.parser.pdb.rest.cluster;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author fk
  */
-public class PDBSequenceClusterTest {
+class PDBSequenceClusterTest {
 
     @Test
-    public void shouldObtainSequenceCluster() {
+    void shouldObtainSequenceCluster() {
         PDBSequenceCluster sequenceCluster = PDBSequenceCluster.of("1zuh", "A",
                 PDBSequenceCluster.PDBSequenceClusterIdentity.IDENTITY_95);
         assertEquals("1zuh", sequenceCluster.getClusterMembers().get(0).getPdbIdentifier().getIdentifier());
@@ -20,7 +20,7 @@ public class PDBSequenceClusterTest {
     }
 
     @Test
-    public void shouldDiscardHomomericStructures() {
+    void shouldDiscardHomomericStructures() {
         PDBSequenceCluster sequenceCluster1 = PDBSequenceCluster.of("1f6d", "A",
                 PDBSequenceCluster.PDBSequenceClusterIdentity.IDENTITY_95);
         assertEquals("1f6d", sequenceCluster1.getRepresentative()[0]);

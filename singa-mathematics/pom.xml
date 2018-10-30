@@ -14,6 +14,10 @@
     <artifactId>singa-mathematics</artifactId>
     <version>0.4.2</version>
     <packaging>jar</packaging>
+    <description>
+        The SiNGA mathematics package handles most of the algorithms and data structures with mathematical background.
+        Amongst others: affinity propagation, graph isomorphism, or voronoi diagram creation.
+    </description>
 
     <dependencies>
         <dependency>

@@ -4,6 +4,7 @@ import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.chemistry.entities.ComplexedChemicalEntity;
 import bio.singa.features.identifiers.SimpleStringIdentifier;
 import bio.singa.features.parameters.Environment;
+import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.geometry.faces.Circle;
 import bio.singa.mathematics.geometry.faces.Rectangle;
 import bio.singa.mathematics.geometry.model.Polygon;
@@ -47,12 +48,12 @@ public class Simulation {
     private AutomatonGraph graph;
 
     /**
-     * The layer for vesicles
+     * The layer for vesicles.
      */
     private VesicleLayer vesicleLayer;
 
     /**
-     * The layer for membranes
+     * The layer for membranes.
      */
     private MembraneLayer membraneLayer;
 
@@ -112,7 +113,7 @@ public class Simulation {
         modules = new ArrayList<>();
         assignmentRules = new ArrayList<>();
         chemicalEntities = new HashMap<>();
-        elapsedTime = Quantities.getQuantity(0.0, Environment.getTimeStep().getUnit());
+        elapsedTime = Quantities.getQuantity(0.0, UnitRegistry.getTimeUnit());
         epoch = 0;
         initializationDone = false;
         observedUpdatables = new HashSet<>();
@@ -145,7 +146,7 @@ public class Simulation {
                 }
                 for (ConcentrationDelta delta : observedUpdatable.getPotentialConcentrationDeltas()) {
                     // adjust to time step
-                    observedDeltas.get(observedUpdatable).add(delta.multiply(1.0 / Environment.getTimeStep().to(MICRO(SECOND)).getValue().doubleValue()));
+                    observedDeltas.get(observedUpdatable).add(delta.multiply(1.0 / UnitRegistry.getTime().to(MICRO(SECOND)).getValue().doubleValue()));
                 }
                 // clear them
                 observedUpdatable.clearPotentialConcentrationDeltas();
@@ -171,8 +172,9 @@ public class Simulation {
         // if time step did not change it can possibly be increased
         if (!scheduler.timeStepWasRescaled()) {
             // if no maximal time step is given or time step is not already maximal
-            if (maximalTimeStep == null || Environment.getTimeStep().to(maximalTimeStep.getUnit()).getValue().doubleValue() < maximalTimeStep.getValue().doubleValue()) {
+            if (maximalTimeStep == null || UnitRegistry.getTime().to(maximalTimeStep.getUnit()).getValue().doubleValue() < maximalTimeStep.getValue().doubleValue()) {
                 // if error was below tolerance threshold (10 percent of epsilon)
+                // TODO evaluate if the sign is right (< instead of >)
                 if (scheduler.getRecalculationCutoff() - scheduler.getLargestError().getValue() > 0.1 * scheduler.getRecalculationCutoff()) {
                     // try larger time step next time
                     scheduler.increaseTimeStep();
@@ -214,7 +216,7 @@ public class Simulation {
         for (AutomatonNode node : graph.getNodes()) {
             // create rectangles centered on the nodes with side length of node distance
             Vector2D position = node.getPosition();
-            double offset = Environment.convertSystemToSimulationScale(Environment.getNodeDistance()) * 0.5;
+            double offset = Environment.convertSystemToSimulationScale(UnitRegistry.getSpace()) * 0.5;
             Vector2D topLeft = new Vector2D(position.getX() - offset, position.getY() - offset);
             Vector2D bottomRight = new Vector2D(position.getX() + offset, position.getY() + offset);
             node.setSpatialRepresentation(new Rectangle(topLeft, bottomRight));
@@ -364,7 +366,7 @@ public class Simulation {
      */
     private void updateEpoch() {
         epoch++;
-        elapsedTime = elapsedTime.add(Environment.getTimeStep());
+        elapsedTime = elapsedTime.add(UnitRegistry.getTime());
     }
 
     public ComparableQuantity<Time> getElapsedTime() {

@@ -2,15 +2,14 @@ package bio.singa.mathematics.graphs.model;
 
 import bio.singa.mathematics.graphs.grid.GridCoordinateConverter;
 import bio.singa.mathematics.vectors.Vector2D;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class GeneralGraphModelTest {
+class GeneralGraphModelTest {
 
     @Test
-    public void shouldAddNode() {
+    void shouldAddNode() {
         UndirectedGraph testGraph = new UndirectedGraph();
         RegularNode nodeToAdd = Nodes.createRandomlyPlacedNode(0);
         RegularNode nodeNotToAdd = Nodes.createRandomlyPlacedNode(1);
@@ -20,7 +19,7 @@ public class GeneralGraphModelTest {
     }
 
     @Test
-    public void shouldConnectNodes() {
+    void shouldConnectNodes() {
         UndirectedGraph testGraph = new UndirectedGraph();
         RegularNode source = Nodes.createRandomlyPlacedNode(0);
         RegularNode target = Nodes.createRandomlyPlacedNode(1);
@@ -35,7 +34,7 @@ public class GeneralGraphModelTest {
     }
 
     @Test
-    public void shouldRemoveNode() {
+    void shouldRemoveNode() {
         UndirectedGraph linearGraph = Graphs.buildLinearGraph(10);
         int unexpectedNodeIdentifier = 5;
         RegularNode removedNode = linearGraph.removeNode(unexpectedNodeIdentifier);
@@ -50,11 +49,11 @@ public class GeneralGraphModelTest {
     }
 
     @Test
-    public void shouldConvertCoordinateToIdentifier() {
+    void shouldConvertCoordinateToIdentifier() {
         GridCoordinateConverter rgc = new GridCoordinateConverter(7, 7);
         final Vector2D coordinate = new Vector2D(5, 3);
-        Assert.assertEquals(26, rgc.convert(coordinate));
-        assertArrayEquals(coordinate.getElements(), rgc.convert(26).getElements(), 0.0);
+        assertEquals(26, rgc.convert(coordinate));
+        assertArrayEquals(coordinate.getElements(), rgc.convert(26).getElements());
     }
 
 }

@@ -3,19 +3,19 @@ package bio.singa.structure.algorithms.superimposition;
 import bio.singa.core.utility.Resources;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.parser.pdb.structures.StructureParser;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author fk
  */
-public class FragmentSubstructureSuperimposerTest {
+class FragmentSubstructureSuperimposerTest {
 
     @Test
-    public void shouldCalculateFragmentSuperimposition() {
+    void shouldCalculateFragmentSuperimposition() {
 
         List<LeafSubstructure<?>> referenceLeafSubstructure = StructureParser.local()
                 .fileLocation(Resources.getResourceAsFileLocation("adenine.pdb"))

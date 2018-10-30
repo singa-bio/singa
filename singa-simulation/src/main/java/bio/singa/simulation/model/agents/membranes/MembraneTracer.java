@@ -10,11 +10,11 @@ import bio.singa.mathematics.geometry.faces.VertexPolygon;
 import bio.singa.mathematics.geometry.model.Polygon;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.mathematics.vectors.Vectors;
+import bio.singa.simulation.model.agents.organelles.OrganelleTemplate;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.sections.CellRegion;
 import bio.singa.simulation.model.sections.CellTopology;
-import bio.singa.simulation.parser.organelles.OrganelleTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

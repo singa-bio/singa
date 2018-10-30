@@ -7,6 +7,7 @@ import bio.singa.chemistry.features.permeability.MembranePermeability;
 import bio.singa.features.model.FeatureOrigin;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.quantities.MolarConcentration;
+import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
@@ -16,8 +17,9 @@ import bio.singa.simulation.model.modules.displacement.VesicleLayer;
 import bio.singa.simulation.model.modules.displacement.implementations.VesicleDiffusion;
 import bio.singa.simulation.model.sections.CellRegion;
 import bio.singa.simulation.model.simulation.Simulation;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import tec.uom.se.ComparableQuantity;
 import tec.uom.se.quantity.Quantities;
 
@@ -28,7 +30,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import static bio.singa.chemistry.features.permeability.MembranePermeability.CENTIMETRE_PER_SECOND;
 import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static bio.singa.simulation.model.sections.CellTopology.INNER;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static tec.uom.se.unit.MetricPrefix.MICRO;
 import static tec.uom.se.unit.MetricPrefix.NANO;
 import static tec.uom.se.unit.Units.METRE;
@@ -37,20 +39,25 @@ import static tec.uom.se.unit.Units.SECOND;
 /**
  * @author cl
  */
-public class VesicleDiffusionTest {
+class VesicleDiffusionTest {
 
     private static final ChemicalEntity water = SmallMolecule.create("water").build();
 
-    @After
-    public void cleanUp() {
+    @BeforeAll
+    static void initialize() {
+        Environment.reset();
+    }
+
+    @AfterEach
+    void cleanUp() {
         Environment.reset();
     }
 
     @Test
-    public void shouldTransformConcentration() {
+    void shouldTransformConcentration() {
         Environment.setSystemExtend(Quantities.getQuantity(20, MICRO(METRE)));
         Environment.setSimulationExtend(500);
-        Environment.setTimeStep(Quantities.getQuantity(1, MICRO(SECOND)));
+        UnitRegistry.setTime(Quantities.getQuantity(1, MICRO(SECOND)));
 
         Vesicle vesicle = new Vesicle("0",
                 new Vector2D(50, 50),
@@ -64,10 +71,10 @@ public class VesicleDiffusionTest {
     }
 
     @Test
-    public void shouldRescaleDiffusivity() {
+    void shouldRescaleDiffusivity() {
         Environment.setSystemExtend(Quantities.getQuantity(20, MICRO(METRE)));
         Environment.setSimulationExtend(500);
-        Environment.setTimeStep(Quantities.getQuantity(1, MICRO(SECOND)));
+        UnitRegistry.setTime(Quantities.getQuantity(1, MICRO(SECOND)));
 
         Vesicle vesicle = new Vesicle("0",
                 new Vector2D(50, 50),
@@ -75,26 +82,26 @@ public class VesicleDiffusionTest {
 
         vesicle.scaleScalableFeatures();
         assertEquals(2.1460983910913096E-9, vesicle.getFeature(Diffusivity.class).getValue().doubleValue(), 1e-8);
-        Environment.setTimeStep(Quantities.getQuantity(2, MICRO(SECOND)));
+        UnitRegistry.setTime(Quantities.getQuantity(2, MICRO(SECOND)));
         vesicle.scaleScalableFeatures();
         assertEquals(4.292196782182619E-9, vesicle.getFeature(Diffusivity.class).getValue().doubleValue(), 1e-8);
     }
 
     @Test
-    public void shouldMembraneDiffusionWithVesicles() {
+    void shouldMembraneDiffusionWithVesicles() {
 
         ComparableQuantity<Length> systemExtend = Quantities.getQuantity(20, MICRO(METRE));
         Environment.setSystemExtend(systemExtend);
         Environment.setSimulationExtend(500);
         Environment.setNodeSpacingToDiameter(systemExtend, 10);
-        Environment.setTimeStep(Quantities.getQuantity(1, MICRO(SECOND)));
+        UnitRegistry.setTime(Quantities.getQuantity(1, MICRO(SECOND)));
 
         Simulation simulation = new Simulation();
 
         Vesicle vesicle = new Vesicle("0",
                 new Vector2D(220, 220),
                 Quantities.getQuantity(150, NANO(METRE))
-                        .to(Environment.getNodeDistance().getUnit()));
+                        .to(UnitRegistry.getSpaceUnit()));
 
         vesicle.getConcentrationContainer().set(INNER, water, 50.0);
 

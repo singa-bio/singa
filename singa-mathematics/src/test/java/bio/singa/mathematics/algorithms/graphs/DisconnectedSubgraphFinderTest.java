@@ -2,19 +2,19 @@ package bio.singa.mathematics.algorithms.graphs;
 
 import bio.singa.mathematics.graphs.model.Graphs;
 import bio.singa.mathematics.graphs.model.UndirectedGraph;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author cl
  */
-public class DisconnectedSubgraphFinderTest {
+class DisconnectedSubgraphFinderTest {
 
     @Test
-    public void shouldFindSubgraphs() {
+    void shouldFindSubgraphs() {
         UndirectedGraph graph = Graphs.buildCircularGraph(20);
         graph.removeNode(5);
         graph.removeNode(16);

@@ -13,9 +13,6 @@ import bio.singa.structure.features.molarmass.MolarMass;
  */
 public class MolarMassProvider extends FeatureProvider<MolarMass> {
 
-    private final ChEBIDatabase chEBIDatabase = ChEBIDatabase.getInstance();
-    private final UniProtDatabase uniProtDatabase = UniProtDatabase.getInstance();
-
     public MolarMassProvider() {
         setProvidedFeature(MolarMass.class);
         addRequirement(ChEBIIdentifier.class);

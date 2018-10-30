@@ -1,19 +1,20 @@
 package bio.singa.mathematics.graphs.trees;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class BinaryTreeTest {
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+class BinaryTreeTest {
 
     @Test
-    public void shouldAppendNode() {
+    void shouldAppendNode() {
         BinaryTree<String> tree = new BinaryTree<>(new BinaryTreeNode<>("Root"));
         tree.appendNodeTo(tree.getRoot(), "Left");
         tree.appendNodeTo(tree.getRoot(), "Right");
         tree.appendNodeTo("Left", "ChildOfLeft");
-        Assert.assertTrue(tree.containsNode("Root"));
-        Assert.assertTrue(tree.containsNode("Right"));
-        Assert.assertTrue(tree.containsNode("ChildOfLeft"));
+        assertTrue(tree.containsNode("Root"));
+        assertTrue(tree.containsNode("Right"));
+        assertTrue(tree.containsNode("ChildOfLeft"));
     }
 
 }

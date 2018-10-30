@@ -67,4 +67,5 @@ public class FeatureManager implements Featureable {
     public Set<Class<? extends Feature>> getRequiredFeatures() {
         return requiredFeatures;
     }
+
 }

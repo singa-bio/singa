@@ -1,6 +1,7 @@
 package bio.singa.simulation.model.agents.membranes;
 
 import bio.singa.features.parameters.Environment;
+import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.geometry.edges.LineSegment;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.simulation.model.graphs.AutomatonNode;
@@ -32,7 +33,7 @@ public class MembraneSegment implements LineSegment {
 
     public Quantity<Area> getArea() {
         return Environment.convertSimulationToSystemScale(segment.getLength())
-                .multiply(Environment.getNodeDistance())
+                .multiply(UnitRegistry.getSpace())
                 .asType(Area.class);
     }
 

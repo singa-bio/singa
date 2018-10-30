@@ -3,22 +3,22 @@ package bio.singa.chemistry.features.smiles;
 import bio.singa.structure.model.molecules.MoleculeAtom;
 import bio.singa.structure.model.molecules.MoleculeBondType;
 import bio.singa.structure.model.molecules.MoleculeGraph;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
 import static bio.singa.structure.elements.ElementProvider.HYDROGEN;
 import static bio.singa.structure.elements.ElementProvider.OXYGEN;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author cl
  */
-public class SmilesParserTest {
+class SmilesParserTest {
 
     @Test
-    public void shouldParseRings() {
+    void shouldParseRings() {
         String smilesString = "c1ccc2cc3ccccc3cc2c1";
         MoleculeGraph moleculeGraph = SmilesParser.parse(smilesString);
         // first (C:0) is connected to last (C:13) and next (C:1)
@@ -39,7 +39,7 @@ public class SmilesParserTest {
 
 
     @Test
-    public void shouldParseBranches() {
+    void shouldParseBranches() {
         // original: (COP(O)(=O)OP(O)(=O)OP(O)(O)=O)[C@@H](O)[C@H]1O
         String smilesString = "COP(O)(=O)OP(O)(=O)OP(O)(O)=O[C@@H](O)[C@H]1O";
         MoleculeGraph moleculeGraph = SmilesParser.parse(smilesString);
@@ -62,7 +62,7 @@ public class SmilesParserTest {
 
 
     @Test
-    public void shouldParseIon() {
+    void shouldParseIon() {
         // [H]C(=O)[C@H](O)[C@@H](O)[C@H](O)[C@H](O)COS([O-])(=O)=O
         String smilesString = "[H]C(=O)[C@H](O)[C@@H](O)[C@H](O)[C@H](O)COS([O-])(=O)=O";
         MoleculeGraph moleculeGraph = SmilesParser.parse(smilesString);
@@ -71,7 +71,7 @@ public class SmilesParserTest {
     }
 
     @Test
-    public void shouldParseIsotpes() {
+    void shouldParseIsotpes() {
         // O=[13C](O)[13C@@H]([15NH2])[13CH]([13CH3])[13CH3]
         String smilesString = "O=[13C](O)[13C@@H]([15NH2])[13CH]([13CH3])[13CH3]";
         MoleculeGraph moleculeGraph = SmilesParser.parse(smilesString);
@@ -82,7 +82,7 @@ public class SmilesParserTest {
     }
 
     @Test
-    public void shouldParseUnconnectedMolecule() {
+    void shouldParseUnconnectedMolecule() {
         // O.O.O.O.O.O.O.O.O.O.O.O.[Al+3].[K+].[O-]S([O-])(=O)=O.[O-]S([O-])(=O)=O
         String smilesString = "O.O.O.O.O.O.O.O.O.O.O.O.[Al+3].[K+].[O-]S([O-])(=O)=O.[O-]S([O-])(=O)=O";
         MoleculeGraph moleculeGraph = SmilesParser.parse(smilesString);
@@ -95,7 +95,7 @@ public class SmilesParserTest {
     }
 
     @Test
-    public void shouldSaturateCorrectlyWithHydrogens() {
+    void shouldSaturateCorrectlyWithHydrogens() {
         // O=[13C](O)[13C@@H]([15NH2])[13CH]([13CH3])[13CH3]
         String smilesString = "O=[13C](O)[13C@@H]([15NH2])[13CH]([13CH3])[13CH3]";
         MoleculeGraph moleculeGraph = SmilesParser.parse(smilesString);

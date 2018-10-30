@@ -2,98 +2,98 @@ package bio.singa.mathematics.vectors;
 
 import bio.singa.mathematics.geometry.faces.Rectangle;
 import bio.singa.mathematics.geometry.model.Polygon;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class Vector2DTest {
+class Vector2DTest {
 
-    private Vector2D first;
-    private Vector2D second;
-    private double scalar;
+    private static Vector2D first;
+    private static Vector2D second;
+    private static double scalar;
 
-    @Before
-    public void initialize() {
+    @BeforeAll
+    static void initialize() {
         first = new Vector2D(10.0, 20.0);
         second = new Vector2D(15.0, 25.0);
         scalar = 2.0;
     }
 
     @Test
-    public void testAddCalculation() {
+    void testAddCalculation() {
         Vector2D actual = first.add(second);
-        assertArrayEquals(new double[]{25.0, 45.0}, actual.getElements(), 0.0);
+        assertArrayEquals(new double[]{25.0, 45.0}, actual.getElements());
     }
 
     @Test
-    public void testSubtractCalculation() {
+    void testSubtractCalculation() {
         Vector2D actual = first.subtract(second);
-        assertArrayEquals(new double[]{-5.0, -5.0}, actual.getElements(), 0.0);
+        assertArrayEquals(new double[]{-5.0, -5.0}, actual.getElements());
     }
 
     @Test
-    public void testMultiplicationCalculation() {
+    void testMultiplicationCalculation() {
         Vector2D actual = first.multiply(second);
-        assertArrayEquals(new double[]{150.0, 500.0}, actual.getElements(), 0.0);
+        assertArrayEquals(new double[]{150.0, 500.0}, actual.getElements());
     }
 
     @Test
-    public void testMultiplicationWithScalarCalculation() {
+    void testMultiplicationWithScalarCalculation() {
         Vector2D actual = first.multiply(scalar);
-        assertArrayEquals(new double[]{20.0, 40.0}, actual.getElements(), 0.0);
+        assertArrayEquals(new double[]{20.0, 40.0}, actual.getElements());
     }
 
     @Test
-    public void testAdditivelyInvertCalculation() {
+    void testAdditivelyInvertCalculation() {
         Vector2D actual = first.additivelyInvert();
-        assertArrayEquals(new double[]{-10.0, -20.0}, actual.getElements(), 0.0);
+        assertArrayEquals(new double[]{-10.0, -20.0}, actual.getElements());
     }
 
     @Test
-    public void testAdditivelyInvertElementCalculation() {
+    void testAdditivelyInvertElementCalculation() {
         Vector2D actual = first.invertX().invertY();
-        assertArrayEquals(new double[]{-10, -20.0}, actual.getElements(), 0.0);
+        assertArrayEquals(new double[]{-10, -20.0}, actual.getElements());
     }
 
     @Test
-    public void testMagnitudeCalculation() {
+    void testMagnitudeCalculation() {
         double actual = first.getMagnitude();
-        assertEquals(10.0 * Math.sqrt(5), actual, 0.0);
+        assertEquals(10.0 * Math.sqrt(5), actual);
     }
 
     @Test
-    public void testDivisionWithScalarCalculation() {
+    void testDivisionWithScalarCalculation() {
         Vector2D actual = first.divide(scalar);
-        assertArrayEquals(new double[]{5.0, 10.0}, actual.getElements(), 0.0);
+        assertArrayEquals(new double[]{5.0, 10.0}, actual.getElements());
     }
 
     @Test
-    public void testDivisionCalculation() {
+    void testDivisionCalculation() {
         Vector2D actual = first.divide(second);
-        assertArrayEquals(new double[]{2.0 / 3.0, 0.8}, actual.getElements(), 0.0);
+        assertArrayEquals(new double[]{2.0 / 3.0, 0.8}, actual.getElements());
     }
 
     @Test
-    public void testDotProductCalculation() {
+    void testDotProductCalculation() {
         double actual = first.dotProduct(second);
-        assertEquals(650.0, actual, 0.0);
+        assertEquals(650.0, actual);
     }
 
     @Test
-    public void testAngleCalculation() {
+    void testAngleCalculation() {
         double actual = first.angleTo(second);
         assertEquals(0.07677189126977, actual, 1e-10);
     }
 
     @Test
-    public void testMidpointCalculation() {
+    void testMidpointCalculation() {
         Vector2D actual = first.getMidpointTo(second);
-        assertArrayEquals(new double[]{12.5, 22.5}, actual.getElements(), 0.0);
+        assertArrayEquals(new double[]{12.5, 22.5}, actual.getElements());
     }
 
     @Test
-    public void shouldBeNearEachOther() {
+    void shouldBeNearEachOther() {
         boolean actualTrue = first.isNearVector(second, 3.0);
         boolean actualFalse = first.isNearVector(second, 2.0);
         assertTrue(actualTrue);
@@ -101,7 +101,7 @@ public class Vector2DTest {
     }
 
     @Test
-    public void shouldBeInRectangle() {
+    void shouldBeInRectangle() {
         Rectangle r = new Rectangle(new Vector2D(0.0, 10.0), new Vector2D(10.0, 0.0));
         Vector2D above = new Vector2D(5.0, 11.0);
         Vector2D below = new Vector2D(5.0, -1.0);
@@ -116,7 +116,7 @@ public class Vector2DTest {
     }
 
     @Test
-    public void testNormalizationCalculation() {
+    void testNormalizationCalculation() {
         Vector2D actual = first.normalize();
         assertArrayEquals(new double[]{1 / Math.sqrt(5.0), 2 / Math.sqrt(5)}, actual.getElements(), 1e-15);
         assertEquals(1.0, actual.getMagnitude(), 1e-15);

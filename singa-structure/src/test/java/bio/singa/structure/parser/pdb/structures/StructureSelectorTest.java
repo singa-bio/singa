@@ -2,18 +2,18 @@ package bio.singa.structure.parser.pdb.structures;
 
 
 import bio.singa.structure.model.interfaces.*;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * @author fk
  */
-public class StructureSelectorTest {
+class StructureSelectorTest {
 
 
     @Test
-    public void shouldSelectModelFromStructure() {
+    void shouldSelectModelFromStructure() {
         Structure structure = StructureParser.pdb()
                 .pdbIdentifier("4CHA")
                 .parse();
@@ -24,7 +24,7 @@ public class StructureSelectorTest {
     }
 
     @Test
-    public void shouldSelectChainFromStructure() {
+    void shouldSelectChainFromStructure() {
         Structure structure = StructureParser.pdb()
                 .pdbIdentifier("4CHA")
                 .parse();
@@ -36,7 +36,7 @@ public class StructureSelectorTest {
     }
 
     @Test
-    public void shouldSelectAminoAcidFromStructure() {
+    void shouldSelectAminoAcidFromStructure() {
         Structure structure = StructureParser.pdb()
                 .pdbIdentifier("4CHA")
                 .parse();
@@ -49,7 +49,7 @@ public class StructureSelectorTest {
     }
 
     @Test
-    public void shouldSelectNucleotideFromStructure() {
+    void shouldSelectNucleotideFromStructure() {
         Structure structure = StructureParser.pdb()
                 .pdbIdentifier("1C0A")
                 .parse();
@@ -62,7 +62,7 @@ public class StructureSelectorTest {
     }
 
     @Test
-    public void shouldSelectAtomFromStructure() {
+    void shouldSelectAtomFromStructure() {
         Structure structure = StructureParser.pdb()
                 .pdbIdentifier("1C0A")
                 .parse();

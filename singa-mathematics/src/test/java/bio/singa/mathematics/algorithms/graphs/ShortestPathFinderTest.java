@@ -1,27 +1,27 @@
 package bio.singa.mathematics.algorithms.graphs;
 
 import bio.singa.mathematics.graphs.model.*;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Objects;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author cl
  */
-public class ShortestPathFinderTest {
+class ShortestPathFinderTest {
 
     private UndirectedGraph linearGraph;
 
-    @Before
-    public void initialize() {
+    @BeforeEach
+    void initialize() {
         linearGraph = Graphs.buildLinearGraph(10);
     }
 
     @Test
-    public void shouldFindWithPredicate() {
+    void shouldFindWithPredicate() {
         RegularNode source = linearGraph.getNode(9);
         GraphPath<RegularNode, UndirectedEdge> shortestPath = ShortestPathFinder.findBasedOnPredicate(linearGraph, source, n -> n.getIdentifier() == 1);
         Objects.requireNonNull(shortestPath);
@@ -30,8 +30,5 @@ public class ShortestPathFinderTest {
             assertEquals(node.getIdentifier().intValue(), start--);
         }
     }
-
-    // TODO test for edges
-
 
 }

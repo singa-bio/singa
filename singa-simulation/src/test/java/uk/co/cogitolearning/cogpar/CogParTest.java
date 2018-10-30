@@ -1,22 +1,22 @@
 package uk.co.cogitolearning.cogpar;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author cl
  */
-public class CogParTest {
+class CogParTest {
 
     @Test
-    public void shoudparsAndEvaulateExpression() {
+    void shoudparsAndEvaulateExpression() {
         String exprstr = "2*(1+sin(pi/2))^2";
         ExpressionParser parser = new ExpressionParser();
         try {
             ExpressionNode expr = parser.parse(exprstr);
             expr.accept(new SetVariable("pi", Math.PI));
-            assertEquals(8.0, expr.getValue(), 0.0);
+            assertEquals(8.0, expr.getValue());
         } catch (ParserException | EvaluationException e) {
             e.printStackTrace();
         }

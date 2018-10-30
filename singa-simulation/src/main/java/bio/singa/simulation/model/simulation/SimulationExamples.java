@@ -8,6 +8,7 @@ import bio.singa.chemistry.features.reactions.MichaelisConstant;
 import bio.singa.chemistry.features.reactions.RateConstant;
 import bio.singa.chemistry.features.reactions.TurnoverNumber;
 import bio.singa.features.parameters.Environment;
+import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.graphs.model.Graphs;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
@@ -16,10 +17,7 @@ import bio.singa.simulation.model.modules.concentration.imlementations.Diffusion
 import bio.singa.simulation.model.modules.concentration.imlementations.MichaelisMentenReaction;
 import bio.singa.simulation.model.modules.concentration.imlementations.NthOrderReaction;
 import bio.singa.simulation.model.modules.concentration.imlementations.ReversibleReaction;
-import bio.singa.simulation.model.sections.CellRegion;
 import bio.singa.simulation.model.sections.CellSubsection;
-import bio.singa.simulation.parser.sbml.BioModelsParserService;
-import bio.singa.simulation.parser.sbml.SBMLParser;
 import bio.singa.structure.features.molarmass.MolarMass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,11 +26,9 @@ import tec.uom.se.unit.ProductUnit;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Time;
-import java.util.ArrayList;
 
 import static bio.singa.features.model.FeatureOrigin.MANUALLY_ANNOTATED;
 import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
-import static bio.singa.simulation.model.sections.CellTopology.INNER;
 import static tec.uom.se.AbstractUnit.ONE;
 import static tec.uom.se.unit.MetricPrefix.MILLI;
 import static tec.uom.se.unit.MetricPrefix.NANO;
@@ -55,7 +51,7 @@ public class SimulationExamples {
      */
     public static Simulation createDecompositionReactionExample() {
         // setup time step size
-        Environment.setTimeStep(Quantities.getQuantity(10.0, MILLI(SECOND)));
+        UnitRegistry.setTime(Quantities.getQuantity(10.0, MILLI(SECOND)));
         // setup simulation
         Simulation simulation = new Simulation();
         // get required species
@@ -93,7 +89,7 @@ public class SimulationExamples {
      */
     public static Simulation createSynthesisReactionExample() {
         // setup time step size
-        Environment.setTimeStep(Quantities.getQuantity(1.0, SECOND));
+        UnitRegistry.setTime(Quantities.getQuantity(1.0, SECOND));
         // setup simulation
         Simulation simulation = new Simulation();
         // get required species
@@ -130,7 +126,7 @@ public class SimulationExamples {
      */
     public static Simulation createEquilibriumReactionExample() {
         // setup time step size
-        Environment.setTimeStep(Quantities.getQuantity(10.0, MILLI(SECOND)));
+        UnitRegistry.setTime(Quantities.getQuantity(10.0, MILLI(SECOND)));
         // setup simulation
         Simulation simulation = new Simulation();
 
@@ -177,7 +173,7 @@ public class SimulationExamples {
      */
     public static Simulation createMichaelisMentenReactionExample() {
         // setup time step size
-        Environment.setTimeStep(Quantities.getQuantity(1.0, MILLI(SECOND)));
+        UnitRegistry.setTime(Quantities.getQuantity(1.0, MILLI(SECOND)));
         // setup simulation
         Simulation simulation = new Simulation();
         // get required species
@@ -189,7 +185,7 @@ public class SimulationExamples {
         Enzyme aldolase = new Enzyme.Builder("P07752")
                 .name("Fructose-bisphosphate aldolase")
                 .assignFeature(new MolarMass(82142, MANUALLY_ANNOTATED))
-                .assignFeature(new MichaelisConstant(Quantities.getQuantity(9.0e-3, MOLE_PER_LITRE).to(Environment.getConcentrationUnit()), MANUALLY_ANNOTATED))
+                .assignFeature(new MichaelisConstant(Quantities.getQuantity(9.0e-3, MOLE_PER_LITRE).to(UnitRegistry.getConcentrationUnit()), MANUALLY_ANNOTATED))
                 .assignFeature(new TurnoverNumber(76, new ProductUnit<>(ONE.divide(MINUTE)), MANUALLY_ANNOTATED))
                 .build();
 
@@ -226,7 +222,7 @@ public class SimulationExamples {
     public static Simulation createDiffusionModuleExample(int numberOfNodes, Quantity<Time> timeStep) {
 
         // setup time step size as given
-        Environment.setTimeStep(timeStep);
+        UnitRegistry.setTime(timeStep);
         // setup node distance to diameter / (numberOfNodes - 1)
         Environment.setNodeSpacingToDiameter(Quantities.getQuantity(2500.0, NANO(METRE)), numberOfNodes);
 
@@ -274,7 +270,7 @@ public class SimulationExamples {
 
         // setup time step size
         logger.debug("Adjusting time step size ... ");
-        Environment.setTimeStep(Quantities.getQuantity(1.0, MILLI(SECOND)));
+        UnitRegistry.setTime(Quantities.getQuantity(1.0, MILLI(SECOND)));
 
         // setup simulation
         Simulation simulation = new Simulation();
@@ -359,48 +355,7 @@ public class SimulationExamples {
         return simulation;
     }
 
-    public static Simulation createSimulationFromSBML() {
 
-        // setup time step size
-        logger.debug("Adjusting time step size ... ");
-        Environment.setTimeStep(Quantities.getQuantity(1.0, SECOND));
-
-        // setup simulation
-        Simulation simulation = new Simulation();
-        // BIOMD0000000023
-        // BIOMD0000000064
-        // BIOMD0000000184 for ca oscillations
-
-        logger.info("Setting up simulation for model BIOMD0000000184 ...");
-        SBMLParser model = BioModelsParserService.parseModelById("BIOMD0000000184");
-
-        logger.debug("Setting up example graph ...");
-        // setup graph with a single node
-        AutomatonGraph graph = AutomatonGraphs.singularGraph();
-
-        CellRegion region = new CellRegion("Default");
-        model.getCompartments().keySet().forEach(subsection -> region.addSubSection(INNER, subsection));
-        graph.getNodes().forEach(node -> node.setCellRegion(region));
-
-        // initialize species in graph with desired concentration
-        logger.debug("Initializing starting concentrations of species and node states in graph ...");
-        AutomatonNode bioNode = graph.getNodes().iterator().next();
-        model.getStartingConcentrations().forEach((entity, value) -> {
-            logger.debug("Initialized concentration of {} to {}.", entity.getIdentifier(), value);
-            bioNode.getConcentrationContainer().set(INNER, entity, value);
-        });
-
-        // add graph
-        simulation.setGraph(graph);
-        // add reaction to the reactions used in the simulations
-        model.getReactions().forEach(reaction -> reaction.setSimulation(simulation));
-        simulation.getModules().addAll(model.getReactions());
-        // add, sort and apply assignment rules
-        simulation.setAssignmentRules(new ArrayList<>(model.getAssignmentRules()));
-        simulation.applyAssignmentRules();
-
-        return simulation;
-    }
 
     public static Simulation createCompartmentTestEnvironment() {
         logger.info("Setting up Compartment Test Example ...");

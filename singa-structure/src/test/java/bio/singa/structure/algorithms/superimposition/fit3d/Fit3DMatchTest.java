@@ -7,30 +7,28 @@ import bio.singa.structure.model.identifiers.LeafIdentifiers;
 import bio.singa.structure.model.interfaces.Structure;
 import bio.singa.structure.model.oak.StructuralMotif;
 import bio.singa.structure.parser.pdb.structures.StructureParser;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author fk
  */
-public class Fit3DMatchTest {
+class Fit3DMatchTest {
 
-    @Rule
-    public final TemporaryFolder testFolder = new TemporaryFolder();
+    private static Path directory;
+    private static Structure target;
+    private static StructuralMotif queryMotif;
 
-    private Structure target;
-    private StructuralMotif queryMotif;
-
-    @Before
-    public void setUp() {
+    @BeforeAll
+    static void initialize() throws IOException {
+        directory = Files.createTempDirectory("junit-tests");
         target = StructureParser.pdb()
                 .pdbIdentifier("1GL0")
                 .parse();
@@ -43,7 +41,7 @@ public class Fit3DMatchTest {
     }
 
     @Test
-    public void shouldGetCsvRepresentation() {
+    void shouldGetCsvRepresentation() {
         Fit3D fit3d = Fit3DBuilder.create()
                 .query(queryMotif)
                 .target(target.getFirstChain())
@@ -52,18 +50,18 @@ public class Fit3DMatchTest {
     }
 
     @Test
-    public void shouldWriteSummaryFile() throws IOException {
+    void shouldWriteSummaryFile() throws IOException {
         Fit3D fit3d = Fit3DBuilder.create()
                 .query(queryMotif)
                 .target(target.getFirstChain())
                 .run();
-        File summaryFile = testFolder.newFile("summary.csv");
-        fit3d.writeSummaryFile(summaryFile.toPath());
-        assertTrue(summaryFile.exists());
+        Path summary = Files.createFile(directory.resolve("summary.csv"));
+        fit3d.writeSummaryFile(summary);
+        assertTrue(Files.size(summary) > 0);
     }
 
     @Test
-    public void shouldAssembleCandidateStructuralMotif() {
+    void shouldAssembleCandidateStructuralMotif() {
         Fit3D fit3d = Fit3DBuilder.create()
                 .query(queryMotif)
                 .target(target.getFirstChain())
@@ -74,7 +72,7 @@ public class Fit3DMatchTest {
     }
 
     @Test
-    public void shouldDetermineAlignedSequence(){
+    void shouldDetermineAlignedSequence(){
         Fit3D fit3d = Fit3DBuilder.create()
                 .query(queryMotif)
                 .target(target.getFirstChain())
@@ -85,7 +83,7 @@ public class Fit3DMatchTest {
     }
 
     @Test
-    public void shouldDetermineType(){
+    void shouldDetermineType(){
         Fit3D fit3d = Fit3DBuilder.create()
                 .query(queryMotif)
                 .target(target.getFirstChain())

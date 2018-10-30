@@ -4,23 +4,23 @@ import bio.singa.core.utility.Resources;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.interfaces.Structure;
 import bio.singa.structure.parser.pdb.structures.StructureParser;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author fk
  */
-public class StructuralMotifTest {
+class StructuralMotifTest {
 
     private static StructuralMotif motif;
 
-    @BeforeClass
-    public static void setup() {
+    @BeforeAll
+    static void initialize() {
         Structure motifStructure = StructureParser.local()
                 .fileLocation(Resources.getResourceAsFileLocation("Asn_3m4p.pdb"))
                 .everything()
@@ -29,7 +29,7 @@ public class StructuralMotifTest {
     }
 
     @Test
-    public void shouldRetainSubstructureOrdering() {
+    void shouldRetainSubstructureOrdering() {
         final List<LeafSubstructure<?>> allLeafSubstructures = motif.getAllLeafSubstructures();
         LeafSubstructure<?> lower = allLeafSubstructures.get(0);
         LeafSubstructure<?> higher = allLeafSubstructures.get(allLeafSubstructures.size() - 1);
