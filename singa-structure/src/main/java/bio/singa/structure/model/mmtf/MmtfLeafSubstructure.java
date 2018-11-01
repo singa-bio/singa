@@ -48,6 +48,7 @@ public abstract class MmtfLeafSubstructure<FamilyType extends StructuralFamily> 
      * The set of atoms anot available
      */
     private final Set<Integer> removedAtoms;
+
     /**
      * The structural family of this entity
      */
@@ -56,6 +57,7 @@ public abstract class MmtfLeafSubstructure<FamilyType extends StructuralFamily> 
      * The families to which the {@link LeafSubstructure} can be exchanged.
      */
     protected Set<FamilyType> exchangeableFamilies;
+
 
     /**
      * Creates a new {@link MmtfLeafSubstructure}.
