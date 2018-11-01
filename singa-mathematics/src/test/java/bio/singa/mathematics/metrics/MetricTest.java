@@ -7,11 +7,10 @@ import bio.singa.mathematics.metrics.implementations.MinkowskiMetric;
 import bio.singa.mathematics.metrics.implementations.TanimotoCoefficient;
 import bio.singa.mathematics.metrics.model.Metric;
 import bio.singa.mathematics.metrics.model.VectorMetricProvider;
-import bio.singa.mathematics.vectors.RegularVector;
-import bio.singa.mathematics.vectors.Vector2D;
-import bio.singa.mathematics.vectors.Vector3D;
-import org.junit.Before;
-import org.junit.Test;
+import bio.singa.mathematics.vectors.*;
+import bio.singa.mathematics.vectors.Vector;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.util.*;
 

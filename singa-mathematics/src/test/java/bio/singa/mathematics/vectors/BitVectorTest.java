@@ -1,36 +1,36 @@
 package bio.singa.mathematics.vectors;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class BitVectorTest {
+class BitVectorTest {
 
-    RegularBitVector bitVector;
+    static RegularBitVector bitVector;
 
-    @Before
-    public void initialize() {
+    @BeforeAll
+    static void initialize() {
         bitVector = new RegularBitVector(true, false, true, true, false, true);
     }
 
     @Test
-    public void getCopy() {
+    void getCopy() {
         BitVector copyOfBitVector = bitVector.getCopy();
         copyOfBitVector.getElements()[0] = false;
         assertTrue(bitVector.getElements()[0] != copyOfBitVector.getElements()[0]);
     }
 
     @Test
-    public void equals() {
+    void equals() {
         BitVector copyOfBitVector = bitVector.getCopy();
         assertEquals(bitVector, copyOfBitVector);
     }
 
     @Test
-    public void fromBitString() {
+    void fromBitString() {
         BitVector bitVector = BitVector.fromBitString("101101");
-        assertEquals(this.bitVector, bitVector);
+        assertEquals(BitVectorTest.bitVector, bitVector);
     }
 }
