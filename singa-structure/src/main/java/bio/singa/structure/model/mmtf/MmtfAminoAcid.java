@@ -19,6 +19,11 @@ import java.util.Optional;
 public class MmtfAminoAcid extends MmtfLeafSubstructure<AminoAcidFamily> implements AminoAcid {
 
     /**
+     * The DSSP-annotated secondary structure
+     */
+    private final MmtfSecondaryStructure secondaryStructure;
+
+    /**
      * Creates a new {@link MmtfAminoAcid}.
      *
      * @param data The original data.
@@ -28,8 +33,9 @@ public class MmtfAminoAcid extends MmtfLeafSubstructure<AminoAcidFamily> impleme
      * @param atomStartIndex The index of the first atom that belong to this leaf.
      * @param atomEndIndex The index of the last atom that belong to this leaf.
      */
-    MmtfAminoAcid(StructureDataInterface data, byte[] bytes, AminoAcidFamily family, LeafIdentifier leafIdentifier, int internalGroupIndex, int atomStartIndex, int atomEndIndex) {
+    MmtfAminoAcid(StructureDataInterface data, byte[] bytes, AminoAcidFamily family, MmtfSecondaryStructure secondaryStructure, LeafIdentifier leafIdentifier, int internalGroupIndex, int atomStartIndex, int atomEndIndex) {
         super(data, bytes, family, leafIdentifier, internalGroupIndex, atomStartIndex, atomEndIndex);
+        this.secondaryStructure = secondaryStructure;
     }
 
     /**
@@ -40,12 +46,17 @@ public class MmtfAminoAcid extends MmtfLeafSubstructure<AminoAcidFamily> impleme
     private MmtfAminoAcid(MmtfAminoAcid mmtfLeafSubstructure) {
         super(mmtfLeafSubstructure);
         family = mmtfLeafSubstructure.family;
+        secondaryStructure = mmtfLeafSubstructure.secondaryStructure;
         exchangeableFamilies = new HashSet<>(mmtfLeafSubstructure.exchangeableFamilies);
     }
 
     @Override
     public boolean isAnnotatedAsHeteroAtom() {
         return false;
+    }
+
+    public MmtfSecondaryStructure getSecondaryStructure() {
+        return secondaryStructure;
     }
 
     @Override
