@@ -21,7 +21,6 @@ import bio.singa.simulation.model.simulation.Updatable;
 import tec.uom.se.ComparableQuantity;
 
 import javax.measure.Quantity;
-import javax.measure.quantity.Area;
 import javax.measure.quantity.Length;
 import javax.measure.quantity.Time;
 import java.util.*;
@@ -173,7 +172,7 @@ public class VesicleFusion extends QualitativeModule {
             Vector2D currentPosition = vesicle.getCurrentPosition();
             // for each associated node
             nodesLoop:
-            for (Map.Entry<AutomatonNode, Quantity<Area>> entry : vesicle.getAssociatedNodes().entrySet()) {
+            for (Map.Entry<AutomatonNode, Double> entry : vesicle.getAssociatedNodes().entrySet()) {
                 AutomatonNode node = entry.getKey();
                 // if it contains a membrane
                 if (node.getCellRegion().hasMembrane()) {

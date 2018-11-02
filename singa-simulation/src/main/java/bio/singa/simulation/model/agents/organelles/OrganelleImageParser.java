@@ -6,7 +6,7 @@ import bio.singa.mathematics.geometry.faces.VertexPolygon;
 import bio.singa.mathematics.geometry.model.Polygon;
 import bio.singa.mathematics.matrices.Matrices;
 import bio.singa.mathematics.matrices.SymmetricMatrix;
-import bio.singa.mathematics.topology.grids.rectangular.RectangularDirection;
+import bio.singa.mathematics.topology.grids.rectangular.NeumannRectangularDirection;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.mathematics.vectors.Vectors;
 import bio.singa.simulation.model.agents.filaments.SkeletalFilament;
@@ -61,7 +61,7 @@ public class OrganelleImageParser {
         return new OrganelleTemplate(parser.scale, parser.polygon, parser.groups);
     }
 
-    public static FilamentTemplate getFilaments(Path imageFolder, String baseFileName, RectangularDirection plusDirection) {
+    public static FilamentTemplate getFilaments(Path imageFolder, String baseFileName, NeumannRectangularDirection plusDirection) {
 
         List<Path> filamentFiles = new ArrayList<>();
 

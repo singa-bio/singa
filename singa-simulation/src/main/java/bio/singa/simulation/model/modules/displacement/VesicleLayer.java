@@ -2,21 +2,30 @@ package bio.singa.simulation.model.modules.displacement;
 
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.units.UnitRegistry;
+import bio.singa.mathematics.geometry.bodies.Spheres;
+import bio.singa.mathematics.geometry.edges.LineSegment;
 import bio.singa.mathematics.geometry.edges.SimpleLineSegment;
+import bio.singa.mathematics.geometry.faces.Circle;
 import bio.singa.mathematics.geometry.faces.Rectangle;
+import bio.singa.mathematics.geometry.model.Polygon;
 import bio.singa.mathematics.matrices.LabeledSymmetricMatrix;
+import bio.singa.mathematics.topology.grids.rectangular.MooreRectangularDirection;
+import bio.singa.mathematics.topology.grids.rectangular.NeumannRectangularDirection;
+import bio.singa.mathematics.topology.grids.rectangular.RectangularCoordinate;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.simulation.model.agents.membranes.Membrane;
 import bio.singa.simulation.model.agents.membranes.MembraneSegment;
+import bio.singa.simulation.model.graphs.AutomatonGraph;
+import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.simulation.Simulation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Length;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
+import static bio.singa.mathematics.geometry.model.Polygon.ON_LINE;
 import static bio.singa.mathematics.metrics.model.VectorMetricProvider.SQUARED_EUCLIDEAN_METRIC;
 
 /**
@@ -122,6 +131,87 @@ public class VesicleLayer {
         }
         return true;
     }
+
+    public void associateVesicles() {
+        // clear previous vesicle associations
+        vesicles.forEach(Vesicle::clearAssociatedNodes);
+        // associate vesicles to nodes
+        vesicles.forEach(this::associateVesicle);
+    }
+
+    private void associateVesicle(Vesicle vesicle) {
+        // convert vesicle from system to simulation scale
+        Circle vesicleCircle = vesicle.getCircleRepresentation();
+        double vesicleRadius = vesicleCircle.getRadius();
+        Vector2D vesicleCentre = vesicleCircle.getMidpoint();
+        // determine the node that contains the vesicle
+        AutomatonGraph graph = simulation.getGraph();
+        for (AutomatonNode node : graph.getNodes()) {
+            // get representative region of the node
+            Polygon polygon = node.getSpatialRepresentation();
+            // associate vesicle to the node with the largest part of the vesicle (midpoint is inside)
+            if (polygon.evaluatePointPosition(vesicle.getCurrentPosition()) >= ON_LINE) {
+                // check if vesicle intersects with more than two regions at once
+                for (Vector2D polygonVertex : polygon.getVertices()) {
+                    // this is the case if the distance to the edge is smaller than the radius
+                    if (vesicleCentre.distanceTo(polygonVertex) < vesicleRadius) {
+                        Map<MooreRectangularDirection, Double> slices = Spheres.calculateSphereSlice(vesicleCentre, vesicleRadius, polygonVertex);
+                        // get biggest slice, this is the representative node
+                        MooreRectangularDirection coordinateDirection = null;
+                        double biggestSurface = 0;
+                        for (Map.Entry<MooreRectangularDirection, Double> entry : slices.entrySet()) {
+                            if (entry.getValue() > biggestSurface) {
+                                coordinateDirection = entry.getKey();
+                                biggestSurface = entry.getValue();
+                            }
+                        }
+                        if (coordinateDirection == null) {
+                            throw new IllegalStateException("Tried to associate vesicle " + vesicle + " with " + node + " but no areas could be determined.");
+                        }
+                        // assign other corresponding nodes to neighbors
+                        for (Map.Entry<MooreRectangularDirection, Double> entry : slices.entrySet()) {
+                            RectangularCoordinate neighbor = MooreRectangularDirection.getNeighborOf(node.getIdentifier(), coordinateDirection, entry.getKey());
+                            vesicle.addAssociatedNode(graph.getNode(neighbor), entry.getValue());
+                        }
+                        // all neighbors have been associated
+                        return;
+                    }
+                }
+                // (else) check if vesicle intersects with exactly two regions
+                double totalSurface = Spheres.calculateSurface(vesicleRadius);
+                for (LineSegment polygonEdge : polygon.getEdges()) {
+                    // this is the case if there are at least two intersections
+                    Set<Vector2D> intersection = polygonEdge.getIntersectionWith(vesicleCircle);
+                    if (intersection.size() > 1) {
+                        Iterator<Vector2D> iterator = intersection.iterator();
+                        LineSegment sliceSegment = new SimpleLineSegment(iterator.next(), iterator.next());
+                        double sliceSurface = Spheres.calculateSphereSlice(vesicleCentre, vesicleRadius, sliceSegment);
+                        if (sliceSegment.isVertical()) {
+                            if (sliceSegment.getStartingPoint().isAbove(node.getPosition())) {
+                                vesicle.addAssociatedNode(node, totalSurface - sliceSurface);
+                                vesicle.addAssociatedNode(graph.getNode(node.getIdentifier().getNeighbour(NeumannRectangularDirection.SOUTH)), sliceSurface);
+                            } else {
+                                vesicle.addAssociatedNode(node, totalSurface - sliceSurface);
+                                vesicle.addAssociatedNode(graph.getNode(node.getIdentifier().getNeighbour(NeumannRectangularDirection.NORTH)), sliceSurface);
+                            }
+                        } else {
+                            if (sliceSegment.getStartingPoint().isLeftOf(node.getPosition())) {
+                                vesicle.addAssociatedNode(node, totalSurface - sliceSurface);
+                                vesicle.addAssociatedNode(graph.getNode(node.getIdentifier().getNeighbour(NeumannRectangularDirection.WEST)), sliceSurface);
+                            } else {
+                                vesicle.addAssociatedNode(node, totalSurface - sliceSurface);
+                                vesicle.addAssociatedNode(graph.getNode(node.getIdentifier().getNeighbour(NeumannRectangularDirection.EAST)), sliceSurface);
+                            }
+                        }
+                        return;
+                    }
+                }
+                // else the vesicle if fully contained
+                vesicle.addAssociatedNode(node, totalSurface);
+            }
+        }
+    }
+
 
     public void clearUpdates() {
         for (Vesicle vesicle : vesicles) {

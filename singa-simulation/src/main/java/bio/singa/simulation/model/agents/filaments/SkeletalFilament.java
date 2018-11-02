@@ -3,7 +3,7 @@ package bio.singa.simulation.model.agents.filaments;
 import bio.singa.mathematics.geometry.edges.Line;
 import bio.singa.mathematics.geometry.faces.Circle;
 import bio.singa.mathematics.geometry.model.Polygon;
-import bio.singa.mathematics.topology.grids.rectangular.RectangularDirection;
+import bio.singa.mathematics.topology.grids.rectangular.NeumannRectangularDirection;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.mathematics.vectors.Vectors;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
@@ -55,7 +55,7 @@ public class SkeletalFilament {
         segments.add(initialDirection.normalize().add(initialPosition));
     }
 
-    public SkeletalFilament(List<Vector2D> segments, RectangularDirection plusDirection) {
+    public SkeletalFilament(List<Vector2D> segments, NeumannRectangularDirection plusDirection) {
         if (orderingIsReversed(segments, plusDirection)) {
             Collections.reverse(segments);
         }
@@ -63,7 +63,7 @@ public class SkeletalFilament {
         associatedNodes = new HashSet<>();
     }
 
-    private boolean orderingIsReversed(List<Vector2D> segments, RectangularDirection plusDirection) {
+    private boolean orderingIsReversed(List<Vector2D> segments, NeumannRectangularDirection plusDirection) {
         Vector2D front = segments.iterator().next();
         Vector2D back = segments.get(segments.size() - 1);
         switch (plusDirection) {

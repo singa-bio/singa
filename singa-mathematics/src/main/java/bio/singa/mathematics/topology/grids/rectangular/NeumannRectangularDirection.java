@@ -5,7 +5,7 @@ import bio.singa.mathematics.topology.model.DiscreteDirection;
 /**
  * @author cl
  */
-public enum RectangularDirection implements DiscreteDirection {
+public enum NeumannRectangularDirection implements DiscreteDirection {
 
     NORTH,
     SOUTH,

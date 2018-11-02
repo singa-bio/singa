@@ -95,10 +95,10 @@ public class MembraneDiffusion extends ConcentrationBasedModule<UpdatableDeltaFu
     }
 
     private void handlePartialDistributionInVesicles(Map<ConcentrationDeltaIdentifier, ConcentrationDelta> deltas, Vesicle vesicle) {
-        Map<AutomatonNode, Quantity<Area>> associatedNodes = vesicle.getAssociatedNodes();
+        Map<AutomatonNode, Double> associatedNodes = vesicle.getAssociatedNodes();
         double vesicleUpdate = 0.0;
         ConcentrationContainer vesicleContainer = vesicle.getConcentrationContainer();
-        for (Map.Entry<AutomatonNode, Quantity<Area>> entry : associatedNodes.entrySet()) {
+        for (Map.Entry<AutomatonNode, Double> entry : associatedNodes.entrySet()) {
             AutomatonNode node = entry.getKey();
             ConcentrationContainer nodeContainer;
             if (supplier.isStrutCalculation()) {
@@ -106,8 +106,8 @@ public class MembraneDiffusion extends ConcentrationBasedModule<UpdatableDeltaFu
             } else {
                 nodeContainer = node.getConcentrationContainer();
             }
-            Quantity<Area> area = entry.getValue();
-            double velocity = calculateVelocity(vesicleContainer, nodeContainer) * area.getValue().doubleValue();
+            // FIXME this is definitely not correct, it should be scaled by fraction of total update
+            double velocity = calculateVelocity(vesicleContainer, nodeContainer) * entry.getValue();
             vesicleUpdate += velocity;
             deltas.put(new ConcentrationDeltaIdentifier(node, nodeContainer.getInnerSubsection(), cargo),
                     new ConcentrationDelta(this, nodeContainer.getInnerSubsection(), cargo, UnitRegistry.concentration(-velocity)));

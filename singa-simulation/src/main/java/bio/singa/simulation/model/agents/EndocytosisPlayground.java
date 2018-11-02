@@ -11,7 +11,7 @@ import bio.singa.javafx.renderer.Renderer;
 import bio.singa.mathematics.geometry.edges.SimpleLineSegment;
 import bio.singa.mathematics.geometry.faces.Rectangle;
 import bio.singa.mathematics.geometry.model.Polygon;
-import bio.singa.mathematics.topology.grids.rectangular.RectangularDirection;
+import bio.singa.mathematics.topology.grids.rectangular.NeumannRectangularDirection;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.simulation.model.agents.filaments.FilamentLayer;
 import bio.singa.simulation.model.agents.filaments.SkeletalFilament;
@@ -97,7 +97,7 @@ public class EndocytosisPlayground extends Application implements Renderer {
         membranes = new MembraneLayer();
         simulation.setMembraneLayer(membranes);
         Map<Vector2D, CellRegion> inverseRegionMap = template.getInverseRegionMap();
-        Membrane membrane = MembraneFactory.createLinearMembrane(template.getGroups().get(-65536), OrganelleTypes.CELL.getInnerRegion(), OrganelleTypes.CELL.getMembraneRegion(), RectangularDirection.EAST, graph, inverseRegionMap, rectangle);
+        Membrane membrane = MembraneFactory.createLinearMembrane(template.getGroups().get(-65536), OrganelleTypes.CELL.getInnerRegion(), OrganelleTypes.CELL.getMembraneRegion(), NeumannRectangularDirection.EAST, graph, inverseRegionMap, rectangle);
         Membrane endosome1 = MembraneFactory.createClosedMembrane(template.getGroups().get(-16711936), OrganelleTypes.EARLY_ENDOSOME.getInnerRegion(), OrganelleTypes.EARLY_ENDOSOME.getMembraneRegion(), graph, inverseRegionMap);
         Membrane endosome2 = MembraneFactory.createClosedMembrane(template.getGroups().get(-16776968), OrganelleTypes.EARLY_ENDOSOME.getInnerRegion(), OrganelleTypes.EARLY_ENDOSOME.getMembraneRegion(), graph, inverseRegionMap);
         membranes.addMembrane(membrane);

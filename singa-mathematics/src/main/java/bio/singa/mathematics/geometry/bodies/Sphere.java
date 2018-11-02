@@ -23,6 +23,10 @@ public class Sphere {
         return radius;
     }
 
+    public double getSurface() {
+        return Spheres.calculateSurface(radius);
+    }
+
     public double getVolume() {
         return 4.0/3.0*Math.PI*radius*radius*radius;
     }
@@ -34,4 +38,5 @@ public class Sphere {
                 ", radius=" + radius +
                 '}';
     }
+
 }

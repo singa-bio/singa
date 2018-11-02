@@ -7,7 +7,7 @@ import bio.singa.mathematics.geometry.edges.SimpleLineSegment;
 import bio.singa.mathematics.geometry.faces.Rectangle;
 import bio.singa.mathematics.geometry.faces.VertexPolygon;
 import bio.singa.mathematics.geometry.model.Polygon;
-import bio.singa.mathematics.topology.grids.rectangular.RectangularDirection;
+import bio.singa.mathematics.topology.grids.rectangular.NeumannRectangularDirection;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.mathematics.vectors.Vectors;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 import java.util.*;
 
 import static bio.singa.mathematics.geometry.model.Polygon.*;
-import static bio.singa.mathematics.topology.grids.rectangular.RectangularDirection.*;
+import static bio.singa.mathematics.topology.grids.rectangular.NeumannRectangularDirection.*;
 
 /**
  * @author cl
@@ -30,16 +30,16 @@ public class MembraneFactory {
 
     private Collection<Vector2D> membraneVectors;
     private Polygon polygon;
-    private RectangularDirection direction;
+    private NeumannRectangularDirection direction;
     private AutomatonGraph graph;
     private Map<Vector2D, CellRegion> regions;
     private Membrane membrane;
 
-    public static Membrane createLinearMembrane(Collection<Vector2D> vectors, CellRegion innerRegion, CellRegion membraneRegion, RectangularDirection innerDirection, AutomatonGraph graph, Map<Vector2D, CellRegion> regions, Rectangle globalClipper) {
+    public static Membrane createLinearMembrane(Collection<Vector2D> vectors, CellRegion innerRegion, CellRegion membraneRegion, NeumannRectangularDirection innerDirection, AutomatonGraph graph, Map<Vector2D, CellRegion> regions, Rectangle globalClipper) {
         MembraneFactory factory = new MembraneFactory(vectors, graph, regions);
         factory.direction = innerDirection;
         factory.initializeMembrane(innerRegion, membraneRegion);
-        RectangularDirection vectorDirection;
+        NeumannRectangularDirection vectorDirection;
         if (innerDirection == NORTH || innerDirection == SOUTH) {
             vectorDirection = WEST;
         } else {

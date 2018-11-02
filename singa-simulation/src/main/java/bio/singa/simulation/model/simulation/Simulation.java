@@ -5,16 +5,13 @@ import bio.singa.chemistry.entities.ComplexedChemicalEntity;
 import bio.singa.features.identifiers.SimpleStringIdentifier;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.units.UnitRegistry;
-import bio.singa.mathematics.geometry.faces.Circle;
 import bio.singa.mathematics.geometry.faces.Rectangle;
-import bio.singa.mathematics.geometry.model.Polygon;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.simulation.model.agents.membranes.MembraneLayer;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.modules.UpdateModule;
 import bio.singa.simulation.model.modules.concentration.ConcentrationDelta;
-import bio.singa.simulation.model.modules.displacement.Vesicle;
 import bio.singa.simulation.model.modules.displacement.VesicleLayer;
 import bio.singa.simulation.model.rules.AssignmentRule;
 import bio.singa.simulation.model.rules.AssignmentRules;
@@ -27,11 +24,9 @@ import tec.uom.se.ComparableQuantity;
 import tec.uom.se.quantity.Quantities;
 
 import javax.measure.Quantity;
-import javax.measure.quantity.Area;
 import javax.measure.quantity.Time;
 import java.util.*;
 
-import static bio.singa.mathematics.geometry.model.Polygon.ON_LINE;
 import static tec.uom.se.unit.MetricPrefix.MICRO;
 import static tec.uom.se.unit.Units.SECOND;
 
@@ -165,7 +160,7 @@ public class Simulation {
         // move vesicles
         if (vesicleLayer != null) {
             vesicleLayer.applyDeltas();
-            associateVesicles();
+            vesicleLayer.associateVesicles();
         }
         // update epoch and elapsed time
         updateEpoch();
@@ -228,67 +223,7 @@ public class Simulation {
         // initialize simulation space
         vesicleLayer.setSimulation(this);
         vesicleLayer.setSimulationArea(new Rectangle(Environment.getSimulationExtend(), Environment.getSimulationExtend()));
-        associateVesicles();
-    }
-
-    private void associateVesicles() {
-        // clear previous vesicle associations
-        vesicleLayer.getVesicles().forEach(Vesicle::clearAssociatedNodes);
-        // associate vesicles to nodes
-        for (Vesicle vesicle : vesicleLayer.getVesicles()) {
-            // convert vesicle from system to simulation scale
-            Circle vesicleCircle = vesicle.getCircleRepresentation();
-            double radius = vesicleCircle.getRadius();
-            // determine representative and associated nodes
-            AutomatonNode representativeNode = null;
-            Map<AutomatonNode, Set<Vector2D>> associatedNodes = new HashMap<>();
-            for (AutomatonNode node : graph.getNodes()) {
-                // get representative region of the node
-                Polygon polygon = node.getSpatialRepresentation();
-                // associate vesicle to the node with the largest part of the vesicle (midpoint is inside)
-                if (representativeNode == null && polygon.evaluatePointPosition(vesicle.getCurrentPosition()) >= ON_LINE) {
-                    representativeNode = node;
-                }
-                // associate partial containment to other nodes
-                Set<Vector2D> intersections = polygon.getIntersections(vesicleCircle);
-                if (!intersections.isEmpty()) {
-                    associatedNodes.put(node, intersections);
-                }
-            }
-            // remove potentially doubly assigned representative node
-            associatedNodes.remove(representativeNode);
-            // calculate the total surface of the implicit sphere
-            final double totalSurface = 4.0 * Math.PI * radius * radius;
-            double reducedSurface = totalSurface;
-            // distribute the sphere according to the intersections with different representative regions
-            for (Map.Entry<AutomatonNode, Set<Vector2D>> entry : associatedNodes.entrySet()) {
-                Set<Vector2D> intersections = entry.getValue();
-                // if there is an actual region to intersect
-                // FIXME handle cases where more than two intersection points are present
-                if (intersections.size() == 2) {
-                    Iterator<Vector2D> iterator = intersections.iterator();
-                    Vector2D first = iterator.next();
-                    Vector2D second = iterator.next();
-                    // calculate angle associated to the node
-                    double theta = vesicleCircle.getCentralAngleBetween(first, second);
-                    // and the spherical lune of the implicit sphere associated to the automaton node
-                    double associatedSurface = 2 * radius * radius * theta;
-                    // use fraction to get actual system area
-                    double fraction = associatedSurface / totalSurface;
-                    // reduce area of representative node
-                    reducedSurface -= associatedSurface;
-                    // associate vesicle and its corresponding area to the node
-                    Quantity<Area> nodeSurface = vesicle.getArea().multiply(fraction);
-                    AutomatonNode node = entry.getKey();
-                    vesicle.addAssociatedNode(node, nodeSurface);
-                }
-            }
-            // set area for representative
-            double fraction = reducedSurface / totalSurface;
-            Quantity<Area> nodeSurface = vesicle.getArea().multiply(fraction);
-            assert representativeNode != null;
-            vesicle.addAssociatedNode(representativeNode, nodeSurface);
-        }
+        vesicleLayer.associateVesicles();
     }
 
     public VesicleLayer getVesicleLayer() {
