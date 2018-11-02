@@ -22,6 +22,7 @@ class MmtfLeafSubstructureTest {
 
     private static Structure structure1C0A;
     private static LeafSubstructure leaf162;
+    private static LeafSubstructure leaf154;
     private static LeafSubstructure<?> leaf620A;
     private static LeafSubstructure leafToModify;
 
@@ -32,6 +33,7 @@ class MmtfLeafSubstructureTest {
         // ...
         // ATOM   2973  CG2 THR A 162      44.646  50.871  -9.169  1.00 11.44           C
         leaf162 = structure1C0A.getLeafSubstructure(new LeafIdentifier("1C0A", 1, "A", 162)).get();
+        leaf154 = structure1C0A.getLeafSubstructure(new LeafIdentifier("1C0A", 1, "A", 154)).get();
         leaf620A = structure1C0A.getLeafSubstructure(new LeafIdentifier("1C0A", 1, "B", 620, 'A')).get();
         leafToModify = structure1C0A.getLeafSubstructure(new LeafIdentifier("1C0A", 1, "A", 163)).get();
     }
@@ -101,4 +103,14 @@ class MmtfLeafSubstructureTest {
         assertEquals(new Vector3D(64.29000091552734, 3.1989998817443848, 32.742000579833984), atom.getPosition());
     }
 
+    @Test
+    void assignSecondaryStructure() {
+        MmtfSecondaryStructure secondaryStructure = ((MmtfAminoAcid) leaf154).getSecondaryStructure();
+        assertEquals(MmtfSecondaryStructure.ALPHA_HELIX, secondaryStructure);
+        secondaryStructure = ((MmtfAminoAcid) leaf162).getSecondaryStructure();
+        assertEquals(MmtfSecondaryStructure.COIL, secondaryStructure);
+        assertTrue(structure1C0A.getAllAminoAcids().stream()
+                .map(MmtfAminoAcid.class::cast)
+                .noneMatch(aminoAcid -> aminoAcid.getSecondaryStructure() == MmtfSecondaryStructure.UNDEFINED));
+    }
 }

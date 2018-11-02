@@ -43,7 +43,14 @@ class MmtfLeafFactory {
         final String threeLetterCode = data.getGroupName(data.getGroupTypeIndices()[internalGroupIndex]);
         Optional<AminoAcidFamily> aminoAcidFamily = AminoAcidFamily.getAminoAcidTypeByThreeLetterCode(threeLetterCode);
         if (aminoAcidFamily.isPresent()) {
-            return new MmtfAminoAcid(data, bytes, aminoAcidFamily.get(), leafIdentifier, internalGroupIndex, atomStartIndex, atomEndIndex);
+            int[] secondaryStructureCodes = data.getSecStructList();
+            MmtfSecondaryStructure secondaryStructure;
+            if (secondaryStructureCodes.length < internalGroupIndex) {
+                secondaryStructure = MmtfSecondaryStructure.UNDEFINED;
+            } else {
+                secondaryStructure = MmtfSecondaryStructure.getByMmtfCode(secondaryStructureCodes[internalGroupIndex]);
+            }
+            return new MmtfAminoAcid(data, bytes, aminoAcidFamily.get(), secondaryStructure, leafIdentifier, internalGroupIndex, atomStartIndex, atomEndIndex);
         }
         Optional<NucleotideFamily> nucleotideFamily = NucleotideFamily.getNucleotideByThreeLetterCode(threeLetterCode);
         if (nucleotideFamily.isPresent()) {

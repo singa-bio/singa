@@ -13,15 +13,15 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 /**
  * @author cl
  */
-public class SubstitutionMatrixTest {
+class SubstitutionMatrixTest {
 
     @Test
-    public void getMatrix() {
+    void getMatrix() {
         assertNotNull(SubstitutionMatrix.BLOSUM_45.getMatrix());
     }
 
     @Test
-    public void getAllMatrices() {
+    void getAllMatrices() {
         Set<String> stringComparison = new HashSet<>();
         for (SubstitutionMatrix substitutionMatrix : SubstitutionMatrix.values()) {
             stringComparison.add(substitutionMatrix.getMatrix().getStringRepresentation());
