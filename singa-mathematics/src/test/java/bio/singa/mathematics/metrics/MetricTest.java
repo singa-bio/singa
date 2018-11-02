@@ -7,11 +7,9 @@ import bio.singa.mathematics.metrics.implementations.MinkowskiMetric;
 import bio.singa.mathematics.metrics.implementations.TanimotoCoefficient;
 import bio.singa.mathematics.metrics.model.Metric;
 import bio.singa.mathematics.metrics.model.VectorMetricProvider;
-import bio.singa.mathematics.vectors.RegularVector;
-import bio.singa.mathematics.vectors.Vector2D;
-import bio.singa.mathematics.vectors.Vector3D;
-import org.junit.Before;
-import org.junit.Test;
+import bio.singa.mathematics.vectors.*;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.util.*;
 
@@ -78,7 +76,7 @@ class MetricTest {
     void testMinkowskiMetricWithVectorsOfDifferentDimension() {
         RegularVector first = new RegularVector(1.0, 1.0, 1.0);
         RegularVector second = new RegularVector(1.0, 1.0);
-        MinkowskiMetric<Vector> minkowski = new MinkowskiMetric<>(2);
+        MinkowskiMetric<RegularVector> minkowski = new MinkowskiMetric<>(2);
         assertThrows(IncompatibleDimensionsException.class,
                 () -> minkowski.calculateDistance(first, second));
     }
@@ -122,7 +120,7 @@ class MetricTest {
     }
 
     @Test
-    public void testTanimotoCoefficient() {
+    void testTanimotoCoefficient() {
         BitVector firstBitVector = new RegularBitVector(true, false, true, true, false, true);
         BitVector secondBitVector = new RegularBitVector(true, true, false, true, false, false);
         TanimotoCoefficient<BitVector> tanimotoCoefficient = new TanimotoCoefficient<>();

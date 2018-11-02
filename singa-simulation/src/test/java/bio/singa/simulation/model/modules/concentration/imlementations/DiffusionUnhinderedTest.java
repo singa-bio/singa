@@ -25,8 +25,7 @@ import javax.measure.quantity.Time;
 
 import static bio.singa.chemistry.features.diffusivity.Diffusivity.SQUARE_CENTIMETRE_PER_SECOND;
 import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
-import static bio.singa.simulation.model.sections.CellSubsection.SECTION_A;
-import static bio.singa.simulation.model.sections.CellTopology.INNER;
+import static bio.singa.simulation.model.sections.CellSubsections.EXTRACELLULAR_REGION;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static tec.uom.se.unit.MetricPrefix.MICRO;
 import static tec.uom.se.unit.MetricPrefix.NANO;
@@ -115,11 +114,10 @@ class DiffusionUnhinderedTest {
         AutomatonGraph graph = AutomatonGraphs.useStructureFrom(Graphs.buildGridGraph(numberOfNodes, numberOfNodes));
         // initialize species in graph with desired concentration leaving the right "half" empty
         for (AutomatonNode node : graph.getNodes()) {
-            node.getConcentrationContainer().initializeSubsection(SECTION_A, INNER);
             if (node.getIdentifier().getColumn() < (graph.getNumberOfColumns() / 2)) {
-                node.getConcentrationContainer().initialize(SECTION_A, species, Quantities.getQuantity(1.0, MOLE_PER_LITRE));
+                node.getConcentrationContainer().initialize(EXTRACELLULAR_REGION, species, Quantities.getQuantity(1.0, MOLE_PER_LITRE));
             } else {
-                node.getConcentrationContainer().initialize(SECTION_A, species, Quantities.getQuantity(0.0, MOLE_PER_LITRE));
+                node.getConcentrationContainer().initialize(EXTRACELLULAR_REGION, species, Quantities.getQuantity(0.0, MOLE_PER_LITRE));
             }
         }
         // setup simulation
@@ -137,11 +135,12 @@ class DiffusionUnhinderedTest {
     private Quantity<Time> runSimulation(Simulation simulation, int numberOfNodes, SmallMolecule species) {
         // returns the node in the middle on the right
         RectangularCoordinate coordinate = new RectangularCoordinate(numberOfNodes - 1, (numberOfNodes / 2) - 1);
+        simulation.getGraph().getNode(coordinate).setObserved(true);
         // simulate until half life concentration has been reached
         double currentConcentration = 0.0;
         while (currentConcentration < 0.25) {
             simulation.nextEpoch();
-            final Quantity<MolarConcentration> concentration = simulation.getGraph().getNode(coordinate).getConcentration(SECTION_A, species).to(MOLE_PER_LITRE);
+            final Quantity<MolarConcentration> concentration = simulation.getGraph().getNode(coordinate).getConcentration(EXTRACELLULAR_REGION, species).to(MOLE_PER_LITRE);
             currentConcentration = concentration.getValue().doubleValue();
             //System.out.println("Currently "+concentration+" at "+simulation.getElapsedTime().to(MICRO(SECOND)));
         }

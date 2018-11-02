@@ -6,7 +6,6 @@ import bio.singa.chemistry.features.reactions.MichaelisConstant;
 import bio.singa.chemistry.features.reactions.RateConstant;
 import bio.singa.chemistry.features.reactions.TurnoverNumber;
 import bio.singa.features.identifiers.UniProtIdentifier;
-import bio.singa.features.parameters.Environment;
 import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.vectors.Vector2D;
@@ -15,7 +14,7 @@ import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.modules.displacement.Vesicle;
 import bio.singa.simulation.model.modules.displacement.VesicleLayer;
-import bio.singa.simulation.model.sections.CellRegion;
+import bio.singa.simulation.model.sections.CellSubsection;
 import bio.singa.simulation.model.sections.CellTopology;
 import bio.singa.simulation.model.simulation.Simulation;
 import org.junit.jupiter.api.AfterEach;
@@ -33,7 +32,7 @@ import javax.measure.quantity.Time;
 import static bio.singa.features.model.FeatureOrigin.MANUALLY_ANNOTATED;
 import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static bio.singa.simulation.model.modules.displacement.implementations.EndocytosisActinBoost.DEFAULT_CLATHRIN_DEPOLYMERIZATION_RATE;
-import static bio.singa.simulation.model.sections.CellSubsection.SECTION_A;
+import static bio.singa.simulation.model.sections.CellRegions.EXTRACELLULAR_REGION;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static tec.uom.se.AbstractUnit.ONE;
 import static tec.uom.se.unit.MetricPrefix.MILLI;
@@ -49,12 +48,12 @@ class ReactionTest {
 
     @BeforeAll
     static void initialize() {
-        Environment.reset();
+        UnitRegistry.reinitialize();
     }
 
     @AfterEach
     void cleanUp() {
-        Environment.reset();
+        UnitRegistry.reinitialize();
     }
 
     @Test
@@ -83,12 +82,12 @@ class ReactionTest {
                 .build();
 
         // set concentrations
+        CellSubsection subsection = EXTRACELLULAR_REGION.getInnerSubsection();
         for (AutomatonNode node : graph.getNodes()) {
-            node.setCellRegion(CellRegion.CYTOSOL_A);
-            node.getConcentrationContainer().set(SECTION_A, fp, 1.0);
-            node.getConcentrationContainer().set(SECTION_A, aldolase, 0.01);
-            node.getConcentrationContainer().set(SECTION_A, ga, 0);
-            node.getConcentrationContainer().set(SECTION_A, gp, 0);
+            node.getConcentrationContainer().set(subsection, fp, 1.0);
+            node.getConcentrationContainer().set(subsection, aldolase, 0.01);
+            node.getConcentrationContainer().set(subsection, ga, 0);
+            node.getConcentrationContainer().set(subsection, gp, 0);
         }
 
         // setup reaction
@@ -112,18 +111,18 @@ class ReactionTest {
             simulation.nextEpoch();
             if (!firstCheckpointPassed && currentTime.getValue().doubleValue() > firstCheckpoint.getValue().doubleValue()) {
                 logger.info("First checkpoint reached at {}.", simulation.getElapsedTime().to(SECOND));
-                assertEquals(0.50, node.getConcentrationContainer().get(SECTION_A, fp).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-2);
-                assertEquals(0.49, node.getConcentrationContainer().get(SECTION_A, gp).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-2);
-                assertEquals(0.49, node.getConcentrationContainer().get(SECTION_A, ga).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-2);
-                assertEquals(0.01, node.getConcentrationContainer().get(SECTION_A, aldolase).to(MOLE_PER_LITRE).getValue().doubleValue());
+                assertEquals(0.50, node.getConcentrationContainer().get(subsection, fp).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-2);
+                assertEquals(0.49, node.getConcentrationContainer().get(subsection, gp).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-2);
+                assertEquals(0.49, node.getConcentrationContainer().get(subsection, ga).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-2);
+                assertEquals(0.01, node.getConcentrationContainer().get(subsection, aldolase).to(MOLE_PER_LITRE).getValue().doubleValue());
                 firstCheckpointPassed = true;
             }
         }
         // check final values
-        assertEquals(0.0, node.getConcentrationContainer().get(SECTION_A, fp).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
-        assertEquals(1.0, node.getConcentrationContainer().get(SECTION_A, gp).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
-        assertEquals(1.0, node.getConcentrationContainer().get(SECTION_A, ga).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
-        assertEquals(0.01, node.getConcentrationContainer().get(SECTION_A, aldolase).to(MOLE_PER_LITRE).getValue().doubleValue());
+        assertEquals(0.0, node.getConcentrationContainer().get(subsection, fp).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
+        assertEquals(1.0, node.getConcentrationContainer().get(subsection, gp).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
+        assertEquals(1.0, node.getConcentrationContainer().get(subsection, ga).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
+        assertEquals(0.01, node.getConcentrationContainer().get(subsection, aldolase).to(MOLE_PER_LITRE).getValue().doubleValue());
         logger.info("Second and final checkpoint (at {}) reached successfully.", simulation.getElapsedTime().to(MILLI(SECOND)));
     }
 
@@ -143,9 +142,10 @@ class ReactionTest {
                 .build();
 
         // set concentrations
+        CellSubsection subsection = EXTRACELLULAR_REGION.getInnerSubsection();
         for (AutomatonNode node : graph.getNodes()) {
-            node.getConcentrationContainer().set(SECTION_A, speciesA, 1.0);
-            node.getConcentrationContainer().set(SECTION_A, speciesB, 0.0);
+            node.getConcentrationContainer().set(subsection, speciesA, 1.0);
+            node.getConcentrationContainer().set(subsection, speciesB, 0.0);
         }
 
         RateConstant forwardsRate = RateConstant.create(5).forward().firstOrder().timeUnit(SECOND).build();
@@ -172,15 +172,15 @@ class ReactionTest {
             simulation.nextEpoch();
             if (!firstCheckpointPassed && currentTime.getValue().doubleValue() > firstCheckpoint.getValue().doubleValue()) {
                 logger.info("First checkpoint reached at {}.", simulation.getElapsedTime().to(MILLI(SECOND)));
-                assertEquals(0.8901, node.getConcentrationContainer().get(SECTION_A, speciesA).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
-                assertEquals(0.1108, node.getConcentrationContainer().get(SECTION_A, speciesB).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
+                assertEquals(0.8901, node.getConcentrationContainer().get(subsection, speciesA).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
+                assertEquals(0.1108, node.getConcentrationContainer().get(subsection, speciesB).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
                 firstCheckpointPassed = true;
             }
         }
 
         // check final values
-        assertEquals(0.66666, node.getConcentrationContainer().get(SECTION_A, speciesA).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-5);
-        assertEquals(0.33333, node.getConcentrationContainer().get(SECTION_A, speciesB).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-5);
+        assertEquals(0.66666, node.getConcentrationContainer().get(subsection, speciesA).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-5);
+        assertEquals(0.33333, node.getConcentrationContainer().get(subsection, speciesB).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-5);
         logger.info("Second and final checkpoint (at {}) reached successfully.", simulation.getElapsedTime().to(MILLI(SECOND)));
 
     }
@@ -199,10 +199,11 @@ class ReactionTest {
         SmallMolecule ndo = ChEBIParserService.parse("CHEBI:33101");
         SmallMolecule oxygen = ChEBIParserService.parse("CHEBI:15379");
 
+        CellSubsection subsection = EXTRACELLULAR_REGION.getInnerSubsection();
         for (AutomatonNode node : graph.getNodes()) {
-            node.getConcentrationContainer().set(SECTION_A, dpo, 0.02);
-            node.getConcentrationContainer().set(SECTION_A, ndo, 0.0);
-            node.getConcentrationContainer().set(SECTION_A, oxygen, 0.0);
+            node.getConcentrationContainer().set(subsection, dpo, 0.02);
+            node.getConcentrationContainer().set(subsection, ndo, 0.0);
+            node.getConcentrationContainer().set(subsection, oxygen, 0.0);
         }
 
         RateConstant rateConstant = RateConstant.create(0.07).forward().firstOrder().timeUnit(SECOND).build();
@@ -228,64 +229,64 @@ class ReactionTest {
             simulation.nextEpoch();
             if (!firstCheckpointPassed && currentTime.getValue().doubleValue() > firstCheckpoint.getValue().doubleValue()) {
                 logger.info("First checkpoint reached at {}.", simulation.getElapsedTime().to(MILLI(SECOND)));
-                assertEquals(9E-4, node.getConcentrationContainer().get(SECTION_A, oxygen).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
-                assertEquals(0.003, node.getConcentrationContainer().get(SECTION_A, ndo).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
-                assertEquals(0.018, node.getConcentrationContainer().get(SECTION_A, dpo).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
+                assertEquals(9E-4, node.getConcentrationContainer().get(subsection, oxygen).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
+                assertEquals(0.003, node.getConcentrationContainer().get(subsection, ndo).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
+                assertEquals(0.018, node.getConcentrationContainer().get(subsection, dpo).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
                 firstCheckpointPassed = true;
             }
         }
 
         // check final values
-        assertEquals(0.006, node.getConcentrationContainer().get(SECTION_A, oxygen).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
-        assertEquals(0.025, node.getConcentrationContainer().get(SECTION_A, ndo).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
-        assertEquals(0.007, node.getConcentrationContainer().get(SECTION_A, dpo).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
+        assertEquals(0.006, node.getConcentrationContainer().get(subsection, oxygen).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
+        assertEquals(0.025, node.getConcentrationContainer().get(subsection, ndo).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
+        assertEquals(0.007, node.getConcentrationContainer().get(subsection, dpo).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
         logger.info("Second and final checkpoint (at {}) reached successfully.", simulation.getElapsedTime().to(MILLI(SECOND)));
 
     }
 
-   @Test
-   void testDecayInMembrane() {
-       logger.info("Testing Decay in Membrane.");
-       // create simulation
-       Simulation simulation = new Simulation();
-       simulation.setMaximalTimeStep(Quantities.getQuantity(0.1, SECOND));
+    @Test
+    void testDecayInMembrane() {
+        logger.info("Testing Decay in Membrane.");
+        // create simulation
+        Simulation simulation = new Simulation();
+        simulation.setMaximalTimeStep(Quantities.getQuantity(0.1, SECOND));
 
-       // setup graph
-       AutomatonGraph graph = AutomatonGraphs.singularGraph();
+        // setup graph
+        AutomatonGraph graph = AutomatonGraphs.singularGraph();
         simulation.setGraph(graph);
 
-       // prepare species
-       ChemicalEntity clathrinHeavyChain = new Protein.Builder("Clathrin heavy chain")
-               .assignFeature(new UniProtIdentifier("Q00610"))
-               .build();
+        // prepare species
+        ChemicalEntity clathrinHeavyChain = new Protein.Builder("Clathrin heavy chain")
+                .assignFeature(new UniProtIdentifier("Q00610"))
+                .build();
 
-       ChemicalEntity clathrinLightChain = new Protein.Builder("Clathrin light chain")
-               .assignFeature(new UniProtIdentifier("P09496"))
-               .build();
+        ChemicalEntity clathrinLightChain = new Protein.Builder("Clathrin light chain")
+                .assignFeature(new UniProtIdentifier("P09496"))
+                .build();
 
-       ComplexedChemicalEntity clathrinTriskelion = ComplexedChemicalEntity.create("Clathrin Triskelion")
-               .addAssociatedPart(clathrinHeavyChain, 3)
-               .addAssociatedPart(clathrinLightChain, 3)
-               .build();
+        ComplexedChemicalEntity clathrinTriskelion = ComplexedChemicalEntity.create("Clathrin Triskelion")
+                .addAssociatedPart(clathrinHeavyChain, 3)
+                .addAssociatedPart(clathrinLightChain, 3)
+                .build();
 
-       VesicleLayer layer = new VesicleLayer(simulation);
-       Vesicle vesicle = new Vesicle(new Vector2D(0.0,0.0),  Quantities.getQuantity(50, NANO(METRE)));
-       vesicle.getConcentrationContainer().set(CellTopology.MEMBRANE, clathrinTriskelion, MolarConcentration.moleculesToConcentration(60, vesicle.getVolume()).to(UnitRegistry.getConcentrationUnit()));
-       layer.addVesicle(vesicle);
-       simulation.setVesicleLayer(layer);
+        VesicleLayer layer = new VesicleLayer(simulation);
+        Vesicle vesicle = new Vesicle(new Vector2D(0.0, 0.0), Quantities.getQuantity(50, NANO(METRE)));
+        vesicle.getConcentrationContainer().set(CellTopology.MEMBRANE, clathrinTriskelion, MolarConcentration.moleculesToConcentration(60, vesicle.getVolume()).to(UnitRegistry.getConcentrationUnit()));
+        layer.addVesicle(vesicle);
+        simulation.setVesicleLayer(layer);
 
-       NthOrderReaction reaction = NthOrderReaction.inSimulation(simulation)
-               .rateConstant(DEFAULT_CLATHRIN_DEPOLYMERIZATION_RATE)
-               .addSubstrate(clathrinTriskelion)
-               .build();
+        NthOrderReaction reaction = NthOrderReaction.inSimulation(simulation)
+                .rateConstant(DEFAULT_CLATHRIN_DEPOLYMERIZATION_RATE)
+                .addSubstrate(clathrinTriskelion)
+                .build();
 
 
-       while (simulation.getElapsedTime().isLessThan(Quantities.getQuantity(11, SECOND))) {
-           simulation.nextEpoch();
-           Quantity<Dimensionless> molecules = MolarConcentration.concentrationToMolecules(vesicle.getConcentrationContainer().get(CellTopology.MEMBRANE, clathrinTriskelion), vesicle.getVolume());
-           System.out.println(simulation.getElapsedTime().to(SECOND)+" - "+molecules.getValue().intValue());
-       }
+        while (simulation.getElapsedTime().isLessThan(Quantities.getQuantity(11, SECOND))) {
+            simulation.nextEpoch();
+            Quantity<Dimensionless> molecules = MolarConcentration.concentrationToMolecules(vesicle.getConcentrationContainer().get(CellTopology.MEMBRANE, clathrinTriskelion), vesicle.getVolume());
+            System.out.println(simulation.getElapsedTime().to(SECOND) + " - " + molecules.getValue().intValue());
+        }
 
-   }
+    }
 
 }
