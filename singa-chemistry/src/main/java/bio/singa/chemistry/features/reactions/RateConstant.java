@@ -1,6 +1,6 @@
 package bio.singa.chemistry.features.reactions;
 
-import bio.singa.features.model.FeatureOrigin;
+import bio.singa.features.model.Evidence;
 import bio.singa.features.model.ScalableQuantityFeature;
 import bio.singa.features.quantities.MolarConcentration;
 import tec.uom.se.unit.ProductUnit;
@@ -31,7 +31,7 @@ public abstract class RateConstant<ReactionRateType extends ReactionRate<Reactio
         ZERO, FIRST, SECOND
     }
 
-    protected RateConstant(Quantity<ReactionRateType> quantityTypeQuantity, FeatureOrigin featureOrigin) {
+    protected RateConstant(Quantity<ReactionRateType> quantityTypeQuantity, Evidence featureOrigin) {
         super(quantityTypeQuantity, featureOrigin);
     }
 
@@ -58,7 +58,7 @@ public abstract class RateConstant<ReactionRateType extends ReactionRate<Reactio
     }
 
     public interface OriginStep {
-        BuilderStep origin(FeatureOrigin origin);
+        BuilderStep origin(Evidence origin);
 
         RateConstant build();
     }
@@ -72,7 +72,7 @@ public abstract class RateConstant<ReactionRateType extends ReactionRate<Reactio
         private Direction direction;
         private Order order;
         private double value;
-        private FeatureOrigin origin;
+        private Evidence origin;
         private Unit<Time> timeUnit;
         private Unit<MolarConcentration> concentrationUnit;
 
@@ -123,7 +123,7 @@ public abstract class RateConstant<ReactionRateType extends ReactionRate<Reactio
         }
 
         @Override
-        public BuilderStep origin(FeatureOrigin origin) {
+        public BuilderStep origin(Evidence origin) {
             this.origin = origin;
             return this;
         }
@@ -131,7 +131,7 @@ public abstract class RateConstant<ReactionRateType extends ReactionRate<Reactio
         @Override
         public RateConstant build() {
             if (origin == null) {
-                origin = FeatureOrigin.MANUALLY_ANNOTATED;
+                origin = Evidence.MANUALLY_ANNOTATED;
             }
 
             if (direction == FORWARDS && order == ZERO) {

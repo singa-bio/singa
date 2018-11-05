@@ -10,12 +10,12 @@ import javax.measure.Quantity;
 public abstract class ScalableQuantityFeature<QuantityType extends Quantity<QuantityType>> implements ScalableFeature<QuantityType> {
 
     private final Quantity<QuantityType> featureContent;
-    private final FeatureOrigin featureOrigin;
+    private final Evidence featureOrigin;
 
     protected Quantity<QuantityType> scaledQuantity;
     protected Quantity<QuantityType> halfScaledQuantity;
 
-    public ScalableQuantityFeature(Quantity<QuantityType> featureContent, FeatureOrigin featureOrigin) {
+    public ScalableQuantityFeature(Quantity<QuantityType> featureContent, Evidence featureOrigin) {
         this.featureContent = featureContent;
         this.featureOrigin = featureOrigin;
     }
@@ -42,7 +42,7 @@ public abstract class ScalableQuantityFeature<QuantityType extends Quantity<Quan
     }
 
     @Override
-    public FeatureOrigin getFeatureOrigin() {
+    public Evidence getFeatureOrigin() {
         return featureOrigin;
     }
 

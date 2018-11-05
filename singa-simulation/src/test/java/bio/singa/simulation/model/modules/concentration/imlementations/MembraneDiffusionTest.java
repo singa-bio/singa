@@ -2,7 +2,7 @@ package bio.singa.simulation.model.modules.concentration.imlementations;
 
 import bio.singa.chemistry.entities.SmallMolecule;
 import bio.singa.chemistry.features.permeability.MembranePermeability;
-import bio.singa.features.model.FeatureOrigin;
+import bio.singa.features.model.Evidence;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.features.units.UnitRegistry;
@@ -50,7 +50,7 @@ class MembraneDiffusionTest {
 
     private final SmallMolecule water = new SmallMolecule.Builder("water")
             .name("water")
-            .assignFeature(new MembranePermeability(Quantities.getQuantity(3.5E-03, CENTIMETRE_PER_SECOND), FeatureOrigin.MANUALLY_ANNOTATED))
+            .assignFeature(new MembranePermeability(Quantities.getQuantity(3.5E-03, CENTIMETRE_PER_SECOND), Evidence.MANUALLY_ANNOTATED))
             .build();
 
     @BeforeAll
@@ -99,7 +99,7 @@ class MembraneDiffusionTest {
         setSpace(Quantities.getQuantity(2, MICRO(METRE)));
         setTime(Quantities.getQuantity(1, MICRO(SECOND)));
 
-        MembranePermeability membranePermeability = new MembranePermeability(Quantities.getQuantity(3.5E-03, CENTIMETRE_PER_SECOND), FeatureOrigin.MANUALLY_ANNOTATED);
+        MembranePermeability membranePermeability = new MembranePermeability(Quantities.getQuantity(3.5E-03, CENTIMETRE_PER_SECOND), Evidence.MANUALLY_ANNOTATED);
         membranePermeability.scale();
         Quantity<MembranePermeability> scaledQuantity = membranePermeability.getScaledQuantity();
         ProductUnit<MolarConcentration> unit = new ProductUnit<>(Units.MOLE.divide(getVolume().getUnit()));
@@ -146,7 +146,7 @@ class MembraneDiffusionTest {
         // setup species
         SmallMolecule water = new SmallMolecule.Builder("water")
                 .name("water")
-                .assignFeature(new MembranePermeability(Quantities.getQuantity(3.5E-03, CENTIMETRE_PER_SECOND), FeatureOrigin.MANUALLY_ANNOTATED))
+                .assignFeature(new MembranePermeability(Quantities.getQuantity(3.5E-03, CENTIMETRE_PER_SECOND), Evidence.MANUALLY_ANNOTATED))
                 .build();
 
         // add diffusion

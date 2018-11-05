@@ -1,7 +1,7 @@
 package bio.singa.simulation.model.parameters;
 
 import bio.singa.chemistry.features.diffusivity.Diffusivity;
-import bio.singa.features.model.FeatureOrigin;
+import bio.singa.features.model.Evidence;
 import bio.singa.features.units.UnitRegistry;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -82,7 +82,7 @@ public class FeatureManagerTest {
 
     @Test
     public void shouldScaleToEnvironment() {
-        Diffusivity diffusivity = new Diffusivity(1, FeatureOrigin.MANUALLY_ANNOTATED);
+        Diffusivity diffusivity = new Diffusivity(1, Evidence.MANUALLY_ANNOTATED);
         Quantity<?> first = UnitRegistry.scale(diffusivity);
         assertEquals(100.0, first.getValue().doubleValue());
 

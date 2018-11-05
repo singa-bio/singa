@@ -2,7 +2,7 @@ package bio.singa.chemistry.features.smiles;
 
 import bio.singa.chemistry.features.FeatureRegistry;
 import bio.singa.features.model.AbstractFeature;
-import bio.singa.features.model.FeatureOrigin;
+import bio.singa.features.model.Evidence;
 
 /**
  * @author cl
@@ -11,7 +11,7 @@ public class Smiles extends AbstractFeature<String> {
 
     public static final String SYMBOL = "SMILES";
 
-    public Smiles(String smilesString, FeatureOrigin featureOrigin) {
+    public Smiles(String smilesString, Evidence featureOrigin) {
         super(smilesString, featureOrigin);
     }
 

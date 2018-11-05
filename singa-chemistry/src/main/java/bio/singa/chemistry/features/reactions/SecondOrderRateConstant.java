@@ -1,6 +1,6 @@
 package bio.singa.chemistry.features.reactions;
 
-import bio.singa.features.model.FeatureOrigin;
+import bio.singa.features.model.Evidence;
 
 import javax.measure.Quantity;
 
@@ -9,7 +9,7 @@ import javax.measure.Quantity;
  */
 public abstract class SecondOrderRateConstant extends RateConstant<SecondOrderRate> {
 
-    public SecondOrderRateConstant(Quantity<SecondOrderRate> secondOrderRateQuantity, FeatureOrigin featureOrigin) {
+    public SecondOrderRateConstant(Quantity<SecondOrderRate> secondOrderRateQuantity, Evidence featureOrigin) {
         super(secondOrderRateQuantity, featureOrigin);
     }
 

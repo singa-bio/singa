@@ -18,7 +18,7 @@ import bio.singa.simulation.model.simulation.Simulation;
 
 import java.util.*;
 
-import static bio.singa.features.model.FeatureOrigin.MANUALLY_ANNOTATED;
+import static bio.singa.features.model.Evidence.MANUALLY_ANNOTATED;
 
 /**
  * The single file channel transport describes the movement of cargo molecules through {@link Transporter} proteins, so

@@ -1,7 +1,7 @@
 package bio.singa.simulation.model.parameters;
 
 import bio.singa.features.identifiers.model.Identifier;
-import bio.singa.features.model.FeatureOrigin;
+import bio.singa.features.model.Evidence;
 import bio.singa.features.units.UnitRegistry;
 
 import javax.measure.Quantity;
@@ -16,7 +16,7 @@ public class Parameter<QuantityType extends Quantity<QuantityType>> {
      */
     private final String identifier;
 
-    private FeatureOrigin origin;
+    private Evidence origin;
 
     /**
      * The value and unit (quantity) of this parameter.
@@ -30,7 +30,7 @@ public class Parameter<QuantityType extends Quantity<QuantityType>> {
         this.identifier = identifier;
     }
 
-    public Parameter(String identifier, Quantity<QuantityType> quantity, FeatureOrigin origin) {
+    public Parameter(String identifier, Quantity<QuantityType> quantity, Evidence origin) {
         this.identifier = identifier;
         this.quantity = quantity;
         this.origin = origin;
@@ -45,11 +45,11 @@ public class Parameter<QuantityType extends Quantity<QuantityType>> {
         return identifier;
     }
 
-    public FeatureOrigin getOrigin() {
+    public Evidence getOrigin() {
         return origin;
     }
 
-    public void setOrigin(FeatureOrigin origin) {
+    public void setOrigin(Evidence origin) {
         this.origin = origin;
     }
 
