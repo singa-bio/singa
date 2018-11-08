@@ -6,6 +6,7 @@ import bio.singa.chemistry.entities.Protein;
 import bio.singa.chemistry.features.variants.SequenceVariant;
 import bio.singa.chemistry.features.variants.SequenceVariants;
 import bio.singa.features.identifiers.ENAAccessionNumber;
+import bio.singa.features.identifiers.UniProtIdentifier;
 import bio.singa.features.identifiers.model.Identifier;
 import bio.singa.features.identifiers.model.IdentifierPatternRegistry;
 import bio.singa.features.model.Evidence;
@@ -28,12 +29,14 @@ class UniProtParserTest {
     private static Protein aminotransferase;
     private static Protein aars;
     private static Protein transthyretin;
+    private static Protein aarsByName;
 
     @BeforeAll
     static void initialize() {
         aminotransferase = UniProtParserService.parse("P12345");
         aars = UniProtParserService.parse("P21889");
         transthyretin = UniProtParserService.parse("P02766");
+        aarsByName = UniProtParserService.parse("SYD_ECOLI");
     }
 
     @Test
@@ -109,4 +112,10 @@ class UniProtParserTest {
         assertEquals(AminoAcidFamily.SERINE, sequenceVariant.getVariation());
     }
 
+    @Test
+    @DisplayName("parse uniprot - by entry name")
+    void shouldParseByEntryName89() {
+        UniProtIdentifier uniProtIdentifier = aarsByName.getFeature(UniProtIdentifier.class);
+        assertEquals("P21889", uniProtIdentifier.getIdentifier());
+    }
 }
