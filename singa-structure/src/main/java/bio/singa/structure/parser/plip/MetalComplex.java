@@ -53,7 +53,7 @@ public class MetalComplex extends Interaction {
     private int complexnum;
 
     public MetalComplex(int plipIdentifier) {
-        super(plipIdentifier);
+        super(plipIdentifier, InteractionType.METAL_COMPLEX);
     }
 
     /**

@@ -3,6 +3,7 @@ package bio.singa.structure.parser.pdb.structures;
 
 import bio.singa.structure.model.families.StructuralFamily;
 import bio.singa.structure.model.interfaces.*;
+import bio.singa.structure.model.mmtf.MmtfAminoAcid;
 import bio.singa.structure.model.oak.*;
 import org.rcsb.mmtf.dataholders.MmtfStructure;
 import org.rcsb.mmtf.encoder.AdapterToStructureData;
@@ -17,6 +18,9 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.List;
 import java.util.Locale;
+import java.util.NoSuchElementException;
+
+import static bio.singa.structure.model.oak.LeafSubstructureFactory.createLeafSubstructure;
 
 
 /**
@@ -117,7 +121,16 @@ public class StructureWriter {
                     // TODO correct vocabulary has to be found for polymerType
                     // TODO sequenceIndex corresponds to SEQRES number which we do not consider for the moment
                     // TODO secStrucType is an integer and follows the DSSP numenclature, BioJava: DsspType
-                    structureAdapterInterface.setGroupInfo(leafSubstructure.getThreeLetterCode().toUpperCase(), leafSubstructure.getSerial(), insertionCode, "L-peptide linking", leafSubstructure.getAllAtoms().size(), 0, oneLetterCode, leafSubstructure.getSerial(), -1);
+                    structureAdapterInterface.setGroupInfo(
+                            leafSubstructure.getThreeLetterCode().toUpperCase(),
+                            leafSubstructure.getSerial(),
+                            insertionCode,
+                            "L-peptide linking",
+                            leafSubstructure.getAllAtoms().size(),
+                            0,
+                            oneLetterCode,
+                            leafSubstructure.getSerial(),
+                            leafSubstructure instanceof MmtfAminoAcid ? ((MmtfAminoAcid) leafSubstructure).getSecondaryStructure().getMmtfCode() : -1);
                     for (Atom atom : atoms) {
                         // TODO currently alternate location, occupancy, and B-factor are ignored
                         structureAdapterInterface.setAtomInfo(atom.getAtomName(), atom.getAtomIdentifier(), MmtfStructure.UNAVAILABLE_CHAR_VALUE,
@@ -154,7 +167,7 @@ public class StructureWriter {
                 OakChain renumberedChain = new OakChain(chain.getChainIdentifier());
                 renumberedModel.addChain(renumberedChain);
                 for (LeafSubstructure leafSubstructure : oakChain.getConsecutivePart()) {
-                    OakLeafSubstructure renumberedLeafSubstructure = LeafSubstructureFactory.createLeafSubstructure(leafSubstructure.getIdentifier(), leafSubstructure.getFamily());
+                    OakLeafSubstructure renumberedLeafSubstructure = createLeafSubstructure(leafSubstructure.getIdentifier(), leafSubstructure.getFamily());
                     renumberedChain.addLeafSubstructure(renumberedLeafSubstructure, true);
                     for (Atom atom : leafSubstructure.getAllAtoms()) {
                         OakAtom renumberedAtom = new OakAtom(identifier, atom.getElement(), atom.getAtomName(), atom.getPosition());
@@ -169,9 +182,9 @@ public class StructureWriter {
             // nonconsecutive parts
             for (Chain chain : model.getAllChains()) {
                 OakChain oakChain = (OakChain) chain;
-                OakChain renumberedChain = (OakChain) renumberedModel.getChain(chain.getChainIdentifier()).get();
+                OakChain renumberedChain = (OakChain) renumberedModel.getChain(chain.getChainIdentifier()).orElseThrow(NoSuchElementException::new);
                 for (LeafSubstructure leafSubstructure : oakChain.getNonConsecutivePart()) {
-                    OakLeafSubstructure renumberedLeafSubstructure = LeafSubstructureFactory.createLeafSubstructure(leafSubstructure.getIdentifier(), leafSubstructure.getFamily());
+                    OakLeafSubstructure renumberedLeafSubstructure = createLeafSubstructure(leafSubstructure.getIdentifier(), leafSubstructure.getFamily());
                     renumberedLeafSubstructure.setAnnotatedAsHetAtom(true);
                     renumberedChain.addLeafSubstructure(renumberedLeafSubstructure);
                     for (Atom atom : leafSubstructure.getAllAtoms()) {

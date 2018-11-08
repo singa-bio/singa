@@ -23,7 +23,7 @@ public class HydrophobicInteraction extends Interaction {
     private double distance;
 
     public HydrophobicInteraction(int plipIdentifier) {
-        super(plipIdentifier);
+        super(plipIdentifier, InteractionType.HYDROPHOBIC_INTERACTION);
     }
 
     /**

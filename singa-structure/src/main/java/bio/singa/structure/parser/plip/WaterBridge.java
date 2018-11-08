@@ -43,11 +43,12 @@ public class WaterBridge extends Interaction {
     private boolean protIsDon;
 
     public WaterBridge(int plipIdentifier) {
-        super(plipIdentifier);
+        super(plipIdentifier, InteractionType.WATER_BRIDGE);
     }
 
     /**
      * Returns the Atom ID of the donor atom of the interaction.
+     *
      * @return The interaction's donor atom ID.
      */
     public int getDonor() {
@@ -60,6 +61,7 @@ public class WaterBridge extends Interaction {
 
     /**
      * Returns the Atom ID of the acceptor atom of the interaction.
+     *
      * @return The interaction's acceptor atom ID.
      */
     public int getAcceptor() {
@@ -72,6 +74,7 @@ public class WaterBridge extends Interaction {
 
     /**
      * Returns the distance between the acceptor and interacting atom from the water in Angstrom.
+     *
      * @return Distance between the acceptor and interacting atom from the water.
      */
     public double getDistanceAW() {
@@ -84,6 +87,7 @@ public class WaterBridge extends Interaction {
 
     /**
      * Returns the distance between the donor and water interacting atom from the water in Angstrom.
+     *
      * @return Distance between the donor and water interacting atom from the water.
      */
     public double getDistanceDW() {
@@ -96,6 +100,7 @@ public class WaterBridge extends Interaction {
 
     /**
      * Returns the angle at the donor.
+     *
      * @return Angle at the donor.
      */
     public double getDonorAngle() {
@@ -108,6 +113,7 @@ public class WaterBridge extends Interaction {
 
     /**
      * Returns the angle at the interacting water atoms.
+     *
      * @return Angle at the interacting water atoms.
      */
     public double getWaterAngle() {
@@ -120,6 +126,7 @@ public class WaterBridge extends Interaction {
 
     /**
      * Returns whether the protein is the donor.
+     *
      * @return Whether the protein is the donor.
      */
     public boolean isProtIsDon() {
@@ -131,8 +138,8 @@ public class WaterBridge extends Interaction {
     }
 
     /**
-     * Returns the Atom ID of the source atom of the interaction.
-     * Return is the same atom as donor.
+     * Returns the Atom ID of the source atom of the interaction. Return is the same atom as donor.
+     *
      * @return The interaction's source atom ID.
      */
     @Override
@@ -141,8 +148,8 @@ public class WaterBridge extends Interaction {
     }
 
     /**
-     * Returns the Atom ID of the target atom of the interaction.
-     * Return is the same atom as acceptor.
+     * Returns the Atom ID of the target atom of the interaction. Return is the same atom as acceptor.
+     *
      * @return The interaction's target atom ID.
      */
     @Override

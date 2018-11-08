@@ -4,10 +4,7 @@ import bio.singa.mathematics.vectors.Vector3D;
 import bio.singa.structure.model.families.LigandFamily;
 import bio.singa.structure.model.identifiers.LeafIdentifier;
 import bio.singa.structure.model.identifiers.UniqueAtomIdentifer;
-import bio.singa.structure.model.interfaces.Atom;
-import bio.singa.structure.model.interfaces.Chain;
-import bio.singa.structure.model.interfaces.LeafSubstructure;
-import bio.singa.structure.model.interfaces.Structure;
+import bio.singa.structure.model.interfaces.*;
 import bio.singa.structure.model.oak.OakChain;
 import bio.singa.structure.model.oak.OakStructure;
 import org.slf4j.Logger;
@@ -33,6 +30,7 @@ public class InteractionContainer {
     private final List<Interaction> interactions;
 
     private final List<Interaction> ligandInteractions;
+    private final Map<Ligand, List<Interaction>> ligandInteractionMap;
 
     /**
      * Creates a new empty interaction container.
@@ -40,6 +38,7 @@ public class InteractionContainer {
     public InteractionContainer() {
         interactions = new ArrayList<>();
         ligandInteractions = new ArrayList<>();
+        ligandInteractionMap = new HashMap<>();
     }
 
     /**
@@ -76,6 +75,10 @@ public class InteractionContainer {
             }
         }
         return false;
+    }
+
+    public Map<Ligand, List<Interaction>> getLigandInteractionMap() {
+        return ligandInteractionMap;
     }
 
     /**
@@ -120,14 +123,35 @@ public class InteractionContainer {
     }
 
     /**
-     * Returns all interactions from this container.
+     * Returns all interactions from this container, irrespective if {@link InteractionContainer#validateWithStructure(OakStructure)}
+     * was invoked or not.
      *
      * @return All interactions.
+     */
+    public List<Interaction> getAllInteractions() {
+        return Stream.concat(interactions.stream(), ligandInteractions.stream())
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * If called before {@link InteractionContainer#validateWithStructure(OakStructure)} this corresponds to all
+     * interactions. If called after invocation of {@link InteractionContainer#validateWithStructure(OakStructure)},
+     * only non-ligand interactions should be contained.
+     *
+     * @return All {@link Interaction}s if {@link InteractionContainer#validateWithStructure(OakStructure)} was not
+     * invoked, otherwise only non-ligand interactions.
      */
     public List<Interaction> getInteractions() {
         return interactions;
     }
 
+    /**
+     * {@link InteractionContainer#validateWithStructure(OakStructure)} must be called in order to discriminate ligand
+     * interactions from non-ligand interactions. Otherwise this is empty.
+     *
+     * @return All {@link Interaction}s with ligands if {@link InteractionContainer#validateWithStructure(OakStructure)}
+     * was invoked, empty otherwise.
+     */
     public List<Interaction> getLigandInteractions() {
         return ligandInteractions;
     }
@@ -320,11 +344,23 @@ public class InteractionContainer {
                 targetIsLigand = determineLigandInteraction(leafSubstructure, structure);
             }
 
-            if (targetIsLigand || sourceIsLigand) {
+            if (targetIsLigand) {
                 ligandInteractions.add(interaction);
+                addInteractionToLigand((Ligand) optionalTargetLeaf.get(), interaction);
+                interactionListIterator.remove();
+            } else if (sourceIsLigand) {
+                ligandInteractions.add(interaction);
+                addInteractionToLigand((Ligand) optionalSourceLeaf.get(), interaction);
                 interactionListIterator.remove();
             }
         }
+    }
+
+    private void addInteractionToLigand(Ligand ligand, Interaction interaction) {
+        if (!ligandInteractionMap.containsKey(ligand)) {
+            ligandInteractionMap.put(ligand, new ArrayList<>());
+        }
+        ligandInteractionMap.get(ligand).add(interaction);
     }
 
     private void fixBrokenSourceIdentifier(Interaction interaction, OakStructure structure) {
@@ -374,4 +410,7 @@ public class InteractionContainer {
         return false;
     }
 
+    public PlipCountFingerprint toCountFingerprint() {
+        return PlipCountFingerprint.of(this);
+    }
 }

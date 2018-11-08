@@ -6,11 +6,12 @@ import bio.singa.mathematics.matrices.LabeledSymmetricMatrix;
 import bio.singa.mathematics.matrices.Matrices;
 import bio.singa.mathematics.metrics.model.VectorMetricProvider;
 import bio.singa.mathematics.vectors.Vectors;
+import bio.singa.structure.model.identifiers.LeafIdentifier;
 import bio.singa.structure.model.interfaces.*;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
+
+import static bio.singa.structure.model.oak.LeafSubstructureFactory.createLeafSubstructure;
 
 /**
  * Methods to use for structures...
@@ -141,5 +142,71 @@ public class Structures {
      */
     public static double calculateTorsionAngle(Atom a, Atom b, Atom c, Atom d) {
         return Vectors.dihedralAngle(a.getPosition(), b.getPosition(), c.getPosition(), d.getPosition());
+    }
+
+    /**
+     * Renumbers the {@link LeafSubstructure}s in a given {@link OakStructure} according to a renumbering map.
+     * <b>Warning:</b>The method copies only the parts of the structure which are covered by the renumbering map.
+     * Non-consecutive parts of the structure (ligands, etc.) are not affected and copied to the new structure.
+     *
+     * @param structure The {@link OakStructure} to be renumbered.
+     * @param renumberingMap The renumbering map, containing as key original {@link LeafIdentifier}s the renumbered
+     * serial as values.
+     * @return A copy of the structure, renumbered according to the given map.
+     */
+    public static OakStructure renumberStructure(OakStructure structure, Map<LeafIdentifier, Integer> renumberingMap) {
+        OakStructure renumberedStructure = new OakStructure();
+        renumberedStructure.setPdbIdentifier(structure.getPdbIdentifier());
+        for (Model model : structure.getAllModels()) {
+            OakModel renumberedModel = new OakModel(model.getModelIdentifier());
+            renumberedStructure.addModel(renumberedModel);
+            // consecutive parts
+            for (Chain chain : model.getAllChains()) {
+                OakChain oakChain = (OakChain) chain;
+                OakChain renumberedChain = new OakChain(chain.getChainIdentifier());
+                renumberedModel.addChain(renumberedChain);
+                for (LeafSubstructure leafSubstructure : oakChain.getConsecutivePart()) {
+                    LeafIdentifier originalIdentifier = leafSubstructure.getIdentifier();
+                    if (!renumberingMap.containsKey(originalIdentifier)) {
+                        continue;
+                    }
+                    LeafIdentifier renumberedIdentifier = new LeafIdentifier(
+                            originalIdentifier.getPdbIdentifier(),
+                            originalIdentifier.getModelIdentifier(),
+                            originalIdentifier.getChainIdentifier(),
+                            renumberingMap.get(originalIdentifier),
+                            originalIdentifier.getInsertionCode());
+                    OakLeafSubstructure renumberedLeafSubstructure = createLeafSubstructure(renumberedIdentifier, leafSubstructure.getFamily());
+                    renumberedChain.addLeafSubstructure(renumberedLeafSubstructure, true);
+                    for (Atom atom : leafSubstructure.getAllAtoms()) {
+                        OakAtom renumberedAtom = new OakAtom(
+                                atom.getAtomIdentifier(),
+                                atom.getElement(),
+                                atom.getAtomName(),
+                                atom.getPosition());
+                        renumberedLeafSubstructure.addAtom(renumberedAtom);
+                    }
+                }
+            }
+            // nonconsecutive parts are copied without renumbering
+            for (Chain chain : model.getAllChains()) {
+                OakChain oakChain = (OakChain) chain;
+                OakChain renumberedChain = (OakChain) renumberedModel.getChain(chain.getChainIdentifier()).orElseThrow(NoSuchElementException::new);
+                for (LeafSubstructure leafSubstructure : oakChain.getNonConsecutivePart()) {
+                    OakLeafSubstructure renumberedLeafSubstructure = createLeafSubstructure(leafSubstructure.getIdentifier(), leafSubstructure.getFamily());
+                    renumberedLeafSubstructure.setAnnotatedAsHetAtom(true);
+                    renumberedChain.addLeafSubstructure(renumberedLeafSubstructure);
+                    for (Atom atom : leafSubstructure.getAllAtoms()) {
+                        OakAtom renumberedAtom = new OakAtom(
+                                atom.getAtomIdentifier(),
+                                atom.getElement(),
+                                atom.getAtomName(),
+                                atom.getPosition());
+                        renumberedLeafSubstructure.addAtom(renumberedAtom);
+                    }
+                }
+            }
+        }
+        return renumberedStructure;
     }
 }
