@@ -429,13 +429,17 @@ public class UniProtContentHandler implements ContentHandler {
                 break;
             }
             case "original": {
-                currentSequenceVariant.setOriginal(AminoAcidFamily.getAminoAcidTypeByOneLetterCode(new String(ch, start, length))
-                        .orElseThrow(() -> new IllegalArgumentException(new String(ch, start, length) +" is no valid amino acid one letter code.")));
+                if (inSequenceVariant) {
+                    currentSequenceVariant.setOriginal(AminoAcidFamily.getAminoAcidTypeByOneLetterCode(new String(ch, start, length))
+                            .orElseThrow(() -> new IllegalArgumentException(new String(ch, start, length) + " is no valid amino acid one letter code.")));
+                }
                 break;
             }
             case "variation": {
-                currentSequenceVariant.setVariation(AminoAcidFamily.getAminoAcidTypeByOneLetterCode(new String(ch, start, length))
-                        .orElseThrow(() -> new IllegalArgumentException(new String(ch, start, length) +" is no valid amino acid one letter code.")));
+                if (inSequenceVariant) {
+                    currentSequenceVariant.setVariation(AminoAcidFamily.getAminoAcidTypeByOneLetterCode(new String(ch, start, length))
+                            .orElseThrow(() -> new IllegalArgumentException(new String(ch, start, length) + " is no valid amino acid one letter code.")));
+                }
                 break;
             }
             case "text": {
