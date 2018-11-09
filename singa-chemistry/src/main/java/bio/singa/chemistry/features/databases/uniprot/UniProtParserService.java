@@ -2,10 +2,8 @@ package bio.singa.chemistry.features.databases.uniprot;
 
 import bio.singa.chemistry.entities.Protein;
 import bio.singa.core.parser.AbstractXMLParser;
-import bio.singa.features.identifiers.UniProtEntryName;
-import bio.singa.features.identifiers.UniProtIdentifier;
-import bio.singa.features.identifiers.model.AbstractIdentifier;
 import bio.singa.features.identifiers.model.Identifier;
+import bio.singa.features.identifiers.model.IdentifierPatternRegistry;
 import bio.singa.structure.features.molarmass.MolarMass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +21,7 @@ public class UniProtParserService extends AbstractXMLParser<Protein> {
 
     private static final Logger logger = LoggerFactory.getLogger(UniProtParserService.class);
 
-    private AbstractIdentifier identifier;
+    private Identifier identifier;
 
     private UniProtParserService(String uniProtIdentifier) {
         getXmlReader().setContentHandler(new UniProtContentHandler());
@@ -54,13 +52,9 @@ public class UniProtParserService extends AbstractXMLParser<Protein> {
     }
 
     public void setIdentifier(String identifier) {
-        try {
-            // first try regular UniProt identifier
-            this.identifier = new UniProtIdentifier(identifier);
-        } catch (IllegalArgumentException e) {
-            // second try UniProt Entry name
-            this.identifier = new UniProtEntryName(identifier);
-        }
+        this.identifier = IdentifierPatternRegistry.instantiate(identifier)
+                .orElseThrow(() -> new IllegalArgumentException(identifier + "is neither an uniprot name nor identifier."));
+
     }
 
     @Override

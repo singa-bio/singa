@@ -83,7 +83,6 @@ class UniProtParserTest {
                 " form kynurenic acid (KA). Plays a key role in amino acid metabolism. Important for metabolite exchange" +
                 " between mitochondria and cytosol. Facilitates cellular uptake of long-chain free fatty acids" +
                 " (By similarity).", functionNote);
-        ;
     }
 
     @Test
@@ -93,7 +92,6 @@ class UniProtParserTest {
         final List<Identifier> additionalIdentifiers = aars.getAdditionalIdentifiers();
         final Optional<ENAAccessionNumber> firstIdentifier = IdentifierPatternRegistry.find(ENAAccessionNumber.class, additionalIdentifiers);
         assertEquals("CAA37932.1", firstIdentifier.get().toString());
-
     }
 
     @Test

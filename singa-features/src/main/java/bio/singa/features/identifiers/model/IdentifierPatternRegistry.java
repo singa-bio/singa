@@ -26,6 +26,7 @@ public class IdentifierPatternRegistry {
         addPattern(PubChemIdentifier.class, PubChemIdentifier.PATTERN);
         addPattern(SimpleStringIdentifier.class, SimpleStringIdentifier.PATTERN);
         addPattern(UniProtIdentifier.class, UniProtIdentifier.PATTERN);
+        addPattern(UniProtEntryName.class, UniProtEntryName.PATTERN);
         addPattern(GoTerm.class, GoTerm.PATTERN);
     }
 
