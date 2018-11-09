@@ -1,4 +1,4 @@
-package bio.singa.chemistry;
+package bio.singa.chemistry.features;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.features.model.AbstractFeature;

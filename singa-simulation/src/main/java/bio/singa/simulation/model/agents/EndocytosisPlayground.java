@@ -1,10 +1,8 @@
 package bio.singa.simulation.model.agents;
 
-import bio.singa.chemistry.annotations.Annotation;
-import bio.singa.chemistry.annotations.AnnotationType;
-import bio.singa.chemistry.entities.ChemicalEntity;
-import bio.singa.chemistry.entities.ComplexedChemicalEntity;
 import bio.singa.chemistry.entities.Protein;
+import bio.singa.chemistry.entities.SmallMolecule;
+import bio.singa.features.identifiers.ChEBIIdentifier;
 import bio.singa.features.identifiers.UniProtIdentifier;
 import bio.singa.features.parameters.Environment;
 import bio.singa.javafx.renderer.Renderer;
@@ -25,8 +23,6 @@ import bio.singa.simulation.model.agents.organelles.OrganelleTypes;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.graphs.AutomatonNode;
-import bio.singa.simulation.model.modules.concentration.imlementations.NthOrderReaction;
-import bio.singa.simulation.model.modules.displacement.implementations.EndocytosisActinBoost;
 import bio.singa.simulation.model.sections.CellRegion;
 import bio.singa.simulation.model.sections.CellSubsections;
 import bio.singa.simulation.model.simulation.Simulation;
@@ -110,63 +106,34 @@ public class EndocytosisPlayground extends Application implements Renderer {
             filaments.spawnFilament(endosome1, membrane);
         }
 
-        // setup species for clathrin decay
-        ChemicalEntity clathrinHeavyChain = new Protein.Builder("Clathrin heavy chain")
-                .assignFeature(new UniProtIdentifier("Q00610"))
+//        while (filaments.hasGrowingFilaments()) {
+//            filaments.nextEpoch();
+//        }
+
+        // species
+
+        // catalytic subunit of PKA
+        Protein catalytic = new Protein.Builder("PKAC")
+                .additionalIdentifier(new UniProtIdentifier("P22694"))
                 .build();
 
-        ChemicalEntity clathrinLightChain = new Protein.Builder("Clathrin light chain")
-                .assignFeature(new UniProtIdentifier("P09496"))
+        // aquaporin 2
+        Protein aqp2 = new Protein.Builder("AQP2")
+                .additionalIdentifier(new UniProtIdentifier("P41181"))
                 .build();
 
-        ComplexedChemicalEntity clathrinTriskelion = ComplexedChemicalEntity.create("Clathrin Triskelion")
-                .addAssociatedPart(clathrinHeavyChain, 3)
-                .addAssociatedPart(clathrinLightChain, 3)
+        // atp
+        SmallMolecule atp = SmallMolecule.create("ATP")
+                .additionalIdentifier(new ChEBIIdentifier("CHEBI:15422"))
                 .build();
 
-        // setup snares for fusion
-        Protein vamp2 = new Protein.Builder("VAMP2")
-                .assignFeature(new UniProtIdentifier("Q15836"))
-                .annotation(new Annotation<>(AnnotationType.NOTE, "SNARE type", "R-SNARE"))
-                .build();
 
-        Protein vamp3 = new Protein.Builder("VAMP3")
-                .assignFeature(new UniProtIdentifier("P63027"))
-                .annotation(new Annotation<>(AnnotationType.NOTE, "SNARE type", "R-SNARE"))
-                .build();
 
-        Protein syntaxin3 = new Protein.Builder("Syntaxin 3")
-                .assignFeature(new UniProtIdentifier("Q13277"))
-                .annotation(new Annotation<>(AnnotationType.NOTE, "SNARE type", "Qa-SNARE"))
-                .build();
 
-        Protein syntaxin4 = new Protein.Builder("Syntaxin 4")
-                .assignFeature(new UniProtIdentifier("Q12846"))
-                .annotation(new Annotation<>(AnnotationType.NOTE, "SNARE type", "Qa-SNARE"))
-                .build();
+        // initialize
 
-        Protein snap23 = new Protein.Builder("SNAP23")
-                .assignFeature(new UniProtIdentifier("O00161"))
-                .annotation(new Annotation<>(AnnotationType.NOTE, "SNARE type", "Qbc-SNARE"))
-                .build();
 
-        ComplexedChemicalEntity snareComplex1 = ComplexedChemicalEntity.create(syntaxin3.getIdentifier().getIdentifier() + ":" + snap23.getIdentifier().getIdentifier())
-                .addAssociatedPart(syntaxin3)
-                .addAssociatedPart(snap23)
-                .annotation(new Annotation<>(AnnotationType.NOTE, "SNARE type", "Qabc-SNARE"))
-                .build();
 
-        ComplexedChemicalEntity snareComplex2 = ComplexedChemicalEntity.create(syntaxin4.getIdentifier().getIdentifier() + ":" + snap23.getIdentifier().getIdentifier())
-                .addAssociatedPart(syntaxin4)
-                .addAssociatedPart(snap23)
-                .annotation(new Annotation<>(AnnotationType.NOTE, "SNARE type", "Qabc-SNARE"))
-                .build();
-
-        // setup clathrin decay reaction
-        NthOrderReaction.inSimulation(simulation)
-                .rateConstant(EndocytosisActinBoost.DEFAULT_CLATHRIN_DEPOLYMERIZATION_RATE)
-                .addSubstrate(clathrinTriskelion)
-                .build();
 
         Scene scene = new Scene(root);
         primaryStage.setScene(scene);
@@ -175,7 +142,6 @@ public class EndocytosisPlayground extends Application implements Renderer {
         AnimationTimer animationTimer = new AnimationTimer() {
             @Override
             public void handle(long now) {
-                filaments.nextEpoch();
                 render();
             }
         };

@@ -1,6 +1,6 @@
 package bio.singa.simulation.features;
 
-import bio.singa.chemistry.MultiEntityFeature;
+import bio.singa.chemistry.features.MultiEntityFeature;
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.features.model.FeatureOrigin;
 

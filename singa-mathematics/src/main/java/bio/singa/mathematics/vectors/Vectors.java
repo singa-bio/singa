@@ -84,7 +84,6 @@ public class Vectors {
         return new Vector3D(x, y, z);
     }
 
-
     public static List<Vector2D> sortByCloseness(Collection<Vector2D> vectors, NeumannRectangularDirection startingDirection) {
         TreeSet<Vector2D> sortedCopy;
         switch (startingDirection) {
