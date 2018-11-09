@@ -116,4 +116,5 @@ class UniProtParserTest {
         UniProtIdentifier uniProtIdentifier = aarsByName.getFeature(UniProtIdentifier.class);
         assertEquals("P21889", uniProtIdentifier.getIdentifier());
     }
+
 }

@@ -40,7 +40,7 @@ public class GoTerm extends AbstractIdentifier<GoTerm> {
         if (matcherCHEBI.matches()) {
             return Integer.parseInt(matcherCHEBI.group(1));
         } else {
-            // should no be possible
+            // should not be possible
             throw new IllegalStateException("This identifier has been created with an unexpected pattern.");
         }
     }

@@ -36,7 +36,7 @@ public class SmallMolecule extends ChemicalEntity {
             .assignFeature(new MolarMass(10, Evidence.MANUALLY_ANNOTATED))
             .build();
 
-    protected static final Set<Class<? extends Feature>> availableFeatures = new HashSet<>();
+    public static final Set<Class<? extends Feature>> availableFeatures = new HashSet<>();
 
     static {
         SmallMolecule.availableFeatures.addAll(ChemicalEntity.availableFeatures);
