@@ -54,6 +54,9 @@ public abstract class FeatureProvider<FeatureType extends Feature> {
         if (preferredStrategyIndex == -1) {
             for (Map.Entry<Integer, Set<Class<? extends Feature>>> entry : strategies.entrySet()) {
                 for (Class<? extends Feature> featureClass : entry.getValue()) {
+                    if (featureable.hasFeature(featureClass)) {
+                        continue;
+                    }
                     featureable.setFeature(featureClass);
                 }
                 Set<Class<? extends Feature>> requirements = entry.getValue();
