@@ -1,7 +1,7 @@
 package bio.singa.chemistry.features.diffusivity;
 
 import bio.singa.features.model.Correlation;
-import bio.singa.features.model.FeatureOrigin;
+import bio.singa.features.model.Evidence;
 import bio.singa.features.model.Featureable;
 import bio.singa.features.parameters.Environment;
 import bio.singa.structure.features.molarmass.MolarMass;
@@ -17,7 +17,7 @@ import static tec.uom.se.AbstractUnit.ONE;
  */
 public class WilkeCorrelation implements Correlation<Diffusivity> {
 
-    private static final FeatureOrigin origin = new FeatureOrigin(FeatureOrigin.OriginType.PREDICTION,
+    private static final Evidence origin = new Evidence(Evidence.OriginType.PREDICTION,
             "Wilke Correlation",
             "Wilke, C. R., and Pin Chang. \"Correlation of diffusion coefficients in dilute " +
                     "solutions.\" AIChE Journal 1.2 (1955): 264-270.");

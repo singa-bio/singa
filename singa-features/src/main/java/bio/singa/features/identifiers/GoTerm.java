@@ -1,7 +1,7 @@
 package bio.singa.features.identifiers;
 
 import bio.singa.features.identifiers.model.AbstractIdentifier;
-import bio.singa.features.model.FeatureOrigin;
+import bio.singa.features.model.Evidence;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -26,7 +26,7 @@ public class GoTerm extends AbstractIdentifier<GoTerm> {
         super(identifier, PATTERN);
     }
 
-    public GoTerm(String identifier, FeatureOrigin origin) throws IllegalArgumentException {
+    public GoTerm(String identifier, Evidence origin) throws IllegalArgumentException {
         super(identifier, PATTERN, origin);
     }
 
@@ -40,7 +40,7 @@ public class GoTerm extends AbstractIdentifier<GoTerm> {
         if (matcherCHEBI.matches()) {
             return Integer.parseInt(matcherCHEBI.group(1));
         } else {
-            // should no be possible
+            // should not be possible
             throw new IllegalStateException("This identifier has been created with an unexpected pattern.");
         }
     }

@@ -1,6 +1,6 @@
 package bio.singa.simulation.features;
 
-import bio.singa.features.model.FeatureOrigin;
+import bio.singa.features.model.Evidence;
 import bio.singa.features.model.ScalableQuantityFeature;
 import tec.uom.se.quantity.Quantities;
 
@@ -19,12 +19,12 @@ public class AppliedScale extends ScalableQuantityFeature<Dimensionless> {
 
     private Quantity<Time> previousTimeStep;
 
-    public AppliedScale(double scale, FeatureOrigin featureOrigin) {
+    public AppliedScale(double scale, Evidence featureOrigin) {
         super(Quantities.getQuantity(scale, ONE), featureOrigin);
     }
 
     public AppliedScale() {
-        super(Quantities.getQuantity(1.0, ONE), FeatureOrigin.MANUALLY_ANNOTATED);
+        super(Quantities.getQuantity(1.0, ONE), Evidence.MANUALLY_ANNOTATED);
     }
 
     @Override

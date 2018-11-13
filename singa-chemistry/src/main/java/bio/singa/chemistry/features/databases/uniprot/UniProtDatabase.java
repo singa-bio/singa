@@ -3,7 +3,7 @@ package bio.singa.chemistry.features.databases.uniprot;
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.features.identifiers.UniProtIdentifier;
 import bio.singa.features.identifiers.model.IdentifierPatternRegistry;
-import bio.singa.features.model.FeatureOrigin;
+import bio.singa.features.model.Evidence;
 import bio.singa.features.model.Featureable;
 import bio.singa.structure.features.molarmass.MolarMass;
 import org.slf4j.Logger;
@@ -16,7 +16,7 @@ import java.util.Optional;
  */
 public class UniProtDatabase {
 
-    public static final FeatureOrigin origin = new FeatureOrigin(FeatureOrigin.OriginType.DATABASE,
+    public static final Evidence origin = new Evidence(Evidence.OriginType.DATABASE,
             "UniProt Database",
             "UniProt Consortium. \"UniProt: the universal protein knowledgebase.\" Nucleic acids research 46.5 (2018): 2699.");
 

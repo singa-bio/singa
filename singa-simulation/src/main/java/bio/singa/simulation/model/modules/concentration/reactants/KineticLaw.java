@@ -1,6 +1,6 @@
 package bio.singa.simulation.model.modules.concentration.reactants;
 
-import bio.singa.features.model.FeatureOrigin;
+import bio.singa.features.model.Evidence;
 import bio.singa.features.model.ScalableFeature;
 import bio.singa.features.model.ScalableQuantityFeature;
 import bio.singa.features.quantities.MolarConcentration;
@@ -74,11 +74,11 @@ public class KineticLaw {
     }
 
     public void referenceConstant(String parameterIdentifier, double constant) {
-        parameterMap.put(parameterIdentifier, new Parameter<>(parameterIdentifier, Quantities.getQuantity(constant, ONE), FeatureOrigin.MANUALLY_ANNOTATED));
+        parameterMap.put(parameterIdentifier, new Parameter<>(parameterIdentifier, Quantities.getQuantity(constant, ONE), Evidence.MANUALLY_ANNOTATED));
         expression.accept(new SetVariable(parameterIdentifier, constant));
     }
 
-    public void referenceConstant(String parameterIdentifier, double constant, FeatureOrigin origin) {
+    public void referenceConstant(String parameterIdentifier, double constant, Evidence origin) {
         parameterMap.put(parameterIdentifier, new Parameter<>(parameterIdentifier, Quantities.getQuantity(constant, ONE), origin));
         expression.accept(new SetVariable(parameterIdentifier, constant));
     }

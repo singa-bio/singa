@@ -4,6 +4,7 @@ import bio.singa.chemistry.features.databases.uniprot.UniProtParserService;
 import bio.singa.core.parser.AbstractHTMLParser;
 import bio.singa.features.identifiers.ChEBIIdentifier;
 import bio.singa.features.identifiers.InChIKey;
+import bio.singa.features.identifiers.PDBLigandIdentifier;
 import bio.singa.features.identifiers.PubChemIdentifier;
 import bio.singa.features.identifiers.model.Identifier;
 import bio.singa.features.identifiers.model.IdentifierPatternRegistry;
@@ -52,12 +53,15 @@ public class UniChemParser extends AbstractHTMLParser<List<Identifier>> {
     private List<Identifier> processLines(List<String> lines) {
         boolean isChebi = false;
         boolean isPubChem = false;
+        boolean isPdbLigand = false;
         List<Identifier> identifiers = new ArrayList<>();
         for (String line : lines) {
             if (line.equals("  name: chebi")) {
                 isChebi = true;
             } else if (line.equals("  name: pubchem")) {
                 isPubChem = true;
+            } else if (line.equals("  name: pdb")) {
+                isPdbLigand = true;
             } else if (isChebi && line.startsWith("    - ")) {
                 isChebi = false;
                 String chebiNumber = line.substring(5).trim();
@@ -66,13 +70,22 @@ public class UniChemParser extends AbstractHTMLParser<List<Identifier>> {
                 isPubChem = false;
                 String pubChemNumber = line.substring(5).trim();
                 identifiers.add(new PubChemIdentifier("CID:" + pubChemNumber));
+            }  else if (isPdbLigand && line.startsWith("    - ")) {
+                isPdbLigand = false;
+                String pdbLigandIdentifier = line.substring(5).trim();
+                identifiers.add(new PDBLigandIdentifier(pdbLigandIdentifier));
             }
         }
         return identifiers;
     }
 
+
     public static PubChemIdentifier fetchPubChemIdentifier(InChIKey inChIKey) {
         return IdentifierPatternRegistry.find(PubChemIdentifier.class, UniChemParser.parse(inChIKey)).orElse(null);
     }
+    public static PDBLigandIdentifier fetchPdbLigandIdentifier(InChIKey inChIKey) {
+        return IdentifierPatternRegistry.find(PDBLigandIdentifier.class, UniChemParser.parse(inChIKey)).orElse(null);
+    }
+
 
 }

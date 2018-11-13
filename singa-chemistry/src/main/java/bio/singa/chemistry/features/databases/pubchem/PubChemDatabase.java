@@ -3,7 +3,7 @@ package bio.singa.chemistry.features.databases.pubchem;
 import bio.singa.features.identifiers.ChEBIIdentifier;
 import bio.singa.features.identifiers.InChIKey;
 import bio.singa.features.identifiers.PubChemIdentifier;
-import bio.singa.features.model.FeatureOrigin;
+import bio.singa.features.model.Evidence;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
  */
 public class PubChemDatabase {
 
-    public static final FeatureOrigin origin = new FeatureOrigin(FeatureOrigin.OriginType.DATABASE,
+    public static final Evidence origin = new Evidence(Evidence.OriginType.DATABASE,
             "PubChem Database",
             "Kim, Sunghwan, et al. \"PubChem substance and compound databases.\" Nucleic acids research " +
                     "44.D1 (2016): D1202-D1213.");

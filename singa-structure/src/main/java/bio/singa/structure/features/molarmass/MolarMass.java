@@ -1,7 +1,7 @@
 package bio.singa.structure.features.molarmass;
 
 import bio.singa.features.model.AbstractFeature;
-import bio.singa.features.model.FeatureOrigin;
+import bio.singa.features.model.Evidence;
 import tec.uom.se.quantity.Quantities;
 import tec.uom.se.unit.ProductUnit;
 
@@ -22,11 +22,11 @@ public class MolarMass extends AbstractFeature<Quantity<MolarMass>> implements Q
     public static final Unit<MolarMass> GRAM_PER_MOLE = new ProductUnit<>(GRAM.divide(MOLE));
     public static final String SYMBOL = "M";
 
-    public MolarMass(Quantity<MolarMass> quantity, FeatureOrigin featureOrigin) {
+    public MolarMass(Quantity<MolarMass> quantity, Evidence featureOrigin) {
         super(quantity, featureOrigin);
     }
 
-    public MolarMass(double quantity, FeatureOrigin featureOrigin) {
+    public MolarMass(double quantity, Evidence featureOrigin) {
         super(Quantities.getQuantity(quantity, GRAM_PER_MOLE), featureOrigin);
     }
 

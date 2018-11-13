@@ -1,7 +1,7 @@
 package bio.singa.chemistry.features.diffusivity;
 
 import bio.singa.chemistry.features.FeatureRegistry;
-import bio.singa.features.model.FeatureOrigin;
+import bio.singa.features.model.Evidence;
 import bio.singa.features.model.ScalableQuantityFeature;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.quantities.NaturalConstants;
@@ -29,7 +29,7 @@ public class Diffusivity extends ScalableQuantityFeature<Diffusivity> implements
     public static final Unit<Diffusivity> SQUARE_METRE_PER_SECOND = new ProductUnit<>(METRE.pow(2).divide(SECOND));
     public static final String SYMBOL = "D";
 
-    private static final FeatureOrigin EINSTEIN1905 = new FeatureOrigin(FeatureOrigin.OriginType.PREDICTION, "Strokes-Einstein Equation", "Einstein, Albert. \"Über die von der molekularkinetischen Theorie der Wärme geforderte Bewegung von in ruhenden Flüssigkeiten suspendierten Teilchen.\" Annalen der physik 322.8 (1905): 549-560.");
+    private static final Evidence EINSTEIN1905 = new Evidence(Evidence.OriginType.PREDICTION, "Strokes-Einstein Equation", "Einstein, Albert. \"Über die von der molekularkinetischen Theorie der Wärme geforderte Bewegung von in ruhenden Flüssigkeiten suspendierten Teilchen.\" Annalen der physik 322.8 (1905): 549-560.");
 
     /**
      * Every FeatureProvider that is registered in this method is invoked automatically when the Feature is requested
@@ -61,11 +61,11 @@ public class Diffusivity extends ScalableQuantityFeature<Diffusivity> implements
         return UnitRegistry.getAreaUnit().divide(UnitRegistry.getTimeUnit()).asType(Diffusivity.class);
     }
 
-    public Diffusivity(Quantity<Diffusivity> diffusivityQuantity, FeatureOrigin origin) {
+    public Diffusivity(Quantity<Diffusivity> diffusivityQuantity, Evidence origin) {
         super(diffusivityQuantity, origin);
     }
 
-    public Diffusivity(double diffusivityQuantity, FeatureOrigin origin) {
+    public Diffusivity(double diffusivityQuantity, Evidence origin) {
         super(Quantities.getQuantity(diffusivityQuantity, SQUARE_CENTIMETRE_PER_SECOND), origin);
     }
 

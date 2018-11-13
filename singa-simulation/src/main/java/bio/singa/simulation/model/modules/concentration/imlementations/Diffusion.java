@@ -22,7 +22,7 @@ import bio.singa.simulation.model.simulation.Simulation;
 import javax.measure.Quantity;
 import java.util.*;
 
-import static bio.singa.features.model.FeatureOrigin.MANUALLY_ANNOTATED;
+import static bio.singa.features.model.Evidence.MANUALLY_ANNOTATED;
 
 /**
  * Diffusion is the fundamental force governing the random movement of molecules in cells. As a

@@ -4,7 +4,7 @@ import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.chemistry.entities.SmallMolecule;
 import bio.singa.chemistry.features.diffusivity.Diffusivity;
 import bio.singa.chemistry.features.permeability.MembranePermeability;
-import bio.singa.features.model.FeatureOrigin;
+import bio.singa.features.model.Evidence;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.features.units.UnitRegistry;
@@ -122,8 +122,8 @@ class VesicleDiffusionTest {
         // setup species
         SmallMolecule water = new SmallMolecule.Builder("water")
                 .name("water")
-                .assignFeature(new MembranePermeability(Quantities.getQuantity(1.75e-3, CENTIMETRE_PER_SECOND), FeatureOrigin.MANUALLY_ANNOTATED))
-                .assignFeature(new Diffusivity(2.6e-6, FeatureOrigin.MANUALLY_ANNOTATED))
+                .assignFeature(new MembranePermeability(Quantities.getQuantity(1.75e-3, CENTIMETRE_PER_SECOND), Evidence.MANUALLY_ANNOTATED))
+                .assignFeature(new Diffusivity(2.6e-6, Evidence.MANUALLY_ANNOTATED))
                 .build();
 
         // add diffusion

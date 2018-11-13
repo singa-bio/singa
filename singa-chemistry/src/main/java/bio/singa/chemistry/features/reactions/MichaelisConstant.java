@@ -1,6 +1,6 @@
 package bio.singa.chemistry.features.reactions;
 
-import bio.singa.features.model.FeatureOrigin;
+import bio.singa.features.model.Evidence;
 import bio.singa.features.model.ScalableQuantityFeature;
 import bio.singa.features.quantities.MolarConcentration;
 
@@ -15,7 +15,7 @@ public class MichaelisConstant extends ScalableQuantityFeature<MolarConcentratio
 
     public static final String SYMBOL = "k_m";
 
-    public MichaelisConstant(Quantity<MolarConcentration> molarConcentration, FeatureOrigin featureOrigin) {
+    public MichaelisConstant(Quantity<MolarConcentration> molarConcentration, Evidence featureOrigin) {
         super(molarConcentration, featureOrigin);
     }
 

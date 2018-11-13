@@ -1,6 +1,6 @@
 package bio.singa.simulation.features;
 
-import bio.singa.features.model.FeatureOrigin;
+import bio.singa.features.model.Evidence;
 import bio.singa.features.model.ScalableQuantityFeature;
 import tec.uom.se.quantity.Quantities;
 import tec.uom.se.unit.ProductUnit;
@@ -27,11 +27,11 @@ public class ActinBoostVelocity extends ScalableQuantityFeature<Speed> {
 
     public static final String SYMBOL = "v_b";
 
-    public ActinBoostVelocity(Quantity<Speed> frequencyQuantity, FeatureOrigin featureOrigin) {
+    public ActinBoostVelocity(Quantity<Speed> frequencyQuantity, Evidence featureOrigin) {
         super(frequencyQuantity, featureOrigin);
     }
 
-    public ActinBoostVelocity(double frequency, FeatureOrigin featureOrigin) {
+    public ActinBoostVelocity(double frequency, Evidence featureOrigin) {
         super(Quantities.getQuantity(frequency,NANOMETRE_PER_SECOND ), featureOrigin);
     }
 

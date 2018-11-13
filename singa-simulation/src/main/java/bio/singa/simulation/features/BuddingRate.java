@@ -1,6 +1,6 @@
 package bio.singa.simulation.features;
 
-import bio.singa.features.model.FeatureOrigin;
+import bio.singa.features.model.Evidence;
 import bio.singa.features.model.ScalableQuantityFeature;
 import tec.uom.se.quantity.Quantities;
 import tec.uom.se.unit.ProductUnit;
@@ -28,11 +28,11 @@ public class BuddingRate extends ScalableQuantityFeature<SpawnRate> {
 
     public static final String SYMBOL = "k_b";
 
-    public BuddingRate(Quantity<SpawnRate> frequencyQuantity, FeatureOrigin featureOrigin) {
+    public BuddingRate(Quantity<SpawnRate> frequencyQuantity, Evidence featureOrigin) {
         super(frequencyQuantity.to(PER_SQUARE_NANOMETRE_PER_SECOND), featureOrigin);
     }
 
-    public BuddingRate(double frequency, FeatureOrigin featureOrigin) {
+    public BuddingRate(double frequency, Evidence featureOrigin) {
         super(Quantities.getQuantity(frequency, PER_SQUARE_NANOMETRE_PER_SECOND), featureOrigin);
     }
 

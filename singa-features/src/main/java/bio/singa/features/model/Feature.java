@@ -3,7 +3,7 @@ package bio.singa.features.model;
 /**
  * A Feature is a kind of annotation that represents a information required by any algorithm. Each feature can
  * only ba annotated once to each {@link Featureable}. The origin of the feature is annotated in the as a
- * {@link FeatureOrigin}.
+ * {@link Evidence}.
  *
  * @author cl
  */
@@ -21,7 +21,7 @@ public interface Feature<FeatureContent> {
      *
      * @return The origin of the feature.
      */
-    FeatureOrigin getFeatureOrigin();
+    Evidence getFeatureOrigin();
 
     /**
      * Returns the symbol associated to this feature.

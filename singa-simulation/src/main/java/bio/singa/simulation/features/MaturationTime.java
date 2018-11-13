@@ -1,7 +1,7 @@
 package bio.singa.simulation.features;
 
 import bio.singa.features.model.AbstractFeature;
-import bio.singa.features.model.FeatureOrigin;
+import bio.singa.features.model.Evidence;
 import tec.uom.se.quantity.Quantities;
 
 import javax.measure.Quantity;
@@ -21,11 +21,11 @@ public class MaturationTime extends AbstractFeature<Quantity<Time>> {
 
     private static final String SYMBOL = "t_Maturation";
 
-    public MaturationTime(Quantity<Time> time, FeatureOrigin featureOrigin) {
+    public MaturationTime(Quantity<Time> time, Evidence featureOrigin) {
         super(time, featureOrigin);
     }
 
-    public MaturationTime(double time, FeatureOrigin featureOrigin) {
+    public MaturationTime(double time, Evidence featureOrigin) {
         super(Quantities.getQuantity(time, SECOND), featureOrigin);
     }
 
