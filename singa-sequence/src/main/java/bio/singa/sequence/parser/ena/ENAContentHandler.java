@@ -1,6 +1,7 @@
 package bio.singa.sequence.parser.ena;
 
 import bio.singa.features.identifiers.ENAAccessionNumber;
+import bio.singa.features.identifiers.UniProtIdentifier;
 import bio.singa.sequence.model.NucleotideSequence;
 import bio.singa.sequence.model.ProteinSequence;
 import org.xml.sax.Attributes;
@@ -20,6 +21,7 @@ public class ENAContentHandler implements ContentHandler {
     private int translationTable;
 
     private ENAAccessionNumber enaAccessionNumber;
+    private UniProtIdentifier uniProtIdentifier;
 
     public ENAContentHandler(ENAAccessionNumber enaAccessionNumber) {
         this.enaAccessionNumber = enaAccessionNumber;
@@ -36,7 +38,9 @@ public class ENAContentHandler implements ContentHandler {
 
     public ProteinSequence getTranslationSequence() {
         final String translationSequence = translationSequenceBuilder.toString().replaceAll("\\s", "");
-        return ProteinSequence.of(translationSequence);
+        ProteinSequence proteinSequence = ProteinSequence.of(translationSequence);
+        proteinSequence.setFeature(uniProtIdentifier);
+        return proteinSequence;
     }
 
     @Override
@@ -81,6 +85,12 @@ public class ENAContentHandler implements ContentHandler {
                     isInTranslationTable = true;
                 }
                 break;
+            }
+            case "xref": {
+                final String db = atts.getValue("db");
+                if (db.equals("UniProtKB/Swiss-Prot")) {
+                    uniProtIdentifier = new UniProtIdentifier(atts.getValue("id"));
+                }
             }
         }
 

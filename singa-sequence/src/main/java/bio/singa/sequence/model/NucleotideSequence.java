@@ -1,6 +1,7 @@
 package bio.singa.sequence.model;
 
 import bio.singa.features.identifiers.ENAAccessionNumber;
+import bio.singa.features.identifiers.UniProtIdentifier;
 import bio.singa.features.model.Feature;
 import bio.singa.structure.model.families.NucleotideFamily;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
@@ -23,6 +24,7 @@ public class NucleotideSequence extends AbstractSequence<NucleotideFamily> {
     static {
         NucleotideSequence.availableFeatures.addAll(AbstractSequence.availableFeatures);
         availableFeatures.add(ENAAccessionNumber.class);
+        availableFeatures.add(UniProtIdentifier.class);
     }
 
     private NucleotideSequence(List<NucleotideFamily> sequence) {
