@@ -25,6 +25,8 @@ public final class UnitProvider {
     public static List<Unit<Time>> TIME_UNITS = new ArrayList<>();
 
     static {
+        TIME_UNITS.add(FEMTO(SECOND));
+        TIME_UNITS.add(PICO(SECOND));
         TIME_UNITS.add(NANO(SECOND));
         TIME_UNITS.add(MICRO(SECOND));
         TIME_UNITS.add(MILLI(SECOND));

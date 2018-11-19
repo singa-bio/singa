@@ -216,7 +216,7 @@ public class ComplexBuildingReaction extends ConcentrationBasedModule<UpdatableD
             }
         }
         if (!forwardsRateFound || !backwardsRateFound) {
-            throw new FeatureUnassignableException("Required reaction rates unavailable.");
+            throw new FeatureUnassignableException("Required reaction rates unavailable for reaction "+getIdentifier()+".");
         }
     }
 

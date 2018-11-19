@@ -44,8 +44,8 @@ public class ConcentrationPool {
         return concentrations.keySet();
     }
 
-    public Set<Map.Entry<ChemicalEntity, Quantity<MolarConcentration>>> getConcentrations() {
-        return concentrations.entrySet();
+    public Map<ChemicalEntity, Quantity<MolarConcentration>> getConcentrations() {
+        return concentrations;
     }
 
     /**

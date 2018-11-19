@@ -9,6 +9,9 @@ import javax.measure.Unit;
 import javax.measure.quantity.Time;
 import java.text.DecimalFormat;
 
+import static tec.uom.se.unit.MetricPrefix.FEMTO;
+import static tec.uom.se.unit.Units.SECOND;
+
 /**
  * @author cl
  */
@@ -34,7 +37,7 @@ public class QuantityFormatter<UnitType extends Quantity<UnitType>> {
      */
     public static String formatTime(Quantity<Time> elapsedTime) {
         int bestInformativeDigits = Integer.MAX_VALUE;
-        Unit<Time> bestUnit = null;
+        Unit<Time> bestUnit = FEMTO(SECOND);
         Unit<Time> nextBestUnit = null;
         for (Unit<Time> timeUnit : UnitProvider.TIME_UNITS) {
             int informativeDigits = elapsedTime.to(timeUnit).getValue().intValue();
@@ -47,13 +50,13 @@ public class QuantityFormatter<UnitType extends Quantity<UnitType>> {
         Quantity<Time> transformed = elapsedTime.to(bestUnit);
         double untruncated = transformed.getValue().doubleValue();
         int truncated = transformed.getValue().intValue();
-
-        ComparableQuantity<Time> nextBest = Quantities.getQuantity(untruncated - truncated, bestUnit).to(nextBestUnit);
-        if (nextBest.getValue().doubleValue() == 0.0) {
-            return truncated + " " + bestUnit;
-        } else {
-            return truncated + " " + bestUnit + " " + nextBest.getValue().intValue() + " " + nextBestUnit;
+        if (nextBestUnit != null) {
+            ComparableQuantity<Time> nextBest = Quantities.getQuantity(untruncated - truncated, bestUnit).to(nextBestUnit);
+            if (nextBest.getValue().doubleValue() != 0.0) {
+                return truncated + " " + bestUnit + " " + nextBest.getValue().intValue() + " " + nextBestUnit;
+            }
         }
+        return truncated + " " + bestUnit;
     }
 
     public QuantityFormatter(Unit<UnitType> targetUnit, boolean displayUnit) {

@@ -117,20 +117,20 @@ public class VesicleFusion extends QualitativeModule {
         ConcentrationContainer vesicleContainer = tetheredVesicle.getConcentrationContainer();
         AutomatonNode node = tetheredNodes.get(tetheredVesicle);
         // merge membranes
-        for (Map.Entry<ChemicalEntity, Quantity<MolarConcentration>> entry : vesicleContainer.getPool(CellTopology.MEMBRANE).getValue().getConcentrations()) {
+        for (Map.Entry<ChemicalEntity, Quantity<MolarConcentration>> entry : vesicleContainer.getPool(CellTopology.MEMBRANE).getValue().getConcentrations().entrySet()) {
             ChemicalEntity entity = entry.getKey();
             Quantity<MolarConcentration> quantity = entry.getValue();
             node.addPotentialDelta(new ConcentrationDelta(this, node.getCellRegion().getMembraneSubsection(), entity, quantity));
         }
         // merge inner concentrations
-        for (Map.Entry<ChemicalEntity, Quantity<MolarConcentration>> entry : vesicleContainer.getPool(CellTopology.INNER).getValue().getConcentrations()) {
+        for (Map.Entry<ChemicalEntity, Quantity<MolarConcentration>> entry : vesicleContainer.getPool(CellTopology.INNER).getValue().getConcentrations().entrySet()) {
             ChemicalEntity entity = entry.getKey();
             Quantity<MolarConcentration> quantity = entry.getValue();
             node.addPotentialDelta(new ConcentrationDelta(this, node.getCellRegion().getInnerSubsection(), entity, quantity));
         }
         // add occupied snares
         ConcentrationPool concentrationPool = occupiedSnares.get(tetheredVesicle);
-        for (Map.Entry<ChemicalEntity, Quantity<MolarConcentration>> entry : concentrationPool.getConcentrations()) {
+        for (Map.Entry<ChemicalEntity, Quantity<MolarConcentration>> entry : concentrationPool.getConcentrations().entrySet()) {
             ChemicalEntity entity = entry.getKey();
             Quantity<MolarConcentration> quantity = entry.getValue();
             node.addPotentialDelta(new ConcentrationDelta(this, node.getCellRegion().getMembraneSubsection(), entity, quantity));

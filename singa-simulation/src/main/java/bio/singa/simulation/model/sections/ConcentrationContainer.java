@@ -99,6 +99,10 @@ public class ConcentrationContainer {
         subsectionTopology.remove(getTopologyFromSubsection(subsection));
     }
 
+    public Map<CellSubsection, ConcentrationPool> getConcentrations() {
+        return concentrations;
+    }
+
     /**
      * Returns all subsections, referenced in this container.
      *

@@ -28,7 +28,7 @@ public abstract class RateConstant<ReactionRateType extends ReactionRate<Reactio
     }
 
     public enum Order {
-        ZERO, FIRST, SECOND
+        ZERO, FIRST, SECOND, THIRD
     }
 
     protected RateConstant(Quantity<ReactionRateType> quantityTypeQuantity, FeatureOrigin featureOrigin) {
@@ -36,17 +36,54 @@ public abstract class RateConstant<ReactionRateType extends ReactionRate<Reactio
     }
 
     public interface DirectionStep {
+
+        /**
+         * Determines that the associated reaction uses this constant to parametrize the transformation from
+         * substrates to products.
+         *
+         * @return order step
+         */
         OrderStep forward();
 
+        /**
+         * Determines that the associated reaction uses this constant to parametrize the transformation from
+         * products to substrates.
+         *
+         * @return order step
+         */
         OrderStep backward();
+
     }
 
     public interface OrderStep {
+
+        /**
+         * Zero order rates are given in concentration * time^-1.
+         * @return concentration step
+         */
         ConcentrationStep zeroOrder();
 
+        /**
+         * First order rates are in time^-1.
+         *
+         * @return concentration step
+         */
         TimeStep firstOrder();
 
+        /**
+         * Second order rates are given in concentration^-1 * time^-1.
+         *
+         * @return concentration step
+         */
         ConcentrationStep secondOrder();
+
+        /**
+         * Second order rates are given in concentration^-2 * time^-1.
+         *
+         * @return concentration step
+         */
+        ConcentrationStep thirdOrder();
+
     }
 
     public interface ConcentrationStep {
@@ -111,6 +148,12 @@ public abstract class RateConstant<ReactionRateType extends ReactionRate<Reactio
         }
 
         @Override
+        public ConcentrationStep thirdOrder() {
+            order = THIRD;
+            return this;
+        }
+
+        @Override
         public TimeStep concentrationUnit(Unit<MolarConcentration> concentrationUnit) {
             this.concentrationUnit = concentrationUnit;
             return this;
@@ -146,6 +189,10 @@ public abstract class RateConstant<ReactionRateType extends ReactionRate<Reactio
                 return new SecondOrderForwardsRateConstant(value,
                         new ProductUnit<>(ONE.divide(concentrationUnit.multiply(timeUnit))), origin);
             }
+            if (direction == FORWARDS && order == THIRD) {
+                return new ThirdOrderForwardsRateConstant(value,
+                        new ProductUnit<>(ONE.divide(concentrationUnit.pow(2).multiply(timeUnit))), origin);
+            }
 
             if (direction == BACKWARDS && order == ZERO) {
                 return new ZeroOrderBackwardsRateConstant(value,
@@ -159,6 +206,11 @@ public abstract class RateConstant<ReactionRateType extends ReactionRate<Reactio
                 return new SecondOrderBackwardsRateConstant(value,
                         new ProductUnit<>(ONE.divide(concentrationUnit.multiply(timeUnit))), origin);
             }
+            if (direction == BACKWARDS && order == THIRD) {
+                return new ThirdOrderBackwardsRateConstant(value,
+                        new ProductUnit<>(ONE.divide(concentrationUnit.pow(2).multiply(timeUnit))), origin);
+            }
+
             throw new IllegalStateException("Reaction Rate cannot be created with the given parameters.");
         }
     }
