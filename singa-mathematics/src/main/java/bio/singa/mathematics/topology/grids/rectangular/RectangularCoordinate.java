@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 /**
  * @author cl
  */
-public class RectangularCoordinate implements DiscreteCoordinate<RectangularCoordinate, RectangularDirection> {
+public class RectangularCoordinate implements DiscreteCoordinate<RectangularCoordinate, NeumannRectangularDirection> {
 
     private final int column;
     private final int row;
@@ -39,7 +39,7 @@ public class RectangularCoordinate implements DiscreteCoordinate<RectangularCoor
     }
 
     @Override
-    public RectangularCoordinate getNeighbour(RectangularDirection rectangularDirection) {
+    public RectangularCoordinate getNeighbour(NeumannRectangularDirection rectangularDirection) {
         switch (rectangularDirection) {
             case NORTH:
                 return new RectangularCoordinate(column, row - 1);
@@ -55,8 +55,8 @@ public class RectangularCoordinate implements DiscreteCoordinate<RectangularCoor
     }
 
     @Override
-    public RectangularDirection[] getAllDirections() {
-        return RectangularDirection.values();
+    public NeumannRectangularDirection[] getAllDirections() {
+        return NeumannRectangularDirection.values();
     }
 
     @Override

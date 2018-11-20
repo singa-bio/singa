@@ -2,8 +2,12 @@ package bio.singa.mathematics.geometry.faces;
 
 import bio.singa.mathematics.geometry.edges.Line;
 import bio.singa.mathematics.geometry.edges.SimpleLineSegment;
-import bio.singa.mathematics.metrics.model.VectorMetricProvider;
 import bio.singa.mathematics.vectors.Vector2D;
+
+import java.util.HashSet;
+import java.util.Set;
+
+import static bio.singa.mathematics.metrics.model.VectorMetricProvider.EUCLIDEAN_METRIC;
 
 public class Circle {
 
@@ -62,13 +66,29 @@ public class Circle {
     public double getCentralAngleBetween(Vector2D first, Vector2D second) {
         // https://math.stackexchange.com/questions/185829/how-do-you-find-an-angle-between-two-points-on-the-edge-of-a-circle
         double rSq = radius * radius * 2.0;
-        double c = VectorMetricProvider.EUCLIDEAN_METRIC.calculateDistance(first, second);
+        double c = EUCLIDEAN_METRIC.calculateDistance(first, second);
         // in rad for angle multiply by (180/Math.PI)
-        return Math.acos((rSq - c * c)/rSq);
+        return Math.acos((rSq - c * c) / rSq);
     }
 
     public double getArcLengthBetween(Vector2D first, Vector2D second) {
         return Math.abs(getCentralAngleBetween(first, second) * radius);
+    }
+
+    public Set<Double> getXValue(double yValue) {
+        Set<Double> values = new HashSet<>();
+        double sqrt = Math.sqrt(-Math.pow(midpoint.getY(), 2) + 2 * midpoint.getY() * yValue + Math.pow(radius, 2) - Math.pow(yValue, 2));
+        values.add(midpoint.getX() + sqrt);
+        values.add(midpoint.getX() - sqrt);
+        return values;
+    }
+
+    public Set<Double> getYValue(double xValue) {
+        Set<Double> values = new HashSet<>();
+        double sqrt = Math.sqrt(-Math.pow(midpoint.getX(), 2) + 2 * midpoint.getX() * xValue + Math.pow(radius, 2) - Math.pow(xValue, 2));
+        values.add(midpoint.getY() + sqrt);
+        values.add(midpoint.getY() - sqrt);
+        return values;
     }
 
     public double getCircumference() {

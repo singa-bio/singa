@@ -60,7 +60,7 @@ public class Vesicle implements Updatable, Featureable {
     private DisplacementDeltaManager displacementManager;
 
     private final CellRegion region;
-    private Map<AutomatonNode, Quantity<Area>> associatedNodes;
+    private Map<AutomatonNode, Double> associatedNodes;
 
     private AttachmentState attachmentState;
     private TargetDirection targetDirection;
@@ -184,12 +184,12 @@ public class Vesicle implements Updatable, Featureable {
         return concentrationManager.getConcentrationContainer().get(region.getInnerSubsection(), entity);
     }
 
-    public Map<AutomatonNode, Quantity<Area>> getAssociatedNodes() {
+    public Map<AutomatonNode, Double> getAssociatedNodes() {
         return associatedNodes;
     }
 
-    public void addAssociatedNode(AutomatonNode node, Quantity<Area> associatedArea) {
-        associatedNodes.put(node, associatedArea);
+    public void addAssociatedNode(AutomatonNode node, double relativeArea) {
+        associatedNodes.put(node, relativeArea);
         CellSubsection subsection = node.getConcentrationContainer().getSubsection(CellTopology.INNER);
         getConcentrationContainer().putSubsectionPool(subsection, CellTopology.OUTER, node.getConcentrationContainer().getPool(CellTopology.INNER).getValue());
     }

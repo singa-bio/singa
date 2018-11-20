@@ -4,7 +4,7 @@ import bio.singa.mathematics.concepts.Addable;
 import bio.singa.mathematics.geometry.edges.LineSegment;
 import bio.singa.mathematics.geometry.edges.SimpleLineSegment;
 import bio.singa.mathematics.geometry.faces.Rectangle;
-import bio.singa.mathematics.topology.grids.rectangular.RectangularDirection;
+import bio.singa.mathematics.topology.grids.rectangular.NeumannRectangularDirection;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
@@ -84,8 +84,7 @@ public class Vectors {
         return new Vector3D(x, y, z);
     }
 
-
-    public static List<Vector2D> sortByCloseness(Collection<Vector2D> vectors, RectangularDirection startingDirection) {
+    public static List<Vector2D> sortByCloseness(Collection<Vector2D> vectors, NeumannRectangularDirection startingDirection) {
         TreeSet<Vector2D> sortedCopy;
         switch (startingDirection) {
             case NORTH:

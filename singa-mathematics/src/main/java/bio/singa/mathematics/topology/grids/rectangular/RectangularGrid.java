@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * @author cl
  */
-public class RectangularGrid<ValueType> implements DiscreteGrid<ValueType, RectangularDirection, RectangularCoordinate> {
+public class RectangularGrid<ValueType> implements DiscreteGrid<ValueType, NeumannRectangularDirection, RectangularCoordinate> {
 
     private final int width;
     private final int height;

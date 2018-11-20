@@ -136,8 +136,9 @@ public class FilamentLayer {
                     }
                 }
             }
-
         }
+
+
         // check pairwise interactions
 //        for (SkeletalFilament filament : filaments) {
 //            Map.Entry<SkeletalFilament, Double> closestRelevantDistance = filament.getClosestRelevantDistance();

@@ -7,7 +7,7 @@ import bio.singa.mathematics.graphs.grid.GridNode;
 import bio.singa.mathematics.graphs.trees.BinaryTree;
 import bio.singa.mathematics.graphs.trees.BinaryTreeNode;
 import bio.singa.mathematics.topology.grids.rectangular.RectangularCoordinate;
-import bio.singa.mathematics.topology.grids.rectangular.RectangularDirection;
+import bio.singa.mathematics.topology.grids.rectangular.NeumannRectangularDirection;
 import bio.singa.mathematics.vectors.Vector;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.mathematics.vectors.Vectors;
@@ -216,11 +216,11 @@ public class Graphs {
                 RectangularCoordinate coordinate = new RectangularCoordinate(columnIndex, rowIndex);
                 GridNode source = graph.getNode(coordinate);
                 if (columnIndex < columns - 1) {
-                    GridNode target = graph.getNode(coordinate.getNeighbour(RectangularDirection.EAST));
+                    GridNode target = graph.getNode(coordinate.getNeighbour(NeumannRectangularDirection.EAST));
                     graph.addEdgeBetween(source, target);
                 }
                 if (rowIndex < rows - 1) {
-                    GridNode target = graph.getNode(coordinate.getNeighbour(RectangularDirection.SOUTH));
+                    GridNode target = graph.getNode(coordinate.getNeighbour(NeumannRectangularDirection.SOUTH));
                     graph.addEdgeBetween(source, target);
                 }
             }

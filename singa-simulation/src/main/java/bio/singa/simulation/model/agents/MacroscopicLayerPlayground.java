@@ -10,21 +10,22 @@ import bio.singa.features.model.QuantityFormatter;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.javafx.renderer.Renderer;
-import bio.singa.mathematics.geometry.edges.SimpleLineSegment;
 import bio.singa.mathematics.geometry.faces.Circle;
 import bio.singa.mathematics.geometry.faces.Rectangle;
+import bio.singa.mathematics.geometry.model.Polygon;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.simulation.features.*;
 import bio.singa.simulation.model.agents.filaments.FilamentLayer;
-import bio.singa.simulation.model.agents.filaments.SkeletalFilament;
 import bio.singa.simulation.model.agents.membranes.Membrane;
 import bio.singa.simulation.model.agents.membranes.MembraneLayer;
 import bio.singa.simulation.model.agents.membranes.MembraneSegment;
 import bio.singa.simulation.model.agents.membranes.MembraneTracer;
 import bio.singa.simulation.model.agents.organelles.MicrotubuleOrganizingCentre;
+import bio.singa.simulation.model.agents.organelles.OrganelleTemplate;
 import bio.singa.simulation.model.agents.organelles.OrganelleTypes;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
+import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.modules.concentration.imlementations.NthOrderReaction;
 import bio.singa.simulation.model.modules.displacement.Vesicle;
 import bio.singa.simulation.model.modules.displacement.implementations.EndocytosisActinBoost;
@@ -35,14 +36,9 @@ import bio.singa.simulation.model.modules.qualitative.implementations.VesicleAtt
 import bio.singa.simulation.model.modules.qualitative.implementations.VesicleFusion;
 import bio.singa.simulation.model.sections.CellSubsections;
 import bio.singa.simulation.model.simulation.Simulation;
-import bio.singa.simulation.model.agents.organelles.OrganelleTemplate;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.Scene;
-import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.BorderPane;
@@ -52,15 +48,9 @@ import tec.uom.se.ComparableQuantity;
 import tec.uom.se.quantity.Quantities;
 import tec.uom.se.unit.ProductUnit;
 
-import javax.imageio.ImageIO;
 import javax.measure.quantity.Area;
 import javax.measure.quantity.Length;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.io.UncheckedIOException;
-import java.nio.file.Paths;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 
 import static bio.singa.features.model.FeatureOrigin.MANUALLY_ANNOTATED;
@@ -302,27 +292,25 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
         fillPolygon(rectangle);
         // draw cells and polygons for subsections
         getGraphicsContext().setStroke(Color.BLACK);
-        getGraphicsContext().setLineWidth(2);
+        getGraphicsContext().setLineWidth(1);
         // draw cell background
         getGraphicsContext().setFill(CellSubsections.getColor(CellSubsections.CYTOPLASM));
         fillPolygon(cell.getPolygon());
         // draw nodes
-//        for (AutomatonNode node : graph.getNodes()) {
-//            Polygon nodePolygon = node.getSpatialRepresentation();
-//            if (node.getCellRegion().hasMembrane()) {
-//                getGraphicsContext().setFill(CellSubsections.getColor(node.getCellRegion().getOuterSubsection()));
-//                fillPolygon(nodePolygon);
-//                getGraphicsContext().setFill(CellSubsections.getColor(node.getCellRegion().getInnerSubsection()));
-//                Polygon organellePolygon = node.getSubsectionRepresentations().get(node.getCellRegion().getInnerSubsection());
-//                fillPolygon(organellePolygon);
-//                // getGraphicsContext().setFill(Color.BLACK);
-//                // strokeTextCenteredOnPoint(node.getCellRegion().getGoTerm().toString(), node.getPosition());
-//            } else {
-//                getGraphicsContext().setFill(CellSubsections.getColor(node.getCellRegion().getInnerSubsection()));
-//                fillPolygon(nodePolygon);
-//            }
-//
-//        }
+        for (AutomatonNode node : graph.getNodes()) {
+            Polygon nodePolygon = node.getSpatialRepresentation();
+            if (node.getCellRegion().hasMembrane()) {
+                getGraphicsContext().setFill(CellSubsections.getColor(node.getCellRegion().getOuterSubsection()));
+                fillPolygon(nodePolygon);
+                getGraphicsContext().setFill(CellSubsections.getColor(node.getCellRegion().getInnerSubsection()));
+                Polygon organellePolygon = node.getSubsectionRepresentations().get(node.getCellRegion().getInnerSubsection());
+                fillPolygon(organellePolygon);
+            } else {
+                getGraphicsContext().setFill(CellSubsections.getColor(node.getCellRegion().getInnerSubsection()));
+                fillPolygon(nodePolygon);
+            }
+            strokePolygon(nodePolygon);
+        }
         // draw membrane
         getGraphicsContext().setStroke(Color.BLACK);
         if (membraneLayer != null) {
@@ -347,6 +335,9 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
             Circle circle = vesicle.getCircleRepresentation();
             fillCircle(circle);
             strokeCircle(circle);
+            for (AutomatonNode node : vesicle.getAssociatedNodes().keySet()) {
+                strokeStraight(node.getPosition(), circle.getMidpoint());
+            }
         }
         // draw fusing vesicles
         getGraphicsContext().setFill(Color.WHITE);
@@ -356,23 +347,23 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
             strokeCircle(circle);
         }
         // draw filaments
-        getGraphicsContext().setStroke(Color.BLACK);
-        if (filamentLayer != null) {
-            for (SkeletalFilament skeletalFilament : filamentLayer.getFilaments()) {
-                if (skeletalFilament.getSegments().size() > 1) {
-                    Vector2D previous = skeletalFilament.getSegments().getLast();
-                    Iterator<Vector2D> vector2DIterator = skeletalFilament.getSegments().descendingIterator();
-                    while (vector2DIterator.hasNext()) {
-                        Vector2D current = vector2DIterator.next();
-                        if (current != previous) {
-                            SimpleLineSegment lineSegment = new SimpleLineSegment(previous, current);
-                            strokeLineSegment(lineSegment);
-                        }
-                        previous = current;
-                    }
-                }
-            }
-        }
+//        getGraphicsContext().setStroke(Color.BLACK);
+//        if (filamentLayer != null) {
+//            for (SkeletalFilament skeletalFilament : filamentLayer.getFilaments()) {
+//                if (skeletalFilament.getSegments().size() > 1) {
+//                    Vector2D previous = skeletalFilament.getSegments().getLast();
+//                    Iterator<Vector2D> vector2DIterator = skeletalFilament.getSegments().descendingIterator();
+//                    while (vector2DIterator.hasNext()) {
+//                        Vector2D current = vector2DIterator.next();
+//                        if (current != previous) {
+//                            SimpleLineSegment lineSegment = new SimpleLineSegment(previous, current);
+//                            strokeLineSegment(lineSegment);
+//                        }
+//                        previous = current;
+//                    }
+//                }
+//            }
+//        }
 
         getGraphicsContext().setFill(Color.BLACK);
         strokeTextCenteredOnPoint(QuantityFormatter.formatTime(simulation.getElapsedTime()), new Vector2D(400, 620));
@@ -383,19 +374,19 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
         getGraphicsContext().setLineWidth(1);
         strokeTextCenteredOnPoint(Quantities.getQuantity(1.0, MICRO(METRE)).toString(), start.getMidpointTo(end).subtract(new Vector2D(0, -20)));
 
-        final SnapshotParameters snapshotParameters = new SnapshotParameters();
-        Platform.runLater(() -> canvas.snapshot(result -> {
-                    final SimpleObjectProperty<BufferedImage> imageProperty = new SimpleObjectProperty<>();
-                    imageProperty.set(SwingFXUtils.fromFXImage(result.getImage(), null));
-                    try {
-                        ImageIO.write(imageProperty.get(), "png", Paths.get("/tmp/vesicles/" + simulation.getEpoch() + ".png").toFile());
-                    } catch (IOException e) {
-                        throw new UncheckedIOException("Could not save image ", e);
-                    }
-                    return null;
-                },
-                snapshotParameters, null
-        ));
+//        final SnapshotParameters snapshotParameters = new SnapshotParameters();
+//        Platform.runLater(() -> canvas.snapshot(result -> {
+//                    final SimpleObjectProperty<BufferedImage> imageProperty = new SimpleObjectProperty<>();
+//                    imageProperty.set(SwingFXUtils.fromFXImage(result.getImage(), null));
+//                    try {
+//                        ImageIO.write(imageProperty.get(), "png", Paths.get("/tmp/vesicles/" + simulation.getEpoch() + ".png").toFile());
+//                    } catch (IOException e) {
+//                        throw new UncheckedIOException("Could not save image ", e);
+//                    }
+//                    return null;
+//                },
+//                snapshotParameters, null
+//        ));
 
     }
 
