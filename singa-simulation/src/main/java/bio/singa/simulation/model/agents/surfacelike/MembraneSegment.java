@@ -1,4 +1,4 @@
-package bio.singa.simulation.model.agents.membranes;
+package bio.singa.simulation.model.agents.surfacelike;
 
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.units.UnitRegistry;

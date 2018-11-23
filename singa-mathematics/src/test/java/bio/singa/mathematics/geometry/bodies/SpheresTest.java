@@ -106,4 +106,5 @@ class SpheresTest {
         double actual = Spheres.calculateSphereSlice(new Vector2D(4.5, 5.0), 2, new SimpleLineSegment(new Vector2D(0, 1), new Vector2D(10, 12)));
         assertEquals(17.10233837874191, actual);
     }
+
 }

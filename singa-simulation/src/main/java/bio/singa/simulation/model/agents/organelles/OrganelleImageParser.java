@@ -9,7 +9,8 @@ import bio.singa.mathematics.matrices.SymmetricMatrix;
 import bio.singa.mathematics.topology.grids.rectangular.NeumannRectangularDirection;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.mathematics.vectors.Vectors;
-import bio.singa.simulation.model.agents.filaments.SkeletalFilament;
+import bio.singa.simulation.model.agents.linelike.FilamentTemplate;
+import bio.singa.simulation.model.agents.linelike.SkeletalFilament;
 import tec.uom.se.quantity.Quantities;
 
 import javax.imageio.ImageIO;

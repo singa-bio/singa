@@ -3,10 +3,11 @@ package bio.singa.simulation.model.modules.qualitative.implementations;
 import bio.singa.features.parameters.Environment;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.simulation.features.AttachmentDistance;
-import bio.singa.simulation.model.agents.filaments.SkeletalFilament;
+import bio.singa.simulation.model.agents.linelike.SkeletalFilament;
+import bio.singa.simulation.model.agents.pointlike.VesicleStateRegistry;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.modules.concentration.ModuleState;
-import bio.singa.simulation.model.modules.displacement.Vesicle;
+import bio.singa.simulation.model.agents.pointlike.Vesicle;
 import bio.singa.simulation.model.modules.qualitative.QualitativeModule;
 import tec.uom.se.ComparableQuantity;
 
@@ -14,17 +15,14 @@ import javax.measure.Quantity;
 import javax.measure.quantity.Length;
 import java.util.*;
 
-import static bio.singa.simulation.model.modules.displacement.Vesicle.AttachmentState.MICROTUBULE;
-import static bio.singa.simulation.model.modules.displacement.Vesicle.AttachmentState.UNATTACHED;
-
 /**
  * @author cl
  */
-public class VesicleAttachment extends QualitativeModule {
+public class MicrotubuleAttachment extends QualitativeModule {
 
     private Map<Vesicle, AttachmentInformation> attachingVesicles;
 
-    public VesicleAttachment() {
+    public MicrotubuleAttachment() {
         attachingVesicles = new HashMap<>();
         // feature
         getRequiredFeatures().add(AttachmentDistance.class);
@@ -39,7 +37,7 @@ public class VesicleAttachment extends QualitativeModule {
     private void processVesicles(List<Vesicle> vesicles) {
         for (Vesicle vesicle : vesicles) {
             // only for unattached vesicles
-            if (vesicle.getAttachmentState() == UNATTACHED) {
+            if (vesicle.getVesicleState() == VesicleStateRegistry.UNATTACHED) {
                 AttachmentInformation attachmentInformation = determineClosestSegment(vesicle);
                 ComparableQuantity<Length> threshold = (ComparableQuantity<Length>) getFeature(AttachmentDistance.class).getFeatureContent().add(vesicle.getRadius());
                 Quantity<Length> distance = Environment.convertSimulationToSystemScale(attachmentInformation.getClosestDistance());
@@ -97,7 +95,7 @@ public class VesicleAttachment extends QualitativeModule {
     }
 
     private void attachVesicle(Vesicle vesicle, AttachmentInformation attachmentInformation) {
-        vesicle.setAttachmentState(MICROTUBULE);
+        vesicle.setVesicleState(VesicleStateRegistry.MICROTUBULE_ATTACHED);
         vesicle.setAttachedFilament(attachmentInformation.getClosestFilament());
         vesicle.setSegmentIterator(attachmentInformation.getSegmentIterator());
     }

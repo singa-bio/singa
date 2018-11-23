@@ -12,9 +12,9 @@ import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.graphs.AutomatonNode;
-import bio.singa.simulation.model.modules.displacement.Vesicle;
-import bio.singa.simulation.model.modules.displacement.VesicleLayer;
-import bio.singa.simulation.model.modules.displacement.implementations.VesicleDiffusion;
+import bio.singa.simulation.model.agents.pointlike.Vesicle;
+import bio.singa.simulation.model.agents.pointlike.VesicleLayer;
+import bio.singa.simulation.model.modules.displacement.implementations.VesicleCytoplasmDiffusion;
 import bio.singa.simulation.model.sections.CellRegion;
 import bio.singa.simulation.model.simulation.Simulation;
 import org.junit.jupiter.api.AfterEach;
@@ -131,7 +131,7 @@ class VesicleDiffusionTest {
                 .cargo(water)
                 .build();
 
-        VesicleDiffusion vesicleDiffusion = new VesicleDiffusion();
+        VesicleCytoplasmDiffusion vesicleDiffusion = new VesicleCytoplasmDiffusion();
         vesicleDiffusion.setSimulation(simulation);
         simulation.getModules().add(vesicleDiffusion);
 

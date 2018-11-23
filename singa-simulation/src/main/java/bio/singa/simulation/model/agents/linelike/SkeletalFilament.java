@@ -1,4 +1,4 @@
-package bio.singa.simulation.model.agents.filaments;
+package bio.singa.simulation.model.agents.linelike;
 
 import bio.singa.mathematics.geometry.edges.Line;
 import bio.singa.mathematics.geometry.faces.Circle;
@@ -11,10 +11,9 @@ import bio.singa.simulation.model.graphs.AutomatonNode;
 
 import java.util.*;
 
-import static bio.singa.mathematics.geometry.model.Polygon.ON_LINE;
 import static bio.singa.mathematics.metrics.model.VectorMetricProvider.EUCLIDEAN_METRIC;
-import static bio.singa.simulation.model.agents.filaments.SkeletalFilament.FilamentBehaviour.GROW;
-import static bio.singa.simulation.model.agents.filaments.SkeletalFilament.FilamentBehaviour.STAGNANT;
+import static bio.singa.simulation.model.agents.linelike.SkeletalFilament.FilamentBehaviour.GROW;
+import static bio.singa.simulation.model.agents.linelike.SkeletalFilament.FilamentBehaviour.STAGNANT;
 
 /**
  * Modified: Mirabet, Vincent, et al. "The self-organization of plant microtubules inside the cell volume yields their
@@ -87,7 +86,7 @@ public class SkeletalFilament {
                 // get representative region of the node
                 Polygon polygon = node.getSpatialRepresentation();
                 // associate segment to the node with the largest part of the vesicle (midpoint is inside)
-                if (polygon.evaluatePointPosition(segment) >= ON_LINE) {
+                if (polygon.isInside(segment)) {
                     node.addMicrotubuleSegment(this, segment);
                 }
                 // associate partial containment to other nodes
@@ -196,7 +195,7 @@ public class SkeletalFilament {
             // get representative region of the node
             Polygon polygon = node.getSpatialRepresentation();
             // associate segment to the node with the largest part of the vesicle (midpoint is inside)
-            if (polygon.evaluatePointPosition(segment) >= ON_LINE) {
+            if (polygon.isInside(segment)) {
                 node.addMicrotubuleSegment(this, segment);
                 associatedNodes.add(node);
             }

@@ -8,7 +8,7 @@ import bio.singa.simulation.model.modules.concentration.ConcentrationDeltaIdenti
 import bio.singa.simulation.model.modules.concentration.FieldSupplier;
 import bio.singa.simulation.model.modules.concentration.imlementations.MembraneDiffusion;
 import bio.singa.simulation.model.modules.concentration.specifity.UpdateSpecificity;
-import bio.singa.simulation.model.modules.displacement.Vesicle;
+import bio.singa.simulation.model.agents.pointlike.Vesicle;
 import bio.singa.simulation.model.sections.ConcentrationContainer;
 import bio.singa.simulation.model.simulation.Updatable;
 

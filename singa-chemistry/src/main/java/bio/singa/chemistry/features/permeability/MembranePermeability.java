@@ -2,6 +2,7 @@ package bio.singa.chemistry.features.permeability;
 
 import bio.singa.features.model.FeatureOrigin;
 import bio.singa.features.model.ScalableQuantityFeature;
+import bio.singa.features.units.UnitRegistry;
 import tec.uom.se.unit.ProductUnit;
 
 import javax.measure.Quantity;
@@ -23,6 +24,12 @@ public class MembranePermeability extends ScalableQuantityFeature<MembranePermea
 
     public MembranePermeability(Quantity<MembranePermeability> membranePermeabilityQuantity, FeatureOrigin featureOrigin) {
         super(membranePermeabilityQuantity, featureOrigin);
+    }
+
+    @Override
+    public void scale() {
+        scaledQuantity = UnitRegistry.scale(getFeatureContent());
+        halfScaledQuantity = scaledQuantity.multiply(0.5);
     }
 
     @Override

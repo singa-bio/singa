@@ -29,9 +29,21 @@ public class Environment extends Observable {
     public static final Quantity<Temperature> DEFAULT_SYSTEM_TEMPERATURE = Quantities.getQuantity(293.0, KELVIN);
 
     /**
-     * Standard system viscosity [pressure per time] (1 mPa*s = 1cP = Viscosity of Water at 20 C)
+     * Standard system macro viscosity [pressure per time] (1 mPa*s = 1cP = Viscosity of Water at 20 C)
+     * as determined by Kalwarczyk, Tomasz, et al. "Comparative analysis of viscosity of complex liquids and cytoplasm
+     * of mammalian cells at the nanoscale." Nano letters 11.5 (2011): 2157-2163.
+     * Average of both cell types
+     *
      */
-    public static final Quantity<DynamicViscosity> DEFAULT_SYSTEM_VISCOSITY = Quantities.getQuantity(1.0, MILLI(PASCAL_SECOND));
+    public static final Quantity<DynamicViscosity> DEFAULT_MACRO_VISCOSITY = Quantities.getQuantity(34.0, MILLI(PASCAL_SECOND));
+
+
+    /**
+     * Standard system matrix viscosity [pressure per time] (1 mPa*s = 1cP = Viscosity of Water at 20 C)
+     * as determined by Kalwarczyk, Tomasz, et al. "Comparative analysis of viscosity of complex liquids and cytoplasm
+     * of mammalian cells at the nanoscale." Nano letters 11.5 (2011): 2157-2163.
+     */
+    public static final Quantity<DynamicViscosity> DEFAULT_MATRIX_VISCOSITY = Quantities.getQuantity(1.0, MILLI(PASCAL_SECOND));
 
     /**
      * Standard system extend [length] (5 um)
@@ -54,9 +66,14 @@ public class Environment extends Observable {
     private Quantity<Temperature> systemTemperature;
 
     /**
-     * The global viscosity of the simulation system.
+     * The viscosity experienced by large components
      */
-    private Quantity<DynamicViscosity> systemViscosity;
+    private Quantity<DynamicViscosity> macroViscosity;
+
+    /**
+     * The viscosity experienced by small components
+     */
+    private Quantity<DynamicViscosity> matrixViscosity;
 
     /**
      * An empty concentration quantity
@@ -96,7 +113,8 @@ public class Environment extends Observable {
         systemExtend = DEFAULT_SYSTEM_EXTEND;
         simulationExtend = DEFAULT_SIMULATION_EXTEND;
         systemTemperature = DEFAULT_SYSTEM_TEMPERATURE;
-        systemViscosity = DEFAULT_SYSTEM_VISCOSITY;
+        macroViscosity = DEFAULT_MACRO_VISCOSITY;
+        matrixViscosity = DEFAULT_MATRIX_VISCOSITY;
         emptyConcentration = UnitRegistry.concentration(0.0);
         setSystemAndSimulationScales();
         setChanged();
@@ -107,7 +125,8 @@ public class Environment extends Observable {
         getInstance().systemExtend = DEFAULT_SYSTEM_EXTEND;
         getInstance().simulationExtend = DEFAULT_SIMULATION_EXTEND;
         getInstance().systemTemperature = DEFAULT_SYSTEM_TEMPERATURE;
-        getInstance().systemViscosity = DEFAULT_SYSTEM_VISCOSITY;
+        getInstance().macroViscosity = DEFAULT_MACRO_VISCOSITY;
+        getInstance().matrixViscosity = DEFAULT_MATRIX_VISCOSITY;
         getInstance().emptyConcentration = UnitRegistry.concentration(0.0);
         getInstance().setSystemAndSimulationScales();
         getInstance().setChanged();
@@ -127,13 +146,22 @@ public class Environment extends Observable {
         getInstance().systemTemperature = temperature.to(KELVIN);
     }
 
-    public static Quantity<DynamicViscosity> getViscosity() {
-        return getInstance().systemViscosity;
+    public static Quantity<DynamicViscosity> getMacroViscosity() {
+        return getInstance().macroViscosity;
     }
 
-    public static void setSystemViscosity(Quantity<DynamicViscosity> viscosity) {
-        logger.debug("Setting environmental dynamic viscosity of to {}.", viscosity);
-        getInstance().systemViscosity = viscosity.to(MILLI(PASCAL_SECOND));
+    public static void setMacroViscosity(Quantity<DynamicViscosity> viscosity) {
+        logger.debug("Setting environmental macro dynamic viscosity of to {}.", viscosity);
+        getInstance().macroViscosity = viscosity.to(MILLI(PASCAL_SECOND));
+    }
+
+    public static Quantity<DynamicViscosity> getMatrixViscosity() {
+        return getInstance().matrixViscosity;
+    }
+
+    public static void setMatrixViscosity(Quantity<DynamicViscosity> viscosity) {
+        logger.debug("Setting environmental matrix dynamic viscosity of to {}.", viscosity);
+        getInstance().matrixViscosity = viscosity.to(MILLI(PASCAL_SECOND));
     }
 
     public static void setNodeSpacingToDiameter(Quantity<Length> diameter, int spanningNodes) {
@@ -189,7 +217,7 @@ public class Environment extends Observable {
                 "system extend = " + getInstance().systemExtend + "\n" +
                 "simulation extend = " + getInstance().simulationExtend + "\n" +
                 "system temperature = " + getInstance().systemTemperature + "\n" +
-                "system viscosity = " + getInstance().systemViscosity + "\n";
+                "system viscosity = " + getInstance().macroViscosity + "\n";
     }
 
 }

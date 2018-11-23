@@ -1,13 +1,13 @@
-package bio.singa.simulation.model.agents.filaments;
+package bio.singa.simulation.model.agents.linelike;
 
 import bio.singa.mathematics.geometry.edges.LineSegment;
 import bio.singa.mathematics.geometry.faces.Rectangle;
 import bio.singa.mathematics.metrics.model.VectorMetricProvider;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.mathematics.vectors.Vectors;
-import bio.singa.simulation.model.agents.membranes.Membrane;
-import bio.singa.simulation.model.agents.membranes.MembraneLayer;
-import bio.singa.simulation.model.agents.membranes.MembraneSegment;
+import bio.singa.simulation.model.agents.surfacelike.Membrane;
+import bio.singa.simulation.model.agents.surfacelike.MembraneLayer;
+import bio.singa.simulation.model.agents.surfacelike.MembraneSegment;
 import bio.singa.simulation.model.simulation.Simulation;
 
 import java.util.ArrayList;
@@ -17,19 +17,19 @@ import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
-import static bio.singa.simulation.model.agents.filaments.SkeletalFilament.FilamentBehaviour.STAGNANT;
+import static bio.singa.simulation.model.agents.linelike.SkeletalFilament.FilamentBehaviour.STAGNANT;
 
 /**
  * @author cl
  */
-public class FilamentLayer {
+public class LineLikeAgentLayer {
 
     private List<SkeletalFilament> filaments;
     private MembraneLayer membraneLayer;
     private Rectangle simulationRegion;
     private Simulation simulation;
 
-    public FilamentLayer(Simulation simulation, MembraneLayer membraneLayer) {
+    public LineLikeAgentLayer(Simulation simulation, MembraneLayer membraneLayer) {
         filaments = new ArrayList<>();
         this.simulation = simulation;
         simulationRegion = simulation.getSimulationRegion();

@@ -1,4 +1,4 @@
-package bio.singa.simulation.model.modules.displacement;
+package bio.singa.simulation.model.agents.pointlike;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.chemistry.entities.SmallMolecule;
@@ -16,7 +16,7 @@ import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.graphs.AutomatonNode;
-import bio.singa.simulation.model.modules.displacement.implementations.VesicleDiffusion;
+import bio.singa.simulation.model.modules.displacement.implementations.VesicleCytoplasmDiffusion;
 import bio.singa.simulation.model.sections.CellRegion;
 import bio.singa.simulation.model.sections.CellTopology;
 import bio.singa.simulation.model.simulation.Simulation;
@@ -111,7 +111,7 @@ public class VesiclePlayground extends Application implements Renderer {
 //                .onlyFor(water)
 //                .build();
 
-        VesicleDiffusion vesicleDiffusion = new VesicleDiffusion();
+        VesicleCytoplasmDiffusion vesicleDiffusion = new VesicleCytoplasmDiffusion();
         vesicleDiffusion.setSimulation(simulation);
         simulation.getModules().add(vesicleDiffusion);
 

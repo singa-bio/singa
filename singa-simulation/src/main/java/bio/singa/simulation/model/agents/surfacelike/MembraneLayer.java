@@ -1,4 +1,4 @@
-package bio.singa.simulation.model.agents.membranes;
+package bio.singa.simulation.model.agents.surfacelike;
 
 import java.util.ArrayList;
 import java.util.Collection;

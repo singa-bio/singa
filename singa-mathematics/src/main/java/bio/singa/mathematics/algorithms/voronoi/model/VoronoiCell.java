@@ -149,34 +149,6 @@ public class VoronoiCell implements Polygon {
         this.closed = closed;
     }
 
-    public int evaluatePointPosition(Vector2D point) {
-        // Since all polygons of a Voronoi diagram are convex, the following solution applies:
-        // http://paulbourke.net/geometry/polygonmesh/
-        // Solution 3 (2D):
-        //   "If the polygon is convex then one can consider the polygon
-        //   "as a 'path' from the first vertex. A point is on the interior
-        //   "of this polygons if it is always on the same side of all the
-        //   "line segments making up the path. ...
-        //   "(y - y0) (x1 - x0) - (x - x0) (y1 - y0)
-        //   "if it is less than 0 then P is to the right of the line segment,
-        //   "if greater than 0 it is to the left, if equal to 0 then it lies
-        //   "on the line segment"
-        for (VoronoiHalfEdge lineSegment : getHalfEdges()) {
-            // FIXME this relies on the ordering of the line segments
-            // voronoi segemnts are ordered in reverse
-            Vector2D p0 = lineSegment.getStartPoint();
-            Vector2D p1 = lineSegment.getEndPoint();
-            double r = (point.getY() - p0.getY()) * (p1.getX() - p0.getX()) - (point.getX() - p0.getX()) * (p1.getY() - p0.getY());
-            if (r == 0) {
-                return ON_LINE;
-            }
-            if (r > 0) {
-                return OUTSIDE;
-            }
-        }
-        return INSIDE;
-    }
-
     public Vector2D getCentroid() {
         double x = 0.0;
         double y = 0.0;

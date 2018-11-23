@@ -10,29 +10,28 @@ import bio.singa.features.model.QuantityFormatter;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.javafx.renderer.Renderer;
+import bio.singa.mathematics.geometry.edges.SimpleLineSegment;
 import bio.singa.mathematics.geometry.faces.Circle;
 import bio.singa.mathematics.geometry.faces.Rectangle;
 import bio.singa.mathematics.geometry.model.Polygon;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.simulation.features.*;
-import bio.singa.simulation.model.agents.filaments.FilamentLayer;
-import bio.singa.simulation.model.agents.membranes.Membrane;
-import bio.singa.simulation.model.agents.membranes.MembraneLayer;
-import bio.singa.simulation.model.agents.membranes.MembraneSegment;
-import bio.singa.simulation.model.agents.membranes.MembraneTracer;
-import bio.singa.simulation.model.agents.organelles.MicrotubuleOrganizingCentre;
+import bio.singa.simulation.model.agents.linelike.LineLikeAgentLayer;
+import bio.singa.simulation.model.agents.linelike.MicrotubuleOrganizingCentre;
+import bio.singa.simulation.model.agents.linelike.SkeletalFilament;
 import bio.singa.simulation.model.agents.organelles.OrganelleTemplate;
 import bio.singa.simulation.model.agents.organelles.OrganelleTypes;
+import bio.singa.simulation.model.agents.pointlike.Vesicle;
+import bio.singa.simulation.model.agents.surfacelike.*;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.modules.concentration.imlementations.NthOrderReaction;
-import bio.singa.simulation.model.modules.displacement.Vesicle;
 import bio.singa.simulation.model.modules.displacement.implementations.EndocytosisActinBoost;
-import bio.singa.simulation.model.modules.displacement.implementations.VesicleDiffusion;
+import bio.singa.simulation.model.modules.displacement.implementations.VesicleCytoplasmDiffusion;
 import bio.singa.simulation.model.modules.displacement.implementations.VesicleTransport;
 import bio.singa.simulation.model.modules.qualitative.implementations.ClathrinMediatedEndocytosis;
-import bio.singa.simulation.model.modules.qualitative.implementations.VesicleAttachment;
+import bio.singa.simulation.model.modules.qualitative.implementations.MicrotubuleAttachment;
 import bio.singa.simulation.model.modules.qualitative.implementations.VesicleFusion;
 import bio.singa.simulation.model.sections.CellSubsections;
 import bio.singa.simulation.model.simulation.Simulation;
@@ -51,6 +50,7 @@ import tec.uom.se.unit.ProductUnit;
 import javax.measure.quantity.Area;
 import javax.measure.quantity.Length;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 
 import static bio.singa.features.model.FeatureOrigin.MANUALLY_ANNOTATED;
@@ -66,7 +66,7 @@ import static tec.uom.se.unit.Units.SECOND;
 public class MacroscopicLayerPlayground extends Application implements Renderer {
 
     private Canvas canvas;
-    private FilamentLayer filamentLayer;
+    private LineLikeAgentLayer filamentLayer;
 
     private MembraneLayer membraneLayer;
     private Rectangle rectangle;
@@ -160,6 +160,8 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
                 .addSubstrate(clathrinTriskelion)
                 .build();
 
+
+
         // setup endocytosis budding
         budding = new ClathrinMediatedEndocytosis();
         budding.setSimulation(simulation);
@@ -171,8 +173,7 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
         simulation.getModules().add(budding);
 
         // setup vesicle diffusion
-        VesicleDiffusion diffusion = new VesicleDiffusion();
-        diffusion.useLiteratureDiffusivity();
+        VesicleCytoplasmDiffusion diffusion = new VesicleCytoplasmDiffusion();
         diffusion.setSimulation(simulation);
         simulation.getModules().add(diffusion);
 
@@ -184,7 +185,7 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
         simulation.getModules().add(boost);
 
         // setup attachment
-        VesicleAttachment attachment = new VesicleAttachment();
+        MicrotubuleAttachment attachment = new MicrotubuleAttachment();
         attachment.setFeature(AttachmentDistance.DEFAULT_DYNEIN_ATTACHMENT_DISTANCE);
         attachment.setSimulation(simulation);
         simulation.getModules().add(attachment);
@@ -240,7 +241,7 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
         // green is the
         int blue = java.awt.Color.BLUE.getRGB();
         cell.initializeGroup(blue, "apical plasma membrane", "GO:0016324");
-        Membrane cellMembrane = MembraneTracer.membraneToRegion(cell, graph);
+        Membrane cellMembrane = MembraneFactory.createClosedMembrane(cell.getPolygon().getVertices(), cell.getInnerRegion(), cell.getMembraneRegion(), graph, cell.getInverseRegionMap());
         membraneLayer.addMembrane(cellMembrane);
 
 //        Organelle nucleus = OrganelleTypes.NUCLEUS.create();
@@ -347,23 +348,23 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
             strokeCircle(circle);
         }
         // draw filaments
-//        getGraphicsContext().setStroke(Color.BLACK);
-//        if (filamentLayer != null) {
-//            for (SkeletalFilament skeletalFilament : filamentLayer.getFilaments()) {
-//                if (skeletalFilament.getSegments().size() > 1) {
-//                    Vector2D previous = skeletalFilament.getSegments().getLast();
-//                    Iterator<Vector2D> vector2DIterator = skeletalFilament.getSegments().descendingIterator();
-//                    while (vector2DIterator.hasNext()) {
-//                        Vector2D current = vector2DIterator.next();
-//                        if (current != previous) {
-//                            SimpleLineSegment lineSegment = new SimpleLineSegment(previous, current);
-//                            strokeLineSegment(lineSegment);
-//                        }
-//                        previous = current;
-//                    }
-//                }
-//            }
-//        }
+        getGraphicsContext().setStroke(Color.BLACK);
+        if (filamentLayer != null) {
+            for (SkeletalFilament skeletalFilament : filamentLayer.getFilaments()) {
+                if (skeletalFilament.getSegments().size() > 1) {
+                    Vector2D previous = skeletalFilament.getSegments().getLast();
+                    Iterator<Vector2D> vector2DIterator = skeletalFilament.getSegments().descendingIterator();
+                    while (vector2DIterator.hasNext()) {
+                        Vector2D current = vector2DIterator.next();
+                        if (current != previous) {
+                            SimpleLineSegment lineSegment = new SimpleLineSegment(previous, current);
+                            strokeLineSegment(lineSegment);
+                        }
+                        previous = current;
+                    }
+                }
+            }
+        }
 
         getGraphicsContext().setFill(Color.BLACK);
         strokeTextCenteredOnPoint(QuantityFormatter.formatTime(simulation.getElapsedTime()), new Vector2D(400, 620));

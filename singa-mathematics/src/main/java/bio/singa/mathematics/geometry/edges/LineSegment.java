@@ -9,7 +9,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
-import static bio.singa.mathematics.geometry.model.Polygon.*;
+import static bio.singa.mathematics.geometry.faces.Polygons.INSIDE;
+import static bio.singa.mathematics.geometry.faces.Polygons.ON_LINE;
+import static bio.singa.mathematics.geometry.faces.Polygons.OUTSIDE;
 
 /**
  * @author cl

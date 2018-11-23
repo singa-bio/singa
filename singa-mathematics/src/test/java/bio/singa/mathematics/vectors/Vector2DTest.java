@@ -1,7 +1,5 @@
 package bio.singa.mathematics.vectors;
 
-import bio.singa.mathematics.geometry.faces.Rectangle;
-import bio.singa.mathematics.geometry.model.Polygon;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -98,21 +96,6 @@ class Vector2DTest {
         boolean actualFalse = first.isNearVector(second, 2.0);
         assertTrue(actualTrue);
         assertFalse(actualFalse);
-    }
-
-    @Test
-    void shouldBeInRectangle() {
-        Rectangle r = new Rectangle(new Vector2D(0.0, 10.0), new Vector2D(10.0, 0.0));
-        Vector2D above = new Vector2D(5.0, 11.0);
-        Vector2D below = new Vector2D(5.0, -1.0);
-        Vector2D left = new Vector2D(-1.0, 5.0);
-        Vector2D right = new Vector2D(11.0, 5.0);
-        Vector2D inside = new Vector2D(5.0, 5.0);
-        assertNotEquals(r.evaluatePointPosition(above), Polygon.INSIDE);
-        assertNotEquals(r.evaluatePointPosition(below), Polygon.INSIDE);
-        assertNotEquals(r.evaluatePointPosition(left), Polygon.INSIDE);
-        assertNotEquals(r.evaluatePointPosition(right), Polygon.INSIDE);
-        assertEquals(r.evaluatePointPosition(inside), Polygon.INSIDE);
     }
 
     @Test

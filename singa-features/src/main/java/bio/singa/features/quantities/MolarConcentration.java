@@ -1,5 +1,6 @@
 package bio.singa.features.quantities;
 
+import bio.singa.features.units.UnitRegistry;
 import tec.uom.se.AbstractConverter;
 import tec.uom.se.AbstractQuantity;
 import tec.uom.se.ComparableQuantity;
@@ -118,10 +119,9 @@ public class MolarConcentration extends AbstractQuantity<MolarConcentration> {
         return false;
     }
 
-    public static Quantity<MolarConcentration> moleculesToConcentration(double numberOfMolecules, Quantity<Volume> targetVolume) {
+    public static Quantity<MolarConcentration> moleculesToConcentration(double numberOfMolecules) {
         Quantity<AmountOfSubstance> mole = Quantities.getQuantity(numberOfMolecules / NaturalConstants.AVOGADRO_CONSTANT.getValue().doubleValue(), MOLE);
-        Quantity<Volume> litre = targetVolume.to(LITRE);
-        return mole.divide(litre).asType(MolarConcentration.class);
+        return mole.divide(UnitRegistry.getVolume()).asType(MolarConcentration.class);
     }
 
     public static Quantity<AmountOfSubstance> concentrationToMoles(Quantity<MolarConcentration> concentration, Quantity<Volume> volume) {
@@ -131,8 +131,8 @@ public class MolarConcentration extends AbstractQuantity<MolarConcentration> {
         return multiply.asType(AmountOfSubstance.class);
     }
 
-    public static Quantity<Dimensionless> concentrationToMolecules(Quantity<MolarConcentration> concentration, Quantity<Volume> volume) {
-        return concentrationToMoles(concentration, volume).multiply(NaturalConstants.AVOGADRO_CONSTANT).asType(Dimensionless.class);
+    public static Quantity<Dimensionless> concentrationToMolecules(Quantity<MolarConcentration> concentration) {
+        return concentrationToMoles(concentration, UnitRegistry.getVolume()).multiply(NaturalConstants.AVOGADRO_CONSTANT).asType(Dimensionless.class);
     }
 
 }

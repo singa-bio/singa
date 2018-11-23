@@ -7,14 +7,14 @@ import bio.singa.features.parameters.Environment;
 import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.vectors.Vector2D;
-import bio.singa.simulation.model.agents.membranes.Membrane;
-import bio.singa.simulation.model.agents.membranes.MembraneLayer;
-import bio.singa.simulation.model.agents.membranes.MembraneTracer;
+import bio.singa.simulation.model.agents.pointlike.Vesicle;
+import bio.singa.simulation.model.agents.pointlike.VesicleLayer;
+import bio.singa.simulation.model.agents.surfacelike.Membrane;
+import bio.singa.simulation.model.agents.surfacelike.MembraneLayer;
+import bio.singa.simulation.model.agents.surfacelike.MembraneTracer;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.graphs.AutomatonNode;
-import bio.singa.simulation.model.modules.displacement.Vesicle;
-import bio.singa.simulation.model.modules.displacement.VesicleLayer;
 import bio.singa.simulation.model.sections.CellTopology;
 import bio.singa.simulation.model.simulation.Simulation;
 import org.junit.jupiter.api.AfterEach;
@@ -22,8 +22,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import tec.uom.se.ComparableQuantity;
 import tec.uom.se.quantity.Quantities;
-import tec.uom.se.unit.ProductUnit;
-import tec.uom.se.unit.Units;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Length;
@@ -102,12 +100,11 @@ class MembraneDiffusionTest {
         MembranePermeability membranePermeability = new MembranePermeability(Quantities.getQuantity(3.5E-03, CENTIMETRE_PER_SECOND), FeatureOrigin.MANUALLY_ANNOTATED);
         membranePermeability.scale();
         Quantity<MembranePermeability> scaledQuantity = membranePermeability.getScaledQuantity();
-        ProductUnit<MolarConcentration> unit = new ProductUnit<>(Units.MOLE.divide(getVolume().getUnit()));
-        Quantity<MolarConcentration> concentration = Quantities.getQuantity(0.1, MOLE_PER_LITRE).to(unit);
+        Quantity<MolarConcentration> concentration = Quantities.getQuantity(0.1, MOLE_PER_LITRE).to(UnitRegistry.getConcentrationUnit());
 
         double result = scaledQuantity.getValue().doubleValue() * concentration.getValue().doubleValue() * getArea().getValue().doubleValue();
 
-        assertEquals(7.0E-6, Quantities.getQuantity(result, unit).to(MOLE_PER_LITRE).getValue().doubleValue(), 1.0E-16);
+        assertEquals(7.0E-6, Quantities.getQuantity(result, UnitRegistry.getConcentrationUnit()).to(MOLE_PER_LITRE).getValue().doubleValue(), 1.0E-16);
 
     }
 

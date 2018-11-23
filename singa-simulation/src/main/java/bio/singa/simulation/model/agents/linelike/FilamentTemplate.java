@@ -1,7 +1,6 @@
-package bio.singa.simulation.model.agents.organelles;
+package bio.singa.simulation.model.agents.linelike;
 
 import bio.singa.features.parameters.Environment;
-import bio.singa.simulation.model.agents.filaments.SkeletalFilament;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 
 import javax.measure.Quantity;

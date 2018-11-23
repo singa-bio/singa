@@ -1,4 +1,4 @@
-package bio.singa.simulation.model.modules.displacement;
+package bio.singa.simulation.model.agents.pointlike;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.chemistry.features.ChemistryFeatureContainer;
@@ -10,11 +10,14 @@ import bio.singa.features.parameters.Environment;
 import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.mathematics.geometry.faces.Circle;
 import bio.singa.mathematics.vectors.Vector2D;
+import bio.singa.simulation.model.agents.linelike.SkeletalFilament;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.modules.UpdateModule;
 import bio.singa.simulation.model.modules.concentration.ConcentrationDelta;
 import bio.singa.simulation.model.modules.concentration.ConcentrationDeltaManager;
-import bio.singa.simulation.model.agents.filaments.SkeletalFilament;
+import bio.singa.simulation.model.modules.displacement.DisplacementBasedModule;
+import bio.singa.simulation.model.modules.displacement.DisplacementDelta;
+import bio.singa.simulation.model.modules.displacement.DisplacementDeltaManager;
 import bio.singa.simulation.model.sections.CellRegion;
 import bio.singa.simulation.model.sections.CellSubsection;
 import bio.singa.simulation.model.sections.CellTopology;
@@ -28,14 +31,13 @@ import javax.measure.quantity.Volume;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static bio.singa.simulation.model.agents.pointlike.VesicleStateRegistry.VesicleState;
+import static bio.singa.simulation.model.modules.displacement.implementations.VesicleCytoplasmDiffusion.DEFAULT_VESICLE_DIFFUSIVITY;
+
 /**
  * @author cl
  */
 public class Vesicle implements Updatable, Featureable {
-
-    public enum AttachmentState {
-        ACTIN_DEPOLYMERIZATION, MICROTUBULE, TETHERED, UNATTACHED
-    }
 
     public enum TargetDirection {
         PLUS, MINUS
@@ -62,7 +64,7 @@ public class Vesicle implements Updatable, Featureable {
     private final CellRegion region;
     private Map<AutomatonNode, Double> associatedNodes;
 
-    private AttachmentState attachmentState;
+    private VesicleState vesicleState;
     private TargetDirection targetDirection;
     private SkeletalFilament attachedFilament;
     private ListIterator<Vector2D> segmentIterator;
@@ -97,7 +99,7 @@ public class Vesicle implements Updatable, Featureable {
         concentrationManager = new ConcentrationDeltaManager(region.setUpConcentrationContainer());
         displacementManager = new DisplacementDeltaManager(position);
         associatedNodes = new HashMap<>();
-        attachmentState = AttachmentState.UNATTACHED;
+        vesicleState = VesicleStateRegistry.UNATTACHED;
     }
 
     public Vesicle(Vector2D position, Quantity<Length> radius) {
@@ -129,12 +131,12 @@ public class Vesicle implements Updatable, Featureable {
         return displacementManager.getNextPosition();
     }
 
-    public AttachmentState getAttachmentState() {
-        return attachmentState;
+    public VesicleState getVesicleState() {
+        return vesicleState;
     }
 
-    public void setAttachmentState(AttachmentState attachmentState) {
-        this.attachmentState = attachmentState;
+    public void setVesicleState(VesicleState vesicleState) {
+        this.vesicleState = vesicleState;
     }
 
     public SkeletalFilament getAttachedFilament() {
@@ -173,7 +175,8 @@ public class Vesicle implements Updatable, Featureable {
         this.radius = radius;
         area = calculateArea(radius);
         volume = calculateVolume(radius);
-        setFeature(Diffusivity.calculate(radius));
+        // setFeature(Diffusivity.calculate(radius));
+        setFeature(DEFAULT_VESICLE_DIFFUSIVITY);
     }
 
     public void setConcentration(ChemicalEntity entity, Quantity<MolarConcentration> concentration) {

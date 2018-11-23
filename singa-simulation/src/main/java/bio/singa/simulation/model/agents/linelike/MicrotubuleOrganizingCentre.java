@@ -1,9 +1,8 @@
-package bio.singa.simulation.model.agents.organelles;
+package bio.singa.simulation.model.agents.linelike;
 
 import bio.singa.mathematics.geometry.faces.Circle;
 import bio.singa.mathematics.vectors.Vector2D;
-import bio.singa.simulation.model.agents.filaments.FilamentLayer;
-import bio.singa.simulation.model.agents.membranes.MembraneLayer;
+import bio.singa.simulation.model.agents.surfacelike.MembraneLayer;
 import bio.singa.simulation.model.simulation.Simulation;
 
 /**
@@ -25,8 +24,8 @@ public class MicrotubuleOrganizingCentre {
         this.membraneLayer = membraneLayer;
     }
 
-    public FilamentLayer initializeFilaments() {
-        FilamentLayer filamentLayer = new FilamentLayer(simulation, membraneLayer);
+    public LineLikeAgentLayer initializeFilaments() {
+        LineLikeAgentLayer filamentLayer = new LineLikeAgentLayer(simulation, membraneLayer);
         // initialize filaments
         int currentFilaments = 0;
         Vector2D centre = circleRepresentation.getMidpoint();

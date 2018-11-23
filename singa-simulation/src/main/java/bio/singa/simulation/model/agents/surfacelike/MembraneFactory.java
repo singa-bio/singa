@@ -1,4 +1,4 @@
-package bio.singa.simulation.model.agents.membranes;
+package bio.singa.simulation.model.agents.surfacelike;
 
 import bio.singa.mathematics.algorithms.geometry.SutherandHodgmanClipping;
 import bio.singa.mathematics.algorithms.topology.FloodFill;
@@ -18,7 +18,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
-import static bio.singa.mathematics.geometry.model.Polygon.*;
 import static bio.singa.mathematics.topology.grids.rectangular.NeumannRectangularDirection.*;
 
 /**
@@ -101,27 +100,30 @@ public class MembraneFactory {
                 Vector2D endingPoint = lineSegment.getEndingPoint();
                 for (AutomatonNode node : graph.getNodes()) {
                     Polygon spatialRepresentation = node.getSpatialRepresentation();
-                    // evaluate line segment (-1 outside, 0 on line, 1 inside)
-                    int startingPosition = spatialRepresentation.evaluatePointPosition(startingPoint);
-                    int endingPosition = spatialRepresentation.evaluatePointPosition(endingPoint);
+                    boolean startIsInside = spatialRepresentation.isInside(startingPoint);
+                    boolean endIsInside = spatialRepresentation.isInside(endingPoint);
                     Set<Vector2D> intersections = spatialRepresentation.getIntersections(lineSegment);
-                    if (startingPosition >= ON_LINE && endingPosition >= ON_LINE) {
+                    if (startIsInside && endIsInside) {
                         // completely inside
                         membrane.addSegment(node, lineSegment);
                         node.setCellRegion(regions.get(startingPoint));
                         break;
-                    } else if (startingPosition == INSIDE && endingPosition == OUTSIDE) {
+                    } else if (startIsInside) {
                         // end outside or on line
                         Vector2D intersectionPoint = intersections.iterator().next();
-                        membrane.addSegment(node, new SimpleLineSegment(startingPoint, intersectionPoint));
-                        node.setCellRegion(regions.get(startingPoint));
-                        isContained = false;
-                    } else if (startingPosition == OUTSIDE && endingPosition == INSIDE) {
+                        if (!intersectionPoint.equals(startingPoint)) {
+                            membrane.addSegment(node, new SimpleLineSegment(startingPoint, intersectionPoint));
+                            node.setCellRegion(regions.get(startingPoint));
+                            isContained = false;
+                        }
+                    } else if (endIsInside) {
                         // start outside or on line
                         Vector2D intersectionPoint = intersections.iterator().next();
-                        membrane.addSegment(node, new SimpleLineSegment(intersectionPoint, endingPoint));
-                        node.setCellRegion(regions.get(startingPoint));
-                        isContained = false;
+                        if (!intersectionPoint.equals(endingPoint)) {
+                            membrane.addSegment(node, new SimpleLineSegment(intersectionPoint, endingPoint));
+                            node.setCellRegion(regions.get(startingPoint));
+                            isContained = false;
+                        }
                     } else if (intersections.size() == 2) {
                         // line only crosses the membrane
                         Iterator<Vector2D> iterator = intersections.iterator();
@@ -152,7 +154,8 @@ public class MembraneFactory {
                 // therefore check if all segments of the representative region are inside
                 boolean allPointsAreInside = true;
                 for (Vector2D vector : node.getSpatialRepresentation().getVertices()) {
-                    if (polygon.evaluatePointPosition(vector) == OUTSIDE) {
+                    // break is any point is not inside
+                    if (!polygon.isInside(vector)) {
                         allPointsAreInside = false;
                         break;
                     }

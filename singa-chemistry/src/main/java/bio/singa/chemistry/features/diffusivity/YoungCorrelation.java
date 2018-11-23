@@ -40,7 +40,7 @@ public class YoungCorrelation implements Correlation<Diffusivity> {
         // D = coefficient * (T/n*M^1/3)
         final double diffusivity = YOUNG_COEFFICIENT.getValue().doubleValue()
                 * (Environment.getTemperature().getValue().doubleValue()
-                / (Environment.getViscosity().getValue().doubleValue() * Math.cbrt(molarMass)));
+                / (Environment.getMatrixViscosity().getValue().doubleValue() * Math.cbrt(molarMass)));
         final Quantity<Diffusivity> quantity = Quantities.getQuantity(diffusivity, Diffusivity.SQUARE_CENTIMETRE_PER_SECOND);
         return new Diffusivity(quantity, origin);
     }

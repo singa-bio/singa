@@ -3,7 +3,6 @@ package bio.singa.simulation.model.modules.concentration.imlementations;
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.chemistry.entities.SmallMolecule;
 import bio.singa.chemistry.features.reactions.RateConstant;
-import bio.singa.features.parameters.Environment;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
@@ -16,9 +15,8 @@ import bio.singa.simulation.model.sections.InitialConcentration;
 import bio.singa.simulation.model.simulation.Simulation;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import tec.uom.se.quantity.Quantities;
 
 import static bio.singa.features.units.UnitProvider.NANO_MOLE_PER_LITRE;
@@ -31,9 +29,6 @@ import static tec.uom.se.unit.Units.SECOND;
  */
 public class DynamicReactionTest {
 
-
-    private static final Logger logger = LoggerFactory.getLogger(DynamicReactionTest.class);
-
     @BeforeAll
     static void initialize() {
         UnitRegistry.reinitialize();
@@ -45,11 +40,8 @@ public class DynamicReactionTest {
     }
 
     @Test
+    @DisplayName("example reaction - arbitrary law")
     public void shouldPerformDynamicReaction() {
-
-        Environment.reset();
-        logger.info("Testing section simple dynamic reaction.");
-        // the rate constants
 
         // the substrate
         ChemicalEntity substrate = new SmallMolecule.Builder("substrate")
@@ -76,7 +68,7 @@ public class DynamicReactionTest {
                 .build();
 
         // create and add module
-        DynamicReaction binding = DynamicReaction.inSimulation(simulation)
+        DynamicReaction.inSimulation(simulation)
                 .kineticLaw("substrate*sin(catalyt)*k/product")
                 .referenceParameter(new Reactant(substrate, ReactantRole.SUBSTRATE, INNER))
                 .referenceParameter(new Reactant(product, ReactantRole.PRODUCT, INNER))

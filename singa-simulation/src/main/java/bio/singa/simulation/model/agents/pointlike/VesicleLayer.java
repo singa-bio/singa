@@ -1,4 +1,4 @@
-package bio.singa.simulation.model.modules.displacement;
+package bio.singa.simulation.model.agents.pointlike;
 
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.units.UnitRegistry;
@@ -13,10 +13,12 @@ import bio.singa.mathematics.topology.grids.rectangular.MooreRectangularDirectio
 import bio.singa.mathematics.topology.grids.rectangular.NeumannRectangularDirection;
 import bio.singa.mathematics.topology.grids.rectangular.RectangularCoordinate;
 import bio.singa.mathematics.vectors.Vector2D;
-import bio.singa.simulation.model.agents.membranes.Membrane;
-import bio.singa.simulation.model.agents.membranes.MembraneSegment;
+import bio.singa.simulation.model.agents.surfacelike.Membrane;
+import bio.singa.simulation.model.agents.surfacelike.MembraneSegment;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonNode;
+import bio.singa.simulation.model.modules.displacement.DisplacementBasedModule;
+import bio.singa.simulation.model.modules.displacement.implementations.VesicleConfinedDiffusion;
 import bio.singa.simulation.model.simulation.Simulation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +27,6 @@ import javax.measure.Quantity;
 import javax.measure.quantity.Length;
 import java.util.*;
 
-import static bio.singa.mathematics.geometry.model.Polygon.ON_LINE;
 import static bio.singa.mathematics.metrics.model.VectorMetricProvider.SQUARED_EUCLIDEAN_METRIC;
 
 /**
@@ -39,22 +40,22 @@ public class VesicleLayer {
     private static final Logger logger = LoggerFactory.getLogger(DisplacementBasedModule.class);
 
     private List<Vesicle> vesicles;
-    private Rectangle simulationArea;
+    private Rectangle simulationRegion;
     private final Quantity<Length> displacementEpsilon;
     private Simulation simulation;
 
     public VesicleLayer(Simulation simulation) {
-        this.simulation = simulation;
+        setSimulation(simulation);
         vesicles = new ArrayList<>();
         displacementEpsilon = UnitRegistry.getSpace().divide(10);
     }
 
-    public Rectangle getSimulationArea() {
-        return simulationArea;
+    public Rectangle getSimulationRegion() {
+        return simulationRegion;
     }
 
-    public void setSimulationArea(Rectangle simulationArea) {
-        this.simulationArea = simulationArea;
+    public void setSimulationRegion(Rectangle simulationRegion) {
+        this.simulationRegion = simulationRegion;
     }
 
     public Simulation getSimulation() {
@@ -63,6 +64,7 @@ public class VesicleLayer {
 
     public void setSimulation(Simulation simulation) {
         this.simulation = simulation;
+        simulationRegion = simulation.getSimulationRegion();
     }
 
     public void addVesicle(Vesicle vesicle) {
@@ -109,11 +111,27 @@ public class VesicleLayer {
                     }
                 }
             }
+            // check for collisions with confined volumes
+            boolean exceedsConfinement = simulation.getModules().stream().filter(VesicleConfinedDiffusion.class::isInstance)
+                    .map(VesicleConfinedDiffusion.class::cast)
+                    .anyMatch(vesicleConfinedDiffusion -> {
+                        // has the confining state
+                        if (vesicle1.getVesicleState().equals(vesicleConfinedDiffusion.getConfiningState())) {
+                            // and is inside the volume
+                            return !vesicleConfinedDiffusion.getConfinedVolume().getArea().isInside(vesicle1.getNextPosition());
+                        }
+                        return false;
+                    });
+            if (exceedsConfinement) {
+                vesicle1.resetNextPosition();
+                continue;
+            }
+
             // check collisions with border
             double x = vesicle1.getNextPosition().getX();
             double y = vesicle1.getNextPosition().getY();
-            if (x - firstRadius < simulationArea.getLeftMostXPosition() || x + firstRadius > simulationArea.getRightMostXPosition() ||
-                    y - firstRadius < simulationArea.getTopMostYPosition() || y + firstRadius > simulationArea.getBottomMostYPosition()) {
+            if (x - firstRadius < simulationRegion.getLeftMostXPosition() || x + firstRadius > simulationRegion.getRightMostXPosition() ||
+                    y - firstRadius < simulationRegion.getTopMostYPosition() || y + firstRadius > simulationRegion.getBottomMostYPosition()) {
                 vesicle1.resetNextPosition();
             }
         }
@@ -150,7 +168,7 @@ public class VesicleLayer {
             // get representative region of the node
             Polygon polygon = node.getSpatialRepresentation();
             // associate vesicle to the node with the largest part of the vesicle (midpoint is inside)
-            if (polygon.evaluatePointPosition(vesicle.getCurrentPosition()) >= ON_LINE) {
+            if (polygon.isInside(vesicle.getCurrentPosition())) {
                 // check if vesicle intersects with more than two regions at once
                 for (Vector2D polygonVertex : polygon.getVertices()) {
                     // this is the case if the distance to the edge is smaller than the radius

@@ -4,9 +4,10 @@ import bio.singa.core.utility.Pair;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.simulation.features.MotorMovementVelocity;
+import bio.singa.simulation.model.agents.pointlike.VesicleStateRegistry;
 import bio.singa.simulation.model.modules.displacement.DisplacementBasedModule;
 import bio.singa.simulation.model.modules.displacement.DisplacementDelta;
-import bio.singa.simulation.model.modules.displacement.Vesicle;
+import bio.singa.simulation.model.agents.pointlike.Vesicle;
 import tec.uom.se.quantity.Quantities;
 
 import javax.measure.Quantity;
@@ -14,8 +15,7 @@ import javax.measure.quantity.Length;
 import javax.measure.quantity.Speed;
 import java.util.ListIterator;
 
-import static bio.singa.simulation.model.modules.displacement.Vesicle.AttachmentState.MICROTUBULE;
-import static bio.singa.simulation.model.modules.displacement.Vesicle.TargetDirection.MINUS;
+import static bio.singa.simulation.model.agents.pointlike.Vesicle.TargetDirection.MINUS;
 
 /**
  * @author cl
@@ -24,7 +24,7 @@ public class VesicleTransport extends DisplacementBasedModule {
 
     public VesicleTransport() {
         // delta function
-        addDeltaFunction(this::calculateDisplacement, vesicle -> vesicle.getAttachmentState() == MICROTUBULE);
+        addDeltaFunction(this::calculateDisplacement, vesicle -> vesicle.getVesicleState() == VesicleStateRegistry.MICROTUBULE_ATTACHED);
         // feature
         getRequiredFeatures().add(MotorMovementVelocity.class);
     }

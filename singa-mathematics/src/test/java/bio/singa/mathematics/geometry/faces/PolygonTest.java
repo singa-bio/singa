@@ -1,6 +1,5 @@
-package bio.singa.mathematics.geometry;
+package bio.singa.mathematics.geometry.faces;
 
-import bio.singa.mathematics.geometry.faces.VertexPolygon;
 import bio.singa.mathematics.vectors.Vector2D;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;

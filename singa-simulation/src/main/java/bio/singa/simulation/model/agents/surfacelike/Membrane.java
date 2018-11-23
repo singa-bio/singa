@@ -1,4 +1,4 @@
-package bio.singa.simulation.model.agents.membranes;
+package bio.singa.simulation.model.agents.surfacelike;
 
 import bio.singa.mathematics.geometry.edges.LineSegment;
 import bio.singa.mathematics.vectors.Vector2D;

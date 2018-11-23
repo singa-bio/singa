@@ -6,6 +6,7 @@ import bio.singa.features.model.ScalableFeature;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.vectors.Vector2D;
+import bio.singa.simulation.model.agents.pointlike.Vesicle;
 import bio.singa.simulation.model.modules.UpdateModule;
 import bio.singa.simulation.model.modules.concentration.ModuleState;
 import bio.singa.simulation.model.parameters.FeatureManager;
