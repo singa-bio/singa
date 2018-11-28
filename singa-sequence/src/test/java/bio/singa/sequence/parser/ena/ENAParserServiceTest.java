@@ -8,6 +8,7 @@ import bio.singa.sequence.model.SequenceContainer;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class ENAParserServiceTest {
 
@@ -52,4 +53,9 @@ class ENAParserServiceTest {
     }
 
 
+    @Test
+    void shouldParseTranslationSequenceWithoutUniProtMapping() {
+        SequenceContainer sequenceContainer = ENAParserService.parseGeneTranslationPair(new ENAAccessionNumber("AAC74452.1"));
+        assertFalse(sequenceContainer.getTranslation().hasFeature(UniProtIdentifier.class));
+    }
 }

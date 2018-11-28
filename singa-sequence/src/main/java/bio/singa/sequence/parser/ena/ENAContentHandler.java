@@ -39,7 +39,9 @@ public class ENAContentHandler implements ContentHandler {
     public ProteinSequence getTranslationSequence() {
         final String translationSequence = translationSequenceBuilder.toString().replaceAll("\\s", "");
         ProteinSequence proteinSequence = ProteinSequence.of(translationSequence);
-        proteinSequence.setFeature(uniProtIdentifier);
+        if (uniProtIdentifier != null) {
+            proteinSequence.setFeature(uniProtIdentifier);
+        }
         return proteinSequence;
     }
 
