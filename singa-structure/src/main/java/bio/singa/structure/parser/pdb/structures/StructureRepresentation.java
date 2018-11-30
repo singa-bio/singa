@@ -47,7 +47,7 @@ public class StructureRepresentation {
     private StructureRepresentation(OakChain chain) {
         List<LeafSubstructure<?>> consecutivePart = chain.getConsecutivePart();
         consecutiveRecords = getPdbLines(consecutivePart);
-        terminateRecord = ChainTerminatorToken.assemblePDBLine(consecutivePart.get(consecutivePart.size() - 1));
+        terminateRecord = consecutivePart.isEmpty() ? "" : ChainTerminatorToken.assemblePDBLine(consecutivePart.get(consecutivePart.size() - 1));
         nonConsecutiveLeafs = chain.getNonConsecutivePart();
     }
 
