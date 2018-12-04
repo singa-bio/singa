@@ -143,7 +143,7 @@ public class ClathrinMediatedEndocytosis extends QualitativeModule {
         // choose random point on that site, spawn a little on the inside
         Vector2D spawnSite = segment.getSegment().getRandomPoint().add(simulation.getSimulationRegion().getCentre().normalize());
         // sample maturation time
-        Quantity<Time> spawnTime = simulation.getElapsedTime().add(SpawnTimeSampler.sampleMaturatuionTime(getFeature(MaturationTime.class).getFeatureContent()));
+        Quantity<Time> spawnTime = simulation.getElapsedTime().add(SpawnTimeSampler.sampleMaturationTime(getFeature(MaturationTime.class).getFeatureContent()));
         // sample vesicle radius
         Quantity<Length> spawnRadius = SpawnTimeSampler.sampleVesicleRadius(getFeature(VesicleRadius.class).getFeatureContent());
         // return event

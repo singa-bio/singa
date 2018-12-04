@@ -55,9 +55,10 @@ public class VesicleStateRegistry {
     private static VesicleStateRegistry instance = getInstance();
 
     public static final VesicleState ACTIN_PROPELLED = new VesicleState("ACTIN_PROPELLED", "propelled by actin depolymerization");
-    public static final VesicleState MICROTUBULE_ATTACHED = new VesicleState("MICROTUBULE_ATTACHED", "attached to micotubule with motor protein");
     public static final VesicleState ACTIN_ATTACHED = new VesicleState("ACTIN_ATTACHED", "attached to actin with motor protein");
-    public static final VesicleState MEMBRANE_ATTACHED = new VesicleState("MEMBRANE_ATTACHED", "attached to membrane");
+    public static final VesicleState ACTIN_TETHERED = new VesicleState("ACTIN_TETHERED", "tethered to actin filaments.");
+    public static final VesicleState MICROTUBULE_ATTACHED = new VesicleState("MICROTUBULE_ATTACHED", "attached to micotubule with motor protein");
+    public static final VesicleState MEMBRANE_TETHERED = new VesicleState("MEMBRANE_TETHERED", "tethered to membrane");
     public static final VesicleState UNATTACHED = new VesicleState("UNATTACHED", "unattached from any cellular component");
 
     private Set<VesicleState> states;
@@ -72,9 +73,9 @@ public class VesicleStateRegistry {
     private VesicleStateRegistry() {
         states = new HashSet<>();
         states.add(ACTIN_PROPELLED);
-        states.add(MICROTUBULE_ATTACHED);
         states.add(ACTIN_ATTACHED);
-        states.add(MEMBRANE_ATTACHED);
+        states.add(MICROTUBULE_ATTACHED);
+        states.add(MEMBRANE_TETHERED);
         states.add(UNATTACHED);
     }
 

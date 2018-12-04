@@ -10,7 +10,7 @@ import bio.singa.features.parameters.Environment;
 import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.mathematics.geometry.faces.Circle;
 import bio.singa.mathematics.vectors.Vector2D;
-import bio.singa.simulation.model.agents.linelike.SkeletalFilament;
+import bio.singa.simulation.model.agents.linelike.LineLikeAgent;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.modules.UpdateModule;
 import bio.singa.simulation.model.modules.concentration.ConcentrationDelta;
@@ -31,17 +31,13 @@ import javax.measure.quantity.Volume;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static bio.singa.simulation.features.MotorPullDirection.Direction;
 import static bio.singa.simulation.model.agents.pointlike.VesicleStateRegistry.VesicleState;
-import static bio.singa.simulation.model.modules.displacement.implementations.VesicleCytoplasmDiffusion.DEFAULT_VESICLE_DIFFUSIVITY;
 
 /**
  * @author cl
  */
 public class Vesicle implements Updatable, Featureable {
-
-    public enum TargetDirection {
-        PLUS, MINUS
-    }
 
     private static AtomicInteger vesicleCounter = new AtomicInteger();
 
@@ -65,8 +61,8 @@ public class Vesicle implements Updatable, Featureable {
     private Map<AutomatonNode, Double> associatedNodes;
 
     private VesicleState vesicleState;
-    private TargetDirection targetDirection;
-    private SkeletalFilament attachedFilament;
+    private Direction targetDirection;
+    private LineLikeAgent attachedFilament;
     private ListIterator<Vector2D> segmentIterator;
 
     /**
@@ -139,19 +135,19 @@ public class Vesicle implements Updatable, Featureable {
         this.vesicleState = vesicleState;
     }
 
-    public SkeletalFilament getAttachedFilament() {
+    public LineLikeAgent getAttachedFilament() {
         return attachedFilament;
     }
 
-    public void setAttachedFilament(SkeletalFilament attachedFilament) {
+    public void setAttachedFilament(LineLikeAgent attachedFilament) {
         this.attachedFilament = attachedFilament;
     }
 
-    public TargetDirection getTargetDirection() {
+    public Direction getTargetDirection() {
         return targetDirection;
     }
 
-    public void setTargetDirection(TargetDirection targetDirection) {
+    public void setTargetDirection(Direction targetDirection) {
         this.targetDirection = targetDirection;
     }
 
@@ -175,8 +171,7 @@ public class Vesicle implements Updatable, Featureable {
         this.radius = radius;
         area = calculateArea(radius);
         volume = calculateVolume(radius);
-        // setFeature(Diffusivity.calculate(radius));
-        setFeature(DEFAULT_VESICLE_DIFFUSIVITY);
+        setFeature(Diffusivity.calculate(radius));
     }
 
     public void setConcentration(ChemicalEntity entity, Quantity<MolarConcentration> concentration) {

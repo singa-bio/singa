@@ -84,7 +84,7 @@ public class MembraneFactory {
      * Associates membranes to their nodes and nodes to their membranes. This means regions are set for each node
      * depending on the membrane the the region associated to each membrane segment.
      *
-     * @param segments the segments
+     * @param segments the path
      */
     private void associateToGraph(List<LineSegment> segments) {
         if (graph.getNodes().size() == 1) {
@@ -92,7 +92,7 @@ public class MembraneFactory {
             membrane = associateOneNodeGraph(segments);
         } else {
             // graph has multiple nodes
-            // flag if all segments are contained in a single node
+            // flag if all path are contained in a single node
             boolean isContained = true;
             // determine and setup membrane cells
             for (LineSegment lineSegment : segments) {
@@ -151,7 +151,7 @@ public class MembraneFactory {
             // if this is a closed membrane section
             for (AutomatonNode node : graph.getNodes()) {
                 // determine cell that is completely inside of the membrane as starting point
-                // therefore check if all segments of the representative region are inside
+                // therefore check if all path of the representative region are inside
                 boolean allPointsAreInside = true;
                 for (Vector2D vector : node.getSpatialRepresentation().getVertices()) {
                     // break is any point is not inside

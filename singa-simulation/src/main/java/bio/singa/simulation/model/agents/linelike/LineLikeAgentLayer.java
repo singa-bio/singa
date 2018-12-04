@@ -17,14 +17,15 @@ import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
-import static bio.singa.simulation.model.agents.linelike.SkeletalFilament.FilamentBehaviour.STAGNANT;
+import static bio.singa.simulation.model.agents.linelike.LineLikeAgent.FilamentType.*;
+import static bio.singa.simulation.model.agents.linelike.LineLikeAgent.GrowthBehaviour.STAGNANT;
 
 /**
  * @author cl
  */
 public class LineLikeAgentLayer {
 
-    private List<SkeletalFilament> filaments;
+    private List<LineLikeAgent> filaments;
     private MembraneLayer membraneLayer;
     private Rectangle simulationRegion;
     private Simulation simulation;
@@ -57,7 +58,21 @@ public class LineLikeAgentLayer {
         }
 
         Map.Entry<Vector2D, Double> entry = VectorMetricProvider.EUCLIDEAN_METRIC.calculateClosestDistance(targetPoints, initialPosition);
-        addFilament(initialPosition, initialPosition.subtract(entry.getKey()).normalize());
+        addMicrotubule(initialPosition, initialPosition.subtract(entry.getKey()).normalize());
+    }
+
+    public void spawnActinFilament(Membrane cellMembrane) {
+        List<MembraneSegment> segments = new ArrayList<>(cellMembrane.getSegments());
+        // choose random line segment from the given membrane
+        LineSegment lineSegment = segments.get(ThreadLocalRandom.current().nextInt(0, segments.size())).getSegment();
+        Vector2D initialPosition = lineSegment.getRandomPoint();
+
+        List<Vector2D> membranePoints = cellMembrane.getSegments().stream()
+                .map(MembraneSegment::getStartingPoint)
+                .collect(Collectors.toList());
+        Vector2D centroid = Vectors.getCentroid(membranePoints).as(Vector2D.class);
+
+        addActin(initialPosition, initialPosition.subtract(centroid).normalize());
     }
 
     public void spawnHorizontalFilament(Membrane sourceMembrane) {
@@ -82,9 +97,9 @@ public class LineLikeAgentLayer {
         double bottomDistance = simulationRegion.getBottomEdge().distanceTo(initialPosition);
         // check if top or bottom is closer
         if (topDistance > bottomDistance) {
-            addFilament(initialPosition, Vector2D.UNIT_VECTOR_UP);
+            addMicrotubule(initialPosition, Vector2D.UNIT_VECTOR_UP);
         } else {
-            addFilament(initialPosition, Vector2D.UNIT_VECTOR_DOWN);
+            addMicrotubule(initialPosition, Vector2D.UNIT_VECTOR_DOWN);
         }
     }
 
@@ -95,23 +110,23 @@ public class LineLikeAgentLayer {
         double leftDistance = simulationRegion.getLeftEdge().distanceTo(initialPosition);
         // check if top or bottom is closer
         if (rightDistance > leftDistance) {
-            addFilament(initialPosition, Vector2D.UNIT_VECTOR_RIGHT);
+            addMicrotubule(initialPosition, Vector2D.UNIT_VECTOR_RIGHT);
         } else {
-            addFilament(initialPosition, Vector2D.UNIT_VECTOR_LEFT);
+            addMicrotubule(initialPosition, Vector2D.UNIT_VECTOR_LEFT);
         }
     }
 
     private void addPerpendicularFilament(LineSegment lineSegment) {
         Vector2D initialPosition = lineSegment.getRandomPoint();
         Vector2D centre = simulationRegion.getCentre();
-        addFilament(initialPosition, centre.subtract(initialPosition));
+        addMicrotubule(initialPosition, centre.subtract(initialPosition));
     }
 
     public void nextEpoch() {
         // TODO scale with time
-        ListIterator<SkeletalFilament> iterator = filaments.listIterator();
+        ListIterator<LineLikeAgent> iterator = filaments.listIterator();
         while (iterator.hasNext()) {
-            SkeletalFilament filament = iterator.next();
+            LineLikeAgent filament = iterator.next();
             int currentLength = filament.nextEpoch();
             // filament has shrunk to zero
             if (currentLength == 0) {
@@ -123,13 +138,13 @@ public class LineLikeAgentLayer {
 
     private void updateBehaviours() {
         // check border interactions
-        for (SkeletalFilament filament : filaments) {
+        for (LineLikeAgent filament : filaments) {
             Vector2D head = filament.getPlusEnd();
             // TODO collisions with simulation borders
             if (filament.getPlusEndBehaviour() != STAGNANT) {
                 for (Membrane membrane : membraneLayer.getMembranes()) {
                     for (MembraneSegment membraneSegment : membrane.getSegments()) {
-                        if (membraneSegment.distanceTo(head) < 1 && filament.getSegments().size() > 10) {
+                        if (membraneSegment.distanceTo(head) < 1 && filament.getPath().size() > 10) {
                             filament.setPlusEndBehaviour(STAGNANT);
                             break;
                         }
@@ -137,7 +152,6 @@ public class LineLikeAgentLayer {
                 }
             }
         }
-
 
         // check pairwise interactions
 //        for (SkeletalFilament filament : filaments) {
@@ -152,7 +166,7 @@ public class LineLikeAgentLayer {
 //                    // zippering - plus: follow
 //                    if (filament.getPlusEndBehaviour() == GROW) {
 //                        filament.setPlusEndBehaviour(FOLLOW);
-//                        filament.setLeadFilament(closestFragment);
+//                        filament.setLeadAgent(closestFragment);
 //                    }
 //                }
 //            }
@@ -161,23 +175,27 @@ public class LineLikeAgentLayer {
     }
 
     public boolean hasGrowingFilaments() {
-        for (SkeletalFilament filament : filaments) {
-            if (filament.getPlusEndBehaviour() != SkeletalFilament.FilamentBehaviour.STAGNANT) {
+        for (LineLikeAgent filament : filaments) {
+            if (filament.getPlusEndBehaviour() != STAGNANT) {
                 return true;
             }
         }
         return false;
     }
 
-    public void addFilament(Vector2D initialPosition, Vector2D initialDirection) {
-        filaments.add(new SkeletalFilament(initialPosition, initialDirection, simulation.getGraph()));
+    public void addMicrotubule(Vector2D initialPosition, Vector2D initialDirection) {
+        filaments.add(new LineLikeAgent(MICROTUBULE, initialPosition, initialDirection, simulation.getGraph()));
     }
 
-    public List<SkeletalFilament> getFilaments() {
+    public void addActin(Vector2D initialPosition, Vector2D initialDirection) {
+        filaments.add(new LineLikeAgent(ACTIN, initialPosition, initialDirection, simulation.getGraph()));
+    }
+
+    public List<LineLikeAgent> getFilaments() {
         return filaments;
     }
 
-    public void setFilaments(List<SkeletalFilament> filaments) {
+    public void setFilaments(List<LineLikeAgent> filaments) {
         this.filaments = filaments;
     }
 }

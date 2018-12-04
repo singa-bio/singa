@@ -10,12 +10,12 @@ import java.util.List;
 /**
  * @author cl
  */
-public class FilamentTemplate {
+public class LineLikeAgentTemplate {
 
     private Quantity<Length> scale;
-    private List<SkeletalFilament> filaments;
+    private List<LineLikeAgent> filaments;
 
-    public FilamentTemplate(List<SkeletalFilament> filaments, Quantity<Length> scale) {
+    public LineLikeAgentTemplate(List<LineLikeAgent> filaments, Quantity<Length> scale) {
         this.scale = scale;
         this.filaments = filaments;
     }
@@ -30,14 +30,14 @@ public class FilamentTemplate {
     }
 
     public void scale(double scalingFactor) {
-        filaments.forEach(filament -> filament.scale(scalingFactor));
+        filaments.forEach(filament -> filament.setPath(filament.getPath().scale(scalingFactor)));
     }
 
     public void reduce() {
         // resize to a handleable number of edges
-        for (SkeletalFilament filament : filaments) {
-            while (filament.getSegments().size() > 200) {
-                filament.reduce();
+        for (LineLikeAgent filament : filaments) {
+            while (filament.getPath().size() > 200) {
+                filament.setPath(filament.getPath().reduce());
             }
         }
     }
@@ -46,7 +46,7 @@ public class FilamentTemplate {
         return scale;
     }
 
-    public List<SkeletalFilament> getFilaments() {
+    public List<LineLikeAgent> getFilaments() {
         return filaments;
     }
 

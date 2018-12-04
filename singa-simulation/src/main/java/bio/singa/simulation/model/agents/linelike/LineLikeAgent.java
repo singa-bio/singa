@@ -1,6 +1,7 @@
 package bio.singa.simulation.model.agents.linelike;
 
 import bio.singa.mathematics.geometry.edges.Line;
+import bio.singa.mathematics.geometry.edges.VectorPath;
 import bio.singa.mathematics.geometry.faces.Circle;
 import bio.singa.mathematics.geometry.model.Polygon;
 import bio.singa.mathematics.topology.grids.rectangular.NeumannRectangularDirection;
@@ -12,57 +13,128 @@ import bio.singa.simulation.model.graphs.AutomatonNode;
 import java.util.*;
 
 import static bio.singa.mathematics.metrics.model.VectorMetricProvider.EUCLIDEAN_METRIC;
-import static bio.singa.simulation.model.agents.linelike.SkeletalFilament.FilamentBehaviour.GROW;
-import static bio.singa.simulation.model.agents.linelike.SkeletalFilament.FilamentBehaviour.STAGNANT;
+import static bio.singa.simulation.model.agents.linelike.LineLikeAgent.GrowthBehaviour.GROW;
+import static bio.singa.simulation.model.agents.linelike.LineLikeAgent.GrowthBehaviour.STAGNANT;
 
 /**
- * Modified: Mirabet, Vincent, et al. "The self-organization of plant microtubules inside the cell volume yields their
- * cortical localization, stable alignment, and sensitivity to external cues." PLoS computational biology 14.2 (2018):
- * e1006011.
- *
  * @author cl
  */
-public class SkeletalFilament {
+public class LineLikeAgent {
 
-    public enum FilamentBehaviour {
+    public enum GrowthBehaviour {
         GROW, SHRINK, STAGNANT, FOLLOW
+    }
+
+    public enum FilamentType {
+        ACTIN, MICROTUBULE
     }
 
     /**
      * Modifier for the randomness of the direction.
      */
-    private static final double rd = 0.05;
+    private static double rd = 0.05;
+
+    private VectorPath path;
+    private FilamentType type;
+    private Set<AutomatonNode> associatedNodes;
+    private AutomatonGraph graph;
 
     /**
      * Plus side is front, Minus side is back.
      */
-    private LinkedList<Vector2D> segments;
-    private SkeletalFilament lead;
-    private FilamentBehaviour minusEndBehaviour;
-    private FilamentBehaviour plusEndBehaviour;
-    private AutomatonGraph graph;
+    private LineLikeAgent lead;
+    private GrowthBehaviour minusEndBehaviour;
+    private GrowthBehaviour plusEndBehaviour;
 
-    private Set<AutomatonNode> associatedNodes;
-
-    SkeletalFilament(Vector2D initialPosition, Vector2D initialDirection, AutomatonGraph graph) {
-        minusEndBehaviour = STAGNANT;
-        plusEndBehaviour = GROW;
-        this.graph = graph;
-        segments = new LinkedList<>();
+    public LineLikeAgent(FilamentType type) {
+        this.type = type;
+        path = new VectorPath();
         associatedNodes = new HashSet<>();
-        segments.add(initialPosition);
-        segments.add(initialDirection.normalize().add(initialPosition));
     }
 
-    public SkeletalFilament(List<Vector2D> segments, NeumannRectangularDirection plusDirection) {
+    public LineLikeAgent(FilamentType type, Vector2D initialPosition, Vector2D initialDirection, AutomatonGraph graph) {
+        this(type);
+        setGraph(graph);
+        minusEndBehaviour = STAGNANT;
+        plusEndBehaviour = GROW;
+        path.addToTail(initialPosition);
+        path.addToTail(initialDirection.normalize().add(initialPosition));
+    }
+
+    public LineLikeAgent(FilamentType type, List<Vector2D> segments, NeumannRectangularDirection plusDirection) {
+        this(type);
         if (orderingIsReversed(segments, plusDirection)) {
             Collections.reverse(segments);
         }
-        this.segments = new LinkedList<>(segments);
-        associatedNodes = new HashSet<>();
+        setPath(new VectorPath(segments));
     }
 
-    private boolean orderingIsReversed(List<Vector2D> segments, NeumannRectangularDirection plusDirection) {
+    public VectorPath getPath() {
+        return path;
+    }
+
+    public void setPath(VectorPath path) {
+        this.path = path;
+    }
+
+    public AutomatonGraph getGraph() {
+        return graph;
+    }
+
+    public void setGraph(AutomatonGraph graph) {
+        this.graph = graph;
+    }
+
+    public Set<AutomatonNode> getAssociatedNodes() {
+        return associatedNodes;
+    }
+
+    public void setAssociatedNodes(Set<AutomatonNode> associatedNodes) {
+        this.associatedNodes = associatedNodes;
+    }
+
+    public Vector2D getPlusEnd() {
+        return path.getHead();
+    }
+
+    public Vector2D getMinusEnd() {
+        return path.getTail();
+    }
+
+    public FilamentType getType() {
+        return type;
+    }
+
+    public void setType(FilamentType type) {
+        this.type = type;
+    }
+
+    Vector2D getPreviousSegmentOf(Vector2D segment) {
+        int index = path.getIndexOf(segment);
+        return path.getVectorAt(index + 1);
+    }
+
+    public GrowthBehaviour getPlusEndBehaviour() {
+        return plusEndBehaviour;
+    }
+
+    void setPlusEndBehaviour(GrowthBehaviour plusEndBehaviour) {
+        this.plusEndBehaviour = plusEndBehaviour;
+    }
+
+    public GrowthBehaviour getMinusEndBehaviour() {
+        return minusEndBehaviour;
+    }
+
+    public void setMinusEndBehaviour(GrowthBehaviour minusEndBehaviour) {
+        this.minusEndBehaviour = minusEndBehaviour;
+    }
+
+    void setLeadAgent(LineLikeAgent lead) {
+        this.lead = lead;
+    }
+
+    boolean orderingIsReversed(List<Vector2D> segments, NeumannRectangularDirection plusDirection) {
         Vector2D front = segments.iterator().next();
         Vector2D back = segments.get(segments.size() - 1);
         switch (plusDirection) {
@@ -78,8 +150,8 @@ public class SkeletalFilament {
     }
 
     public void associateInGraph(AutomatonGraph graph) {
-        this.graph = graph;
-        for (Vector2D segment : segments) {
+        setGraph(graph);
+        for (Vector2D segment : getPath().getSegments()) {
             Circle headRegion = new Circle(segment, 10);
             // determine associated nodes
             for (AutomatonNode node : graph.getNodes()) {
@@ -87,42 +159,14 @@ public class SkeletalFilament {
                 Polygon polygon = node.getSpatialRepresentation();
                 // associate segment to the node with the largest part of the vesicle (midpoint is inside)
                 if (polygon.isInside(segment)) {
-                    node.addMicrotubuleSegment(this, segment);
+                    node.addLineLikeAgentSegment(this, segment);
                 }
                 // associate partial containment to other nodes
                 if (!polygon.getIntersections(headRegion).isEmpty()) {
-                    node.addMicrotubuleSegment(this, segment);
+                    node.addLineLikeAgentSegment(this, segment);
                 }
             }
         }
-    }
-
-    public void scale(double scalingFactor) {
-        LinkedList<Vector2D> scaledSegments = new LinkedList<>();
-        for (Vector2D vertex : segments) {
-            scaledSegments.add(vertex.multiply(scalingFactor));
-        }
-        segments = scaledSegments;
-    }
-
-    public void reduce() {
-        LinkedList<Vector2D> reducedVectors = new LinkedList<>();
-        for (int index = 0; index < segments.size() - 1; index++) {
-            if (index % 2 == 0) {
-                reducedVectors.add(segments.get(index));
-            }
-        }
-        segments = reducedVectors;
-    }
-
-    private Vector2D getPreviousSegment(Vector2D segment) {
-        int index = segments.indexOf(segment);
-        return segments.get(index + 1);
-    }
-
-    public ListIterator<Vector2D> getSegmentIterator(Vector2D segment) {
-        int index = segments.indexOf(segment);
-        return segments.listIterator(index);
     }
 
     public int nextEpoch() {
@@ -132,6 +176,7 @@ public class SkeletalFilament {
                 break;
             default:
                 // do nothing
+                break;
         }
         switch (plusEndBehaviour) {
             case GROW:
@@ -141,7 +186,7 @@ public class SkeletalFilament {
                 shrinkPlus();
                 break;
             case FOLLOW:
-                if (segments.size() > 2) {
+                if (path.size() > 2) {
                     follow();
                 } else {
                     growPlus();
@@ -151,35 +196,43 @@ public class SkeletalFilament {
                 // do nothing
                 break;
         }
-        return segments.size();
+        return path.size();
     }
 
     private void follow() {
-        Map.Entry<Vector2D, Double> closestFragmentEntry = EUCLIDEAN_METRIC.calculateClosestDistance(lead.getSegments(), segments.getFirst());
+        Map.Entry<Vector2D, Double> closestFragmentEntry = EUCLIDEAN_METRIC.calculateClosestDistance(lead.getPath().getSegments(), path.getHead());
         Vector2D closestFragment = closestFragmentEntry.getKey();
-        Vector2D previousSegment = lead.getPreviousSegment(closestFragment);
+        Vector2D previousSegment = lead.getPreviousSegmentOf(closestFragment);
         Vector2D head = closestFragment.subtract(previousSegment);
-        Vector2D nextPosition = segments.getFirst().add(head);
+        Vector2D nextPosition = path.getHead().add(head);
         associateNodes(nextPosition);
-        segments.addFirst(nextPosition);
+        path.addToHead(nextPosition);
     }
 
     private void growPlus() {
         Vector2D head;
-        if (segments.size() == 1) {
+        if (path.size() == 1) {
             // this is the first growth
             // normalize
-            head = segments.getFirst().normalize();
+            head = path.getHead().normalize();
         } else {
             // any subsequent growth
             // current - previous
-            Iterator<Vector2D> iterator = segments.iterator();
+            Iterator<Vector2D> iterator = path.getSegments().iterator();
             head = iterator.next().subtract(iterator.next());
         }
         Vector2D nextSegment = computeNextSegment(head);
-        Vector2D nextPosition = segments.getFirst().add(nextSegment);
+        Vector2D nextPosition = path.getHead().add(nextSegment);
         associateNodes(nextPosition);
-        segments.addFirst(nextPosition);
+        path.addToHead(nextPosition);
+    }
+
+    private void shrinkMinus() {
+        path.removeTail();
+    }
+
+    private void shrinkPlus() {
+        path.removeHead();
     }
 
     private Vector2D computeNextSegment(Vector2D head) {
@@ -191,48 +244,39 @@ public class SkeletalFilament {
         associatedNodes.clear();
         Circle headRegion = new Circle(segment, 10);
         // determine associated nodes
-        for (AutomatonNode node : graph.getNodes()) {
+        for (AutomatonNode node : getGraph().getNodes()) {
             // get representative region of the node
             Polygon polygon = node.getSpatialRepresentation();
             // associate segment to the node with the largest part of the vesicle (midpoint is inside)
             if (polygon.isInside(segment)) {
-                node.addMicrotubuleSegment(this, segment);
+                node.addLineLikeAgentSegment(this, segment);
                 associatedNodes.add(node);
             }
             // associate partial containment to other nodes
             if (!polygon.getIntersections(headRegion).isEmpty()) {
-                node.addMicrotubuleSegment(this, segment);
+                node.addLineLikeAgentSegment(this, segment);
                 associatedNodes.add(node);
             }
         }
     }
 
-    private void shrinkMinus() {
-        segments.removeLast();
-    }
-
-    private void shrinkPlus() {
-        segments.removeFirst();
-    }
-
-    double angleTo(SkeletalFilament filament) {
-        Iterator<Vector2D> thisSegments = segments.iterator();
+    double angleTo(LineLikeAgent filament) {
+        Iterator<Vector2D> thisSegments = path.getSegments().iterator();
         Line thisLine = new Line(thisSegments.next(), thisSegments.next());
-        Iterator<Vector2D> otherSegments = filament.getSegments().iterator();
+        Iterator<Vector2D> otherSegments = filament.getPath().getSegments().iterator();
         Line otherLine = new Line(otherSegments.next(), otherSegments.next());
         return thisLine.getAngleTo(otherLine);
     }
 
-    Map.Entry<SkeletalFilament, Double> getClosestRelevantDistance() {
-        Vector2D head = segments.getFirst();
-
-        SkeletalFilament closestFilament = null;
+    Map.Entry<LineLikeAgent, Double> getClosestRelevantDistance() {
+        Vector2D head = path.getHead();
+        LineLikeAgent closestFilament = null;
         double closestDistance = Double.MAX_VALUE;
         // get closest relevant node
         for (AutomatonNode associatedNode : associatedNodes) {
-            // get the associated segments
-            for (Map.Entry<SkeletalFilament, Set<Vector2D>> entry : associatedNode.getMicrotubuleSegments().entrySet()) {
-                SkeletalFilament currentFilament = entry.getKey();
+            // get the associated path
+            for (Map.Entry<LineLikeAgent, Set<Vector2D>> entry : associatedNode.getAssociatedLineLikeAgents().entrySet()) {
+                LineLikeAgent currentFilament = entry.getKey();
                 // don't compare to fragments in the same fragment
                 if (currentFilament != this) {
                     Set<Vector2D> segments = entry.getValue();
@@ -247,35 +291,7 @@ public class SkeletalFilament {
                 }
             }
         }
-
         return new AbstractMap.SimpleEntry<>(closestFilament, closestDistance);
     }
 
-    public LinkedList<Vector2D> getSegments() {
-        return segments;
-    }
-
-    public Vector2D getHead() {
-        return segments.getFirst();
-    }
-
-    public Set<AutomatonNode> getAssociatedNodes() {
-        return associatedNodes;
-    }
-
-    Vector2D getPlusEnd() {
-        return segments.getFirst();
-    }
-
-    public FilamentBehaviour getPlusEndBehaviour() {
-        return plusEndBehaviour;
-    }
-
-    void setPlusEndBehaviour(FilamentBehaviour plusEndBehaviour) {
-        this.plusEndBehaviour = plusEndBehaviour;
-    }
-
-    void setLeadFilament(SkeletalFilament lead) {
-        this.lead = lead;
-    }
 }

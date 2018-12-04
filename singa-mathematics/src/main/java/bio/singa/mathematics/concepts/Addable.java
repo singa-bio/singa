@@ -14,7 +14,7 @@ import java.util.Iterator;
  * @author cl
  * @see <a href="https://en.wikipedia.org/wiki/Addition">Wikipedia: Addition</a>
  */
-public interface Addable<NumberConcept extends Addable<? extends NumberConcept>> {
+public interface Addable<NumberConcept extends Addable<NumberConcept>> {
 
     /**
      * Adds all the given Objects (called summands) and returns a new Object (called sum). No summand shall be changed.

@@ -1,6 +1,7 @@
 package bio.singa.simulation.model.sections;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
+import bio.singa.chemistry.entities.ComplexedChemicalEntity;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.features.units.UnitProvider;
@@ -133,6 +134,23 @@ public class ConcentrationContainer {
         }
         return chemicalEntities;
     }
+
+    public Optional<ChemicalEntity> containsEntity(CellTopology topology, ChemicalEntity entity) {
+        for (ChemicalEntity chemicalEntity : getPool(topology).getValue().getReferencedEntities()) {
+            if (entity.equals(chemicalEntity)) {
+                return Optional.of(chemicalEntity);
+            }
+            if (chemicalEntity instanceof ComplexedChemicalEntity) {
+                for (ChemicalEntity associatedChemicalEntity : ((ComplexedChemicalEntity) chemicalEntity).getAssociatedChemicalEntities()) {
+                    if (entity.equals(associatedChemicalEntity)) {
+                        return Optional.of(chemicalEntity);
+                    }
+                }
+            }
+        }
+        return Optional.empty();
+    }
+
 
     /**
      * Returns the topology and concentration pool for the subsection.

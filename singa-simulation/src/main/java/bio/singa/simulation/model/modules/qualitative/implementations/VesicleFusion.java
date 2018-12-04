@@ -138,7 +138,7 @@ public class VesicleFusion extends QualitativeModule {
     private void tetherVesicle(Vesicle vesicle, TetheringSnares tetheringSnares) {
         // add tethering time to current time
         ComparableQuantity<Time> tetheringTime = simulation.getElapsedTime().add(getFeature(TetheringTime.class).getFeatureContent());
-        vesicle.setVesicleState(VesicleStateRegistry.MEMBRANE_ATTACHED);
+        vesicle.setVesicleState(VesicleStateRegistry.MEMBRANE_TETHERED);
         // set time
         tetheredVesicles.put(vesicle, tetheringTime);
         // set target
@@ -164,7 +164,7 @@ public class VesicleFusion extends QualitativeModule {
         // for each vesicle
         for (Vesicle vesicle : vesicles) {
             if (vesicle.getVesicleState() == VesicleStateRegistry.ACTIN_PROPELLED ||
-                    vesicle.getVesicleState() == VesicleStateRegistry.MEMBRANE_ATTACHED) {
+                    vesicle.getVesicleState() == VesicleStateRegistry.MEMBRANE_TETHERED) {
                 continue;
             }
             Vector2D currentPosition = vesicle.getCurrentPosition();

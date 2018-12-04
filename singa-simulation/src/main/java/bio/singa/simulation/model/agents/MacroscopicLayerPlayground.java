@@ -16,13 +16,16 @@ import bio.singa.mathematics.geometry.faces.Rectangle;
 import bio.singa.mathematics.geometry.model.Polygon;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.simulation.features.*;
+import bio.singa.simulation.model.agents.linelike.LineLikeAgent;
 import bio.singa.simulation.model.agents.linelike.LineLikeAgentLayer;
 import bio.singa.simulation.model.agents.linelike.MicrotubuleOrganizingCentre;
-import bio.singa.simulation.model.agents.linelike.SkeletalFilament;
 import bio.singa.simulation.model.agents.organelles.OrganelleTemplate;
 import bio.singa.simulation.model.agents.organelles.OrganelleTypes;
 import bio.singa.simulation.model.agents.pointlike.Vesicle;
-import bio.singa.simulation.model.agents.surfacelike.*;
+import bio.singa.simulation.model.agents.surfacelike.Membrane;
+import bio.singa.simulation.model.agents.surfacelike.MembraneFactory;
+import bio.singa.simulation.model.agents.surfacelike.MembraneLayer;
+import bio.singa.simulation.model.agents.surfacelike.MembraneSegment;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.graphs.AutomatonNode;
@@ -31,7 +34,7 @@ import bio.singa.simulation.model.modules.displacement.implementations.Endocytos
 import bio.singa.simulation.model.modules.displacement.implementations.VesicleCytoplasmDiffusion;
 import bio.singa.simulation.model.modules.displacement.implementations.VesicleTransport;
 import bio.singa.simulation.model.modules.qualitative.implementations.ClathrinMediatedEndocytosis;
-import bio.singa.simulation.model.modules.qualitative.implementations.MicrotubuleAttachment;
+import bio.singa.simulation.model.modules.qualitative.implementations.LineLikeAgentAttachment;
 import bio.singa.simulation.model.modules.qualitative.implementations.VesicleFusion;
 import bio.singa.simulation.model.sections.CellSubsections;
 import bio.singa.simulation.model.simulation.Simulation;
@@ -160,8 +163,6 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
                 .addSubstrate(clathrinTriskelion)
                 .build();
 
-
-
         // setup endocytosis budding
         budding = new ClathrinMediatedEndocytosis();
         budding.setSimulation(simulation);
@@ -185,7 +186,7 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
         simulation.getModules().add(boost);
 
         // setup attachment
-        MicrotubuleAttachment attachment = new MicrotubuleAttachment();
+        LineLikeAgentAttachment attachment = new LineLikeAgentAttachment();
         attachment.setFeature(AttachmentDistance.DEFAULT_DYNEIN_ATTACHMENT_DISTANCE);
         attachment.setSimulation(simulation);
         simulation.getModules().add(attachment);
@@ -269,7 +270,7 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
         // setup microtubules
         MicrotubuleOrganizingCentre moc = new MicrotubuleOrganizingCentre(simulation, membraneLayer, new Circle(new Vector2D(310, 400),
                 Environment.convertSystemToSimulationScale(Quantities.getQuantity(250, NANO(METRE)))), 60);
-        filamentLayer = moc.initializeFilaments();
+        filamentLayer = moc.initializeMicrotubules();
 
         Scene scene = new Scene(root);
         primaryStage.setScene(scene);
@@ -350,10 +351,10 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
         // draw filaments
         getGraphicsContext().setStroke(Color.BLACK);
         if (filamentLayer != null) {
-            for (SkeletalFilament skeletalFilament : filamentLayer.getFilaments()) {
-                if (skeletalFilament.getSegments().size() > 1) {
-                    Vector2D previous = skeletalFilament.getSegments().getLast();
-                    Iterator<Vector2D> vector2DIterator = skeletalFilament.getSegments().descendingIterator();
+            for (LineLikeAgent skeletalFilament : filamentLayer.getFilaments()) {
+                if (skeletalFilament.getPath().size() > 1) {
+                    Vector2D previous = skeletalFilament.getPath().getTail();
+                    Iterator<Vector2D> vector2DIterator = skeletalFilament.getPath().getSegments().descendingIterator();
                     while (vector2DIterator.hasNext()) {
                         Vector2D current = vector2DIterator.next();
                         if (current != previous) {

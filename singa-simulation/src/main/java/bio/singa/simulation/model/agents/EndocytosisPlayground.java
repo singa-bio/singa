@@ -17,8 +17,8 @@ import bio.singa.mathematics.geometry.model.Polygon;
 import bio.singa.mathematics.topology.grids.rectangular.NeumannRectangularDirection;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.simulation.features.*;
+import bio.singa.simulation.model.agents.linelike.LineLikeAgent;
 import bio.singa.simulation.model.agents.linelike.LineLikeAgentLayer;
-import bio.singa.simulation.model.agents.linelike.SkeletalFilament;
 import bio.singa.simulation.model.agents.organelles.OrganelleImageParser;
 import bio.singa.simulation.model.agents.organelles.OrganelleTemplate;
 import bio.singa.simulation.model.agents.organelles.OrganelleTypes;
@@ -137,7 +137,6 @@ public class EndocytosisPlayground extends Application implements Renderer {
         volumeLayer.setCortex(cortex);
         simulation.setVolumeLayer(volumeLayer);
 
-
         // setup species for clathrin decay
         ChemicalEntity clathrinHeavyChain = new Protein.Builder("Clathrin heavy chain")
                 .assignFeature(new UniProtIdentifier("Q00610"))
@@ -198,9 +197,9 @@ public class EndocytosisPlayground extends Application implements Renderer {
         confinedDiffusion.setSimulation(simulation);
         simulation.getModules().add(confinedDiffusion);
 
-//        while (filaments.hasGrowingFilaments()) {
-//            filaments.nextEpoch();
-//        }
+        while (filaments.hasGrowingFilaments()) {
+            filaments.nextEpoch();
+        }
 
         // species
 
@@ -218,8 +217,6 @@ public class EndocytosisPlayground extends Application implements Renderer {
         SmallMolecule atp = SmallMolecule.create("ATP")
                 .additionalIdentifier(new ChEBIIdentifier("CHEBI:15422"))
                 .build();
-
-        // initialize
 
         Scene scene = new Scene(root);
         primaryStage.setScene(scene);
@@ -276,10 +273,10 @@ public class EndocytosisPlayground extends Application implements Renderer {
         getGraphicsContext().setStroke(Color.BLACK);
         LineLikeAgentLayer lineLayer = simulation.getLineLayer();
         if (lineLayer != null) {
-            for (SkeletalFilament skeletalFilament : lineLayer.getFilaments()) {
-                if (skeletalFilament.getSegments().size() > 1) {
-                    Vector2D previous = skeletalFilament.getSegments().getLast();
-                    Iterator<Vector2D> vector2DIterator = skeletalFilament.getSegments().descendingIterator();
+            for (LineLikeAgent skeletalFilament : lineLayer.getFilaments()) {
+                if (skeletalFilament.getPath().size() > 1) {
+                    Vector2D previous = skeletalFilament.getPath().getTail();
+                    Iterator<Vector2D> vector2DIterator = skeletalFilament.getPath().getSegments().descendingIterator();
                     while (vector2DIterator.hasNext()) {
                         Vector2D current = vector2DIterator.next();
                         if (current != previous) {

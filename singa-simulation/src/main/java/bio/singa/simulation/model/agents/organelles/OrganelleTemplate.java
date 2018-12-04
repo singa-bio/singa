@@ -101,12 +101,13 @@ public class OrganelleTemplate {
         return !regionMap.isEmpty();
     }
 
-    public void initializeGroup(int groupIdentifier, String identifier, String goTerm) {
+    public CellRegion initializeGroup(int groupIdentifier, String identifier, String goTerm) {
         CellRegion region = new CellRegion(identifier, new GoTerm(goTerm));
         region.addSubSection(CellTopology.MEMBRANE, membraneRegion.getMembraneSubsection());
         region.addSubSection(CellTopology.INNER, membraneRegion.getInnerSubsection());
         region.addSubSection(CellTopology.OUTER, membraneRegion.getOuterSubsection());
         initializeGroup(groupIdentifier, region);
+        return region;
     }
 
     public void initializeGroup(int groupIdentifier, CellRegion region) {

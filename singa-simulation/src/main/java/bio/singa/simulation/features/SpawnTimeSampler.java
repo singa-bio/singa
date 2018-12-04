@@ -14,7 +14,7 @@ public class SpawnTimeSampler {
 
     private static final double variation = 0.1;
 
-    public static Quantity<Time> sampleMaturatuionTime(Quantity<Time> averageTime) {
+    public static Quantity<Time> sampleMaturationTime(Quantity<Time> averageTime) {
         // add some random percent of variation
         double next = averageTime.getValue().doubleValue() + averageTime.getValue().doubleValue() * ThreadLocalRandom.current().nextGaussian() * variation;
         // calculate next Event

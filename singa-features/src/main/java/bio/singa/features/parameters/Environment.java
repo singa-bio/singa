@@ -32,11 +32,9 @@ public class Environment extends Observable {
      * Standard system macro viscosity [pressure per time] (1 mPa*s = 1cP = Viscosity of Water at 20 C)
      * as determined by Kalwarczyk, Tomasz, et al. "Comparative analysis of viscosity of complex liquids and cytoplasm
      * of mammalian cells at the nanoscale." Nano letters 11.5 (2011): 2157-2163.
-     * Average of both cell types
-     *
+     * Average of both cell types.
      */
     public static final Quantity<DynamicViscosity> DEFAULT_MACRO_VISCOSITY = Quantities.getQuantity(34.0, MILLI(PASCAL_SECOND));
-
 
     /**
      * Standard system matrix viscosity [pressure per time] (1 mPa*s = 1cP = Viscosity of Water at 20 C)

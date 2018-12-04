@@ -19,9 +19,18 @@ public class Polygons {
     //  NO if it is not.  If the point is exactly on the edge of the polygon,
     //  then the function may return YES or NO.
     //
+
+    /**
+     * Returns true, if the vector is inside the polygon, or false if not. If the point is exactly on the edge it may
+     * return true or false.
+     *
+     * @param polygon
+     * @param vector
+     * @return
+     */
     public static boolean isInside(Polygon polygon, Vector2D vector) {
         // checks complex (convex and intersecting polygons)
-        // http://alienryderflex.com/polygon/p
+        // http://alienryderflex.com/polygon
         int polyCorners = polygon.getNumberOfVertices();
         int j = polyCorners - 1;
         boolean oddNodes = false;

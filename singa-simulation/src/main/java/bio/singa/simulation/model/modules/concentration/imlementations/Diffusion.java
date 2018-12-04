@@ -96,7 +96,7 @@ public class Diffusion extends ConcentrationBasedModule<EntityDeltaFunction> {
 
                 } else {
                     // if current is non-membrane and neighbour is membrane
-                    if (neigbourIsPotentialSource(node, neighbour)) {
+                    if (neighborIsPotentialSource(node, neighbour)) {
                         // leaving amount stays unchanged, but entering concentration is relevant
                         final Quantity<MolarConcentration> availableConcentration = neighbour.getConcentration(subsection, entity);
                         if (availableConcentration != null) {
@@ -104,7 +104,7 @@ public class Diffusion extends ConcentrationBasedModule<EntityDeltaFunction> {
                         }
                     }
                     // if current is membrane and neighbour is non-membrane
-                    if (neigbourIsPotentialTarget(node, neighbour)) {
+                    if (neighborIsPotentialTarget(node, neighbour)) {
                         // assert effect on leaving concentration but entering concentration stays unchanged
                         numberOfNeighbors++;
                     }
@@ -138,11 +138,11 @@ public class Diffusion extends ConcentrationBasedModule<EntityDeltaFunction> {
         return currentNode.getCellRegion().hasMembrane() && neighbour.getCellRegion().hasMembrane();
     }
 
-    private boolean neigbourIsPotentialTarget(AutomatonNode currentNode, AutomatonNode neighbour) {
+    private boolean neighborIsPotentialTarget(AutomatonNode currentNode, AutomatonNode neighbour) {
         return !currentNode.getCellRegion().hasMembrane() && neighbour.getCellRegion().hasMembrane();
     }
 
-    private boolean neigbourIsPotentialSource(AutomatonNode currentNode, AutomatonNode neighbour) {
+    private boolean neighborIsPotentialSource(AutomatonNode currentNode, AutomatonNode neighbour) {
         return currentNode.getCellRegion().hasMembrane() && !neighbour.getCellRegion().hasMembrane();
     }
 

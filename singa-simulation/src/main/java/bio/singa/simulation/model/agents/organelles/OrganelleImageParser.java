@@ -9,8 +9,8 @@ import bio.singa.mathematics.matrices.SymmetricMatrix;
 import bio.singa.mathematics.topology.grids.rectangular.NeumannRectangularDirection;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.mathematics.vectors.Vectors;
-import bio.singa.simulation.model.agents.linelike.FilamentTemplate;
-import bio.singa.simulation.model.agents.linelike.SkeletalFilament;
+import bio.singa.simulation.model.agents.linelike.LineLikeAgent;
+import bio.singa.simulation.model.agents.linelike.LineLikeAgentTemplate;
 import tec.uom.se.quantity.Quantities;
 
 import javax.imageio.ImageIO;
@@ -25,6 +25,7 @@ import java.nio.file.Path;
 import java.util.*;
 
 import static bio.singa.mathematics.metrics.model.VectorMetricProvider.EUCLIDEAN_METRIC;
+import static bio.singa.simulation.model.agents.linelike.LineLikeAgent.FilamentType.MICROTUBULE;
 import static tec.uom.se.unit.MetricPrefix.NANO;
 import static tec.uom.se.unit.Units.METRE;
 
@@ -62,7 +63,7 @@ public class OrganelleImageParser {
         return new OrganelleTemplate(parser.scale, parser.polygon, parser.groups);
     }
 
-    public static FilamentTemplate getFilaments(Path imageFolder, String baseFileName, NeumannRectangularDirection plusDirection) {
+    public static LineLikeAgentTemplate getFilaments(Path imageFolder, String baseFileName, NeumannRectangularDirection plusDirection) {
 
         List<Path> filamentFiles = new ArrayList<>();
 
@@ -83,7 +84,7 @@ public class OrganelleImageParser {
         Collections.sort(filamentFiles);
 
         Quantity<Length> scale = null;
-        List<SkeletalFilament> filaments = new ArrayList<>();
+        List<LineLikeAgent> filaments = new ArrayList<>();
 
         // for each image path
         for (Path imagePath : filamentFiles) {
@@ -105,9 +106,9 @@ public class OrganelleImageParser {
             }
             // sort and connect
             List<Vector2D> vectors = Vectors.sortByCloseness(parser.groups.values().iterator().next(), plusDirection);
-            filaments.add(new SkeletalFilament(vectors, plusDirection));
+            filaments.add(new LineLikeAgent(MICROTUBULE, vectors, plusDirection));
         }
-        return new FilamentTemplate(filaments, scale);
+        return new LineLikeAgentTemplate(filaments, scale);
     }
 
     public OrganelleImageParser(BufferedImage templateImage) {

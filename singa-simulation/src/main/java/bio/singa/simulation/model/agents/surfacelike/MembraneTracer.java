@@ -212,7 +212,7 @@ public class MembraneTracer {
 
         // create membrane section
         Membrane membrane = new Membrane(region.getIdentifier());
-        // add full segments first
+        // add full path first
         // get first node
         ListIterator<AutomatonNode> iterator = currentNodes.listIterator();
         AutomatonNode previousNode = iterator.next();
@@ -241,7 +241,7 @@ public class MembraneTracer {
         }
         membranes.add(membrane);
 
-        // cut segments to size
+        // cut path to size
         for (MembraneSegment entry : membrane.getSegments()) {
             Polygon spatialRepresentation = entry.getNode().getSpatialRepresentation();
             Set<Vector2D> intersections = spatialRepresentation.getIntersections(entry);

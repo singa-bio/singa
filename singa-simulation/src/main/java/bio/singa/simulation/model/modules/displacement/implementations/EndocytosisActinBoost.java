@@ -19,7 +19,6 @@ import javax.measure.Quantity;
 import javax.measure.quantity.Length;
 import javax.measure.quantity.Speed;
 
-import static bio.singa.simulation.model.agents.pointlike.Vesicle.TargetDirection.MINUS;
 import static tec.uom.se.unit.Units.SECOND;
 
 /**
@@ -63,8 +62,6 @@ public class EndocytosisActinBoost extends DisplacementBasedModule {
         System.out.println(pullingEntity);
         if (pullingEntity < 1) {
             vesicle.setVesicleState(VesicleStateRegistry.UNATTACHED);
-            // TODO alter for vesicles moving from centre to outside
-            vesicle.setTargetDirection(MINUS);
         }
         Quantity<Speed> systemSpeed = scaledVelocity.multiply(pullingEntity);
         Quantity<Length> distance = Quantities.getQuantity(systemSpeed.getValue().doubleValue(), UnitRegistry.getSpaceUnit());
