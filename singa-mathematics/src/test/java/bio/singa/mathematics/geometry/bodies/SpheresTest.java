@@ -60,7 +60,7 @@ class SpheresTest {
     void calculateSphereSlice1() {
         Map<MooreRectangularDirection, Double> sphereSlices = Spheres.calculateSphereSlice(new Vector2D(0, 0), 1, new Vector2D(0.0, 0.0));
         for (Double surface : sphereSlices.values()) {
-            assertEquals(Math.PI/2.0, surface.doubleValue());
+            assertEquals(0.25, surface.doubleValue());
         }
     }
 
@@ -72,7 +72,7 @@ class SpheresTest {
         for (Double triangleSurface : sphereSlices.values()) {
             surface += triangleSurface;
         }
-        assertEquals(Math.PI*2.0, surface, 1e-12);
+        assertEquals(1.0, surface, 1e-12);
     }
 
     @Test
@@ -83,7 +83,7 @@ class SpheresTest {
         for (Double triangleSurface : sphereSlices.values()) {
             surface += triangleSurface;
         }
-        assertEquals(Math.PI*2, surface, 1e-12);
+        assertEquals(1.0, surface, 1e-12);
     }
 
     @Test
