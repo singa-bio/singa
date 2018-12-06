@@ -11,7 +11,7 @@ import java.util.List;
  *
  * @author cl
  */
-public interface Polytope<VectorType extends Vector> {
+public interface Polytope<VectorType extends Vector>{
 
     /**
      * Returns the vertices of the polytope.
@@ -36,7 +36,5 @@ public interface Polytope<VectorType extends Vector> {
     default int getNumberOfVertices() {
         return getVertices().size();
     }
-
-
 
 }

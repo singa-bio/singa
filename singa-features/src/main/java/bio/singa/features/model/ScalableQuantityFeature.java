@@ -22,7 +22,7 @@ public abstract class ScalableQuantityFeature<QuantityType extends Quantity<Quan
 
     @Override
     public void scale() {
-        scaledQuantity = UnitRegistry.scale(featureContent);
+        scaledQuantity = UnitRegistry.scaleTime(featureContent);
         halfScaledQuantity = scaledQuantity.multiply(0.5);
     }
 

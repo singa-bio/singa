@@ -15,7 +15,7 @@ import bio.singa.simulation.model.sections.CellSubsection;
 import bio.singa.simulation.model.simulation.Simulation;
 import bio.singa.structure.features.molarmass.MolarMass;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import tec.uom.se.quantity.Quantities;
 
@@ -73,8 +73,12 @@ class DiffusionAtMembranesTest {
         return simulation;
     }
 
+    @BeforeAll
+    static void initialize() {
+        UnitRegistry.reinitialize();
+    }
+
     @AfterEach
-    @BeforeEach
     void cleanUp() {
         UnitRegistry.reinitialize();
     }
@@ -108,12 +112,12 @@ class DiffusionAtMembranesTest {
         }
 
         // left part of the central node should fill with ammonia
-        assertTrue(leftNode.getConcentration(SECTION_A, ammonia).getValue().doubleValue() > 0.0);
-        assertTrue(membraneNode.getConcentration(SECTION_A, ammonia).getValue().doubleValue() > 0.0);
+        assertTrue(leftNode.getConcentrationContainer().get(SECTION_A, ammonia).getValue().doubleValue() > 0.0);
+        assertTrue(membraneNode.getConcentrationContainer().get(SECTION_A, ammonia).getValue().doubleValue() > 0.0);
         // right part of the central node and right node should not
-        assertEquals(0.0, membraneNode.getConcentration(CellSubsection.MEMBRANE, ammonia).getValue().doubleValue());
-        assertEquals(0.0, membraneNode.getConcentration(SECTION_B, ammonia).getValue().doubleValue());
-        assertEquals(0.0, rightNode.getConcentration(SECTION_B, ammonia).getValue().doubleValue());
+        assertEquals(0.0, membraneNode.getConcentrationContainer().get(CellSubsection.MEMBRANE, ammonia).getValue().doubleValue());
+        assertEquals(0.0, membraneNode.getConcentrationContainer().get(SECTION_B, ammonia).getValue().doubleValue());
+        assertEquals(0.0, rightNode.getConcentrationContainer().get(SECTION_B, ammonia).getValue().doubleValue());
     }
 
     @Test
@@ -159,23 +163,23 @@ class DiffusionAtMembranesTest {
         // create simulation
         Simulation simulation = setupAnchorSimulation();
         // add some protein in cytoplasm
-        AutomatonNode node1 = simulation.getGraph().getNode(0, 0);
-        AutomatonNode node2 = simulation.getGraph().getNode(0, 1);
+        AutomatonNode first = simulation.getGraph().getNode(0, 0);
+        AutomatonNode second = simulation.getGraph().getNode(0, 1);
         // set concentrations
-        node1.getConcentrationContainer().set(SECTION_A, anchoredProtein, 0.1);
-        node1.getConcentrationContainer().set(SECTION_A, globularProtein, 0.1);
+        first.getConcentrationContainer().set(SECTION_A, anchoredProtein, 0.1);
+        first.getConcentrationContainer().set(SECTION_A, globularProtein, 0.1);
 
         // observe
         for (int i = 0; i < 10; i++) {
             simulation.nextEpoch();
             // concentration of anchored entity should stay zero in non-membrane node
-            Quantity<MolarConcentration> betaGammaConcentration = node2.getConcentration(SECTION_A, anchoredProtein);
+            Quantity<MolarConcentration> betaGammaConcentration = second.getConcentrationContainer().get(SECTION_A, anchoredProtein);
             assertEquals(0.0, betaGammaConcentration.getValue().doubleValue());
             // concentration of globular entity should increase in non-membrane node
-            Quantity<MolarConcentration> betaConcentration = node2.getConcentration(SECTION_A, globularProtein);
+            Quantity<MolarConcentration> betaConcentration = second.getConcentrationContainer().get(SECTION_A, globularProtein);
             assertTrue(betaConcentration.getValue().doubleValue() > 0.0);
             // concentration of anchored entity should stay equal in non-membrane node
-            Quantity<MolarConcentration> remainingConcentration = node1.getConcentration(SECTION_A, anchoredProtein);
+            Quantity<MolarConcentration> remainingConcentration = first.getConcentrationContainer().get(SECTION_A, anchoredProtein);
             assertEquals(0.1, remainingConcentration.to(MOLE_PER_LITRE).getValue().doubleValue());
         }
 
@@ -185,18 +189,18 @@ class DiffusionAtMembranesTest {
     void shouldAbsorbFromCytoplasm() {
         Simulation simulation = setupAnchorSimulation();
         // add some protein in cytoplasm
-        AutomatonNode node1 = simulation.getGraph().getNode(0, 0);
-        AutomatonNode node2 = simulation.getGraph().getNode(0, 1);
+        AutomatonNode first = simulation.getGraph().getNode(0, 0);
+        AutomatonNode second = simulation.getGraph().getNode(0, 1);
         // anchored
-        node2.getConcentrationContainer().set(SECTION_A, anchoredProtein, 0.1);
+        second.getConcentrationContainer().set(SECTION_A, anchoredProtein, 0.1);
         // observe over 10 epochs
         for (int i = 0; i < 100; i++) {
             simulation.nextEpoch();
             // concentration of anchored entity should increase in membrane node
-            Quantity<MolarConcentration> availableConcentration = node1.getConcentration(SECTION_A, anchoredProtein);
+            Quantity<MolarConcentration> availableConcentration = first.getConcentrationContainer().get(SECTION_A, anchoredProtein);
             assertTrue(availableConcentration.getValue().doubleValue() > 0.0);
             // and decrease in the other node
-            Quantity<MolarConcentration> remainingConcentration = node2.getConcentration(SECTION_A, anchoredProtein);
+            Quantity<MolarConcentration> remainingConcentration = second.getConcentrationContainer().get(SECTION_A, anchoredProtein);
             assertTrue(remainingConcentration.getValue().doubleValue() < 0.1);
         }
     }
@@ -217,15 +221,15 @@ class DiffusionAtMembranesTest {
                 .build();
 
         // add some protein in cytoplasm
-        AutomatonNode node1 = simulation.getGraph().getNode(0, 0);
-        AutomatonNode node2 = simulation.getGraph().getNode(1, 0);
+        AutomatonNode first = simulation.getGraph().getNode(0, 0);
+        AutomatonNode second = simulation.getGraph().getNode(1, 0);
         // bound
-        node1.getConcentrationContainer().set(SECTION_A, anchoredProtein, 1.0);
+        first.getConcentrationContainer().set(SECTION_A, anchoredProtein, 1.0);
         // observe over 10 epochs
         for (int i = 0; i < 100; i++) {
             simulation.nextEpoch();
             // concentration of bound chemical entity should increase in neighboring membrane node
-            Quantity<MolarConcentration> availableConcentration = node2.getConcentration(SECTION_A, anchoredProtein);
+            Quantity<MolarConcentration> availableConcentration = second.getConcentrationContainer().get(SECTION_A, anchoredProtein);
             assertTrue(availableConcentration.getValue().doubleValue() > 0.0);
         }
     }

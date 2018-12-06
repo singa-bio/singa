@@ -24,6 +24,22 @@ public enum MooreRectangularDirection implements DiscreteDirection {
         this.directionY = directionY;
     }
 
+    public int getDirectionX() {
+        return directionX;
+    }
+
+    public void setDirectionX(int directionX) {
+        this.directionX = directionX;
+    }
+
+    public int getDirectionY() {
+        return directionY;
+    }
+
+    public void setDirectionY(int directionY) {
+        this.directionY = directionY;
+    }
+
     public static RectangularCoordinate getNeighborOf(RectangularCoordinate coordinate, MooreRectangularDirection coordinateDirection, MooreRectangularDirection relativeDirection) {
         int addX = 0;
         if (coordinateDirection.directionX != relativeDirection.directionX) {

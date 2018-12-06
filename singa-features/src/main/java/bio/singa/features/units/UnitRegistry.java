@@ -58,7 +58,7 @@ public class UnitRegistry {
 
     private static UnitRegistry instance = getInstance();
 
-    public UnitRegistry() {
+    private UnitRegistry() {
         space = DEFAULT_SPACE;
         time = DEFAULT_TIME;
 
@@ -68,6 +68,12 @@ public class UnitRegistry {
         defaultUnits.put(QuantityDimension.AMOUNT_OF_SUBSTANCE, DEFAULT_AMOUNT_OF_SUBSTANCE.getUnit());
         defaultUnits.put(QuantityDimension.MASS, DEFAULT_MASS_UNIT);
         defaultUnits.put(QuantityDimension.TEMPERATURE, DEFAULT_TEMPERATURE_UNIT);
+    }
+
+    public static void reinitialize() {
+        synchronized (UnitRegistry.class) {
+            instance = new UnitRegistry();
+        }
     }
 
     public static void setSpace(Quantity<Length> space) {
@@ -167,12 +173,6 @@ public class UnitRegistry {
         return Quantities.getQuantity(value, unit).to(getConcentrationUnit());
     }
 
-    public static void reinitialize() {
-        synchronized (UnitRegistry.class) {
-            instance = new UnitRegistry();
-        }
-    }
-
     public static <QuantityType extends Quantity<QuantityType>> Quantity<QuantityType> scale(Quantity<QuantityType> quantity) {
         Quantity<QuantityType> convert = convert(quantity);
         double value = convert.getValue().doubleValue();
@@ -185,6 +185,21 @@ public class UnitRegistry {
                 value = value * Math.pow(getSpaceScale(), Math.abs(spaceExponent));
             }
 
+            if (timeExponent > 0 && getSpaceScale() != 1.0) {
+                value = value / Math.pow(getTimeScale(), timeExponent);
+            } else {
+                value = value * Math.pow(getTimeScale(), Math.abs(timeExponent));
+            }
+            return Quantities.getQuantity(value, convert.getUnit());
+        }
+        return convert;
+    }
+
+    public static <QuantityType extends Quantity<QuantityType>> Quantity<QuantityType> scaleTime(Quantity<QuantityType> quantity) {
+        Quantity<QuantityType> convert = convert(quantity);
+        double value = convert.getValue().doubleValue();
+        int timeExponent = ScalableFeature.getTimeExponent(convert.getUnit());
+        if (timeExponent != 0) {
             if (timeExponent > 0 && getSpaceScale() != 1.0) {
                 value = value / Math.pow(getTimeScale(), timeExponent);
             } else {

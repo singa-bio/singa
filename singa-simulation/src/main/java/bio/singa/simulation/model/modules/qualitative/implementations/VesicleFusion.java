@@ -5,14 +5,14 @@ import bio.singa.chemistry.entities.ComplexedChemicalEntity;
 import bio.singa.core.utility.Pair;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.quantities.MolarConcentration;
-import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.simulation.features.*;
-import bio.singa.simulation.model.agents.membranes.MembraneSegment;
+import bio.singa.simulation.model.agents.pointlike.Vesicle;
+import bio.singa.simulation.model.agents.pointlike.VesicleStateRegistry;
+import bio.singa.simulation.model.agents.surfacelike.MembraneSegment;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.modules.concentration.ConcentrationDelta;
 import bio.singa.simulation.model.modules.concentration.ModuleState;
-import bio.singa.simulation.model.modules.displacement.Vesicle;
 import bio.singa.simulation.model.modules.qualitative.QualitativeModule;
 import bio.singa.simulation.model.sections.CellTopology;
 import bio.singa.simulation.model.sections.ConcentrationContainer;
@@ -26,7 +26,6 @@ import javax.measure.quantity.Time;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
-import static bio.singa.simulation.model.modules.displacement.Vesicle.AttachmentState.TETHERED;
 
 /**
  * @author cl
@@ -103,11 +102,12 @@ public class VesicleFusion extends QualitativeModule {
         for (Vesicle fusingVesicle : fusingVesicles) {
             fuse(fusingVesicle);
             tetheredVesicles.remove(fusingVesicle);
+            simulation.getVesicleLayer().removeVesicle(fusingVesicle);
         }
         // tether vesicles
         for (Map.Entry<Vesicle, TetheringSnares> entry : tetheringVesicles.entrySet()) {
             tetherVesicle(entry.getKey(), entry.getValue());
-            simulation.getVesicleLayer().removeVesicle(entry.getKey());
+            // simulation.getVesicleLayer().removeVesicle(entry.getKey());
         }
     }
 
@@ -122,7 +122,7 @@ public class VesicleFusion extends QualitativeModule {
             node.addPotentialDelta(new ConcentrationDelta(this, node.getCellRegion().getMembraneSubsection(), entity, quantity));
         }
         // merge inner concentrations
-        for (Map.Entry<ChemicalEntity, Quantity<MolarConcentration>> entry : vesicleContainer.getPool(CellTopology.INNER).getValue().getConcentrations().entrySet()) {
+        for (Map.Entry<ChemicalEntity, Quantity<MolarConcentration>> entry : vesicleContainer.getPool(CellTopology.OUTER).getValue().getConcentrations().entrySet()) {
             ChemicalEntity entity = entry.getKey();
             Quantity<MolarConcentration> quantity = entry.getValue();
             node.addPotentialDelta(new ConcentrationDelta(this, node.getCellRegion().getInnerSubsection(), entity, quantity));
@@ -139,7 +139,7 @@ public class VesicleFusion extends QualitativeModule {
     private void tetherVesicle(Vesicle vesicle, TetheringSnares tetheringSnares) {
         // add tethering time to current time
         ComparableQuantity<Time> tetheringTime = simulation.getElapsedTime().add(getFeature(TetheringTime.class).getFeatureContent());
-        vesicle.setAttachmentState(TETHERED);
+        vesicle.setVesicleState(VesicleStateRegistry.MEMBRANE_TETHERED);
         // set time
         tetheredVesicles.put(vesicle, tetheringTime);
         // set target
@@ -147,7 +147,6 @@ public class VesicleFusion extends QualitativeModule {
         // set reserved snares
         reserveSnares(vesicle, tetheringSnares);
     }
-
 
     private void checkTetheringTime() {
         for (Map.Entry<Vesicle, Quantity<Time>> entry : tetheredVesicles.entrySet()) {
@@ -165,8 +164,8 @@ public class VesicleFusion extends QualitativeModule {
         List<Vesicle> vesicles = simulation.getVesicleLayer().getVesicles();
         // for each vesicle
         for (Vesicle vesicle : vesicles) {
-            if (vesicle.getAttachmentState() == Vesicle.AttachmentState.ACTIN_DEPOLYMERIZATION ||
-                    vesicle.getAttachmentState() == Vesicle.AttachmentState.TETHERED) {
+            if (vesicle.getVesicleState() == VesicleStateRegistry.ACTIN_PROPELLED ||
+                    vesicle.getVesicleState() == VesicleStateRegistry.MEMBRANE_TETHERED) {
                 continue;
             }
             Vector2D currentPosition = vesicle.getCurrentPosition();
@@ -203,7 +202,7 @@ public class VesicleFusion extends QualitativeModule {
         HashMap<ChemicalEntity, Integer> availableQSnares = new HashMap<>();
         for (ChemicalEntity snare : entitiesToCount) {
             Quantity<MolarConcentration> quantity = updatable.getConcentrationContainer().get(CellTopology.MEMBRANE, snare);
-            int numberOfSnares = MolarConcentration.concentrationToMolecules(quantity, UnitRegistry.getVolume()).getValue().intValue();
+            int numberOfSnares = MolarConcentration.concentrationToMolecules(quantity).getValue().intValue();
             if (numberOfSnares > 0) {
                 availableQSnares.put(snare, numberOfSnares);
             }
@@ -239,7 +238,7 @@ public class VesicleFusion extends QualitativeModule {
             ComplexedChemicalEntity snareComplex = complexes.get(new Pair<>(qSnare, rSnare));
             reserveComplex(vesicle, snareComplex);
             // add deltas
-            Quantity<MolarConcentration> concentrationQuantity = MolarConcentration.moleculesToConcentration(-1.0, UnitRegistry.getVolume());
+            Quantity<MolarConcentration> concentrationQuantity = MolarConcentration.moleculesToConcentration(-1.0);
             // rsnare in vesicle
             vesicle.addPotentialDelta(new ConcentrationDelta(this, vesicle.getCellRegion().getMembraneSubsection(), rSnare, concentrationQuantity));
             // qsnare in node
@@ -251,7 +250,7 @@ public class VesicleFusion extends QualitativeModule {
 
     private void reserveComplex(Vesicle vesicle, ComplexedChemicalEntity snareComplex) {
         // reserve one snare
-        Quantity<MolarConcentration> concentrationQuantity = MolarConcentration.moleculesToConcentration(1.0, UnitRegistry.getVolume());
+        Quantity<MolarConcentration> concentrationQuantity = MolarConcentration.moleculesToConcentration(1.0);
         if (!occupiedSnares.containsKey(vesicle)) {
             occupiedSnares.put(vesicle, new ConcentrationPool());
         }
@@ -284,6 +283,5 @@ public class VesicleFusion extends QualitativeModule {
             return tetheringTarget;
         }
     }
-
 
 }

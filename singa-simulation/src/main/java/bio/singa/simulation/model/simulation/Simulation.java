@@ -7,17 +7,19 @@ import bio.singa.features.parameters.Environment;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.geometry.faces.Rectangle;
 import bio.singa.mathematics.vectors.Vector2D;
-import bio.singa.simulation.model.agents.membranes.MembraneLayer;
+import bio.singa.simulation.model.agents.linelike.LineLikeAgentLayer;
+import bio.singa.simulation.model.agents.surfacelike.MembraneLayer;
+import bio.singa.simulation.model.agents.volumelike.VolumeLayer;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.modules.UpdateModule;
 import bio.singa.simulation.model.modules.concentration.ConcentrationDelta;
-import bio.singa.simulation.model.modules.displacement.VesicleLayer;
+import bio.singa.simulation.model.agents.pointlike.VesicleLayer;
 import bio.singa.simulation.model.rules.AssignmentRule;
 import bio.singa.simulation.model.rules.AssignmentRules;
 import bio.singa.simulation.model.sections.CellRegion;
 import bio.singa.simulation.model.sections.CellRegions;
-import bio.singa.simulation.model.sections.ConcentrationInitializer;
+import bio.singa.simulation.model.sections.concentration.ConcentrationInitializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tec.uom.se.ComparableQuantity;
@@ -51,6 +53,10 @@ public class Simulation {
      * The layer for membranes.
      */
     private MembraneLayer membraneLayer;
+
+    private LineLikeAgentLayer lineLayer;
+
+    private VolumeLayer volumeLayer;
 
     /**
      * The base area of the membrane
@@ -222,7 +228,7 @@ public class Simulation {
         logger.info("Initializing vesicle layer and individual vesicles.");
         // initialize simulation space
         vesicleLayer.setSimulation(this);
-        vesicleLayer.setSimulationArea(new Rectangle(Environment.getSimulationExtend(), Environment.getSimulationExtend()));
+        vesicleLayer.setSimulationRegion(new Rectangle(Environment.getSimulationExtend(), Environment.getSimulationExtend()));
         vesicleLayer.associateVesicles();
     }
 
@@ -240,6 +246,22 @@ public class Simulation {
 
     public void setMembraneLayer(MembraneLayer membraneLayer) {
         this.membraneLayer = membraneLayer;
+    }
+
+    public VolumeLayer getVolumeLayer() {
+        return volumeLayer;
+    }
+
+    public void setVolumeLayer(VolumeLayer volumeLayer) {
+        this.volumeLayer = volumeLayer;
+    }
+
+    public LineLikeAgentLayer getLineLayer() {
+        return lineLayer;
+    }
+
+    public void setLineLayer(LineLikeAgentLayer lineLayer) {
+        this.lineLayer = lineLayer;
     }
 
     public Rectangle getSimulationRegion() {

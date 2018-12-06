@@ -71,7 +71,7 @@ public class Spheres {
      * @param sphereCentre the centre of the sphere
      * @param sphereRadius the radius of the sphere
      * @param beam the position of the beam
-     * @return The slices in their directions relative to the beam.
+     * @return The slices in their directions relative to the beam the area of the slice is given relative to the total surface.
      */
     public static Map<MooreRectangularDirection, Double> calculateSphereSlice(Vector2D sphereCentre, double sphereRadius, Vector2D beam) {
         // construct base circle
@@ -95,8 +95,8 @@ public class Spheres {
                 - pow(beam.getX(), 2)
                 - pow(beam.getY(), 2));
         // create the corresponding vectors on the surface
-        Vector3D vNorth = new Vector3D(beam.getX(), y1, 0);
-        Vector3D vSouth = new Vector3D(beam.getX(), y2, 0);
+        Vector3D vSouth = new Vector3D(beam.getX(), y1, 0);
+        Vector3D vNorth = new Vector3D(beam.getX(), y2, 0);
         Vector3D vEast = new Vector3D(x1, beam.getY(), 0);
         Vector3D vWest = new Vector3D(x2, beam.getY(), 0);
         Vector3D vTop = new Vector3D(beam.getX(), beam.getY(), z);
@@ -122,19 +122,19 @@ public class Spheres {
         double sSouthEast = calculateSphereTriangleSurface(sphere, vSouth, vEast, vTop);
         double sSouthWest = calculateSphereTriangleSurface(sphere, vSouth, vWest, vTop);
 
-//        double sumSurface = sNorthEast+sNorthWest+sSouthEast+sSouthWest;
+        double sumSurface = sNorthEast+sNorthWest+sSouthEast+sSouthWest;
 //
 //        System.out.println("A = "+(sNorthEast/sumSurface));
 //        System.out.println("B = "+(sSouthEast/sumSurface));
-//        System.out.println("C = "+(sSouthWest/sumSurface));
+//        System.out.println("C = "+(sSouthWest/sumSurface));#
 //        System.out.println("D = "+(sNorthWest/sumSurface));
 //        System.out.println();
         // assign and return results
         EnumMap<MooreRectangularDirection, Double> results = new EnumMap<>(MooreRectangularDirection.class);
-        results.put(NORTH_EAST, sNorthEast);
-        results.put(NORTH_WEST, sNorthWest);
-        results.put(SOUTH_EAST, sSouthEast);
-        results.put(SOUTH_WEST, sSouthWest);
+        results.put(SOUTH_WEST, sNorthEast/sumSurface);
+        results.put(SOUTH_EAST, sNorthWest/sumSurface);
+        results.put(NORTH_WEST, sSouthEast/sumSurface);
+        results.put(NORTH_EAST, sSouthWest/sumSurface);
         return results;
     }
 

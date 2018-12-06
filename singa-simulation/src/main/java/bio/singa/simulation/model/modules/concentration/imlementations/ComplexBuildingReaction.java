@@ -8,6 +8,8 @@ import bio.singa.chemistry.features.reactions.RateConstant;
 import bio.singa.features.exceptions.FeatureUnassignableException;
 import bio.singa.features.model.Feature;
 import bio.singa.features.units.UnitRegistry;
+import bio.singa.simulation.model.agents.pointlike.Vesicle;
+import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.modules.concentration.*;
 import bio.singa.simulation.model.modules.concentration.functions.UpdatableDeltaFunction;
 import bio.singa.simulation.model.modules.concentration.scope.IndependentUpdate;
@@ -16,6 +18,7 @@ import bio.singa.simulation.model.sections.CellSubsection;
 import bio.singa.simulation.model.sections.CellTopology;
 import bio.singa.simulation.model.sections.ConcentrationContainer;
 import bio.singa.simulation.model.simulation.Simulation;
+import bio.singa.simulation.model.simulation.Updatable;
 
 import javax.measure.Quantity;
 import java.util.HashMap;
@@ -29,39 +32,32 @@ import java.util.Map;
  * <b>binder topology</b>, resulting in a <b>complex</b> in the <b>binder topology</b>.<br>
  * The speed of the reaction is guided by any {@link ForwardsRateConstant} that determines the speed of the association
  * reaction and a {@link BackwardsRateConstant} the determines the speed of the dissociation of the complex.
- *
  * Complex building reactions are {@link UpdatableSpecific} and supply {@link IndependentUpdate}s.
- *
  * <pre>
  *  // From: Lauffenburger, Douglas A., and Jennifer J. Linderman.
  *  //       Receptors: models for binding, trafficking, and signaling. Oxford University Press, 1996.
  *  //       Table on Page 30
- *
  *  // prazosin
  *  ChemicalEntity ligand = new SmallMolecule.Builder("ligand")
  *      .name("prazosin")
  *      .additionalIdentifier(new ChEBIIdentifier("CHEBI:8364"))
  *      .build();
- *
  *  // alpha-1 adrenergic receptor
  *  Receptor receptor = new Receptor.Builder("receptor")
  *      .name("alpha-1 adrenergic receptor")
  *      .additionalIdentifier(new UniProtIdentifier("P35348"))
  *      .build();
- *
  *  // the forwards rate constants
  *  RateConstant forwardsRate = RateConstant.create(2.4e8)
  *      .forward().secondOrder()
  *      .concentrationUnit(MOLE_PER_LITRE)
  *      .timeUnit(MINUTE)
  *      .build();
- *
  *  // the backwards rate constants
  *  RateConstant backwardsRate = RateConstant.create(0.018)
  *      .backward().firstOrder()
  *      .timeUnit(MINUTE)
  *      .build();
- *
  *  // create and add module
  *  ComplexBuildingReaction reaction = ComplexBuildingReaction.inSimulation(simulation)
  *      .identifier("binding reaction")
@@ -92,10 +88,11 @@ public class ComplexBuildingReaction extends ConcentrationBasedModule<UpdatableD
 
     public void initialize() {
         // apply
-        // TODO apply condition
+        // TODO apply condition ?
         setApplicationCondition(updatable -> true);
         // function
-        UpdatableDeltaFunction function = new UpdatableDeltaFunction(this::calculateDeltas, this::containsReactants);
+        // TODO apply condition this::containsReactants
+        UpdatableDeltaFunction function = new UpdatableDeltaFunction(this::calculateDeltas, container -> true);
         addDeltaFunction(function);
         // feature
         getRequiredFeatures().add(ForwardsRateConstant.class);
@@ -128,19 +125,86 @@ public class ComplexBuildingReaction extends ConcentrationBasedModule<UpdatableD
 
     private Map<ConcentrationDeltaIdentifier, ConcentrationDelta> calculateDeltas(ConcentrationContainer concentrationContainer) {
         Map<ConcentrationDeltaIdentifier, ConcentrationDelta> deltas = new HashMap<>();
-        double velocity = calculateVelocity(concentrationContainer);
-        // ligand concentration
-        CellSubsection bindeeSubsection = concentrationContainer.getSubsection(bindeeTopology);
-        deltas.put(new ConcentrationDeltaIdentifier(supplier.getCurrentUpdatable(), bindeeSubsection, bindee),
-                new ConcentrationDelta(this, bindeeSubsection, bindee, UnitRegistry.concentration(-velocity)));
-        // unbound receptor concentration
-        CellSubsection binderSubsection = concentrationContainer.getSubsection(binderTopology);
-        deltas.put(new ConcentrationDeltaIdentifier(supplier.getCurrentUpdatable(), binderSubsection, binder),
-                new ConcentrationDelta(this, binderSubsection, binder, UnitRegistry.concentration(-velocity)));
-        // bound receptor concentration
-        deltas.put(new ConcentrationDeltaIdentifier(supplier.getCurrentUpdatable(), binderSubsection, complex),
-                new ConcentrationDelta(this, binderSubsection, complex, UnitRegistry.concentration(velocity)));
+        Updatable currentUpdatable = supplier.getCurrentUpdatable();
+        if (currentUpdatable instanceof Vesicle) {
+            handlePartialDistributionInVesicles(deltas, (Vesicle) currentUpdatable);
+        } else {
+            double velocity = calculateVelocity(concentrationContainer);
+            // bindee concentration
+            CellSubsection bindeeSubsection = concentrationContainer.getSubsection(bindeeTopology);
+            addDelta(deltas, new ConcentrationDeltaIdentifier(supplier.getCurrentUpdatable(), bindeeSubsection, bindee), -velocity);
+            // binder concentration
+            CellSubsection binderSubsection = concentrationContainer.getSubsection(binderTopology);
+            addDelta(deltas, new ConcentrationDeltaIdentifier(supplier.getCurrentUpdatable(), binderSubsection, binder), -velocity);
+            // complex concentration
+            addDelta(deltas, new ConcentrationDeltaIdentifier(supplier.getCurrentUpdatable(), binderSubsection, complex), velocity);
+        }
         return deltas;
+    }
+
+    private void handlePartialDistributionInVesicles(Map<ConcentrationDeltaIdentifier, ConcentrationDelta> deltas, Vesicle vesicle) {
+        Map<AutomatonNode, Double> associatedNodes = vesicle.getAssociatedNodes();
+        ConcentrationContainer vesicleContainer = vesicle.getConcentrationContainer();
+        for (Map.Entry<AutomatonNode, Double> entry : associatedNodes.entrySet()) {
+            AutomatonNode node = entry.getKey();
+            ConcentrationContainer nodeContainer;
+            if (supplier.isStrutCalculation()) {
+                nodeContainer = getScope().getHalfStepConcentration(node);
+            } else {
+                nodeContainer = node.getConcentrationContainer();
+            }
+            // assuming equal distribution of entities on the membrane surface the fraction of the associated surface is
+            // used to scale the velocity
+            double velocity = calculateVelocity(vesicleContainer, nodeContainer) * entry.getValue();
+            if (bindeeTopology.equals(CellTopology.MEMBRANE)) {
+                // bindee concentration in vesicle
+                CellSubsection bindeeSubsection = vesicleContainer.getMembraneSubsection();
+                addDelta(deltas, new ConcentrationDeltaIdentifier(vesicle, bindeeSubsection, bindee), -velocity);
+            } else {
+                // bindee concentration in node
+                CellSubsection bindeeSubsection = nodeContainer.getSubsection(bindeeTopology);
+                addDelta(deltas, new ConcentrationDeltaIdentifier(node, bindeeSubsection, bindee), -velocity);
+            }
+            if (binderTopology.equals(CellTopology.MEMBRANE)) {
+                // binder concentration in vesicle
+                CellSubsection binderSubsection = vesicleContainer.getMembraneSubsection();
+                addDelta(deltas, new ConcentrationDeltaIdentifier(vesicle, binderSubsection, binder), -velocity);
+                // complex concentration in vesicle
+                addDelta(deltas, new ConcentrationDeltaIdentifier(vesicle, binderSubsection, complex), velocity);
+            } else {
+                // binder concentration in node
+                CellSubsection binderSubsection = nodeContainer.getSubsection(binderTopology);
+                addDelta(deltas, new ConcentrationDeltaIdentifier(node, binderSubsection, binder), -velocity);
+                // complex concentration in node
+                addDelta(deltas, new ConcentrationDeltaIdentifier(node, binderSubsection, complex), velocity);
+            }
+        }
+    }
+
+    private double calculateVelocity(ConcentrationContainer vesicleContainer, ConcentrationContainer nodeContainer) {
+        // get rates
+        final double forwardsRateConstant = getScaledForwardsReactionRate().getValue().doubleValue();
+        final double backwardsRateConstant = getScaledBackwardsReactionRate().getValue().doubleValue();
+
+        // get concentrations
+        double bindeeConcentration;
+        if (bindeeTopology.equals(CellTopology.MEMBRANE)) {
+            bindeeConcentration = vesicleContainer.get(CellTopology.MEMBRANE, bindee).getValue().doubleValue();
+        } else {
+            bindeeConcentration = nodeContainer.get(bindeeTopology, bindee).getValue().doubleValue();
+        }
+        double binderConcentration;
+        double complexConcentration;
+        if (binderTopology.equals(CellTopology.MEMBRANE)) {
+            binderConcentration = vesicleContainer.get(CellTopology.MEMBRANE, binder).getValue().doubleValue();
+            complexConcentration = vesicleContainer.get(CellTopology.MEMBRANE, complex).getValue().doubleValue();
+        } else {
+            binderConcentration = nodeContainer.get(binderTopology, binder).getValue().doubleValue();
+            complexConcentration = nodeContainer.get(binderTopology, complex).getValue().doubleValue();
+        }
+
+        // calculate velocity
+        return forwardsRateConstant * binderConcentration * bindeeConcentration - backwardsRateConstant * complexConcentration;
     }
 
     private double calculateVelocity(ConcentrationContainer concentrationContainer) {
@@ -153,6 +217,15 @@ public class ComplexBuildingReaction extends ConcentrationBasedModule<UpdatableD
         final double complexConcentration = concentrationContainer.get(binderTopology, complex).getValue().doubleValue();
         // calculate velocity
         return forwardsRateConstant * binderConcentration * bindeeConcentration - backwardsRateConstant * complexConcentration;
+    }
+
+    private void addDelta(Map<ConcentrationDeltaIdentifier, ConcentrationDelta> deltas, ConcentrationDeltaIdentifier identifier, double concentrationDelta) {
+        if (deltas.containsKey(identifier)) {
+            deltas.put(identifier, deltas.get(identifier).add(concentrationDelta));
+        } else {
+            deltas.put(identifier, new ConcentrationDelta(this, identifier.getSubsection(), identifier.getEntity(),
+                    UnitRegistry.concentration(concentrationDelta)));
+        }
     }
 
     public ComplexedChemicalEntity getComplex() {
@@ -216,7 +289,7 @@ public class ComplexBuildingReaction extends ConcentrationBasedModule<UpdatableD
             }
         }
         if (!forwardsRateFound || !backwardsRateFound) {
-            throw new FeatureUnassignableException("Required reaction rates unavailable for reaction "+getIdentifier()+".");
+            throw new FeatureUnassignableException("Required reaction rates unavailable for reaction " + getIdentifier() + ".");
         }
     }
 
@@ -306,7 +379,7 @@ public class ComplexBuildingReaction extends ConcentrationBasedModule<UpdatableD
         @Override
         public ComplexBuildingReaction createModule(Simulation simulation) {
             module = ModuleFactory.setupModule(ComplexBuildingReaction.class,
-                    ModuleFactory.Scope.NEIGHBOURHOOD_INDEPENDENT,
+                    ModuleFactory.Scope.SEMI_NEIGHBOURHOOD_DEPENDENT,
                     ModuleFactory.Specificity.UPDATABLE_SPECIFIC);
             module.setSimulation(simulation);
             return module;

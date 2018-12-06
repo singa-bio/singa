@@ -1,18 +1,20 @@
 package bio.singa.simulation.model.graphs;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
-import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.geometry.model.Polygon;
 import bio.singa.mathematics.graphs.model.AbstractNode;
 import bio.singa.mathematics.topology.grids.rectangular.RectangularCoordinate;
 import bio.singa.mathematics.vectors.Vector2D;
-import bio.singa.simulation.model.agents.filaments.SkeletalFilament;
-import bio.singa.simulation.model.agents.membranes.MembraneSegment;
+import bio.singa.simulation.model.agents.linelike.LineLikeAgent;
+import bio.singa.simulation.model.agents.surfacelike.MembraneSegment;
 import bio.singa.simulation.model.modules.UpdateModule;
 import bio.singa.simulation.model.modules.concentration.ConcentrationDelta;
 import bio.singa.simulation.model.modules.concentration.ConcentrationDeltaManager;
-import bio.singa.simulation.model.sections.*;
+import bio.singa.simulation.model.sections.CellRegion;
+import bio.singa.simulation.model.sections.CellRegions;
+import bio.singa.simulation.model.sections.CellSubsection;
+import bio.singa.simulation.model.sections.ConcentrationContainer;
 import bio.singa.simulation.model.simulation.Updatable;
 import tec.uom.se.quantity.Quantities;
 
@@ -31,7 +33,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
     private CellRegion cellRegion;
     private ConcentrationDeltaManager updateManager;
     private Polygon spatialRepresentation;
-    private Map<SkeletalFilament, Set<Vector2D>> microtubuleSegments;
+    private Map<LineLikeAgent, Set<Vector2D>> microtubuleSegments;
     private List<MembraneSegment> membraneSegments;
     private Map<CellSubsection, Polygon> subsectionRepresentations;
 
@@ -49,18 +51,6 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
 
     public AutomatonNode(int column, int row) {
         this(new RectangularCoordinate(column, row));
-    }
-
-    /**
-     * Returns the concentration of the given chemical entity in the given compartment.
-     *
-     * @param entity The chemical entity.
-     * @param section The cell section.
-     * @return The concentration of the given chemical entity.
-     */
-    @Override
-    public Quantity<MolarConcentration> getConcentration(CellSubsection section, ChemicalEntity entity) {
-        return updateManager.getConcentrationContainer().get(section, entity);
     }
 
     public Map<CellSubsection, Polygon> getSubsectionRepresentations() {
@@ -197,15 +187,15 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
         this.updateManager = updateManager;
     }
 
-    public Map<SkeletalFilament, Set<Vector2D>> getMicrotubuleSegments() {
+    public Map<LineLikeAgent, Set<Vector2D>> getAssociatedLineLikeAgents() {
         return microtubuleSegments;
     }
 
-    public void addMicrotubuleSegment(SkeletalFilament filament, Vector2D segment) {
-        if (!microtubuleSegments.containsKey(filament)) {
-            microtubuleSegments.put(filament, new HashSet<>());
+    public void addLineLikeAgentSegment(LineLikeAgent lineLikeAgent, Vector2D segment) {
+        if (!microtubuleSegments.containsKey(lineLikeAgent)) {
+            microtubuleSegments.put(lineLikeAgent, new HashSet<>());
         }
-        microtubuleSegments.get(filament).add(segment);
+        microtubuleSegments.get(lineLikeAgent).add(segment);
     }
 
     public List<MembraneSegment> getMembraneSegments() {

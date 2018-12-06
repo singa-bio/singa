@@ -5,7 +5,7 @@ import bio.singa.features.units.UnitRegistry;
 import bio.singa.simulation.model.modules.UpdateModule;
 import bio.singa.simulation.model.modules.concentration.LocalError;
 import bio.singa.simulation.model.modules.concentration.ModuleState;
-import bio.singa.simulation.model.modules.displacement.Vesicle;
+import bio.singa.simulation.model.agents.pointlike.Vesicle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

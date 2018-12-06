@@ -63,7 +63,7 @@ public class WilkeCorrelation implements Correlation<Diffusivity> {
                 * Math.pow(MOLAR_MASS_OF_WATER * WILKE_ASSOCIATION_WATER.getValue().doubleValue(), 0.5)
                 * Environment.getTemperature().getValue().doubleValue();
         // b = n * M(Sp)^0.6
-        final double divisor = Environment.getViscosity().getValue().doubleValue()
+        final double divisor = Environment.getMatrixViscosity().getValue().doubleValue()
                 * Math.pow(estimateMolarVolume(molarMass), 0.6);
         // D = a / b
         final Quantity<Diffusivity> quantity = Quantities.getQuantity(dividend / divisor, Diffusivity.SQUARE_CENTIMETRE_PER_SECOND);

@@ -62,7 +62,7 @@ class SingleFileChannelMembraneTransportTest {
         AutomatonNode node = graph.getNode(0, 0);
         node.setCellRegion(CellRegion.MEMBRANE);
         // set concentrations
-        Quantity<MolarConcentration> aqp2Concentration = MolarConcentration.moleculesToConcentration(3700, UnitRegistry.getVolume());
+        Quantity<MolarConcentration> aqp2Concentration = MolarConcentration.moleculesToConcentration(3700);
         node.getConcentrationContainer().set(CellTopology.OUTER, water, 50.0);
         node.getConcentrationContainer().set(CellTopology.OUTER, solute, 0.2);
         node.getConcentrationContainer().set(CellTopology.MEMBRANE, aquaporin2, aqp2Concentration);

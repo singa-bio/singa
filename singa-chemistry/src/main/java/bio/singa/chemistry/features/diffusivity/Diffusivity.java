@@ -51,7 +51,7 @@ public class Diffusivity extends ScalableQuantityFeature<Diffusivity> implements
      */
     public static Diffusivity calculate(Quantity<Length> radius) {
         final double upper = NaturalConstants.BOLTZMANN_CONSTANT.getValue().doubleValue() * Environment.getTemperature().getValue().doubleValue();
-        final double lower = 6 * Math.PI * Environment.getViscosity().getValue().doubleValue() * radius.to(METRE).getValue().doubleValue();
+        final double lower = 6 * Math.PI * Environment.getMacroViscosity().getValue().doubleValue() * radius.to(METRE).getValue().doubleValue();
         Diffusivity diffusivity = new Diffusivity(Quantities.getQuantity(upper / lower, Diffusivity.SQUARE_METRE_PER_SECOND), EINSTEIN1905);
         diffusivity.scale();
         return diffusivity;
@@ -67,6 +67,12 @@ public class Diffusivity extends ScalableQuantityFeature<Diffusivity> implements
 
     public Diffusivity(double diffusivityQuantity, Evidence origin) {
         super(Quantities.getQuantity(diffusivityQuantity, SQUARE_CENTIMETRE_PER_SECOND), origin);
+    }
+
+    @Override
+    public void scale() {
+        scaledQuantity = UnitRegistry.scale(getFeatureContent());
+        halfScaledQuantity = scaledQuantity.multiply(0.5);
     }
 
     @Override

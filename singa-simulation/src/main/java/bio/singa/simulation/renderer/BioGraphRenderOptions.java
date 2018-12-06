@@ -45,10 +45,10 @@ public class BioGraphRenderOptions {
         nodeHighlightEntity = species;
     }
 
-    public Color getColorForUpdatable(Updatable node) {
-        CellSubsection firstSubsection = node.getCellRegion().getSubsections().iterator().next();
+    public Color getColorForUpdatable(Updatable updatable) {
+        CellSubsection firstSubsection = updatable.getCellRegion().getSubsections().iterator().next();
         if (nodeHighlightEntity != null) {
-            double concentration = node.getConcentration(firstSubsection, nodeHighlightEntity).getValue().doubleValue();
+            double concentration = updatable.getConcentrationContainer().get(firstSubsection, nodeHighlightEntity).getValue().doubleValue();
             return nodeColorScale.getColor(concentration);
         } else {
             return Color.GRAY;

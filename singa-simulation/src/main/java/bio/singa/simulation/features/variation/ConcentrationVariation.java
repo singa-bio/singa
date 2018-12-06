@@ -4,7 +4,7 @@ import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.simulation.model.sections.CellRegion;
 import bio.singa.simulation.model.sections.CellSubsection;
-import bio.singa.simulation.model.sections.InitialConcentration;
+import bio.singa.simulation.model.sections.concentration.SectionConcentration;
 
 /**
  * @author cl
@@ -42,8 +42,8 @@ public class ConcentrationVariation extends Variation<MolarConcentration> {
     }
 
     @Override
-    public InitialConcentration create(Object concentration) {
-        return new InitialConcentration(cellRegion, subsection, entity, (MolarConcentration) concentration);
+    public SectionConcentration create(Object concentration) {
+        return new SectionConcentration(cellRegion, subsection, entity, (MolarConcentration) concentration);
     }
 
     @Override

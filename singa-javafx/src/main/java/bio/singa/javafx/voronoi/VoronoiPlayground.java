@@ -111,7 +111,7 @@ public class VoronoiPlayground extends Application implements Renderer {
     private void handleCanvasClick(MouseEvent event) {
         Vector2D clickPosition = new Vector2D(event.getX(), event.getY());
         for (VoronoiCell voronoiCell : diagram.getCells()) {
-            if (voronoiCell.evaluatePointPosition(clickPosition) == VoronoiCell.INSIDE) {
+            if (voronoiCell.isInside(clickPosition)) {
                 getGraphicsContext().setFill(Color.INDIANRED);
                 fillPolygon(voronoiCell);
                 break;

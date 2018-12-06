@@ -4,13 +4,13 @@ import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.chemistry.features.permeability.MembranePermeability;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.simulation.features.Cargo;
-import bio.singa.simulation.model.agents.membranes.Membrane;
+import bio.singa.simulation.model.agents.pointlike.Vesicle;
+import bio.singa.simulation.model.agents.surfacelike.Membrane;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.modules.concentration.*;
 import bio.singa.simulation.model.modules.concentration.functions.UpdatableDeltaFunction;
 import bio.singa.simulation.model.modules.concentration.scope.SemiDependentUpdate;
 import bio.singa.simulation.model.modules.concentration.specifity.UpdatableSpecific;
-import bio.singa.simulation.model.modules.displacement.Vesicle;
 import bio.singa.simulation.model.sections.CellTopology;
 import bio.singa.simulation.model.sections.ConcentrationContainer;
 import bio.singa.simulation.model.simulation.Simulation;
@@ -38,12 +38,10 @@ import static bio.singa.features.model.Evidence.MANUALLY_ANNOTATED;
  *  // define the feature to parametrize the diffusion
  *  MembranePermeability membranePermeability = new MembranePermeability(Quantities.getQuantity(3.5E-03, CENTIMETRE_PER_SECOND),
  *         FeatureOrigin.MANUALLY_ANNOTATED);
- *
  *  // assign it to the chemical entity
  *  SmallMolecule water = new SmallMolecule.Builder("water")
  *         .assignFeature(membranePermeability)
  *         .build();
- *
  *  // create the module
  *  MembraneDiffusion.inSimulation(simulation)
  *         .cargo(water)
@@ -106,14 +104,14 @@ public class MembraneDiffusion extends ConcentrationBasedModule<UpdatableDeltaFu
             } else {
                 nodeContainer = node.getConcentrationContainer();
             }
-            // FIXME this is definitely not correct, it should be scaled by fraction of total update
-            double velocity = calculateVelocity(vesicleContainer, nodeContainer) * entry.getValue();
+            // TODO scale with area
+            double velocity = calculateVelocity(nodeContainer, vesicleContainer) * entry.getValue();
             vesicleUpdate += velocity;
             deltas.put(new ConcentrationDeltaIdentifier(node, nodeContainer.getInnerSubsection(), cargo),
-                    new ConcentrationDelta(this, nodeContainer.getInnerSubsection(), cargo, UnitRegistry.concentration(-velocity)));
+                    new ConcentrationDelta(this, nodeContainer.getInnerSubsection(), cargo, UnitRegistry.concentration(velocity)));
         }
-        deltas.put(new ConcentrationDeltaIdentifier(vesicle, vesicleContainer.getInnerSubsection(), cargo),
-                new ConcentrationDelta(this, vesicleContainer.getInnerSubsection(), cargo, UnitRegistry.concentration(vesicleUpdate)));
+        deltas.put(new ConcentrationDeltaIdentifier(vesicle, vesicleContainer.getOuterSubsection(), cargo),
+                new ConcentrationDelta(this, vesicleContainer.getOuterSubsection(), cargo, UnitRegistry.concentration(-vesicleUpdate)));
     }
 
     private double calculateVelocity(ConcentrationContainer innerContainer, ConcentrationContainer outerContainer) {
@@ -124,13 +122,8 @@ public class MembraneDiffusion extends ConcentrationBasedModule<UpdatableDeltaFu
     private double getCargoDifference(ConcentrationContainer innerContainer, ConcentrationContainer outerContainer) {
         double outerConcentration;
         double innerConcentration;
-        if (innerContainer == outerContainer) {
-            outerConcentration = outerContainer.get(CellTopology.OUTER, cargo).getValue().doubleValue();
-            innerConcentration = innerContainer.get(CellTopology.INNER, cargo).getValue().doubleValue();
-        } else {
-            outerConcentration = outerContainer.get(CellTopology.INNER, cargo).getValue().doubleValue();
-            innerConcentration = innerContainer.get(CellTopology.INNER, cargo).getValue().doubleValue();
-        }
+        outerConcentration = outerContainer.get(CellTopology.OUTER, cargo).getValue().doubleValue();
+        innerConcentration = innerContainer.get(CellTopology.INNER, cargo).getValue().doubleValue();
         // return delta
         return outerConcentration - innerConcentration;
     }

@@ -8,9 +8,10 @@ import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.simulation.features.ActinBoostVelocity;
 import bio.singa.simulation.features.DecayingEntity;
 import bio.singa.simulation.features.DefaultFeatureSources;
+import bio.singa.simulation.model.agents.pointlike.Vesicle;
+import bio.singa.simulation.model.agents.pointlike.VesicleStateRegistry;
 import bio.singa.simulation.model.modules.displacement.DisplacementBasedModule;
 import bio.singa.simulation.model.modules.displacement.DisplacementDelta;
-import bio.singa.simulation.model.modules.displacement.Vesicle;
 import bio.singa.simulation.model.sections.CellTopology;
 import tec.uom.se.quantity.Quantities;
 
@@ -18,9 +19,6 @@ import javax.measure.Quantity;
 import javax.measure.quantity.Length;
 import javax.measure.quantity.Speed;
 
-import static bio.singa.simulation.model.modules.displacement.Vesicle.AttachmentState.ACTIN_DEPOLYMERIZATION;
-import static bio.singa.simulation.model.modules.displacement.Vesicle.AttachmentState.UNATTACHED;
-import static bio.singa.simulation.model.modules.displacement.Vesicle.TargetDirection.MINUS;
 import static tec.uom.se.unit.Units.SECOND;
 
 /**
@@ -31,10 +29,9 @@ public class EndocytosisActinBoost extends DisplacementBasedModule {
     /**
      * Average vesicle with a radius of 50 nm was coated by 60 clathrins. The depolymerization finished after about
      * 11 seconds.
-     *
-     * 9.963E-14 is the concentration of 60 clathrin molecules scaled to 1 nmol/um^3
      */
-    public static final RateConstant DEFAULT_CLATHRIN_DEPOLYMERIZATION_RATE = RateConstant.create(9.963E-14/11.0)
+    public static final RateConstant DEFAULT_CLATHRIN_DEPOLYMERIZATION_RATE = RateConstant.create(MolarConcentration.
+            moleculesToConcentration(60).to(UnitRegistry.getConcentrationUnit()).getValue().doubleValue()/11.0)
             .forward()
             .zeroOrder()
             .concentrationUnit(UnitRegistry.getConcentrationUnit())
@@ -46,7 +43,7 @@ public class EndocytosisActinBoost extends DisplacementBasedModule {
 
     public EndocytosisActinBoost() {
         // delta function
-        addDeltaFunction(this::calculateDisplacement, vesicle -> vesicle.getAttachmentState() == ACTIN_DEPOLYMERIZATION);
+        addDeltaFunction(this::calculateDisplacement, vesicle -> vesicle.getVesicleState().equals(VesicleStateRegistry.ACTIN_PROPELLED));
         // feature
         getRequiredFeatures().add(ActinBoostVelocity.class);
         getRequiredFeatures().add(DecayingEntity.class);
@@ -61,12 +58,10 @@ public class EndocytosisActinBoost extends DisplacementBasedModule {
     public DisplacementDelta calculateDisplacement(Vesicle vesicle) {
         DecayingEntity decayingEntity = getFeature(DecayingEntity.class);
         // calculate speed based on clathrins available
-        double pullingEntity = MolarConcentration.concentrationToMolecules(vesicle.getConcentrationContainer().get(CellTopology.MEMBRANE, decayingEntity.getFeatureContent()),
-                UnitRegistry.getVolume()).getValue().doubleValue();
+        double pullingEntity = MolarConcentration.concentrationToMolecules(vesicle.getConcentrationContainer().get(CellTopology.MEMBRANE, decayingEntity.getFeatureContent())).getValue().doubleValue();
+        System.out.println(pullingEntity);
         if (pullingEntity < 1) {
-            vesicle.setAttachmentState(UNATTACHED);
-            // TODO alter for vesicles moving from centre to outside
-            vesicle.setTargetDirection(MINUS);
+            vesicle.setVesicleState(VesicleStateRegistry.UNATTACHED);
         }
         Quantity<Speed> systemSpeed = scaledVelocity.multiply(pullingEntity);
         Quantity<Length> distance = Quantities.getQuantity(systemSpeed.getValue().doubleValue(), UnitRegistry.getSpaceUnit());

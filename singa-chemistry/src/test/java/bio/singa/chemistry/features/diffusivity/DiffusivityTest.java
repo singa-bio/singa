@@ -5,10 +5,9 @@ import bio.singa.features.identifiers.ChEBIIdentifier;
 import bio.singa.features.model.Evidence;
 import bio.singa.structure.features.molarmass.MolarMass;
 import org.junit.jupiter.api.Test;
+import tec.uom.se.quantity.Quantities;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static tec.uom.se.unit.MetricPrefix.CENTI;
-import static tec.uom.se.unit.MetricPrefix.MILLI;
 
 /**
  * @author cl
@@ -23,8 +22,9 @@ class DiffusivityTest {
         Diffusivity diffusivity = testSpecies.getFeature(Diffusivity.class);
         // this also needs to resolve the molar mass feature
         MolarMass molarMass = testSpecies.getFeature(MolarMass.class);
-        assertEquals(7.889770977995664E-6, diffusivity.getValue().doubleValue());
         assertEquals(108.0104, molarMass.getValue().doubleValue());
+        System.out.println(diffusivity);
+        assertEquals(7.889770977995664E-6, diffusivity.getValue().doubleValue());
     }
 
     @Test

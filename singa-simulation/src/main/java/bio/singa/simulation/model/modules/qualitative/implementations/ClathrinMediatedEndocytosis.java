@@ -8,9 +8,10 @@ import bio.singa.simulation.features.BuddingRate;
 import bio.singa.simulation.features.MaturationTime;
 import bio.singa.simulation.features.SpawnTimeSampler;
 import bio.singa.simulation.features.VesicleRadius;
-import bio.singa.simulation.model.agents.membranes.MembraneSegment;
+import bio.singa.simulation.model.agents.pointlike.Vesicle;
+import bio.singa.simulation.model.agents.pointlike.VesicleStateRegistry;
+import bio.singa.simulation.model.agents.surfacelike.MembraneSegment;
 import bio.singa.simulation.model.modules.concentration.ModuleState;
-import bio.singa.simulation.model.modules.displacement.Vesicle;
 import bio.singa.simulation.model.modules.qualitative.QualitativeModule;
 import bio.singa.simulation.model.sections.CellTopology;
 
@@ -22,7 +23,6 @@ import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static bio.singa.simulation.features.BuddingRate.SQUARE_NANOMETRE;
-import static bio.singa.simulation.model.modules.displacement.Vesicle.AttachmentState.ACTIN_DEPOLYMERIZATION;
 import static tec.uom.se.unit.Units.SECOND;
 
 /**
@@ -105,7 +105,7 @@ public class ClathrinMediatedEndocytosis extends QualitativeModule {
 
     private void spawnVesicle(SpawnEvent event) {
         Vesicle vesicle = new Vesicle(event.getSpawnSite(), event.getSpawnRadius());
-        vesicle.setAttachmentState(ACTIN_DEPOLYMERIZATION);
+        vesicle.setVesicleState(VesicleStateRegistry.ACTIN_PROPELLED);
         initializeCargo(vesicle);
         simulation.getVesicleLayer().addVesicle(vesicle);
     }
@@ -120,7 +120,7 @@ public class ClathrinMediatedEndocytosis extends QualitativeModule {
             double molecules = vesicle.getArea().multiply(number / area.to(vesicle.getArea().getUnit())
                     .getValue().doubleValue()).getValue().doubleValue();
             // convert to concentration
-            Quantity<MolarConcentration> concentration = MolarConcentration.moleculesToConcentration(molecules, UnitRegistry.getVolume())
+            Quantity<MolarConcentration> concentration = MolarConcentration.moleculesToConcentration(molecules)
                     .to(UnitRegistry.getConcentrationUnit());
             // set concentration
             vesicle.getConcentrationContainer().initialize(CellTopology.MEMBRANE, chemicalEntity, concentration);
@@ -143,7 +143,7 @@ public class ClathrinMediatedEndocytosis extends QualitativeModule {
         // choose random point on that site, spawn a little on the inside
         Vector2D spawnSite = segment.getSegment().getRandomPoint().add(simulation.getSimulationRegion().getCentre().normalize());
         // sample maturation time
-        Quantity<Time> spawnTime = simulation.getElapsedTime().add(SpawnTimeSampler.sampleMaturatuionTime(getFeature(MaturationTime.class).getFeatureContent()));
+        Quantity<Time> spawnTime = simulation.getElapsedTime().add(SpawnTimeSampler.sampleMaturationTime(getFeature(MaturationTime.class).getFeatureContent()));
         // sample vesicle radius
         Quantity<Length> spawnRadius = SpawnTimeSampler.sampleVesicleRadius(getFeature(VesicleRadius.class).getFeatureContent());
         // return event

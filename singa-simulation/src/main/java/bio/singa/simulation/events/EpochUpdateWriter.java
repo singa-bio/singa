@@ -290,7 +290,7 @@ public class EpochUpdateWriter implements UpdateEventListener<UpdatableUpdatedEv
                 sb.append(timeFormatter.format(event.getTime())).append(SEPARATOR_CHARACTER)
                         .append(entity.getIdentifier()).append(SEPARATOR_CHARACTER)
                         .append(cellSection.getIdentifier()).append(SEPARATOR_CHARACTER)
-                        .append(concentrationFormatter.format(node.getConcentration(cellSection, entity)))
+                        .append(concentrationFormatter.format(node.getConcentrationContainer().get(cellSection, entity)))
                         .append(LINEBREAK);
             }
         }

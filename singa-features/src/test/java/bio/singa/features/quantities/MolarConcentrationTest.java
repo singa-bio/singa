@@ -17,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static tec.uom.se.AbstractUnit.ONE;
 import static tec.uom.se.unit.MetricPrefix.MILLI;
 import static tec.uom.se.unit.Units.CUBIC_METRE;
+import static tec.uom.se.unit.Units.METRE;
 import static tec.uom.se.unit.Units.MOLE;
 
 /**
@@ -106,16 +107,16 @@ class MolarConcentrationTest {
     @Test
     void concentrationToMolecules() {
         MolarConcentration molePerLitre = new MolarConcentration(0.1, MOLE_PER_LITRE);
-        Quantity<Volume> volume = Quantities.getQuantity(1.0, UnitRegistry.getVolumeUnit());
-        Quantity<Dimensionless> actualResult = MolarConcentration.concentrationToMolecules(molePerLitre, volume);
+        Quantity<Dimensionless> actualResult = MolarConcentration.concentrationToMolecules(molePerLitre);
         Quantity<Dimensionless> expectedResult = Quantities.getQuantity(6.022140857000001E7, ONE);
         assertEquals(expectedResult, actualResult);
     }
 
     @Test
     void moleculesToConcentration() {
-        Quantity<MolarConcentration> concentration = MolarConcentration.moleculesToConcentration(4000, Quantities.getQuantity(2.0, CUBIC_METRE));
-        Quantity<Dimensionless> molecules = MolarConcentration.concentrationToMolecules(concentration, Quantities.getQuantity(1.0, CUBIC_METRE));
-        assertEquals(2000, molecules.getValue().doubleValue(), 1e-10);
+        UnitRegistry.setSpace( Quantities.getQuantity(2.0, METRE));
+        Quantity<MolarConcentration> concentration = MolarConcentration.moleculesToConcentration(4000);
+        Quantity<Dimensionless> molecules = MolarConcentration.concentrationToMolecules(concentration);
+        assertEquals(4000, molecules.getValue().doubleValue(), 1e-10);
     }
 }
