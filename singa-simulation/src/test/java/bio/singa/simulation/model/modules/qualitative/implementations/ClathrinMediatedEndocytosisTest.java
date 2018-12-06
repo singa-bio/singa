@@ -17,8 +17,6 @@ import bio.singa.simulation.model.agents.surfacelike.MembraneTracer;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.graphs.AutomatonNode;
-import bio.singa.simulation.model.modules.concentration.imlementations.NthOrderReaction;
-import bio.singa.simulation.model.modules.displacement.implementations.EndocytosisActinBoost;
 import bio.singa.simulation.model.sections.CellRegion;
 import bio.singa.simulation.model.simulation.Simulation;
 import org.junit.jupiter.api.Test;
@@ -31,9 +29,7 @@ import javax.measure.quantity.Length;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static tec.uom.se.unit.MetricPrefix.MICRO;
-import static tec.uom.se.unit.MetricPrefix.MILLI;
-import static tec.uom.se.unit.MetricPrefix.NANO;
+import static tec.uom.se.unit.MetricPrefix.*;
 import static tec.uom.se.unit.Units.METRE;
 import static tec.uom.se.unit.Units.SECOND;
 
@@ -81,12 +77,6 @@ class ClathrinMediatedEndocytosisTest {
         ComplexedChemicalEntity clathrinTriskelion = ComplexedChemicalEntity.create("Clathrin Triskelion")
                 .addAssociatedPart(clathrinHeavyChain, 3)
                 .addAssociatedPart(clathrinLightChain, 3)
-                .build();
-
-        // setup clathrin decay reaction
-        NthOrderReaction.inSimulation(simulation)
-                .rateConstant(EndocytosisActinBoost.DEFAULT_CLATHRIN_DEPOLYMERIZATION_RATE)
-                .addSubstrate(clathrinTriskelion)
                 .build();
 
         // setup endocytosis budding

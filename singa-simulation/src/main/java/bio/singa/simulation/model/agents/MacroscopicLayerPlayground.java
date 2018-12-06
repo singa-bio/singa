@@ -29,7 +29,6 @@ import bio.singa.simulation.model.agents.surfacelike.MembraneSegment;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.graphs.AutomatonNode;
-import bio.singa.simulation.model.modules.concentration.imlementations.NthOrderReaction;
 import bio.singa.simulation.model.modules.displacement.implementations.EndocytosisActinBoost;
 import bio.singa.simulation.model.modules.displacement.implementations.VesicleCytoplasmDiffusion;
 import bio.singa.simulation.model.modules.displacement.implementations.VesicleTransport;
@@ -158,10 +157,10 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
                 .build();
 
         // setup clathrin decay reaction
-        NthOrderReaction.inSimulation(simulation)
-                .rateConstant(EndocytosisActinBoost.DEFAULT_CLATHRIN_DEPOLYMERIZATION_RATE)
-                .addSubstrate(clathrinTriskelion)
-                .build();
+//        NthOrderReaction.inSimulation(simulation)
+//                .rateConstant(EndocytosisActinBoost.DEFAULT_CLATHRIN_DEPOLYMERIZATION_RATE)
+//                .addSubstrate(clathrinTriskelion)
+//                .build();
 
         // setup endocytosis budding
         budding = new ClathrinMediatedEndocytosis();

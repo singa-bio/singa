@@ -100,19 +100,6 @@ public class Spheres {
         Vector3D vEast = new Vector3D(x1, beam.getY(), 0);
         Vector3D vWest = new Vector3D(x2, beam.getY(), 0);
         Vector3D vTop = new Vector3D(beam.getX(), beam.getY(), z);
-        // test basti hypothesis
-//        double alpha = vNorth.angleTo(vEast);
-//        double beta = vEast.angleTo(vSouth);
-//        double gamma = vSouth.angleTo(vWest);
-//        double delta = vWest.angleTo(vNorth);
-//
-//        double sum = alpha+beta+gamma+delta;
-//
-//        System.out.println("A = "+(alpha/sum));
-//        System.out.println("B = "+(beta/sum));
-//        System.out.println("C = "+(gamma/sum));
-//        System.out.println("D = "+(delta/sum));
-//        System.out.println();
 
         // the actual sphere
         Sphere sphere = new Sphere(new Vector3D(sphereCentre.getX(), sphereCentre.getY(), 0), sphereRadius);
@@ -123,12 +110,7 @@ public class Spheres {
         double sSouthWest = calculateSphereTriangleSurface(sphere, vSouth, vWest, vTop);
 
         double sumSurface = sNorthEast+sNorthWest+sSouthEast+sSouthWest;
-//
-//        System.out.println("A = "+(sNorthEast/sumSurface));
-//        System.out.println("B = "+(sSouthEast/sumSurface));
-//        System.out.println("C = "+(sSouthWest/sumSurface));#
-//        System.out.println("D = "+(sNorthWest/sumSurface));
-//        System.out.println();
+
         // assign and return results
         EnumMap<MooreRectangularDirection, Double> results = new EnumMap<>(MooreRectangularDirection.class);
         results.put(SOUTH_WEST, sNorthEast/sumSurface);

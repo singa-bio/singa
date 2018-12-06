@@ -1,6 +1,6 @@
 package bio.singa.chemistry.features.reactions;
 
-import bio.singa.features.model.FeatureOrigin;
+import bio.singa.features.model.Evidence;
 import tec.uom.se.quantity.Quantities;
 
 import javax.measure.Quantity;
@@ -13,11 +13,11 @@ public class ThirdOrderBackwardsRateConstant extends ThirdOrderRateConstant impl
 
     public static final String symbol = "k_bwd_3";
 
-    public ThirdOrderBackwardsRateConstant(Quantity<ThirdOrderRate> thirdOrderRateQuantity, FeatureOrigin featureOrigin) {
+    public ThirdOrderBackwardsRateConstant(Quantity<ThirdOrderRate> thirdOrderRateQuantity, Evidence featureOrigin) {
         super(thirdOrderRateQuantity, featureOrigin);
     }
 
-    public ThirdOrderBackwardsRateConstant(double value, Unit<ThirdOrderRate> unit, FeatureOrigin featureOrigin) {
+    public ThirdOrderBackwardsRateConstant(double value, Unit<ThirdOrderRate> unit, Evidence featureOrigin) {
         super(Quantities.getQuantity(value, unit), featureOrigin);
     }
 

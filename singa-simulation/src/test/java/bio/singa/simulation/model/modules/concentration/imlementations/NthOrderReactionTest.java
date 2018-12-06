@@ -8,6 +8,7 @@ import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.geometry.faces.Rectangle;
 import bio.singa.mathematics.vectors.Vector2D;
+import bio.singa.simulation.features.DefaultFeatureSources;
 import bio.singa.simulation.model.agents.pointlike.Vesicle;
 import bio.singa.simulation.model.agents.pointlike.VesicleLayer;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
@@ -29,12 +30,9 @@ import javax.measure.quantity.Length;
 import javax.measure.quantity.Time;
 
 import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
-import static bio.singa.simulation.model.modules.displacement.implementations.EndocytosisActinBoost.DEFAULT_CLATHRIN_DEPOLYMERIZATION_RATE;
 import static bio.singa.simulation.model.sections.CellRegions.EXTRACELLULAR_REGION;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static tec.uom.se.unit.MetricPrefix.MICRO;
-import static tec.uom.se.unit.MetricPrefix.MILLI;
-import static tec.uom.se.unit.MetricPrefix.NANO;
+import static tec.uom.se.unit.MetricPrefix.*;
 import static tec.uom.se.unit.Units.METRE;
 import static tec.uom.se.unit.Units.SECOND;
 
@@ -115,6 +113,7 @@ class NthOrderReactionTest {
     @Test
     @DisplayName("rate independence from space scale")
     void testReactionSpeedScaling() {
+        Environment.reset();
         // create simulation
         double simulationExtend = 800;
         int nodesHorizontal = 1;
@@ -143,8 +142,15 @@ class NthOrderReactionTest {
         layer.addVesicle(vesicle);
         simulation.setVesicleLayer(layer);
 
+        RateConstant rateConstant = RateConstant.create(MolarConcentration.moleculesToConcentration(60).to(UnitRegistry.getConcentrationUnit()).getValue().doubleValue() / 11.0)
+                .forward().zeroOrder()
+                .concentrationUnit(UnitRegistry.getConcentrationUnit())
+                .timeUnit(SECOND)
+                .origin(DefaultFeatureSources.EHRLICH2004)
+                .build();
+
         NthOrderReaction.inSimulation(simulation)
-                .rateConstant(DEFAULT_CLATHRIN_DEPOLYMERIZATION_RATE)
+                .rateConstant(rateConstant)
                 .addSubstrate(sm)
                 .build();
 

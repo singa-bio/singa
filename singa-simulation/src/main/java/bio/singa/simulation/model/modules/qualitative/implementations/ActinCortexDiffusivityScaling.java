@@ -3,7 +3,7 @@ package bio.singa.simulation.model.modules.qualitative.implementations;
 import bio.singa.chemistry.entities.Protein;
 import bio.singa.chemistry.features.diffusivity.Diffusivity;
 import bio.singa.features.identifiers.UniProtIdentifier;
-import bio.singa.features.model.FeatureOrigin;
+import bio.singa.features.model.Evidence;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.simulation.features.CortexDiffusivity;
 import bio.singa.simulation.features.CytoplasmDiffusivity;
@@ -35,7 +35,7 @@ public class ActinCortexDiffusivityScaling extends QualitativeModule {
     public static final Diffusivity DEFAULT_CORTEX_DIFFUSIVITY = new Diffusivity(Quantities.getQuantity(2.45E-4, MICRO(METRE).pow(2).divide(SECOND)).asType(Diffusivity.class), LANG2000);
     public static final Diffusivity DEFAULT_CYTOPLASM_DIFFUSIFITY = Diffusivity.calculate(Quantities.getQuantity(50.0, NANO(METRE)));
 
-    private static final FeatureOrigin origin = new FeatureOrigin(FeatureOrigin.OriginType.PREDICTION, "Cortex Diffusivity Estimation", "");
+    private static final Evidence origin = new Evidence(Evidence.OriginType.PREDICTION, "Cortex Diffusivity Estimation", "");
 
     private Quantity<Diffusivity> slope;
 

@@ -1,7 +1,7 @@
 package bio.singa.simulation.features;
 
 import bio.singa.features.model.AbstractFeature;
-import bio.singa.features.model.FeatureOrigin;
+import bio.singa.features.model.Evidence;
 
 /**
  * @author cl
@@ -14,7 +14,7 @@ public class MotorPullDirection extends AbstractFeature<MotorPullDirection.Direc
         PLUS, MINUS
     }
 
-    public MotorPullDirection(Direction direction, FeatureOrigin featureOrigin) {
+    public MotorPullDirection(Direction direction, Evidence featureOrigin) {
         super(direction, featureOrigin);
     }
 

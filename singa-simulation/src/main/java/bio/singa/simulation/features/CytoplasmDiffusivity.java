@@ -1,7 +1,7 @@
 package bio.singa.simulation.features;
 
 import bio.singa.chemistry.features.diffusivity.Diffusivity;
-import bio.singa.features.model.FeatureOrigin;
+import bio.singa.features.model.Evidence;
 
 import javax.measure.Quantity;
 
@@ -10,7 +10,7 @@ import javax.measure.Quantity;
  */
 public class CytoplasmDiffusivity extends Diffusivity {
 
-    public CytoplasmDiffusivity(Quantity<Diffusivity> diffusivityQuantity, FeatureOrigin origin) {
+    public CytoplasmDiffusivity(Quantity<Diffusivity> diffusivityQuantity, Evidence origin) {
         super(diffusivityQuantity, origin);
     }
 

@@ -21,7 +21,7 @@ import tec.uom.se.unit.ProductUnit;
 import javax.measure.Quantity;
 import javax.measure.quantity.Time;
 
-import static bio.singa.features.model.FeatureOrigin.MANUALLY_ANNOTATED;
+import static bio.singa.features.model.Evidence.MANUALLY_ANNOTATED;
 import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static bio.singa.simulation.model.sections.CellRegions.EXTRACELLULAR_REGION;
 import static org.junit.jupiter.api.Assertions.*;

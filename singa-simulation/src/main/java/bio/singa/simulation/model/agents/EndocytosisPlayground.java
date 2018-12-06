@@ -34,7 +34,6 @@ import bio.singa.simulation.model.agents.volumelike.VolumeLikeAgentFactory;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.graphs.AutomatonNode;
-import bio.singa.simulation.model.modules.concentration.imlementations.NthOrderReaction;
 import bio.singa.simulation.model.modules.displacement.implementations.EndocytosisActinBoost;
 import bio.singa.simulation.model.modules.displacement.implementations.VesicleConfinedDiffusion;
 import bio.singa.simulation.model.modules.displacement.implementations.VesicleCytoplasmDiffusion;
@@ -61,9 +60,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import static bio.singa.features.model.FeatureOrigin.MANUALLY_ANNOTATED;
+import static bio.singa.features.model.Evidence.MANUALLY_ANNOTATED;
 import static bio.singa.mathematics.topology.grids.rectangular.MooreRectangularDirection.EAST;
-import static bio.singa.simulation.model.modules.displacement.implementations.EndocytosisActinBoost.DEFAULT_CLATHRIN_DEPOLYMERIZATION_RATE;
 import static tec.uom.se.unit.MetricPrefix.MICRO;
 import static tec.uom.se.unit.MetricPrefix.NANO;
 import static tec.uom.se.unit.Units.METRE;
@@ -152,10 +150,10 @@ public class EndocytosisPlayground extends Application implements Renderer {
                 .build();
 
         // setup clathrin decay reaction
-        NthOrderReaction.inSimulation(simulation)
-                .rateConstant(DEFAULT_CLATHRIN_DEPOLYMERIZATION_RATE)
-                .addSubstrate(clathrinTriskelion)
-                .build();
+//        NthOrderReaction.inSimulation(simulation)
+//                .rateConstant(DEFAULT_CLATHRIN_DEPOLYMERIZATION_RATE)
+//                .addSubstrate(clathrinTriskelion)
+//                .build();
 
         // setup endocytosis budding
         budding = new ClathrinMediatedEndocytosis();

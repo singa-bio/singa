@@ -360,13 +360,13 @@ class ComplexBuildingReactionTest {
         // the ligand
         ChemicalEntity bindee = new SmallMolecule.Builder("bindee")
                 .name("bindee")
-                .assignFeature(new MolarMass(10, FeatureOrigin.MANUALLY_ANNOTATED))
+                .assignFeature(new MolarMass(10, Evidence.MANUALLY_ANNOTATED))
                 .build();
 
         // the receptor
         Protein binder = new Protein.Builder("binder")
                 .name("binder")
-                .assignFeature(new MolarMass(100, FeatureOrigin.MANUALLY_ANNOTATED))
+                .assignFeature(new MolarMass(100, Evidence.MANUALLY_ANNOTATED))
                 .build();
 
         // create and add module
@@ -454,13 +454,13 @@ class ComplexBuildingReactionTest {
         // the ligand
         ChemicalEntity bindee = new SmallMolecule.Builder("bindee")
                 .name("bindee")
-                .assignFeature(new MolarMass(10, FeatureOrigin.MANUALLY_ANNOTATED))
+                .assignFeature(new MolarMass(10, Evidence.MANUALLY_ANNOTATED))
                 .build();
 
         // the receptor
         Protein binder = new Protein.Builder("binder")
                 .name("binder")
-                .assignFeature(new MolarMass(100, FeatureOrigin.MANUALLY_ANNOTATED))
+                .assignFeature(new MolarMass(100, Evidence.MANUALLY_ANNOTATED))
                 .build();
 
         // create and add module

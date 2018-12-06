@@ -1,7 +1,7 @@
 package bio.singa.simulation.features;
 
 import bio.singa.features.model.AbstractFeature;
-import bio.singa.features.model.FeatureOrigin;
+import bio.singa.features.model.Evidence;
 import bio.singa.features.quantities.MolarConcentration;
 
 import javax.measure.Quantity;
@@ -13,7 +13,7 @@ public class MaximalConcentration extends AbstractFeature<Quantity<MolarConcentr
 
     private static final String SYMBOL = "cMax";
 
-    public MaximalConcentration(Quantity<MolarConcentration> concentration, FeatureOrigin featureOrigin) {
+    public MaximalConcentration(Quantity<MolarConcentration> concentration, Evidence featureOrigin) {
         super(concentration, featureOrigin);
     }
 
