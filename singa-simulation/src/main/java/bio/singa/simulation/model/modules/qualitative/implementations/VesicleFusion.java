@@ -102,11 +102,12 @@ public class VesicleFusion extends QualitativeModule {
         for (Vesicle fusingVesicle : fusingVesicles) {
             fuse(fusingVesicle);
             tetheredVesicles.remove(fusingVesicle);
+            simulation.getVesicleLayer().removeVesicle(fusingVesicle);
         }
         // tether vesicles
         for (Map.Entry<Vesicle, TetheringSnares> entry : tetheringVesicles.entrySet()) {
             tetherVesicle(entry.getKey(), entry.getValue());
-            simulation.getVesicleLayer().removeVesicle(entry.getKey());
+            // simulation.getVesicleLayer().removeVesicle(entry.getKey());
         }
     }
 
@@ -121,7 +122,7 @@ public class VesicleFusion extends QualitativeModule {
             node.addPotentialDelta(new ConcentrationDelta(this, node.getCellRegion().getMembraneSubsection(), entity, quantity));
         }
         // merge inner concentrations
-        for (Map.Entry<ChemicalEntity, Quantity<MolarConcentration>> entry : vesicleContainer.getPool(CellTopology.INNER).getValue().getConcentrations().entrySet()) {
+        for (Map.Entry<ChemicalEntity, Quantity<MolarConcentration>> entry : vesicleContainer.getPool(CellTopology.OUTER).getValue().getConcentrations().entrySet()) {
             ChemicalEntity entity = entry.getKey();
             Quantity<MolarConcentration> quantity = entry.getValue();
             node.addPotentialDelta(new ConcentrationDelta(this, node.getCellRegion().getInnerSubsection(), entity, quantity));

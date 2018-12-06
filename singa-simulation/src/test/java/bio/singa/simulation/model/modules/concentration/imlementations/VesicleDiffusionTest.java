@@ -30,6 +30,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import static bio.singa.chemistry.features.permeability.MembranePermeability.CENTIMETRE_PER_SECOND;
 import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static bio.singa.simulation.model.sections.CellTopology.INNER;
+import static bio.singa.simulation.model.sections.CellTopology.OUTER;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static tec.uom.se.unit.MetricPrefix.MICRO;
 import static tec.uom.se.unit.MetricPrefix.NANO;
@@ -64,8 +65,8 @@ class VesicleDiffusionTest {
                 Quantities.getQuantity(ThreadLocalRandom.current().nextDouble(100, 200), NANO(METRE)));
 
         ComparableQuantity<MolarConcentration> originalQuantity = Quantities.getQuantity(10.0, MOLE_PER_LITRE);
-        vesicle.setConcentration(water, originalQuantity);
-        Quantity<MolarConcentration> concentration = vesicle.getConcentration(water);
+        vesicle.getConcentrationContainer().set(OUTER, water, originalQuantity);
+        Quantity<MolarConcentration> concentration = vesicle.getConcentrationContainer().get(OUTER, water);
         Quantity<MolarConcentration> transformedQuantity = concentration.to(MOLE_PER_LITRE);
         assertEquals(originalQuantity.getValue().doubleValue(), transformedQuantity.getValue().doubleValue(), 1e-8);
     }
@@ -103,7 +104,7 @@ class VesicleDiffusionTest {
                 Quantities.getQuantity(150, NANO(METRE))
                         .to(UnitRegistry.getSpaceUnit()));
 
-        vesicle.getConcentrationContainer().set(INNER, water, 50.0);
+        vesicle.getConcentrationContainer().set(OUTER, water, 50.0);
 
         // add vesicle transport layer
         VesicleLayer layer = new VesicleLayer(simulation);

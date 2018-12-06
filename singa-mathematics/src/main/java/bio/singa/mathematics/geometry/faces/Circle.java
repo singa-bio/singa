@@ -2,8 +2,8 @@ package bio.singa.mathematics.geometry.faces;
 
 import bio.singa.mathematics.vectors.Vector2D;
 
-import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeSet;
 
 public class Circle {
 
@@ -33,7 +33,7 @@ public class Circle {
 
 
     public Set<Double> getXValue(double yValue) {
-        Set<Double> values = new HashSet<>();
+        Set<Double> values = new TreeSet<>();
         double sqrt = Math.sqrt(-Math.pow(midpoint.getY(), 2) + 2 * midpoint.getY() * yValue + Math.pow(radius, 2) - Math.pow(yValue, 2));
         values.add(midpoint.getX() + sqrt);
         values.add(midpoint.getX() - sqrt);
@@ -41,7 +41,7 @@ public class Circle {
     }
 
     public Set<Double> getYValue(double xValue) {
-        Set<Double> values = new HashSet<>();
+        Set<Double> values = new TreeSet<>();
         double sqrt = Math.sqrt(-Math.pow(midpoint.getX(), 2) + 2 * midpoint.getX() * xValue + Math.pow(radius, 2) - Math.pow(xValue, 2));
         values.add(midpoint.getY() + sqrt);
         values.add(midpoint.getY() - sqrt);

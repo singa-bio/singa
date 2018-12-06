@@ -19,7 +19,7 @@ import bio.singa.simulation.model.rules.AssignmentRule;
 import bio.singa.simulation.model.rules.AssignmentRules;
 import bio.singa.simulation.model.sections.CellRegion;
 import bio.singa.simulation.model.sections.CellRegions;
-import bio.singa.simulation.model.sections.ConcentrationInitializer;
+import bio.singa.simulation.model.sections.concentration.ConcentrationInitializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tec.uom.se.ComparableQuantity;

@@ -25,7 +25,9 @@ public class ActinCortexAttachment extends QualitativeModule {
     public void calculateUpdates() {
         ActinCortex cortex = simulation.getVolumeLayer().getCortex();
         for (Vesicle vesicle : simulation.getVesicleLayer().getVesicles()) {
-            if (!(vesicle.getVesicleState().equals(VesicleStateRegistry.ACTIN_TETHERED) || vesicle.getVesicleState().equals(VesicleStateRegistry.ACTIN_PROPELLED)) ) {
+            if (!(vesicle.getVesicleState().equals(VesicleStateRegistry.ACTIN_TETHERED)
+                    || vesicle.getVesicleState().equals(VesicleStateRegistry.ACTIN_PROPELLED)
+                    || vesicle.getVesicleState().equals(VesicleStateRegistry.MEMBRANE_TETHERED))) {
                 if (cortex.getArea().isInside(vesicle.getCurrentPosition())) {
                     tetheringVesicles.add(vesicle);
                 }

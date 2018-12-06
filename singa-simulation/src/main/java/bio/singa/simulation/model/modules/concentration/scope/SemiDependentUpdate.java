@@ -132,8 +132,13 @@ public class SemiDependentUpdate implements UpdateScope {
     @Override
     public ConcentrationContainer getHalfStepConcentration(Updatable updatable) {
         ConcentrationContainer container = halfConcentrations.get(updatable);
+        // if the delta calculated for any updatable is zero for any reason the delta is not taken into account for full steps
+        // the half delta function will subsequently try to calculate the update for the same updatable and find no container
+        // and fail - previously an error was thrown, if no change has been recorded previously the original container
+        // can be returned since it is highly probable no change will result in the half step calculation
         if (container == null) {
-            throw new IllegalStateException("No half concentration container has been defined for " + updatable + ".");
+            // throw new IllegalStateException("No half concentration container has been defined for " + updatable + ".");
+            return updatable.getConcentrationContainer();
         }
         return container;
     }

@@ -1,7 +1,6 @@
 package bio.singa.simulation.model.graphs;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
-import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.geometry.model.Polygon;
 import bio.singa.mathematics.graphs.model.AbstractNode;
@@ -52,18 +51,6 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
 
     public AutomatonNode(int column, int row) {
         this(new RectangularCoordinate(column, row));
-    }
-
-    /**
-     * Returns the concentration of the given chemical entity in the given compartment.
-     *
-     * @param entity The chemical entity.
-     * @param section The cell section.
-     * @return The concentration of the given chemical entity.
-     */
-    @Override
-    public Quantity<MolarConcentration> getConcentration(CellSubsection section, ChemicalEntity entity) {
-        return updateManager.getConcentrationContainer().get(section, entity);
     }
 
     public Map<CellSubsection, Polygon> getSubsectionRepresentations() {

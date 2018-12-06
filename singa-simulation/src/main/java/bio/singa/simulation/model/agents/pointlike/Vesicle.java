@@ -188,12 +188,12 @@ public class Vesicle implements Updatable, Featureable {
 
     public void addAssociatedNode(AutomatonNode node, double relativeArea) {
         associatedNodes.put(node, relativeArea);
-        CellSubsection subsection = node.getConcentrationContainer().getSubsection(CellTopology.INNER);
-        getConcentrationContainer().putSubsectionPool(subsection, CellTopology.OUTER, node.getConcentrationContainer().getPool(CellTopology.INNER).getValue());
+        // CellSubsection subsection = node.getConcentrationContainer().getSubsection(CellTopology.INNER);
+        // getConcentrationContainer().putSubsectionPool(subsection, CellTopology.INNER, node.getConcentrationContainer().getPool(CellTopology.INNER).getValue());
     }
 
     public void clearAssociatedNodes() {
-        getConcentrationContainer().removeSubsection(CellTopology.OUTER);
+        getConcentrationContainer().removeSubsection(CellTopology.INNER);
         associatedNodes.clear();
     }
 
@@ -234,11 +234,6 @@ public class Vesicle implements Updatable, Featureable {
     @Override
     public ConcentrationContainer getConcentrationContainer() {
         return concentrationManager.getConcentrationContainer();
-    }
-
-    @Override
-    public Quantity<MolarConcentration> getConcentration(CellSubsection cellSection, ChemicalEntity chemicalEntity) {
-        return concentrationManager.getConcentrationContainer().get(cellSection, chemicalEntity);
     }
 
     @Override

@@ -142,7 +142,7 @@ public class AutomatonGraphRenderer extends GraphRenderer<AutomatonNode, Automat
         for (AutomatonNode node : graph.getNodes()) {
             // FIXME current workaround for rendering multiple concentrations of one node
             CellSubsection firstSubsection = node.getCellRegion().getSubsections().iterator().next();
-            double concentration = node.getConcentration(firstSubsection, bioRenderingOptions.getNodeHighlightEntity()).getValue().doubleValue();
+            double concentration = node.getConcentrationContainer().get(firstSubsection, bioRenderingOptions.getNodeHighlightEntity()).getValue().doubleValue();
             if (concentration > max) {
                 max = concentration;
             } else if (concentration < min) {

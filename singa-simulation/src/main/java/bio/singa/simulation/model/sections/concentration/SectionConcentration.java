@@ -1,7 +1,9 @@
-package bio.singa.simulation.model.sections;
+package bio.singa.simulation.model.sections.concentration;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.features.quantities.MolarConcentration;
+import bio.singa.simulation.model.sections.CellRegion;
+import bio.singa.simulation.model.sections.CellSubsection;
 import bio.singa.simulation.model.simulation.Simulation;
 import bio.singa.simulation.model.simulation.Updatable;
 import tec.uom.se.quantity.Quantities;
@@ -15,7 +17,7 @@ import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 /**
  * @author cl
  */
-public class InitialConcentration {
+public class SectionConcentration {
 
     private CellRegion region;
 
@@ -25,27 +27,27 @@ public class InitialConcentration {
 
     private Quantity<MolarConcentration> concentration;
 
-    public InitialConcentration(CellRegion region, CellSubsection subsection, ChemicalEntity entity, Quantity<MolarConcentration> concentration) {
+    public SectionConcentration(CellRegion region, CellSubsection subsection, ChemicalEntity entity, Quantity<MolarConcentration> concentration) {
         this.region = region;
         this.subsection = subsection;
         this.entity = entity;
         this.concentration = concentration;
     }
 
-    public InitialConcentration(CellSubsection subsection, ChemicalEntity entity, Quantity<MolarConcentration> concentration) {
+    public SectionConcentration(CellSubsection subsection, ChemicalEntity entity, Quantity<MolarConcentration> concentration) {
         this.subsection = subsection;
         this.entity = entity;
         this.concentration = concentration;
     }
 
-    public InitialConcentration(CellRegion region, CellSubsection subsection, ChemicalEntity entity, double concentration) {
+    public SectionConcentration(CellRegion region, CellSubsection subsection, ChemicalEntity entity, double concentration) {
         this.region = region;
         this.subsection = subsection;
         this.entity = entity;
         this.concentration = Quantities.getQuantity(concentration, MOLE_PER_LITRE);
     }
 
-    public InitialConcentration(CellSubsection subsection, ChemicalEntity entity, double concentration) {
+    public SectionConcentration(CellSubsection subsection, ChemicalEntity entity, double concentration) {
         this.subsection = subsection;
         this.entity = entity;
         this.concentration = Quantities.getQuantity(concentration, MOLE_PER_LITRE);
@@ -105,7 +107,7 @@ public class InitialConcentration {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        InitialConcentration that = (InitialConcentration) o;
+        SectionConcentration that = (SectionConcentration) o;
         return Objects.equals(region, that.region) &&
                 Objects.equals(subsection, that.subsection) &&
                 Objects.equals(entity, that.entity);

@@ -34,6 +34,7 @@ import static bio.singa.features.units.UnitRegistry.*;
 import static bio.singa.simulation.model.sections.CellRegion.CYTOSOL_A;
 import static bio.singa.simulation.model.sections.CellRegion.MEMBRANE;
 import static bio.singa.simulation.model.sections.CellTopology.INNER;
+import static bio.singa.simulation.model.sections.CellTopology.OUTER;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static tec.uom.se.unit.MetricPrefix.MICRO;
@@ -87,8 +88,8 @@ class MembraneDiffusionTest {
         // delta should be about 3.5e-20 mol/um3
         ComparableQuantity<MolarConcentration> expectedLeft = Quantities.getQuantity(2.0, MOLE_PER_LITRE).to(getConcentrationUnit()).subtract(Quantities.getQuantity(3.5e-11, getConcentrationUnit()));
         ComparableQuantity<MolarConcentration> expectedRight = Quantities.getQuantity(1.0, MOLE_PER_LITRE).to(getConcentrationUnit()).add(Quantities.getQuantity(3.5e-11, getConcentrationUnit()));
-        assertEquals(expectedLeft.getValue().doubleValue(), membraneNode.getConcentration(MEMBRANE.getInnerSubsection(), water).getValue().doubleValue(), 1e-12);
-        assertEquals(expectedRight.getValue().doubleValue(), membraneNode.getConcentration(MEMBRANE.getOuterSubsection(), water).getValue().doubleValue(), 1e-12);
+        assertEquals(expectedLeft.getValue().doubleValue(), membraneNode.getConcentrationContainer().get(MEMBRANE.getInnerSubsection(), water).getValue().doubleValue(), 1e-12);
+        assertEquals(expectedRight.getValue().doubleValue(), membraneNode.getConcentrationContainer().get(MEMBRANE.getOuterSubsection(), water).getValue().doubleValue(), 1e-12);
     }
 
     @Test
@@ -124,7 +125,7 @@ class MembraneDiffusionTest {
                         .nextDouble(100, 200), NANO(METRE))
                         .to(UnitRegistry.getSpaceUnit()));
 
-        vesicle.getConcentrationContainer().set(INNER, water, 50.0);
+        vesicle.getConcentrationContainer().set(OUTER, water, 50.0);
 
         // add vesicle transport layer
         VesicleLayer vesicleLayer = new VesicleLayer(simulation);
@@ -159,13 +160,13 @@ class MembraneDiffusionTest {
         for (int i = 0; i < 10; i++) {
             simulation.nextEpoch();
             // node increasing
-            Quantity<MolarConcentration> currentNodeConcentration = node.getConcentrationContainer().get(CellTopology.INNER, water).to(MOLE_PER_LITRE);
+            Quantity<MolarConcentration> currentNodeConcentration = node.getConcentrationContainer().get(INNER, water).to(MOLE_PER_LITRE);
             if (previousNodeConcentration != null) {
                 assertTrue(currentNodeConcentration.getValue().doubleValue() > previousNodeConcentration.getValue().doubleValue());
             }
             previousNodeConcentration = currentNodeConcentration;
             // vesicle decreasing
-            Quantity<MolarConcentration> currentVesicleConcentration = vesicle.getConcentrationContainer().get(CellTopology.INNER, water).to(MOLE_PER_LITRE);
+            Quantity<MolarConcentration> currentVesicleConcentration = vesicle.getConcentrationContainer().get(CellTopology.OUTER, water).to(MOLE_PER_LITRE);
             if (previousVesicleConcentration != null) {
                 assertTrue(currentVesicleConcentration.getValue().doubleValue() < previousVesicleConcentration.getValue().doubleValue());
             }

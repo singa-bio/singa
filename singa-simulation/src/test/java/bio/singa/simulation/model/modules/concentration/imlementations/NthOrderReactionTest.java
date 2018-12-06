@@ -157,5 +157,4 @@ class NthOrderReactionTest {
         assertEquals(0, molecules.getValue().intValue());
     }
 
-
 }

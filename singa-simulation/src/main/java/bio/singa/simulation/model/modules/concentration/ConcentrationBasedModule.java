@@ -229,6 +229,7 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
 
     /**
      * Returns the identifier of this module.
+     *
      * @return The identifier.
      */
     public String getIdentifier() {
@@ -237,6 +238,7 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
 
     /**
      * Sets the identifier of this module.
+     *
      * @param identifier The identifier.
      */
     public void setIdentifier(String identifier) {
@@ -245,6 +247,7 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
 
     /**
      * Returns the field supplier.
+     *
      * @return The field supplier.
      */
     public FieldSupplier getSupplier() {
@@ -253,6 +256,7 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
 
     /**
      * Returns the scope of this module.
+     *
      * @return The scope of this module.
      */
     public UpdateScope getScope() {
@@ -261,6 +265,7 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
 
     /**
      * Sets the scope of this module.
+     *
      * @param scope The scope of this module.
      */
     void setScope(UpdateScope scope) {
@@ -269,6 +274,7 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
 
     /**
      * Returns the specificity of this module.
+     *
      * @return The specificity of this module.
      */
     public UpdateSpecificity getSpecificity() {
@@ -277,6 +283,7 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
 
     /**
      * Sets the specificity of this module.
+     *
      * @param specificity The specificity of this module.
      */
     void setSpecificity(UpdateSpecificity<DeltaFunctionType> specificity) {
@@ -290,6 +297,7 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
 
     /**
      * Handles a delta based on the current state of the calculation.
+     *
      * @param deltaIdentifier The unique identifier of the delta.
      * @param delta The delta itself.
      */
@@ -306,6 +314,7 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
 
     /**
      * Produces a log massage for the given update.
+     *
      * @param deltaIdentifier THe delta identifier.
      * @param delta The delta.
      */
@@ -393,17 +402,19 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
         // set local error and return local error
         return localError;
     }
+
     /**
      * Determines if the current error can be considered stable (is above the error cutoff).
+     *
      * @param fullDelta The full delta (only for logging purposes).
      * @param halfDelta The half delta (only for logging purposes).
      * @param error The error.
      */
     private void checkErrorStability(double fullDelta, double halfDelta, double error) {
         if (error > errorCutoff) {
-            throw new NumericalInstabilityException("The simulation experiences numerical instabilities. The local " +
-                    "error between the full step delta (" + fullDelta + ") and half step delta (" + halfDelta + ") is "
-                    + error + ". This can be an result of time steps that have been initially chosen too large" +
+            throw new NumericalInstabilityException("The module " + toString() + " experiences numerical instabilities. " +
+                    "The local error between the full step delta (" + fullDelta + ") and half step delta (" + halfDelta +
+                    ") is " + error + ". This can be an result of time steps that have been initially chosen too large" +
                     " or an implementation error in module that calculated the delta.");
         }
     }
@@ -493,6 +504,7 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
 
     /**
      * Determines the correct scaling based on the state of the strut calculation.
+     *
      * @param feature The requested feature.
      * @param <FeatureContentType> The resulting content type.
      * @return The scaled feature.
@@ -506,6 +518,7 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
 
     /**
      * Returns the requested feature.
+     *
      * @param featureTypeClass The requested feature.
      * @param <FeatureType> The resulting content type.
      * @return The requested feature.
@@ -516,6 +529,7 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
 
     /**
      * Sets a feature.
+     *
      * @param feature The feature.
      */
     public void setFeature(Feature<?> feature) {
@@ -524,6 +538,7 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
 
     /**
      * Returns all features of this module (not its entities).
+     *
      * @return all features of this module.
      */
     public Collection<Feature<?>> getFeatures() {

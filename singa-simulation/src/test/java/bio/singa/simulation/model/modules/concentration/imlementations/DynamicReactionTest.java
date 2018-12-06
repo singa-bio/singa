@@ -10,8 +10,8 @@ import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.modules.concentration.reactants.Reactant;
 import bio.singa.simulation.model.modules.concentration.reactants.ReactantRole;
 import bio.singa.simulation.model.sections.CellRegion;
-import bio.singa.simulation.model.sections.ConcentrationInitializer;
-import bio.singa.simulation.model.sections.InitialConcentration;
+import bio.singa.simulation.model.sections.concentration.ConcentrationInitializer;
+import bio.singa.simulation.model.sections.concentration.SectionConcentration;
 import bio.singa.simulation.model.simulation.Simulation;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -86,9 +86,9 @@ public class DynamicReactionTest {
         node.setCellRegion(CellRegion.CYTOSOL_A);
 
         ConcentrationInitializer ci = new ConcentrationInitializer();
-        ci.addInitialConcentration(new InitialConcentration(SECTION_A, substrate, Quantities.getQuantity(200, NANO_MOLE_PER_LITRE)));
-        ci.addInitialConcentration(new InitialConcentration(SECTION_A, product, Quantities.getQuantity(100, NANO_MOLE_PER_LITRE)));
-        ci.addInitialConcentration(new InitialConcentration(SECTION_A, catalyt, Quantities.getQuantity(30, NANO_MOLE_PER_LITRE)));
+        ci.addInitialConcentration(new SectionConcentration(SECTION_A, substrate, Quantities.getQuantity(200, NANO_MOLE_PER_LITRE)));
+        ci.addInitialConcentration(new SectionConcentration(SECTION_A, product, Quantities.getQuantity(100, NANO_MOLE_PER_LITRE)));
+        ci.addInitialConcentration(new SectionConcentration(SECTION_A, catalyt, Quantities.getQuantity(30, NANO_MOLE_PER_LITRE)));
         simulation.setConcentrationInitializer(ci);
 
         for (int i = 0; i < 10; i++) {

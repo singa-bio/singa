@@ -90,7 +90,7 @@ public class VesicleLayer {
                 // TODO speed up by comparing only to close vesicles with referenced automaton nodes
                 if (vesicle1 != vesicle2) {
                     double distance = distances.getValueForLabel(vesicle1, vesicle2);
-                    double combinedRadii = firstRadius * Environment.convertSystemToSimulationScale(vesicle2.getRadius());
+                    double combinedRadii = firstRadius + Environment.convertSystemToSimulationScale(vesicle2.getRadius());
                     if (distance < combinedRadii) {
                         vesicle1.resetNextPosition();
                         continue vesicleLoop;
@@ -203,21 +203,22 @@ public class VesicleLayer {
                     if (intersection.size() > 1) {
                         Iterator<Vector2D> iterator = intersection.iterator();
                         LineSegment sliceSegment = new SimpleLineSegment(iterator.next(), iterator.next());
-                        double sliceSurface = Spheres.calculateSphereSlice(vesicleCentre, vesicleRadius, sliceSegment);
+                        double sliceSurface = Spheres.calculateSphereSlice(vesicleCentre, vesicleRadius, sliceSegment)/totalSurface;
+                        double remainingSurface = 1-sliceSurface;
                         if (sliceSegment.isVertical()) {
                             if (sliceSegment.getStartingPoint().isLeftOf(node.getPosition())) {
-                                vesicle.addAssociatedNode(node, totalSurface - sliceSurface);
+                                vesicle.addAssociatedNode(node, remainingSurface);
                                 vesicle.addAssociatedNode(graph.getNode(node.getIdentifier().getNeighbour(NeumannRectangularDirection.WEST)), sliceSurface);
                             } else {
-                                vesicle.addAssociatedNode(node, totalSurface - sliceSurface);
+                                vesicle.addAssociatedNode(node, remainingSurface);
                                 vesicle.addAssociatedNode(graph.getNode(node.getIdentifier().getNeighbour(NeumannRectangularDirection.EAST)), sliceSurface);
                             }
                         } else {
                             if (sliceSegment.getStartingPoint().isBelow(node.getPosition())) {
-                                vesicle.addAssociatedNode(node, totalSurface - sliceSurface);
+                                vesicle.addAssociatedNode(node, remainingSurface);
                                 vesicle.addAssociatedNode(graph.getNode(node.getIdentifier().getNeighbour(NeumannRectangularDirection.SOUTH)), sliceSurface);
                             } else {
-                                vesicle.addAssociatedNode(node, totalSurface - sliceSurface);
+                                vesicle.addAssociatedNode(node, remainingSurface);
                                 vesicle.addAssociatedNode(graph.getNode(node.getIdentifier().getNeighbour(NeumannRectangularDirection.NORTH)), sliceSurface);
                             }
                         }
@@ -225,7 +226,8 @@ public class VesicleLayer {
                     }
                 }
                 // else the vesicle if fully contained
-                vesicle.addAssociatedNode(node, totalSurface);
+                vesicle.addAssociatedNode(node, 1.0);
+                return;
             }
         }
     }

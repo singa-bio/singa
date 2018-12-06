@@ -2,6 +2,7 @@ package bio.singa.simulation.model.modules.concentration;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.features.quantities.MolarConcentration;
+import bio.singa.features.units.UnitRegistry;
 import bio.singa.simulation.model.modules.UpdateModule;
 import bio.singa.simulation.model.sections.CellSubsection;
 
@@ -93,6 +94,11 @@ public class ConcentrationDelta {
      */
     public ConcentrationDelta multiply(double multiplicand) {
         quantity = quantity.multiply(multiplicand);
+        return this;
+    }
+
+    public ConcentrationDelta add(double summand) {
+        quantity = quantity.add(UnitRegistry.concentration(summand));
         return this;
     }
 

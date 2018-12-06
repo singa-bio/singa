@@ -88,7 +88,7 @@ public class Diffusion extends ConcentrationBasedModule<EntityDeltaFunction> {
                     // if current is non-membrane and neighbour is non-membrane
                     // classical diffusion
                     // if the neighbour actually contains the same subsection
-                    final Quantity<MolarConcentration> availableConcentration = neighbour.getConcentration(subsection, entity);
+                    final Quantity<MolarConcentration> availableConcentration = neighbour.getConcentrationContainer().get(subsection, entity);
                     if (availableConcentration != null) {
                         concentration += availableConcentration.getValue().doubleValue();
                         numberOfNeighbors++;
@@ -98,7 +98,7 @@ public class Diffusion extends ConcentrationBasedModule<EntityDeltaFunction> {
                     // if current is non-membrane and neighbour is membrane
                     if (neighborIsPotentialSource(node, neighbour)) {
                         // leaving amount stays unchanged, but entering concentration is relevant
-                        final Quantity<MolarConcentration> availableConcentration = neighbour.getConcentration(subsection, entity);
+                        final Quantity<MolarConcentration> availableConcentration = neighbour.getConcentrationContainer().get(subsection, entity);
                         if (availableConcentration != null) {
                             concentration += availableConcentration.getValue().doubleValue();
                         }

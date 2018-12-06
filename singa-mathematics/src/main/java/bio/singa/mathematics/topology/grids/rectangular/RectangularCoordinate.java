@@ -2,6 +2,7 @@ package bio.singa.mathematics.topology.grids.rectangular;
 
 import bio.singa.mathematics.topology.model.DiscreteCoordinate;
 
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -57,6 +58,20 @@ public class RectangularCoordinate implements DiscreteCoordinate<RectangularCoor
     @Override
     public NeumannRectangularDirection[] getAllDirections() {
         return NeumannRectangularDirection.values();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        RectangularCoordinate that = (RectangularCoordinate) o;
+        return column == that.column &&
+                row == that.row;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(column, row);
     }
 
     @Override
