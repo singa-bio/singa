@@ -56,6 +56,30 @@ public class LeafIdentifier implements Comparable<LeafIdentifier> {
     }
 
     /**
+     * Constructs a {@link LeafIdentifier} from its full string specification: PDB-ID, model ID, chain ID, serial
+     * number, and (optionally) insertion code.
+     *
+     * @param string The identifier in string format, e.g. 1ZUH-1-A-62
+     * @return The {@link LeafIdentifier}.
+     */
+    public static LeafIdentifier fromString(String string) {
+        String[] split = string.split("-");
+        String pdbIdentifier = split[0];
+        int modelIdentifier = Integer.valueOf(split[1]);
+        String chainIdentifier = split[2];
+        // decide whether insertion code was used
+        String serialPart = split[3];
+        if (serialPart.substring(serialPart.length() - 1).matches("[A-Z]")) {
+            char insertionCode = serialPart.charAt(serialPart.length() - 1);
+            int serial = Integer.valueOf(serialPart.substring(0, serialPart.length() - 1));
+            return new LeafIdentifier(pdbIdentifier, modelIdentifier, chainIdentifier, serial, insertionCode);
+        } else {
+            int serial = Integer.valueOf(serialPart);
+            return new LeafIdentifier(pdbIdentifier, modelIdentifier, chainIdentifier, serial);
+        }
+    }
+
+    /**
      * Constructs a {@link LeafIdentifier} from the given simple string. Only chain-ID, residue number and optional
      * insertion code is required.
      *
@@ -106,9 +130,10 @@ public class LeafIdentifier implements Comparable<LeafIdentifier> {
 
     /**
      * Returns a simple version of this {@link LeafIdentifier} (e.g. A-62 or A-62B).
+     *
      * @return The simple string version.
      */
-    public String toSimpleString(){
+    public String toSimpleString() {
         return chainIdentifer + "-" + serial + (insertionCode != DEFAULT_INSERTION_CODE ? insertionCode : "");
     }
 

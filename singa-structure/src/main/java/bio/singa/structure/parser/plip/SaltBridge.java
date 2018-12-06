@@ -35,13 +35,14 @@ public class SaltBridge extends Interaction {
     private String ligandGroup;
 
     public SaltBridge(int plipIdentifier) {
-        super(plipIdentifier);
+        super(plipIdentifier, InteractionType.SALT_BRIDGE);
         atoms1 = new ArrayList<>();
         atoms2 = new ArrayList<>();
     }
 
     /**
      * Returns a list of the Atom IDs of the source atoms of the interaction, belonging to the protein.
+     *
      * @return The interaction's source atom IDs.
      */
     public List<Integer> getAtoms1() {
@@ -54,6 +55,7 @@ public class SaltBridge extends Interaction {
 
     /**
      * Returns a list of the Atom IDs of the target atoms of the interaction, belonging to the ligand.
+     *
      * @return The interaction's target atom IDs.
      */
     public List<Integer> getAtoms2() {
@@ -66,6 +68,7 @@ public class SaltBridge extends Interaction {
 
     /**
      * Returns the distance between the interacting atoms in Angstrom.
+     *
      * @return The distance between the interacting atoms.
      */
     public double getDistance() {
@@ -78,6 +81,7 @@ public class SaltBridge extends Interaction {
 
     /**
      * Returns whether the protein carries the positive charge.
+     *
      * @return Whether the protein carries the positive charge.
      */
     public boolean isProtIsPos() {
@@ -90,6 +94,7 @@ public class SaltBridge extends Interaction {
 
     /**
      * Returns the functional group in the ligand.
+     *
      * @return The ligand's functional group.
      */
     public String getLigandGroup() {
@@ -102,6 +107,7 @@ public class SaltBridge extends Interaction {
 
     /**
      * Merges two salt bridges.
+     *
      * @param other Another salt bridge.
      */
     public void mergeWith(SaltBridge other) {
@@ -110,6 +116,7 @@ public class SaltBridge extends Interaction {
 
     /**
      * Returns the Atom ID of the first atom in the list of source atoms, belonging to the protein.
+     *
      * @return The interaction's first source atom ID.
      */
     @Override
@@ -123,6 +130,7 @@ public class SaltBridge extends Interaction {
 
     /**
      * Returns the Atom ID of the first atom in the list of target atoms, belonging to the ligand.
+     *
      * @return The interaction's first target atom ID.
      */
     @Override

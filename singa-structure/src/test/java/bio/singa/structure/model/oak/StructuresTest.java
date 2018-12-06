@@ -3,12 +3,16 @@ package bio.singa.structure.model.oak;
 import bio.singa.core.utility.Pair;
 import bio.singa.mathematics.matrices.LabeledSymmetricMatrix;
 import bio.singa.mathematics.matrices.Matrices;
+import bio.singa.structure.model.identifiers.LeafIdentifier;
 import bio.singa.structure.model.interfaces.*;
 import bio.singa.structure.parser.pdb.structures.StructureParser;
+import bio.singa.structure.parser.pdb.structures.StructureSelector;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -63,4 +67,20 @@ class StructuresTest {
         assertTrue(Structures.isBackboneStructure(alphaCarbonStructure));
     }
 
+    @Test
+    void renumberStructure() {
+        OakStructure structure = ((OakStructure) StructureParser.pdb()
+                .pdbIdentifier("1szi")
+                .chainIdentifier("A")
+                .parse());
+        LeafIdentifier leafIdentifier = new LeafIdentifier("1szi", 1, "A", 206);
+        Map<LeafIdentifier, Integer> renumberingMap = new TreeMap<>();
+        renumberingMap.put(leafIdentifier, 202);
+        OakStructure renumberStructure = Structures.renumberStructure(structure, renumberingMap);
+        StructureSelector.selectFrom(renumberStructure)
+                .model(1)
+                .chain("A")
+                .aminoAcid(202)
+                .selectAminoAcid();
+    }
 }

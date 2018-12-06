@@ -1,7 +1,7 @@
 package bio.singa.simulation.features;
 
 import bio.singa.features.model.AbstractFeature;
-import bio.singa.features.model.FeatureOrigin;
+import bio.singa.features.model.Evidence;
 import tec.uom.se.quantity.Quantities;
 
 import javax.measure.Quantity;
@@ -19,11 +19,11 @@ public class VesicleRadius extends AbstractFeature<Quantity<Length>> {
 
     private static final String SYMBOL = "r_Vesicle";
 
-    public VesicleRadius(Quantity<Length> radius, FeatureOrigin featureOrigin) {
+    public VesicleRadius(Quantity<Length> radius, Evidence featureOrigin) {
         super(radius, featureOrigin);
     }
 
-    public VesicleRadius(double radius, FeatureOrigin featureOrigin) {
+    public VesicleRadius(double radius, Evidence featureOrigin) {
         super(Quantities.getQuantity(radius, NANO(METRE)), featureOrigin);
     }
 

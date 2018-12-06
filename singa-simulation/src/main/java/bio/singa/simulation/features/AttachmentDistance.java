@@ -1,7 +1,7 @@
 package bio.singa.simulation.features;
 
 import bio.singa.features.model.AbstractFeature;
-import bio.singa.features.model.FeatureOrigin;
+import bio.singa.features.model.Evidence;
 import tec.uom.se.quantity.Quantities;
 
 import javax.measure.Quantity;
@@ -22,11 +22,11 @@ public class AttachmentDistance extends AbstractFeature<Quantity<Length>> {
 
     private static final String SYMBOL = "d_Attachment";
 
-    public AttachmentDistance(Quantity<Length> length, FeatureOrigin featureOrigin) {
+    public AttachmentDistance(Quantity<Length> length, Evidence featureOrigin) {
         super(length, featureOrigin);
     }
 
-    public AttachmentDistance(double length, FeatureOrigin featureOrigin) {
+    public AttachmentDistance(double length, Evidence featureOrigin) {
         super(Quantities.getQuantity(length, NANO(METRE)), featureOrigin);
     }
 

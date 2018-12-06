@@ -40,7 +40,7 @@ public class PiCation extends Interaction {
     private String ligandGroup;
 
     public PiCation(int plipIdentifier) {
-        super(plipIdentifier);
+        super(plipIdentifier, InteractionType.PI_CATION_INTERACTION);
         atoms1 = new ArrayList<>();
         atoms2 = new ArrayList<>();
     }

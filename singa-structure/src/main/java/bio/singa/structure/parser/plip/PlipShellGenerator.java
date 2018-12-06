@@ -61,7 +61,7 @@ public class PlipShellGenerator {
 
     private void generateInteractionGraph() {
         // compute first shell (directly interacting with reference)
-        Set<LeafSubstructure> firstShell = referenceInteractions.getInteractions().stream()
+        Set<LeafSubstructure> firstShell = referenceInteractions.getAllInteractions().stream()
                 .filter(interaction -> interaction.getTarget().equals(reference.getIdentifier()))
                 .map(Interaction::getSource)
                 .map(leafIdentifier -> chain.getAllLeafSubstructures().stream()
@@ -77,7 +77,7 @@ public class PlipShellGenerator {
             graph.addEdgeBetween(reference, leafSubstructure);
         }
         // generate interaction graph from inter chain interactions
-        for (Interaction interaction : interChainInteractions.getInteractions()) {
+        for (Interaction interaction : interChainInteractions.getAllInteractions()) {
             Optional<LeafSubstructure<?>> source = chain.getLeafSubstructure(interaction.getSource());
             Optional<LeafSubstructure<?>> target = chain.getLeafSubstructure(interaction.getTarget());
             if (source.isPresent() && target.isPresent()) {

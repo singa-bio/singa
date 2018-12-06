@@ -4,6 +4,7 @@ import bio.singa.mathematics.concepts.MultiDimensional;
 import bio.singa.mathematics.metrics.model.Metrizable;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.StringJoiner;
 import java.util.regex.Pattern;
 
 /**
@@ -79,5 +80,44 @@ public interface BitVector extends MultiDimensional<BitVector>, Metrizable<BitVe
             }
         }
         return true;
+    }
+
+    default BitVector and(BitVector bitVector) {
+        assertThatDimensionsMatch(bitVector);
+        boolean[] elements = new boolean[getDimension()];
+        for (int i = 0; i < getElements().length; i++) {
+            elements[i] = getElement(i) & bitVector.getElement(i);
+        }
+        return new RegularBitVector(elements);
+    }
+
+    default BitVector or(BitVector bitVector) {
+        assertThatDimensionsMatch(bitVector);
+        boolean[] elements = new boolean[getDimension()];
+        for (int i = 0; i < getElements().length; i++) {
+            elements[i] = getElement(i) | bitVector.getElement(i);
+        }
+        return new RegularBitVector(elements);
+    }
+
+    default BitVector xor(BitVector bitVector) {
+        assertThatDimensionsMatch(bitVector);
+        boolean[] elements = new boolean[getDimension()];
+        for (int i = 0; i < getElements().length; i++) {
+            elements[i] = getElement(i) ^ bitVector.getElement(i);
+        }
+        return new RegularBitVector(elements);
+    }
+
+    default String toBitString() {
+        StringJoiner stringJoiner = new StringJoiner("");
+        for (boolean element : getElements()) {
+            if (element) {
+                stringJoiner.add("1");
+            } else {
+                stringJoiner.add("0");
+            }
+        }
+        return stringJoiner.toString();
     }
 }

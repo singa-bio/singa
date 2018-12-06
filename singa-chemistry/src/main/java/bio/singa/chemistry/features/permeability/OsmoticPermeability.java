@@ -1,6 +1,6 @@
 package bio.singa.chemistry.features.permeability;
 
-import bio.singa.features.model.FeatureOrigin;
+import bio.singa.features.model.Evidence;
 import bio.singa.features.model.ScalableQuantityFeature;
 import tec.uom.se.quantity.Quantities;
 import tec.uom.se.unit.ProductUnit;
@@ -31,7 +31,7 @@ public class OsmoticPermeability extends ScalableQuantityFeature<OsmoticPermeabi
      * @param osmoticPermeabilityQuantity The osmotic permeability.
      * @param featureOrigin The origin of the feature.
      */
-    public OsmoticPermeability(Quantity<OsmoticPermeability> osmoticPermeabilityQuantity, FeatureOrigin featureOrigin) {
+    public OsmoticPermeability(Quantity<OsmoticPermeability> osmoticPermeabilityQuantity, Evidence featureOrigin) {
         super(osmoticPermeabilityQuantity, featureOrigin);
     }
 
@@ -42,7 +42,7 @@ public class OsmoticPermeability extends ScalableQuantityFeature<OsmoticPermeabi
      * @param osmoticPermeabilityQuantity The osmotic permeability in {@link OsmoticPermeability#CUBIC_CENTIMETRE_PER_SECOND}
      * @param featureOrigin The origin of the feature.
      */
-    public OsmoticPermeability(double osmoticPermeabilityQuantity, FeatureOrigin featureOrigin) {
+    public OsmoticPermeability(double osmoticPermeabilityQuantity, Evidence featureOrigin) {
         super(Quantities.getQuantity(osmoticPermeabilityQuantity, CUBIC_CENTIMETRE_PER_SECOND), featureOrigin);
     }
 

@@ -12,7 +12,7 @@ class AbstractFeatureTest {
     @Test
     void stringLabel() {
 
-        MolarVolume molarVolume = new MolarVolume(Quantities.getQuantity(0.5, MolarVolume.CUBIC_METRE_PER_MOLE), FeatureOrigin.MANUALLY_ANNOTATED);
+        MolarVolume molarVolume = new MolarVolume(Quantities.getQuantity(0.5, MolarVolume.CUBIC_METRE_PER_MOLE), Evidence.MANUALLY_ANNOTATED);
         System.out.println(molarVolume);
 
 

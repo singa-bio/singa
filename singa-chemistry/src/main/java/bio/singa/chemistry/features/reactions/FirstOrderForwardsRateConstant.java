@@ -1,7 +1,7 @@
 package bio.singa.chemistry.features.reactions;
 
 
-import bio.singa.features.model.FeatureOrigin;
+import bio.singa.features.model.Evidence;
 import tec.uom.se.quantity.Quantities;
 
 import javax.measure.Quantity;
@@ -14,11 +14,11 @@ public class FirstOrderForwardsRateConstant extends FirstOrderRateConstant imple
 
     private static final String symbol = "k_fwd_1";
 
-    public FirstOrderForwardsRateConstant(Quantity<FirstOrderRate> firstOrderRateQuantity, FeatureOrigin featureOrigin) {
+    public FirstOrderForwardsRateConstant(Quantity<FirstOrderRate> firstOrderRateQuantity, Evidence featureOrigin) {
         super(firstOrderRateQuantity, featureOrigin);
     }
 
-    public FirstOrderForwardsRateConstant(double value, Unit<FirstOrderRate> unit, FeatureOrigin featureOrigin) {
+    public FirstOrderForwardsRateConstant(double value, Unit<FirstOrderRate> unit, Evidence featureOrigin) {
         super(Quantities.getQuantity(value, unit), featureOrigin);
     }
 

@@ -1,6 +1,6 @@
 package bio.singa.chemistry.features.permeability;
 
-import bio.singa.features.model.FeatureOrigin;
+import bio.singa.features.model.Evidence;
 import bio.singa.features.model.ScalableQuantityFeature;
 import tec.uom.se.unit.ProductUnit;
 
@@ -21,7 +21,7 @@ public class MembranePermeability extends ScalableQuantityFeature<MembranePermea
 
     public static final String SYMBOL = "P_d";
 
-    public MembranePermeability(Quantity<MembranePermeability> membranePermeabilityQuantity, FeatureOrigin featureOrigin) {
+    public MembranePermeability(Quantity<MembranePermeability> membranePermeabilityQuantity, Evidence featureOrigin) {
         super(membranePermeabilityQuantity, featureOrigin);
     }
 

@@ -1,7 +1,7 @@
 package bio.singa.chemistry.features.molarvolume;
 
 import bio.singa.chemistry.features.structure3d.Structure3D;
-import bio.singa.features.model.FeatureOrigin;
+import bio.singa.features.model.Evidence;
 import bio.singa.features.model.FeatureProvider;
 import bio.singa.features.model.Featureable;
 import bio.singa.features.quantities.MolarVolume;
@@ -19,7 +19,7 @@ import static bio.singa.features.quantities.MolarVolume.CUBIC_ANGSTROEM_PER_MOLE
  */
 public class MolarVolumePredictor extends FeatureProvider<MolarVolume> {
 
-    private static FeatureOrigin OTT1992 = new FeatureOrigin(FeatureOrigin.OriginType.PREDICTION, "Ott1992", "Ott, Rolf, et al. \"A computer method for estimating volumes and surface areas of complex structures consisting of overlapping spheres.\" Mathematical and computer modelling 16.12 (1992): 83-98.");
+    private static Evidence OTT1992 = new Evidence(Evidence.OriginType.PREDICTION, "Ott1992", "Ott, Rolf, et al. \"A computer method for estimating volumes and surface areas of complex structures consisting of overlapping spheres.\" Mathematical and computer modelling 16.12 (1992): 83-98.");
 
     public MolarVolumePredictor() {
         setProvidedFeature(MolarVolume.class);

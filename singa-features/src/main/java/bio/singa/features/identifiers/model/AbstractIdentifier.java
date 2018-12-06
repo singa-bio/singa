@@ -1,7 +1,7 @@
 package bio.singa.features.identifiers.model;
 
 import bio.singa.features.model.Feature;
-import bio.singa.features.model.FeatureOrigin;
+import bio.singa.features.model.Evidence;
 
 import java.util.regex.Pattern;
 
@@ -18,7 +18,7 @@ public abstract class AbstractIdentifier<IdentifierType> implements Identifier<I
      */
     private final String identifier;
 
-    private final FeatureOrigin featureOrigin;
+    private final Evidence featureOrigin;
 
     /**
      * Creates a new identifier by validating it with the given pattern.
@@ -28,10 +28,10 @@ public abstract class AbstractIdentifier<IdentifierType> implements Identifier<I
      * @throws IllegalArgumentException If the identifier not valid.
      */
     public AbstractIdentifier(String identifier, Pattern pattern) throws IllegalArgumentException {
-        this(identifier, pattern, FeatureOrigin.MANUALLY_ANNOTATED);
+        this(identifier, pattern, Evidence.MANUALLY_ANNOTATED);
     }
 
-    public AbstractIdentifier(String identifier, Pattern pattern, FeatureOrigin featureOrigin) throws IllegalArgumentException {
+    public AbstractIdentifier(String identifier, Pattern pattern, Evidence featureOrigin) throws IllegalArgumentException {
         if (pattern.matcher(identifier).matches()) {
             this.identifier = identifier;
             this.featureOrigin = featureOrigin;
@@ -48,7 +48,7 @@ public abstract class AbstractIdentifier<IdentifierType> implements Identifier<I
 
 
     @Override
-    public FeatureOrigin getFeatureOrigin() {
+    public Evidence getFeatureOrigin() {
         return featureOrigin;
     }
 

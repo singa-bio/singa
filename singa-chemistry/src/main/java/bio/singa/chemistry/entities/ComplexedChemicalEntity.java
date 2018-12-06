@@ -1,7 +1,7 @@
 package bio.singa.chemistry.entities;
 
 import bio.singa.features.identifiers.SimpleStringIdentifier;
-import bio.singa.features.model.FeatureOrigin;
+import bio.singa.features.model.Evidence;
 import bio.singa.structure.features.molarmass.MolarMass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +18,7 @@ public class ComplexedChemicalEntity extends ChemicalEntity {
 
     private static final Logger logger = LoggerFactory.getLogger(ComplexedChemicalEntity.class);
 
-    private static final FeatureOrigin computedMassOrigin = new FeatureOrigin(FeatureOrigin.OriginType.PREDICTION,
+    private static final Evidence computedMassOrigin = new Evidence(Evidence.OriginType.PREDICTION,
             "computed by sum of components",
             "none");
 

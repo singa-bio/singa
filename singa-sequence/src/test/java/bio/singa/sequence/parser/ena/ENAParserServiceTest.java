@@ -1,12 +1,14 @@
 package bio.singa.sequence.parser.ena;
 
 import bio.singa.features.identifiers.ENAAccessionNumber;
+import bio.singa.features.identifiers.UniProtIdentifier;
 import bio.singa.sequence.model.NucleotideSequence;
 import bio.singa.sequence.model.ProteinSequence;
 import bio.singa.sequence.model.SequenceContainer;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class ENAParserServiceTest {
 
@@ -45,7 +47,15 @@ class ENAParserServiceTest {
                 "DGDMIFFGADNKKIVADAMGALRLKVGKDLGLTDESKWAPLWVIDFPMFEDDGEGGLTAMHHPFTSPKDMTAAELKAAPENAVANAYDMVINGYEVGGGS" +
                 "VRIHNGDMQQTVFGILGINEEEQREKFGFLLDALKYGTPPHAGLAFGLDRLTMLLTGTDNIRDVIAFPKTTAAACLMTEAPSFANPTALAELSIQVVKKA" +
                 "ENN", translation.getSequenceAsString());
+
+        // ensure correct UniProt mapping
+        assertEquals("P21889", translation.getFeature(UniProtIdentifier.class).getIdentifier());
     }
 
 
+    @Test
+    void shouldParseTranslationSequenceWithoutUniProtMapping() {
+        SequenceContainer sequenceContainer = ENAParserService.parseGeneTranslationPair(new ENAAccessionNumber("AAC74452.1"));
+        assertFalse(sequenceContainer.getTranslation().hasFeature(UniProtIdentifier.class));
+    }
 }

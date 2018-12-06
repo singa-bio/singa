@@ -4,7 +4,7 @@ import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.chemistry.entities.SmallMolecule;
 import bio.singa.chemistry.features.diffusivity.Diffusivity;
 import bio.singa.chemistry.features.permeability.MembranePermeability;
-import bio.singa.features.model.FeatureOrigin;
+import bio.singa.features.model.Evidence;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.javafx.renderer.Renderer;
@@ -52,8 +52,8 @@ public class VesiclePlayground extends Application implements Renderer {
     private Simulation simulation;
     private static final ChemicalEntity water = new SmallMolecule.Builder("water")
             .name("water")
-            .assignFeature(new MembranePermeability(Quantities.getQuantity(0.1, CENTIMETRE_PER_SECOND), FeatureOrigin.MANUALLY_ANNOTATED))
-            .assignFeature(new Diffusivity(10, FeatureOrigin.MANUALLY_ANNOTATED))
+            .assignFeature(new MembranePermeability(Quantities.getQuantity(0.1, CENTIMETRE_PER_SECOND), Evidence.MANUALLY_ANNOTATED))
+            .assignFeature(new Diffusivity(10, Evidence.MANUALLY_ANNOTATED))
             .build();
     private AutomatonGraphRenderer renderer;
 

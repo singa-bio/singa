@@ -51,4 +51,16 @@ class PlipParserTest {
                 .parse();
         interactionContainer.validateWithStructure(structure);
     }
+
+    @Test
+    void plipCountFingerPrint() {
+        InputStream inputStream = getResourceAsStream("plip/1c0a_ligand.xml");
+        InteractionContainer interactionContainer = PlipParser.parse("1c0a", inputStream);
+        OakStructure structure = (OakStructure) StructureParser.pdb()
+                .pdbIdentifier("1c0a")
+                .chainIdentifier("A")
+                .parse();
+        interactionContainer.validateWithStructure(structure);
+        PlipCountFingerprint.of(interactionContainer);
+    }
 }

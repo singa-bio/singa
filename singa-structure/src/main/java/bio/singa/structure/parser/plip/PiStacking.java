@@ -40,7 +40,7 @@ public class PiStacking extends Interaction {
     private String type;
 
     public PiStacking(int plipIdentifier) {
-        super(plipIdentifier);
+        super(plipIdentifier, InteractionType.PI_STACKING);
         atoms1 = new ArrayList<>();
         atoms2 = new ArrayList<>();
     }

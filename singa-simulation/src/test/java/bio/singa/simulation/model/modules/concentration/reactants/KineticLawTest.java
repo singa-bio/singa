@@ -3,7 +3,7 @@ package bio.singa.simulation.model.modules.concentration.reactants;
 import bio.singa.chemistry.entities.SmallMolecule;
 import bio.singa.chemistry.features.diffusivity.Diffusivity;
 import bio.singa.features.identifiers.ChEBIIdentifier;
-import bio.singa.features.model.FeatureOrigin;
+import bio.singa.features.model.Evidence;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.simulation.model.parameters.Parameter;
 import bio.singa.simulation.model.sections.CellSubsection;
@@ -39,7 +39,7 @@ public class KineticLawTest {
         // create law
         KineticLaw kl = new KineticLaw("1-D*ATP");
         // reference a feature
-        Diffusivity diffusivity = new Diffusivity(0.01, FeatureOrigin.MANUALLY_ANNOTATED);
+        Diffusivity diffusivity = new Diffusivity(0.01, Evidence.MANUALLY_ANNOTATED);
         kl.referenceFeature(diffusivity.getSymbol(), diffusivity);
         diffusivity.scale();
         // reference a reactant to get concentration from
@@ -61,9 +61,9 @@ public class KineticLawTest {
         // create law
         KineticLaw kl = new KineticLaw("a+b+c");
         // reference a parameter
-        kl.referenceParameter(new Parameter<>("a", UnitRegistry.concentration(1.0), FeatureOrigin.MANUALLY_ANNOTATED));
-        kl.referenceParameter(new Parameter<>("b", UnitRegistry.concentration(0.1, MOLE_PER_LITRE), FeatureOrigin.MANUALLY_ANNOTATED));
-        kl.referenceParameter(new Parameter<>("c", Quantities.getQuantity(1.0, MOLE_PER_LITRE.divide(MICRO(SECOND))), FeatureOrigin.MANUALLY_ANNOTATED));
+        kl.referenceParameter(new Parameter<>("a", UnitRegistry.concentration(1.0), Evidence.MANUALLY_ANNOTATED));
+        kl.referenceParameter(new Parameter<>("b", UnitRegistry.concentration(0.1, MOLE_PER_LITRE), Evidence.MANUALLY_ANNOTATED));
+        kl.referenceParameter(new Parameter<>("c", Quantities.getQuantity(1.0, MOLE_PER_LITRE.divide(MICRO(SECOND))), Evidence.MANUALLY_ANNOTATED));
         // rescale
         kl.scaleScalableFeatures();
         // exemplary concentration container

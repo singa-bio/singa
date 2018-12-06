@@ -31,7 +31,7 @@ import javax.measure.quantity.Length;
 import java.util.HashSet;
 import java.util.List;
 
-import static bio.singa.features.model.FeatureOrigin.MANUALLY_ANNOTATED;
+import static bio.singa.features.model.Evidence.MANUALLY_ANNOTATED;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static tec.uom.se.AbstractUnit.ONE;
 import static tec.uom.se.unit.MetricPrefix.MICRO;

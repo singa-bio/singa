@@ -6,20 +6,25 @@ import bio.singa.chemistry.annotations.taxonomy.Organism;
 import bio.singa.chemistry.annotations.taxonomy.Taxon;
 import bio.singa.chemistry.entities.Enzyme;
 import bio.singa.chemistry.entities.Protein;
+import bio.singa.chemistry.features.variants.SequenceVariant;
+import bio.singa.chemistry.features.variants.SequenceVariants;
 import bio.singa.features.identifiers.ECNumber;
 import bio.singa.features.identifiers.ENAAccessionNumber;
 import bio.singa.features.identifiers.NCBITaxonomyIdentifier;
 import bio.singa.features.identifiers.UniProtIdentifier;
+import bio.singa.features.model.Evidence;
 import bio.singa.structure.features.molarmass.MolarMass;
+import bio.singa.structure.model.families.AminoAcidFamily;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.Locator;
 import tec.uom.se.quantity.Quantities;
 
 import javax.measure.Quantity;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.regex.Pattern;
+
+import static bio.singa.features.model.Evidence.OriginType.*;
 
 /**
  * @author cl
@@ -47,6 +52,12 @@ public class UniProtContentHandler implements ContentHandler {
     private List<Annotation<String>> textComments;
     private List<ECNumber> ecNumbers;
     private List<ENAAccessionNumber> genomicSequenceIdentifiers;
+    private List<SequenceVariant> sequenceVariants;
+    private SequenceVariant currentSequenceVariant;
+
+    private Map<Integer, Evidence> evidenceMap;
+    private int currentEvidenceId;
+    private Evidence currentEvidence;
 
     // parser attributes
     private String currentTag = "";
@@ -61,15 +72,20 @@ public class UniProtContentHandler implements ContentHandler {
     private boolean isScientificName = false;
     private boolean isCommonName = false;
     private boolean inEMBLReference = false;
+    private boolean inCitation;
+    private boolean inSequenceVariant;
 
     private String proteinSequenceID;
     private String moleculeType;
+    private int currentReferenceYear;
 
     public UniProtContentHandler() {
         additionalNames = new ArrayList<>();
         textComments = new ArrayList<>();
         ecNumbers = new ArrayList<>();
         genomicSequenceIdentifiers = new ArrayList<>();
+        sequenceVariants = new ArrayList<>();
+        evidenceMap = new HashMap<>();
     }
 
     public UniProtContentHandler(String primaryIdentifier) {
@@ -79,6 +95,7 @@ public class UniProtContentHandler implements ContentHandler {
 
     Protein getProtein() {
         // create base enzyme
+        // evidenceMap.forEach((key, value) -> System.out.println(key + ": " + value.full()));
         Protein protein;
         if (primaryIdentifier == null) {
             protein = new Protein.Builder(identifier.toString())
@@ -103,6 +120,8 @@ public class UniProtContentHandler implements ContentHandler {
         textComments.forEach(protein::addAnnotation);
         // add ecNumbers
         ecNumbers.forEach(protein::addAdditionalIdentifier);
+        // add variants
+        protein.setFeature(new SequenceVariants(sequenceVariants, UniProtDatabase.origin));
 
         return protein;
     }
@@ -145,7 +164,9 @@ public class UniProtContentHandler implements ContentHandler {
             case "location":
             case "text":
             case "ecNumber":
-            case "taxon": {
+            case "taxon":
+            case "original":
+            case "variation": {
                 currentTag = qName;
                 break;
             }
@@ -162,6 +183,69 @@ public class UniProtContentHandler implements ContentHandler {
             case "organism": {
                 currentTag = qName;
                 inOrganism = true;
+                break;
+            }
+            case "reference": {
+                currentTag = qName;
+                currentEvidenceId = Integer.valueOf(atts.getValue("key"));
+                break;
+            }
+            case "feature": {
+                currentTag = qName;
+                if (atts.getValue("type").equals("sequence variant")) {
+                    inSequenceVariant = true;
+                    currentSequenceVariant = new SequenceVariant(atts.getValue("id"));
+                    String evidence = atts.getValue("evidence");
+                    if (evidence != null) {
+                        Pattern.compile(" ").splitAsStream(evidence)
+                                .forEach(key -> currentSequenceVariant.addEvidence(evidenceMap.get(Integer.valueOf(key))));
+                    }
+                    currentSequenceVariant.setDescription(atts.getValue("description"));
+                }
+                break;
+            }
+            case "position": {
+                if (inSequenceVariant) {
+                    currentSequenceVariant.setLocation(Integer.valueOf(atts.getValue("position")));
+                }
+                break;
+            }
+            case "citation": {
+                currentTag = qName;
+                inCitation = true;
+                String type = atts.getValue("type");
+                switch (type) {
+                    case "journal article": {
+                        currentEvidence = new Evidence(LITERATURE);
+                        currentReferenceYear = Integer.valueOf(atts.getValue("date"));
+                        break;
+                    }
+                    case "submission": {
+                        currentEvidence = new Evidence(DATABASE);
+                        currentEvidence.setName(atts.getValue("db"));
+                        break;
+                    }
+                    default: {
+                        currentEvidence = new Evidence(MANUAL_ANNOTATION);
+                    }
+                }
+                break;
+            }
+            case "person": {
+                if (inCitation) {
+                    if (currentEvidence.getName() == null || currentEvidence.getName().isEmpty()) {
+                        String person = atts.getValue("name");
+                        currentEvidence.setName(person.substring(0, person.indexOf(" ")) + currentReferenceYear);
+                    }
+                }
+                break;
+            }
+            case "consortium": {
+                if (inCitation) {
+                    if (currentEvidence.getName() == null || currentEvidence.getName().isEmpty()) {
+                        currentEvidence.setName(atts.getValue("name"));
+                    }
+                }
                 break;
             }
             case "subcellularLocation": {
@@ -193,6 +277,10 @@ public class UniProtContentHandler implements ContentHandler {
                 if (inOrganism && atts.getValue("type").equals("NCBI Taxonomy")) {
                     // set tax id for organism
                     sourceOrganism.setIdentifier(new NCBITaxonomyIdentifier(atts.getValue("id")));
+                } else if (inCitation && atts.getValue("type").equals("DOI")) {
+                    currentEvidence.setPublication("DOI: " + atts.getValue("id"));
+                } else if (inCitation && currentEvidence.getPublication() == null && atts.getValue("type").equals("PubMed")) {
+                    currentEvidence.setPublication("PubMed: " + atts.getValue("id"));
                 } else {
                     if (atts.getValue("type").equals("EMBL")) {
                         inEMBLReference = true;
@@ -242,6 +330,14 @@ public class UniProtContentHandler implements ContentHandler {
                 inOrganism = false;
                 break;
             }
+            case "reference": {
+                evidenceMap.put(currentEvidenceId, currentEvidence);
+                break;
+            }
+            case "citation": {
+                inCitation = false;
+                break;
+            }
             case "name": {
                 isScientificName = false;
                 isCommonName = false;
@@ -251,9 +347,15 @@ public class UniProtContentHandler implements ContentHandler {
                 inSubcellularLocation = false;
                 break;
             }
+            case "feature": {
+                if (inSequenceVariant) {
+                    sequenceVariants.add(currentSequenceVariant);
+                }
+                inSequenceVariant = false;
+            }
             case "dbReference": {
                 if (inEMBLReference && moleculeType != null && !moleculeType.isEmpty() && proteinSequenceID != null) {
-                    if (moleculeType.equals("Genomic_DNA") || moleculeType.equals("mRNA") ) {
+                    if (moleculeType.equals("Genomic_DNA") || moleculeType.equals("mRNA")) {
                         genomicSequenceIdentifiers.add(new ENAAccessionNumber(proteinSequenceID));
                     }
                     moleculeType = null;
@@ -323,6 +425,20 @@ public class UniProtContentHandler implements ContentHandler {
                     aminoAcidSequence = new String(ch, start, length);
                 } else {
                     aminoAcidSequence += new String(ch, start, length);
+                }
+                break;
+            }
+            case "original": {
+                if (inSequenceVariant) {
+                    currentSequenceVariant.setOriginal(AminoAcidFamily.getAminoAcidTypeByOneLetterCode(new String(ch, start, length))
+                            .orElseThrow(() -> new IllegalArgumentException(new String(ch, start, length) + " is no valid amino acid one letter code.")));
+                }
+                break;
+            }
+            case "variation": {
+                if (inSequenceVariant) {
+                    currentSequenceVariant.setVariation(AminoAcidFamily.getAminoAcidTypeByOneLetterCode(new String(ch, start, length))
+                            .orElseThrow(() -> new IllegalArgumentException(new String(ch, start, length) + " is no valid amino acid one letter code.")));
                 }
                 break;
             }

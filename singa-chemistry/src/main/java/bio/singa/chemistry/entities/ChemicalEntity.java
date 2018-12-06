@@ -8,10 +8,7 @@ import bio.singa.chemistry.features.diffusivity.Diffusivity;
 import bio.singa.chemistry.features.permeability.MembranePermeability;
 import bio.singa.chemistry.features.structure3d.Structure3D;
 import bio.singa.core.utility.Nameable;
-import bio.singa.features.identifiers.ChEBIIdentifier;
-import bio.singa.features.identifiers.InChIKey;
-import bio.singa.features.identifiers.PubChemIdentifier;
-import bio.singa.features.identifiers.SimpleStringIdentifier;
+import bio.singa.features.identifiers.*;
 import bio.singa.features.identifiers.model.Identifiable;
 import bio.singa.features.identifiers.model.Identifier;
 import bio.singa.features.identifiers.model.IdentifierPatternRegistry;
@@ -34,12 +31,13 @@ import java.util.*;
  */
 public abstract class ChemicalEntity implements Identifiable<SimpleStringIdentifier>, Nameable, Annotatable, Featureable {
 
-    protected static final Set<Class<? extends Feature>> availableFeatures = new HashSet<>();
+    public static final Set<Class<? extends Feature>> availableFeatures = new HashSet<>();
 
     static {
         availableFeatures.add(InChIKey.class);
         availableFeatures.add(ChEBIIdentifier.class);
         availableFeatures.add(PubChemIdentifier.class);
+        availableFeatures.add(PDBLigandIdentifier.class);
         availableFeatures.add(Diffusivity.class);
         availableFeatures.add(MembranePermeability.class);
         availableFeatures.add(MolarMass.class);

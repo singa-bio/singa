@@ -1,7 +1,7 @@
 package bio.singa.features.identifiers;
 
 import bio.singa.features.identifiers.model.AbstractIdentifier;
-import bio.singa.features.model.FeatureOrigin;
+import bio.singa.features.model.Evidence;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -32,7 +32,7 @@ public class PubChemIdentifier extends AbstractIdentifier<PubChemIdentifier> {
         super(identifier, PATTERN);
     }
 
-    public PubChemIdentifier(String identifier, FeatureOrigin origin) throws IllegalArgumentException {
+    public PubChemIdentifier(String identifier, Evidence origin) throws IllegalArgumentException {
         super(identifier, PATTERN, origin);
     }
 

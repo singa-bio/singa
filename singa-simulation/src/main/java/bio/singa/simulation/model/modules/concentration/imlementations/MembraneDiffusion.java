@@ -21,7 +21,7 @@ import javax.measure.quantity.Area;
 import java.util.HashMap;
 import java.util.Map;
 
-import static bio.singa.features.model.FeatureOrigin.MANUALLY_ANNOTATED;
+import static bio.singa.features.model.Evidence.MANUALLY_ANNOTATED;
 
 /**
  * The membrane diffusion module describes the movement of chemical entities across {@link Membrane}s driven by the

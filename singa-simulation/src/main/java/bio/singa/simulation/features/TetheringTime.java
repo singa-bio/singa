@@ -1,7 +1,7 @@
 package bio.singa.simulation.features;
 
 import bio.singa.features.model.AbstractFeature;
-import bio.singa.features.model.FeatureOrigin;
+import bio.singa.features.model.Evidence;
 import tec.uom.se.quantity.Quantities;
 
 import javax.measure.Quantity;
@@ -21,11 +21,11 @@ public class TetheringTime extends AbstractFeature<Quantity<Time>> {
 
     private static final String SYMBOL = "t_Tethering";
 
-    public TetheringTime(Quantity<Time> time, FeatureOrigin featureOrigin) {
+    public TetheringTime(Quantity<Time> time, Evidence featureOrigin) {
         super(time, featureOrigin);
     }
 
-    public TetheringTime(double time, FeatureOrigin featureOrigin) {
+    public TetheringTime(double time, Evidence featureOrigin) {
         super(Quantities.getQuantity(time, SECOND), featureOrigin);
     }
 

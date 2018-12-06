@@ -2,8 +2,8 @@ package bio.singa.chemistry.features.databases.uniprot;
 
 import bio.singa.chemistry.entities.Protein;
 import bio.singa.core.parser.AbstractXMLParser;
-import bio.singa.features.identifiers.UniProtIdentifier;
 import bio.singa.features.identifiers.model.Identifier;
+import bio.singa.features.identifiers.model.IdentifierPatternRegistry;
 import bio.singa.structure.features.molarmass.MolarMass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,18 +21,18 @@ public class UniProtParserService extends AbstractXMLParser<Protein> {
 
     private static final Logger logger = LoggerFactory.getLogger(UniProtParserService.class);
 
-    private UniProtIdentifier identifier;
+    private Identifier identifier;
 
     private UniProtParserService(String uniProtIdentifier) {
         getXmlReader().setContentHandler(new UniProtContentHandler());
         setResource("https://www.uniprot.org/uniprot/");
-        setIdentifier(new UniProtIdentifier(uniProtIdentifier));
+        setIdentifier(uniProtIdentifier);
     }
 
     private UniProtParserService(String uniProtIdentifier, String primaryIdentifier) {
         getXmlReader().setContentHandler(new UniProtContentHandler(primaryIdentifier));
         setResource("https://www.uniprot.org/uniprot/");
-        setIdentifier(new UniProtIdentifier(uniProtIdentifier));
+        setIdentifier(uniProtIdentifier);
     }
 
     public static Protein parse(String uniProtIdentifier) {
@@ -51,8 +51,10 @@ public class UniProtParserService extends AbstractXMLParser<Protein> {
         return ((UniProtContentHandler) parser.getXmlReader().getContentHandler()).getMass();
     }
 
-    public void setIdentifier(UniProtIdentifier identifier) {
-        this.identifier = identifier;
+    public void setIdentifier(String identifier) {
+        this.identifier = IdentifierPatternRegistry.instantiate(identifier)
+                .orElseThrow(() -> new IllegalArgumentException(identifier + "is neither an uniprot name nor identifier."));
+
     }
 
     @Override
@@ -73,6 +75,4 @@ public class UniProtParserService extends AbstractXMLParser<Protein> {
             e.printStackTrace();
         }
     }
-
-
 }

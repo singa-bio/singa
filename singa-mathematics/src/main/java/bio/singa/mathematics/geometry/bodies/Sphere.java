@@ -28,7 +28,7 @@ public class Sphere {
     }
 
     public double getVolume() {
-        return 4.0/3.0*Math.PI*radius*radius*radius;
+        return 4.0 / 3.0 * Math.PI * radius * radius * radius;
     }
 
     @Override
@@ -39,4 +39,14 @@ public class Sphere {
                 '}';
     }
 
+    /**
+     * Returns true if the given sphere intersects with this.
+     *
+     * @param sphere The sphere to check.
+     * @return True if intersection.
+     */
+    public boolean intersect(Sphere sphere) {
+        Vector3D difference = center.subtract(sphere.getCenter());
+        return difference.dotProduct(difference) < Math.pow((radius + sphere.getRadius()), 2);
+    }
 }

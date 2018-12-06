@@ -4,7 +4,7 @@ import bio.singa.chemistry.entities.*;
 import bio.singa.chemistry.features.reactions.RateConstant;
 import bio.singa.features.identifiers.ChEBIIdentifier;
 import bio.singa.features.identifiers.UniProtIdentifier;
-import bio.singa.features.model.FeatureOrigin;
+import bio.singa.features.model.Evidence;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.features.units.UnitRegistry;
@@ -191,13 +191,13 @@ class ComplexBuildingReactionTest {
         // the ligand
         ChemicalEntity bindee = new SmallMolecule.Builder("bindee")
                 .name("bindee")
-                .assignFeature(new MolarMass(10, FeatureOrigin.MANUALLY_ANNOTATED))
+                .assignFeature(new MolarMass(10, Evidence.MANUALLY_ANNOTATED))
                 .build();
 
         // the receptor
         Protein binder = new Protein.Builder("binder")
                 .name("binder")
-                .assignFeature(new MolarMass(100, FeatureOrigin.MANUALLY_ANNOTATED))
+                .assignFeature(new MolarMass(100, Evidence.MANUALLY_ANNOTATED))
                 .build();
 
         // create simulation
@@ -249,19 +249,19 @@ class ComplexBuildingReactionTest {
         // the inner ligand
         ChemicalEntity innerBindee = new SmallMolecule.Builder("inner bindee")
                 .name("inner bindee")
-                .assignFeature(new MolarMass(10, FeatureOrigin.MANUALLY_ANNOTATED))
+                .assignFeature(new MolarMass(10, Evidence.MANUALLY_ANNOTATED))
                 .build();
 
         // the outer ligand
         ChemicalEntity outerBindee = new SmallMolecule.Builder("outer bindee")
                 .name("outer bindee")
-                .assignFeature(new MolarMass(10, FeatureOrigin.MANUALLY_ANNOTATED))
+                .assignFeature(new MolarMass(10, Evidence.MANUALLY_ANNOTATED))
                 .build();
 
         // the receptor
         Protein binder = new Protein.Builder("binder")
                 .name("binder")
-                .assignFeature(new MolarMass(100, FeatureOrigin.MANUALLY_ANNOTATED))
+                .assignFeature(new MolarMass(100, Evidence.MANUALLY_ANNOTATED))
                 .build();
 
         // create simulation

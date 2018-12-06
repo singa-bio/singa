@@ -43,7 +43,7 @@ public class HydrogenBond extends Interaction {
     private double angle;
 
     public HydrogenBond(int plipIdentifier) {
-        super(plipIdentifier);
+        super(plipIdentifier, InteractionType.HYDROGEN_BOND);
     }
 
     /**

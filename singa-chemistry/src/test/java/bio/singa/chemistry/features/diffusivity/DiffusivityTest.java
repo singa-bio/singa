@@ -2,16 +2,13 @@ package bio.singa.chemistry.features.diffusivity;
 
 import bio.singa.chemistry.entities.SmallMolecule;
 import bio.singa.features.identifiers.ChEBIIdentifier;
-import bio.singa.features.model.FeatureOrigin;
+import bio.singa.features.model.Evidence;
 import bio.singa.structure.features.molarmass.MolarMass;
 import org.junit.jupiter.api.Test;
-import tec.uom.se.quantity.Quantities;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static tec.uom.se.unit.MetricPrefix.CENTI;
 import static tec.uom.se.unit.MetricPrefix.MILLI;
-import static tec.uom.se.unit.Units.METRE;
-import static tec.uom.se.unit.Units.SECOND;
 
 /**
  * @author cl
@@ -33,7 +30,7 @@ class DiffusivityTest {
     @Test
     void shouldUseWilkeToCalculateDiffusifity() {
         SmallMolecule testSpecies = new SmallMolecule.Builder("light entity")
-                .assignFeature(new MolarMass(100, FeatureOrigin.MANUALLY_ANNOTATED))
+                .assignFeature(new MolarMass(100, Evidence.MANUALLY_ANNOTATED))
                 .build();
         // get feature
         Diffusivity feature = testSpecies.getFeature(Diffusivity.class);
@@ -46,7 +43,7 @@ class DiffusivityTest {
     @Test
     void shouldUseYoungToCalculateDiffusifity() {
         SmallMolecule testSpecies = new SmallMolecule.Builder("heavy entity")
-                .assignFeature(new MolarMass(10000, FeatureOrigin.MANUALLY_ANNOTATED))
+                .assignFeature(new MolarMass(10000, Evidence.MANUALLY_ANNOTATED))
                 .build();
         // get feature
         Diffusivity feature = testSpecies.getFeature(Diffusivity.class);

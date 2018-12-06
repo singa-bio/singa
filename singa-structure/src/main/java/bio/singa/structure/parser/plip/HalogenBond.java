@@ -33,7 +33,7 @@ public class HalogenBond extends Interaction {
     private double acceptorAngle;
 
     public HalogenBond(int plipIdentifier) {
-        super(plipIdentifier);
+        super(plipIdentifier, InteractionType.HALOGEN_BOND);
     }
 
     /**

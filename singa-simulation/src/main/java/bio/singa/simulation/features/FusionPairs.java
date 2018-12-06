@@ -1,7 +1,7 @@
 package bio.singa.simulation.features;
 
 import bio.singa.features.model.AbstractFeature;
-import bio.singa.features.model.FeatureOrigin;
+import bio.singa.features.model.Evidence;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Dimensionless;
@@ -14,7 +14,7 @@ public class FusionPairs extends AbstractFeature<Quantity<Dimensionless>> {
 
     private static final String SYMBOL = "i_Pairs";
 
-    public FusionPairs(Quantity<Dimensionless> integer, FeatureOrigin featureOrigin) {
+    public FusionPairs(Quantity<Dimensionless> integer, Evidence featureOrigin) {
         super(integer, featureOrigin);
     }
 

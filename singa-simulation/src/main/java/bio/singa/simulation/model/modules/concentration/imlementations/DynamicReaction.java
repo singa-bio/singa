@@ -2,7 +2,7 @@ package bio.singa.simulation.model.modules.concentration.imlementations;
 
 import bio.singa.chemistry.features.reactions.RateConstant;
 import bio.singa.features.model.Feature;
-import bio.singa.features.model.FeatureOrigin;
+import bio.singa.features.model.Evidence;
 import bio.singa.features.model.ScalableQuantityFeature;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.simulation.model.modules.concentration.*;
@@ -162,7 +162,7 @@ public class DynamicReaction extends ConcentrationBasedModule<UpdatableDeltaFunc
 
         ParameterStep referenceParameter(String parameterIdentifier, double parameter);
 
-        ParameterStep referenceParameter(String parameterIdentifier, double parameter, FeatureOrigin origin);
+        ParameterStep referenceParameter(String parameterIdentifier, double parameter, Evidence origin);
 
         DynamicReaction build();
 
@@ -265,7 +265,7 @@ public class DynamicReaction extends ConcentrationBasedModule<UpdatableDeltaFunc
         }
 
         @Override
-        public ParameterStep referenceParameter(String parameterIdentifier, double parameter, FeatureOrigin origin) {
+        public ParameterStep referenceParameter(String parameterIdentifier, double parameter, Evidence origin) {
             module.getKineticLaw().referenceConstant(parameterIdentifier, parameter, origin);
             return this;
         }

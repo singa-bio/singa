@@ -33,12 +33,20 @@ public abstract class Interaction {
      */
     double[] proteinCoordinate;
 
-    public Interaction(int plipIdentifier) {
+    InteractionType interactionType;
+
+    public Interaction(int plipIdentifier, InteractionType interactionType) {
         this.plipIdentifier = plipIdentifier;
+        this.interactionType = interactionType;
+    }
+
+    public InteractionType getInteractionType() {
+        return interactionType;
     }
 
     /**
      * Returns the LeafIdentifier of the interaction source.
+     *
      * @return The interaction source.
      */
     public LeafIdentifier getSource() {
@@ -51,6 +59,7 @@ public abstract class Interaction {
 
     /**
      * Returns the LeafIdentifier of the interaction target.
+     *
      * @return The interaction target.
      */
     public LeafIdentifier getTarget() {
@@ -63,6 +72,7 @@ public abstract class Interaction {
 
     /**
      * Returns the coordinates of the interacting ligand atom or interaction center in ligand.
+     *
      * @return The coordinates of the interacting ligand atom.
      */
     public double[] getLigandCoordinate() {
@@ -75,6 +85,7 @@ public abstract class Interaction {
 
     /**
      * Returns the coordinates of the interacting protein atom or interaction center in protein.
+     *
      * @return The coordinates of the interacting protein atom.
      */
     public double[] getProteinCoordinate() {
@@ -87,6 +98,7 @@ public abstract class Interaction {
 
     /**
      * Returns the PLIP-identifier of the interaction.
+     *
      * @return The PLIP-identifier of the interaction.
      */
     public int getPlipIdentifier() {
@@ -98,15 +110,17 @@ public abstract class Interaction {
     }
 
     /**
-     * Returns the Atom ID of the source atom of the interaction, belonging to the protein.
-     * Pay attention to interaction type in question since definition may vary accordingly.
+     * Returns the Atom ID of the source atom of the interaction, belonging to the protein. Pay attention to interaction
+     * type in question since definition may vary accordingly.
+     *
      * @return The interaction's source atom ID.
      */
     abstract public int getFirstSourceAtom();
 
     /**
-     * Returns the Atom ID of the target atom of the interaction, belonging to the ligand.
-     * Pay attention to interaction type in question since definition may vary accordingly.
+     * Returns the Atom ID of the target atom of the interaction, belonging to the ligand. Pay attention to interaction
+     * type in question since definition may vary accordingly.
+     *
      * @return The interaction's target atom ID.
      */
     abstract public int getFirstTargetAtom();

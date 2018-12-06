@@ -1,7 +1,7 @@
 package bio.singa.features.quantities;
 
 import bio.singa.features.model.AbstractFeature;
-import bio.singa.features.model.FeatureOrigin;
+import bio.singa.features.model.Evidence;
 import tec.uom.se.quantity.Quantities;
 import tec.uom.se.unit.ProductUnit;
 
@@ -25,11 +25,11 @@ public class MolarVolume extends AbstractFeature<Quantity<MolarVolume>> implemen
     public static final Unit<MolarVolume> CUBIC_ANGSTROEM_PER_MOLE = new ProductUnit<>(ANGSTROEM.multiply(ANGSTROEM).multiply(ANGSTROEM).divide(MOLE));
     public static final String SYMBOL = "V_m";
 
-    public MolarVolume(Quantity<MolarVolume> quantity, FeatureOrigin featureOrigin) {
+    public MolarVolume(Quantity<MolarVolume> quantity, Evidence featureOrigin) {
         super(quantity, featureOrigin);
     }
 
-    public MolarVolume(double quantity, FeatureOrigin featureOrigin) {
+    public MolarVolume(double quantity, Evidence featureOrigin) {
         super(Quantities.getQuantity(quantity, CUBIC_METRE_PER_MOLE), featureOrigin);
     }
 

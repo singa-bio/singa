@@ -1,7 +1,7 @@
 package bio.singa.simulation.features.variation;
 
 import bio.singa.features.model.Feature;
-import bio.singa.features.model.FeatureOrigin;
+import bio.singa.features.model.Evidence;
 import bio.singa.simulation.model.modules.UpdateModule;
 
 import java.lang.reflect.Constructor;
@@ -32,8 +32,8 @@ public class ModuleFeatureVariation<FeatureType> extends Variation<FeatureType> 
     @Override
     public ModuleFeatureVariationEntry create(Object featureType) {
         try {
-            Constructor<? extends Feature<FeatureType>> constructor = featureClass.getConstructor(featureType.getClass(), FeatureOrigin.class);
-            Feature<FeatureType> feature = constructor.newInstance(featureType, new FeatureOrigin(FeatureOrigin.OriginType.PREDICTION, "Variation", "Parameter variation"));
+            Constructor<? extends Feature<FeatureType>> constructor = featureClass.getConstructor(featureType.getClass(), Evidence.class);
+            Feature<FeatureType> feature = constructor.newInstance(featureType, new Evidence(Evidence.OriginType.PREDICTION, "Variation", "Parameter variation"));
             return new ModuleFeatureVariationEntry(module, feature);
         } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
             throw new IllegalStateException("Unable to create Feature.", e);
