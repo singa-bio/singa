@@ -100,13 +100,13 @@ public class UniProtContentHandler implements ContentHandler {
         if (primaryIdentifier == null) {
             protein = new Protein.Builder(identifier.toString())
                     .name(recommendedName)
-                    .assignFeature(new MolarMass(molarMass, UniProtDatabase.origin))
+                    .assignFeature(new MolarMass(molarMass, UniProtDatabase.evidence))
                     .build();
         } else {
             protein = new Enzyme.Builder(primaryIdentifier)
                     .additionalIdentifier(identifier)
                     .name(recommendedName)
-                    .assignFeature(new MolarMass(molarMass, UniProtDatabase.origin))
+                    .assignFeature(new MolarMass(molarMass, UniProtDatabase.evidence))
                     .build();
         }
         // add organism
@@ -121,7 +121,7 @@ public class UniProtContentHandler implements ContentHandler {
         // add ecNumbers
         ecNumbers.forEach(protein::addAdditionalIdentifier);
         // add variants
-        protein.setFeature(new SequenceVariants(sequenceVariants, UniProtDatabase.origin));
+        protein.setFeature(new SequenceVariants(sequenceVariants, UniProtDatabase.evidence));
 
         return protein;
     }

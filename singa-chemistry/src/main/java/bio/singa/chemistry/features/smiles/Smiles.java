@@ -11,8 +11,8 @@ public class Smiles extends AbstractFeature<String> {
 
     public static final String SYMBOL = "SMILES";
 
-    public Smiles(String smilesString, Evidence featureOrigin) {
-        super(smilesString, featureOrigin);
+    public Smiles(String smilesString, Evidence evidence) {
+        super(smilesString, evidence);
     }
 
     public static void register() {

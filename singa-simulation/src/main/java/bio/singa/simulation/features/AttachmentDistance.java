@@ -22,12 +22,12 @@ public class AttachmentDistance extends AbstractFeature<Quantity<Length>> {
 
     private static final String SYMBOL = "d_Attachment";
 
-    public AttachmentDistance(Quantity<Length> length, Evidence featureOrigin) {
-        super(length, featureOrigin);
+    public AttachmentDistance(Quantity<Length> length, Evidence evidence) {
+        super(length, evidence);
     }
 
-    public AttachmentDistance(double length, Evidence featureOrigin) {
-        super(Quantities.getQuantity(length, NANO(METRE)), featureOrigin);
+    public AttachmentDistance(double length, Evidence evidence) {
+        super(Quantities.getQuantity(length, NANO(METRE)), evidence);
     }
 
     @Override

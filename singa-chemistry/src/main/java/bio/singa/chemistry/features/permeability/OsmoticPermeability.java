@@ -29,10 +29,10 @@ public class OsmoticPermeability extends ScalableQuantityFeature<OsmoticPermeabi
      * Creates a new Instance of the {@link OsmoticPermeability} Feature.
      *
      * @param osmoticPermeabilityQuantity The osmotic permeability.
-     * @param featureOrigin The origin of the feature.
+     * @param evidence The origin of the feature.
      */
-    public OsmoticPermeability(Quantity<OsmoticPermeability> osmoticPermeabilityQuantity, Evidence featureOrigin) {
-        super(osmoticPermeabilityQuantity, featureOrigin);
+    public OsmoticPermeability(Quantity<OsmoticPermeability> osmoticPermeabilityQuantity, Evidence evidence) {
+        super(osmoticPermeabilityQuantity, evidence);
     }
 
     /**
@@ -40,10 +40,10 @@ public class OsmoticPermeability extends ScalableQuantityFeature<OsmoticPermeabi
      * {@link OsmoticPermeability#CUBIC_CENTIMETRE_PER_SECOND}.
      *
      * @param osmoticPermeabilityQuantity The osmotic permeability in {@link OsmoticPermeability#CUBIC_CENTIMETRE_PER_SECOND}
-     * @param featureOrigin The origin of the feature.
+     * @param evidence The origin of the feature.
      */
-    public OsmoticPermeability(double osmoticPermeabilityQuantity, Evidence featureOrigin) {
-        super(Quantities.getQuantity(osmoticPermeabilityQuantity, CUBIC_CENTIMETRE_PER_SECOND), featureOrigin);
+    public OsmoticPermeability(double osmoticPermeabilityQuantity, Evidence evidence) {
+        super(Quantities.getQuantity(osmoticPermeabilityQuantity, CUBIC_CENTIMETRE_PER_SECOND), evidence);
     }
 
     @Override

@@ -31,8 +31,8 @@ public abstract class RateConstant<ReactionRateType extends ReactionRate<Reactio
         ZERO, FIRST, SECOND, THIRD
     }
 
-    protected RateConstant(Quantity<ReactionRateType> quantityTypeQuantity, Evidence featureOrigin) {
-        super(quantityTypeQuantity, featureOrigin);
+    protected RateConstant(Quantity<ReactionRateType> quantityTypeQuantity, Evidence evidence) {
+        super(quantityTypeQuantity, evidence);
     }
 
     public interface DirectionStep {
@@ -95,7 +95,7 @@ public abstract class RateConstant<ReactionRateType extends ReactionRate<Reactio
     }
 
     public interface OriginStep {
-        BuilderStep origin(Evidence origin);
+        BuilderStep evidence(Evidence evidence);
 
         RateConstant build();
     }
@@ -109,7 +109,7 @@ public abstract class RateConstant<ReactionRateType extends ReactionRate<Reactio
         private Direction direction;
         private Order order;
         private double value;
-        private Evidence origin;
+        private Evidence evidence;
         private Unit<Time> timeUnit;
         private Unit<MolarConcentration> concentrationUnit;
 
@@ -166,49 +166,49 @@ public abstract class RateConstant<ReactionRateType extends ReactionRate<Reactio
         }
 
         @Override
-        public BuilderStep origin(Evidence origin) {
-            this.origin = origin;
+        public BuilderStep evidence(Evidence evidence) {
+            this.evidence = evidence;
             return this;
         }
 
         @Override
         public RateConstant build() {
-            if (origin == null) {
-                origin = Evidence.MANUALLY_ANNOTATED;
+            if (evidence == null) {
+                evidence = Evidence.MANUALLY_ANNOTATED;
             }
 
             if (direction == FORWARDS && order == ZERO) {
                 return new ZeroOrderForwardsRateConstant(value,
-                        new ProductUnit<>(concentrationUnit.divide(timeUnit)), origin);
+                        new ProductUnit<>(concentrationUnit.divide(timeUnit)), evidence);
             }
             if (direction == FORWARDS && order == FIRST) {
                 return new FirstOrderForwardsRateConstant(value,
-                        new ProductUnit<>(ONE.divide(timeUnit)), origin);
+                        new ProductUnit<>(ONE.divide(timeUnit)), evidence);
             }
             if (direction == FORWARDS && order == SECOND) {
                 return new SecondOrderForwardsRateConstant(value,
-                        new ProductUnit<>(ONE.divide(concentrationUnit.multiply(timeUnit))), origin);
+                        new ProductUnit<>(ONE.divide(concentrationUnit.multiply(timeUnit))), evidence);
             }
             if (direction == FORWARDS && order == THIRD) {
                 return new ThirdOrderForwardsRateConstant(value,
-                        new ProductUnit<>(ONE.divide(concentrationUnit.pow(2).multiply(timeUnit))), origin);
+                        new ProductUnit<>(ONE.divide(concentrationUnit.pow(2).multiply(timeUnit))), evidence);
             }
 
             if (direction == BACKWARDS && order == ZERO) {
                 return new ZeroOrderBackwardsRateConstant(value,
-                        new ProductUnit<>(concentrationUnit.divide(timeUnit)), origin);
+                        new ProductUnit<>(concentrationUnit.divide(timeUnit)), evidence);
             }
             if (direction == BACKWARDS && order == FIRST) {
                 return new FirstOrderBackwardsRateConstant(value,
-                        new ProductUnit<>(ONE.divide(timeUnit)), origin);
+                        new ProductUnit<>(ONE.divide(timeUnit)), evidence);
             }
             if (direction == BACKWARDS && order == SECOND) {
                 return new SecondOrderBackwardsRateConstant(value,
-                        new ProductUnit<>(ONE.divide(concentrationUnit.multiply(timeUnit))), origin);
+                        new ProductUnit<>(ONE.divide(concentrationUnit.multiply(timeUnit))), evidence);
             }
             if (direction == BACKWARDS && order == THIRD) {
                 return new ThirdOrderBackwardsRateConstant(value,
-                        new ProductUnit<>(ONE.divide(concentrationUnit.pow(2).multiply(timeUnit))), origin);
+                        new ProductUnit<>(ONE.divide(concentrationUnit.pow(2).multiply(timeUnit))), evidence);
             }
 
             throw new IllegalStateException("Reaction Rate cannot be created with the given parameters.");

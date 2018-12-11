@@ -15,12 +15,12 @@ public class TurnoverNumber extends FirstOrderRateConstant implements ForwardsRa
 
     public static final String SYMBOL = "k_cat";
 
-    public TurnoverNumber(Quantity<FirstOrderRate> firstOrderRateQuantity, Evidence featureOrigin) {
-        super(firstOrderRateQuantity, featureOrigin);
+    public TurnoverNumber(Quantity<FirstOrderRate> firstOrderRateQuantity, Evidence evidence) {
+        super(firstOrderRateQuantity, evidence);
     }
 
-    public TurnoverNumber(double value, Unit<FirstOrderRate> unit, Evidence featureOrigin) {
-        super(Quantities.getQuantity(value, unit), featureOrigin);
+    public TurnoverNumber(double value, Unit<FirstOrderRate> unit, Evidence evidence) {
+        super(Quantities.getQuantity(value, unit), evidence);
     }
 
     @Override

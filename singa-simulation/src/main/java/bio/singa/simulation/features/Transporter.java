@@ -11,8 +11,8 @@ public class Transporter extends EntityFeature {
 
     private static final String SYMBOL = "e_Decay";
 
-    public Transporter(ChemicalEntity entity, Evidence featureOrigin) {
-        super(entity, featureOrigin);
+    public Transporter(ChemicalEntity entity, Evidence evidence) {
+        super(entity, evidence);
     }
 
     @Override

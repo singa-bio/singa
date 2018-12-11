@@ -57,15 +57,15 @@ public class ChEBIContentHandler implements ContentHandler {
                 .additionalIdentifier(inChIKey)
                 .build();
         if (! smilesBuilder.toString().isEmpty()) {
-            species.setFeature(new Smiles(smilesBuilder.toString(), ChEBIDatabase.origin));
+            species.setFeature(new Smiles(smilesBuilder.toString(), ChEBIDatabase.evidence));
         }
         if (molarMass != null) {
             species.setFeature(molarMass);
         }
         if (ligand3D != null) {
-            species.setFeature(new Structure3D(ligand3D, ChEBIDatabase.origin));
+            species.setFeature(new Structure3D(ligand3D, ChEBIDatabase.evidence));
         } else if (ligand2D != null){
-            species.setFeature(new Structure3D(ligand2D, ChEBIDatabase.origin));
+            species.setFeature(new Structure3D(ligand2D, ChEBIDatabase.evidence));
         }
         return species;
     }
@@ -169,7 +169,7 @@ public class ChEBIContentHandler implements ContentHandler {
             }
             case "mass": {
                 final String precursorString = new String(ch, start, length);
-                molarMass = new MolarMass(Double.valueOf(precursorString), ChEBIDatabase.origin);
+                molarMass = new MolarMass(Double.valueOf(precursorString), ChEBIDatabase.evidence);
                 break;
             }
             case "smiles": {

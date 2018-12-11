@@ -13,12 +13,12 @@ public class SecondOrderForwardsRateConstant extends SecondOrderRateConstant imp
 
     public static final String symbol = "k_fwd_2";
 
-    public SecondOrderForwardsRateConstant(Quantity<SecondOrderRate> secondOrderRateQuantity, Evidence featureOrigin) {
-        super(secondOrderRateQuantity, featureOrigin);
+    public SecondOrderForwardsRateConstant(Quantity<SecondOrderRate> secondOrderRateQuantity, Evidence evidence) {
+        super(secondOrderRateQuantity, evidence);
     }
 
-    public SecondOrderForwardsRateConstant(double value, Unit<SecondOrderRate> unit, Evidence featureOrigin) {
-        super(Quantities.getQuantity(value, unit), featureOrigin);
+    public SecondOrderForwardsRateConstant(double value, Unit<SecondOrderRate> unit, Evidence evidence) {
+        super(Quantities.getQuantity(value, unit), evidence);
     }
 
     @Override

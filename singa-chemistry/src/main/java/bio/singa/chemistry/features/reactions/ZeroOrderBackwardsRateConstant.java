@@ -12,12 +12,12 @@ public class ZeroOrderBackwardsRateConstant extends ZeroOrderRateConstant implem
 
     public static final String symbol = "k_bwd_0";
 
-    public ZeroOrderBackwardsRateConstant(Quantity<ZeroOrderRate> zeroOrderRateQuantity, Evidence featureOrigin) {
-        super(zeroOrderRateQuantity, featureOrigin);
+    public ZeroOrderBackwardsRateConstant(Quantity<ZeroOrderRate> zeroOrderRateQuantity, Evidence evidence) {
+        super(zeroOrderRateQuantity, evidence);
     }
 
-    public ZeroOrderBackwardsRateConstant(double value, Unit<ZeroOrderRate> unit, Evidence featureOrigin) {
-        super(value, unit, featureOrigin);
+    public ZeroOrderBackwardsRateConstant(double value, Unit<ZeroOrderRate> unit, Evidence evidence) {
+        super(value, unit, evidence);
     }
 
     @Override

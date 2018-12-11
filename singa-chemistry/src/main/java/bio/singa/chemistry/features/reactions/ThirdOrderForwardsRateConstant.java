@@ -13,12 +13,12 @@ public class ThirdOrderForwardsRateConstant extends ThirdOrderRateConstant imple
 
     public static final String symbol = "k_fwd_3";
 
-    public ThirdOrderForwardsRateConstant(Quantity<ThirdOrderRate> thirdOrderRateQuantity, Evidence featureOrigin) {
-        super(thirdOrderRateQuantity, featureOrigin);
+    public ThirdOrderForwardsRateConstant(Quantity<ThirdOrderRate> thirdOrderRateQuantity, Evidence evidence) {
+        super(thirdOrderRateQuantity, evidence);
     }
 
-    public ThirdOrderForwardsRateConstant(double value, Unit<ThirdOrderRate> unit, Evidence featureOrigin) {
-        super(Quantities.getQuantity(value, unit), featureOrigin);
+    public ThirdOrderForwardsRateConstant(double value, Unit<ThirdOrderRate> unit, Evidence evidence) {
+        super(Quantities.getQuantity(value, unit), evidence);
     }
 
     @Override

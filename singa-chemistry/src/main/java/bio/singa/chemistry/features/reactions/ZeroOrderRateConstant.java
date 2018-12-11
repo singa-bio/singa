@@ -11,12 +11,12 @@ import javax.measure.Unit;
  */
 public abstract class ZeroOrderRateConstant extends RateConstant<ZeroOrderRate> {
 
-    public ZeroOrderRateConstant(Quantity<ZeroOrderRate> zeroOrderRateQuantity, Evidence featureOrigin) {
-        super(zeroOrderRateQuantity, featureOrigin);
+    public ZeroOrderRateConstant(Quantity<ZeroOrderRate> zeroOrderRateQuantity, Evidence evidence) {
+        super(zeroOrderRateQuantity, evidence);
     }
 
-    public ZeroOrderRateConstant(double value, Unit<ZeroOrderRate> unit, Evidence featureOrigin) {
-        super(Quantities.getQuantity(value, unit), featureOrigin);
+    public ZeroOrderRateConstant(double value, Unit<ZeroOrderRate> unit, Evidence evidence) {
+        super(Quantities.getQuantity(value, unit), evidence);
     }
 
 }

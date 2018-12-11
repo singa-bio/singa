@@ -162,7 +162,7 @@ public class DynamicReaction extends ConcentrationBasedModule<UpdatableDeltaFunc
 
         ParameterStep referenceParameter(String parameterIdentifier, double parameter);
 
-        ParameterStep referenceParameter(String parameterIdentifier, double parameter, Evidence origin);
+        ParameterStep referenceParameter(String parameterIdentifier, double parameter, Evidence evidence);
 
         DynamicReaction build();
 
@@ -265,8 +265,8 @@ public class DynamicReaction extends ConcentrationBasedModule<UpdatableDeltaFunc
         }
 
         @Override
-        public ParameterStep referenceParameter(String parameterIdentifier, double parameter, Evidence origin) {
-            module.getKineticLaw().referenceConstant(parameterIdentifier, parameter, origin);
+        public ParameterStep referenceParameter(String parameterIdentifier, double parameter, Evidence evidence) {
+            module.getKineticLaw().referenceConstant(parameterIdentifier, parameter, evidence);
             return this;
         }
 

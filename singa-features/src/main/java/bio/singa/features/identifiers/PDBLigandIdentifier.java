@@ -16,8 +16,8 @@ public class PDBLigandIdentifier extends AbstractIdentifier<PDBLigandIdentifier>
         super(identifier, PATTERN);
     }
 
-    public PDBLigandIdentifier(String identifier, Evidence featureOrigin) throws IllegalArgumentException {
-        super(identifier, PATTERN, featureOrigin);
+    public PDBLigandIdentifier(String identifier, Evidence evidence) throws IllegalArgumentException {
+        super(identifier, PATTERN, evidence);
     }
 
     @Override

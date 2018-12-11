@@ -11,8 +11,8 @@ public class LogP extends AbstractFeature<Double> {
 
     public static String SYMBOL = "log_p_okt_wat";
 
-    public LogP(Double value, Evidence featureOrigin) {
-        super(value, featureOrigin);
+    public LogP(Double value, Evidence evidence) {
+        super(value, evidence);
     }
 
     public static void register() {

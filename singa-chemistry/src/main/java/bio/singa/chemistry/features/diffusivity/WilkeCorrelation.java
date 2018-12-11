@@ -17,7 +17,7 @@ import static tec.uom.se.AbstractUnit.ONE;
  */
 public class WilkeCorrelation implements Correlation<Diffusivity> {
 
-    private static final Evidence origin = new Evidence(Evidence.OriginType.PREDICTION,
+    private static final Evidence evidence = new Evidence(Evidence.OriginType.PREDICTION,
             "Wilke Correlation",
             "Wilke, C. R., and Pin Chang. \"Correlation of diffusion coefficients in dilute " +
                     "solutions.\" AIChE Journal 1.2 (1955): 264-270.");
@@ -67,6 +67,6 @@ public class WilkeCorrelation implements Correlation<Diffusivity> {
                 * Math.pow(estimateMolarVolume(molarMass), 0.6);
         // D = a / b
         final Quantity<Diffusivity> quantity = Quantities.getQuantity(dividend / divisor, Diffusivity.SQUARE_CENTIMETRE_PER_SECOND);
-        return new Diffusivity(quantity, origin);
+        return new Diffusivity(quantity, evidence);
     }
 }

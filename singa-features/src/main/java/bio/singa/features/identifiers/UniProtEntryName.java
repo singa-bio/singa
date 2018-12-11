@@ -24,8 +24,8 @@ public class UniProtEntryName extends AbstractIdentifier<UniProtEntryName> {
         super(identifier, PATTERN);
     }
 
-    public UniProtEntryName(String identifier, Evidence origin) throws IllegalArgumentException {
-        super(identifier, PATTERN, origin);
+    public UniProtEntryName(String identifier, Evidence evidence) throws IllegalArgumentException {
+        super(identifier, PATTERN, evidence);
     }
 
     @Override

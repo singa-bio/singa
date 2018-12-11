@@ -1,23 +1,20 @@
 package bio.singa.simulation.model.sections.concentration;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
+import bio.singa.features.model.Evidence;
 import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.simulation.model.sections.CellRegion;
 import bio.singa.simulation.model.sections.CellSubsection;
 import bio.singa.simulation.model.simulation.Simulation;
 import bio.singa.simulation.model.simulation.Updatable;
-import tec.uom.se.quantity.Quantities;
 
 import javax.measure.Quantity;
-
 import java.util.Objects;
-
-import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 
 /**
  * @author cl
  */
-public class SectionConcentration {
+public class SectionConcentration implements InitialConcentration {
 
     private CellRegion region;
 
@@ -26,6 +23,8 @@ public class SectionConcentration {
     private ChemicalEntity entity;
 
     private Quantity<MolarConcentration> concentration;
+
+    private Evidence evidence;
 
     public SectionConcentration(CellRegion region, CellSubsection subsection, ChemicalEntity entity, Quantity<MolarConcentration> concentration) {
         this.region = region;
@@ -38,19 +37,6 @@ public class SectionConcentration {
         this.subsection = subsection;
         this.entity = entity;
         this.concentration = concentration;
-    }
-
-    public SectionConcentration(CellRegion region, CellSubsection subsection, ChemicalEntity entity, double concentration) {
-        this.region = region;
-        this.subsection = subsection;
-        this.entity = entity;
-        this.concentration = Quantities.getQuantity(concentration, MOLE_PER_LITRE);
-    }
-
-    public SectionConcentration(CellSubsection subsection, ChemicalEntity entity, double concentration) {
-        this.subsection = subsection;
-        this.entity = entity;
-        this.concentration = Quantities.getQuantity(concentration, MOLE_PER_LITRE);
     }
 
     public CellRegion getRegion() {
@@ -85,6 +71,16 @@ public class SectionConcentration {
         this.concentration = concentration;
     }
 
+    @Override
+    public Evidence getEvidence() {
+        return evidence;
+    }
+
+    public void setEvidence(Evidence evidence) {
+        this.evidence = evidence;
+    }
+
+    @Override
     public void initialize(Simulation simulation) {
         for (Updatable updatable : simulation.getUpdatables()) {
             if (region == null || updatable.getCellRegion().equals(region)) {

@@ -14,8 +14,8 @@ public class FusionPairs extends AbstractFeature<Quantity<Dimensionless>> {
 
     private static final String SYMBOL = "i_Pairs";
 
-    public FusionPairs(Quantity<Dimensionless> integer, Evidence featureOrigin) {
-        super(integer, featureOrigin);
+    public FusionPairs(Quantity<Dimensionless> integer, Evidence evidence) {
+        super(integer, evidence);
     }
 
     @Override

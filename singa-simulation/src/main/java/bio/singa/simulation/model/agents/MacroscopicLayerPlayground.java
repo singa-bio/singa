@@ -167,7 +167,7 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
         budding.setSimulation(simulation);
         budding.addMembraneCargo(Quantities.getQuantity(31415.93, new ProductUnit<Area>(NANO(METRE).pow(2))), 60.0, clathrinTriskelion);
         budding.addMembraneCargo(Quantities.getQuantity(10000, new ProductUnit<Area>(NANO(METRE).pow(2))), 10, vamp3);
-        budding.setFeature(BuddingRate.DEFAULT_BUDDING_RATE);
+        budding.setFeature(PitFormationRate.DEFAULT_BUDDING_RATE);
         budding.setFeature(VesicleRadius.DEFAULT_VESICLE_RADIUS);
         budding.setFeature(MaturationTime.DEFAULT_MATURATION_TIME);
         simulation.getModules().add(budding);
@@ -255,16 +255,16 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
 //        membraneLayer.addMembrane(endosomeMembrane);
 
         // add left membrane to as endocytosis site
-        List<Membrane> membranes = membraneLayer.getMembranes();
-        for (Membrane membrane : membranes) {
-            if (membrane.getIdentifier().equals("cell outer membrane")) {
-                for (MembraneSegment membraneSegment : membrane.getSegments()) {
-                    if (membraneSegment.getNode().getIdentifier().getColumn() == 1) {
-                        budding.addMembraneSegment(membraneSegment);
-                    }
-                }
-            }
-        }
+//        List<Membrane> membranes = membraneLayer.getMembranes();
+//        for (Membrane membrane : membranes) {
+//            if (membrane.getIdentifier().equals("cell outer membrane")) {
+//                for (MembraneSegment membraneSegment : membrane.getSegments()) {
+//                    if (membraneSegment.getNode().getIdentifier().getColumn() == 1) {
+//                        budding.addMembraneSegment(membraneSegment);
+//                    }
+//                }
+//            }
+//        }
 
         // setup microtubules
         MicrotubuleOrganizingCentre moc = new MicrotubuleOrganizingCentre(simulation, membraneLayer, new Circle(new Vector2D(310, 400),
@@ -327,7 +327,7 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
         // draw budding vesicles
         getGraphicsContext().setLineWidth(1);
         getGraphicsContext().setFill(Color.WHITE);
-        for (ClathrinMediatedEndocytosis.SpawnEvent event : budding.getQueuedEvents()) {
+        for (ClathrinMediatedEndocytosis.Pit event : budding.getAspiringPits()) {
             strokeCircle(event.getSpawnSite(), 2);
         }
         // draw moving vesicles

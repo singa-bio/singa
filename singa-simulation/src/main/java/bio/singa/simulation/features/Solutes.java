@@ -13,8 +13,8 @@ public class Solutes extends MultiEntityFeature {
 
     private static final String SYMBOL = "es_Solutes";
 
-    public Solutes(Set<ChemicalEntity> chemicalEntities, Evidence featureOrigin) {
-        super(chemicalEntities, featureOrigin);
+    public Solutes(Set<ChemicalEntity> chemicalEntities, Evidence evidence) {
+        super(chemicalEntities, evidence);
     }
 
     @Override

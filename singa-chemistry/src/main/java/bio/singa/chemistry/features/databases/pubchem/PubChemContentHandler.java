@@ -56,9 +56,9 @@ class PubChemContentHandler implements ContentHandler {
     public SmallMolecule getSpecies() {
         SmallMolecule species = new SmallMolecule.Builder(pubChemIdentifier.getIdentifier())
                 .name(name)
-                .assignFeature(new MolarMass(molarMass, PubChemDatabase.origin))
-                .assignFeature(new Smiles(smilesRepresentation, PubChemDatabase.origin))
-                .assignFeature(new LogP(logP, PubChemDatabase.origin))
+                .assignFeature(new MolarMass(molarMass, PubChemDatabase.evidence))
+                .assignFeature(new Smiles(smilesRepresentation, PubChemDatabase.evidence))
+                .assignFeature(new LogP(logP, PubChemDatabase.evidence))
                 .build();
         identifiers.forEach(species::addAdditionalIdentifier);
         return species;
@@ -133,10 +133,10 @@ class PubChemContentHandler implements ContentHandler {
                 if (inSynonyms && inSynonymsInformation) {
                     String potentialIdentifier = new String(ch, start, length);
                     if (ChEBIIdentifier.PATTERN.matcher(potentialIdentifier).matches()) {
-                        identifiers.add(new ChEBIIdentifier(potentialIdentifier, PubChemDatabase.origin));
+                        identifiers.add(new ChEBIIdentifier(potentialIdentifier, PubChemDatabase.evidence));
                     }
                     if (InChIKey.PATTERN.matcher(potentialIdentifier).matches()) {
-                        identifiers.add(new InChIKey(potentialIdentifier, PubChemDatabase.origin));
+                        identifiers.add(new InChIKey(potentialIdentifier, PubChemDatabase.evidence));
                     }
                 }
                 break;

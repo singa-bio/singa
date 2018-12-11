@@ -9,8 +9,8 @@ import javax.measure.Quantity;
  */
 public class ThirdOrderRateConstant extends RateConstant<ThirdOrderRate> {
 
-    public ThirdOrderRateConstant(Quantity<ThirdOrderRate> thirdOrderRateQuantity, Evidence featureOrigin) {
-        super(thirdOrderRateQuantity, featureOrigin);
+    public ThirdOrderRateConstant(Quantity<ThirdOrderRate> thirdOrderRateQuantity, Evidence evidence) {
+        super(thirdOrderRateQuantity, evidence);
     }
 
 }

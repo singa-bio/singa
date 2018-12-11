@@ -17,11 +17,11 @@ public interface Feature<FeatureContent> {
     FeatureContent getFeatureContent();
 
     /**
-     * Returns the origin of the feature.
+     * Returns the evidence for the feature.
      *
-     * @return The origin of the feature.
+     * @return The evidence for the feature.
      */
-    Evidence getFeatureOrigin();
+    Evidence getEvidence();
 
     /**
      * Returns the symbol associated to this feature.

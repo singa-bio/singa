@@ -42,14 +42,13 @@ public class EndocytosisActinBoost extends DisplacementBasedModule {
         DecayingEntity decayingEntity = getFeature(DecayingEntity.class);
         // calculate speed based on clathrins available
         double pullingEntity = MolarConcentration.concentrationToMolecules(vesicle.getConcentrationContainer().get(CellTopology.MEMBRANE, decayingEntity.getFeatureContent())).getValue().doubleValue();
-        System.out.println(pullingEntity);
         if (pullingEntity < 1) {
             vesicle.setVesicleState(VesicleStateRegistry.UNATTACHED);
         }
         Quantity<Speed> systemSpeed = scaledVelocity.multiply(pullingEntity);
         Quantity<Length> distance = Quantities.getQuantity(systemSpeed.getValue().doubleValue(), UnitRegistry.getSpaceUnit());
         // determine direction
-        Vector2D centre = simulation.getSimulationRegion().getCentre();
+        Vector2D centre = simulation.getMembraneLayer().getMicrotubuleOrganizingCentre().getCircleRepresentation().getMidpoint();
         Vector2D direction = centre.subtract(vesicle.getCurrentPosition()).normalize();
         // determine delta
         Vector2D delta = direction.multiply(Environment.convertSystemToSimulationScale(distance));

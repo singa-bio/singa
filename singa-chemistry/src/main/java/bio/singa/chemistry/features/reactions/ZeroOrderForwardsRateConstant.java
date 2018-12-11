@@ -12,12 +12,12 @@ public class ZeroOrderForwardsRateConstant extends ZeroOrderRateConstant impleme
 
     private static final String symbol = "K_fwd_0";
 
-    public ZeroOrderForwardsRateConstant(Quantity<ZeroOrderRate> zeroOrderRateQuantity, Evidence featureOrigin) {
-        super(zeroOrderRateQuantity, featureOrigin);
+    public ZeroOrderForwardsRateConstant(Quantity<ZeroOrderRate> zeroOrderRateQuantity, Evidence evidence) {
+        super(zeroOrderRateQuantity, evidence);
     }
 
-    public ZeroOrderForwardsRateConstant(double value, Unit<ZeroOrderRate> unit, Evidence featureOrigin) {
-        super(value, unit, featureOrigin);
+    public ZeroOrderForwardsRateConstant(double value, Unit<ZeroOrderRate> unit, Evidence evidence) {
+        super(value, unit, evidence);
     }
 
     @Override

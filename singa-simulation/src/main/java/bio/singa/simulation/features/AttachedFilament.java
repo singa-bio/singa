@@ -11,8 +11,8 @@ public class AttachedFilament extends AbstractFeature<LineLikeAgent.FilamentType
 
     private static final String SYMBOL = "filament";
 
-    public AttachedFilament(LineLikeAgent.FilamentType filamentType, Evidence featureOrigin) {
-        super(filamentType, featureOrigin);
+    public AttachedFilament(LineLikeAgent.FilamentType filamentType, Evidence evidence) {
+        super(filamentType, evidence);
     }
 
     @Override

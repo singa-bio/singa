@@ -8,7 +8,7 @@ import bio.singa.features.parameters.Environment;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.geometry.faces.Rectangle;
 import bio.singa.mathematics.vectors.Vector2D;
-import bio.singa.simulation.features.BuddingRate;
+import bio.singa.simulation.features.PitFormationRate;
 import bio.singa.simulation.features.MaturationTime;
 import bio.singa.simulation.features.VesicleRadius;
 import bio.singa.simulation.model.agents.surfacelike.Membrane;
@@ -28,7 +28,7 @@ import javax.measure.quantity.Area;
 import javax.measure.quantity.Length;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static tec.uom.se.unit.MetricPrefix.*;
 import static tec.uom.se.unit.Units.METRE;
 import static tec.uom.se.unit.Units.SECOND;
@@ -83,17 +83,16 @@ class ClathrinMediatedEndocytosisTest {
         ClathrinMediatedEndocytosis budding = new ClathrinMediatedEndocytosis();
         budding.setSimulation(simulation);
         budding.addMembraneCargo(Quantities.getQuantity(31415.93, new ProductUnit<Area>(NANO(METRE).pow(2))), 60.0, clathrinTriskelion);
-        budding.setFeature(BuddingRate.DEFAULT_BUDDING_RATE);
+        budding.setFeature(PitFormationRate.DEFAULT_BUDDING_RATE);
         budding.setFeature(VesicleRadius.DEFAULT_VESICLE_RADIUS);
         budding.setFeature(MaturationTime.DEFAULT_MATURATION_TIME);
-        budding.addMembraneSegments(node.getMembraneSegments());
         simulation.getModules().add(budding);
 
         while (simulation.getElapsedTime().isLessThanOrEqualTo(Quantities.getQuantity(200, SECOND))) {
             simulation.nextEpoch();
         }
 
-        assertTrue(!simulation.getVesicleLayer().getVesicles().isEmpty());
+        assertFalse(simulation.getVesicleLayer().getVesicles().isEmpty());
     }
 
 

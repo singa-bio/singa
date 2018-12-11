@@ -16,7 +16,7 @@ import static tec.uom.se.unit.Units.SECOND;
 /**
  * @author cl
  */
-public class BuddingRate extends ScalableQuantityFeature<SpawnRate> {
+public class PitFormationRate extends ScalableQuantityFeature<SpawnRate> {
 
     public static final ProductUnit<Area> SQUARE_NANOMETRE = new ProductUnit<>(NANO(METRE).pow(2));
     public static final ProductUnit<SpawnRate> PER_SQUARE_NANOMETRE_PER_SECOND = new ProductUnit<>(ONE.divide(SQUARE_NANOMETRE.multiply(SECOND)));
@@ -24,16 +24,16 @@ public class BuddingRate extends ScalableQuantityFeature<SpawnRate> {
     /**
      * About three events per 10^8 nm^2 s^-1, developing into actual vesicles.
      */
-    public static final BuddingRate DEFAULT_BUDDING_RATE = new BuddingRate(Quantities.getQuantity(3.0/10.0E8, PER_SQUARE_NANOMETRE_PER_SECOND), DefaultFeatureSources.EHRLICH2004);
+    public static final PitFormationRate DEFAULT_BUDDING_RATE = new PitFormationRate(Quantities.getQuantity(3.0/10.0E8, PER_SQUARE_NANOMETRE_PER_SECOND), DefaultFeatureSources.EHRLICH2004);
 
-    public static final String SYMBOL = "k_b";
+    public static final String SYMBOL = "k_form";
 
-    public BuddingRate(Quantity<SpawnRate> frequencyQuantity, Evidence featureOrigin) {
-        super(frequencyQuantity.to(PER_SQUARE_NANOMETRE_PER_SECOND), featureOrigin);
+    public PitFormationRate(Quantity<SpawnRate> frequencyQuantity, Evidence evidence) {
+        super(frequencyQuantity.to(PER_SQUARE_NANOMETRE_PER_SECOND), evidence);
     }
 
-    public BuddingRate(double frequency, Evidence featureOrigin) {
-        super(Quantities.getQuantity(frequency, PER_SQUARE_NANOMETRE_PER_SECOND), featureOrigin);
+    public PitFormationRate(double frequency, Evidence evidence) {
+        super(Quantities.getQuantity(frequency, PER_SQUARE_NANOMETRE_PER_SECOND), evidence);
     }
 
     @Override

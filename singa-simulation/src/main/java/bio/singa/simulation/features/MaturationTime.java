@@ -19,14 +19,14 @@ public class MaturationTime extends AbstractFeature<Quantity<Time>> {
      */
     public static final MaturationTime DEFAULT_MATURATION_TIME = new MaturationTime(Quantities.getQuantity(100.0, SECOND), DefaultFeatureSources.MERRIFIELD2005);
 
-    private static final String SYMBOL = "t_Maturation";
+    private static final String SYMBOL = "t_mature";
 
-    public MaturationTime(Quantity<Time> time, Evidence featureOrigin) {
-        super(time, featureOrigin);
+    public MaturationTime(Quantity<Time> time, Evidence evidence) {
+        super(time, evidence);
     }
 
-    public MaturationTime(double time, Evidence featureOrigin) {
-        super(Quantities.getQuantity(time, SECOND), featureOrigin);
+    public MaturationTime(double time, Evidence evidence) {
+        super(Quantities.getQuantity(time, SECOND), evidence);
     }
 
     @Override

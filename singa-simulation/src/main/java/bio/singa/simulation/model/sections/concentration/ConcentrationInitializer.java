@@ -15,28 +15,29 @@ import java.util.Set;
  */
 public class ConcentrationInitializer {
 
-    private Set<SectionConcentration> initialConcentrations;
+    private Set<InitialConcentration> initialConcentrations;
 
     public ConcentrationInitializer() {
         initialConcentrations = new HashSet<>();
     }
 
-    public ConcentrationInitializer(Set<SectionConcentration> initialConcentrations) {
+    public ConcentrationInitializer(Set<InitialConcentration> initialConcentrations) {
         this.initialConcentrations = initialConcentrations;
     }
 
-    public Set<SectionConcentration> getInitialConcentrations() {
+    public Set<InitialConcentration> getInitialConcentrations() {
         return initialConcentrations;
     }
 
-    public void setInitialConcentrations(Set<SectionConcentration> initialConcentrations) {
+    public void setInitialConcentrations(Set<InitialConcentration> initialConcentrations) {
         this.initialConcentrations = initialConcentrations;
     }
 
-    public void addInitialConcentration(SectionConcentration initialConcentration) {
+    public void addInitialConcentration(InitialConcentration initialConcentration) {
         initialConcentrations.remove(initialConcentration);
         initialConcentrations.add(initialConcentration);
     }
+
 
     public void addInitialConcentration(CellRegion region, CellSubsection subsection, ChemicalEntity entity, Quantity<MolarConcentration> concentration) {
         SectionConcentration initialConcentration = new SectionConcentration(region, subsection, entity, concentration);
@@ -52,7 +53,7 @@ public class ConcentrationInitializer {
 
     public void initialize(Simulation simulation) {
         simulation.collectUpdatables();
-        for (SectionConcentration initialConcentration : initialConcentrations) {
+        for (InitialConcentration initialConcentration : initialConcentrations) {
             initialConcentration.initialize(simulation);
         }
     }

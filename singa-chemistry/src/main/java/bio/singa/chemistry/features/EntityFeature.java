@@ -9,8 +9,8 @@ import bio.singa.features.model.Evidence;
  */
 public abstract class EntityFeature extends AbstractFeature<ChemicalEntity> {
 
-    public EntityFeature(ChemicalEntity entity, Evidence featureOrigin) {
-        super(entity, featureOrigin);
+    public EntityFeature(ChemicalEntity entity, Evidence evidence) {
+        super(entity, evidence);
     }
 
 }

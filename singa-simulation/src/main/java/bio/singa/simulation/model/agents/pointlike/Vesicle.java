@@ -57,7 +57,7 @@ public class Vesicle implements Updatable, Featureable {
     private ConcentrationDeltaManager concentrationManager;
     private DisplacementDeltaManager displacementManager;
 
-    private final CellRegion region;
+    private CellRegion region;
     private Map<AutomatonNode, Double> associatedNodes;
 
     private VesicleState vesicleState;
@@ -157,6 +157,14 @@ public class Vesicle implements Updatable, Featureable {
 
     public void setSegmentIterator(ListIterator<Vector2D> segmentIterator) {
         this.segmentIterator = segmentIterator;
+    }
+
+    public CellRegion getRegion() {
+        return region;
+    }
+
+    public void setRegion(CellRegion region) {
+        this.region = region;
     }
 
     public void addPotentialSpatialDelta(DisplacementDelta spatialDelta) {

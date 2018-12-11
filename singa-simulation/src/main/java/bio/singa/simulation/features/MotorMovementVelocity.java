@@ -27,12 +27,12 @@ public class MotorMovementVelocity extends ScalableQuantityFeature<Speed> {
 
     public static final String SYMBOL = "v_m";
 
-    public MotorMovementVelocity(Quantity<Speed> frequencyQuantity, Evidence featureOrigin) {
-        super(frequencyQuantity, featureOrigin);
+    public MotorMovementVelocity(Quantity<Speed> frequencyQuantity, Evidence evidence) {
+        super(frequencyQuantity, evidence);
     }
 
-    public MotorMovementVelocity(double frequency, Evidence featureOrigin) {
-        super(Quantities.getQuantity(frequency, NANOMETRE_PER_SECOND), featureOrigin);
+    public MotorMovementVelocity(double frequency, Evidence evidence) {
+        super(Quantities.getQuantity(frequency, NANOMETRE_PER_SECOND), evidence);
     }
 
     @Override

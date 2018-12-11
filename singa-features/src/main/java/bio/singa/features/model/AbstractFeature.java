@@ -6,16 +6,16 @@ package bio.singa.features.model;
 public abstract class AbstractFeature<FeatureContent> implements Feature<FeatureContent> {
 
     private final FeatureContent featureContent;
-    private final Evidence featureOrigin;
+    private final Evidence evidence;
 
-    public AbstractFeature(FeatureContent featureContent, Evidence featureOrigin) {
+    public AbstractFeature(FeatureContent featureContent, Evidence evidence) {
         this.featureContent = featureContent;
-        this.featureOrigin = featureOrigin;
+        this.evidence = evidence;
     }
 
     @Override
-    public Evidence getFeatureOrigin() {
-        return featureOrigin;
+    public Evidence getEvidence() {
+        return evidence;
     }
 
     @Override

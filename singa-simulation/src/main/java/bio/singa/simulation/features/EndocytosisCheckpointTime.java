@@ -12,20 +12,15 @@ import static tec.uom.se.unit.Units.SECOND;
 /**
  * @author cl
  */
-public class TetheringTime extends AbstractFeature<Quantity<Time>> {
+public class EndocytosisCheckpointTime extends AbstractFeature<Quantity<Time>> {
 
-    /**
-     * Average maturation time is 100 seconds.
-     */
-    public static final TetheringTime DEFAULT_TETHERING_TIME = new TetheringTime(Quantities.getQuantity(18.0, SECOND), DefaultFeatureSources.MERRIFIELD2005);
+    private static final String SYMBOL = "t_check";
 
-    private static final String SYMBOL = "t_Tethering";
-
-    public TetheringTime(Quantity<Time> time, Evidence evidence) {
+    public EndocytosisCheckpointTime(Quantity<Time> time, Evidence evidence) {
         super(time, evidence);
     }
 
-    public TetheringTime(double time, Evidence evidence) {
+    public EndocytosisCheckpointTime(double time, Evidence evidence) {
         super(Quantities.getQuantity(time, SECOND), evidence);
     }
 

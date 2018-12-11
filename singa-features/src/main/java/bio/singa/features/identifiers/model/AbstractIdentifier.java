@@ -18,7 +18,7 @@ public abstract class AbstractIdentifier<IdentifierType> implements Identifier<I
      */
     private final String identifier;
 
-    private final Evidence featureOrigin;
+    private final Evidence evidence;
 
     /**
      * Creates a new identifier by validating it with the given pattern.
@@ -31,10 +31,10 @@ public abstract class AbstractIdentifier<IdentifierType> implements Identifier<I
         this(identifier, pattern, Evidence.MANUALLY_ANNOTATED);
     }
 
-    public AbstractIdentifier(String identifier, Pattern pattern, Evidence featureOrigin) throws IllegalArgumentException {
+    public AbstractIdentifier(String identifier, Pattern pattern, Evidence evidence) throws IllegalArgumentException {
         if (pattern.matcher(identifier).matches()) {
             this.identifier = identifier;
-            this.featureOrigin = featureOrigin;
+            this.evidence = evidence;
         } else {
             throw new IllegalArgumentException("The identifer \"" + identifier + "\" is no valid " +
                     getClass().getSimpleName() + ".");
@@ -48,8 +48,8 @@ public abstract class AbstractIdentifier<IdentifierType> implements Identifier<I
 
 
     @Override
-    public Evidence getFeatureOrigin() {
-        return featureOrigin;
+    public Evidence getEvidence() {
+        return evidence;
     }
 
     @Override

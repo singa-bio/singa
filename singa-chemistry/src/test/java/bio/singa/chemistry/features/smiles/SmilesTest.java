@@ -18,7 +18,7 @@ class SmilesTest {
         // get feature
         Smiles feature = testSpecies.getFeature(Smiles.class);
         // assert attributes and values
-        assertEquals("ChEBI Database", feature.getFeatureOrigin().getName());
+        assertEquals("ChEBI Database", feature.getEvidence().getName());
         assertEquals("[O-][N+](=O)O[N+]([O-])=O", feature.getFeatureContent());
     }
 

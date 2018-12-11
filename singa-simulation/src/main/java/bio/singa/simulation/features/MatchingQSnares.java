@@ -13,8 +13,8 @@ public class MatchingQSnares extends MultiEntityFeature {
 
     private static final String SYMBOL = "es_QSnares";
 
-    public MatchingQSnares(Set<ChemicalEntity> chemicalEntities, Evidence featureOrigin) {
-        super(chemicalEntities, featureOrigin);
+    public MatchingQSnares(Set<ChemicalEntity> chemicalEntities, Evidence evidence) {
+        super(chemicalEntities, evidence);
     }
 
     @Override

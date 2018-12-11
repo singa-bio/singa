@@ -13,8 +13,8 @@ public class MatchingRSnares extends MultiEntityFeature {
 
     private static final String SYMBOL = "es_RSnares";
 
-    public MatchingRSnares(Set<ChemicalEntity> chemicalEntities, Evidence featureOrigin) {
-        super(chemicalEntities, featureOrigin);
+    public MatchingRSnares(Set<ChemicalEntity> chemicalEntities, Evidence evidence) {
+        super(chemicalEntities, evidence);
     }
 
     @Override

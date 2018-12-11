@@ -78,8 +78,8 @@ public class KineticLaw {
         expression.accept(new SetVariable(parameterIdentifier, constant));
     }
 
-    public void referenceConstant(String parameterIdentifier, double constant, Evidence origin) {
-        parameterMap.put(parameterIdentifier, new Parameter<>(parameterIdentifier, Quantities.getQuantity(constant, ONE), origin));
+    public void referenceConstant(String parameterIdentifier, double constant, Evidence evidence) {
+        parameterMap.put(parameterIdentifier, new Parameter<>(parameterIdentifier, Quantities.getQuantity(constant, ONE), evidence));
         expression.accept(new SetVariable(parameterIdentifier, constant));
     }
 

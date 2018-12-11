@@ -14,8 +14,8 @@ public class MotorPullDirection extends AbstractFeature<MotorPullDirection.Direc
         PLUS, MINUS
     }
 
-    public MotorPullDirection(Direction direction, Evidence featureOrigin) {
-        super(direction, featureOrigin);
+    public MotorPullDirection(Direction direction, Evidence evidence) {
+        super(direction, evidence);
     }
 
     @Override

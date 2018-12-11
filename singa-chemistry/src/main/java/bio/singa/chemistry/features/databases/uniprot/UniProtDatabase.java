@@ -16,7 +16,7 @@ import java.util.Optional;
  */
 public class UniProtDatabase {
 
-    public static final Evidence origin = new Evidence(Evidence.OriginType.DATABASE,
+    public static final Evidence evidence = new Evidence(Evidence.OriginType.DATABASE,
             "UniProt Database",
             "UniProt Consortium. \"UniProt: the universal protein knowledgebase.\" Nucleic acids research 46.5 (2018): 2699.");
 
@@ -36,7 +36,7 @@ public class UniProtDatabase {
         ChemicalEntity entity = (ChemicalEntity) featureable;
         Optional<UniProtIdentifier> identifierOptional = IdentifierPatternRegistry.find(UniProtIdentifier.class, entity.getAllIdentifiers());
         // try to get weight from UniProt Database
-        return identifierOptional.map(identifier -> new MolarMass(UniProtParserService.fetchMolarMass(identifier), origin)).orElse(null);
+        return identifierOptional.map(identifier -> new MolarMass(UniProtParserService.fetchMolarMass(identifier), evidence)).orElse(null);
     }
 
 }

@@ -10,8 +10,8 @@ import javax.measure.Quantity;
  */
 public class CytoplasmDiffusivity extends Diffusivity {
 
-    public CytoplasmDiffusivity(Quantity<Diffusivity> diffusivityQuantity, Evidence origin) {
-        super(diffusivityQuantity, origin);
+    public CytoplasmDiffusivity(Quantity<Diffusivity> diffusivityQuantity, Evidence evidence) {
+        super(diffusivityQuantity, evidence);
     }
 
 }

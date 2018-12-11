@@ -9,11 +9,11 @@ import javax.measure.Quantity;
 /**
  * @author cl
  */
-public class MaximalConcentration extends AbstractFeature<Quantity<MolarConcentration>> {
+public class EndocytosisCkeckpointConcentration extends AbstractFeature<Quantity<MolarConcentration>> {
 
     private static final String SYMBOL = "cMax";
 
-    public MaximalConcentration(Quantity<MolarConcentration> concentration, Evidence evidence) {
+    public EndocytosisCkeckpointConcentration(Quantity<MolarConcentration> concentration, Evidence evidence) {
         super(concentration, evidence);
     }
 

@@ -146,7 +146,7 @@ class NthOrderReactionTest {
                 .forward().zeroOrder()
                 .concentrationUnit(UnitRegistry.getConcentrationUnit())
                 .timeUnit(SECOND)
-                .origin(DefaultFeatureSources.EHRLICH2004)
+                .evidence(DefaultFeatureSources.EHRLICH2004)
                 .build();
 
         NthOrderReaction.inSimulation(simulation)

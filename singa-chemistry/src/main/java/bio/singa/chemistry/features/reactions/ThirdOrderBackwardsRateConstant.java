@@ -13,12 +13,12 @@ public class ThirdOrderBackwardsRateConstant extends ThirdOrderRateConstant impl
 
     public static final String symbol = "k_bwd_3";
 
-    public ThirdOrderBackwardsRateConstant(Quantity<ThirdOrderRate> thirdOrderRateQuantity, Evidence featureOrigin) {
-        super(thirdOrderRateQuantity, featureOrigin);
+    public ThirdOrderBackwardsRateConstant(Quantity<ThirdOrderRate> thirdOrderRateQuantity, Evidence evidence) {
+        super(thirdOrderRateQuantity, evidence);
     }
 
-    public ThirdOrderBackwardsRateConstant(double value, Unit<ThirdOrderRate> unit, Evidence featureOrigin) {
-        super(Quantities.getQuantity(value, unit), featureOrigin);
+    public ThirdOrderBackwardsRateConstant(double value, Unit<ThirdOrderRate> unit, Evidence evidence) {
+        super(Quantities.getQuantity(value, unit), evidence);
     }
 
     @Override

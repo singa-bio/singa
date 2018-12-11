@@ -61,12 +61,12 @@ public class Diffusivity extends ScalableQuantityFeature<Diffusivity> implements
         return UnitRegistry.getAreaUnit().divide(UnitRegistry.getTimeUnit()).asType(Diffusivity.class);
     }
 
-    public Diffusivity(Quantity<Diffusivity> diffusivityQuantity, Evidence origin) {
-        super(diffusivityQuantity, origin);
+    public Diffusivity(Quantity<Diffusivity> diffusivityQuantity, Evidence evidence) {
+        super(diffusivityQuantity, evidence);
     }
 
-    public Diffusivity(double diffusivityQuantity, Evidence origin) {
-        super(Quantities.getQuantity(diffusivityQuantity, SQUARE_CENTIMETRE_PER_SECOND), origin);
+    public Diffusivity(double diffusivityQuantity, Evidence evidence) {
+        super(Quantities.getQuantity(diffusivityQuantity, SQUARE_CENTIMETRE_PER_SECOND), evidence);
     }
 
     @Override

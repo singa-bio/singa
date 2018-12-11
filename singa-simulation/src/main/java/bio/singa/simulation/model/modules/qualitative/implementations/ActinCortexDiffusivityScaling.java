@@ -35,7 +35,7 @@ public class ActinCortexDiffusivityScaling extends QualitativeModule {
     public static final Diffusivity DEFAULT_CORTEX_DIFFUSIVITY = new Diffusivity(Quantities.getQuantity(2.45E-4, MICRO(METRE).pow(2).divide(SECOND)).asType(Diffusivity.class), LANG2000);
     public static final Diffusivity DEFAULT_CYTOPLASM_DIFFUSIFITY = Diffusivity.calculate(Quantities.getQuantity(50.0, NANO(METRE)));
 
-    private static final Evidence origin = new Evidence(Evidence.OriginType.PREDICTION, "Cortex Diffusivity Estimation", "");
+    private static final Evidence evidence = new Evidence(Evidence.OriginType.PREDICTION, "Cortex Diffusivity Estimation", "");
 
     private Quantity<Diffusivity> slope;
 
@@ -77,9 +77,9 @@ public class ActinCortexDiffusivityScaling extends QualitativeModule {
         double concentration = node.getConcentrationContainer().get(INNER, tropomyosin).getValue().doubleValue();
         ComparableQuantity<Diffusivity> quantity = (ComparableQuantity<Diffusivity>) slope.multiply(concentration).add(cytoplasmDiffusivity);
         if (quantity.isLessThan(cytoplasmDiffusivity)) {
-            diffusivities.put(vesicle, new Diffusivity(cytoplasmDiffusivity, origin));
+            diffusivities.put(vesicle, new Diffusivity(cytoplasmDiffusivity, evidence));
         } else {
-            diffusivities.put(vesicle, new Diffusivity(quantity, origin));
+            diffusivities.put(vesicle, new Diffusivity(quantity, evidence));
         }
     }
 

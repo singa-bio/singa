@@ -15,8 +15,8 @@ public class MichaelisConstant extends ScalableQuantityFeature<MolarConcentratio
 
     public static final String SYMBOL = "k_m";
 
-    public MichaelisConstant(Quantity<MolarConcentration> molarConcentration, Evidence featureOrigin) {
-        super(molarConcentration, featureOrigin);
+    public MichaelisConstant(Quantity<MolarConcentration> molarConcentration, Evidence evidence) {
+        super(molarConcentration, evidence);
     }
 
     @Override

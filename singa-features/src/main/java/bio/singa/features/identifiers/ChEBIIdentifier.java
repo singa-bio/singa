@@ -31,8 +31,8 @@ public class ChEBIIdentifier extends AbstractIdentifier<ChEBIIdentifier> {
         super(identifier, PATTERN);
     }
 
-    public ChEBIIdentifier(String identifier, Evidence origin) throws IllegalArgumentException {
-        super(identifier, PATTERN, origin);
+    public ChEBIIdentifier(String identifier, Evidence evidence) throws IllegalArgumentException {
+        super(identifier, PATTERN, evidence);
     }
 
     /**

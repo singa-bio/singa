@@ -35,7 +35,7 @@ import static bio.singa.features.model.Evidence.MANUALLY_ANNOTATED;
  * <pre>
  *  // define the feature to parametrize the diffusion
  *  Diffusivity diffusivity = new Diffusivity(Quantities.getQuantity(2.28E-05, SQUARE_CENTIMETRE_PER_SECOND),
- *         FeatureOrigin.MANUALLY_ANNOTATED);
+ *         Evidence.MANUALLY_ANNOTATED);
  *  // assign it to the chemical entity
  *  SmallMolecule ammonia = new SmallMolecule.Builder("ammonia")
  *         .name("ammonia")

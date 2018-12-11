@@ -17,7 +17,7 @@ class LogPTest {
         // get feature
         LogP feature = testSpecies.getFeature(LogP.class);
         // assert attributes and values
-        assertEquals("PubChem Database", feature.getFeatureOrigin().getName());
+        assertEquals("PubChem Database", feature.getEvidence().getName());
         assertEquals(-5.5, feature.getFeatureContent().doubleValue());
     }
 
@@ -27,7 +27,7 @@ class LogPTest {
         // get feature
         LogP feature = testSpecies.getFeature(LogP.class);
         // assert attributes and values
-        assertEquals("PubChem Database", feature.getFeatureOrigin().getName());
+        assertEquals("PubChem Database", feature.getEvidence().getName());
         assertEquals(5.2, feature.getFeatureContent().doubleValue());
     }
 

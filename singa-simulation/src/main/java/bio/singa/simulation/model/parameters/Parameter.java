@@ -16,7 +16,7 @@ public class Parameter<QuantityType extends Quantity<QuantityType>> {
      */
     private final String identifier;
 
-    private Evidence origin;
+    private Evidence evidence;
 
     /**
      * The value and unit (quantity) of this parameter.
@@ -30,10 +30,10 @@ public class Parameter<QuantityType extends Quantity<QuantityType>> {
         this.identifier = identifier;
     }
 
-    public Parameter(String identifier, Quantity<QuantityType> quantity, Evidence origin) {
+    public Parameter(String identifier, Quantity<QuantityType> quantity, Evidence evidence) {
         this.identifier = identifier;
         this.quantity = quantity;
-        this.origin = origin;
+        this.evidence = evidence;
     }
 
     public void scale() {
@@ -46,11 +46,11 @@ public class Parameter<QuantityType extends Quantity<QuantityType>> {
     }
 
     public Evidence getOrigin() {
-        return origin;
+        return evidence;
     }
 
-    public void setOrigin(Evidence origin) {
-        this.origin = origin;
+    public void setOrigin(Evidence evidence) {
+        this.evidence = evidence;
     }
 
     public Quantity<QuantityType> getQuantity() {

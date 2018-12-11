@@ -19,12 +19,12 @@ public class VesicleRadius extends AbstractFeature<Quantity<Length>> {
 
     private static final String SYMBOL = "r_Vesicle";
 
-    public VesicleRadius(Quantity<Length> radius, Evidence featureOrigin) {
-        super(radius, featureOrigin);
+    public VesicleRadius(Quantity<Length> radius, Evidence evidence) {
+        super(radius, evidence);
     }
 
-    public VesicleRadius(double radius, Evidence featureOrigin) {
-        super(Quantities.getQuantity(radius, NANO(METRE)), featureOrigin);
+    public VesicleRadius(double radius, Evidence evidence) {
+        super(Quantities.getQuantity(radius, NANO(METRE)), evidence);
     }
 
     @Override

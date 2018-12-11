@@ -19,8 +19,8 @@ public class AppliedScale extends ScalableQuantityFeature<Dimensionless> {
 
     private Quantity<Time> previousTimeStep;
 
-    public AppliedScale(double scale, Evidence featureOrigin) {
-        super(Quantities.getQuantity(scale, ONE), featureOrigin);
+    public AppliedScale(double scale, Evidence evidence) {
+        super(Quantities.getQuantity(scale, ONE), evidence);
     }
 
     public AppliedScale() {

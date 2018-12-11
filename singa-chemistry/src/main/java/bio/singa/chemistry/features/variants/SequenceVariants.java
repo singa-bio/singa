@@ -12,8 +12,8 @@ public class SequenceVariants extends AbstractFeature<List<SequenceVariant>> {
 
     private static final String SYMBOL = "variants";
 
-    public SequenceVariants(List<SequenceVariant> sequenceVariants, Evidence featureOrigin) {
-        super(sequenceVariants, featureOrigin);
+    public SequenceVariants(List<SequenceVariant> sequenceVariants, Evidence evidence) {
+        super(sequenceVariants, evidence);
     }
 
     @Override

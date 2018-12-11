@@ -10,8 +10,8 @@ import javax.measure.Quantity;
  */
 public class CortexDiffusivity extends Diffusivity {
 
-    public CortexDiffusivity(Quantity<Diffusivity> diffusivityQuantity, Evidence origin) {
-        super(diffusivityQuantity, origin);
+    public CortexDiffusivity(Quantity<Diffusivity> diffusivityQuantity, Evidence evidence) {
+        super(diffusivityQuantity, evidence);
     }
 
 }

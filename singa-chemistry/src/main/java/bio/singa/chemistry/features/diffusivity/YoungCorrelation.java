@@ -17,7 +17,7 @@ import static tec.uom.se.AbstractUnit.ONE;
  */
 public class YoungCorrelation implements Correlation<Diffusivity> {
 
-    private static final Evidence origin = new Evidence(Evidence.OriginType.PREDICTION,
+    private static final Evidence evidence = new Evidence(Evidence.OriginType.PREDICTION,
             "Young Correlation",
             "Young, M. E., P. A. Carroad, and R. L. Bell. \"Estimation of diffusion coefficients " +
                     "of proteins.\" Biotechnology and Bioengineering 22.5 (1980): 947-955.");
@@ -42,7 +42,7 @@ public class YoungCorrelation implements Correlation<Diffusivity> {
                 * (Environment.getTemperature().getValue().doubleValue()
                 / (Environment.getMatrixViscosity().getValue().doubleValue() * Math.cbrt(molarMass)));
         final Quantity<Diffusivity> quantity = Quantities.getQuantity(diffusivity, Diffusivity.SQUARE_CENTIMETRE_PER_SECOND);
-        return new Diffusivity(quantity, origin);
+        return new Diffusivity(quantity, evidence);
     }
 
 

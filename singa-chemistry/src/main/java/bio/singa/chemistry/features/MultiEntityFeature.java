@@ -11,8 +11,8 @@ import java.util.Set;
  */
 public abstract class MultiEntityFeature extends AbstractFeature<Set<ChemicalEntity>> {
 
-    public MultiEntityFeature(Set<ChemicalEntity> chemicalEntities, Evidence featureOrigin) {
-        super(chemicalEntities, featureOrigin);
+    public MultiEntityFeature(Set<ChemicalEntity> chemicalEntities, Evidence evidence) {
+        super(chemicalEntities, evidence);
     }
 
 }

@@ -32,8 +32,8 @@ public class PubChemIdentifier extends AbstractIdentifier<PubChemIdentifier> {
         super(identifier, PATTERN);
     }
 
-    public PubChemIdentifier(String identifier, Evidence origin) throws IllegalArgumentException {
-        super(identifier, PATTERN, origin);
+    public PubChemIdentifier(String identifier, Evidence evidence) throws IllegalArgumentException {
+        super(identifier, PATTERN, evidence);
     }
 
     /**

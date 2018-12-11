@@ -31,14 +31,14 @@ public class ChEBIParserService extends AbstractXMLParser<SmallMolecule> {
     }
 
     public static SmallMolecule parse(String chEBIIdentifier, String primaryIdentifier) {
-        logger.info("Parsing chemical entity with identifier " + chEBIIdentifier + " from " + ChEBIDatabase.origin.getName());
+        logger.info("Parsing chemical entity with identifier " + chEBIIdentifier + " from " + ChEBIDatabase.evidence.getName());
         ChEBIParserService parser = new ChEBIParserService(new ChEBIIdentifier(chEBIIdentifier), primaryIdentifier);
         return parser.parse();
     }
 
 
     public static SmallMolecule parse(ChEBIIdentifier identifier) {
-        logger.info("Parsing chemical entity with identifier " + identifier.getIdentifier() + " from " + ChEBIDatabase.origin.getName());
+        logger.info("Parsing chemical entity with identifier " + identifier.getIdentifier() + " from " + ChEBIDatabase.evidence.getName());
         ChEBIParserService parser = new ChEBIParserService(identifier);
         return parser.parse();
     }

@@ -26,8 +26,8 @@ public class GoTerm extends AbstractIdentifier<GoTerm> {
         super(identifier, PATTERN);
     }
 
-    public GoTerm(String identifier, Evidence origin) throws IllegalArgumentException {
-        super(identifier, PATTERN, origin);
+    public GoTerm(String identifier, Evidence evidence) throws IllegalArgumentException {
+        super(identifier, PATTERN, evidence);
     }
 
     /**

@@ -37,7 +37,7 @@ import static bio.singa.features.model.Evidence.MANUALLY_ANNOTATED;
  * <pre>
  *  // define the feature to parametrize the diffusion
  *  MembranePermeability membranePermeability = new MembranePermeability(Quantities.getQuantity(3.5E-03, CENTIMETRE_PER_SECOND),
- *         FeatureOrigin.MANUALLY_ANNOTATED);
+ *         Evidence.MANUALLY_ANNOTATED);
  *  // assign it to the chemical entity
  *  SmallMolecule water = new SmallMolecule.Builder("water")
  *         .assignFeature(membranePermeability)

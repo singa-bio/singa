@@ -11,8 +11,8 @@ public class Cargo extends EntityFeature {
 
     private static final String SYMBOL = "e_Cargo";
 
-    public Cargo(ChemicalEntity entity, Evidence featureOrigin) {
-        super(entity, featureOrigin);
+    public Cargo(ChemicalEntity entity, Evidence evidence) {
+        super(entity, evidence);
     }
 
     @Override

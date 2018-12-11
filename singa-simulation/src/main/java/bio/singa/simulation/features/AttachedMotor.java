@@ -11,8 +11,8 @@ public class AttachedMotor extends EntityFeature {
 
     private static final String SYMBOL = "e_Motor";
 
-    public AttachedMotor(ChemicalEntity entity, Evidence featureOrigin) {
-        super(entity, featureOrigin);
+    public AttachedMotor(ChemicalEntity entity, Evidence evidence) {
+        super(entity, evidence);
     }
 
     @Override

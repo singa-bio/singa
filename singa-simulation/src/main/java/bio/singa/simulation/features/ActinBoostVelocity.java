@@ -27,12 +27,12 @@ public class ActinBoostVelocity extends ScalableQuantityFeature<Speed> {
 
     public static final String SYMBOL = "v_b";
 
-    public ActinBoostVelocity(Quantity<Speed> frequencyQuantity, Evidence featureOrigin) {
-        super(frequencyQuantity, featureOrigin);
+    public ActinBoostVelocity(Quantity<Speed> frequencyQuantity, Evidence evidence) {
+        super(frequencyQuantity, evidence);
     }
 
-    public ActinBoostVelocity(double frequency, Evidence featureOrigin) {
-        super(Quantities.getQuantity(frequency,NANOMETRE_PER_SECOND ), featureOrigin);
+    public ActinBoostVelocity(double frequency, Evidence evidence) {
+        super(Quantities.getQuantity(frequency,NANOMETRE_PER_SECOND ), evidence);
     }
 
     @Override

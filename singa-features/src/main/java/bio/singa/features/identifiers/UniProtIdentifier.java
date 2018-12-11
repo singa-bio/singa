@@ -30,8 +30,8 @@ public class UniProtIdentifier extends AbstractIdentifier<UniProtIdentifier> {
         super(identifier, PATTERN);
     }
 
-    public UniProtIdentifier(String identifier, Evidence origin) throws IllegalArgumentException {
-        super(identifier, PATTERN, origin);
+    public UniProtIdentifier(String identifier, Evidence evidence) throws IllegalArgumentException {
+        super(identifier, PATTERN, evidence);
     }
 
     @Override

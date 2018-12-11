@@ -22,8 +22,8 @@ public class MembranePermeability extends ScalableQuantityFeature<MembranePermea
 
     public static final String SYMBOL = "P_d";
 
-    public MembranePermeability(Quantity<MembranePermeability> membranePermeabilityQuantity, Evidence featureOrigin) {
-        super(membranePermeabilityQuantity, featureOrigin);
+    public MembranePermeability(Quantity<MembranePermeability> membranePermeabilityQuantity, Evidence evidence) {
+        super(membranePermeabilityQuantity, evidence);
     }
 
     @Override

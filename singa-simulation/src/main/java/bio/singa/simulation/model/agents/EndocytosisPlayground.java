@@ -159,7 +159,7 @@ public class EndocytosisPlayground extends Application implements Renderer {
         budding = new ClathrinMediatedEndocytosis();
         budding.setSimulation(simulation);
         budding.addMembraneCargo(Quantities.getQuantity(31415.93, new ProductUnit<Area>(NANO(METRE).pow(2))), 60.0, clathrinTriskelion);
-        budding.setFeature(BuddingRate.DEFAULT_BUDDING_RATE);
+        budding.setFeature(PitFormationRate.DEFAULT_BUDDING_RATE);
         budding.setFeature(VesicleRadius.DEFAULT_VESICLE_RADIUS);
         budding.setFeature(MaturationTime.DEFAULT_MATURATION_TIME);
         simulation.getModules().add(budding);
@@ -171,15 +171,15 @@ public class EndocytosisPlayground extends Application implements Renderer {
         boost.setSimulation(simulation);
         simulation.getModules().add(boost);
 
-        for (Membrane current : simulation.getMembraneLayer().getMembranes()) {
-            if (current.getIdentifier().equals("cell outer membrane")) {
-                for (MembraneSegment membraneSegment : current.getSegments()) {
-                    if (membraneSegment.getNode().getIdentifier().getRow() >= 3 && membraneSegment.getNode().getIdentifier().getRow() <= 12) {
-                        budding.addMembraneSegment(membraneSegment);
-                    }
-                }
-            }
-        }
+//        for (Membrane current : simulation.getMembraneLayer().getMembranes()) {
+//            if (current.getIdentifier().equals("cell outer membrane")) {
+//                for (MembraneSegment membraneSegment : current.getSegments()) {
+//                    if (membraneSegment.getNode().getIdentifier().getRow() >= 3 && membraneSegment.getNode().getIdentifier().getRow() <= 12) {
+//                        budding.addMembraneSegment(membraneSegment);
+//                    }
+//                }
+//            }
+//        }
 
         ActinCortexAttachment cortexAttachment = new ActinCortexAttachment();
         cortexAttachment.setSimulation(simulation);
@@ -289,7 +289,7 @@ public class EndocytosisPlayground extends Application implements Renderer {
         // draw budding vesicles
         getGraphicsContext().setLineWidth(1);
         getGraphicsContext().setFill(Color.WHITE);
-        for (ClathrinMediatedEndocytosis.SpawnEvent event : budding.getQueuedEvents()) {
+        for (ClathrinMediatedEndocytosis.Pit event : budding.getAspiringPits()) {
             fillPoint(event.getSpawnSite(), 5);
         }
         // draw moving vesicles

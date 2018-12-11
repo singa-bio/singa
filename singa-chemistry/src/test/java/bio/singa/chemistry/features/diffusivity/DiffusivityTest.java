@@ -35,7 +35,7 @@ class DiffusivityTest {
         // get feature
         Diffusivity feature = testSpecies.getFeature(Diffusivity.class);
         // assert attributes and values
-        assertEquals("Wilke Correlation", feature.getFeatureOrigin().getName());
+        assertEquals("Wilke Correlation", feature.getEvidence().getName());
         assertEquals(8.217150338823197E-6, feature.getValue().doubleValue());
         assertEquals(Diffusivity.SQUARE_CENTIMETRE_PER_SECOND, feature.getUnit());
     }
@@ -48,7 +48,7 @@ class DiffusivityTest {
         // get feature
         Diffusivity feature = testSpecies.getFeature(Diffusivity.class);
         // assert attributes and values
-        assertEquals("Young Correlation", feature.getFeatureOrigin().getName());
+        assertEquals("Young Correlation", feature.getEvidence().getName());
         assertEquals(1.134227930559286E-6, feature.getValue().doubleValue());
         assertEquals(Diffusivity.SQUARE_CENTIMETRE_PER_SECOND, feature.getUnit());
     }

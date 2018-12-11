@@ -12,7 +12,6 @@ import bio.singa.simulation.model.sections.CellTopology;
 import bio.singa.simulation.model.sections.ConcentrationContainer;
 import bio.singa.simulation.model.simulation.Simulation;
 import bio.singa.simulation.model.simulation.Updatable;
-import tec.uom.se.quantity.Quantities;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,9 +22,7 @@ import static bio.singa.simulation.model.modules.concentration.reactants.Reactan
 
 /**
  * Reactions in general are {@link ConcentrationBasedModule}s following the laws of chemical kinetics. The calculation
- * of the velocity is defined by the concrete implementation of this module. In general {@link Reactant} are defined
- * as {@link Reactant} that are consumed or produced during the reaction or {@link CatalyticReactant}
- * that are used to modify the reaction speed but whose concentration is not altered.
+ * of the velocity is defined by the concrete implementation of this module.
  *
  * @author cl
  * @see ReversibleReaction
@@ -263,6 +260,12 @@ public abstract class Reaction extends ConcentrationBasedModule<SectionDeltaFunc
 
         public BuilderType addSubstrate(ChemicalEntity chemicalEntity, double stoichiometricNumber, double reactionOrder) {
             topLevelObject.addStochiometricReactant(new Reactant(chemicalEntity, SUBSTRATE, stoichiometricNumber, reactionOrder));
+            topLevelObject.addReferencedEntity(chemicalEntity);
+            return builderObject;
+        }
+
+        public BuilderType addProduct(ChemicalEntity chemicalEntity, CellTopology topology) {
+            topLevelObject.addStochiometricReactant(new Reactant(chemicalEntity, PRODUCT, topology));
             topLevelObject.addReferencedEntity(chemicalEntity);
             return builderObject;
         }

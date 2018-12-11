@@ -26,7 +26,7 @@ public class PubChemParserService extends AbstractXMLParser<SmallMolecule> {
     }
 
     public static SmallMolecule parse(PubChemIdentifier pubChemIdentifier) {
-        logger.info("Parsing chemical entity with identifier " + pubChemIdentifier + " from " + PubChemDatabase.origin.getName());
+        logger.info("Parsing chemical entity with identifier " + pubChemIdentifier + " from " + PubChemDatabase.evidence.getName());
         PubChemParserService parser = new PubChemParserService(pubChemIdentifier);
         return parser.parse();
     }

@@ -25,6 +25,7 @@ public class MicrotubuleOrganizingCentre {
 
     public LineLikeAgentLayer initializeMicrotubules() {
         LineLikeAgentLayer filamentLayer = new LineLikeAgentLayer(simulation, membraneLayer);
+        membraneLayer.setMicrotubuleOrganizingCentre(this);
         // initialize filaments
         int currentFilaments = 0;
         Vector2D centre = circleRepresentation.getMidpoint();
@@ -48,6 +49,7 @@ public class MicrotubuleOrganizingCentre {
 
     public LineLikeAgentLayer initializeActin() {
         LineLikeAgentLayer filamentLayer = new LineLikeAgentLayer(simulation, membraneLayer);
+        membraneLayer.setMicrotubuleOrganizingCentre(this);
         // initialize filaments
         int currentFilaments = 0;
         Vector2D centre = circleRepresentation.getMidpoint();
@@ -69,5 +71,8 @@ public class MicrotubuleOrganizingCentre {
         return filamentLayer;
     }
 
+    public Circle getCircleRepresentation() {
+        return circleRepresentation;
+    }
 
 }

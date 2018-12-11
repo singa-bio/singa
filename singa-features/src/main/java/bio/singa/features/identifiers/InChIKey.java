@@ -32,8 +32,8 @@ public class InChIKey extends AbstractIdentifier<InChIKey> {
         super(identifier, PATTERN);
     }
 
-    public InChIKey(String identifier, Evidence origin) throws IllegalArgumentException {
-        super(identifier, PATTERN, origin);
+    public InChIKey(String identifier, Evidence evidence) throws IllegalArgumentException {
+        super(identifier, PATTERN, evidence);
     }
 
     @Override

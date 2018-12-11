@@ -11,8 +11,8 @@ public class DecayingEntity extends EntityFeature {
 
     private static final String SYMBOL = "e_Decay";
 
-    public DecayingEntity(ChemicalEntity entity, Evidence featureOrigin) {
-        super(entity, featureOrigin);
+    public DecayingEntity(ChemicalEntity entity, Evidence evidence) {
+        super(entity, evidence);
     }
 
     @Override
