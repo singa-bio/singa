@@ -124,6 +124,7 @@ public class KineticLaw {
      * Calculates the velocity of the reaction based on the entities in the concentration container.
      *
      * @param concentrationContainer The concentration container.
+     * @param isStrutCalculation The state of the numeric calculation.
      * @return The velocity.
      */
     public double calculateVelocity(ConcentrationContainer concentrationContainer, boolean isStrutCalculation) {

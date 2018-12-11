@@ -24,9 +24,9 @@ public class Polygons {
      * Returns true, if the vector is inside the polygon, or false if not. If the point is exactly on the edge it may
      * return true or false.
      *
-     * @param polygon
-     * @param vector
-     * @return
+     * @param polygon The polygon
+     * @param vector The vector.
+     * @return  True, if the vector is inside the polygon, false if not.
      */
     public static boolean isInside(Polygon polygon, Vector2D vector) {
         // checks complex (convex and intersecting polygons)

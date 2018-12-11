@@ -32,22 +32,22 @@ public class QuantityFormatter<UnitType extends Quantity<UnitType>> {
     /**
      * Formats the time to the shortest informative representation.
      *
-     * @param elapsedTime
+     * @param time The time to be formatted.
      * @return
      */
-    public static String formatTime(Quantity<Time> elapsedTime) {
+    public static String formatTime(Quantity<Time> time) {
         int bestInformativeDigits = Integer.MAX_VALUE;
         Unit<Time> bestUnit = FEMTO(SECOND);
         Unit<Time> nextBestUnit = null;
         for (Unit<Time> timeUnit : UnitProvider.TIME_UNITS) {
-            int informativeDigits = elapsedTime.to(timeUnit).getValue().intValue();
+            int informativeDigits = time.to(timeUnit).getValue().intValue();
             if (informativeDigits != 0 && informativeDigits < bestInformativeDigits) {
                 bestInformativeDigits = informativeDigits;
                 nextBestUnit = bestUnit;
                 bestUnit = timeUnit;
             }
         }
-        Quantity<Time> transformed = elapsedTime.to(bestUnit);
+        Quantity<Time> transformed = time.to(bestUnit);
         double untruncated = transformed.getValue().doubleValue();
         int truncated = transformed.getValue().intValue();
         if (nextBestUnit != null) {
