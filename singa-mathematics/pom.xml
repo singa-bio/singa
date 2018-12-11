@@ -7,12 +7,12 @@
     <parent>
         <artifactId>singa-all</artifactId>
         <groupId>bio.singa</groupId>
-        <version>0.4.2</version>
+        <version>0.5.0</version>
         <relativePath>../singa-all/pom.xml</relativePath>
     </parent>
 
     <artifactId>singa-mathematics</artifactId>
-    <version>0.4.2</version>
+    <version>0.5.0</version>
     <packaging>jar</packaging>
     <description>
         The SiNGA mathematics package handles most of the algorithms and data structures with mathematical background.
@@ -23,7 +23,7 @@
         <dependency>
             <groupId>bio.singa</groupId>
             <artifactId>singa-core</artifactId>
-            <version>0.4.2</version>
+            <version>0.5.0</version>
         </dependency>
     </dependencies>
 
