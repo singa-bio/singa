@@ -288,6 +288,7 @@ public class ClathrinMediatedEndocytosis extends QualitativeModule {
             AutomatonNode associatedNode = abortedPit.getAssociatedNode();
             ConcentrationDelta delta = new ConcentrationDelta(this, associatedNode.getConcentrationContainer().getMembraneSubsection(), cargo, abortedPit.getCargoConcentration());
             associatedNode.addPotentialDelta(delta);
+            aspiringPits.remove(abortedPit);
         }
         abortedPits.clear();
     }

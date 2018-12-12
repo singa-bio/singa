@@ -23,8 +23,7 @@ public class MicrotubuleOrganizingCentre {
         this.membraneLayer = membraneLayer;
     }
 
-    public LineLikeAgentLayer initializeMicrotubules() {
-        LineLikeAgentLayer filamentLayer = new LineLikeAgentLayer(simulation, membraneLayer);
+    public void initializeMicrotubules(LineLikeAgentLayer layer) {
         membraneLayer.setMicrotubuleOrganizingCentre(this);
         // initialize filaments
         int currentFilaments = 0;
@@ -36,19 +35,18 @@ public class MicrotubuleOrganizingCentre {
             double y = Math.sin(angle) * circleRepresentation.getRadius();
             // set starting position and direction
             Vector2D initialPosition = centre.add(new Vector2D(x, y));
-            filamentLayer.addMicrotubule(initialPosition, centre.subtract(initialPosition));
+            layer.addMicrotubule(initialPosition, centre.subtract(initialPosition));
             // increment filaments
             currentFilaments++;
         }
         // grow filaments
-        while (filamentLayer.hasGrowingFilaments()) {
-            filamentLayer.nextEpoch();
+        while (layer.hasGrowingFilaments()) {
+            layer.nextEpoch();
         }
-        return filamentLayer;
+
     }
 
-    public LineLikeAgentLayer initializeActin() {
-        LineLikeAgentLayer filamentLayer = new LineLikeAgentLayer(simulation, membraneLayer);
+    public void initializeActin(LineLikeAgentLayer layer) {
         membraneLayer.setMicrotubuleOrganizingCentre(this);
         // initialize filaments
         int currentFilaments = 0;
@@ -60,15 +58,15 @@ public class MicrotubuleOrganizingCentre {
             double y = Math.sin(angle) * circleRepresentation.getRadius();
             // set starting position and direction
             Vector2D initialPosition = centre.add(new Vector2D(x, y));
-            filamentLayer.addActin(initialPosition, centre.subtract(initialPosition));
+            layer.addActin(initialPosition, centre.subtract(initialPosition));
             // increment filaments
             currentFilaments++;
         }
         // grow filaments
-        while (filamentLayer.hasGrowingFilaments()) {
-            filamentLayer.nextEpoch();
+        while (layer.hasGrowingFilaments()) {
+            layer.nextEpoch();
         }
-        return filamentLayer;
+
     }
 
     public Circle getCircleRepresentation() {

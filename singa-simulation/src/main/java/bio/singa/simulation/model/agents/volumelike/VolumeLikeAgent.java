@@ -5,7 +5,7 @@ import bio.singa.mathematics.geometry.model.Polygon;
 /**
  * @author cl
  */
-public abstract class VolumeLikeAgent {
+public class VolumeLikeAgent {
 
     protected Polygon area;
 

@@ -48,8 +48,6 @@ public class ActinCortexAttachment extends QualitativeModule {
 
     @Override
     public void onCompletion() {
-        tetheringVesicles.forEach(vesicle -> {
-            vesicle.setVesicleState(VesicleStateRegistry.ACTIN_TETHERED);
-        });
+        tetheringVesicles.forEach(vesicle -> vesicle.setVesicleState(VesicleStateRegistry.ACTIN_TETHERED));
     }
 }
