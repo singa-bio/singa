@@ -9,24 +9,22 @@ import bio.singa.features.parameters.Environment;
 import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.vectors.Vector2D;
+import bio.singa.simulation.model.agents.pointlike.Vesicle;
+import bio.singa.simulation.model.agents.pointlike.VesicleLayer;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.graphs.AutomatonNode;
-import bio.singa.simulation.model.agents.pointlike.Vesicle;
-import bio.singa.simulation.model.agents.pointlike.VesicleLayer;
 import bio.singa.simulation.model.modules.displacement.implementations.VesicleCytoplasmDiffusion;
 import bio.singa.simulation.model.sections.CellRegion;
 import bio.singa.simulation.model.simulation.Simulation;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import tec.uom.se.ComparableQuantity;
 import tec.uom.se.quantity.Quantities;
 
-import javax.measure.Quantity;
 import javax.measure.quantity.Length;
 import java.util.concurrent.ThreadLocalRandom;
 
+import static bio.singa.chemistry.features.diffusivity.Diffusivity.SQUARE_CENTIMETRE_PER_SECOND;
 import static bio.singa.chemistry.features.permeability.MembranePermeability.CENTIMETRE_PER_SECOND;
 import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static bio.singa.simulation.model.sections.CellTopology.INNER;
@@ -44,16 +42,6 @@ class VesicleDiffusionTest {
 
     private static final ChemicalEntity water = SmallMolecule.create("water").build();
 
-    @BeforeAll
-    static void initialize() {
-        Environment.reset();
-    }
-
-    @AfterEach
-    void cleanUp() {
-        Environment.reset();
-    }
-
     @Test
     void shouldTransformConcentration() {
         Environment.setSystemExtend(Quantities.getQuantity(20, MICRO(METRE)));
@@ -65,10 +53,10 @@ class VesicleDiffusionTest {
                 Quantities.getQuantity(ThreadLocalRandom.current().nextDouble(100, 200), NANO(METRE)));
 
         ComparableQuantity<MolarConcentration> originalQuantity = Quantities.getQuantity(10.0, MOLE_PER_LITRE);
-        vesicle.getConcentrationContainer().set(OUTER, water, originalQuantity);
-        Quantity<MolarConcentration> concentration = vesicle.getConcentrationContainer().get(OUTER, water);
-        Quantity<MolarConcentration> transformedQuantity = concentration.to(MOLE_PER_LITRE);
-        assertEquals(originalQuantity.getValue().doubleValue(), transformedQuantity.getValue().doubleValue(), 1e-8);
+        vesicle.getConcentrationContainer().initialize(OUTER, water, originalQuantity);
+        double concentration = vesicle.getConcentrationContainer().get(OUTER, water);
+        double transformedQuantity = UnitRegistry.concentration(concentration).to(MOLE_PER_LITRE).getValue().doubleValue();
+        assertEquals(originalQuantity.getValue().doubleValue(), transformedQuantity, 1e-8);
     }
 
     @Test
@@ -81,10 +69,8 @@ class VesicleDiffusionTest {
                 new Vector2D(50, 50),
                 Quantities.getQuantity(100, NANO(METRE)));
 
-        vesicle.scaleScalableFeatures();
         assertEquals(2.1460983910913096E-9, vesicle.getFeature(Diffusivity.class).getValue().doubleValue(), 1e-8);
         UnitRegistry.setTime(Quantities.getQuantity(2, MICRO(SECOND)));
-        vesicle.scaleScalableFeatures();
         assertEquals(4.292196782182619E-9, vesicle.getFeature(Diffusivity.class).getValue().doubleValue(), 1e-8);
     }
 
@@ -123,8 +109,8 @@ class VesicleDiffusionTest {
         // setup species
         SmallMolecule water = new SmallMolecule.Builder("water")
                 .name("water")
-                .assignFeature(new MembranePermeability(Quantities.getQuantity(1.75e-3, CENTIMETRE_PER_SECOND), Evidence.MANUALLY_ANNOTATED))
-                .assignFeature(new Diffusivity(2.6e-6, Evidence.MANUALLY_ANNOTATED))
+                .assignFeature(new MembranePermeability(Quantities.getQuantity(1.75e-3, CENTIMETRE_PER_SECOND), Evidence.NO_EVIDENCE))
+                .assignFeature(new Diffusivity(Quantities.getQuantity(2.6e-6, SQUARE_CENTIMETRE_PER_SECOND), Evidence.NO_EVIDENCE))
                 .build();
 
         // add diffusion

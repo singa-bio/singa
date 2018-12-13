@@ -16,7 +16,7 @@ public static final String SYMBOL = "Structure3D";
     }
 
     @Override
-    public String getSymbol() {
+    public String getDescriptor() {
         return SYMBOL;
     }
     

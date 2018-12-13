@@ -19,7 +19,7 @@ public class FusionPairs extends AbstractFeature<Quantity<Dimensionless>> {
     }
 
     @Override
-    public String getSymbol() {
+    public String getDescriptor() {
         return SYMBOL;
     }
 }

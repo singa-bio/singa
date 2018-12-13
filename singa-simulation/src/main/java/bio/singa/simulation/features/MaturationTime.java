@@ -30,7 +30,7 @@ public class MaturationTime extends AbstractFeature<Quantity<Time>> {
     }
 
     @Override
-    public String getSymbol() {
+    public String getDescriptor() {
         return SYMBOL;
     }
 }

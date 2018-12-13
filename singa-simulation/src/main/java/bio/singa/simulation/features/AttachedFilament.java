@@ -16,7 +16,7 @@ public class AttachedFilament extends AbstractFeature<LineLikeAgent.FilamentType
     }
 
     @Override
-    public String getSymbol() {
+    public String getDescriptor() {
         return SYMBOL;
     }
 }

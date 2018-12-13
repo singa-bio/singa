@@ -9,10 +9,12 @@ import tec.uom.se.quantity.Quantities;
 import tec.uom.se.unit.ProductUnit;
 
 import javax.measure.Quantity;
+import javax.measure.Unit;
 
 import static bio.singa.features.units.UnitProvider.MICRO_MOLE_PER_LITRE;
 import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static tec.uom.se.AbstractUnit.ONE;
 import static tec.uom.se.unit.MetricPrefix.*;
 import static tec.uom.se.unit.Units.*;
 
@@ -78,6 +80,31 @@ class UnitRegistryTest {
         UnitRegistry.setSpace(Quantities.getQuantity(2, MICRO(METRE)));
         // 2*2*2 = 8
         assertEquals(8.0E-6 , UnitRegistry.scale(molePerLitre).getValue());
+    }
+
+    @Test
+    public void testTimeScale() {
+        Unit<?> first = ONE.divide(NANO(MOLE).divide(LITRE).multiply(MINUTE));
+        assertEquals(-1, UnitRegistry.getTimeExponent(first));
+        Unit<?> second = CENTI(METRE).pow(2);
+        assertEquals(0, UnitRegistry.getTimeExponent(second));
+    }
+
+    @Test
+    public void testSpaceScale() {
+        Unit<?> first = ONE.divide(NANO(MOLE).divide(METRE.pow(3)).multiply(MINUTE));
+        assertEquals(3, UnitRegistry.getSpaceExponent(first));
+        Unit<?> second = MOLE.divide(LITRE.pow(3));
+        assertEquals(-3, UnitRegistry.getSpaceExponent(second));
+        Unit<?> third = CENTI(METRE);
+        assertEquals(1, UnitRegistry.getSpaceExponent(third));
+    }
+
+    @Test
+    public void testDiffusivity() {
+        Unit<?> diffusivity = METRE.divide(100).pow(2).divide(SECOND);
+        assertEquals(2, UnitRegistry.getSpaceExponent(diffusivity));
+        assertEquals(-1, UnitRegistry.getTimeExponent(diffusivity));
     }
 
 }

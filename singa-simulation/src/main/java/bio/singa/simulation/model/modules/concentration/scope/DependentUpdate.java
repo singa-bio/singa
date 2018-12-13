@@ -1,13 +1,11 @@
 package bio.singa.simulation.model.modules.concentration.scope;
 
-import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.simulation.model.modules.concentration.*;
 import bio.singa.simulation.model.modules.concentration.imlementations.Diffusion;
 import bio.singa.simulation.model.modules.concentration.specifity.UpdateSpecificity;
 import bio.singa.simulation.model.sections.ConcentrationContainer;
 import bio.singa.simulation.model.simulation.Updatable;
 
-import javax.measure.Quantity;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -112,9 +110,9 @@ public class DependentUpdate implements UpdateScope {
                 halfConcentrations.put(updatable, container);
             }
             // get full concentration
-            Quantity<MolarConcentration> fullConcentration = updatable.getConcentrationContainer().get(identifier.getSubsection(), identifier.getEntity());
+            double fullConcentration = updatable.getConcentrationContainer().get(identifier.getSubsection(), identifier.getEntity());
             // add half of the full delta
-            Quantity<MolarConcentration> halfStepConcentration = fullConcentration.add(fullDelta.getQuantity().multiply(0.5));
+            double halfStepConcentration = fullConcentration + (fullDelta.getValue() * 0.5);
             // update concentration
             container.set(identifier.getSubsection(), identifier.getEntity(), halfStepConcentration);
         }

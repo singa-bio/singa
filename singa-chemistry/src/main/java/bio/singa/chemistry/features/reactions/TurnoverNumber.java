@@ -24,7 +24,7 @@ public class TurnoverNumber extends FirstOrderRateConstant implements ForwardsRa
     }
 
     @Override
-    public String getSymbol() {
+    public String getDescriptor() {
         return SYMBOL;
     }
 

@@ -16,13 +16,10 @@ public class LeafIdentifierTest {
 
     @BeforeAll
     static void initialize() {
-
         structure = StructureParser.pdb()
                 .pdbIdentifier("2w0l")
                 .parse();
-
         leaf = structure.getAllLeafSubstructures().get(26);
-        System.out.println(leaf);
     }
 
     @Test

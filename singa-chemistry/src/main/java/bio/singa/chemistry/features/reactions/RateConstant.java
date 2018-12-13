@@ -1,7 +1,7 @@
 package bio.singa.chemistry.features.reactions;
 
 import bio.singa.features.model.Evidence;
-import bio.singa.features.model.ScalableQuantityFeature;
+import bio.singa.features.model.ScalableQuantitativeFeature;
 import bio.singa.features.quantities.MolarConcentration;
 import tec.uom.se.unit.ProductUnit;
 
@@ -17,7 +17,7 @@ import static tec.uom.se.AbstractUnit.ONE;
 /**
  * @author cl
  */
-public abstract class RateConstant<ReactionRateType extends ReactionRate<ReactionRateType>> extends ScalableQuantityFeature<ReactionRateType> {
+public abstract class RateConstant<ReactionRateType extends ReactionRate<ReactionRateType>> extends ScalableQuantitativeFeature<ReactionRateType> {
 
     public static DirectionStep create(double value) {
         return new RateBuilder(value);
@@ -173,10 +173,6 @@ public abstract class RateConstant<ReactionRateType extends ReactionRate<Reactio
 
         @Override
         public RateConstant build() {
-            if (evidence == null) {
-                evidence = Evidence.MANUALLY_ANNOTATED;
-            }
-
             if (direction == FORWARDS && order == ZERO) {
                 return new ZeroOrderForwardsRateConstant(value,
                         new ProductUnit<>(concentrationUnit.divide(timeUnit)), evidence);

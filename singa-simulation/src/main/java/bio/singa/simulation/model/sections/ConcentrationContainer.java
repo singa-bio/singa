@@ -2,16 +2,12 @@ package bio.singa.simulation.model.sections;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.chemistry.entities.ComplexedChemicalEntity;
-import bio.singa.features.parameters.Environment;
 import bio.singa.features.quantities.MolarConcentration;
-import bio.singa.features.units.UnitProvider;
 import bio.singa.features.units.UnitRegistry;
-import tec.uom.se.quantity.Quantities;
 
 import javax.measure.Quantity;
 import java.util.*;
 
-import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static bio.singa.simulation.model.sections.CellTopology.INNER;
 import static bio.singa.simulation.model.sections.CellTopology.OUTER;
 
@@ -187,10 +183,10 @@ public class ConcentrationContainer {
      * @param entity The entity.
      * @return The concentration of the entity in the corresponding subsection.
      */
-    public Quantity<MolarConcentration> get(CellSubsection subsection, ChemicalEntity entity) {
+    public double get(CellSubsection subsection, ChemicalEntity entity) {
         ConcentrationPool concentrationPool = concentrations.get(subsection);
         if (concentrationPool == null) {
-            return Environment.emptyConcentration();
+            return 0.0;
         }
         return concentrationPool.get(entity);
     }
@@ -202,10 +198,10 @@ public class ConcentrationContainer {
      * @param entity The entity.
      * @return The concentration of the entity in the corresponding topology.
      */
-    public Quantity<MolarConcentration> get(CellTopology topology, ChemicalEntity entity) {
+    public double get(CellTopology topology, ChemicalEntity entity) {
         CellSubsection subsection = subsectionTopology.get(topology);
         if (subsection == null) {
-            return Environment.emptyConcentration();
+            return 0.0;
         }
         return get(subsection, entity);
     }
@@ -217,12 +213,12 @@ public class ConcentrationContainer {
      * @param entity The entity.
      * @param concentration The concentration.
      */
-    public void set(CellSubsection subsection, ChemicalEntity entity, Quantity<MolarConcentration> concentration) {
+    public void set(CellSubsection subsection, ChemicalEntity entity, double concentration) {
         concentrations.get(subsection).set(entity, concentration);
     }
 
     public void initialize(CellSubsection subsection, ChemicalEntity entity, Quantity<MolarConcentration> concentration) {
-        concentrations.get(subsection).set(entity, concentration.to(UnitRegistry.getConcentrationUnit()));
+        concentrations.get(subsection).set(entity, concentration.to(UnitRegistry.getConcentrationUnit()).getValue().doubleValue());
     }
 
     /**
@@ -232,39 +228,12 @@ public class ConcentrationContainer {
      * @param entity The entity.
      * @param concentration The concentration.
      */
-    public void set(CellTopology topology, ChemicalEntity entity, Quantity<MolarConcentration> concentration) {
+    public void set(CellTopology topology, ChemicalEntity entity, double concentration) {
         set(subsectionTopology.get(topology), entity, concentration);
     }
 
     public void initialize(CellTopology topology, ChemicalEntity entity, Quantity<MolarConcentration> concentration) {
         initialize(subsectionTopology.get(topology), entity, concentration);
-    }
-
-
-    /**
-     * Sets the concentration of the given entity in the given subsection. The concentration is assumed to be
-     * {@link UnitProvider#MOLE_PER_LITRE} but is transformed to the preferred concentration.
-     *
-     * @param subsection The subsection.
-     * @param entity The entity.
-     * @param concentration The concentration in mol/l
-     */
-    public void set(CellSubsection subsection, ChemicalEntity entity, double concentration) {
-        set(subsection, entity, Quantities.getQuantity(concentration, MOLE_PER_LITRE).to(UnitRegistry.getConcentrationUnit()));
-    }
-
-    /**
-     * Sets the concentration of the given entity in the subsection corresponding to the topological descriptor. The
-     * concentration is assumed to be {@link UnitProvider#MOLE_PER_LITRE} but is transformed to the preferred
-     * concentration.
-     *
-     * @param topology The topological descriptor.
-     * @param entity The entity.
-     * @param concentration The concentration in mol/l
-     */
-    public void set(CellTopology topology, ChemicalEntity entity, double concentration) {
-        CellSubsection subsection = subsectionTopology.get(topology);
-        set(subsection, entity, concentration);
     }
 
     /**

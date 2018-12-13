@@ -7,13 +7,6 @@ import bio.singa.features.model.Feature;
  *
  * @author cl
  */
-public interface Identifier<IdentifierType> extends Feature<IdentifierType> {
-
-    /**
-     * Returns the string representation of the identifier.
-     *
-     * @return The string representation of the identifier.
-     */
-    String getIdentifier();
+public interface Identifier  extends Feature<String>  {
 
 }

@@ -1,9 +1,8 @@
 package bio.singa.simulation.model.modules.concentration.reactants;
 
 import bio.singa.features.model.Evidence;
-import bio.singa.features.model.ScalableFeature;
-import bio.singa.features.model.ScalableQuantityFeature;
-import bio.singa.features.quantities.MolarConcentration;
+import bio.singa.features.model.ScalableQuantitativeFeature;
+import bio.singa.features.units.UnitRegistry;
 import bio.singa.simulation.exceptions.ModuleCalculationException;
 import bio.singa.simulation.model.parameters.Parameter;
 import bio.singa.simulation.model.sections.ConcentrationContainer;
@@ -36,7 +35,7 @@ public class KineticLaw {
     /**
      * The features influencing the reaction.
      */
-    private Map<String, ScalableQuantityFeature> featureMap;
+    private Map<String, ScalableQuantitativeFeature> featureMap;
 
     /**
      * The parameters remaining constant in the course of the simulation.
@@ -65,16 +64,16 @@ public class KineticLaw {
         concentrationMap.put(reactant.getEntity().getIdentifier().toString(), reactant);
     }
 
-    public void referenceFeature(String parameterIdentifier, ScalableQuantityFeature feature) {
+    public void referenceFeature(String parameterIdentifier, ScalableQuantitativeFeature feature) {
         featureMap.put(parameterIdentifier, feature);
     }
 
-    public void referenceFeature(ScalableQuantityFeature feature) {
-        featureMap.put(feature.getSymbol(), feature);
+    public void referenceFeature(ScalableQuantitativeFeature feature) {
+        featureMap.put(feature.getDescriptor(), feature);
     }
 
     public void referenceConstant(String parameterIdentifier, double constant) {
-        parameterMap.put(parameterIdentifier, new Parameter<>(parameterIdentifier, Quantities.getQuantity(constant, ONE), Evidence.MANUALLY_ANNOTATED));
+        parameterMap.put(parameterIdentifier, new Parameter<>(parameterIdentifier, Quantities.getQuantity(constant, ONE), Evidence.NO_EVIDENCE));
         expression.accept(new SetVariable(parameterIdentifier, constant));
     }
 
@@ -87,11 +86,11 @@ public class KineticLaw {
         parameterMap.put(parameter.getIdentifier(), parameter);
     }
 
-    public Map<String, ScalableQuantityFeature> getFeatureMap() {
+    public Map<String, ScalableQuantitativeFeature> getFeatureMap() {
         return featureMap;
     }
 
-    public void setFeatureMap(Map<String, ScalableQuantityFeature> featureMap) {
+    public void setFeatureMap(Map<String, ScalableQuantitativeFeature> featureMap) {
         this.featureMap = featureMap;
     }
 
@@ -115,11 +114,6 @@ public class KineticLaw {
         this.parameterMap = parameterMap;
     }
 
-    public void scaleScalableFeatures() {
-        getFeatureMap().values().forEach(ScalableFeature::scale);
-        getParameterMap().values().forEach(Parameter::scale);
-    }
-
     /**
      * Calculates the velocity of the reaction based on the entities in the concentration container.
      *
@@ -129,18 +123,20 @@ public class KineticLaw {
      */
     public double calculateVelocity(ConcentrationContainer concentrationContainer, boolean isStrutCalculation) {
         // set features
-        for (Map.Entry<String, ScalableQuantityFeature> entry : featureMap.entrySet()) {
-            Quantity<?> featureQuantity;
+        for (Map.Entry<String, ScalableQuantitativeFeature> entry : featureMap.entrySet()) {
+            double value;
             if (isStrutCalculation) {
-                featureQuantity = entry.getValue().getHalfScaledQuantity();
+                value = entry.getValue().getHalfScaledQuantity();
             } else {
-                featureQuantity = entry.getValue().getScaledQuantity();
+                value = entry.getValue().getScaledQuantity();
             }
-            SetVariable variable = new SetVariable(entry.getKey(), featureQuantity.getValue().doubleValue());
+            SetVariable variable = new SetVariable(entry.getKey(), value);
             expression.accept(variable);
         }
         // set parameters
         for (Map.Entry<String, Parameter> entry : parameterMap.entrySet()) {
+            entry.getValue().scale();
+            // TODO these are possibly not rescaled with the latest changes (refactoring feature model)
             Quantity<?> parameterQuantity;
             if (isStrutCalculation) {
                 parameterQuantity = entry.getValue().getHalfScaledQuantity();
@@ -153,13 +149,13 @@ public class KineticLaw {
         // set concentrations
         for (Map.Entry<String, Reactant> entry : concentrationMap.entrySet()) {
             Reactant reactant = entry.getValue();
-            Quantity<MolarConcentration> concentration;
+            double concentration;
             if (reactant.getPreferredConcentrationUnit() != null) {
-                concentration = concentrationContainer.get(reactant.getPreferredTopology(), reactant.getEntity()).to(reactant.getPreferredConcentrationUnit());
+                concentration = UnitRegistry.concentration(concentrationContainer.get(reactant.getPreferredTopology(), reactant.getEntity())).to(reactant.getPreferredConcentrationUnit()).getValue().doubleValue();
             } else {
                 concentration = concentrationContainer.get(reactant.getPreferredTopology(), reactant.getEntity());
             }
-            SetVariable variable = new SetVariable(entry.getKey(), concentration.getValue().doubleValue());
+            SetVariable variable = new SetVariable(entry.getKey(), concentration);
             expression.accept(variable);
         }
         // calculate

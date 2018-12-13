@@ -33,7 +33,7 @@ public class ModuleFeatureVariation<FeatureType> extends Variation<FeatureType> 
     public ModuleFeatureVariationEntry create(Object featureType) {
         try {
             Constructor<? extends Feature<FeatureType>> constructor = featureClass.getConstructor(featureType.getClass(), Evidence.class);
-            Feature<FeatureType> feature = constructor.newInstance(featureType, new Evidence(Evidence.OriginType.PREDICTION, "Variation", "Parameter variation"));
+            Feature<FeatureType> feature = constructor.newInstance(featureType, new Evidence(Evidence.SourceType.PREDICTION, "Variation", "Parameter variation"));
             return new ModuleFeatureVariationEntry(module, feature);
         } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
             throw new IllegalStateException("Unable to create Feature.", e);

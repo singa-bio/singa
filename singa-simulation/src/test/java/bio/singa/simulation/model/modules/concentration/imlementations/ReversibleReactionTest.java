@@ -56,8 +56,7 @@ class ReversibleReactionTest {
         // set concentrations
         CellSubsection subsection = EXTRACELLULAR_REGION.getInnerSubsection();
         for (AutomatonNode node : graph.getNodes()) {
-            node.getConcentrationContainer().set(subsection, speciesA, 1.0);
-            node.getConcentrationContainer().set(subsection, speciesB, 0.0);
+            node.getConcentrationContainer().initialize(subsection, speciesA, Quantities.getQuantity(1.0, MOLE_PER_LITRE));
         }
 
         RateConstant forwardsRate = RateConstant.create(5)
@@ -90,15 +89,15 @@ class ReversibleReactionTest {
         while ((currentTime = simulation.getElapsedTime().to(MILLI(SECOND))).getValue().doubleValue() < secondCheckpoint.getValue().doubleValue()) {
             simulation.nextEpoch();
             if (!firstCheckpointPassed && currentTime.getValue().doubleValue() > firstCheckpoint.getValue().doubleValue()) {
-                assertEquals(0.8901, node.getConcentrationContainer().get(subsection, speciesA).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
-                assertEquals(0.1108, node.getConcentrationContainer().get(subsection, speciesB).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
+                assertEquals(0.8901, UnitRegistry.concentration(node.getConcentrationContainer().get(subsection, speciesA)).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
+                assertEquals(0.1108, UnitRegistry.concentration(node.getConcentrationContainer().get(subsection, speciesB)).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
                 firstCheckpointPassed = true;
             }
         }
 
         // check final values
-        assertEquals(0.66666, node.getConcentrationContainer().get(subsection, speciesA).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-5);
-        assertEquals(0.33333, node.getConcentrationContainer().get(subsection, speciesB).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-5);
+        assertEquals(0.66666, UnitRegistry.concentration(node.getConcentrationContainer().get(subsection, speciesA)).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-5);
+        assertEquals(0.33333, UnitRegistry.concentration(node.getConcentrationContainer().get(subsection, speciesB)).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-5);
 
     }
 

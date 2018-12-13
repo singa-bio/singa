@@ -2,7 +2,7 @@ package bio.singa.simulation.model.modules.concentration;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.features.model.Feature;
-import bio.singa.features.model.ScalableFeature;
+import bio.singa.features.model.ScalableQuantitativeFeature;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.simulation.exceptions.NumericalInstabilityException;
 import bio.singa.simulation.model.modules.UpdateModule;
@@ -15,7 +15,6 @@ import bio.singa.simulation.model.simulation.Updatable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.measure.Quantity;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
@@ -324,7 +323,7 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
                 deltaIdentifier.getEntity().getIdentifier(),
                 deltaIdentifier.getUpdatable().getStringIdentifier(),
                 deltaIdentifier.getSubsection().getIdentifier(),
-                delta.getQuantity());
+                delta.getValue());
     }
 
     /**
@@ -344,7 +343,7 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
      * @return true if the delta is not zero.
      */
     private boolean deltaIsNotZero(ConcentrationDelta delta) {
-        return delta.getQuantity().getValue().doubleValue() != 0.0;
+        return delta.getValue() != 0.0;
     }
 
     /**
@@ -354,7 +353,7 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
      * @return true if the delta is above the numerical cutoff (not effectively zero).
      */
     private boolean deltaIsAboveNumericCutoff(ConcentrationDelta delta) {
-        return Math.abs(delta.getQuantity().getValue().doubleValue()) > deltaCutoff;
+        return Math.abs(delta.getValue()) > deltaCutoff;
     }
 
     /**
@@ -383,8 +382,8 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
         double largestLocalError = -Double.MAX_VALUE;
         ConcentrationDeltaIdentifier largestIdentifier = null;
         for (ConcentrationDeltaIdentifier identifier : supplier.getCurrentFullDeltas().keySet()) {
-            double fullDelta = supplier.getCurrentFullDeltas().get(identifier).getQuantity().getValue().doubleValue();
-            double halfDelta = supplier.getCurrentHalfDeltas().get(identifier).getQuantity().getValue().doubleValue();
+            double fullDelta = supplier.getCurrentFullDeltas().get(identifier).getValue();
+            double halfDelta = supplier.getCurrentHalfDeltas().get(identifier).getValue();
             // calculate error
             double localError = Math.abs(1 - (fullDelta / halfDelta));
             // check for numerical instabilities
@@ -473,17 +472,12 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
     }
 
     @Override
-    public void scaleScalableFeatures() {
-        featureManager.scaleScalableFeatures();
-    }
-
-    @Override
     public Set<Class<? extends Feature>> getRequiredFeatures() {
         return featureManager.getRequiredFeatures();
     }
 
     @Override
-    public <FeatureContentType extends Quantity<FeatureContentType>> Quantity<FeatureContentType> getScaledFeature(Class<? extends ScalableFeature<FeatureContentType>> featureClass) {
+    public double getScaledFeature(Class<? extends ScalableQuantitativeFeature<?>> featureClass) {
         // feature from the module (like reaction rates)
         return choseScaling(featureManager.getFeature(featureClass));
     }
@@ -494,10 +488,9 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
      *
      * @param entity The chemical entity.
      * @param featureClass The requested feature.
-     * @param <FeatureContentType> The resulting content type.
      * @return The scaled feature.
      */
-    protected <FeatureContentType extends Quantity<FeatureContentType>> Quantity<FeatureContentType> getScaledFeature(ChemicalEntity entity, Class<? extends ScalableFeature<FeatureContentType>> featureClass) {
+    protected double getScaledFeature(ChemicalEntity entity, Class<? extends ScalableQuantitativeFeature<?>> featureClass) {
         // feature from any entity (like molar mass)
         return choseScaling(entity.getFeature(featureClass));
     }
@@ -506,10 +499,9 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
      * Determines the correct scaling based on the state of the strut calculation.
      *
      * @param feature The requested feature.
-     * @param <FeatureContentType> The resulting content type.
      * @return The scaled feature.
      */
-    private <FeatureContentType extends Quantity<FeatureContentType>> Quantity<FeatureContentType> choseScaling(ScalableFeature<FeatureContentType> feature) {
+    private double choseScaling(ScalableQuantitativeFeature<?> feature) {
         if (supplier.isStrutCalculation()) {
             return feature.getHalfScaledQuantity();
         }

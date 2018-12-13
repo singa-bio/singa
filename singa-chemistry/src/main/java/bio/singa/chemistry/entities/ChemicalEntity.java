@@ -74,7 +74,7 @@ public abstract class ChemicalEntity implements Identifiable<SimpleStringIdentif
         membraneAnchored = false;
         annotations = new ArrayList<>();
         features = new ChemistryFeatureContainer();
-        IdentifierPatternRegistry.instantiate(identifier.getIdentifier()).ifPresent(this::setFeature);
+        IdentifierPatternRegistry.instantiate(identifier.getContent()).ifPresent(this::setFeature);
     }
 
     @Override
@@ -84,7 +84,7 @@ public abstract class ChemicalEntity implements Identifiable<SimpleStringIdentif
 
     @Override
     public String getName() {
-        return name.equals("Unnamed chemical entity") ? identifier.getIdentifier() : name;
+        return name.equals("Unnamed chemical entity") ? identifier.getContent() : name;
     }
 
     /**
@@ -138,7 +138,7 @@ public abstract class ChemicalEntity implements Identifiable<SimpleStringIdentif
     public List<Identifier> getAdditionalIdentifiers() {
         List<Identifier> identifiers = new ArrayList<>();
         for (Feature<?> feature : getFeatures()) {
-            if (feature.getFeatureContent() instanceof Identifier) {
+            if (feature instanceof Identifier) {
                 identifiers.add((Identifier) feature);
             }
         }
@@ -188,7 +188,7 @@ public abstract class ChemicalEntity implements Identifiable<SimpleStringIdentif
     @Override
     public String toString() {
         return "ChemicalEntity{" +
-                "identifier=" + identifier.getIdentifier() +
+                "identifier=" + identifier.getContent() +
                 ", name='" + name + '\'' +
                 '}';
     }

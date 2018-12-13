@@ -48,7 +48,7 @@ public class BioGraphRenderOptions {
     public Color getColorForUpdatable(Updatable updatable) {
         CellSubsection firstSubsection = updatable.getCellRegion().getSubsections().iterator().next();
         if (nodeHighlightEntity != null) {
-            double concentration = updatable.getConcentrationContainer().get(firstSubsection, nodeHighlightEntity).getValue().doubleValue();
+            double concentration = updatable.getConcentrationContainer().get(firstSubsection, nodeHighlightEntity);
             return nodeColorScale.getColor(concentration);
         } else {
             return Color.GRAY;

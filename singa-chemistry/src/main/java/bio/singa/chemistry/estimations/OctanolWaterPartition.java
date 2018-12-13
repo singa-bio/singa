@@ -1,6 +1,5 @@
 package bio.singa.chemistry.estimations;
 
-import bio.singa.chemistry.features.smiles.SmilesParser;
 import bio.singa.structure.elements.Element;
 import bio.singa.structure.elements.ElementProvider;
 import bio.singa.structure.model.molecules.*;
@@ -67,20 +66,6 @@ public class OctanolWaterPartition {
             default:
                 return partition.calculateCoefficientUsingNCAndNHET();
         }
-    }
-
-    public static void main(String[] args) {
-
-        String ampicilin = "[H][C@]12SC(C)(C)[C@@H](N1C(=O)[C@H]2NC(=O)[C@H](N)c1ccccc1)C(O)=O";
-        String valerolactone = "O=C1CCCCO1";
-        String oxazepam = "OC1N=C(C2=CC=CC=C2)C2=C(NC1=O)C=CC(Cl)=C2";
-
-        MoleculeGraph molecule = SmilesParser.parse(oxazepam);
-        MoleculeGraphs.replaceAromaticsWithDoubleBonds(molecule);
-
-        OctanolWaterPartition.calculateOctanolWaterPartitionCoefficient(molecule, Method.NC_NHET);
-
-
     }
 
     /**

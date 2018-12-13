@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
  *
  * @author cl
  */
-public class PubChemIdentifier extends AbstractIdentifier<PubChemIdentifier> {
+public class PubChemIdentifier extends AbstractIdentifier {
 
     /**
      * The pattern to verify the identifier.
@@ -42,7 +42,7 @@ public class PubChemIdentifier extends AbstractIdentifier<PubChemIdentifier> {
      * @return The consecutive number without the "CID:" part.
      */
     public int getConsecutiveNumber() {
-        Matcher matcherCHEBI = PATTERN.matcher(getIdentifier());
+        Matcher matcherCHEBI = PATTERN.matcher(getContent());
         if (matcherCHEBI.matches()) {
             return Integer.parseInt(matcherCHEBI.group(1));
         } else {
@@ -51,8 +51,4 @@ public class PubChemIdentifier extends AbstractIdentifier<PubChemIdentifier> {
         }
     }
 
-    @Override
-    public PubChemIdentifier getFeatureContent() {
-        return this;
-    }
 }

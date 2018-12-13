@@ -17,7 +17,7 @@ import static tec.uom.se.AbstractUnit.ONE;
  */
 public class WilkeCorrelation implements Correlation<Diffusivity> {
 
-    private static final Evidence evidence = new Evidence(Evidence.OriginType.PREDICTION,
+    private static final Evidence evidence = new Evidence(Evidence.SourceType.PREDICTION,
             "Wilke Correlation",
             "Wilke, C. R., and Pin Chang. \"Correlation of diffusion coefficients in dilute " +
                     "solutions.\" AIChE Journal 1.2 (1955): 264-270.");

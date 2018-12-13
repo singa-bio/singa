@@ -6,6 +6,7 @@ import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.chemistry.entities.ComplexedChemicalEntity;
 import bio.singa.chemistry.entities.Protein;
 import bio.singa.features.identifiers.UniProtIdentifier;
+import bio.singa.features.model.Evidence;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.features.units.UnitRegistry;
@@ -31,7 +32,7 @@ import javax.measure.quantity.Length;
 import java.util.HashSet;
 import java.util.List;
 
-import static bio.singa.features.model.Evidence.MANUALLY_ANNOTATED;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static tec.uom.se.AbstractUnit.ONE;
 import static tec.uom.se.unit.MetricPrefix.MICRO;
@@ -43,7 +44,6 @@ import static tec.uom.se.unit.Units.SECOND;
  * @author cl
  */
 class VesicleFusionTest {
-
 
     @Test
     void shouldSimulateFusionTethering() {
@@ -83,13 +83,13 @@ class VesicleFusionTest {
                 .annotation(new Annotation<>(AnnotationType.NOTE, "SNARE type", "Qbc-SNARE"))
                 .build();
 
-        ComplexedChemicalEntity snareComplex1 = ComplexedChemicalEntity.create(syntaxin3.getIdentifier().getIdentifier() + ":" + snap23.getIdentifier().getIdentifier())
+        ComplexedChemicalEntity snareComplex1 = ComplexedChemicalEntity.create(syntaxin3.getIdentifier().getContent() + ":" + snap23.getIdentifier().getContent())
                 .addAssociatedPart(syntaxin3)
                 .addAssociatedPart(snap23)
                 .annotation(new Annotation<>(AnnotationType.NOTE, "SNARE type", "Qabc-SNARE"))
                 .build();
 
-        ComplexedChemicalEntity snareComplex2 = ComplexedChemicalEntity.create(syntaxin4.getIdentifier().getIdentifier() + ":" + snap23.getIdentifier().getIdentifier())
+        ComplexedChemicalEntity snareComplex2 = ComplexedChemicalEntity.create(syntaxin4.getIdentifier().getContent() + ":" + snap23.getIdentifier().getContent())
                 .addAssociatedPart(syntaxin4)
                 .addAssociatedPart(snap23)
                 .annotation(new Annotation<>(AnnotationType.NOTE, "SNARE type", "Qabc-SNARE"))
@@ -100,7 +100,7 @@ class VesicleFusionTest {
         AutomatonNode node = graph.getNode(0, 0);
         node.setPosition(new Vector2D(50.0, 50.0));
         node.setCellRegion(CellRegion.MEMBRANE);
-        node.getConcentrationContainer().initialize(CellTopology.MEMBRANE, snareComplex1, MolarConcentration.moleculesToConcentration(10));
+        node.getConcentrationContainer().set(CellTopology.MEMBRANE, snareComplex1, MolarConcentration.moleculesToConcentration(10));
         simulation.setGraph(graph);
 
         // setup membrane
@@ -112,7 +112,7 @@ class VesicleFusionTest {
         // setup vesicle
         VesicleLayer vesicleLayer = new VesicleLayer(simulation);
         Vesicle vesicle = new Vesicle(new Vector2D(49.0, 49.0), Quantities.getQuantity(100.0, NANO(METRE)));
-        vesicle.getConcentrationContainer().initialize(CellTopology.MEMBRANE, vamp3, MolarConcentration.moleculesToConcentration(10));
+        vesicle.getConcentrationContainer().set(CellTopology.MEMBRANE, vamp3, MolarConcentration.moleculesToConcentration(10));
         vesicleLayer.addVesicle(vesicle);
         simulation.setVesicleLayer(vesicleLayer);
 
@@ -121,16 +121,16 @@ class VesicleFusionTest {
         HashSet<ChemicalEntity> qSnareEntities = new HashSet<>();
         qSnareEntities.add(snareComplex1);
         qSnareEntities.add(snareComplex2);
-        MatchingQSnares qSnares = new MatchingQSnares(qSnareEntities, MANUALLY_ANNOTATED);
+        MatchingQSnares qSnares = new MatchingQSnares(qSnareEntities, Evidence.NO_EVIDENCE);
         fusion.setFeature(qSnares);
 
         HashSet<ChemicalEntity> rSnareEntities = new HashSet<>();
         rSnareEntities.add(vamp2);
         rSnareEntities.add(vamp3);
-        MatchingRSnares rSnares = new MatchingRSnares(rSnareEntities, MANUALLY_ANNOTATED);
+        MatchingRSnares rSnares = new MatchingRSnares(rSnareEntities, Evidence.NO_EVIDENCE);
         fusion.setFeature(rSnares);
         fusion.initializeComplexes();
-        fusion.setFeature(new FusionPairs(Quantities.getQuantity(3, ONE), MANUALLY_ANNOTATED));
+        fusion.setFeature(new FusionPairs(Quantities.getQuantity(3, ONE), Evidence.NO_EVIDENCE));
         fusion.setFeature(TetheringTime.DEFAULT_TETHERING_TIME);
         fusion.setFeature(AttachmentDistance.DEFAULT_DYNEIN_ATTACHMENT_DISTANCE);
         fusion.setSimulation(simulation);

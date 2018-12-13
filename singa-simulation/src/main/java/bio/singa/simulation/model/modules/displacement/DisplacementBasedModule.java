@@ -2,7 +2,7 @@ package bio.singa.simulation.model.modules.displacement;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.features.model.Feature;
-import bio.singa.features.model.ScalableFeature;
+import bio.singa.features.model.ScalableQuantitativeFeature;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.vectors.Vector2D;
@@ -15,7 +15,6 @@ import bio.singa.simulation.model.simulation.UpdateScheduler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.measure.Quantity;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -115,17 +114,12 @@ public class DisplacementBasedModule implements UpdateModule {
     }
 
     @Override
-    public void scaleScalableFeatures() {
-        featureManager.scaleScalableFeatures();
-    }
-
-    @Override
     public Set<Class<? extends Feature>> getRequiredFeatures() {
         return featureManager.getRequiredFeatures();
     }
 
     @Override
-    public <FeatureContentType extends Quantity<FeatureContentType>> Quantity<FeatureContentType> getScaledFeature(Class<? extends ScalableFeature<FeatureContentType>> featureClass) {
+    public double getScaledFeature(Class<? extends ScalableQuantitativeFeature<?>> featureClass) {
         return featureManager.getFeature(featureClass).getScaledQuantity();
     }
 
@@ -145,8 +139,8 @@ public class DisplacementBasedModule implements UpdateModule {
         return featureManager.getAllFeatures();
     }
 
-    protected <FeatureContentType extends Quantity<FeatureContentType>> Quantity<FeatureContentType> getScaledFeature(ChemicalEntity entity, Class<? extends ScalableFeature<FeatureContentType>> featureClass) {
-        ScalableFeature<FeatureContentType> feature = entity.getFeature(featureClass);
+    protected double getScaledFeature(ChemicalEntity entity, Class<? extends ScalableQuantitativeFeature<?>> featureClass) {
+        ScalableQuantitativeFeature<?> feature = entity.getFeature(featureClass);
         return feature.getScaledQuantity();
     }
 
@@ -204,4 +198,6 @@ public class DisplacementBasedModule implements UpdateModule {
     public Set<ChemicalEntity> getReferencedEntities() {
         return referencedChemicalEntities;
     }
+
+
 }

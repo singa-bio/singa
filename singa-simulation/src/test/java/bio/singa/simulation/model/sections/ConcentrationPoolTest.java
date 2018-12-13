@@ -3,14 +3,10 @@ package bio.singa.simulation.model.sections;
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.chemistry.entities.SmallMolecule;
 import bio.singa.features.parameters.Environment;
-import bio.singa.features.quantities.MolarConcentration;
 import org.junit.jupiter.api.Test;
-import tec.uom.se.ComparableQuantity;
-import tec.uom.se.quantity.Quantities;
 
 import java.util.Set;
 
-import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -25,8 +21,7 @@ class ConcentrationPoolTest {
     @Test
     void getReferencedEntities() {
         ConcentrationPool pool = new ConcentrationPool();
-        ComparableQuantity<MolarConcentration> expected = Quantities.getQuantity(1.0, MOLE_PER_LITRE);
-        pool.set(entityA, expected);
+        pool.set(entityA, 1.0);
         Set<ChemicalEntity> entities = pool.getReferencedEntities();
         assertEquals(entities.size(), 1);
         assertTrue(entities.contains(entityA));
@@ -36,10 +31,9 @@ class ConcentrationPoolTest {
     void testGetAndSet() {
         Environment.reset();
         ConcentrationPool pool = new ConcentrationPool();
-        ComparableQuantity<MolarConcentration> expected = Quantities.getQuantity(1.0, MOLE_PER_LITRE);
-        pool.set(entityA, expected);
-        assertEquals(expected, pool.get(entityA));
-        assertEquals(Environment.emptyConcentration(), pool.get(entityB));
+        pool.set(entityA, 1.0);
+        assertEquals(1.0, pool.get(entityA));
+        assertEquals(0.0, pool.get(entityB));
     }
 
 }

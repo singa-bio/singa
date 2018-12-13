@@ -1,7 +1,6 @@
 package bio.singa.simulation.model.modules.concentration.imlementations;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
-import bio.singa.features.units.UnitRegistry;
 import bio.singa.simulation.model.modules.concentration.ConcentrationBasedModule;
 import bio.singa.simulation.model.modules.concentration.ConcentrationDelta;
 import bio.singa.simulation.model.modules.concentration.ModuleBuilder;
@@ -110,9 +109,9 @@ public abstract class Reaction extends ConcentrationBasedModule<SectionDeltaFunc
         for (Reactant reactant : getStoichiometricReactants()) {
             if (reactant.getRole() == role) {
                 if (isElementary()) {
-                    product *= concentrationContainer.get(supplier.getCurrentSubsection(), reactant.getEntity()).getValue().doubleValue();
+                    product *= concentrationContainer.get(supplier.getCurrentSubsection(), reactant.getEntity());
                 } else {
-                    product *= Math.pow(concentrationContainer.get(supplier.getCurrentSubsection(), reactant.getEntity()).getValue().doubleValue(),
+                    product *= Math.pow(concentrationContainer.get(supplier.getCurrentSubsection(), reactant.getEntity()),
                             reactant.getReactionOrder());
                 }
             }
@@ -131,11 +130,11 @@ public abstract class Reaction extends ConcentrationBasedModule<SectionDeltaFunc
         double velocity = calculateVelocity(concentrationContainer);
         for (Reactant substrate : substrates) {
             double deltaValue = -velocity * substrate.getStoichiometricNumber();
-            deltas.add(new ConcentrationDelta(this, supplier.getCurrentSubsection(), substrate.getEntity(), UnitRegistry.concentration(deltaValue)));
+            deltas.add(new ConcentrationDelta(this, supplier.getCurrentSubsection(), substrate.getEntity(), deltaValue));
         }
         for (Reactant product : products) {
             double deltaValue = velocity * product.getStoichiometricNumber();
-            deltas.add(new ConcentrationDelta(this, supplier.getCurrentSubsection(), product.getEntity(), UnitRegistry.concentration(deltaValue)));
+            deltas.add(new ConcentrationDelta(this, supplier.getCurrentSubsection(), product.getEntity(), deltaValue));
         }
         return deltas;
     }

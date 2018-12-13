@@ -104,7 +104,7 @@ public class GraphImageWriter implements UpdateEventListener<GraphUpdatedEvent> 
                 Files.createDirectory(workspaceFolder);
             }
             for (ChemicalEntity observedEntity : observedEntities) {
-                Path path = workspaceFolder.resolve(observedEntity.getIdentifier().getIdentifier().replace("(\\W|^_)*", "_"));
+                Path path = workspaceFolder.resolve(observedEntity.getIdentifier().getContent().replace("(\\W|^_)*", "_"));
                 paths.put(observedEntity, path);
                 if (Files.exists(path)) {
                     deleteDirectory(path.toFile());

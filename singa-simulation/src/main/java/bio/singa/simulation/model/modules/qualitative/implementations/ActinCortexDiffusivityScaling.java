@@ -35,7 +35,7 @@ public class ActinCortexDiffusivityScaling extends QualitativeModule {
     public static final Diffusivity DEFAULT_CORTEX_DIFFUSIVITY = new Diffusivity(Quantities.getQuantity(2.45E-4, MICRO(METRE).pow(2).divide(SECOND)).asType(Diffusivity.class), LANG2000);
     public static final Diffusivity DEFAULT_CYTOPLASM_DIFFUSIFITY = Diffusivity.calculate(Quantities.getQuantity(50.0, NANO(METRE)));
 
-    private static final Evidence evidence = new Evidence(Evidence.OriginType.PREDICTION, "Cortex Diffusivity Estimation", "");
+    private static final Evidence evidence = new Evidence(Evidence.SourceType.PREDICTION, "Cortex Diffusivity Estimation", "");
 
     private Quantity<Diffusivity> slope;
 
@@ -60,7 +60,7 @@ public class ActinCortexDiffusivityScaling extends QualitativeModule {
     public void calculateUpdates() {
         cortexDiffusivity = getFeature(CortexDiffusivity.class).to(MICRO(METRE).pow(2).divide(SECOND).asType(Diffusivity.class));
         cytoplasmDiffusivity = getFeature(CytoplasmDiffusivity.class).to(MICRO(METRE).pow(2).divide(SECOND).asType(Diffusivity.class));
-        double concentration = UnitRegistry.convert(getFeature(MaximalConcentration.class).getFeatureContent()).getValue().doubleValue();
+        double concentration = UnitRegistry.convert(getFeature(MaximalConcentration.class).getContent()).getValue().doubleValue();
         slope = Quantities.getQuantity((cortexDiffusivity.getValue().doubleValue() - cytoplasmDiffusivity.getValue().doubleValue()) / concentration, MICRO(METRE).pow(2).divide(SECOND).asType(Diffusivity.class));
 
         for (Vesicle vesicle : simulation.getVesicleLayer().getVesicles()) {
@@ -74,7 +74,7 @@ public class ActinCortexDiffusivityScaling extends QualitativeModule {
     public void estimateDiffusivity(Vesicle vesicle) {
         // get entry with largest area (main node)
         AutomatonNode node = vesicle.getAssociatedNodes().entrySet().stream().max(Map.Entry.comparingByValue()).get().getKey();
-        double concentration = node.getConcentrationContainer().get(INNER, tropomyosin).getValue().doubleValue();
+        double concentration = node.getConcentrationContainer().get(INNER, tropomyosin);
         ComparableQuantity<Diffusivity> quantity = (ComparableQuantity<Diffusivity>) slope.multiply(concentration).add(cytoplasmDiffusivity);
         if (quantity.isLessThan(cytoplasmDiffusivity)) {
             diffusivities.put(vesicle, new Diffusivity(cytoplasmDiffusivity, evidence));

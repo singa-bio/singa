@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 /**
  * @author cl
  */
-public class GoTerm extends AbstractIdentifier<GoTerm> {
+public class GoTerm extends AbstractIdentifier {
 
     /**
      * The pattern to verify the identifier.
@@ -36,7 +36,7 @@ public class GoTerm extends AbstractIdentifier<GoTerm> {
      * @return The consecutive number without the "GO:" part.
      */
     public int getConsecutiveNumber() {
-        Matcher matcherCHEBI = PATTERN.matcher(getIdentifier());
+        Matcher matcherCHEBI = PATTERN.matcher(getContent());
         if (matcherCHEBI.matches()) {
             return Integer.parseInt(matcherCHEBI.group(1));
         } else {
@@ -44,11 +44,5 @@ public class GoTerm extends AbstractIdentifier<GoTerm> {
             throw new IllegalStateException("This identifier has been created with an unexpected pattern.");
         }
     }
-
-    @Override
-    public GoTerm getFeatureContent() {
-        return this;
-    }
-
 
 }

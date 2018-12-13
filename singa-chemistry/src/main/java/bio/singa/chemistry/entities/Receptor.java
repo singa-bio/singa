@@ -37,7 +37,7 @@ public class Receptor extends Protein {
 
     private void generateReceptorState(ChemicalEntity chemicalEntity) {
         boundReceptorStates.put(chemicalEntity,
-                new ComplexedChemicalEntity.Builder(getIdentifier().getIdentifier() + "-" + chemicalEntity.getIdentifier().getIdentifier())
+                new ComplexedChemicalEntity.Builder(getIdentifier().getContent() + "-" + chemicalEntity.getIdentifier().getContent())
                         .name("complex of " + getName() + " and " + chemicalEntity.getName())
                         .addAssociatedPart(this)
                         .addAssociatedPart(chemicalEntity)

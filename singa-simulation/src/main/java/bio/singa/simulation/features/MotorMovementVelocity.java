@@ -1,7 +1,7 @@
 package bio.singa.simulation.features;
 
 import bio.singa.features.model.Evidence;
-import bio.singa.features.model.ScalableQuantityFeature;
+import bio.singa.features.model.ScalableQuantitativeFeature;
 import tec.uom.se.quantity.Quantities;
 import tec.uom.se.unit.ProductUnit;
 
@@ -16,7 +16,7 @@ import static tec.uom.se.unit.Units.SECOND;
 /**
  * @author cl
  */
-public class MotorMovementVelocity extends ScalableQuantityFeature<Speed> {
+public class MotorMovementVelocity extends ScalableQuantitativeFeature<Speed> {
 
     private static final Unit<Speed> NANOMETRE_PER_SECOND = new ProductUnit<>(NANO(METRE).divide(SECOND));
 
@@ -36,7 +36,7 @@ public class MotorMovementVelocity extends ScalableQuantityFeature<Speed> {
     }
 
     @Override
-    public String getSymbol() {
+    public String getDescriptor() {
         return SYMBOL;
     }
 

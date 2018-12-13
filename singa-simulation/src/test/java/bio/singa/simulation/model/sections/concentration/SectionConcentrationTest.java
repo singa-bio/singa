@@ -3,6 +3,7 @@ package bio.singa.simulation.model.sections.concentration;
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.chemistry.entities.SmallMolecule;
 import bio.singa.features.quantities.MolarConcentration;
+import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.simulation.model.agents.pointlike.Vesicle;
 import bio.singa.simulation.model.agents.pointlike.VesicleLayer;
@@ -58,7 +59,7 @@ class SectionConcentrationTest {
         ComparableQuantity<MolarConcentration> expected = Quantities.getQuantity(10, NANO_MOLE_PER_LITRE);
         ci.addInitialConcentration(new SectionConcentration(CELL_OUTER_MEMBRANE_REGION, CELL_OUTER_MEMBRANE_REGION.getInnerSubsection(), entity, expected));
         ci.initialize(simulation);
-        assertEquals(expected, simulation.getGraph().getNode(0, 0).getConcentrationContainer().get(CellTopology.INNER, entity).to(expected.getUnit()));
+        assertEquals(expected, UnitRegistry.concentration(simulation.getGraph().getNode(0, 0).getConcentrationContainer().get(CellTopology.INNER, entity)).to(expected.getUnit()));
     }
 
 

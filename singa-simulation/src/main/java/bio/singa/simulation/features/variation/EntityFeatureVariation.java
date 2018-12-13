@@ -33,7 +33,7 @@ public class EntityFeatureVariation<FeatureType> extends Variation<FeatureType> 
     public EntityFeatureVariationEntry create(Object featureType) {
         try {
             Constructor<? extends Feature<FeatureType>> constructor = featureClass.getConstructor(featureType.getClass(), Evidence.class);
-            Feature<FeatureType> feature = constructor.newInstance(featureType, new Evidence(Evidence.OriginType.PREDICTION, "Variation", "Parameter variation"));
+            Feature<FeatureType> feature = constructor.newInstance(featureType, new Evidence(Evidence.SourceType.PREDICTION, "Variation", "Parameter variation"));
             return new EntityFeatureVariationEntry(entity, feature);
         } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
             throw new IllegalStateException("Unable to create Feature.", e);

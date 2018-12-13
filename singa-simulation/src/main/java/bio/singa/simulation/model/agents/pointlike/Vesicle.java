@@ -1,13 +1,11 @@
 package bio.singa.simulation.model.agents.pointlike;
 
-import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.chemistry.features.ChemistryFeatureContainer;
 import bio.singa.chemistry.features.diffusivity.Diffusivity;
 import bio.singa.features.model.Feature;
 import bio.singa.features.model.FeatureContainer;
 import bio.singa.features.model.Featureable;
 import bio.singa.features.parameters.Environment;
-import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.mathematics.geometry.faces.Circle;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.simulation.model.agents.linelike.LineLikeAgent;
@@ -180,14 +178,6 @@ public class Vesicle implements Updatable, Featureable {
         area = calculateArea(radius);
         volume = calculateVolume(radius);
         setFeature(Diffusivity.calculate(radius));
-    }
-
-    public void setConcentration(ChemicalEntity entity, Quantity<MolarConcentration> concentration) {
-        concentrationManager.getConcentrationContainer().set(region.getInnerSubsection(), entity, concentration);
-    }
-
-    public Quantity<MolarConcentration> getConcentration(ChemicalEntity entity) {
-        return concentrationManager.getConcentrationContainer().get(region.getInnerSubsection(), entity);
     }
 
     public Map<AutomatonNode, Double> getAssociatedNodes() {

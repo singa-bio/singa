@@ -2,10 +2,9 @@ package bio.singa.simulation.model.modules.concentration.imlementations;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.chemistry.features.diffusivity.Diffusivity;
+import bio.singa.features.model.Evidence;
 import bio.singa.features.model.Feature;
 import bio.singa.features.model.FeatureProvider;
-import bio.singa.features.quantities.MolarConcentration;
-import bio.singa.features.units.UnitRegistry;
 import bio.singa.simulation.features.Cargoes;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.modules.concentration.ConcentrationBasedModule;
@@ -19,10 +18,7 @@ import bio.singa.simulation.model.sections.CellSubsection;
 import bio.singa.simulation.model.sections.ConcentrationContainer;
 import bio.singa.simulation.model.simulation.Simulation;
 
-import javax.measure.Quantity;
 import java.util.*;
-
-import static bio.singa.features.model.Evidence.MANUALLY_ANNOTATED;
 
 /**
  * Diffusion is the fundamental force governing the random movement of molecules in cells. As a
@@ -34,7 +30,7 @@ import static bio.singa.features.model.Evidence.MANUALLY_ANNOTATED;
  * diffusion to nodes with non membrane regions.
  * <pre>
  *  // define the feature to parametrize the diffusion
- *  Diffusivity diffusivity = new Diffusivity(Quantities.getQuantity(2.28E-05, SQUARE_CENTIMETRE_PER_SECOND),
+ *  Diffusivity diffusivity = new Diffusivity(Quantities.getValue(2.28E-05, SQUARE_CENTIMETRE_PER_SECOND),
  *         Evidence.MANUALLY_ANNOTATED);
  *  // assign it to the chemical entity
  *  SmallMolecule ammonia = new SmallMolecule.Builder("ammonia")
@@ -63,7 +59,7 @@ public class Diffusion extends ConcentrationBasedModule<EntityDeltaFunction> {
         addDeltaFunction(function);
         // feature
         getRequiredFeatures().add(Diffusivity.class);
-        Set<ChemicalEntity> cargoes = getFeature(Cargoes.class).getFeatureContent();
+        Set<ChemicalEntity> cargoes = getFeature(Cargoes.class).getContent();
         addReferencedEntities(cargoes);
         addModuleToSimulation();
     }
@@ -72,8 +68,8 @@ public class Diffusion extends ConcentrationBasedModule<EntityDeltaFunction> {
         AutomatonNode node = (AutomatonNode) supplier.getCurrentUpdatable();
         ChemicalEntity entity = supplier.getCurrentEntity();
         CellSubsection subsection = supplier.getCurrentSubsection();
-        final double currentConcentration = concentrationContainer.get(subsection, entity).getValue().doubleValue();
-        final double diffusivity = getScaledFeature(entity, Diffusivity.class).getValue().doubleValue();
+        final double currentConcentration = concentrationContainer.get(subsection, entity);
+        final double diffusivity = getScaledFeature(entity, Diffusivity.class);
         // calculate entering term
         int numberOfNeighbors = 0;
         double concentration = 0;
@@ -88,20 +84,16 @@ public class Diffusion extends ConcentrationBasedModule<EntityDeltaFunction> {
                     // if current is non-membrane and neighbour is non-membrane
                     // classical diffusion
                     // if the neighbour actually contains the same subsection
-                    final Quantity<MolarConcentration> availableConcentration = neighbour.getConcentrationContainer().get(subsection, entity);
-                    if (availableConcentration != null) {
-                        concentration += availableConcentration.getValue().doubleValue();
-                        numberOfNeighbors++;
-                    }
+                    double availableConcentration = neighbour.getConcentrationContainer().get(subsection, entity);
+                    concentration += availableConcentration;
+                    numberOfNeighbors++;
 
                 } else {
                     // if current is non-membrane and neighbour is membrane
                     if (neighborIsPotentialSource(node, neighbour)) {
                         // leaving amount stays unchanged, but entering concentration is relevant
-                        final Quantity<MolarConcentration> availableConcentration = neighbour.getConcentrationContainer().get(subsection, entity);
-                        if (availableConcentration != null) {
-                            concentration += availableConcentration.getValue().doubleValue();
-                        }
+                        double availableConcentration = neighbour.getConcentrationContainer().get(subsection, entity);
+                        concentration += availableConcentration;
                     }
                     // if current is membrane and neighbour is non-membrane
                     if (neighborIsPotentialTarget(node, neighbour)) {
@@ -119,7 +111,7 @@ public class Diffusion extends ConcentrationBasedModule<EntityDeltaFunction> {
         // calculate next concentration
         final double delta = enteringConcentration - leavingConcentration;
         // return delta
-        return new ConcentrationDelta(this, subsection, entity, UnitRegistry.concentration(delta));
+        return new ConcentrationDelta(this, subsection, entity, delta);
     }
 
     private boolean onlyForReferencedEntities(ConcentrationContainer container) {
@@ -194,17 +186,17 @@ public class Diffusion extends ConcentrationBasedModule<EntityDeltaFunction> {
         }
 
         public BuildStep onlyFor(ChemicalEntity chemicalEntity) {
-            module.setFeature(new Cargoes(Collections.singleton(chemicalEntity), MANUALLY_ANNOTATED));
+            module.setFeature(new Cargoes(Collections.singleton(chemicalEntity), Evidence.NO_EVIDENCE));
             return this;
         }
 
         public BuildStep forAll(ChemicalEntity... chemicalEntities) {
-            module.setFeature(new Cargoes(new HashSet<>(Arrays.asList(chemicalEntities)), MANUALLY_ANNOTATED));
+            module.setFeature(new Cargoes(new HashSet<>(Arrays.asList(chemicalEntities)), Evidence.NO_EVIDENCE));
             return this;
         }
 
         public BuildStep forAll(Collection<ChemicalEntity> chemicalEntities) {
-            module.setFeature(new Cargoes(new HashSet<>(chemicalEntities), MANUALLY_ANNOTATED));
+            module.setFeature(new Cargoes(new HashSet<>(chemicalEntities), Evidence.NO_EVIDENCE));
             return this;
         }
 

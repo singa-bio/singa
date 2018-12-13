@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 /**
  * @author cl
  */
-public class PDBLigandIdentifier extends AbstractIdentifier<PDBLigandIdentifier> {
+public class PDBLigandIdentifier extends AbstractIdentifier {
 
     public static final Pattern PATTERN = Pattern.compile("([A-Z0-9]{3})");
 
@@ -20,9 +20,5 @@ public class PDBLigandIdentifier extends AbstractIdentifier<PDBLigandIdentifier>
         super(identifier, PATTERN, evidence);
     }
 
-    @Override
-    public PDBLigandIdentifier getFeatureContent() {
-        return this;
-    }
 
 }

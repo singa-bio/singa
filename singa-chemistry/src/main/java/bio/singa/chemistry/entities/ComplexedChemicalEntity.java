@@ -18,7 +18,7 @@ public class ComplexedChemicalEntity extends ChemicalEntity {
 
     private static final Logger logger = LoggerFactory.getLogger(ComplexedChemicalEntity.class);
 
-    private static final Evidence computedMassOrigin = new Evidence(Evidence.OriginType.PREDICTION,
+    private static final Evidence computedMassOrigin = new Evidence(Evidence.SourceType.PREDICTION,
             "computed by sum of components",
             "none");
 

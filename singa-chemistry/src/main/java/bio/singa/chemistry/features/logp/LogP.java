@@ -1,6 +1,6 @@
 package bio.singa.chemistry.features.logp;
 
-import bio.singa.chemistry.features.FeatureRegistry;
+import bio.singa.chemistry.features.FeatureProviderRegistry;
 import bio.singa.features.model.AbstractFeature;
 import bio.singa.features.model.Evidence;
 
@@ -16,11 +16,11 @@ public class LogP extends AbstractFeature<Double> {
     }
 
     public static void register() {
-        FeatureRegistry.addProviderForFeature(LogP.class, LogPProvider.class);
+        FeatureProviderRegistry.addProviderForFeature(LogP.class, LogPProvider.class);
     }
 
     @Override
-    public String getSymbol() {
+    public String getDescriptor() {
         return SYMBOL;
     }
 

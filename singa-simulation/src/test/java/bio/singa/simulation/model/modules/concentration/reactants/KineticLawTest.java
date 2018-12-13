@@ -14,6 +14,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import tec.uom.se.quantity.Quantities;
 
+import static bio.singa.chemistry.features.diffusivity.Diffusivity.SQUARE_CENTIMETRE_PER_SECOND;
 import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static tec.uom.se.unit.MetricPrefix.MICRO;
@@ -39,8 +40,8 @@ public class KineticLawTest {
         // create law
         KineticLaw kl = new KineticLaw("1-D*ATP");
         // reference a feature
-        Diffusivity diffusivity = new Diffusivity(0.01, Evidence.MANUALLY_ANNOTATED);
-        kl.referenceFeature(diffusivity.getSymbol(), diffusivity);
+        Diffusivity diffusivity = new Diffusivity(Quantities.getQuantity(0.01, SQUARE_CENTIMETRE_PER_SECOND), Evidence.NO_EVIDENCE);
+        kl.referenceFeature(diffusivity.getDescriptor(), diffusivity);
         diffusivity.scale();
         // reference a reactant to get concentration from
         SmallMolecule atp = SmallMolecule.create("ATP")
@@ -61,11 +62,9 @@ public class KineticLawTest {
         // create law
         KineticLaw kl = new KineticLaw("a+b+c");
         // reference a parameter
-        kl.referenceParameter(new Parameter<>("a", UnitRegistry.concentration(1.0), Evidence.MANUALLY_ANNOTATED));
-        kl.referenceParameter(new Parameter<>("b", UnitRegistry.concentration(0.1, MOLE_PER_LITRE), Evidence.MANUALLY_ANNOTATED));
-        kl.referenceParameter(new Parameter<>("c", Quantities.getQuantity(1.0, MOLE_PER_LITRE.divide(MICRO(SECOND))), Evidence.MANUALLY_ANNOTATED));
-        // rescale
-        kl.scaleScalableFeatures();
+        kl.referenceParameter(new Parameter<>("a", UnitRegistry.concentration(1.0), Evidence.NO_EVIDENCE));
+        kl.referenceParameter(new Parameter<>("b", UnitRegistry.concentration(0.1, MOLE_PER_LITRE), Evidence.NO_EVIDENCE));
+        kl.referenceParameter(new Parameter<>("c", Quantities.getQuantity(1.0, MOLE_PER_LITRE.divide(MICRO(SECOND))), Evidence.NO_EVIDENCE));
         // exemplary concentration container
         ConcentrationContainer cc = new ConcentrationContainer();
         // assertion

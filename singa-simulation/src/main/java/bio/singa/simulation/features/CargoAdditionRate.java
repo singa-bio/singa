@@ -25,7 +25,7 @@ public class CargoAdditionRate extends FirstOrderRateConstant implements Forward
     }
 
     @Override
-    public String getSymbol() {
+    public String getDescriptor() {
         return SYMBOL;
     }
 

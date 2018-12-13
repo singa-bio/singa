@@ -15,14 +15,13 @@ import tec.uom.se.quantity.Quantities;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Length;
-import javax.measure.quantity.Speed;
 
 /**
  * @author cl
  */
 public class EndocytosisActinBoost extends DisplacementBasedModule {
 
-    private Quantity<Speed> scaledVelocity;
+    private double scaledVelocity;
 
     public EndocytosisActinBoost() {
         // delta function
@@ -34,19 +33,19 @@ public class EndocytosisActinBoost extends DisplacementBasedModule {
 
     @Override
     public void calculateUpdates() {
-        scaledVelocity = getScaledFeature(ActinBoostVelocity.class).multiply(2.0).divide(60.0);
+        scaledVelocity = getScaledFeature(ActinBoostVelocity.class) * 2.0 / 60.0;
         super.calculateUpdates();
     }
 
     public DisplacementDelta calculateDisplacement(Vesicle vesicle) {
         DecayingEntity decayingEntity = getFeature(DecayingEntity.class);
         // calculate speed based on clathrins available
-        double pullingEntity = MolarConcentration.concentrationToMolecules(vesicle.getConcentrationContainer().get(CellTopology.MEMBRANE, decayingEntity.getFeatureContent())).getValue().doubleValue();
+        double pullingEntity = MolarConcentration.concentrationToMolecules(vesicle.getConcentrationContainer().get(CellTopology.MEMBRANE, decayingEntity.getContent())).getValue().doubleValue();
         if (pullingEntity < 1) {
             vesicle.setVesicleState(VesicleStateRegistry.UNATTACHED);
         }
-        Quantity<Speed> systemSpeed = scaledVelocity.multiply(pullingEntity);
-        Quantity<Length> distance = Quantities.getQuantity(systemSpeed.getValue().doubleValue(), UnitRegistry.getSpaceUnit());
+        double systemSpeed = scaledVelocity * pullingEntity;
+        Quantity<Length> distance = Quantities.getQuantity(systemSpeed, UnitRegistry.getSpaceUnit());
         // determine direction
         Vector2D centre = simulation.getMembraneLayer().getMicrotubuleOrganizingCentre().getCircleRepresentation().getMidpoint();
         Vector2D direction = centre.subtract(vesicle.getCurrentPosition()).normalize();

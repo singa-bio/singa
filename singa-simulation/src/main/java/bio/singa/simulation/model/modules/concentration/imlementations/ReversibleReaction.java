@@ -13,10 +13,8 @@ import bio.singa.simulation.model.modules.concentration.specifity.SectionSpecifi
 import bio.singa.simulation.model.sections.ConcentrationContainer;
 import bio.singa.simulation.model.simulation.Simulation;
 
-import javax.measure.Quantity;
-
-import static bio.singa.simulation.model.modules.concentration.reactants.ReactantRole.SUBSTRATE;
 import static bio.singa.simulation.model.modules.concentration.reactants.ReactantRole.PRODUCT;
+import static bio.singa.simulation.model.modules.concentration.reactants.ReactantRole.SUBSTRATE;
 
 /**
  * Reversible reactions are {@link Reaction}s where the substrates form products, and products can also from substrates.
@@ -28,27 +26,22 @@ import static bio.singa.simulation.model.modules.concentration.reactants.Reactan
  * where v is the velocity of the reaction, kfwd is any {@link ForwardsRateConstant}, kbwd is any
  * {@link BackwardsRateConstant}, cA is the concentration of the substrate, and cB is the concentration of the product.
  * Reversible reactions are {@link SectionSpecific} and supply {@link IndependentUpdate}s.
- *
  * <pre>
  *  // setup kfwd
  *  RateConstant forwardsRate = RateConstant.create(10)
  *         .forward().firstOrder()
  *         .timeUnit(SECOND)
  *         .build();
- *
  *  // setup kbwd
  *  RateConstant backwardsRate = RateConstant.create(10)
  *         .backward().firstOrder()
  *         .timeUnit(SECOND)
  *         .build();
- *
  *  // set up species
  *  SmallMolecule speciesA = new SmallMolecule.Builder("A")
  *         .build();
- *
  *  SmallMolecule speciesB = new SmallMolecule.Builder("A")
  *         .build();
- *
  *  // create reaction
  *  ReversibleReaction.inSimulation(simulation)
  *         .addSubstrate(speciesA)
@@ -84,14 +77,13 @@ public class ReversibleReaction extends Reaction {
 
     public double calculateVelocity(ConcentrationContainer concentrationContainer) {
         // reaction rates for this reaction
-        final Quantity forwardsRateConstant = getScaledForwardsReactionRate();
-        final Quantity backwardsRateConstant = getScaledBackwardsReactionRate();
+        final double forwardsRateConstant = getScaledForwardsReactionRate();
+        final double backwardsRateConstant = getScaledBackwardsReactionRate();
         // concentrations of substrates that influence the reaction
         double substrateConcentration = determineEffectiveConcentration(concentrationContainer, SUBSTRATE);
         double productConcentration = determineEffectiveConcentration(concentrationContainer, PRODUCT);
         // calculate acceleration
-        return substrateConcentration * forwardsRateConstant.getValue().doubleValue() -
-                productConcentration * backwardsRateConstant.getValue().doubleValue();
+        return substrateConcentration * forwardsRateConstant - productConcentration * backwardsRateConstant;
     }
 
     @Override
@@ -123,7 +115,7 @@ public class ReversibleReaction extends Reaction {
         }
     }
 
-    private Quantity getScaledForwardsReactionRate() {
+    private double getScaledForwardsReactionRate() {
         if (forwardsReactionRate == null) {
             for (Feature<?> feature : getFeatures()) {
                 // any forwards rate constant
@@ -140,7 +132,7 @@ public class ReversibleReaction extends Reaction {
 
     }
 
-    private Quantity getScaledBackwardsReactionRate() {
+    private double getScaledBackwardsReactionRate() {
         if (backwardsReactionRate == null) {
             for (Feature<?> feature : getFeatures()) {
                 // any forwards rate constant

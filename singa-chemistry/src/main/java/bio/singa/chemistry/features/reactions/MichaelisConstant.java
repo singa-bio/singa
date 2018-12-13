@@ -1,7 +1,7 @@
 package bio.singa.chemistry.features.reactions;
 
 import bio.singa.features.model.Evidence;
-import bio.singa.features.model.ScalableQuantityFeature;
+import bio.singa.features.model.QuantitativeFeature;
 import bio.singa.features.quantities.MolarConcentration;
 
 import javax.measure.Quantity;
@@ -11,7 +11,7 @@ import javax.measure.Quantity;
  *
  * @author cl
  */
-public class MichaelisConstant extends ScalableQuantityFeature<MolarConcentration> {
+public class MichaelisConstant extends QuantitativeFeature<MolarConcentration> {
 
     public static final String SYMBOL = "k_m";
 
@@ -20,7 +20,7 @@ public class MichaelisConstant extends ScalableQuantityFeature<MolarConcentratio
     }
 
     @Override
-    public String getSymbol() {
+    public String getDescriptor() {
         return SYMBOL;
     }
     

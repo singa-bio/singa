@@ -22,7 +22,7 @@ public class ThirdOrderForwardsRateConstant extends ThirdOrderRateConstant imple
     }
 
     @Override
-    public String getSymbol() {
+    public String getDescriptor() {
         return symbol;
     }
 

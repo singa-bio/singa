@@ -16,7 +16,7 @@ public class AttachedMotor extends EntityFeature {
     }
 
     @Override
-    public String getSymbol() {
+    public String getDescriptor() {
         return SYMBOL;
     }
 

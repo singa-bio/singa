@@ -4,6 +4,7 @@ import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.core.events.UpdateEventListener;
 import bio.singa.features.model.QuantityFormatter;
 import bio.singa.features.quantities.MolarConcentration;
+import bio.singa.features.units.UnitRegistry;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.modules.UpdateModule;
 import bio.singa.simulation.model.modules.concentration.ConcentrationBasedModule;
@@ -320,7 +321,7 @@ public class EpochUpdateWriter implements UpdateEventListener<UpdatableUpdatedEv
                 .map(entry -> timeFormatter.format(event.getTime()) + SEPARATOR_CHARACTER
                         + entry.getKey() + SEPARATOR_CHARACTER
                         + concentrationFormatter.format(entry.getValue().stream()
-                        .mapToDouble(delta -> delta.getQuantity().to(concentrationFormatter.getTargetUnit()).getValue().doubleValue())
+                        .mapToDouble(delta -> UnitRegistry.concentration(delta.getValue()).to(concentrationFormatter.getTargetUnit()).getValue().doubleValue())
                         .average()
                         .orElse(Double.NaN)))
                 .collect(Collectors.joining(LINEBREAK, "", LINEBREAK));

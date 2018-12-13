@@ -24,7 +24,7 @@ import javax.measure.Quantity;
 import java.util.*;
 import java.util.regex.Pattern;
 
-import static bio.singa.features.model.Evidence.OriginType.*;
+import static bio.singa.features.model.Evidence.SourceType.*;
 
 /**
  * @author cl
@@ -98,7 +98,6 @@ public class UniProtContentHandler implements ContentHandler {
 
     Protein getProtein() {
         // create base enzyme
-        // evidenceMap.forEach((key, value) -> System.out.println(key + ": " + value.full()));
         Protein protein;
         if (primaryIdentifier == null) {
             protein = new Protein.Builder(identifier.toString())
@@ -227,28 +226,28 @@ public class UniProtContentHandler implements ContentHandler {
                     }
                     case "submission": {
                         currentEvidence = new Evidence(DATABASE);
-                        currentEvidence.setName(atts.getValue("db"));
+                        currentEvidence.setIdentifier(atts.getValue("db"));
                         break;
                     }
                     default: {
-                        currentEvidence = new Evidence(MANUAL_ANNOTATION);
+                        currentEvidence = new Evidence(GUESS);
                     }
                 }
                 break;
             }
             case "person": {
                 if (inCitation) {
-                    if (currentEvidence.getName() == null || currentEvidence.getName().isEmpty()) {
+                    if (currentEvidence.getIdentifier() == null || currentEvidence.getIdentifier().isEmpty()) {
                         String person = atts.getValue("name");
-                        currentEvidence.setName(person.substring(0, person.indexOf(" ")) + currentReferenceYear);
+                        currentEvidence.setIdentifier(person.substring(0, person.indexOf(" ")) + currentReferenceYear);
                     }
                 }
                 break;
             }
             case "consortium": {
                 if (inCitation) {
-                    if (currentEvidence.getName() == null || currentEvidence.getName().isEmpty()) {
-                        currentEvidence.setName(atts.getValue("name"));
+                    if (currentEvidence.getIdentifier() == null || currentEvidence.getIdentifier().isEmpty()) {
+                        currentEvidence.setIdentifier(atts.getValue("name"));
                     }
                 }
                 break;
@@ -291,9 +290,9 @@ public class UniProtContentHandler implements ContentHandler {
                     // set tax id for organism
                     sourceOrganism.setIdentifier(new NCBITaxonomyIdentifier(atts.getValue("id")));
                 } else if (inCitation && atts.getValue("type").equals("DOI")) {
-                    currentEvidence.setPublication("DOI: " + atts.getValue("id"));
-                } else if (inCitation && currentEvidence.getPublication() == null && atts.getValue("type").equals("PubMed")) {
-                    currentEvidence.setPublication("PubMed: " + atts.getValue("id"));
+                    currentEvidence.setDescription("DOI: " + atts.getValue("id"));
+                } else if (inCitation && currentEvidence.getDescription() == null && atts.getValue("type").equals("PubMed")) {
+                    currentEvidence.setDescription("PubMed: " + atts.getValue("id"));
                 } else {
                     if (atts.getValue("type").equals("EMBL")) {
                         inEMBLReference = true;

@@ -3,8 +3,8 @@ package bio.singa.simulation.model.modules.concentration.imlementations;
 import bio.singa.chemistry.entities.Protein;
 import bio.singa.chemistry.entities.SmallMolecule;
 import bio.singa.chemistry.features.diffusivity.Diffusivity;
+import bio.singa.features.model.Evidence;
 import bio.singa.features.parameters.Environment;
-import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.graphs.model.Graphs;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
@@ -19,10 +19,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import tec.uom.se.quantity.Quantities;
 
-import javax.measure.Quantity;
-
 import static bio.singa.chemistry.features.diffusivity.Diffusivity.SQUARE_CENTIMETRE_PER_SECOND;
-import static bio.singa.features.model.Evidence.MANUALLY_ANNOTATED;
 import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static bio.singa.simulation.model.sections.CellSubsection.SECTION_A;
 import static bio.singa.simulation.model.sections.CellSubsection.SECTION_B;
@@ -40,20 +37,20 @@ class DiffusionAtMembranesTest {
     // ammonia
     private static final SmallMolecule ammonia = new SmallMolecule.Builder("ammonia")
             .name("ammonia")
-            .assignFeature(new Diffusivity(Quantities.getQuantity(2.28E-05, SQUARE_CENTIMETRE_PER_SECOND), MANUALLY_ANNOTATED))
+            .assignFeature(new Diffusivity(Quantities.getQuantity(2.28E-05, SQUARE_CENTIMETRE_PER_SECOND), Evidence.NO_EVIDENCE))
             .build();
 
     // anchored protein
     private static final Protein anchoredProtein = new Protein.Builder("AP")
             .name("anchored protein")
-            .assignFeature(new MolarMass(1000, MANUALLY_ANNOTATED))
+            .assignFeature(new MolarMass(1000, Evidence.NO_EVIDENCE))
             .setMembraneAnchored(true)
             .build();
 
     // unanchored protein
     private static final Protein globularProtein = new Protein.Builder("GP")
             .name("globular protein")
-            .assignFeature(new MolarMass(1000, MANUALLY_ANNOTATED))
+            .assignFeature(new MolarMass(1000, Evidence.NO_EVIDENCE))
             .setMembraneAnchored(false)
             .build();
 
@@ -112,12 +109,12 @@ class DiffusionAtMembranesTest {
         }
 
         // left part of the central node should fill with ammonia
-        assertTrue(leftNode.getConcentrationContainer().get(SECTION_A, ammonia).getValue().doubleValue() > 0.0);
-        assertTrue(membraneNode.getConcentrationContainer().get(SECTION_A, ammonia).getValue().doubleValue() > 0.0);
+        assertTrue(leftNode.getConcentrationContainer().get(SECTION_A, ammonia) > 0.0);
+        assertTrue(membraneNode.getConcentrationContainer().get(SECTION_A, ammonia) > 0.0);
         // right part of the central node and right node should not
-        assertEquals(0.0, membraneNode.getConcentrationContainer().get(CellSubsection.MEMBRANE, ammonia).getValue().doubleValue());
-        assertEquals(0.0, membraneNode.getConcentrationContainer().get(SECTION_B, ammonia).getValue().doubleValue());
-        assertEquals(0.0, rightNode.getConcentrationContainer().get(SECTION_B, ammonia).getValue().doubleValue());
+        assertEquals(0.0, membraneNode.getConcentrationContainer().get(CellSubsection.MEMBRANE, ammonia));
+        assertEquals(0.0, membraneNode.getConcentrationContainer().get(SECTION_B, ammonia));
+        assertEquals(0.0, rightNode.getConcentrationContainer().get(SECTION_B, ammonia));
     }
 
     @Test
@@ -152,7 +149,7 @@ class DiffusionAtMembranesTest {
         for (AutomatonNode node : graph.getNodes()) {
             if (node.getIdentifier().getColumn() < (graph.getNumberOfColumns() / 2)) {
                 // nothing should permeate to the lower part
-                assertEquals(0.0, node.getConcentrationContainer().get(SECTION_B, ammonia).getValue().doubleValue());
+                assertEquals(0.0, node.getConcentrationContainer().get(SECTION_B, ammonia));
             }
         }
 
@@ -166,21 +163,21 @@ class DiffusionAtMembranesTest {
         AutomatonNode first = simulation.getGraph().getNode(0, 0);
         AutomatonNode second = simulation.getGraph().getNode(0, 1);
         // set concentrations
-        first.getConcentrationContainer().set(SECTION_A, anchoredProtein, 0.1);
-        first.getConcentrationContainer().set(SECTION_A, globularProtein, 0.1);
+        first.getConcentrationContainer().initialize(SECTION_A, anchoredProtein, Quantities.getQuantity(0.1,MOLE_PER_LITRE));
+        first.getConcentrationContainer().initialize(SECTION_A, globularProtein, Quantities.getQuantity(0.1, MOLE_PER_LITRE));
 
         // observe
         for (int i = 0; i < 10; i++) {
             simulation.nextEpoch();
             // concentration of anchored entity should stay zero in non-membrane node
-            Quantity<MolarConcentration> betaGammaConcentration = second.getConcentrationContainer().get(SECTION_A, anchoredProtein);
-            assertEquals(0.0, betaGammaConcentration.getValue().doubleValue());
+            double betaGammaConcentration = second.getConcentrationContainer().get(SECTION_A, anchoredProtein);
+            assertEquals(0.0, betaGammaConcentration);
             // concentration of globular entity should increase in non-membrane node
-            Quantity<MolarConcentration> betaConcentration = second.getConcentrationContainer().get(SECTION_A, globularProtein);
-            assertTrue(betaConcentration.getValue().doubleValue() > 0.0);
+            double betaConcentration = second.getConcentrationContainer().get(SECTION_A, globularProtein);
+            assertTrue(betaConcentration > 0.0);
             // concentration of anchored entity should stay equal in non-membrane node
-            Quantity<MolarConcentration> remainingConcentration = first.getConcentrationContainer().get(SECTION_A, anchoredProtein);
-            assertEquals(0.1, remainingConcentration.to(MOLE_PER_LITRE).getValue().doubleValue());
+            double remainingConcentration = first.getConcentrationContainer().get(SECTION_A, anchoredProtein);
+            assertEquals(0.1, UnitRegistry.concentration(remainingConcentration).to(MOLE_PER_LITRE).getValue().doubleValue());
         }
 
     }
@@ -197,11 +194,11 @@ class DiffusionAtMembranesTest {
         for (int i = 0; i < 100; i++) {
             simulation.nextEpoch();
             // concentration of anchored entity should increase in membrane node
-            Quantity<MolarConcentration> availableConcentration = first.getConcentrationContainer().get(SECTION_A, anchoredProtein);
-            assertTrue(availableConcentration.getValue().doubleValue() > 0.0);
+            double availableConcentration = first.getConcentrationContainer().get(SECTION_A, anchoredProtein);
+            assertTrue(availableConcentration > 0.0);
             // and decrease in the other node
-            Quantity<MolarConcentration> remainingConcentration = second.getConcentrationContainer().get(SECTION_A, anchoredProtein);
-            assertTrue(remainingConcentration.getValue().doubleValue() < 0.1);
+            double remainingConcentration = second.getConcentrationContainer().get(SECTION_A, anchoredProtein);
+            assertTrue(remainingConcentration < 0.1);
         }
     }
 
@@ -229,8 +226,8 @@ class DiffusionAtMembranesTest {
         for (int i = 0; i < 100; i++) {
             simulation.nextEpoch();
             // concentration of bound chemical entity should increase in neighboring membrane node
-            Quantity<MolarConcentration> availableConcentration = second.getConcentrationContainer().get(SECTION_A, anchoredProtein);
-            assertTrue(availableConcentration.getValue().doubleValue() > 0.0);
+            double availableConcentration = second.getConcentrationContainer().get(SECTION_A, anchoredProtein);
+            assertTrue(availableConcentration > 0.0);
         }
     }
 

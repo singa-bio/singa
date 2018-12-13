@@ -16,9 +16,7 @@ import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static tec.uom.se.AbstractUnit.ONE;
 import static tec.uom.se.unit.MetricPrefix.MILLI;
-import static tec.uom.se.unit.Units.CUBIC_METRE;
-import static tec.uom.se.unit.Units.METRE;
-import static tec.uom.se.unit.Units.MOLE;
+import static tec.uom.se.unit.Units.*;
 
 /**
  * @author cl
@@ -99,23 +97,22 @@ class MolarConcentrationTest {
     void concentrationToMoles() {
         MolarConcentration molePerLitre = new MolarConcentration(1.0, MOLE_PER_LITRE);
         Quantity<Volume> volume = Quantities.getQuantity(2, CUBIC_METRE);
-        Quantity<AmountOfSubstance> actualResult = MolarConcentration.concentrationToMoles(molePerLitre,volume);
+        Quantity<AmountOfSubstance> actualResult = MolarConcentration.concentrationToMoles(molePerLitre, volume);
         Quantity<AmountOfSubstance> expectedResult = Quantities.getQuantity(2000.0, MOLE);
         assertEquals(expectedResult, actualResult);
     }
 
     @Test
     void concentrationToMolecules() {
-        MolarConcentration molePerLitre = new MolarConcentration(0.1, MOLE_PER_LITRE);
-        Quantity<Dimensionless> actualResult = MolarConcentration.concentrationToMolecules(molePerLitre);
-        Quantity<Dimensionless> expectedResult = Quantities.getQuantity(6.022140857000001E7, ONE);
-        assertEquals(expectedResult, actualResult);
+        ComparableQuantity<MolarConcentration> molePerLitre = new MolarConcentration(0.1, MOLE_PER_LITRE).to(UnitRegistry.getConcentrationUnit());
+        Quantity<Dimensionless> actualResult = MolarConcentration.concentrationToMolecules(molePerLitre.getValue().doubleValue());
+        assertEquals(6.0221408570000015E7, actualResult.getValue().doubleValue());
     }
 
     @Test
     void moleculesToConcentration() {
-        UnitRegistry.setSpace( Quantities.getQuantity(2.0, METRE));
-        Quantity<MolarConcentration> concentration = MolarConcentration.moleculesToConcentration(4000);
+        UnitRegistry.setSpace(Quantities.getQuantity(2.0, METRE));
+        double concentration = MolarConcentration.moleculesToConcentration(4000);
         Quantity<Dimensionless> molecules = MolarConcentration.concentrationToMolecules(concentration);
         assertEquals(4000, molecules.getValue().doubleValue(), 1e-10);
     }

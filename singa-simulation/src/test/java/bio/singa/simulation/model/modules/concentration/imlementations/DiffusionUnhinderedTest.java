@@ -4,7 +4,6 @@ import bio.singa.chemistry.entities.SmallMolecule;
 import bio.singa.chemistry.features.diffusivity.Diffusivity;
 import bio.singa.features.model.Evidence;
 import bio.singa.features.parameters.Environment;
-import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.graphs.model.Graphs;
 import bio.singa.mathematics.topology.grids.rectangular.RectangularCoordinate;
@@ -12,10 +11,7 @@ import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.simulation.Simulation;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tec.uom.se.quantity.Quantities;
@@ -45,17 +41,17 @@ class DiffusionUnhinderedTest {
     // required species
     private static final SmallMolecule hydrogen = new SmallMolecule.Builder("h2")
             .name("dihydrogen")
-            .assignFeature(new Diffusivity(Quantities.getQuantity(4.40E-05, SQUARE_CENTIMETRE_PER_SECOND), Evidence.MANUALLY_ANNOTATED))
+            .assignFeature(new Diffusivity(Quantities.getQuantity(4.40E-05, SQUARE_CENTIMETRE_PER_SECOND), Evidence.NO_EVIDENCE))
             .build();
 
     private static final SmallMolecule ammonia = new SmallMolecule.Builder("ammonia")
             .name("ammonia")
-            .assignFeature(new Diffusivity(Quantities.getQuantity(2.28E-05, SQUARE_CENTIMETRE_PER_SECOND), Evidence.MANUALLY_ANNOTATED))
+            .assignFeature(new Diffusivity(Quantities.getQuantity(2.28E-05, SQUARE_CENTIMETRE_PER_SECOND), Evidence.NO_EVIDENCE))
             .build();
 
     private static final SmallMolecule benzene = new SmallMolecule.Builder("benzene")
             .name("benzene")
-            .assignFeature(new Diffusivity(Quantities.getQuantity(1.09E-05, SQUARE_CENTIMETRE_PER_SECOND), Evidence.MANUALLY_ANNOTATED))
+            .assignFeature(new Diffusivity(Quantities.getQuantity(1.09E-05, SQUARE_CENTIMETRE_PER_SECOND), Evidence.NO_EVIDENCE))
             .build();
 
     @BeforeAll
@@ -69,6 +65,7 @@ class DiffusionUnhinderedTest {
     }
 
     @Test
+    @DisplayName("diffusion of hydrogen with 10 nodes")
     void shouldReachCorrectHalfLife1() {
         // setup and run simulation
         Simulation simulation = setUpSimulation(10, hydrogen);
@@ -79,6 +76,7 @@ class DiffusionUnhinderedTest {
     }
 
     @Test
+    @DisplayName("diffusion of hydrogen with 20 nodes")
     void shouldReachCorrectHalfLife2() {
         // setup and run simulation
         Simulation simulation = setUpSimulation(20, hydrogen);
@@ -89,7 +87,7 @@ class DiffusionUnhinderedTest {
     }
 
     @Test
-    @Disabled
+    @DisplayName("diffusion of ammonia with 30 nodes")
     void shouldReachCorrectHalfLife3() {
         // setup and run simulation
         Simulation simulation = setUpSimulation(30, ammonia);
@@ -100,7 +98,7 @@ class DiffusionUnhinderedTest {
     }
 
     @Test
-    @Disabled
+    @DisplayName("diffusion of benzene with 30 nodes")
     void shouldReachCorrectHalfLife4() {
         // setup and run simulation
         Simulation simulation = setUpSimulation(30, benzene);
@@ -143,9 +141,7 @@ class DiffusionUnhinderedTest {
         double currentConcentration = 0.0;
         while (currentConcentration < 0.25) {
             simulation.nextEpoch();
-            final Quantity<MolarConcentration> concentration = simulation.getGraph().getNode(coordinate).getConcentrationContainer().get(EXTRACELLULAR_REGION, species).to(MOLE_PER_LITRE);
-            currentConcentration = concentration.getValue().doubleValue();
-            //System.out.println("Currently "+concentration+" at "+simulation.getElapsedTime().to(MICRO(SECOND)));
+            currentConcentration = UnitRegistry.concentration(simulation.getGraph().getNode(coordinate).getConcentrationContainer().get(EXTRACELLULAR_REGION, species)).to(MOLE_PER_LITRE).getValue().doubleValue();
         }
         logger.info("Half life time of {} reached at {}.", species.getName(), simulation.getElapsedTime().to(MICRO(SECOND)));
         return simulation.getElapsedTime().to(MICRO(SECOND));

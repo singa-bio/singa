@@ -28,7 +28,7 @@ public class VesicleRadius extends AbstractFeature<Quantity<Length>> {
     }
 
     @Override
-    public String getSymbol() {
+    public String getDescriptor() {
         return SYMBOL;
     }
 

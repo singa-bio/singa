@@ -1,12 +1,8 @@
 package bio.singa.simulation.model.modules.concentration;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
-import bio.singa.features.quantities.MolarConcentration;
-import bio.singa.features.units.UnitRegistry;
 import bio.singa.simulation.model.modules.UpdateModule;
 import bio.singa.simulation.model.sections.CellSubsection;
-
-import javax.measure.Quantity;
 
 /**
  * The delta object manages the change that will be applied to the concentration of a specific {@link ChemicalEntity} in
@@ -34,7 +30,7 @@ public class ConcentrationDelta {
     /**
      * The change in concentration.
      */
-    private Quantity<MolarConcentration> quantity;
+    private double quantity;
 
     /**
      * Creates a new concentration delta.
@@ -43,7 +39,7 @@ public class ConcentrationDelta {
      * @param chemicalEntity The chemical entity the delta is applied to.
      * @param quantity The actual quantity of the change.
      */
-    public ConcentrationDelta(UpdateModule module, CellSubsection cellSubsection, ChemicalEntity chemicalEntity, Quantity<MolarConcentration> quantity) {
+    public ConcentrationDelta(UpdateModule module, CellSubsection cellSubsection, ChemicalEntity chemicalEntity, double quantity) {
         this.module = module;
         this.chemicalEntity = chemicalEntity;
         this.cellSubsection = cellSubsection;
@@ -82,7 +78,7 @@ public class ConcentrationDelta {
      *
      * @return The quantity of the change.
      */
-    public Quantity<MolarConcentration> getQuantity() {
+    public double getValue() {
         return quantity;
     }
 
@@ -93,12 +89,12 @@ public class ConcentrationDelta {
      * @return This multiplied delta.
      */
     public ConcentrationDelta multiply(double multiplicand) {
-        quantity = quantity.multiply(multiplicand);
+        quantity = quantity * multiplicand;
         return this;
     }
 
     public ConcentrationDelta add(double summand) {
-        quantity = quantity.add(UnitRegistry.concentration(summand));
+        quantity = quantity + summand;
         return this;
     }
 

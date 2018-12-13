@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
  * @author cl
  * @see <a href="https://www.ebi.ac.uk/chebi/faqForward.do#5">ChEBI identifier</a>
  */
-public class ChEBIIdentifier extends AbstractIdentifier<ChEBIIdentifier> {
+public class ChEBIIdentifier extends AbstractIdentifier {
 
     /**
      * The pattern to verify the identifier.
@@ -41,7 +41,7 @@ public class ChEBIIdentifier extends AbstractIdentifier<ChEBIIdentifier> {
      * @return The consecutive number without the "CHEBI:" part.
      */
     public int getConsecutiveNumber() {
-        Matcher matcherCHEBI = PATTERN.matcher(getIdentifier());
+        Matcher matcherCHEBI = PATTERN.matcher(getContent());
         if (matcherCHEBI.matches()) {
             return Integer.parseInt(matcherCHEBI.group(1));
         } else {
@@ -50,8 +50,4 @@ public class ChEBIIdentifier extends AbstractIdentifier<ChEBIIdentifier> {
         }
     }
 
-    @Override
-    public ChEBIIdentifier getFeatureContent() {
-        return this;
-    }
 }

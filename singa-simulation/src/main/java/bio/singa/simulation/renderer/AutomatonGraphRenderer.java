@@ -111,12 +111,8 @@ public class AutomatonGraphRenderer extends GraphRenderer<AutomatonNode, Automat
                 // generate node map for cell identification
                 HashMap<Integer, AutomatonNode> nodeMap = new HashMap<>();
                 int identifier = 0;
-
                 ChemicalEntity highlightEntity = bioRenderingOptions.getNodeHighlightEntity();
                 if (highlightEntity != null) {
-
-
-
                     final VoronoiDiagram diagram = VoronoiGenerator.generateVoronoiDiagram(nodeMap, new Rectangle(getDrawingWidth(), getDrawingHeight()));
                     for (VoronoiCell voronoiCell : diagram.getCells()) {
                         int nodeIdentifier = voronoiCell.getSite().getIdentifier();
@@ -125,7 +121,6 @@ public class AutomatonGraphRenderer extends GraphRenderer<AutomatonNode, Automat
                         fillPolygon(voronoiCell);
                     }
                 }
-
                 return null;
             });
         }
@@ -142,7 +137,7 @@ public class AutomatonGraphRenderer extends GraphRenderer<AutomatonNode, Automat
         for (AutomatonNode node : graph.getNodes()) {
             // FIXME current workaround for rendering multiple concentrations of one node
             CellSubsection firstSubsection = node.getCellRegion().getSubsections().iterator().next();
-            double concentration = node.getConcentrationContainer().get(firstSubsection, bioRenderingOptions.getNodeHighlightEntity()).getValue().doubleValue();
+            double concentration = node.getConcentrationContainer().get(firstSubsection, bioRenderingOptions.getNodeHighlightEntity());
             if (concentration > max) {
                 max = concentration;
             } else if (concentration < min) {
