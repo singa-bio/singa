@@ -12,6 +12,7 @@ import java.util.Optional;
  * @author fk
  */
 class MoleculeGraphsTest {
+
     @Test
     void shouldConvertStructureGraphToMoleculeGraph() {
 
@@ -19,10 +20,9 @@ class MoleculeGraphsTest {
                 .pdbIdentifier("1C0A")
                 .parse();
 
-        System.out.println();
-
         Optional<LeafSubstructure<?>> arginine = structure.getLeafSubstructure(new LeafIdentifier("1C0A", 1, "A", 1));
         Optional<LeafSubstructure<?>> amp = structure.getLeafSubstructure(new LeafIdentifier("1C0A", 1, "A", 800));
         Optional<LeafSubstructure<?>> a = structure.getLeafSubstructure(new LeafIdentifier("1C0A", 1, "B", 1));
     }
+
 }

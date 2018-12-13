@@ -95,7 +95,6 @@ public class UniProtContentHandler implements ContentHandler {
 
     Protein getProtein() {
         // create base enzyme
-        // evidenceMap.forEach((key, value) -> System.out.println(key + ": " + value.full()));
         Protein protein;
         if (primaryIdentifier == null) {
             protein = new Protein.Builder(identifier.toString())

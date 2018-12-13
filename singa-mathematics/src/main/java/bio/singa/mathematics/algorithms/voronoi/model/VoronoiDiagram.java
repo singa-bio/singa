@@ -588,8 +588,6 @@ public class VoronoiDiagram {
                         if (lastBorderSegment) {
                             break;
                         }
-
-                        System.out.println("This point should never be reached.");
                     }
 
                 }

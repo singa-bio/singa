@@ -11,10 +11,7 @@ import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.simulation.Simulation;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tec.uom.se.quantity.Quantities;
@@ -68,6 +65,7 @@ class DiffusionUnhinderedTest {
     }
 
     @Test
+    @DisplayName("diffusion of hydrogen with 10 nodes")
     void shouldReachCorrectHalfLife1() {
         // setup and run simulation
         Simulation simulation = setUpSimulation(10, hydrogen);
@@ -78,6 +76,7 @@ class DiffusionUnhinderedTest {
     }
 
     @Test
+    @DisplayName("diffusion of hydrogen with 20 nodes")
     void shouldReachCorrectHalfLife2() {
         // setup and run simulation
         Simulation simulation = setUpSimulation(20, hydrogen);
@@ -88,7 +87,7 @@ class DiffusionUnhinderedTest {
     }
 
     @Test
-    @Disabled
+    @DisplayName("diffusion of ammonia with 30 nodes")
     void shouldReachCorrectHalfLife3() {
         // setup and run simulation
         Simulation simulation = setUpSimulation(30, ammonia);
@@ -99,7 +98,7 @@ class DiffusionUnhinderedTest {
     }
 
     @Test
-    @Disabled
+    @DisplayName("diffusion of benzene with 30 nodes")
     void shouldReachCorrectHalfLife4() {
         // setup and run simulation
         Simulation simulation = setUpSimulation(30, benzene);
@@ -143,7 +142,6 @@ class DiffusionUnhinderedTest {
         while (currentConcentration < 0.25) {
             simulation.nextEpoch();
             currentConcentration = UnitRegistry.concentration(simulation.getGraph().getNode(coordinate).getConcentrationContainer().get(EXTRACELLULAR_REGION, species)).to(MOLE_PER_LITRE).getValue().doubleValue();
-            //System.out.println("Currently "+concentration+" at "+simulation.getElapsedTime().to(MICRO(SECOND)));
         }
         logger.info("Half life time of {} reached at {}.", species.getName(), simulation.getElapsedTime().to(MICRO(SECOND)));
         return simulation.getElapsedTime().to(MICRO(SECOND));

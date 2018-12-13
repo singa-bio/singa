@@ -43,11 +43,6 @@ public class ChEBIParserService extends AbstractXMLParser<SmallMolecule> {
         return parser.parse();
     }
 
-    public static void main(String[] args) {
-        final SmallMolecule species = ChEBIParserService.parse("CHEBI:17790");
-        System.out.println(species);
-    }
-
     private void parseXML() {
         fetchResource();
         // parse xml

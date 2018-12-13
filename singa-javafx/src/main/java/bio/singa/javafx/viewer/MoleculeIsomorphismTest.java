@@ -28,28 +28,6 @@ public class MoleculeIsomorphismTest {
 
     public static void main(String[] args) {
 
-//        Species alanylAMP = ChEBIParserService.parse("CHEBI:139296");
-//        MoleculeGraph targetGraph = SmilesParser.parse(alanylAMP.getFeature(Smiles.class).getContent());
-//
-//        Species alanine = ChEBIParserService.parse("CHEBI:15570");
-//        MoleculeGraph patternGraph= SmilesParser.parse(alanine.getFeature(Smiles.class).getContent());
-//
-//        RISubGraphFinder<MoleculeAtom, MoleculeBond, Vector2D, Integer, MoleculeGraph, Element, MoleculeBondType> finder
-//                = new RISubGraphFinder<>(patternGraph, targetGraph, MoleculeAtom::getElement, MoleculeBond::getType);
-//
-//        GraphDisplayApplication.renderer = new MoleculeGraphRenderer();
-//        GraphDisplayApplication.graph = patternGraph;
-//
-//        GraphDisplayApplication.renderer.setRenderAfter(graph -> {
-//            for (MoleculeAtom moleculeAtom : targetGraph.getNodes()) {
-//                if (finder.getFullMatches().get(0).contains(moleculeAtom)) {
-//                    GraphDisplayApplication.renderer.getGraphicsContext().setStroke(Color.DARKRED);
-//                    GraphDisplayApplication.renderer.strokeCircle(moleculeAtom.getPosition(), 35);
-//                }
-//            }
-//            return null;
-//        });
-
         Structure structure = StructureParser.pdb()
                 .pdbIdentifier("1jjc")
                 .parse();

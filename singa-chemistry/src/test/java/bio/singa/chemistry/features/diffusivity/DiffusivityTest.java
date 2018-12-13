@@ -21,7 +21,6 @@ class DiffusivityTest {
         // this also needs to resolve the molar mass feature
         MolarMass molarMass = testSpecies.getFeature(MolarMass.class);
         assertEquals(108.0104, molarMass.getValue().doubleValue());
-        System.out.println(diffusivity);
         assertEquals(7.889770977995664E-6, diffusivity.getValue().doubleValue());
     }
 

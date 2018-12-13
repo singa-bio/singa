@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Set;
 
+import static bio.singa.structure.elements.ElementProvider.CARBON;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -65,12 +66,12 @@ class OakAtomTest {
     @Test
     void getNeighbours() {
         final Set<OakAtom> neighbours = atom412.getNeighbours();
-        System.out.println(neighbours);
+        assertEquals(new OakAtom(411, CARBON, "C2", new Vector3D(63.187, -8.227, 21.727)), neighbours.iterator().next());
     }
 
     @Test
     void shouldCreateCopyOfAtom() {
-        OakAtom atom = new OakAtom(1, ElementProvider.CARBON, "CA", new Vector3D(1.0, 2.0, 3.0));
+        OakAtom atom = new OakAtom(1, CARBON, "CA", new Vector3D(1.0, 2.0, 3.0));
         Atom copiedAtom = atom.getCopy();
 
         // by contract
