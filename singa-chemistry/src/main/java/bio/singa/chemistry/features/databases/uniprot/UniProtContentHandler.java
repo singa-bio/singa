@@ -54,6 +54,7 @@ public class UniProtContentHandler implements ContentHandler {
     private List<ENAAccessionNumber> genomicSequenceIdentifiers;
     private List<SequenceVariant> sequenceVariants;
     private SequenceVariant currentSequenceVariant;
+    private String primaryGeneName;
 
     private Map<Integer, Evidence> evidenceMap;
     private int currentEvidenceId;
@@ -66,6 +67,8 @@ public class UniProtContentHandler implements ContentHandler {
     // reading name
     private boolean inRecommendedName = false;
     private boolean inAlternativeName = false;
+    private boolean inGene = false;
+    private boolean inPrimaryGene;
     private boolean inOrganism = false;
     private boolean inSubcellularLocation = false;
     private boolean inRelevantComment = false;
@@ -122,6 +125,8 @@ public class UniProtContentHandler implements ContentHandler {
         ecNumbers.forEach(protein::addAdditionalIdentifier);
         // add variants
         protein.setFeature(new SequenceVariants(sequenceVariants, UniProtDatabase.evidence));
+        // add gene name
+        protein.setPrimaryGeneName(primaryGeneName);
 
         return protein;
     }
@@ -271,6 +276,14 @@ public class UniProtContentHandler implements ContentHandler {
                         isCommonName = true;
                     }
                 }
+                if (inGene) {
+                    String type = atts.getValue("type");
+                    if (type != null && type.equals("primary")) {
+                        inPrimaryGene = true;
+                    } else {
+                        inPrimaryGene = false;
+                    }
+                }
                 break;
             }
             case "dbReference": {
@@ -306,6 +319,11 @@ public class UniProtContentHandler implements ContentHandler {
                     molarMass = Double.valueOf(atts.getValue("mass"));
                     break;
                 }
+            }
+            case "gene": {
+                currentTag = qName;
+                inGene = true;
+                break;
             }
         }
 
@@ -373,6 +391,10 @@ public class UniProtContentHandler implements ContentHandler {
                     inRelevantComment = false;
                 }
             }
+            case "gene": {
+                inGene = false;
+                break;
+            }
         }
 
     }
@@ -410,6 +432,11 @@ public class UniProtContentHandler implements ContentHandler {
                         sourceOrganism.setCommonName(new String(ch, start, length));
                     }
                 }
+                if (inGene) {
+                    if (inPrimaryGene) {
+                        primaryGeneName = new String(ch, start, length);
+                    }
+                }
                 break;
             }
             case "taxon": {
@@ -431,14 +458,14 @@ public class UniProtContentHandler implements ContentHandler {
             case "original": {
                 if (inSequenceVariant) {
                     currentSequenceVariant.setOriginal(AminoAcidFamily.getAminoAcidTypeByOneLetterCode(new String(ch, start, length))
-                            .orElseThrow(() -> new IllegalArgumentException(new String(ch, start, length) + " is no valid amino acid one letter code.")));
+                            .orElse(AminoAcidFamily.UNKNOWN));
                 }
                 break;
             }
             case "variation": {
                 if (inSequenceVariant) {
                     currentSequenceVariant.setVariation(AminoAcidFamily.getAminoAcidTypeByOneLetterCode(new String(ch, start, length))
-                            .orElseThrow(() -> new IllegalArgumentException(new String(ch, start, length) + " is no valid amino acid one letter code.")));
+                            .orElse(AminoAcidFamily.UNKNOWN));
                 }
                 break;
             }

@@ -117,4 +117,11 @@ class UniProtParserTest {
         assertEquals("P21889", uniProtIdentifier.getIdentifier());
     }
 
+    @Test
+    void parsePrimaryGeneName() {
+        assertEquals("GOT2", aminotransferase.getPrimaryGeneName());
+        assertEquals("aspS", aars.getPrimaryGeneName());
+        assertEquals("TTR", transthyretin.getPrimaryGeneName());
+    }
+
 }

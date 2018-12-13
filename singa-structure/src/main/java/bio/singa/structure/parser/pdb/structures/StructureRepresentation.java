@@ -110,13 +110,16 @@ public class StructureRepresentation {
         // create chain representations
         List<StructureRepresentation> chainRepresentations = structuralModel.getAllChains().stream()
                 .map(OakChain.class::cast)
+                .filter(oakChain -> !oakChain.getAllLeafSubstructures().isEmpty())
                 .map(StructureRepresentation::new)
                 .collect(Collectors.toList());
         // collect nonconsecutive records for all chains and append consecutive parts to builder
         List<LeafSubstructure<?>> nonConsecutiveRecords = new ArrayList<>();
         for (StructureRepresentation chainRepresentation : chainRepresentations) {
-            sb.append(chainRepresentation.getConsecutiveRepresentation())
-                    .append(chainRepresentation.getTerminateRecord());
+            if (!chainRepresentation.consecutiveRecords.isEmpty()) {
+                sb.append(chainRepresentation.getConsecutiveRepresentation())
+                        .append(chainRepresentation.getTerminateRecord());
+            }
             nonConsecutiveRecords.addAll(chainRepresentation.getNonConsecutiveLeafSubstructures());
         }
         // append non non consecutive part

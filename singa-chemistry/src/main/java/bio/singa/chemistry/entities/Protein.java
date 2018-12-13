@@ -21,6 +21,8 @@ public class Protein extends ChemicalEntity {
         Protein.availableFeatures.addAll(ChemicalEntity.availableFeatures);
     }
 
+    private String primaryGeneName;
+
     /**
      * Creates a new Protein with the given identifier.
      *
@@ -101,6 +103,22 @@ public class Protein extends ChemicalEntity {
         return availableFeatures;
     }
 
+    /**
+     * Gets the primary gene name of this {@link Protein} according to UniProt.
+     *
+     * @return The primary gene name.
+     */
+    public String getPrimaryGeneName() {
+        return primaryGeneName;
+    }
+
+    /**
+     * Sets the primary gene name of this {@link Protein} according to UniProt.
+     */
+    public void setPrimaryGeneName(String primaryGeneName) {
+        this.primaryGeneName = primaryGeneName;
+    }
+
     public static class Builder extends ChemicalEntity.Builder<Protein, Builder> {
 
         public Builder(SimpleStringIdentifier identifier) {
@@ -117,7 +135,7 @@ public class Protein extends ChemicalEntity {
         }
 
         @Override
-        protected Protein.Builder getBuilder() {
+        protected Builder getBuilder() {
             return this;
         }
 
