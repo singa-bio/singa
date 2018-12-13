@@ -3,7 +3,7 @@ package bio.singa.simulation.model.modules.qualitative;
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.features.exceptions.FeatureUnassignableException;
 import bio.singa.features.model.Feature;
-import bio.singa.features.model.ScalableFeature;
+import bio.singa.features.model.ScalableQuantitativeFeature;
 import bio.singa.simulation.model.modules.UpdateModule;
 import bio.singa.simulation.model.modules.concentration.ModuleState;
 import bio.singa.simulation.model.modules.displacement.DisplacementBasedModule;
@@ -13,7 +13,6 @@ import bio.singa.simulation.model.simulation.UpdateScheduler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.measure.Quantity;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -70,17 +69,12 @@ public abstract class QualitativeModule implements UpdateModule {
     }
 
     @Override
-    public void scaleScalableFeatures() {
-        featureManager.scaleScalableFeatures();
-    }
-
-    @Override
     public Set<Class<? extends Feature>> getRequiredFeatures() {
         return featureManager.getRequiredFeatures();
     }
 
     @Override
-    public <FeatureContentType extends Quantity<FeatureContentType>> Quantity<FeatureContentType> getScaledFeature(Class<? extends ScalableFeature<FeatureContentType>> featureClass) {
+    public double getScaledFeature(Class<? extends ScalableQuantitativeFeature<?>> featureClass) {
         return featureManager.getFeature(featureClass).getScaledQuantity();
     }
 

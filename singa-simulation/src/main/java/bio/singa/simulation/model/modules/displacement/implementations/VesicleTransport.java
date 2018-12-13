@@ -12,7 +12,6 @@ import tec.uom.se.quantity.Quantities;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Length;
-import javax.measure.quantity.Speed;
 import java.util.ListIterator;
 
 import static bio.singa.simulation.features.MotorPullDirection.Direction.MINUS;
@@ -74,8 +73,7 @@ public class VesicleTransport extends DisplacementBasedModule {
         if (guide == null) {
             return new DisplacementDelta(this, new Vector2D(0.0, 0.0));
         }
-        Quantity<Speed> speed = getScaledFeature(MotorMovementVelocity.class);
-        Quantity<Length> distance = Quantities.getQuantity(speed.getValue().doubleValue(), UnitRegistry.getSpaceUnit());
+        Quantity<Length> distance = Quantities.getQuantity(getScaledFeature(MotorMovementVelocity.class), UnitRegistry.getSpaceUnit());
         return new DisplacementDelta(this, guide.multiply(distance.getValue().doubleValue()));
     }
 

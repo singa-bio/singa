@@ -20,7 +20,6 @@ import bio.singa.simulation.model.sections.ConcentrationContainer;
 import bio.singa.simulation.model.simulation.Simulation;
 import bio.singa.simulation.model.simulation.Updatable;
 
-import javax.measure.Quantity;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -99,7 +98,7 @@ public class ComplexBuildingReaction extends ConcentrationBasedModule<UpdatableD
         getRequiredFeatures().add(BackwardsRateConstant.class);
         // in no complex has been set create it
         if (complex == null) {
-            complex = new ComplexedChemicalEntity.Builder(binder.getIdentifier().getIdentifier() + ":" + bindee.getIdentifier().getIdentifier())
+            complex = new ComplexedChemicalEntity.Builder(binder.getIdentifier().getContent() + ":" + bindee.getIdentifier().getContent())
                     .addAssociatedPart(binder)
                     .addAssociatedPart(bindee)
                     .build();
@@ -183,8 +182,8 @@ public class ComplexBuildingReaction extends ConcentrationBasedModule<UpdatableD
 
     private double calculateVelocity(ConcentrationContainer vesicleContainer, ConcentrationContainer nodeContainer) {
         // get rates
-        final double forwardsRateConstant = getScaledForwardsReactionRate().getValue().doubleValue();
-        final double backwardsRateConstant = getScaledBackwardsReactionRate().getValue().doubleValue();
+        final double forwardsRateConstant = getScaledForwardsReactionRate();
+        final double backwardsRateConstant = getScaledBackwardsReactionRate();
 
         // get concentrations
         double bindeeConcentration;
@@ -209,8 +208,8 @@ public class ComplexBuildingReaction extends ConcentrationBasedModule<UpdatableD
 
     private double calculateVelocity(ConcentrationContainer concentrationContainer) {
         // get rates
-        final double forwardsRateConstant = getScaledForwardsReactionRate().getValue().doubleValue();
-        final double backwardsRateConstant = getScaledBackwardsReactionRate().getValue().doubleValue();
+        final double forwardsRateConstant = getScaledForwardsReactionRate();
+        final double backwardsRateConstant = getScaledBackwardsReactionRate();
         // get concentrations
         final double bindeeConcentration = concentrationContainer.get(bindeeTopology, bindee).getValue().doubleValue();
         final double binderConcentration = concentrationContainer.get(binderTopology, binder).getValue().doubleValue();
@@ -293,7 +292,7 @@ public class ComplexBuildingReaction extends ConcentrationBasedModule<UpdatableD
         }
     }
 
-    private Quantity getScaledForwardsReactionRate() {
+    private double getScaledForwardsReactionRate() {
         if (forwardsReactionRate == null) {
             for (Feature<?> feature : getFeatures()) {
                 // any forwards rate constant
@@ -309,7 +308,7 @@ public class ComplexBuildingReaction extends ConcentrationBasedModule<UpdatableD
         return forwardsReactionRate.getScaledQuantity();
     }
 
-    private Quantity getScaledBackwardsReactionRate() {
+    private double getScaledBackwardsReactionRate() {
         if (backwardsReactionRate == null) {
             for (Feature<?> feature : getFeatures()) {
                 // any forwards rate constant

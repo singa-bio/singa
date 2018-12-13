@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
  *
  * @author cl
  */
-public class NCBITaxonomyIdentifier extends AbstractIdentifier<NCBITaxonomyIdentifier> {
+public class NCBITaxonomyIdentifier extends AbstractIdentifier {
 
     /**
      * The pattern to verify the identifier.
@@ -29,8 +29,4 @@ public class NCBITaxonomyIdentifier extends AbstractIdentifier<NCBITaxonomyIdent
         super(identifier, PATTERN);
     }
 
-    @Override
-    public NCBITaxonomyIdentifier getFeatureContent() {
-        return this;
-    }
 }

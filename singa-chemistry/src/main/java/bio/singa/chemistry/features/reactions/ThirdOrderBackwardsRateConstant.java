@@ -22,7 +22,7 @@ public class ThirdOrderBackwardsRateConstant extends ThirdOrderRateConstant impl
     }
 
     @Override
-    public String getSymbol() {
+    public String getDescriptor() {
         return symbol;
     }
 }

@@ -22,7 +22,7 @@ public class SecondOrderBackwardsRateConstant extends SecondOrderRateConstant im
     }
 
     @Override
-    public String getSymbol() {
+    public String getDescriptor() {
         return symbol;
     }
 }

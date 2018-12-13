@@ -23,7 +23,7 @@ public class FirstOrderForwardsRateConstant extends FirstOrderRateConstant imple
     }
 
     @Override
-    public String getSymbol() {
+    public String getDescriptor() {
         return symbol;
     }
 

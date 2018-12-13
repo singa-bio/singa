@@ -13,7 +13,6 @@ import bio.singa.simulation.model.sections.CellSubsection;
 import bio.singa.simulation.model.sections.ConcentrationContainer;
 import bio.singa.simulation.model.simulation.Simulation;
 
-import javax.measure.Quantity;
 import java.util.List;
 
 /**
@@ -56,14 +55,14 @@ public class NthOrderReaction extends Reaction {
 
     @Override
     public double calculateVelocity(ConcentrationContainer concentrationContainer) {
-        Quantity scaledReactionRate = getScaledReactionRate();
+        double scaledReactionRate = getScaledReactionRate();
         if (rateConstant instanceof ZeroOrderRateConstant) {
-            return scaledReactionRate.getValue().doubleValue();
+            return scaledReactionRate;
         }
         // concentrations of substrates that influence the reaction
         double concentration = determineEffectiveConcentration(concentrationContainer, ReactantRole.SUBSTRATE);
         // calculate acceleration
-        return concentration * getScaledReactionRate().getValue().doubleValue();
+        return concentration * getScaledReactionRate();
     }
 
     @Override
@@ -77,7 +76,7 @@ public class NthOrderReaction extends Reaction {
         throw new FeatureUnassignableException("Required reaction rate unavailable.");
     }
 
-    private Quantity getScaledReactionRate() {
+    private double getScaledReactionRate() {
         if (rateConstant == null) {
             for (Feature<?> feature : getFeatures()) {
                 // any forwards rate constant

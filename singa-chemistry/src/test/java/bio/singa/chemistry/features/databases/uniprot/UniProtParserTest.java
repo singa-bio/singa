@@ -98,12 +98,12 @@ class UniProtParserTest {
     @DisplayName("parse uniprot - variants")
     void shouldParseVariants() {
         SequenceVariants sequenceVariants = transthyretin.getFeature(SequenceVariants.class);
-        SequenceVariant sequenceVariant = sequenceVariants.getFeatureContent().iterator().next();
+        SequenceVariant sequenceVariant = sequenceVariants.getContent().iterator().next();
         assertEquals("VAR_007546", sequenceVariant.getIdentifier());
         assertEquals("Common polymorphism; dbSNP:rs1800458.", sequenceVariant.getDescription());
-        Evidence expected = new Evidence(Evidence.OriginType.LITERATURE);
-        expected.setName("Ota2004");
-        expected.setPublication("DOI: 10.1038/ng1285");
+        Evidence expected = new Evidence(Evidence.SourceType.LITERATURE);
+        expected.setIdentifier("Ota2004");
+        expected.setDescription("DOI: 10.1038/ng1285");
         assertEquals(expected, sequenceVariant.getEvidences().iterator().next());
         assertEquals(26, sequenceVariant.getLocation());
         assertEquals(AminoAcidFamily.GLYCINE, sequenceVariant.getOriginal());
@@ -114,7 +114,7 @@ class UniProtParserTest {
     @DisplayName("parse uniprot - by entry name")
     void shouldParseByEntryName89() {
         UniProtIdentifier uniProtIdentifier = aarsByName.getFeature(UniProtIdentifier.class);
-        assertEquals("P21889", uniProtIdentifier.getIdentifier());
+        assertEquals("P21889", uniProtIdentifier.getContent());
     }
 
 }

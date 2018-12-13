@@ -2,6 +2,7 @@ package bio.singa.simulation.model.modules.concentration.imlementations;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.chemistry.features.permeability.MembranePermeability;
+import bio.singa.features.model.Evidence;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.simulation.features.Cargo;
 import bio.singa.simulation.model.agents.pointlike.Vesicle;
@@ -20,8 +21,6 @@ import javax.measure.Quantity;
 import javax.measure.quantity.Area;
 import java.util.HashMap;
 import java.util.Map;
-
-import static bio.singa.features.model.Evidence.MANUALLY_ANNOTATED;
 
 /**
  * The membrane diffusion module describes the movement of chemical entities across {@link Membrane}s driven by the
@@ -66,7 +65,7 @@ public class MembraneDiffusion extends ConcentrationBasedModule<UpdatableDeltaFu
         // feature
         getRequiredFeatures().add(MembranePermeability.class);
         // add cargo
-        cargo = getFeature(Cargo.class).getFeatureContent();
+        cargo = getFeature(Cargo.class).getContent();
         addReferencedEntity(cargo);
         // reference module in simulation
         addModuleToSimulation();
@@ -115,7 +114,7 @@ public class MembraneDiffusion extends ConcentrationBasedModule<UpdatableDeltaFu
     }
 
     private double calculateVelocity(ConcentrationContainer innerContainer, ConcentrationContainer outerContainer) {
-        final double permeability = getScaledFeature(cargo, MembranePermeability.class).getValue().doubleValue();
+        final double permeability = getScaledFeature(cargo, MembranePermeability.class);
         return getCargoDifference(innerContainer, outerContainer) * permeability;
     }
 
@@ -169,7 +168,7 @@ public class MembraneDiffusion extends ConcentrationBasedModule<UpdatableDeltaFu
 
         @Override
         public BuildStep cargo(ChemicalEntity cargo) {
-            module.setFeature(new Cargo(cargo, MANUALLY_ANNOTATED));
+            module.setFeature(new Cargo(cargo, Evidence.NO_EVIDENCE));
             return this;
         }
 

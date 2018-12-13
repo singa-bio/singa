@@ -2,55 +2,52 @@ package bio.singa.features.model;
 
 import java.util.Objects;
 
-import static bio.singa.features.model.Evidence.OriginType.MANUAL_ANNOTATION;
+import static bio.singa.features.model.Evidence.SourceType.GUESS;
 
 /**
  * @author cl
  */
 public class Evidence {
 
-    public static final Evidence MANUALLY_ANNOTATED = new Evidence(MANUAL_ANNOTATION, "manually assigned", "none");
-    private final OriginType originType;
-    private String name;
-    private String publication;
+    public static final Evidence NO_EVIDENCE = new Evidence(GUESS, "no evidence", "no information about evidence provided");
 
-    public Evidence(OriginType originType, String name, String publication) {
-        this.originType = originType;
-        this.name = name;
-        this.publication = publication;
+    private SourceType type;
+    private String identifier;
+    private String description;
+
+    public Evidence(SourceType type) {
+        this.type = type;
     }
 
-    public Evidence(OriginType originType) {
-        this.originType = originType;
+    public Evidence(SourceType type, String identifier, String description) {
+        this.type = type;
+        this.identifier = identifier;
+        this.description = description;
     }
 
-    public OriginType getOriginType() {
-        return originType;
+    public SourceType getType() {
+        return type;
     }
 
-    public String getName() {
-        return name;
+    public String getIdentifier() {
+        return identifier;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
     }
 
-    public String getPublication() {
-        return publication;
+    public String getDescription() {
+        return description;
     }
 
-    public void setPublication(String publication) {
-        this.publication = publication;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     @Override
     public String toString() {
-        return originType == MANUAL_ANNOTATION ? "manual annotation" : originType + " " + name;
-    }
-
-    public String full() {
-        return originType + " " + name + " - " + (getPublication() == null ? "no further description" : getPublication());
+        return type + " " + identifier + " - " + description;
     }
 
     @Override
@@ -58,17 +55,17 @@ public class Evidence {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Evidence evidence = (Evidence) o;
-        return originType == evidence.originType &&
-                Objects.equals(name, evidence.name) &&
-                Objects.equals(publication, evidence.publication);
+        return type == evidence.type &&
+                Objects.equals(identifier, evidence.identifier) &&
+                Objects.equals(description, evidence.description);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(originType, name, publication);
+        return Objects.hash(type, identifier, description);
     }
 
-    public enum OriginType {
-        PREDICTION, DATABASE, LITERATURE, MANUAL_ANNOTATION
+    public enum SourceType {
+        GUESS, ESTIMATION, PREDICTION, DATABASE, LITERATURE
     }
 }

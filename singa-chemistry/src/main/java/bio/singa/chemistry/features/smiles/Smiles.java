@@ -1,6 +1,6 @@
 package bio.singa.chemistry.features.smiles;
 
-import bio.singa.chemistry.features.FeatureRegistry;
+import bio.singa.chemistry.features.FeatureProviderRegistry;
 import bio.singa.features.model.AbstractFeature;
 import bio.singa.features.model.Evidence;
 
@@ -16,11 +16,11 @@ public class Smiles extends AbstractFeature<String> {
     }
 
     public static void register() {
-        FeatureRegistry.addProviderForFeature(Smiles.class, SmilesProvider.class);
+        FeatureProviderRegistry.addProviderForFeature(Smiles.class, SmilesProvider.class);
     }
 
     @Override
-    public String getSymbol() {
+    public String getDescriptor() {
         return SYMBOL;
     }
 }

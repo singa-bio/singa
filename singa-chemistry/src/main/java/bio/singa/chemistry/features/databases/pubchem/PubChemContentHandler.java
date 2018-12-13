@@ -54,7 +54,7 @@ class PubChemContentHandler implements ContentHandler {
     }
 
     public SmallMolecule getSpecies() {
-        SmallMolecule species = new SmallMolecule.Builder(pubChemIdentifier.getIdentifier())
+        SmallMolecule species = new SmallMolecule.Builder(pubChemIdentifier.getContent())
                 .name(name)
                 .assignFeature(new MolarMass(molarMass, PubChemDatabase.evidence))
                 .assignFeature(new Smiles(smilesRepresentation, PubChemDatabase.evidence))

@@ -18,7 +18,7 @@ public class EndocytosisCkeckpointConcentration extends AbstractFeature<Quantity
     }
 
     @Override
-    public String getSymbol() {
+    public String getDescriptor() {
         return SYMBOL;
     }
 

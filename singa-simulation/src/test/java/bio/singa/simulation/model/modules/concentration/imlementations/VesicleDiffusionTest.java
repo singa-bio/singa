@@ -27,6 +27,7 @@ import javax.measure.Quantity;
 import javax.measure.quantity.Length;
 import java.util.concurrent.ThreadLocalRandom;
 
+import static bio.singa.chemistry.features.diffusivity.Diffusivity.SQUARE_CENTIMETRE_PER_SECOND;
 import static bio.singa.chemistry.features.permeability.MembranePermeability.CENTIMETRE_PER_SECOND;
 import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static bio.singa.simulation.model.sections.CellTopology.INNER;
@@ -81,10 +82,9 @@ class VesicleDiffusionTest {
                 new Vector2D(50, 50),
                 Quantities.getQuantity(100, NANO(METRE)));
 
-        vesicle.scaleScalableFeatures();
         assertEquals(2.1460983910913096E-9, vesicle.getFeature(Diffusivity.class).getValue().doubleValue(), 1e-8);
         UnitRegistry.setTime(Quantities.getQuantity(2, MICRO(SECOND)));
-        vesicle.scaleScalableFeatures();
+
         assertEquals(4.292196782182619E-9, vesicle.getFeature(Diffusivity.class).getValue().doubleValue(), 1e-8);
     }
 
@@ -123,8 +123,8 @@ class VesicleDiffusionTest {
         // setup species
         SmallMolecule water = new SmallMolecule.Builder("water")
                 .name("water")
-                .assignFeature(new MembranePermeability(Quantities.getQuantity(1.75e-3, CENTIMETRE_PER_SECOND), Evidence.MANUALLY_ANNOTATED))
-                .assignFeature(new Diffusivity(2.6e-6, Evidence.MANUALLY_ANNOTATED))
+                .assignFeature(new MembranePermeability(Quantities.getQuantity(1.75e-3, CENTIMETRE_PER_SECOND), Evidence.NO_EVIDENCE))
+                .assignFeature(new Diffusivity(Quantities.getQuantity(2.6e-6, SQUARE_CENTIMETRE_PER_SECOND), Evidence.NO_EVIDENCE))
                 .build();
 
         // add diffusion

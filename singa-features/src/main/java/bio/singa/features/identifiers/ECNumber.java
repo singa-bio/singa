@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
  * @author cl
  * @see <a href="http://www.chem.qmul.ac.uk/iubmb/enzyme/">Enzyme Nomenclature</a>
  */
-public class ECNumber extends AbstractIdentifier<ECNumber> {
+public class ECNumber extends AbstractIdentifier {
 
     /**
      * The pattern to verify the identifier.
@@ -39,8 +39,4 @@ public class ECNumber extends AbstractIdentifier<ECNumber> {
         return PATTERN;
     }
 
-    @Override
-    public ECNumber getFeatureContent() {
-        return this;
-    }
 }

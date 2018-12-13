@@ -30,63 +30,67 @@ public class MolarMass extends AbstractFeature<Quantity<MolarMass>> implements Q
         super(Quantities.getQuantity(quantity, GRAM_PER_MOLE), evidence);
     }
 
+    public MolarMass(double quantity) {
+        super(Quantities.getQuantity(quantity, GRAM_PER_MOLE));
+    }
+
     @Override
     public Quantity<MolarMass> add(Quantity<MolarMass> augend) {
-        return getFeatureContent().add(augend);
+        return getContent().add(augend);
     }
 
     @Override
     public Quantity<MolarMass> subtract(Quantity<MolarMass> subtrahend) {
-        return getFeatureContent().subtract(subtrahend);
+        return getContent().subtract(subtrahend);
     }
 
     @Override
     public Quantity<?> divide(Quantity<?> divisor) {
-        return getFeatureContent().divide(divisor);
+        return getContent().divide(divisor);
     }
 
     @Override
     public Quantity<MolarMass> divide(Number divisor) {
-        return getFeatureContent().divide(divisor);
+        return getContent().divide(divisor);
     }
 
     @Override
     public Quantity<?> multiply(Quantity<?> multiplier) {
-        return getFeatureContent().multiply(multiplier);
+        return getContent().multiply(multiplier);
     }
 
     @Override
     public Quantity<MolarMass> multiply(Number multiplier) {
-        return getFeatureContent().multiply(multiplier);
+        return getContent().multiply(multiplier);
     }
 
     @Override
     public Quantity<?> inverse() {
-        return getFeatureContent().inverse();
+        return getContent().inverse();
     }
 
     @Override
     public Quantity<MolarMass> to(Unit<MolarMass> unit) {
-        return getFeatureContent().to(unit);
+        return getContent().to(unit);
     }
 
     @Override
     public <T extends Quantity<T>> Quantity<T> asType(Class<T> type) throws ClassCastException {
-        return getFeatureContent().asType(type);
+        return getContent().asType(type);
     }
 
     @Override
     public Number getValue() {
-        return getFeatureContent().getValue();
+        return getContent().getValue();
     }
 
     @Override
     public Unit<MolarMass> getUnit() {
-        return getFeatureContent().getUnit();
+        return getContent().getUnit();
     }
 
     @Override
-    public String getSymbol() {
+    public String getDescriptor() {
         return SYMBOL;
     }
 }

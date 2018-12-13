@@ -2,10 +2,9 @@ package bio.singa.simulation.model.modules;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.features.model.Feature;
-import bio.singa.features.model.ScalableFeature;
+import bio.singa.features.model.ScalableQuantitativeFeature;
 import bio.singa.simulation.model.modules.concentration.ModuleState;
 
-import javax.measure.Quantity;
 import java.util.Collection;
 import java.util.Set;
 
@@ -20,11 +19,9 @@ public interface UpdateModule {
 
     void resetState();
 
-    void scaleScalableFeatures();
-
     Set<Class<? extends Feature>> getRequiredFeatures();
 
-    <FeatureContentType extends Quantity<FeatureContentType>> Quantity<FeatureContentType> getScaledFeature(Class<? extends ScalableFeature<FeatureContentType>> featureClass);
+    double getScaledFeature(Class<? extends ScalableQuantitativeFeature<?>> featureClass);
 
     Collection<Feature<?>> getFeatures();
 

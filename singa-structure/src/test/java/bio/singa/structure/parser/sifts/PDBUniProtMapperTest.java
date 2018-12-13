@@ -15,10 +15,10 @@ class PDBUniProtMapperTest {
     @Test
     void shouldMapChainsToUniProt() {
         Map<String, UniProtIdentifier> map = PDBUniProtMapper.map("4hhb");
-        assertEquals("P69905", map.get("A").getIdentifier());
-        assertEquals("P68871", map.get("B").getIdentifier());
-        assertEquals("P69905", map.get("C").getIdentifier());
-        assertEquals("P68871", map.get("D").getIdentifier());
+        assertEquals("P69905", map.get("A").getContent());
+        assertEquals("P68871", map.get("B").getContent());
+        assertEquals("P69905", map.get("C").getContent());
+        assertEquals("P68871", map.get("D").getContent());
     }
 
 }

@@ -3,6 +3,7 @@ package bio.singa.simulation.model.modules.concentration.imlementations;
 import bio.singa.chemistry.entities.Protein;
 import bio.singa.chemistry.entities.SmallMolecule;
 import bio.singa.chemistry.features.diffusivity.Diffusivity;
+import bio.singa.features.model.Evidence;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.features.units.UnitRegistry;
@@ -22,7 +23,7 @@ import tec.uom.se.quantity.Quantities;
 import javax.measure.Quantity;
 
 import static bio.singa.chemistry.features.diffusivity.Diffusivity.SQUARE_CENTIMETRE_PER_SECOND;
-import static bio.singa.features.model.Evidence.MANUALLY_ANNOTATED;
+
 import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static bio.singa.simulation.model.sections.CellSubsection.SECTION_A;
 import static bio.singa.simulation.model.sections.CellSubsection.SECTION_B;
@@ -40,20 +41,20 @@ class DiffusionAtMembranesTest {
     // ammonia
     private static final SmallMolecule ammonia = new SmallMolecule.Builder("ammonia")
             .name("ammonia")
-            .assignFeature(new Diffusivity(Quantities.getQuantity(2.28E-05, SQUARE_CENTIMETRE_PER_SECOND), MANUALLY_ANNOTATED))
+            .assignFeature(new Diffusivity(Quantities.getQuantity(2.28E-05, SQUARE_CENTIMETRE_PER_SECOND), Evidence.NO_EVIDENCE))
             .build();
 
     // anchored protein
     private static final Protein anchoredProtein = new Protein.Builder("AP")
             .name("anchored protein")
-            .assignFeature(new MolarMass(1000, MANUALLY_ANNOTATED))
+            .assignFeature(new MolarMass(1000, Evidence.NO_EVIDENCE))
             .setMembraneAnchored(true)
             .build();
 
     // unanchored protein
     private static final Protein globularProtein = new Protein.Builder("GP")
             .name("globular protein")
-            .assignFeature(new MolarMass(1000, MANUALLY_ANNOTATED))
+            .assignFeature(new MolarMass(1000, Evidence.NO_EVIDENCE))
             .setMembraneAnchored(false)
             .build();
 

@@ -23,7 +23,7 @@ public class ENAParserService extends AbstractXMLParser<NucleotideSequence> {
 
     public ENAParserService(ENAAccessionNumber enaAccessionNumber) {
         getXmlReader().setContentHandler(new ENAContentHandler(enaAccessionNumber));
-        setResource(String.format(ENA_FETCH_URL, enaAccessionNumber.getIdentifier()));
+        setResource(String.format(ENA_FETCH_URL, enaAccessionNumber.getContent()));
     }
 
     public static NucleotideSequence parse(String enaAccessionNumber) {
@@ -31,7 +31,7 @@ public class ENAParserService extends AbstractXMLParser<NucleotideSequence> {
     }
 
     public static NucleotideSequence parse(ENAAccessionNumber enaAccessionNumber) {
-        logger.info("Parsing sequence with identifier {} from ENA.", enaAccessionNumber.getIdentifier());
+        logger.info("Parsing sequence with identifier {} from ENA.", enaAccessionNumber.getContent());
         ENAParserService parser = new ENAParserService(enaAccessionNumber);
         return parser.parse();
     }
@@ -41,7 +41,7 @@ public class ENAParserService extends AbstractXMLParser<NucleotideSequence> {
     }
 
     public static SequenceContainer parseGeneTranslationPair(ENAAccessionNumber enaAccessionNumber) {
-        logger.info("Parsing sequence with identifier {} from ENA.", enaAccessionNumber.getIdentifier());
+        logger.info("Parsing sequence with identifier {} from ENA.", enaAccessionNumber.getContent());
         ENAParserService parser = new ENAParserService(enaAccessionNumber);
         parser.parseXML();
         ENAContentHandler contentHandler = (ENAContentHandler) parser.getXmlReader().getContentHandler();

@@ -170,7 +170,7 @@ public class PfamParser {
             try (GZIPInputStream zip = new GZIPInputStream(new FileInputStream(temporaryZippedFile.toFile()));
                  BufferedReader reader = new BufferedReader(new InputStreamReader(zip, "UTF-8"))) {
                 relevantLines = reader.lines()
-                        .filter(line -> PfamToken.IdentifierToken.PFAM_IDENTIFIER.extract(line).equals(pfamIdentifier.getIdentifier()))
+                        .filter(line -> PfamToken.IdentifierToken.PFAM_IDENTIFIER.extract(line).equals(pfamIdentifier.getContent()))
                         .collect(Collectors.toList());
                 logger.info("Pfam {} has {} entries", pfamIdentifier, relevantLines.size());
             }

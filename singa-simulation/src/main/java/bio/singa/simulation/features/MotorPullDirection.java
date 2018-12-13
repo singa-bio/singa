@@ -19,7 +19,7 @@ public class MotorPullDirection extends AbstractFeature<MotorPullDirection.Direc
     }
 
     @Override
-    public String getSymbol() {
+    public String getDescriptor() {
         return SYMBOL;
     }
 }

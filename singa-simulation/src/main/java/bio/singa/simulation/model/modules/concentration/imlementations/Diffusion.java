@@ -2,6 +2,7 @@ package bio.singa.simulation.model.modules.concentration.imlementations;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.chemistry.features.diffusivity.Diffusivity;
+import bio.singa.features.model.Evidence;
 import bio.singa.features.model.Feature;
 import bio.singa.features.model.FeatureProvider;
 import bio.singa.features.quantities.MolarConcentration;
@@ -21,8 +22,6 @@ import bio.singa.simulation.model.simulation.Simulation;
 
 import javax.measure.Quantity;
 import java.util.*;
-
-import static bio.singa.features.model.Evidence.MANUALLY_ANNOTATED;
 
 /**
  * Diffusion is the fundamental force governing the random movement of molecules in cells. As a
@@ -63,7 +62,7 @@ public class Diffusion extends ConcentrationBasedModule<EntityDeltaFunction> {
         addDeltaFunction(function);
         // feature
         getRequiredFeatures().add(Diffusivity.class);
-        Set<ChemicalEntity> cargoes = getFeature(Cargoes.class).getFeatureContent();
+        Set<ChemicalEntity> cargoes = getFeature(Cargoes.class).getContent();
         addReferencedEntities(cargoes);
         addModuleToSimulation();
     }
@@ -73,7 +72,7 @@ public class Diffusion extends ConcentrationBasedModule<EntityDeltaFunction> {
         ChemicalEntity entity = supplier.getCurrentEntity();
         CellSubsection subsection = supplier.getCurrentSubsection();
         final double currentConcentration = concentrationContainer.get(subsection, entity).getValue().doubleValue();
-        final double diffusivity = getScaledFeature(entity, Diffusivity.class).getValue().doubleValue();
+        final double diffusivity = getScaledFeature(entity, Diffusivity.class);
         // calculate entering term
         int numberOfNeighbors = 0;
         double concentration = 0;
@@ -194,17 +193,17 @@ public class Diffusion extends ConcentrationBasedModule<EntityDeltaFunction> {
         }
 
         public BuildStep onlyFor(ChemicalEntity chemicalEntity) {
-            module.setFeature(new Cargoes(Collections.singleton(chemicalEntity), MANUALLY_ANNOTATED));
+            module.setFeature(new Cargoes(Collections.singleton(chemicalEntity), Evidence.NO_EVIDENCE));
             return this;
         }
 
         public BuildStep forAll(ChemicalEntity... chemicalEntities) {
-            module.setFeature(new Cargoes(new HashSet<>(Arrays.asList(chemicalEntities)), MANUALLY_ANNOTATED));
+            module.setFeature(new Cargoes(new HashSet<>(Arrays.asList(chemicalEntities)),Evidence.NO_EVIDENCE));
             return this;
         }
 
         public BuildStep forAll(Collection<ChemicalEntity> chemicalEntities) {
-            module.setFeature(new Cargoes(new HashSet<>(chemicalEntities), MANUALLY_ANNOTATED));
+            module.setFeature(new Cargoes(new HashSet<>(chemicalEntities), Evidence.NO_EVIDENCE));
             return this;
         }
 

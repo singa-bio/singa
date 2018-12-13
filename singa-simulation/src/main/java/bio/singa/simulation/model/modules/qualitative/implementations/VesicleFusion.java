@@ -66,10 +66,10 @@ public class VesicleFusion extends QualitativeModule {
     public void initializeComplexes() {
         MatchingQSnares qSnares = getFeature(MatchingQSnares.class);
         MatchingRSnares rSnares = getFeature(MatchingRSnares.class);
-        for (ChemicalEntity qSnare : qSnares.getFeatureContent()) {
-            for (ChemicalEntity rSnare : rSnares.getFeatureContent()) {
+        for (ChemicalEntity qSnare : qSnares.getContent()) {
+            for (ChemicalEntity rSnare : rSnares.getContent()) {
                 Pair<ChemicalEntity> pair = new Pair<>(qSnare, rSnare);
-                ComplexedChemicalEntity complex = ComplexedChemicalEntity.create(qSnare.getIdentifier().getIdentifier() + ":" + rSnare.getIdentifier().getIdentifier())
+                ComplexedChemicalEntity complex = ComplexedChemicalEntity.create(qSnare.getIdentifier().getContent() + ":" + rSnare.getIdentifier().getContent())
                         .addAssociatedPart(qSnare)
                         .addAssociatedPart(rSnare)
                         .build();
@@ -138,7 +138,7 @@ public class VesicleFusion extends QualitativeModule {
 
     private void tetherVesicle(Vesicle vesicle, TetheringSnares tetheringSnares) {
         // add tethering time to current time
-        ComparableQuantity<Time> tetheringTime = simulation.getElapsedTime().add(getFeature(TetheringTime.class).getFeatureContent());
+        ComparableQuantity<Time> tetheringTime = simulation.getElapsedTime().add(getFeature(TetheringTime.class).getContent());
         vesicle.setVesicleState(VesicleStateRegistry.MEMBRANE_TETHERED);
         // set time
         tetheredVesicles.put(vesicle, tetheringTime);
@@ -179,7 +179,7 @@ public class VesicleFusion extends QualitativeModule {
                     for (MembraneSegment membraneSegment : node.getMembraneSegments()) {
                         // check distance cutoff
                         double currentDistance = membraneSegment.distanceTo(currentPosition);
-                        ComparableQuantity<Length> threshold = (ComparableQuantity<Length>) getFeature(AttachmentDistance.class).getFeatureContent().add(vesicle.getRadius());
+                        ComparableQuantity<Length> threshold = (ComparableQuantity<Length>) getFeature(AttachmentDistance.class).getContent().add(vesicle.getRadius());
                         Quantity<Length> distance = Environment.convertSimulationToSystemScale(currentDistance);
                         if (threshold.isGreaterThanOrEqualTo(distance)) {
                             TetheringSnares tetheringSnares = prepareTethering(node, vesicle);
@@ -195,7 +195,7 @@ public class VesicleFusion extends QualitativeModule {
     }
 
     private TetheringSnares prepareTethering(AutomatonNode node, Vesicle vesicle) {
-        return new TetheringSnares(countSnares(vesicle, getFeature(MatchingRSnares.class).getFeatureContent()), countSnares(node, getFeature(MatchingQSnares.class).getFeatureContent()), node);
+        return new TetheringSnares(countSnares(vesicle, getFeature(MatchingRSnares.class).getContent()), countSnares(node, getFeature(MatchingQSnares.class).getContent()), node);
     }
 
     private Map<ChemicalEntity, Integer> countSnares(Updatable updatable, Set<ChemicalEntity> entitiesToCount) {
@@ -219,12 +219,12 @@ public class VesicleFusion extends QualitativeModule {
         for (Integer qSnareNumber : snarePattern.getQSnares().values()) {
             qSnareSum += qSnareNumber;
         }
-        int fusionPairs = getFeature(FusionPairs.class).getFeatureContent().getValue().intValue();
+        int fusionPairs = getFeature(FusionPairs.class).getContent().getValue().intValue();
         return rSnareSum >= fusionPairs && qSnareSum >= fusionPairs;
     }
 
     private void reserveSnares(Vesicle vesicle, TetheringSnares tetheringSnares) {
-        int fusionPairs = getFeature(FusionPairs.class).getFeatureContent().getValue().intValue();
+        int fusionPairs = getFeature(FusionPairs.class).getContent().getValue().intValue();
         List<ChemicalEntity> qSnareEntities = new ArrayList<>(tetheringSnares.getQSnares().keySet());
         List<ChemicalEntity> rSnareEntities = new ArrayList<>(tetheringSnares.getRSnares().keySet());
         for (int occupiedSnareCounter = 0; occupiedSnareCounter < fusionPairs; occupiedSnareCounter++) {

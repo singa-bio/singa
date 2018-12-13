@@ -17,7 +17,7 @@ import static tec.uom.se.AbstractUnit.ONE;
  */
 public class YoungCorrelation implements Correlation<Diffusivity> {
 
-    private static final Evidence evidence = new Evidence(Evidence.OriginType.PREDICTION,
+    private static final Evidence evidence = new Evidence(Evidence.SourceType.PREDICTION,
             "Young Correlation",
             "Young, M. E., P. A. Carroad, and R. L. Bell. \"Estimation of diffusion coefficients " +
                     "of proteins.\" Biotechnology and Bioengineering 22.5 (1980): 947-955.");

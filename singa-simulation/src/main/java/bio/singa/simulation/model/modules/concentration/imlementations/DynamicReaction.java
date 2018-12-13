@@ -1,9 +1,9 @@
 package bio.singa.simulation.model.modules.concentration.imlementations;
 
 import bio.singa.chemistry.features.reactions.RateConstant;
-import bio.singa.features.model.Feature;
 import bio.singa.features.model.Evidence;
-import bio.singa.features.model.ScalableQuantityFeature;
+import bio.singa.features.model.Feature;
+import bio.singa.features.model.ScalableQuantitativeFeature;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.simulation.model.modules.concentration.*;
 import bio.singa.simulation.model.modules.concentration.functions.UpdatableDeltaFunction;
@@ -129,11 +129,6 @@ public class DynamicReaction extends ConcentrationBasedModule<UpdatableDeltaFunc
         return new HashSet<>();
     }
 
-    @Override
-    public void scaleScalableFeatures() {
-        kineticLaw.scaleScalableFeatures();
-    }
-
     public static ModuleBuilder getBuilder(Simulation simulation) {
         return new DynamicReactionBuilder(simulation);
     }
@@ -150,9 +145,9 @@ public class DynamicReaction extends ConcentrationBasedModule<UpdatableDeltaFunc
 
     public interface ParameterStep {
 
-        ParameterStep referenceParameter(ScalableQuantityFeature<?> scalableFeature);
+        ParameterStep referenceParameter(ScalableQuantitativeFeature<?> scalableFeature);
 
-        ParameterStep referenceParameter(String parameterIdentifier, ScalableQuantityFeature<?> scalableFeature);
+        ParameterStep referenceParameter(String parameterIdentifier, ScalableQuantitativeFeature<?> scalableFeature);
 
         ParameterStep referenceParameter(Reactant reactant);
 
@@ -218,20 +213,20 @@ public class DynamicReaction extends ConcentrationBasedModule<UpdatableDeltaFunc
                 module.addReactant(reactantEntry.getValue());
                 module.addReferencedEntity(reactantEntry.getValue().getEntity());
             }
-            for (Map.Entry<String, ScalableQuantityFeature> featureEntry : kineticLaw.getFeatureMap().entrySet()) {
+            for (Map.Entry<String, ScalableQuantitativeFeature> featureEntry : kineticLaw.getFeatureMap().entrySet()) {
                 module.setFeature(featureEntry.getValue());
             }
             return this;
         }
 
         @Override
-        public ParameterStep referenceParameter(ScalableQuantityFeature<?> scalableFeature) {
+        public ParameterStep referenceParameter(ScalableQuantitativeFeature<?> scalableFeature) {
             module.getKineticLaw().referenceFeature(scalableFeature);
             return this;
         }
 
         @Override
-        public ParameterStep referenceParameter(String parameterIdentifier, ScalableQuantityFeature<?> scalableFeature) {
+        public ParameterStep referenceParameter(String parameterIdentifier, ScalableQuantitativeFeature<?> scalableFeature) {
             module.getKineticLaw().referenceFeature(parameterIdentifier, scalableFeature);
             return this;
         }

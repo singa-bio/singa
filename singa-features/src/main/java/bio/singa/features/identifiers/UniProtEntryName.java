@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
  * @author cl
  * @see <a href="https://www.uniprot.org/help/entry_name">Uniprot entry name</a>
  */
-public class UniProtEntryName extends AbstractIdentifier<UniProtEntryName> {
+public class UniProtEntryName extends AbstractIdentifier {
 
     /**
      * The pattern to verify the identifier.
@@ -28,8 +28,4 @@ public class UniProtEntryName extends AbstractIdentifier<UniProtEntryName> {
         super(identifier, PATTERN, evidence);
     }
 
-    @Override
-    public UniProtEntryName getFeatureContent() {
-        return this;
-    }
 }

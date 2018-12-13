@@ -1,12 +1,10 @@
 package bio.singa.simulation.model.modules.concentration.imlementations;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
-import bio.singa.chemistry.features.reactions.FirstOrderRate;
 import bio.singa.chemistry.features.reactions.MichaelisConstant;
 import bio.singa.chemistry.features.reactions.TurnoverNumber;
 import bio.singa.features.exceptions.FeatureUnassignableException;
 import bio.singa.features.model.Feature;
-import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.simulation.model.modules.concentration.ConcentrationDelta;
 import bio.singa.simulation.model.modules.concentration.ModuleBuilder;
@@ -15,9 +13,7 @@ import bio.singa.simulation.model.modules.concentration.functions.SectionDeltaFu
 import bio.singa.simulation.model.modules.concentration.reactants.Reactant;
 import bio.singa.simulation.model.sections.ConcentrationContainer;
 import bio.singa.simulation.model.simulation.Simulation;
-import tec.uom.se.quantity.Quantities;
 
-import javax.measure.Quantity;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -68,25 +64,25 @@ public class MichaelisMentenReaction extends Reaction {
     @Override
     public double calculateVelocity(ConcentrationContainer concentrationContainer) {
         // reaction rates for this reaction
-        final Quantity<FirstOrderRate> kCat = getScaledFeature(TurnoverNumber.class);
-        final Quantity<MolarConcentration> km = getFeature(MichaelisConstant.class).getFeatureContent().to(UnitRegistry.getConcentrationUnit());
+        final double kCat = getScaledFeature(TurnoverNumber.class);
+        final double km = getFeature(MichaelisConstant.class).getContent().getValue().doubleValue();
         // (KCAT * enzyme * substrate) / KM + substrate
         // FIXME currently "only" the first substrate is considered
         double substrateConcentration = concentrationContainer.get(supplier.getCurrentSubsection(), getSubstrateEntities().iterator().next()).getValue().doubleValue();
         double enzymeConcentration = concentrationContainer.get(supplier.getCurrentSubsection(), enzyme).getValue().doubleValue();
-        return (kCat.getValue().doubleValue() * enzymeConcentration * substrateConcentration) / (km.getValue().doubleValue() + substrateConcentration);
+        return (kCat * enzymeConcentration * substrateConcentration) / (km + substrateConcentration);
     }
 
     public double calculateMembraneBasedVelocity(ConcentrationContainer concentrationContainer) {
         // reaction rates for this reaction
-        final Quantity<FirstOrderRate> kCat = getScaledFeature(TurnoverNumber.class);
-        final Quantity<MolarConcentration> km = getFeature(MichaelisConstant.class).getFeatureContent().to(UnitRegistry.getConcentrationUnit());
+        final double kCat = getScaledFeature(TurnoverNumber.class);
+        final double km = getFeature(MichaelisConstant.class).getContent().getValue().doubleValue();
         // (KCAT * enzyme * substrate) / KM + substrate
         // FIXME currently "only" the first substrate is considered
         Reactant reactant = getSubstrates().iterator().next();
         double substrateConcentration = concentrationContainer.get(reactant.getPreferredTopology(), reactant.getEntity()).getValue().doubleValue();
         double enzymeConcentration = concentrationContainer.get(supplier.getCurrentSubsection(), enzyme).getValue().doubleValue();
-        return (kCat.getValue().doubleValue() * enzymeConcentration * substrateConcentration) / (km.getValue().doubleValue() + substrateConcentration);
+        return (kCat * enzymeConcentration * substrateConcentration) / (km + substrateConcentration);
     }
 
     @Override

@@ -135,7 +135,6 @@ public class Simulation {
             initializeConcentrations();
             initializeSpatialRepresentations();
             initializeVesicleLayer();
-            scheduler.rescaleParameters();
             initializationDone = true;
         }
         // clear observed nodes if necessary

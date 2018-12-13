@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
  *
  * @see <a href="https://www.ncbi.nlm.nih.gov/books/NBK50679/">RefSeq Frequently Asked Questions</a>
  */
-public class RefSeqIdentifier extends AbstractIdentifier<RefSeqIdentifier> {
+public class RefSeqIdentifier extends AbstractIdentifier{
 
     /**
      * The pattern to verify the identifier.
@@ -20,8 +20,4 @@ public class RefSeqIdentifier extends AbstractIdentifier<RefSeqIdentifier> {
         super(identifier, PATTERN);
     }
 
-    @Override
-    public RefSeqIdentifier getFeatureContent() {
-        return this;
-    }
 }

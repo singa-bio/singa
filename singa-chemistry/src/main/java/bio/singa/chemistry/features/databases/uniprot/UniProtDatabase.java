@@ -16,7 +16,7 @@ import java.util.Optional;
  */
 public class UniProtDatabase {
 
-    public static final Evidence evidence = new Evidence(Evidence.OriginType.DATABASE,
+    public static final Evidence evidence = new Evidence(Evidence.SourceType.DATABASE,
             "UniProt Database",
             "UniProt Consortium. \"UniProt: the universal protein knowledgebase.\" Nucleic acids research 46.5 (2018): 2699.");
 

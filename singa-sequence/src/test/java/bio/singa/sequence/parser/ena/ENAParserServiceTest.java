@@ -49,7 +49,7 @@ class ENAParserServiceTest {
                 "ENN", translation.getSequenceAsString());
 
         // ensure correct UniProt mapping
-        assertEquals("P21889", translation.getFeature(UniProtIdentifier.class).getIdentifier());
+        assertEquals("P21889", translation.getFeature(UniProtIdentifier.class).getContent());
     }
 
 

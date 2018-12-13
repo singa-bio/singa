@@ -1,11 +1,9 @@
 package bio.singa.simulation.model.simulation;
 
-import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.simulation.model.modules.UpdateModule;
 import bio.singa.simulation.model.modules.concentration.LocalError;
 import bio.singa.simulation.model.modules.concentration.ModuleState;
-import bio.singa.simulation.model.agents.pointlike.Vesicle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -132,32 +130,15 @@ public class UpdateScheduler {
         return timestepRescaled;
     }
 
-    public void rescaleParameters() {
-        // rescale entity parameters
-        for (ChemicalEntity entity : simulation.getChemicalEntities()) {
-            entity.scaleScalableFeatures();
-        }
-        // rescale vesicle parameters
-        for (Vesicle vesicle : simulation.getVesicleLayer().getVesicles()) {
-            vesicle.scaleScalableFeatures();
-        }
-        // rescale module parameters
-        for (UpdateModule module : modules) {
-            module.scaleScalableFeatures();
-        }
-    }
-
     public void increaseTimeStep() {
         UnitRegistry.setTime(UnitRegistry.getTime().multiply(1.2));
         logger.debug("Increasing time step to {}.", UnitRegistry.getTime());
-        rescaleParameters();
         timestepRescaled = true;
     }
 
     public void decreaseTimeStep() {
         UnitRegistry.setTime(UnitRegistry.getTime().multiply(0.8));
         logger.debug("Decreasing time step to {}.", UnitRegistry.getTime());
-        rescaleParameters();
         timestepRescaled = true;
     }
 

@@ -5,6 +5,7 @@ import bio.singa.chemistry.entities.SmallMolecule;
 import bio.singa.chemistry.features.databases.chebi.ChEBIParserService;
 import bio.singa.chemistry.features.reactions.MichaelisConstant;
 import bio.singa.chemistry.features.reactions.TurnoverNumber;
+import bio.singa.features.model.Evidence;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
@@ -21,7 +22,6 @@ import tec.uom.se.unit.ProductUnit;
 import javax.measure.Quantity;
 import javax.measure.quantity.Time;
 
-import static bio.singa.features.model.Evidence.MANUALLY_ANNOTATED;
 import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static bio.singa.simulation.model.sections.CellRegions.EXTRACELLULAR_REGION;
 import static org.junit.jupiter.api.Assertions.*;
@@ -64,8 +64,8 @@ class MichaelisMentenReactionTest {
         // prepare enzyme
         Enzyme aldolase = new Enzyme.Builder("P07752")
                 .name("Fructose-bisphosphate aldolase")
-                .assignFeature(new MichaelisConstant(Quantities.getQuantity(9.0e-3, MOLE_PER_LITRE), MANUALLY_ANNOTATED))
-                .assignFeature(new TurnoverNumber(76, new ProductUnit<>(ONE.divide(MINUTE)), MANUALLY_ANNOTATED))
+                .assignFeature(new MichaelisConstant(Quantities.getQuantity(9.0e-3, MOLE_PER_LITRE), Evidence.NO_EVIDENCE))
+                .assignFeature(new TurnoverNumber(76, new ProductUnit<>(ONE.divide(MINUTE)), Evidence.NO_EVIDENCE))
                 .build();
 
         // set concentrations

@@ -3,6 +3,7 @@ package bio.singa.simulation.model.modules.concentration.imlementations;
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.chemistry.entities.Protein;
 import bio.singa.chemistry.features.permeability.OsmoticPermeability;
+import bio.singa.features.model.Evidence;
 import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.simulation.features.Cargo;
@@ -17,8 +18,6 @@ import bio.singa.simulation.model.sections.ConcentrationContainer;
 import bio.singa.simulation.model.simulation.Simulation;
 
 import java.util.*;
-
-import static bio.singa.features.model.Evidence.MANUALLY_ANNOTATED;
 
 /**
  * The single file channel transport describes the movement of cargo molecules through {@link Transporter} proteins, so
@@ -75,11 +74,11 @@ public class SingleFileChannelMembraneTransport extends ConcentrationBasedModule
         // feature
         getRequiredFeatures().add(OsmoticPermeability.class);
         // reference entities for this module
-        transporter = getFeature(Transporter.class).getFeatureContent();
+        transporter = getFeature(Transporter.class).getContent();
         addReferencedEntity(transporter);
-        cargo = getFeature(Cargo.class).getFeatureContent();
+        cargo = getFeature(Cargo.class).getContent();
         addReferencedEntity(cargo);
-        solutes = getFeature(Solutes.class).getFeatureContent();
+        solutes = getFeature(Solutes.class).getContent();
         addReferencedEntities(solutes);
         // reference module in simulation
         addModuleToSimulation();
@@ -94,7 +93,7 @@ public class SingleFileChannelMembraneTransport extends ConcentrationBasedModule
 
     private Map<ConcentrationDeltaIdentifier, ConcentrationDelta> calculateDeltas(ConcentrationContainer container) {
         Map<ConcentrationDeltaIdentifier, ConcentrationDelta> deltas = new HashMap<>();
-        final double permeability = getScaledFeature(transporter, OsmoticPermeability.class).getValue().doubleValue();
+        final double permeability = getScaledFeature(transporter, OsmoticPermeability.class);
         final double value = getSoluteDelta(container) * permeability * MolarConcentration.concentrationToMolecules(container.get(CellTopology.MEMBRANE, transporter)).getValue().doubleValue();
         deltas.put(new ConcentrationDeltaIdentifier(supplier.getCurrentUpdatable(), container.getInnerSubsection(), cargo),
                 new ConcentrationDelta(this, container.getInnerSubsection(), cargo, UnitRegistry.concentration(value)));
@@ -176,31 +175,31 @@ public class SingleFileChannelMembraneTransport extends ConcentrationBasedModule
 
         @Override
         public CargoStep transporter(Protein transporter) {
-            module.setFeature(new Transporter(transporter, MANUALLY_ANNOTATED));
+            module.setFeature(new Transporter(transporter, Evidence.NO_EVIDENCE));
             return this;
         }
 
         @Override
         public SolutesStep cargo(ChemicalEntity cargo) {
-            module.setFeature(new Cargo(cargo, MANUALLY_ANNOTATED));
+            module.setFeature(new Cargo(cargo, Evidence.NO_EVIDENCE));
             return this;
         }
 
         @Override
         public BuildStep forSolute(ChemicalEntity solute) {
-            module.setFeature(new Solutes(Collections.singleton(solute), MANUALLY_ANNOTATED));
+            module.setFeature(new Solutes(Collections.singleton(solute), Evidence.NO_EVIDENCE));
             return this;
         }
 
         @Override
         public BuildStep forSolutes(ChemicalEntity... solutes) {
-            module.setFeature(new Solutes(new HashSet<>(Arrays.asList(solutes)), MANUALLY_ANNOTATED));
+            module.setFeature(new Solutes(new HashSet<>(Arrays.asList(solutes)), Evidence.NO_EVIDENCE));
             return this;
         }
 
         @Override
         public BuildStep forSolutes(Collection<ChemicalEntity> solutes) {
-            module.setFeature(new Solutes(new HashSet<>(solutes), MANUALLY_ANNOTATED));
+            module.setFeature(new Solutes(new HashSet<>(solutes), Evidence.NO_EVIDENCE));
             return this;
         }
 

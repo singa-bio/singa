@@ -49,7 +49,7 @@ class MembraneDiffusionTest {
 
     private final SmallMolecule water = new SmallMolecule.Builder("water")
             .name("water")
-            .assignFeature(new MembranePermeability(Quantities.getQuantity(3.5E-03, CENTIMETRE_PER_SECOND), Evidence.MANUALLY_ANNOTATED))
+            .assignFeature(new MembranePermeability(Quantities.getQuantity(3.5E-03, CENTIMETRE_PER_SECOND), Evidence.NO_EVIDENCE))
             .build();
 
     @BeforeAll
@@ -98,12 +98,12 @@ class MembraneDiffusionTest {
         setSpace(Quantities.getQuantity(2, MICRO(METRE)));
         setTime(Quantities.getQuantity(1, MICRO(SECOND)));
 
-        MembranePermeability membranePermeability = new MembranePermeability(Quantities.getQuantity(3.5E-03, CENTIMETRE_PER_SECOND), Evidence.MANUALLY_ANNOTATED);
+        MembranePermeability membranePermeability = new MembranePermeability(Quantities.getQuantity(3.5E-03, CENTIMETRE_PER_SECOND), Evidence.NO_EVIDENCE);
         membranePermeability.scale();
-        Quantity<MembranePermeability> scaledQuantity = membranePermeability.getScaledQuantity();
+        double scaledQuantity = membranePermeability.getScaledQuantity();
         Quantity<MolarConcentration> concentration = Quantities.getQuantity(0.1, MOLE_PER_LITRE).to(UnitRegistry.getConcentrationUnit());
 
-        double result = scaledQuantity.getValue().doubleValue() * concentration.getValue().doubleValue() * getArea().getValue().doubleValue();
+        double result = scaledQuantity * concentration.getValue().doubleValue() * getArea().getValue().doubleValue();
 
         assertEquals(7.0E-6, Quantities.getQuantity(result, UnitRegistry.getConcentrationUnit()).to(MOLE_PER_LITRE).getValue().doubleValue(), 1.0E-16);
 
@@ -144,7 +144,7 @@ class MembraneDiffusionTest {
         // setup species
         SmallMolecule water = new SmallMolecule.Builder("water")
                 .name("water")
-                .assignFeature(new MembranePermeability(Quantities.getQuantity(3.5E-03, CENTIMETRE_PER_SECOND), Evidence.MANUALLY_ANNOTATED))
+                .assignFeature(new MembranePermeability(Quantities.getQuantity(3.5E-03, CENTIMETRE_PER_SECOND), Evidence.NO_EVIDENCE))
                 .build();
 
         // add diffusion

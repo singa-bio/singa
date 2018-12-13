@@ -47,7 +47,7 @@ public class LineLikeAgentAttachment extends QualitativeModule {
     }
 
     private void processVesicles(List<Vesicle> vesicles) {
-        ChemicalEntity motor = getFeature(AttachedMotor.class).getFeatureContent();
+        ChemicalEntity motor = getFeature(AttachedMotor.class).getContent();
         for (Vesicle vesicle : vesicles) {
             // at least one motor is available
             Optional<ChemicalEntity> motorEntity = vesicle.getConcentrationContainer().containsEntity(CellTopology.MEMBRANE, motor);
@@ -65,7 +65,7 @@ public class LineLikeAgentAttachment extends QualitativeModule {
             }
             // attach if there is any close filament
             AttachmentInformation attachmentInformation = determineClosestSegment(vesicle);
-            ComparableQuantity<Length> threshold = (ComparableQuantity<Length>) getFeature(AttachmentDistance.class).getFeatureContent().add(vesicle.getRadius());
+            ComparableQuantity<Length> threshold = (ComparableQuantity<Length>) getFeature(AttachmentDistance.class).getContent().add(vesicle.getRadius());
             Quantity<Length> distance = Environment.convertSimulationToSystemScale(attachmentInformation.getClosestDistance());
             if (threshold.isGreaterThanOrEqualTo(distance)) {
                 attachingVesicles.put(vesicle, attachmentInformation);
@@ -78,7 +78,7 @@ public class LineLikeAgentAttachment extends QualitativeModule {
         LineLikeAgent closestFilament = null;
         Vector2D closestSegment = null;
         double closestDistance = Double.MAX_VALUE;
-        FilamentType filamentType = getFeature(AttachedFilament.class).getFeatureContent();
+        FilamentType filamentType = getFeature(AttachedFilament.class).getContent();
         // get closest relevant node
         for (AutomatonNode node : vesicle.getAssociatedNodes().keySet()) {
             // get relevant path
@@ -124,13 +124,13 @@ public class LineLikeAgentAttachment extends QualitativeModule {
     }
 
     private void attachVesicle(Vesicle vesicle, AttachmentInformation attachmentInformation) {
-        FilamentType filamentType = getFeature(AttachedFilament.class).getFeatureContent();
+        FilamentType filamentType = getFeature(AttachedFilament.class).getContent();
         if (filamentType.equals(MICROTUBULE)) {
             vesicle.setVesicleState(VesicleStateRegistry.MICROTUBULE_ATTACHED);
         } else {
             vesicle.setVesicleState(VesicleStateRegistry.ACTIN_ATTACHED);
         }
-        vesicle.setTargetDirection(getFeature(MotorPullDirection.class).getFeatureContent());
+        vesicle.setTargetDirection(getFeature(MotorPullDirection.class).getContent());
         vesicle.setAttachedFilament(attachmentInformation.getClosestFilament());
         vesicle.setSegmentIterator(attachmentInformation.getSegmentIterator());
     }

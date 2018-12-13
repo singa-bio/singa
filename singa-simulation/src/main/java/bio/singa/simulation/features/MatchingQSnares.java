@@ -18,7 +18,7 @@ public class MatchingQSnares extends MultiEntityFeature {
     }
 
     @Override
-    public String getSymbol() {
+    public String getDescriptor() {
         return SYMBOL;
     }
 }

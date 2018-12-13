@@ -17,7 +17,7 @@ public class SequenceVariants extends AbstractFeature<List<SequenceVariant>> {
     }
 
     @Override
-    public String getSymbol() {
+    public String getDescriptor() {
         return SYMBOL;
     }
 }

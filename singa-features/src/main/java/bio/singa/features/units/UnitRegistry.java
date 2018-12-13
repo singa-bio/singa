@@ -1,9 +1,9 @@
 package bio.singa.features.units;
 
-import bio.singa.features.model.ScalableFeature;
+import bio.singa.features.model.FeatureRegistry;
 import bio.singa.features.quantities.MolarConcentration;
 import tec.uom.se.quantity.Quantities;
-import tec.uom.se.quantity.QuantityDimension;
+import tec.uom.se.unit.TransformedUnit;
 import tec.uom.se.unit.Units;
 
 import javax.measure.Dimension;
@@ -15,6 +15,7 @@ import java.util.Map;
 
 import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static tec.uom.se.AbstractUnit.ONE;
+import static tec.uom.se.quantity.QuantityDimension.*;
 import static tec.uom.se.unit.MetricPrefix.MICRO;
 import static tec.uom.se.unit.MetricPrefix.NANO;
 import static tec.uom.se.unit.Units.*;
@@ -23,15 +24,6 @@ import static tec.uom.se.unit.Units.*;
  * @author cl
  */
 public class UnitRegistry {
-
-    // TODO maybe encapsulate units in objects to make them fixable (mol/l instead of mol/µl)
-
-    private static UnitRegistry getInstance() {
-        if (instance == null) {
-            reinitialize();
-        }
-        return instance;
-    }
 
     /**
      * Standard node distance [L] (100 nm)
@@ -63,11 +55,18 @@ public class UnitRegistry {
         time = DEFAULT_TIME;
 
         defaultUnits = new HashMap<>();
-        defaultUnits.put(QuantityDimension.LENGTH, space.getUnit());
-        defaultUnits.put(QuantityDimension.TIME, time.getUnit());
-        defaultUnits.put(QuantityDimension.AMOUNT_OF_SUBSTANCE, DEFAULT_AMOUNT_OF_SUBSTANCE.getUnit());
-        defaultUnits.put(QuantityDimension.MASS, DEFAULT_MASS_UNIT);
-        defaultUnits.put(QuantityDimension.TEMPERATURE, DEFAULT_TEMPERATURE_UNIT);
+        defaultUnits.put(LENGTH, space.getUnit());
+        defaultUnits.put(TIME, time.getUnit());
+        defaultUnits.put(AMOUNT_OF_SUBSTANCE, DEFAULT_AMOUNT_OF_SUBSTANCE.getUnit());
+        defaultUnits.put(MASS, DEFAULT_MASS_UNIT);
+        defaultUnits.put(TEMPERATURE, DEFAULT_TEMPERATURE_UNIT);
+    }
+
+    private static UnitRegistry getInstance() {
+        if (instance == null) {
+            reinitialize();
+        }
+        return instance;
     }
 
     public static void reinitialize() {
@@ -79,6 +78,7 @@ public class UnitRegistry {
     public static void setSpace(Quantity<Length> space) {
         setSpaceScale(space.getValue().doubleValue());
         setSpaceUnit(space.getUnit());
+        FeatureRegistry.scale();
     }
 
     public static Quantity<Length> getSpace() {
@@ -100,7 +100,7 @@ public class UnitRegistry {
     public static void setSpaceUnit(Unit<Length> unit) {
         // only rescale if unit was updated
         getInstance().space = Quantities.getQuantity(getInstance().space.getValue().doubleValue(), unit);
-        getInstance().defaultUnits.put(QuantityDimension.LENGTH, unit);
+        getInstance().defaultUnits.put(LENGTH, unit);
         rescaleRegisteredUnits();
     }
 
@@ -110,8 +110,12 @@ public class UnitRegistry {
     }
 
     public static void setTime(Quantity<Time> time) {
+        double previousTime = getTime().getValue().doubleValue();
         setTimeScale(time.getValue().doubleValue());
         setTimeUnit(time.getUnit());
+        double currentTime = getTime().getValue().doubleValue();
+        double scalingFactor = currentTime / previousTime;
+        FeatureRegistry.scale(scalingFactor);
     }
 
     public static Quantity<Time> getTime() {
@@ -131,9 +135,11 @@ public class UnitRegistry {
     }
 
     public static void setTimeUnit(Unit<Time> unit) {
-        getInstance().time = Quantities.getQuantity(getInstance().time.getValue().doubleValue(), unit);
-        getInstance().defaultUnits.put(QuantityDimension.TIME, unit);
-        rescaleRegisteredUnits();
+        if (!getInstance().time.getUnit().equals(unit)) {
+            getInstance().time = Quantities.getQuantity(getInstance().time.getValue().doubleValue(), unit);
+            getInstance().defaultUnits.put(TIME, unit);
+            rescaleRegisteredUnits();
+        }
     }
 
     public static void resetTime() {
@@ -176,8 +182,8 @@ public class UnitRegistry {
     public static <QuantityType extends Quantity<QuantityType>> Quantity<QuantityType> scale(Quantity<QuantityType> quantity) {
         Quantity<QuantityType> convert = convert(quantity);
         double value = convert.getValue().doubleValue();
-        int spaceExponent = ScalableFeature.getSpaceExponent(convert.getUnit());
-        int timeExponent = ScalableFeature.getTimeExponent(convert.getUnit());
+        int spaceExponent = getSpaceExponent(convert.getUnit());
+        int timeExponent = getTimeExponent(convert.getUnit());
         if (spaceExponent != 0 || timeExponent != 0) {
             if (spaceExponent > 0 && getSpaceScale() != 1.0) {
                 value = value / Math.pow(getSpaceScale(), spaceExponent);
@@ -198,7 +204,7 @@ public class UnitRegistry {
     public static <QuantityType extends Quantity<QuantityType>> Quantity<QuantityType> scaleTime(Quantity<QuantityType> quantity) {
         Quantity<QuantityType> convert = convert(quantity);
         double value = convert.getValue().doubleValue();
-        int timeExponent = ScalableFeature.getTimeExponent(convert.getUnit());
+        int timeExponent = getTimeExponent(convert.getUnit());
         if (timeExponent != 0) {
             if (timeExponent > 0 && getSpaceScale() != 1.0) {
                 value = value / Math.pow(getTimeScale(), timeExponent);
@@ -262,6 +268,38 @@ public class UnitRegistry {
             // else use si units
             return Units.getInstance().getUnits(dimension).iterator().next();
         }
+    }
+
+    public static int getTimeExponent(Unit<?> unit) {
+        return getExponent(unit, SECOND);
+    }
+
+    public static int getSpaceExponent(Unit<?> unit) {
+        return getExponent(unit, METRE);
+    }
+
+    private static int getExponent(Unit<?> testUnit, Unit<?> requiredUnit) {
+        // check eventual base units
+        Map<? extends Unit<?>, Integer> baseUnits = testUnit.getBaseUnits();
+        if (baseUnits == null) {
+            if (testUnit.getDimension().equals(requiredUnit.getDimension())) {
+                return 1;
+            }
+            return 0;
+        }
+        for (Map.Entry<? extends Unit<?>, Integer> entry : baseUnits.entrySet()) {
+            Unit<?> unit = entry.getKey();
+            if (unit.getDimension().equals(requiredUnit.getDimension())) {
+                return entry.getValue();
+            }
+            if (unit instanceof TransformedUnit) {
+                int scale = getExponent(unit, requiredUnit);
+                if (scale != 0) {
+                    return entry.getValue();
+                }
+            }
+        }
+        return 0;
     }
 
     public static Map<Dimension, Unit> getDefaultUnits() {

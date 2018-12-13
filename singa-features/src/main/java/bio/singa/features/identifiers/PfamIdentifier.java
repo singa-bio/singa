@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
  *
  * @author fk
  */
-public class PfamIdentifier extends AbstractIdentifier<PfamIdentifier> {
+public class PfamIdentifier extends AbstractIdentifier{
 
     /**
      * The {@link Pattern} to verify the identifier.
@@ -21,8 +21,4 @@ public class PfamIdentifier extends AbstractIdentifier<PfamIdentifier> {
         super(identifier, PATTERN);
     }
 
-    @Override
-    public PfamIdentifier getFeatureContent() {
-        return this;
-    }
 }

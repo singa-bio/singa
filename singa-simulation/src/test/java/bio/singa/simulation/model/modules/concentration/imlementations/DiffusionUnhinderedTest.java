@@ -45,17 +45,17 @@ class DiffusionUnhinderedTest {
     // required species
     private static final SmallMolecule hydrogen = new SmallMolecule.Builder("h2")
             .name("dihydrogen")
-            .assignFeature(new Diffusivity(Quantities.getQuantity(4.40E-05, SQUARE_CENTIMETRE_PER_SECOND), Evidence.MANUALLY_ANNOTATED))
+            .assignFeature(new Diffusivity(Quantities.getQuantity(4.40E-05, SQUARE_CENTIMETRE_PER_SECOND), Evidence.NO_EVIDENCE))
             .build();
 
     private static final SmallMolecule ammonia = new SmallMolecule.Builder("ammonia")
             .name("ammonia")
-            .assignFeature(new Diffusivity(Quantities.getQuantity(2.28E-05, SQUARE_CENTIMETRE_PER_SECOND), Evidence.MANUALLY_ANNOTATED))
+            .assignFeature(new Diffusivity(Quantities.getQuantity(2.28E-05, SQUARE_CENTIMETRE_PER_SECOND), Evidence.NO_EVIDENCE))
             .build();
 
     private static final SmallMolecule benzene = new SmallMolecule.Builder("benzene")
             .name("benzene")
-            .assignFeature(new Diffusivity(Quantities.getQuantity(1.09E-05, SQUARE_CENTIMETRE_PER_SECOND), Evidence.MANUALLY_ANNOTATED))
+            .assignFeature(new Diffusivity(Quantities.getQuantity(1.09E-05, SQUARE_CENTIMETRE_PER_SECOND), Evidence.NO_EVIDENCE))
             .build();
 
     @BeforeAll

@@ -23,9 +23,9 @@ import java.util.Map;
 /**
  * @author cl
  */
-public class FeatureRegistry {
+public class FeatureProviderRegistry {
 
-    private static FeatureRegistry instance = new FeatureRegistry();
+    private static FeatureProviderRegistry instance = new FeatureProviderRegistry();
 
     static {
         // identifiers
@@ -39,14 +39,14 @@ public class FeatureRegistry {
 
     private final Map<Class<? extends Feature>, Class<? extends FeatureProvider>> featureRegistry;
 
-    private FeatureRegistry() {
+    private FeatureProviderRegistry() {
         featureRegistry = new HashMap<>();
     }
 
-    public static FeatureRegistry getInstance() {
+    public static FeatureProviderRegistry getInstance() {
         if (instance == null) {
-            synchronized (FeatureRegistry.class) {
-                instance = new FeatureRegistry();
+            synchronized (FeatureProviderRegistry.class) {
+                instance = new FeatureProviderRegistry();
             }
         }
         return instance;

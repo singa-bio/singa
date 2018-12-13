@@ -7,6 +7,7 @@ import bio.singa.chemistry.features.diffusivity.Diffusivity;
 import bio.singa.chemistry.features.reactions.MichaelisConstant;
 import bio.singa.chemistry.features.reactions.RateConstant;
 import bio.singa.chemistry.features.reactions.TurnoverNumber;
+import bio.singa.features.model.Evidence;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.graphs.model.Graphs;
@@ -27,7 +28,7 @@ import tec.uom.se.unit.ProductUnit;
 import javax.measure.Quantity;
 import javax.measure.quantity.Time;
 
-import static bio.singa.features.model.Evidence.MANUALLY_ANNOTATED;
+
 import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static tec.uom.se.AbstractUnit.ONE;
 import static tec.uom.se.unit.MetricPrefix.MILLI;
@@ -184,9 +185,9 @@ public class SimulationExamples {
         // setup enzyme
         Enzyme aldolase = new Enzyme.Builder("P07752")
                 .name("Fructose-bisphosphate aldolase")
-                .assignFeature(new MolarMass(82142, MANUALLY_ANNOTATED))
-                .assignFeature(new MichaelisConstant(Quantities.getQuantity(9.0e-3, MOLE_PER_LITRE).to(UnitRegistry.getConcentrationUnit()), MANUALLY_ANNOTATED))
-                .assignFeature(new TurnoverNumber(76, new ProductUnit<>(ONE.divide(MINUTE)), MANUALLY_ANNOTATED))
+                .assignFeature(new MolarMass(82142, Evidence.NO_EVIDENCE))
+                .assignFeature(new MichaelisConstant(Quantities.getQuantity(9.0e-3, MOLE_PER_LITRE).to(UnitRegistry.getConcentrationUnit()), Evidence.NO_EVIDENCE))
+                .assignFeature(new TurnoverNumber(76, new ProductUnit<>(ONE.divide(MINUTE)), Evidence.NO_EVIDENCE))
                 .build();
 
         // setup graph with a single node

@@ -6,8 +6,6 @@ import bio.singa.chemistry.features.smiles.Smiles;
 import bio.singa.features.identifiers.ChEBIIdentifier;
 import bio.singa.features.identifiers.SimpleStringIdentifier;
 import bio.singa.features.model.Feature;
-import bio.singa.features.model.Evidence;
-import bio.singa.structure.features.molarmass.MolarMass;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -30,11 +28,6 @@ public class SmallMolecule extends ChemicalEntity {
     public static Builder create(SimpleStringIdentifier identifier) {
         return new Builder(identifier);
     }
-
-    public static final SmallMolecule UNKNOWN_SPECIES = new SmallMolecule.Builder("UNK")
-            .name("Unknown chemical species")
-            .assignFeature(new MolarMass(10, Evidence.MANUALLY_ANNOTATED))
-            .build();
 
     public static final Set<Class<? extends Feature>> availableFeatures = new HashSet<>();
 
@@ -79,7 +72,7 @@ public class SmallMolecule extends ChemicalEntity {
 
         @Override
         protected SmallMolecule createObject(SimpleStringIdentifier primaryIdentifer) {
-            return new SmallMolecule(primaryIdentifer.getIdentifier());
+            return new SmallMolecule(primaryIdentifer.getContent());
         }
 
         @Override

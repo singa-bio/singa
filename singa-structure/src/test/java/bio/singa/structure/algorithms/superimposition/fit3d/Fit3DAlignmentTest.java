@@ -395,7 +395,7 @@ class Fit3DAlignmentTest {
                 .map(Optional::get)
                 .map(Map::values)
                 .flatMap(Collection::stream)
-                .anyMatch(pfamIdentifier -> pfamIdentifier.getIdentifier().equals("PF00089")));
+                .anyMatch(pfamIdentifier -> pfamIdentifier.getContent().equals("PF00089")));
         assertTrue(fit3d.getMatches().stream()
                 .map(Fit3DMatch::getUniProtIdentifiers)
                 .filter(Optional::isPresent)
@@ -403,14 +403,14 @@ class Fit3DAlignmentTest {
                 .map(Map::values)
                 .flatMap(Collection::stream)
                 .peek(System.out::println)
-                .anyMatch(uniProtIdentifier -> uniProtIdentifier.getIdentifier().equals("P00766")));
+                .anyMatch(uniProtIdentifier -> uniProtIdentifier.getContent().equals("P00766")));
         assertTrue(fit3d.getMatches().stream()
                 .map(Fit3DMatch::getEcNumbers)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .map(Map::values)
                 .flatMap(Collection::stream)
-                .anyMatch(ecNumber -> ecNumber.getIdentifier().equals("3.4.21.1")));
+                .anyMatch(ecNumber -> ecNumber.getContent().equals("3.4.21.1")));
     }
 
     @Test
@@ -432,20 +432,20 @@ class Fit3DAlignmentTest {
                 .map(Optional::get)
                 .map(Map::values)
                 .flatMap(Collection::stream)
-                .anyMatch(pfamIdentifier -> pfamIdentifier.getIdentifier().equals("PF00089")));
+                .anyMatch(pfamIdentifier -> pfamIdentifier.getContent().equals("PF00089")));
         assertTrue(fit3d.getMatches().stream()
                 .map(Fit3DMatch::getUniProtIdentifiers)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .map(Map::values)
                 .flatMap(Collection::stream)
-                .anyMatch(uniProtIdentifier -> uniProtIdentifier.getIdentifier().equals("Q9EXR9")));
+                .anyMatch(uniProtIdentifier -> uniProtIdentifier.getContent().equals("Q9EXR9")));
         assertTrue(fit3d.getMatches().stream()
                 .map(Fit3DMatch::getEcNumbers)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .map(Map::values)
                 .flatMap(Collection::stream)
-                .anyMatch(ecNumber -> ecNumber.getIdentifier().equals("3.4.21.5")));
+                .anyMatch(ecNumber -> ecNumber.getContent().equals("3.4.21.5")));
     }
 }

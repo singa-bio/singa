@@ -18,7 +18,7 @@ public class MaximalConcentration extends AbstractFeature<Quantity<MolarConcentr
     }
 
     @Override
-    public String getSymbol() {
+    public String getDescriptor() {
         return SYMBOL;
     }
 

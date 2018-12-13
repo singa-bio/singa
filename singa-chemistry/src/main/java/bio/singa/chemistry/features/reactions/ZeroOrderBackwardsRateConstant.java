@@ -21,7 +21,7 @@ public class ZeroOrderBackwardsRateConstant extends ZeroOrderRateConstant implem
     }
 
     @Override
-    public String getSymbol() {
+    public String getDescriptor() {
         return symbol;
     }
 }

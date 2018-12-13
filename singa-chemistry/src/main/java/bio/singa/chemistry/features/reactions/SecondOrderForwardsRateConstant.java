@@ -22,7 +22,7 @@ public class SecondOrderForwardsRateConstant extends SecondOrderRateConstant imp
     }
 
     @Override
-    public String getSymbol() {
+    public String getDescriptor() {
         return symbol;
     }
 

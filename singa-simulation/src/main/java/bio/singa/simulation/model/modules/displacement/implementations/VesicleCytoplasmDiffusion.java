@@ -26,7 +26,7 @@ public class VesicleCytoplasmDiffusion extends DisplacementBasedModule {
     }
 
     public DisplacementDelta calculateDisplacement(Vesicle vesicle) {
-        double scaling = SQRT2 * Environment.convertSystemToSimulationScale(Quantities.getQuantity(Math.sqrt(vesicle.getFeature(Diffusivity.class).getScaledQuantity().getValue().doubleValue()), UnitRegistry.getSpaceUnit()));
+        double scaling = SQRT2 * Environment.convertSystemToSimulationScale(Quantities.getQuantity(Math.sqrt(vesicle.getFeature(Diffusivity.class).getScaledQuantity()), UnitRegistry.getSpaceUnit()));
         Vector2D gaussian = Vectors.generateStandardGaussian2DVector();
         return new DisplacementDelta(this, gaussian.multiply(scaling));
     }
