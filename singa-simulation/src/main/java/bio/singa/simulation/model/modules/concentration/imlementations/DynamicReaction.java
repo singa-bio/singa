@@ -4,7 +4,6 @@ import bio.singa.chemistry.features.reactions.RateConstant;
 import bio.singa.features.model.Evidence;
 import bio.singa.features.model.Feature;
 import bio.singa.features.model.ScalableQuantitativeFeature;
-import bio.singa.features.units.UnitRegistry;
 import bio.singa.simulation.model.modules.concentration.*;
 import bio.singa.simulation.model.modules.concentration.functions.UpdatableDeltaFunction;
 import bio.singa.simulation.model.modules.concentration.reactants.KineticLaw;
@@ -93,11 +92,11 @@ public class DynamicReaction extends ConcentrationBasedModule<UpdatableDeltaFunc
             switch (reactant.getRole()) {
                 case PRODUCT:
                     deltas.put(new ConcentrationDeltaIdentifier(updatable, subsection, reactant.getEntity()),
-                            new ConcentrationDelta(this, subsection, reactant.getEntity(), UnitRegistry.concentration(velocity)));
+                            new ConcentrationDelta(this, subsection, reactant.getEntity(), velocity));
                     break;
                 case SUBSTRATE:
                     deltas.put(new ConcentrationDeltaIdentifier(updatable, subsection, reactant.getEntity()),
-                            new ConcentrationDelta(this, subsection, reactant.getEntity(), UnitRegistry.concentration(-velocity)));
+                            new ConcentrationDelta(this, subsection, reactant.getEntity(), -velocity));
                     break;
                 case CATALYTIC:
                     break;

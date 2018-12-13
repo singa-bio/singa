@@ -100,7 +100,7 @@ class VesicleFusionTest {
         AutomatonNode node = graph.getNode(0, 0);
         node.setPosition(new Vector2D(50.0, 50.0));
         node.setCellRegion(CellRegion.MEMBRANE);
-        node.getConcentrationContainer().initialize(CellTopology.MEMBRANE, snareComplex1, MolarConcentration.moleculesToConcentration(10));
+        node.getConcentrationContainer().set(CellTopology.MEMBRANE, snareComplex1, MolarConcentration.moleculesToConcentration(10));
         simulation.setGraph(graph);
 
         // setup membrane
@@ -112,7 +112,7 @@ class VesicleFusionTest {
         // setup vesicle
         VesicleLayer vesicleLayer = new VesicleLayer(simulation);
         Vesicle vesicle = new Vesicle(new Vector2D(49.0, 49.0), Quantities.getQuantity(100.0, NANO(METRE)));
-        vesicle.getConcentrationContainer().initialize(CellTopology.MEMBRANE, vamp3, MolarConcentration.moleculesToConcentration(10));
+        vesicle.getConcentrationContainer().set(CellTopology.MEMBRANE, vamp3, MolarConcentration.moleculesToConcentration(10));
         vesicleLayer.addVesicle(vesicle);
         simulation.setVesicleLayer(vesicleLayer);
 

@@ -15,7 +15,6 @@ import bio.singa.simulation.model.modules.qualitative.QualitativeModule;
 import bio.singa.simulation.model.sections.CellRegion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tec.uom.se.ComparableQuantity;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Area;
@@ -127,6 +126,7 @@ public class ClathrinMediatedEndocytosis extends QualitativeModule {
 
     /**
      * Prepares a new aspiring pit.
+     *
      * @param segment The segment where the pit should spawn.
      */
     private void initializeAspiringPit(MembraneSegment segment) {
@@ -140,11 +140,11 @@ public class ClathrinMediatedEndocytosis extends QualitativeModule {
         // initial concentration
         double pitArea = spawnRadius.multiply(spawnRadius).multiply(Math.PI).getValue().doubleValue();
         ChemicalEntity cargo = getFeature(Cargo.class).getContent();
-        double totalConcentration = segment.getNode().getConcentrationContainer().get(MEMBRANE, cargo).getValue().doubleValue();
+        double totalConcentration = segment.getNode().getConcentrationContainer().get(MEMBRANE, cargo);
         double totalArea = segment.getNode().getMembraneArea().to(UnitRegistry.getAreaUnit()).getValue().doubleValue();
         // initial concentration = pit area * total cell membrane concentration / total cell membrane area
-        ComparableQuantity<MolarConcentration> concentration = (ComparableQuantity<MolarConcentration>) UnitRegistry.concentration(pitArea * totalConcentration / totalArea);
-        ConcentrationDelta concentrationDelta = new ConcentrationDelta(this, segment.getNode().getConcentrationContainer().getMembraneSubsection(), cargo, concentration.multiply(-1));
+        double concentration = pitArea * totalConcentration / totalArea;
+        ConcentrationDelta concentrationDelta = new ConcentrationDelta(this, segment.getNode().getConcentrationContainer().getMembraneSubsection(), cargo, -concentration);
         // return event
         preAspiringPits.add(new Pit(checkpointTime, spawnSite, spawnRadius, concentration, segment.getNode(), concentrationDelta));
     }
@@ -198,7 +198,7 @@ public class ClathrinMediatedEndocytosis extends QualitativeModule {
      */
     private void spawnVesicles() {
         for (Pit maturedPit : maturedPits) {
-            logger.trace("Clathrin-coated pit at {} formed vesicle with {} cargo molecules.", maturedPit.spawnSite,  MolarConcentration.concentrationToMolecules(maturedPit.getCargoConcentration()).getValue());
+            logger.trace("Clathrin-coated pit at {} formed vesicle with {} cargo molecules.", maturedPit.spawnSite, MolarConcentration.concentrationToMolecules(maturedPit.getCargoConcentration()).getValue());
             Vesicle vesicle = new Vesicle(maturedPit.getSpawnSite(), maturedPit.getSpawnRadius());
             vesicle.setVesicleState(VesicleStateRegistry.ACTIN_PROPELLED);
             initializeCargo(vesicle, maturedPit);
@@ -210,6 +210,7 @@ public class ClathrinMediatedEndocytosis extends QualitativeModule {
 
     /**
      * Creates the cargo for the given vesicle.
+     *
      * @param vesicle The vesicle.
      * @param maturedPit The original pit
      */
@@ -223,13 +224,12 @@ public class ClathrinMediatedEndocytosis extends QualitativeModule {
             double molecules = vesicle.getArea().multiply(number / area.to(vesicle.getArea().getUnit())
                     .getValue().doubleValue()).getValue().doubleValue();
             // convert to concentration
-            Quantity<MolarConcentration> concentration = MolarConcentration.moleculesToConcentration(molecules)
-                    .to(UnitRegistry.getConcentrationUnit());
+            double concentration = MolarConcentration.moleculesToConcentration(molecules);
             // set concentration
-            vesicle.getConcentrationContainer().initialize(MEMBRANE, chemicalEntity, concentration);
+            vesicle.getConcentrationContainer().initialize(MEMBRANE, chemicalEntity, UnitRegistry.concentration(concentration));
         }
         ChemicalEntity cargo = getFeature(Cargo.class).getContent();
-        vesicle.getConcentrationContainer().initialize(MEMBRANE, cargo, maturedPit.getCargoConcentration());
+        vesicle.getConcentrationContainer().initialize(MEMBRANE, cargo, UnitRegistry.concentration(maturedPit.getCargoConcentration()));
     }
 
     /**
@@ -240,9 +240,9 @@ public class ClathrinMediatedEndocytosis extends QualitativeModule {
         double additionRate = getScaledFeature(CargoAdditionRate.class);
         ChemicalEntity cargo = getFeature(Cargo.class).getContent();
         for (Pit aspiringPit : aspiringPits) {
-            double membraneConcentration = aspiringPit.getAssociatedNode().getConcentrationContainer().get(MEMBRANE, cargo).getValue().doubleValue();
+            double membraneConcentration = aspiringPit.getAssociatedNode().getConcentrationContainer().get(MEMBRANE, cargo);
             double concentrationDelta = additionRate * membraneConcentration;
-            aspiringPit.setAdditionDelta(new ConcentrationDelta(this, aspiringPit.getAssociatedNode().getConcentrationContainer().getMembraneSubsection(), cargo, UnitRegistry.concentration(-concentrationDelta)));
+            aspiringPit.setAdditionDelta(new ConcentrationDelta(this, aspiringPit.getAssociatedNode().getConcentrationContainer().getMembraneSubsection(), cargo, -concentrationDelta));
         }
     }
 
@@ -251,11 +251,11 @@ public class ClathrinMediatedEndocytosis extends QualitativeModule {
      */
     private void moveCargoToPits() {
         for (Pit aspiringPit : aspiringPits) {
-            logger.trace("Clathrin-coated pit at {} caught {} cargo molecules.", aspiringPit.spawnSite, MolarConcentration.concentrationToMolecules(aspiringPit.getAdditionDelta().getQuantity().multiply(-1)).getValue());
+            logger.trace("Clathrin-coated pit at {} caught {} cargo molecules.", aspiringPit.spawnSite, MolarConcentration.concentrationToMolecules(-aspiringPit.getAdditionDelta().getValue()).getValue());
             // remove from node
             aspiringPit.getAssociatedNode().addPotentialDelta(aspiringPit.getAdditionDelta());
             // add to pit (negate actual value)
-            aspiringPit.setCargoConcentration(aspiringPit.getCargoConcentration().add(aspiringPit.getAdditionDelta().getQuantity().multiply(-1)));
+            aspiringPit.setCargoConcentration(aspiringPit.getCargoConcentration() - aspiringPit.getAdditionDelta().getValue());
         }
     }
 
@@ -264,10 +264,10 @@ public class ClathrinMediatedEndocytosis extends QualitativeModule {
      * Moves aspiring to pre maturing pits or aborting pits.
      */
     private void checkPitState() {
-        Quantity<MolarConcentration> criticalConcentration = getFeature(EndocytosisCkeckpointConcentration.class).getContent();
+        double criticalConcentration = getFeature(EndocytosisCkeckpointConcentration.class).getContent().getValue().doubleValue();
         for (Pit aspiringPit : aspiringPits) {
             // check if critical concentration has been reached
-            if (aspiringPit.getCargoConcentration().isGreaterThanOrEqualTo(criticalConcentration)) {
+            if (aspiringPit.getCargoConcentration() >= criticalConcentration) {
                 // move to pre maturing pits
                 preMaturingPits.add(aspiringPit);
                 continue;
@@ -324,13 +324,13 @@ public class ClathrinMediatedEndocytosis extends QualitativeModule {
         // randomized radius
         private Quantity<Length> spawnRadius;
         // current cargo concentration
-        private ComparableQuantity<MolarConcentration> cargoConcentration;
+        private double cargoConcentration;
         // concentration delta
         private ConcentrationDelta additionDelta;
         // associated node
         private AutomatonNode associatedNode;
 
-        public Pit(Quantity<Time> checkpointTime, Vector2D spawnSite, Quantity<Length> spawnRadius, ComparableQuantity<MolarConcentration> cargoConcentration, AutomatonNode associatedNode, ConcentrationDelta additionDelta) {
+        public Pit(Quantity<Time> checkpointTime, Vector2D spawnSite, Quantity<Length> spawnRadius, double cargoConcentration, AutomatonNode associatedNode, ConcentrationDelta additionDelta) {
             this.checkpointTime = checkpointTime;
             this.spawnSite = spawnSite;
             this.spawnRadius = spawnRadius;
@@ -355,11 +355,11 @@ public class ClathrinMediatedEndocytosis extends QualitativeModule {
             return spawnRadius;
         }
 
-        public ComparableQuantity<MolarConcentration> getCargoConcentration() {
+        public double getCargoConcentration() {
             return cargoConcentration;
         }
 
-        public void setCargoConcentration(ComparableQuantity<MolarConcentration> cargoConcentration) {
+        public void setCargoConcentration(double cargoConcentration) {
             this.cargoConcentration = cargoConcentration;
         }
 

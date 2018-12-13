@@ -1,12 +1,10 @@
 package bio.singa.simulation.model.rules;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
-import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.measure.Quantity;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -53,8 +51,8 @@ public class AssignmentRule {
     public void applyRule(AutomatonNode node) {
         // set entity parameters
         for (Map.Entry<ChemicalEntity, String> entry : entityReference.entrySet()) {
-            final Quantity<MolarConcentration> concentration = node.getConcentrationContainer().get(node.getConcentrationContainer().getInnerSubsection(), entry.getKey());
-            final String parameterName = entityReference.get(entry.getKey());
+            double concentration = node.getConcentrationContainer().get(node.getConcentrationContainer().getInnerSubsection(), entry.getKey());
+            String parameterName = entityReference.get(entry.getKey());
             // expression.acceptValue(parameterName, concentration.getValue().doubleValue());
         }
         // Quantity<?> concentration = expression.evaluate();

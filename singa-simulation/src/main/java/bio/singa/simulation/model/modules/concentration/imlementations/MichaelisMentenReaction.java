@@ -5,7 +5,6 @@ import bio.singa.chemistry.features.reactions.MichaelisConstant;
 import bio.singa.chemistry.features.reactions.TurnoverNumber;
 import bio.singa.features.exceptions.FeatureUnassignableException;
 import bio.singa.features.model.Feature;
-import bio.singa.features.units.UnitRegistry;
 import bio.singa.simulation.model.modules.concentration.ConcentrationDelta;
 import bio.singa.simulation.model.modules.concentration.ModuleBuilder;
 import bio.singa.simulation.model.modules.concentration.ModuleFactory;
@@ -49,11 +48,11 @@ public class MichaelisMentenReaction extends Reaction {
                 double velocity = calculateMembraneBasedVelocity(concentrationContainer);
                 for (Reactant substrate : substrates) {
                     double deltaValue = -velocity * substrate.getStoichiometricNumber();
-                    deltas.add(new ConcentrationDelta(this, concentrationContainer.getSubsection(substrate.getPreferredTopology()), substrate.getEntity(), UnitRegistry.concentration(deltaValue)));
+                    deltas.add(new ConcentrationDelta(this, concentrationContainer.getSubsection(substrate.getPreferredTopology()), substrate.getEntity(), deltaValue));
                 }
                 for (Reactant product : products) {
                     double deltaValue = velocity * product.getStoichiometricNumber();
-                    deltas.add(new ConcentrationDelta(this, concentrationContainer.getSubsection(product.getPreferredTopology()), product.getEntity(), UnitRegistry.concentration(deltaValue)));
+                    deltas.add(new ConcentrationDelta(this, concentrationContainer.getSubsection(product.getPreferredTopology()), product.getEntity(), deltaValue));
                 }
             }
             return deltas;
@@ -68,8 +67,8 @@ public class MichaelisMentenReaction extends Reaction {
         final double km = getFeature(MichaelisConstant.class).getContent().getValue().doubleValue();
         // (KCAT * enzyme * substrate) / KM + substrate
         // FIXME currently "only" the first substrate is considered
-        double substrateConcentration = concentrationContainer.get(supplier.getCurrentSubsection(), getSubstrateEntities().iterator().next()).getValue().doubleValue();
-        double enzymeConcentration = concentrationContainer.get(supplier.getCurrentSubsection(), enzyme).getValue().doubleValue();
+        double substrateConcentration = concentrationContainer.get(supplier.getCurrentSubsection(), getSubstrateEntities().iterator().next());
+        double enzymeConcentration = concentrationContainer.get(supplier.getCurrentSubsection(), enzyme);
         return (kCat * enzymeConcentration * substrateConcentration) / (km + substrateConcentration);
     }
 
@@ -80,8 +79,8 @@ public class MichaelisMentenReaction extends Reaction {
         // (KCAT * enzyme * substrate) / KM + substrate
         // FIXME currently "only" the first substrate is considered
         Reactant reactant = getSubstrates().iterator().next();
-        double substrateConcentration = concentrationContainer.get(reactant.getPreferredTopology(), reactant.getEntity()).getValue().doubleValue();
-        double enzymeConcentration = concentrationContainer.get(supplier.getCurrentSubsection(), enzyme).getValue().doubleValue();
+        double substrateConcentration = concentrationContainer.get(reactant.getPreferredTopology(), reactant.getEntity());
+        double enzymeConcentration = concentrationContainer.get(supplier.getCurrentSubsection(), enzyme);
         return (kCat * enzymeConcentration * substrateConcentration) / (km + substrateConcentration);
     }
 

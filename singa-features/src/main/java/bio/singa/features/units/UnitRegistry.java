@@ -233,7 +233,7 @@ public class UnitRegistry {
         }
     }
 
-    private static Unit<?> getDefaultUnit(Unit<?> unit) {
+    public static Unit<?> getDefaultUnit(Unit<?> unit) {
         Dimension dimension = unit.getDimension();
         if (!getInstance().defaultUnits.containsKey(dimension)) {
             // not base unit and not registered

@@ -3,6 +3,7 @@ package bio.singa.simulation.model.sections.concentration;
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.features.model.Evidence;
 import bio.singa.features.quantities.MolarConcentration;
+import bio.singa.features.units.UnitRegistry;
 import bio.singa.simulation.model.agents.pointlike.Vesicle;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.sections.CellRegion;
@@ -99,8 +100,8 @@ public class MembraneConcentration implements InitialConcentration {
             }
             // correlate
             Quantity<?> adjustedMolecules = updatableArea.to(area.getUnit()).multiply(numberOfMolecules).divide(area);
-            Quantity < MolarConcentration > concentration = MolarConcentration.moleculesToConcentration(adjustedMolecules.getValue().doubleValue());
-            updatable.getConcentrationContainer().initialize(membraneSubsection, entity, concentration);
+            double concentration = MolarConcentration.moleculesToConcentration(adjustedMolecules.getValue().doubleValue());
+            updatable.getConcentrationContainer().initialize(membraneSubsection, entity, UnitRegistry.concentration(concentration));
         }
     }
 

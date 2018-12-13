@@ -2,7 +2,7 @@ package bio.singa.simulation.model.modules.concentration.reactants;
 
 import bio.singa.features.model.Evidence;
 import bio.singa.features.model.ScalableQuantitativeFeature;
-import bio.singa.features.quantities.MolarConcentration;
+import bio.singa.features.units.UnitRegistry;
 import bio.singa.simulation.exceptions.ModuleCalculationException;
 import bio.singa.simulation.model.parameters.Parameter;
 import bio.singa.simulation.model.sections.ConcentrationContainer;
@@ -149,13 +149,13 @@ public class KineticLaw {
         // set concentrations
         for (Map.Entry<String, Reactant> entry : concentrationMap.entrySet()) {
             Reactant reactant = entry.getValue();
-            Quantity<MolarConcentration> concentration;
+            double concentration;
             if (reactant.getPreferredConcentrationUnit() != null) {
-                concentration = concentrationContainer.get(reactant.getPreferredTopology(), reactant.getEntity()).to(reactant.getPreferredConcentrationUnit());
+                concentration = UnitRegistry.concentration(concentrationContainer.get(reactant.getPreferredTopology(), reactant.getEntity())).to(reactant.getPreferredConcentrationUnit()).getValue().doubleValue();
             } else {
                 concentration = concentrationContainer.get(reactant.getPreferredTopology(), reactant.getEntity());
             }
-            SetVariable variable = new SetVariable(entry.getKey(), concentration.getValue().doubleValue());
+            SetVariable variable = new SetVariable(entry.getKey(), concentration);
             expression.accept(variable);
         }
         // calculate

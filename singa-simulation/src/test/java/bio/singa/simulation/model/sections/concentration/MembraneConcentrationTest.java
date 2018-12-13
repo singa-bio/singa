@@ -60,7 +60,7 @@ class MembraneConcentrationTest {
         ci.addInitialConcentration(new MembraneConcentration(CELL_OUTER_MEMBRANE_REGION, entity,
                 Quantities.getQuantity(1, MICRO(METRE).pow(2)).asType(Area.class), 1000, Evidence.NO_EVIDENCE));
         ci.initialize(simulation);
-        assertEquals(1.6605390404271641E-12, simulation.getGraph().getNode(0, 0).getConcentrationContainer().get(MEMBRANE, entity).getValue().doubleValue());
+        assertEquals(1.6605390404271641E-12, simulation.getGraph().getNode(0, 0).getConcentrationContainer().get(MEMBRANE, entity));
     }
 
     @Test
@@ -69,7 +69,7 @@ class MembraneConcentrationTest {
         ci.addInitialConcentration(new MembraneConcentration(EARLY_ENDOSOME_VESICLE_REGION, entity,
                 Quantities.getQuantity(1, MICRO(METRE).pow(2)).asType(Area.class), 1000, Evidence.NO_EVIDENCE));
         ci.initialize(simulation);
-        assertEquals(5.2167372504050236E-14, simulation.getVesicleLayer().getVesicles().iterator().next().getConcentrationContainer().get(MEMBRANE, entity).getValue().doubleValue());
+        assertEquals(5.2167372504050236E-14, simulation.getVesicleLayer().getVesicles().iterator().next().getConcentrationContainer().get(MEMBRANE, entity));
     }
 
 }

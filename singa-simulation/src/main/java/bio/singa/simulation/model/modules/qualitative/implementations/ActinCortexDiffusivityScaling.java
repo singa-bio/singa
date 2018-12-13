@@ -74,7 +74,7 @@ public class ActinCortexDiffusivityScaling extends QualitativeModule {
     public void estimateDiffusivity(Vesicle vesicle) {
         // get entry with largest area (main node)
         AutomatonNode node = vesicle.getAssociatedNodes().entrySet().stream().max(Map.Entry.comparingByValue()).get().getKey();
-        double concentration = node.getConcentrationContainer().get(INNER, tropomyosin).getValue().doubleValue();
+        double concentration = node.getConcentrationContainer().get(INNER, tropomyosin);
         ComparableQuantity<Diffusivity> quantity = (ComparableQuantity<Diffusivity>) slope.multiply(concentration).add(cytoplasmDiffusivity);
         if (quantity.isLessThan(cytoplasmDiffusivity)) {
             diffusivities.put(vesicle, new Diffusivity(cytoplasmDiffusivity, evidence));

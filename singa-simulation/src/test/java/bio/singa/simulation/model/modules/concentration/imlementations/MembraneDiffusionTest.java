@@ -72,8 +72,8 @@ class MembraneDiffusionTest {
 
         AutomatonNode membraneNode = automatonGraph.getNode(0, 0);
         membraneNode.setCellRegion(MEMBRANE);
-        membraneNode.getConcentrationContainer().set(MEMBRANE.getInnerSubsection(), water, Quantities.getQuantity(2.0, MOLE_PER_LITRE).to(getConcentrationUnit()));
-        membraneNode.getConcentrationContainer().set(MEMBRANE.getOuterSubsection(), water, Quantities.getQuantity(1.0, MOLE_PER_LITRE).to(getConcentrationUnit()));
+        membraneNode.getConcentrationContainer().initialize(MEMBRANE.getInnerSubsection(), water, Quantities.getQuantity(2.0, MOLE_PER_LITRE).to(getConcentrationUnit()));
+        membraneNode.getConcentrationContainer().initialize(MEMBRANE.getOuterSubsection(), water, Quantities.getQuantity(1.0, MOLE_PER_LITRE).to(getConcentrationUnit()));
         automatonGraph.addNode(membraneNode);
         List<Membrane> membranes = MembraneTracer.regionsToMembrane(automatonGraph);
         MembraneLayer layer = new MembraneLayer();
@@ -88,8 +88,8 @@ class MembraneDiffusionTest {
         // delta should be about 3.5e-20 mol/um3
         ComparableQuantity<MolarConcentration> expectedLeft = Quantities.getQuantity(2.0, MOLE_PER_LITRE).to(getConcentrationUnit()).subtract(Quantities.getQuantity(3.5e-11, getConcentrationUnit()));
         ComparableQuantity<MolarConcentration> expectedRight = Quantities.getQuantity(1.0, MOLE_PER_LITRE).to(getConcentrationUnit()).add(Quantities.getQuantity(3.5e-11, getConcentrationUnit()));
-        assertEquals(expectedLeft.getValue().doubleValue(), membraneNode.getConcentrationContainer().get(MEMBRANE.getInnerSubsection(), water).getValue().doubleValue(), 1e-12);
-        assertEquals(expectedRight.getValue().doubleValue(), membraneNode.getConcentrationContainer().get(MEMBRANE.getOuterSubsection(), water).getValue().doubleValue(), 1e-12);
+        assertEquals(expectedLeft.getValue().doubleValue(), membraneNode.getConcentrationContainer().get(MEMBRANE.getInnerSubsection(), water), 1e-12);
+        assertEquals(expectedRight.getValue().doubleValue(), membraneNode.getConcentrationContainer().get(MEMBRANE.getOuterSubsection(), water), 1e-12);
     }
 
     @Test
@@ -125,7 +125,7 @@ class MembraneDiffusionTest {
                         .nextDouble(100, 200), NANO(METRE))
                         .to(UnitRegistry.getSpaceUnit()));
 
-        vesicle.getConcentrationContainer().set(OUTER, water, 50.0);
+        vesicle.getConcentrationContainer().initialize(OUTER, water, Quantities.getQuantity(50.0, MOLE_PER_LITRE));
 
         // add vesicle transport layer
         VesicleLayer vesicleLayer = new VesicleLayer(simulation);
@@ -138,7 +138,7 @@ class MembraneDiffusionTest {
 
         for (AutomatonNode node : graph.getNodes()) {
             node.setCellRegion(CYTOSOL_A);
-            node.getConcentrationContainer().set(INNER, water, 40.0);
+            node.getConcentrationContainer().initialize(INNER, water, Quantities.getQuantity(40.0, MOLE_PER_LITRE));
         }
 
         // setup species
@@ -154,22 +154,18 @@ class MembraneDiffusionTest {
 
         // vesicleLayer.addVesicleModule(new VesicleDiffusion(simulation));
         // simulate a couple of epochs
-        AutomatonNode node = graph.getNode(0,0);
-        Quantity<MolarConcentration> previousVesicleConcentration = null;
-        Quantity<MolarConcentration> previousNodeConcentration = null;
+        AutomatonNode node = graph.getNode(0, 0);
+        double previousVesicleConcentration = UnitRegistry.convert(Quantities.getQuantity(50.0, MOLE_PER_LITRE)).getValue().doubleValue();
+        double previousNodeConcentration = 0.0;
         for (int i = 0; i < 10; i++) {
             simulation.nextEpoch();
             // node increasing
-            Quantity<MolarConcentration> currentNodeConcentration = node.getConcentrationContainer().get(INNER, water).to(MOLE_PER_LITRE);
-            if (previousNodeConcentration != null) {
-                assertTrue(currentNodeConcentration.getValue().doubleValue() > previousNodeConcentration.getValue().doubleValue());
-            }
+            double currentNodeConcentration = node.getConcentrationContainer().get(INNER, water);
+            assertTrue(currentNodeConcentration > previousNodeConcentration);
             previousNodeConcentration = currentNodeConcentration;
             // vesicle decreasing
-            Quantity<MolarConcentration> currentVesicleConcentration = vesicle.getConcentrationContainer().get(CellTopology.OUTER, water).to(MOLE_PER_LITRE);
-            if (previousVesicleConcentration != null) {
-                assertTrue(currentVesicleConcentration.getValue().doubleValue() < previousVesicleConcentration.getValue().doubleValue());
-            }
+            double currentVesicleConcentration = vesicle.getConcentrationContainer().get(CellTopology.OUTER, water);
+            assertTrue(currentVesicleConcentration < previousVesicleConcentration);
             previousVesicleConcentration = currentVesicleConcentration;
         }
     }

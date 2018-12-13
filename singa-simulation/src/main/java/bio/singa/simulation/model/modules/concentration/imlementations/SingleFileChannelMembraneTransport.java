@@ -5,7 +5,6 @@ import bio.singa.chemistry.entities.Protein;
 import bio.singa.chemistry.features.permeability.OsmoticPermeability;
 import bio.singa.features.model.Evidence;
 import bio.singa.features.quantities.MolarConcentration;
-import bio.singa.features.units.UnitRegistry;
 import bio.singa.simulation.features.Cargo;
 import bio.singa.simulation.features.Solutes;
 import bio.singa.simulation.features.Transporter;
@@ -96,9 +95,9 @@ public class SingleFileChannelMembraneTransport extends ConcentrationBasedModule
         final double permeability = getScaledFeature(transporter, OsmoticPermeability.class);
         final double value = getSoluteDelta(container) * permeability * MolarConcentration.concentrationToMolecules(container.get(CellTopology.MEMBRANE, transporter)).getValue().doubleValue();
         deltas.put(new ConcentrationDeltaIdentifier(supplier.getCurrentUpdatable(), container.getInnerSubsection(), cargo),
-                new ConcentrationDelta(this, container.getInnerSubsection(), cargo, UnitRegistry.concentration(value)));
+                new ConcentrationDelta(this, container.getInnerSubsection(), cargo, value));
         deltas.put(new ConcentrationDeltaIdentifier(supplier.getCurrentUpdatable(), container.getOuterSubsection(), cargo),
-                new ConcentrationDelta(this, container.getOuterSubsection(), cargo, UnitRegistry.concentration(-value)));
+                new ConcentrationDelta(this, container.getOuterSubsection(), cargo, -value));
         return deltas;
     }
 
@@ -106,12 +105,12 @@ public class SingleFileChannelMembraneTransport extends ConcentrationBasedModule
         // sum outer solutes
         double outerConcentration = 0.0;
         for (ChemicalEntity solute : solutes) {
-            outerConcentration += container.get(CellTopology.OUTER, solute).getValue().doubleValue();
+            outerConcentration += container.get(CellTopology.OUTER, solute);
         }
         // sum inner solutes
         double innerConcentration = 0.0;
         for (ChemicalEntity solute : solutes) {
-            innerConcentration += container.get(CellTopology.INNER, solute).getValue().doubleValue();
+            innerConcentration += container.get(CellTopology.INNER, solute);
         }
         // return delta
         return innerConcentration - outerConcentration;

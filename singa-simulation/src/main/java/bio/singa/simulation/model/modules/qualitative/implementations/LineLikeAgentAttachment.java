@@ -52,7 +52,7 @@ public class LineLikeAgentAttachment extends QualitativeModule {
             // at least one motor is available
             Optional<ChemicalEntity> motorEntity = vesicle.getConcentrationContainer().containsEntity(CellTopology.MEMBRANE, motor);
             if (motorEntity.isPresent()) {
-                Quantity<MolarConcentration> molarConcentrationQuantity = vesicle.getConcentrationContainer().get(CellTopology.MEMBRANE, motorEntity.get());
+                double molarConcentrationQuantity = vesicle.getConcentrationContainer().get(CellTopology.MEMBRANE, motorEntity.get());
                 if (MolarConcentration.concentrationToMolecules(molarConcentrationQuantity).getValue().intValue() < 1) {
                     continue;
                 }

@@ -19,8 +19,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import tec.uom.se.quantity.Quantities;
 
-import javax.measure.Quantity;
-
 import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static bio.singa.simulation.features.DefaultFeatureSources.BINESH2015;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -62,12 +60,12 @@ class SingleFileChannelMembraneTransportTest {
         AutomatonNode node = graph.getNode(0, 0);
         node.setCellRegion(CellRegion.MEMBRANE);
         // set concentrations
-        Quantity<MolarConcentration> aqp2Concentration = MolarConcentration.moleculesToConcentration(3700);
-        node.getConcentrationContainer().set(CellTopology.OUTER, water, 50.0);
-        node.getConcentrationContainer().set(CellTopology.OUTER, solute, 0.2);
-        node.getConcentrationContainer().set(CellTopology.MEMBRANE, aquaporin2, aqp2Concentration);
-        node.getConcentrationContainer().set(CellTopology.INNER, solute, 0.1);
-        node.getConcentrationContainer().set(CellTopology.INNER, water, 50.0);
+        double aqp2Concentration = MolarConcentration.moleculesToConcentration(3700);
+        node.getConcentrationContainer().initialize(CellTopology.OUTER, water, Quantities.getQuantity(50.0, MOLE_PER_LITRE));
+        node.getConcentrationContainer().initialize(CellTopology.OUTER, solute, Quantities.getQuantity(0.2, MOLE_PER_LITRE));
+        node.getConcentrationContainer().initialize(CellTopology.MEMBRANE, aquaporin2, UnitRegistry.concentration(aqp2Concentration));
+        node.getConcentrationContainer().initialize(CellTopology.INNER, solute, Quantities.getQuantity(0.1, MOLE_PER_LITRE));
+        node.getConcentrationContainer().initialize(CellTopology.INNER, water, Quantities.getQuantity(50.0, MOLE_PER_LITRE));
         // single file channel membrane transport
         SingleFileChannelMembraneTransport.inSimulation(simulation)
                 .transporter(aquaporin2)
@@ -75,21 +73,17 @@ class SingleFileChannelMembraneTransportTest {
                 .forSolute(solute)
                 .build();
         // simulate a couple of epochs
-        Quantity<MolarConcentration> previousInnerConcentration = null;
-        Quantity<MolarConcentration> previousOuterConcentration = null;
+        double previousInnerConcentration = UnitRegistry.convert(Quantities.getQuantity(50.0, MOLE_PER_LITRE)).getValue().doubleValue();
+        double previousOuterConcentration = 0.0;
         for (int i = 0; i < 10; i++) {
             simulation.nextEpoch();
             // inner assertions
-            Quantity<MolarConcentration> currentInnerConcentration = node.getConcentrationContainer().get(CellTopology.INNER, water).to(MOLE_PER_LITRE);
-            if (previousInnerConcentration != null) {
-                assertTrue(currentInnerConcentration.getValue().doubleValue() < previousInnerConcentration.getValue().doubleValue());
-            }
+            double currentInnerConcentration = node.getConcentrationContainer().get(CellTopology.INNER, water);
+            assertTrue(currentInnerConcentration < previousInnerConcentration);
             previousInnerConcentration = currentInnerConcentration;
             // outer assertions
-            Quantity<MolarConcentration> currentOuterConcentration = node.getConcentrationContainer().get(CellTopology.OUTER, water).to(MOLE_PER_LITRE);
-            if (previousOuterConcentration != null) {
-                assertTrue(currentOuterConcentration.getValue().doubleValue() > previousOuterConcentration.getValue().doubleValue());
-            }
+            double currentOuterConcentration = node.getConcentrationContainer().get(CellTopology.OUTER, water);
+            assertTrue(currentOuterConcentration > previousOuterConcentration);
             previousOuterConcentration = currentOuterConcentration;
         }
         Environment.reset();

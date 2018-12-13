@@ -1,8 +1,6 @@
 package bio.singa.simulation.model.modules.concentration;
 
 import bio.singa.core.events.UpdateEventListener;
-import bio.singa.features.parameters.Environment;
-import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.modules.UpdateModule;
 import bio.singa.simulation.model.sections.ConcentrationContainer;
@@ -10,7 +8,6 @@ import bio.singa.simulation.model.simulation.Updatable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.measure.Quantity;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -180,12 +177,12 @@ public class ConcentrationDeltaManager {
     public void applyDeltas() {
         if (!concentrationFixed) {
             for (ConcentrationDelta delta : finalDeltas) {
-                Quantity<MolarConcentration> previousConcentration = currentConcentrations.get(delta.getCellSubsection(), delta.getChemicalEntity());
-                Quantity<MolarConcentration> updatedConcentration = previousConcentration.add(delta.getQuantity());
-                if (updatedConcentration.getValue().doubleValue() < 0.0) {
+                double previousConcentration = currentConcentrations.get(delta.getCellSubsection(), delta.getChemicalEntity());
+                double updatedConcentration = previousConcentration + delta.getValue();
+                if (updatedConcentration < 0.0) {
                     // FIXME updated concentration should probably not be capped
                     // FIXME the the delta that resulted in the decrease probably had a corresponding increase
-                    updatedConcentration = Environment.emptyConcentration();
+                    updatedConcentration = 0.0;
                 }
                 logger.trace("Setting c({}) in {} from {} to {} ", delta.getChemicalEntity().getIdentifier(), delta.getCellSubsection().getIdentifier(), previousConcentration, updatedConcentration);
                 currentConcentrations.set(delta.getCellSubsection(), delta.getChemicalEntity(), updatedConcentration);

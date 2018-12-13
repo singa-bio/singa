@@ -71,10 +71,8 @@ class MichaelisMentenReactionTest {
         // set concentrations
         CellSubsection subsection = EXTRACELLULAR_REGION.getInnerSubsection();
         for (AutomatonNode node : graph.getNodes()) {
-            node.getConcentrationContainer().set(subsection, fp, 1.0);
-            node.getConcentrationContainer().set(subsection, aldolase, 0.01);
-            node.getConcentrationContainer().set(subsection, ga, 0);
-            node.getConcentrationContainer().set(subsection, gp, 0);
+            node.getConcentrationContainer().initialize(subsection, fp, Quantities.getQuantity(1.0, MOLE_PER_LITRE));
+            node.getConcentrationContainer().initialize(subsection, aldolase, Quantities.getQuantity(0.01,  MOLE_PER_LITRE));
         }
 
         // setup reaction
@@ -97,18 +95,18 @@ class MichaelisMentenReactionTest {
         while ((currentTime = simulation.getElapsedTime().to(SECOND)).getValue().doubleValue() < secondCheckpoint.getValue().doubleValue()) {
             simulation.nextEpoch();
             if (!firstCheckpointPassed && currentTime.getValue().doubleValue() > firstCheckpoint.getValue().doubleValue()) {
-                assertEquals(0.50, node.getConcentrationContainer().get(subsection, fp).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-2);
-                assertEquals(0.49, node.getConcentrationContainer().get(subsection, gp).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-2);
-                assertEquals(0.49, node.getConcentrationContainer().get(subsection, ga).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-2);
-                assertEquals(0.01, node.getConcentrationContainer().get(subsection, aldolase).to(MOLE_PER_LITRE).getValue().doubleValue());
+                assertEquals(0.50, UnitRegistry.concentration(node.getConcentrationContainer().get(subsection, fp)).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-2);
+                assertEquals(0.49, UnitRegistry.concentration(node.getConcentrationContainer().get(subsection, gp)).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-2);
+                assertEquals(0.49, UnitRegistry.concentration(node.getConcentrationContainer().get(subsection, ga)).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-2);
+                assertEquals(0.01, UnitRegistry.concentration(node.getConcentrationContainer().get(subsection, aldolase)).to(MOLE_PER_LITRE).getValue().doubleValue());
                 firstCheckpointPassed = true;
             }
         }
         // check final values
-        assertEquals(0.0, node.getConcentrationContainer().get(subsection, fp).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
-        assertEquals(1.0, node.getConcentrationContainer().get(subsection, gp).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
-        assertEquals(1.0, node.getConcentrationContainer().get(subsection, ga).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
-        assertEquals(0.01, node.getConcentrationContainer().get(subsection, aldolase).to(MOLE_PER_LITRE).getValue().doubleValue());
+        assertEquals(0.0, UnitRegistry.concentration(node.getConcentrationContainer().get(subsection, fp)).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
+        assertEquals(1.0, UnitRegistry.concentration(node.getConcentrationContainer().get(subsection, gp)).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
+        assertEquals(1.0, UnitRegistry.concentration(node.getConcentrationContainer().get(subsection, ga)).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
+        assertEquals(0.01, UnitRegistry.concentration(node.getConcentrationContainer().get(subsection, aldolase)).to(MOLE_PER_LITRE).getValue().doubleValue());
     }
 
 }

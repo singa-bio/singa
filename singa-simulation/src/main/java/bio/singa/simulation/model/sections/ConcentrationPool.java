@@ -1,10 +1,8 @@
 package bio.singa.simulation.model.sections;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
-import bio.singa.features.parameters.Environment;
 import bio.singa.features.quantities.MolarConcentration;
 
-import javax.measure.Quantity;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -19,7 +17,7 @@ public class ConcentrationPool {
     /**
      * The associated concentrations.
      */
-    private Map<ChemicalEntity, Quantity<MolarConcentration>> concentrations;
+    private Map<ChemicalEntity, Double> concentrations;
 
     /**
      * Creates a new, empty concentration pool.
@@ -44,7 +42,7 @@ public class ConcentrationPool {
         return concentrations.keySet();
     }
 
-    public Map<ChemicalEntity, Quantity<MolarConcentration>> getConcentrations() {
+    public Map<ChemicalEntity, Double> getConcentrations() {
         return concentrations;
     }
 
@@ -53,8 +51,8 @@ public class ConcentrationPool {
      * @param entity The entity.
      * @return The concentration of a entity.
      */
-    public Quantity<MolarConcentration> get(ChemicalEntity entity) {
-        return concentrations.getOrDefault(entity, Environment.emptyConcentration());
+    public double get(ChemicalEntity entity) {
+        return concentrations.getOrDefault(entity, 0.0);
     }
 
     /**
@@ -62,7 +60,7 @@ public class ConcentrationPool {
      * @param entity Th entity.
      * @param concentration The concentration (this should be scaled to the subsection volume).
      */
-    public void set(ChemicalEntity entity, Quantity<MolarConcentration> concentration) {
+    public void set(ChemicalEntity entity, double concentration) {
         concentrations.put(entity, concentration);
     }
 

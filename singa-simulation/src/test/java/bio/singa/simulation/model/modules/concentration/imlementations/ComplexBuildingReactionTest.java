@@ -6,7 +6,6 @@ import bio.singa.features.identifiers.ChEBIIdentifier;
 import bio.singa.features.identifiers.UniProtIdentifier;
 import bio.singa.features.model.Evidence;
 import bio.singa.features.parameters.Environment;
-import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.geometry.faces.Rectangle;
 import bio.singa.mathematics.vectors.Vector2D;
@@ -20,7 +19,10 @@ import bio.singa.simulation.model.sections.CellSubsection;
 import bio.singa.simulation.model.sections.ConcentrationContainer;
 import bio.singa.simulation.model.simulation.Simulation;
 import bio.singa.structure.features.molarmass.MolarMass;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import tec.uom.se.ComparableQuantity;
 import tec.uom.se.quantity.Quantities;
 
@@ -87,27 +89,25 @@ class ComplexBuildingReactionTest {
         // set concentrations
         AutomatonNode membraneNode = automatonGraph.getNode(0, 0);
         membraneNode.setCellRegion(CellRegion.MEMBRANE);
-        membraneNode.getConcentrationContainer().set(OUTER, bindee, 1.0);
-        membraneNode.getConcentrationContainer().set(MEMBRANE, binder, 1.0);
-        membraneNode.getConcentrationContainer().set(MEMBRANE, complex, 1.0);
+        membraneNode.getConcentrationContainer().initialize(OUTER, bindee, Quantities.getQuantity(1.0, MOLE_PER_LITRE));
+        membraneNode.getConcentrationContainer().initialize(MEMBRANE, binder, Quantities.getQuantity(1.0, MOLE_PER_LITRE));
+        membraneNode.getConcentrationContainer().initialize(MEMBRANE, complex, Quantities.getQuantity(1.0, MOLE_PER_LITRE));
 
         // forward and backward reactions should cancel each other out
-        Quantity<MolarConcentration> empty = Environment.emptyConcentration();
-        Quantity<MolarConcentration> one =  UnitRegistry.concentration(1.0, MOLE_PER_LITRE);
         for (int i = 0; i < 10; i++) {
             ConcentrationContainer container = membraneNode.getConcentrationContainer();
 
-            assertEquals(empty, container.get(INNER, bindee));
-            assertEquals(empty, container.get(INNER, binder));
-            assertEquals(empty, container.get(INNER, complex));
+            assertEquals(0.0, container.get(INNER, bindee));
+            assertEquals(0.0, container.get(INNER, binder));
+            assertEquals(0.0, container.get(INNER, complex));
 
-            assertEquals(empty, container.get(MEMBRANE, bindee));
-            assertEquals(one, container.get(MEMBRANE, binder));
-            assertEquals(one, container.get(MEMBRANE, complex));
+            assertEquals(0.0, container.get(MEMBRANE, bindee));
+            assertEquals(1.0, UnitRegistry.concentration(container.get(MEMBRANE, binder)).to(MOLE_PER_LITRE).getValue().doubleValue());
+            assertEquals(1.0, UnitRegistry.concentration(container.get(MEMBRANE, complex)).to(MOLE_PER_LITRE).getValue().doubleValue());
 
-            assertEquals(one, container.get(OUTER, bindee));
-            assertEquals(empty, container.get(OUTER, binder));
-            assertEquals(empty, container.get(OUTER, complex));
+            assertEquals(1.0, UnitRegistry.concentration(container.get(OUTER, bindee)).to(MOLE_PER_LITRE).getValue().doubleValue());
+            assertEquals(0, container.get(OUTER, binder));
+            assertEquals(0, container.get(OUTER, complex));
 
             simulation.nextEpoch();
         }
@@ -143,8 +143,8 @@ class ComplexBuildingReactionTest {
         // concentrations
         AutomatonNode membraneNode = automatonGraph.getNode(0, 0);
         membraneNode.setCellRegion(CellRegion.MEMBRANE);
-        membraneNode.getConcentrationContainer().set(SECTION_A, ligand, UnitRegistry.concentration(0.1, MOLE_PER_LITRE));
-        membraneNode.getConcentrationContainer().set(CellSubsection.MEMBRANE, receptor, UnitRegistry.concentration(0.1, MOLE_PER_LITRE));
+        membraneNode.getConcentrationContainer().initialize(SECTION_A, ligand, UnitRegistry.concentration(0.1, MOLE_PER_LITRE));
+        membraneNode.getConcentrationContainer().initialize(CellSubsection.MEMBRANE, receptor, UnitRegistry.concentration(0.1, MOLE_PER_LITRE));
 
         // create and add module
         ComplexBuildingReaction reaction = ComplexBuildingReaction.inSimulation(simulation)
@@ -165,17 +165,17 @@ class ComplexBuildingReactionTest {
         while ((currentTime = simulation.getElapsedTime().to(MILLI(SECOND))).getValue().doubleValue() < secondCheckpoint.getValue().doubleValue()) {
             simulation.nextEpoch();
             if (!firstCheckpointPassed && currentTime.getValue().doubleValue() > firstCheckpoint.getValue().doubleValue()) {
-                assertEquals(0.00476, membraneNode.getConcentrationContainer().get(CellSubsection.MEMBRANE, receptor).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
-                assertEquals(0.00476, membraneNode.getConcentrationContainer().get(INNER, ligand).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
-                assertEquals(0.09523, membraneNode.getConcentrationContainer().get(CellSubsection.MEMBRANE, complex).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
+                assertEquals(0.00476, UnitRegistry.concentration(membraneNode.getConcentrationContainer().get(CellSubsection.MEMBRANE, receptor)).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
+                assertEquals(0.00476, UnitRegistry.concentration(membraneNode.getConcentrationContainer().get(INNER, ligand)).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
+                assertEquals(0.09523, UnitRegistry.concentration(membraneNode.getConcentrationContainer().get(CellSubsection.MEMBRANE, complex)).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
                 firstCheckpointPassed = true;
             }
         }
 
         // check final values
-        assertEquals(0.0001, membraneNode.getConcentrationContainer().get(CellSubsection.MEMBRANE, receptor).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
-        assertEquals(0.0001, membraneNode.getConcentrationContainer().get(INNER, ligand).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
-        assertEquals(0.0998, membraneNode.getConcentrationContainer().get(CellSubsection.MEMBRANE, complex).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
+        assertEquals(0.0001, UnitRegistry.concentration(membraneNode.getConcentrationContainer().get(CellSubsection.MEMBRANE, receptor)).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
+        assertEquals(0.0001, UnitRegistry.concentration(membraneNode.getConcentrationContainer().get(INNER, ligand)).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
+        assertEquals(0.0998, UnitRegistry.concentration(membraneNode.getConcentrationContainer().get(CellSubsection.MEMBRANE, complex)).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
     }
 
     @Test
@@ -227,13 +227,11 @@ class ComplexBuildingReactionTest {
         membraneNode.getConcentrationContainer().set(MEMBRANE, binder, 0.1);
         membraneNode.getConcentrationContainer().set(MEMBRANE, binding.getComplex(), 0.0);
 
-        Quantity<MolarConcentration> previousConcentration = null;
+        double previousConcentration = 0.0;
         for (int i = 0; i < 10; i++) {
             simulation.nextEpoch();
-            Quantity<MolarConcentration> currentConcentration = membraneNode.getConcentrationContainer().get(CellSubsection.MEMBRANE, binding.getComplex());
-            if (previousConcentration != null) {
-                assertTrue(currentConcentration.getValue().doubleValue() > previousConcentration.getValue().doubleValue());
-            }
+            double currentConcentration = membraneNode.getConcentrationContainer().get(CellSubsection.MEMBRANE, binding.getComplex());
+            assertTrue(currentConcentration > previousConcentration);
             previousConcentration = currentConcentration;
         }
     }
@@ -295,27 +293,21 @@ class ComplexBuildingReactionTest {
         AutomatonNode membraneNode = automatonGraph.getNode(0, 0);
         membraneNode.setCellRegion(CellRegion.MEMBRANE);
 
-        membraneNode.getConcentrationContainer().set(INNER, innerBindee, 0.1);
-        membraneNode.getConcentrationContainer().set(OUTER, outerBindee, 0.1);
-        membraneNode.getConcentrationContainer().set(MEMBRANE, binder, 0.1);
-        membraneNode.getConcentrationContainer().set(MEMBRANE, innerBinding.getComplex(), 0.0);
-        membraneNode.getConcentrationContainer().set(MEMBRANE, outerBinding.getComplex(), 0.0);
+        membraneNode.getConcentrationContainer().initialize(INNER, innerBindee, Quantities.getQuantity(0.1, MOLE_PER_LITRE));
+        membraneNode.getConcentrationContainer().initialize(OUTER, outerBindee, Quantities.getQuantity(0.1, MOLE_PER_LITRE));
+        membraneNode.getConcentrationContainer().initialize(MEMBRANE, binder, Quantities.getQuantity(0.1, MOLE_PER_LITRE));
 
-        Quantity<MolarConcentration> previousInnerConcentration = null;
-        Quantity<MolarConcentration> previousOuterConcentration = null;
+        double previousInnerConcentration = 0.0;
+        double previousOuterConcentration = 0.0;
         for (int i = 0; i < 10; i++) {
             simulation.nextEpoch();
             // inner assertions
-            Quantity<MolarConcentration> currentInnerConcentration = membraneNode.getConcentrationContainer().get(MEMBRANE, innerBinding.getComplex());
-            if (previousInnerConcentration != null) {
-                assertTrue(currentInnerConcentration.getValue().doubleValue() > previousInnerConcentration.getValue().doubleValue());
-            }
+            double currentInnerConcentration = membraneNode.getConcentrationContainer().get(MEMBRANE, innerBinding.getComplex());
+            assertTrue(currentInnerConcentration > previousInnerConcentration);
             previousInnerConcentration = currentInnerConcentration;
             // outer assertions
-            Quantity<MolarConcentration> currentOuterConcentration = membraneNode.getConcentrationContainer().get(MEMBRANE, outerBinding.getComplex());
-            if (previousOuterConcentration != null) {
-                assertTrue(currentOuterConcentration.getValue().doubleValue() > previousOuterConcentration.getValue().doubleValue());
-            }
+            double currentOuterConcentration = membraneNode.getConcentrationContainer().get(MEMBRANE, outerBinding.getComplex());
+            assertTrue(currentOuterConcentration > previousOuterConcentration);
             previousOuterConcentration = currentOuterConcentration;
         }
     }
@@ -385,30 +377,26 @@ class ComplexBuildingReactionTest {
         ComparableQuantity<Length> radius = Quantities.getQuantity(20, NANO(METRE));
 
         // vesicle contained
-        Vesicle vesicle = new Vesicle("Vesicle", new Vector2D(25.0,25.0), radius);
-        vesicle.getConcentrationContainer().set(MEMBRANE, binder, 0.1);
-        vesicle.getConcentrationContainer().set(MEMBRANE, binding.getComplex(), 0.0);
+        Vesicle vesicle = new Vesicle("Vesicle", new Vector2D(25.0, 25.0), radius);
+        vesicle.getConcentrationContainer().initialize(MEMBRANE, binder, Quantities.getQuantity(0.1, MOLE_PER_LITRE));
+        vesicle.getConcentrationContainer().initialize(MEMBRANE, binding.getComplex(), Quantities.getQuantity(0.0, MOLE_PER_LITRE));
         vesicleLayer.addVesicle(vesicle);
 
         // concentrations
         AutomatonNode node = graph.getNode(0, 0);
-        node.getConcentrationContainer().set(INNER, bindee, 1.0);
+        node.getConcentrationContainer().initialize(INNER, bindee, Quantities.getQuantity(1.0, MOLE_PER_LITRE));
 
-        Quantity<MolarConcentration> previousNodeConcentration = null;
-        Quantity<MolarConcentration> previousVesicleConcentration = null;
+        double previousNodeConcentration = 1.0;
+        double previousVesicleConcentration = 0.0;
         for (int i = 0; i < 10; i++) {
             simulation.nextEpoch();
             // node assertion
-            Quantity<MolarConcentration> currentNodeConcentration = node.getConcentrationContainer().get(INNER, bindee);
-            if (previousNodeConcentration != null) {
-                assertTrue(currentNodeConcentration.getValue().doubleValue() < previousNodeConcentration.getValue().doubleValue());
-            }
+            double currentNodeConcentration = node.getConcentrationContainer().get(INNER, bindee);
+            assertTrue(currentNodeConcentration < previousNodeConcentration);
             previousNodeConcentration = currentNodeConcentration;
             // vesicle assertion
-            Quantity<MolarConcentration> currentVesicleConcentration = vesicle.getConcentrationContainer().get(MEMBRANE, binding.getComplex());
-            if (previousVesicleConcentration != null) {
-                assertTrue(currentVesicleConcentration.getValue().doubleValue() > previousVesicleConcentration.getValue().doubleValue());
-            }
+            double currentVesicleConcentration = vesicle.getConcentrationContainer().get(MEMBRANE, binding.getComplex());
+            assertTrue(currentVesicleConcentration > previousVesicleConcentration);
             previousVesicleConcentration = currentVesicleConcentration;
         }
     }
@@ -479,40 +467,34 @@ class ComplexBuildingReactionTest {
         ComparableQuantity<Length> radius = Quantities.getQuantity(20, NANO(METRE));
 
         // vesicle contained
-        Vesicle vesicle = new Vesicle("Vesicle", new Vector2D(25.0,50.0), radius);
-        vesicle.getConcentrationContainer().set(MEMBRANE, binder, 0.1);
-        vesicle.getConcentrationContainer().set(MEMBRANE, binding.getComplex(), 0.0);
+        Vesicle vesicle = new Vesicle("Vesicle", new Vector2D(25.0, 50.0), radius);
+        vesicle.getConcentrationContainer().initialize(MEMBRANE, binder, Quantities.getQuantity(0.1, MOLE_PER_LITRE));
+        vesicle.getConcentrationContainer().initialize(MEMBRANE, binding.getComplex(), Quantities.getQuantity(0.0, MOLE_PER_LITRE));
         vesicleLayer.addVesicle(vesicle);
 
         // concentrations
         AutomatonNode first = graph.getNode(0, 0);
-        first.getConcentrationContainer().set(INNER, bindee, 1.0);
+        first.getConcentrationContainer().initialize(INNER, bindee, Quantities.getQuantity(1.0, MOLE_PER_LITRE));
         // concentrations
         AutomatonNode second = graph.getNode(0, 1);
-        second.getConcentrationContainer().set(INNER, bindee, 0.5);
+        second.getConcentrationContainer().initialize(INNER, bindee, Quantities.getQuantity(0.5, MOLE_PER_LITRE));
 
-        Quantity<MolarConcentration> previousFirstConcentration = null;
-        Quantity<MolarConcentration> previousSecondConcentration = null;
-        Quantity<MolarConcentration> previousVesicleConcentration = null;
+        double previousFirstConcentration = 1.0;
+        double previousSecondConcentration = 0.5;
+        double previousVesicleConcentration = 0.0;
         for (int i = 0; i < 10; i++) {
             simulation.nextEpoch();
             // first node assertions
-            Quantity<MolarConcentration> currentFirstConcentration = first.getConcentrationContainer().get(INNER, bindee);
-            if (previousFirstConcentration != null) {
-                assertTrue(currentFirstConcentration.getValue().doubleValue() < previousFirstConcentration.getValue().doubleValue());
-            }
+            double currentFirstConcentration = first.getConcentrationContainer().get(INNER, bindee);
+            assertTrue(currentFirstConcentration < previousFirstConcentration);
             previousFirstConcentration = currentFirstConcentration;
             // first node assertions
-            Quantity<MolarConcentration> currentSecondConcentration = second.getConcentrationContainer().get(INNER, bindee);
-            if (previousSecondConcentration != null) {
-                assertTrue(currentSecondConcentration.getValue().doubleValue() < previousSecondConcentration.getValue().doubleValue());
-            }
+            double currentSecondConcentration = second.getConcentrationContainer().get(INNER, bindee);
+            assertTrue(currentSecondConcentration < previousSecondConcentration);
             previousSecondConcentration = currentSecondConcentration;
             // outer assertions
-            Quantity<MolarConcentration> currentVesicleConcentration = vesicle.getConcentrationContainer().get(MEMBRANE, binding.getComplex());
-            if (previousVesicleConcentration != null) {
-                assertTrue(currentVesicleConcentration.getValue().doubleValue() > previousVesicleConcentration.getValue().doubleValue());
-            }
+            double currentVesicleConcentration = vesicle.getConcentrationContainer().get(MEMBRANE, binding.getComplex());
+            assertTrue(currentVesicleConcentration > previousVesicleConcentration);
             previousVesicleConcentration = currentVesicleConcentration;
         }
     }

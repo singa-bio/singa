@@ -18,7 +18,10 @@ import bio.singa.simulation.model.modules.concentration.imlementations.Diffusion
 import bio.singa.simulation.model.modules.concentration.imlementations.MichaelisMentenReaction;
 import bio.singa.simulation.model.modules.concentration.imlementations.NthOrderReaction;
 import bio.singa.simulation.model.modules.concentration.imlementations.ReversibleReaction;
+import bio.singa.simulation.model.sections.CellRegions;
 import bio.singa.simulation.model.sections.CellSubsection;
+import bio.singa.simulation.model.sections.CellSubsections;
+import bio.singa.simulation.model.sections.concentration.ConcentrationInitializer;
 import bio.singa.structure.features.molarmass.MolarMass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,11 +67,14 @@ public class SimulationExamples {
         AutomatonGraph graph = AutomatonGraphs.singularGraph();
 
         // initialize species in graph with desired concentration
-        graph.initializeSpeciesWithConcentration(dinitrogenPentaoxide, 0.02);
-        graph.initializeSpeciesWithConcentration(nitrogenDioxide, 0.0);
-        graph.initializeSpeciesWithConcentration(oxygen, 0.0);
+        ConcentrationInitializer ci = new ConcentrationInitializer();
+        ci.addInitialConcentration(CellRegions.EXTRACELLULAR_REGION, CellSubsections.EXTRACELLULAR_REGION, dinitrogenPentaoxide, Quantities.getQuantity(0.02, MOLE_PER_LITRE));
+        simulation.setConcentrationInitializer(ci);
 
-        RateConstant rateConstant = RateConstant.create(0.07).forward().firstOrder().timeUnit(SECOND).build();
+        RateConstant rateConstant = RateConstant.create(0.07)
+                .forward().firstOrder()
+                .timeUnit(SECOND)
+                .build();
 
         NthOrderReaction.inSimulation(simulation)
                 .addSubstrate(dinitrogenPentaoxide, 2)
@@ -101,10 +107,14 @@ public class SimulationExamples {
         AutomatonGraph graph = AutomatonGraphs.singularGraph();
 
         // initialize species in graph with desired concentration
-        graph.initializeSpeciesWithConcentration(butadiene, 0.02);
-        graph.initializeSpeciesWithConcentration(octatriene, 0.0);
+        ConcentrationInitializer ci = new ConcentrationInitializer();
+        ci.addInitialConcentration(CellRegions.EXTRACELLULAR_REGION, CellSubsections.EXTRACELLULAR_REGION, butadiene, Quantities.getQuantity(0.02, MOLE_PER_LITRE));
+        simulation.setConcentrationInitializer(ci);
 
-        RateConstant rateConstant = RateConstant.create(0.614).forward().firstOrder().timeUnit(SECOND).build();
+        RateConstant rateConstant = RateConstant.create(0.614)
+                .forward().firstOrder()
+                .timeUnit(SECOND)
+                .build();
 
         // create reaction
         NthOrderReaction.inSimulation(simulation)
@@ -144,11 +154,19 @@ public class SimulationExamples {
         AutomatonGraph graph = AutomatonGraphs.singularGraph();
 
         // initialize species in graph with desired concentration
-        graph.initializeSpeciesWithConcentration(speciesA, 1.0);
-        graph.initializeSpeciesWithConcentration(speciesB, 0.0);
+        ConcentrationInitializer ci = new ConcentrationInitializer();
+        ci.addInitialConcentration(CellRegions.EXTRACELLULAR_REGION, CellSubsections.EXTRACELLULAR_REGION, speciesA, Quantities.getQuantity(1.0, MOLE_PER_LITRE));
+        simulation.setConcentrationInitializer(ci);
 
-        RateConstant forwardsRate = RateConstant.create(10).forward().firstOrder().timeUnit(SECOND).build();
-        RateConstant backwardsRate = RateConstant.create(10).backward().firstOrder().timeUnit(SECOND).build();
+        RateConstant forwardsRate = RateConstant.create(10)
+                .forward().firstOrder()
+                .timeUnit(SECOND)
+                .build();
+
+        RateConstant backwardsRate = RateConstant.create(10)
+                .backward().firstOrder()
+                .timeUnit(SECOND)
+                .build();
 
         // create reaction
         ReversibleReaction.inSimulation(simulation)
@@ -194,10 +212,10 @@ public class SimulationExamples {
         AutomatonGraph graph = AutomatonGraphs.singularGraph();
 
         // initialize species in graph with desired concentration
-        graph.initializeSpeciesWithConcentration(fructosePhosphate, 0.1);
-        graph.initializeSpeciesWithConcentration(aldolase, 0.2);
-        graph.initializeSpeciesWithConcentration(glyceronePhosphate, 0.0);
-        graph.initializeSpeciesWithConcentration(glyceraldehyde, 0.0);
+        ConcentrationInitializer ci = new ConcentrationInitializer();
+        ci.addInitialConcentration(CellRegions.EXTRACELLULAR_REGION, CellSubsections.EXTRACELLULAR_REGION, fructosePhosphate, Quantities.getQuantity(0.1, MOLE_PER_LITRE));
+        ci.addInitialConcentration(CellRegions.EXTRACELLULAR_REGION, CellSubsections.EXTRACELLULAR_REGION, aldolase, Quantities.getQuantity(0.2, MOLE_PER_LITRE));
+        simulation.setConcentrationInitializer(ci);
 
         // create reaction using the properties of the enzyme
         MichaelisMentenReaction.inSimulation(simulation)

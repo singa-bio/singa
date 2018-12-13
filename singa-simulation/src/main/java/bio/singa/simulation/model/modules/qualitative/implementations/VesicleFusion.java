@@ -116,23 +116,17 @@ public class VesicleFusion extends QualitativeModule {
         ConcentrationContainer vesicleContainer = tetheredVesicle.getConcentrationContainer();
         AutomatonNode node = tetheredNodes.get(tetheredVesicle);
         // merge membranes
-        for (Map.Entry<ChemicalEntity, Quantity<MolarConcentration>> entry : vesicleContainer.getPool(CellTopology.MEMBRANE).getValue().getConcentrations().entrySet()) {
-            ChemicalEntity entity = entry.getKey();
-            Quantity<MolarConcentration> quantity = entry.getValue();
-            node.addPotentialDelta(new ConcentrationDelta(this, node.getCellRegion().getMembraneSubsection(), entity, quantity));
+        for (Map.Entry<ChemicalEntity, Double> entry : vesicleContainer.getPool(CellTopology.MEMBRANE).getValue().getConcentrations().entrySet()) {
+            node.addPotentialDelta(new ConcentrationDelta(this, node.getCellRegion().getMembraneSubsection(), entry.getKey(), entry.getValue()));
         }
         // merge inner concentrations
-        for (Map.Entry<ChemicalEntity, Quantity<MolarConcentration>> entry : vesicleContainer.getPool(CellTopology.OUTER).getValue().getConcentrations().entrySet()) {
-            ChemicalEntity entity = entry.getKey();
-            Quantity<MolarConcentration> quantity = entry.getValue();
-            node.addPotentialDelta(new ConcentrationDelta(this, node.getCellRegion().getInnerSubsection(), entity, quantity));
+        for (Map.Entry<ChemicalEntity, Double> entry : vesicleContainer.getPool(CellTopology.OUTER).getValue().getConcentrations().entrySet()) {
+            node.addPotentialDelta(new ConcentrationDelta(this, node.getCellRegion().getInnerSubsection(), entry.getKey(),  entry.getValue()));
         }
         // add occupied snares
         ConcentrationPool concentrationPool = occupiedSnares.get(tetheredVesicle);
-        for (Map.Entry<ChemicalEntity, Quantity<MolarConcentration>> entry : concentrationPool.getConcentrations().entrySet()) {
-            ChemicalEntity entity = entry.getKey();
-            Quantity<MolarConcentration> quantity = entry.getValue();
-            node.addPotentialDelta(new ConcentrationDelta(this, node.getCellRegion().getMembraneSubsection(), entity, quantity));
+        for (Map.Entry<ChemicalEntity, Double> entry : concentrationPool.getConcentrations().entrySet()) {
+            node.addPotentialDelta(new ConcentrationDelta(this, node.getCellRegion().getMembraneSubsection(), entry.getKey(), entry.getValue()));
         }
     }
 
@@ -201,8 +195,8 @@ public class VesicleFusion extends QualitativeModule {
     private Map<ChemicalEntity, Integer> countSnares(Updatable updatable, Set<ChemicalEntity> entitiesToCount) {
         HashMap<ChemicalEntity, Integer> availableQSnares = new HashMap<>();
         for (ChemicalEntity snare : entitiesToCount) {
-            Quantity<MolarConcentration> quantity = updatable.getConcentrationContainer().get(CellTopology.MEMBRANE, snare);
-            int numberOfSnares = MolarConcentration.concentrationToMolecules(quantity).getValue().intValue();
+            double concentration = updatable.getConcentrationContainer().get(CellTopology.MEMBRANE, snare);
+            int numberOfSnares = MolarConcentration.concentrationToMolecules(concentration).getValue().intValue();
             if (numberOfSnares > 0) {
                 availableQSnares.put(snare, numberOfSnares);
             }
@@ -238,24 +232,24 @@ public class VesicleFusion extends QualitativeModule {
             ComplexedChemicalEntity snareComplex = complexes.get(new Pair<>(qSnare, rSnare));
             reserveComplex(vesicle, snareComplex);
             // add deltas
-            Quantity<MolarConcentration> concentrationQuantity = MolarConcentration.moleculesToConcentration(-1.0);
+            double concentration = MolarConcentration.moleculesToConcentration(-1.0);
             // rsnare in vesicle
-            vesicle.addPotentialDelta(new ConcentrationDelta(this, vesicle.getCellRegion().getMembraneSubsection(), rSnare, concentrationQuantity));
+            vesicle.addPotentialDelta(new ConcentrationDelta(this, vesicle.getCellRegion().getMembraneSubsection(), rSnare, concentration));
             // qsnare in node
             AutomatonNode target = tetheringSnares.getTetheringTarget();
-            target.addPotentialDelta(new ConcentrationDelta(this, target.getCellRegion().getMembraneSubsection(), qSnare, concentrationQuantity));
+            target.addPotentialDelta(new ConcentrationDelta(this, target.getCellRegion().getMembraneSubsection(), qSnare, concentration));
         }
 
     }
 
     private void reserveComplex(Vesicle vesicle, ComplexedChemicalEntity snareComplex) {
         // reserve one snare
-        Quantity<MolarConcentration> concentrationQuantity = MolarConcentration.moleculesToConcentration(1.0);
+        double concentration = MolarConcentration.moleculesToConcentration(1.0);
         if (!occupiedSnares.containsKey(vesicle)) {
             occupiedSnares.put(vesicle, new ConcentrationPool());
         }
         // add complex to occupied concentration
-        Quantity<MolarConcentration> addedQuantity = occupiedSnares.get(vesicle).get(snareComplex).add(concentrationQuantity);
+        double addedQuantity = occupiedSnares.get(vesicle).get(snareComplex) + concentration;
         occupiedSnares.get(vesicle).set(snareComplex, addedQuantity);
     }
 

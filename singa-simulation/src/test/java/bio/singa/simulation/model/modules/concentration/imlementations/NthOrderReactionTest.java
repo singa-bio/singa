@@ -67,9 +67,7 @@ class NthOrderReactionTest {
 
         CellSubsection subsection = EXTRACELLULAR_REGION.getInnerSubsection();
         for (AutomatonNode node : graph.getNodes()) {
-            node.getConcentrationContainer().set(subsection, dpo, 0.02);
-            node.getConcentrationContainer().set(subsection, ndo, 0.0);
-            node.getConcentrationContainer().set(subsection, oxygen, 0.0);
+            node.getConcentrationContainer().initialize(subsection, dpo, Quantities.getQuantity(0.02, MOLE_PER_LITRE));
         }
 
         RateConstant rateConstant = RateConstant.create(0.07)
@@ -97,17 +95,17 @@ class NthOrderReactionTest {
         while ((currentTime = simulation.getElapsedTime().to(MILLI(SECOND))).getValue().doubleValue() < secondCheckpoint.getValue().doubleValue()) {
             simulation.nextEpoch();
             if (!firstCheckpointPassed && currentTime.getValue().doubleValue() > firstCheckpoint.getValue().doubleValue()) {
-                assertEquals(9E-4, node.getConcentrationContainer().get(subsection, oxygen).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
-                assertEquals(0.003, node.getConcentrationContainer().get(subsection, ndo).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
-                assertEquals(0.018, node.getConcentrationContainer().get(subsection, dpo).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
+                assertEquals(9E-4, UnitRegistry.concentration(node.getConcentrationContainer().get(subsection, oxygen)).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
+                assertEquals(0.003, UnitRegistry.concentration(node.getConcentrationContainer().get(subsection, ndo)).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
+                assertEquals(0.018, UnitRegistry.concentration(node.getConcentrationContainer().get(subsection, dpo)).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
                 firstCheckpointPassed = true;
             }
         }
 
         // check final values
-        assertEquals(0.006, node.getConcentrationContainer().get(subsection, oxygen).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
-        assertEquals(0.025, node.getConcentrationContainer().get(subsection, ndo).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
-        assertEquals(0.007, node.getConcentrationContainer().get(subsection, dpo).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
+        assertEquals(0.006, UnitRegistry.concentration(node.getConcentrationContainer().get(subsection, oxygen)).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
+        assertEquals(0.025, UnitRegistry.concentration(node.getConcentrationContainer().get(subsection, ndo)).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
+        assertEquals(0.007, UnitRegistry.concentration(node.getConcentrationContainer().get(subsection, dpo)).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
     }
 
     @Test
@@ -142,7 +140,7 @@ class NthOrderReactionTest {
         layer.addVesicle(vesicle);
         simulation.setVesicleLayer(layer);
 
-        RateConstant rateConstant = RateConstant.create(MolarConcentration.moleculesToConcentration(60).to(UnitRegistry.getConcentrationUnit()).getValue().doubleValue() / 11.0)
+        RateConstant rateConstant = RateConstant.create(MolarConcentration.moleculesToConcentration(60) / 11.0)
                 .forward().zeroOrder()
                 .concentrationUnit(UnitRegistry.getConcentrationUnit())
                 .timeUnit(SECOND)

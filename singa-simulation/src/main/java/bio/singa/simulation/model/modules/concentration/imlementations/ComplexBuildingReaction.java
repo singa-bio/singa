@@ -7,7 +7,6 @@ import bio.singa.chemistry.features.reactions.ForwardsRateConstant;
 import bio.singa.chemistry.features.reactions.RateConstant;
 import bio.singa.features.exceptions.FeatureUnassignableException;
 import bio.singa.features.model.Feature;
-import bio.singa.features.units.UnitRegistry;
 import bio.singa.simulation.model.agents.pointlike.Vesicle;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.modules.concentration.*;
@@ -113,13 +112,13 @@ public class ComplexBuildingReaction extends ConcentrationBasedModule<UpdatableD
 
     private boolean containsReactants(ConcentrationContainer concentrationContainer) {
         // binder and complex are zero
-        if (concentrationContainer.get(binderTopology, binder).getValue().doubleValue() == 0.0
-                && concentrationContainer.get(binderTopology, complex).getValue().doubleValue() == 0.0) {
+        if (concentrationContainer.get(binderTopology, binder) == 0.0
+                && concentrationContainer.get(binderTopology, complex) == 0.0) {
             return false;
         }
         // bindee and complex are zero
-        return !(concentrationContainer.get(bindeeTopology, bindee).getValue().doubleValue() == 0.0)
-                || !(concentrationContainer.get(binderTopology, complex).getValue().doubleValue() == 0.0);
+        return !(concentrationContainer.get(bindeeTopology, bindee) == 0.0)
+                || !(concentrationContainer.get(binderTopology, complex) == 0.0);
     }
 
     private Map<ConcentrationDeltaIdentifier, ConcentrationDelta> calculateDeltas(ConcentrationContainer concentrationContainer) {
@@ -188,18 +187,18 @@ public class ComplexBuildingReaction extends ConcentrationBasedModule<UpdatableD
         // get concentrations
         double bindeeConcentration;
         if (bindeeTopology.equals(CellTopology.MEMBRANE)) {
-            bindeeConcentration = vesicleContainer.get(CellTopology.MEMBRANE, bindee).getValue().doubleValue();
+            bindeeConcentration = vesicleContainer.get(CellTopology.MEMBRANE, bindee);
         } else {
-            bindeeConcentration = nodeContainer.get(bindeeTopology, bindee).getValue().doubleValue();
+            bindeeConcentration = nodeContainer.get(bindeeTopology, bindee);
         }
         double binderConcentration;
         double complexConcentration;
         if (binderTopology.equals(CellTopology.MEMBRANE)) {
-            binderConcentration = vesicleContainer.get(CellTopology.MEMBRANE, binder).getValue().doubleValue();
-            complexConcentration = vesicleContainer.get(CellTopology.MEMBRANE, complex).getValue().doubleValue();
+            binderConcentration = vesicleContainer.get(CellTopology.MEMBRANE, binder);
+            complexConcentration = vesicleContainer.get(CellTopology.MEMBRANE, complex);
         } else {
-            binderConcentration = nodeContainer.get(binderTopology, binder).getValue().doubleValue();
-            complexConcentration = nodeContainer.get(binderTopology, complex).getValue().doubleValue();
+            binderConcentration = nodeContainer.get(binderTopology, binder);
+            complexConcentration = nodeContainer.get(binderTopology, complex);
         }
 
         // calculate velocity
@@ -211,9 +210,9 @@ public class ComplexBuildingReaction extends ConcentrationBasedModule<UpdatableD
         final double forwardsRateConstant = getScaledForwardsReactionRate();
         final double backwardsRateConstant = getScaledBackwardsReactionRate();
         // get concentrations
-        final double bindeeConcentration = concentrationContainer.get(bindeeTopology, bindee).getValue().doubleValue();
-        final double binderConcentration = concentrationContainer.get(binderTopology, binder).getValue().doubleValue();
-        final double complexConcentration = concentrationContainer.get(binderTopology, complex).getValue().doubleValue();
+        final double bindeeConcentration = concentrationContainer.get(bindeeTopology, bindee);
+        final double binderConcentration = concentrationContainer.get(binderTopology, binder);
+        final double complexConcentration = concentrationContainer.get(binderTopology, complex);
         // calculate velocity
         return forwardsRateConstant * binderConcentration * bindeeConcentration - backwardsRateConstant * complexConcentration;
     }
@@ -222,8 +221,7 @@ public class ComplexBuildingReaction extends ConcentrationBasedModule<UpdatableD
         if (deltas.containsKey(identifier)) {
             deltas.put(identifier, deltas.get(identifier).add(concentrationDelta));
         } else {
-            deltas.put(identifier, new ConcentrationDelta(this, identifier.getSubsection(), identifier.getEntity(),
-                    UnitRegistry.concentration(concentrationDelta)));
+            deltas.put(identifier, new ConcentrationDelta(this, identifier.getSubsection(), identifier.getEntity(), concentrationDelta));
         }
     }
 

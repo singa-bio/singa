@@ -1,22 +1,15 @@
 package bio.singa.simulation.model.graphs;
 
-import bio.singa.chemistry.entities.ChemicalEntity;
-import bio.singa.features.quantities.MolarConcentration;
-import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.graphs.grid.AbstractGridGraph;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.simulation.model.sections.CellRegion;
 import bio.singa.simulation.model.sections.CellSubsection;
 import bio.singa.simulation.model.simulation.Simulation;
-import tec.uom.se.quantity.Quantities;
 
-import javax.measure.Quantity;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
-import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 
 /**
  * The Automaton graph class is the underlying graph of cellular graph automaton {@link Simulation}s. Each {@link
@@ -52,27 +45,6 @@ public class AutomatonGraph extends AbstractGridGraph<AutomatonNode, AutomatonEd
     @Override
     public int addEdgeBetween(AutomatonNode source, AutomatonNode target) {
         return addEdgeBetween(nextEdgeIdentifier(), source, target);
-    }
-
-    /**
-     * Initializes the concentration of the given chemical entity of every node in this graph to to the given
-     * concentration in mol/l.
-     *
-     * @param entity The chemical entity.
-     * @param concentration The concentration in mol/l.
-     */
-    public void initializeSpeciesWithConcentration(ChemicalEntity entity, double concentration) {
-        initializeSpeciesWithConcentration(entity, Quantities.getQuantity(concentration, MOLE_PER_LITRE).to(UnitRegistry.getConcentrationUnit()));
-    }
-
-    /**
-     * Initializes the concentration of the given chemical entity of every node in this graph.
-     *
-     * @param entity The chemical entity.
-     * @param concentration The concentration.
-     */
-    public void initializeSpeciesWithConcentration(ChemicalEntity entity, Quantity<MolarConcentration> concentration) {
-        getNodes().forEach(node -> node.getConcentrationContainer().set(node.getCellRegion().getInnerSubsection(), entity, concentration));
     }
 
     /**

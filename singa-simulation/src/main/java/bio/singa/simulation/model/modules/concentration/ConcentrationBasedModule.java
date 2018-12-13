@@ -323,7 +323,7 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
                 deltaIdentifier.getEntity().getIdentifier(),
                 deltaIdentifier.getUpdatable().getStringIdentifier(),
                 deltaIdentifier.getSubsection().getIdentifier(),
-                delta.getQuantity());
+                delta.getValue());
     }
 
     /**
@@ -343,7 +343,7 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
      * @return true if the delta is not zero.
      */
     private boolean deltaIsNotZero(ConcentrationDelta delta) {
-        return delta.getQuantity().getValue().doubleValue() != 0.0;
+        return delta.getValue() != 0.0;
     }
 
     /**
@@ -353,7 +353,7 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
      * @return true if the delta is above the numerical cutoff (not effectively zero).
      */
     private boolean deltaIsAboveNumericCutoff(ConcentrationDelta delta) {
-        return Math.abs(delta.getQuantity().getValue().doubleValue()) > deltaCutoff;
+        return Math.abs(delta.getValue()) > deltaCutoff;
     }
 
     /**
@@ -382,8 +382,8 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
         double largestLocalError = -Double.MAX_VALUE;
         ConcentrationDeltaIdentifier largestIdentifier = null;
         for (ConcentrationDeltaIdentifier identifier : supplier.getCurrentFullDeltas().keySet()) {
-            double fullDelta = supplier.getCurrentFullDeltas().get(identifier).getQuantity().getValue().doubleValue();
-            double halfDelta = supplier.getCurrentHalfDeltas().get(identifier).getQuantity().getValue().doubleValue();
+            double fullDelta = supplier.getCurrentFullDeltas().get(identifier).getValue();
+            double halfDelta = supplier.getCurrentHalfDeltas().get(identifier).getValue();
             // calculate error
             double localError = Math.abs(1 - (fullDelta / halfDelta));
             // check for numerical instabilities

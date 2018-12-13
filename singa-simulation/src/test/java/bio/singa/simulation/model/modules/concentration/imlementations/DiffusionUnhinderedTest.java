@@ -4,7 +4,6 @@ import bio.singa.chemistry.entities.SmallMolecule;
 import bio.singa.chemistry.features.diffusivity.Diffusivity;
 import bio.singa.features.model.Evidence;
 import bio.singa.features.parameters.Environment;
-import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.graphs.model.Graphs;
 import bio.singa.mathematics.topology.grids.rectangular.RectangularCoordinate;
@@ -143,8 +142,7 @@ class DiffusionUnhinderedTest {
         double currentConcentration = 0.0;
         while (currentConcentration < 0.25) {
             simulation.nextEpoch();
-            final Quantity<MolarConcentration> concentration = simulation.getGraph().getNode(coordinate).getConcentrationContainer().get(EXTRACELLULAR_REGION, species).to(MOLE_PER_LITRE);
-            currentConcentration = concentration.getValue().doubleValue();
+            currentConcentration = UnitRegistry.concentration(simulation.getGraph().getNode(coordinate).getConcentrationContainer().get(EXTRACELLULAR_REGION, species)).to(MOLE_PER_LITRE).getValue().doubleValue();
             //System.out.println("Currently "+concentration+" at "+simulation.getElapsedTime().to(MICRO(SECOND)));
         }
         logger.info("Half life time of {} reached at {}.", species.getName(), simulation.getElapsedTime().to(MICRO(SECOND)));
