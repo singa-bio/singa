@@ -23,9 +23,7 @@ import javax.measure.quantity.Time;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
-import static bio.singa.simulation.features.PitFormationRate.SQUARE_NANOMETRE;
 import static bio.singa.simulation.model.sections.CellTopology.MEMBRANE;
-import static tec.uom.se.unit.Units.SECOND;
 
 /**
  * @author cl
@@ -63,7 +61,7 @@ public class ClathrinMediatedEndocytosis extends QualitativeModule {
         getRequiredFeatures().add(VesicleRadius.class);
         getRequiredFeatures().add(CargoAdditionRate.class);
         getRequiredFeatures().add(EndocytosisCheckpointTime.class);
-        getRequiredFeatures().add(EndocytosisCkeckpointConcentration.class);
+        getRequiredFeatures().add(EndocytosisCheckpointConcentration.class);
         getRequiredFeatures().add(Cargo.class);
         getRequiredFeatures().add(MaturationTime.class);
     }
@@ -115,8 +113,10 @@ public class ClathrinMediatedEndocytosis extends QualitativeModule {
     private void prepareAspiringPits() {
         for (MembraneSegment segment : segments) {
             // probability = rate (1/area*time) * area * time step
-            double probability = getFeature(PitFormationRate.class).getContent().multiply(segment.getArea().to(SQUARE_NANOMETRE))
-                    .multiply(UnitRegistry.getTime().to(SECOND)).getValue().doubleValue();
+            double probability = getFeature(PitFormationRate.class).getContent()
+                    .multiply(segment.getArea())
+                    .multiply(UnitRegistry.getTime())
+                    .getValue().doubleValue();
             // roll if event happens
             if (ThreadLocalRandom.current().nextDouble() < probability) {
                 initializeAspiringPit(segment);
@@ -200,7 +200,7 @@ public class ClathrinMediatedEndocytosis extends QualitativeModule {
         for (Pit maturedPit : maturedPits) {
             logger.trace("Clathrin-coated pit at {} formed vesicle with {} cargo molecules.", maturedPit.spawnSite, MolarConcentration.concentrationToMolecules(maturedPit.getCargoConcentration()).getValue());
             Vesicle vesicle = new Vesicle(maturedPit.getSpawnSite(), maturedPit.getSpawnRadius());
-            vesicle.setVesicleState(VesicleStateRegistry.ACTIN_PROPELLED);
+            vesicle.setState(VesicleStateRegistry.ACTIN_PROPELLED);
             initializeCargo(vesicle, maturedPit);
             simulation.getVesicleLayer().addVesicle(vesicle);
             maturingPits.remove(maturedPit);
@@ -264,7 +264,7 @@ public class ClathrinMediatedEndocytosis extends QualitativeModule {
      * Moves aspiring to pre maturing pits or aborting pits.
      */
     private void checkPitState() {
-        double criticalConcentration = getFeature(EndocytosisCkeckpointConcentration.class).getContent().getValue().doubleValue();
+        double criticalConcentration = getFeature(EndocytosisCheckpointConcentration.class).getContent().getValue().doubleValue();
         for (Pit aspiringPit : aspiringPits) {
             // check if critical concentration has been reached
             if (aspiringPit.getCargoConcentration() >= criticalConcentration) {

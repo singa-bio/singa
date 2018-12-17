@@ -8,6 +8,7 @@ import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.mathematics.vectors.Vectors;
 import bio.singa.simulation.model.agents.surfacelike.Membrane;
 import bio.singa.simulation.model.agents.surfacelike.MembraneSegment;
+import bio.singa.simulation.model.sections.CellRegions;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Length;
@@ -26,7 +27,7 @@ public class VolumeLikeAgentFactory {
 
     }
 
-    public static ActinCortex createActinCortex(Membrane cellMembrane, MooreRectangularDirection innerDirection, Quantity<Length> width, Quantity<Length> distance) {
+    public static VolumeLikeAgent createCellCortex(Membrane cellMembrane, MooreRectangularDirection innerDirection, Quantity<Length> width, Quantity<Length> distance) {
         ArrayDeque<Vector2D> vertices = new ArrayDeque<>();
         Iterator<MembraneSegment> segmentIterator = cellMembrane.getSegments().iterator();
         double distanceSimulation = Environment.convertSystemToSimulationScale(distance);
@@ -45,10 +46,10 @@ public class VolumeLikeAgentFactory {
             }
         }
         VertexPolygon volumePolygon = new VertexPolygon(vertices, false);
-        return new ActinCortex(volumePolygon);
+        return new VolumeLikeAgent(volumePolygon, CellRegions.CELL_CORTEX);
     }
 
-    public static ActinCortex createActinCortex(Membrane cellMembrane, Quantity<Length> width, Quantity<Length> distance) {
+    public static VolumeLikeAgent createCellCortex(Membrane cellMembrane, Quantity<Length> width, Quantity<Length> distance) {
         ArrayDeque<Vector2D> vertices = new ArrayDeque<>();
         Iterator<MembraneSegment> segmentIterator = cellMembrane.getSegments().iterator();
         double distanceSimulation = Environment.convertSystemToSimulationScale(distance);
@@ -73,7 +74,7 @@ public class VolumeLikeAgentFactory {
             }
         }
         ComplexPolygon polygon = new ComplexPolygon(new ArrayList<>(vertices));
-        return new ActinCortex(polygon);
+        return new VolumeLikeAgent(polygon, CellRegions.CELL_CORTEX);
     }
 
 

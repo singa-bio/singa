@@ -8,17 +8,17 @@ import java.util.List;
 /**
  * @author cl
  */
-public class Cargo extends EntityFeature {
+public class BoostMediatingEntity extends EntityFeature {
 
-    public Cargo(ChemicalEntity entity, List<Evidence> evidence) {
+    public BoostMediatingEntity(ChemicalEntity entity, List<Evidence> evidence) {
         super(entity, evidence);
     }
 
-    public Cargo(ChemicalEntity entity, Evidence evidence) {
+    public BoostMediatingEntity(ChemicalEntity entity, Evidence evidence) {
         super(entity, evidence);
     }
 
-    public Cargo(ChemicalEntity entity) {
+    public BoostMediatingEntity(ChemicalEntity entity) {
         super(entity);
     }
 

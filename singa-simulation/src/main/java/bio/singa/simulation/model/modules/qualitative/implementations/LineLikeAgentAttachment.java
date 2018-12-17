@@ -60,7 +60,7 @@ public class LineLikeAgentAttachment extends QualitativeModule {
                 continue;
             }
             // and the current vesicle is unattached
-            if (!vesicle.getVesicleState().equals(VesicleStateRegistry.UNATTACHED)) {
+            if (!vesicle.getState().equals(VesicleStateRegistry.UNATTACHED)) {
                 continue;
             }
             // attach if there is any close filament
@@ -126,9 +126,9 @@ public class LineLikeAgentAttachment extends QualitativeModule {
     private void attachVesicle(Vesicle vesicle, AttachmentInformation attachmentInformation) {
         FilamentType filamentType = getFeature(AttachedFilament.class).getContent();
         if (filamentType.equals(MICROTUBULE)) {
-            vesicle.setVesicleState(VesicleStateRegistry.MICROTUBULE_ATTACHED);
+            vesicle.setState(VesicleStateRegistry.MICROTUBULE_ATTACHED);
         } else {
-            vesicle.setVesicleState(VesicleStateRegistry.ACTIN_ATTACHED);
+            vesicle.setState(VesicleStateRegistry.ACTIN_ATTACHED);
         }
         vesicle.setTargetDirection(getFeature(MotorPullDirection.class).getContent());
         vesicle.setAttachedFilament(attachmentInformation.getClosestFilament());

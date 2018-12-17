@@ -8,23 +8,14 @@ import java.util.List;
  */
 public class VolumeLayer {
 
-    private ActinCortex cortex;
     private List<VolumeLikeAgent> agents;
 
     public VolumeLayer() {
         agents = new ArrayList<>();
     }
 
-    public ActinCortex getCortex() {
-        return cortex;
-    }
-
-    public void setCortex(ActinCortex cortex) {
-        this.cortex = cortex;
-    }
-
     public void addAgent(VolumeLikeAgent agent) {
-        this.agents.add(agent);
+        agents.add(agent);
     }
 
     public List<VolumeLikeAgent> getAgents() {

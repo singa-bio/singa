@@ -60,6 +60,7 @@ public class VesicleStateRegistry {
     public static final VesicleState MICROTUBULE_ATTACHED = new VesicleState("MICROTUBULE_ATTACHED", "attached to micotubule with motor protein");
     public static final VesicleState MEMBRANE_TETHERED = new VesicleState("MEMBRANE_TETHERED", "tethered to membrane");
     public static final VesicleState UNATTACHED = new VesicleState("UNATTACHED", "unattached from any cellular component");
+    public static final VesicleState IN_STORAGE = new VesicleState("IN_STORAGE", "tethered in storage region of the cell");
 
     private Set<VesicleState> states;
 

@@ -29,8 +29,8 @@ public class VesicleTransport extends DisplacementBasedModule {
     }
 
     private static boolean isAttachedToFilament(Vesicle vesicle) {
-        return vesicle.getVesicleState().equals(VesicleStateRegistry.MICROTUBULE_ATTACHED) ||
-                vesicle.getVesicleState().equals(VesicleStateRegistry.ACTIN_ATTACHED);
+        return vesicle.getState().equals(VesicleStateRegistry.MICROTUBULE_ATTACHED) ||
+                vesicle.getState().equals(VesicleStateRegistry.ACTIN_ATTACHED);
     }
 
     @Override

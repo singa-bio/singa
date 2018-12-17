@@ -20,7 +20,7 @@ public class VesicleCytoplasmDiffusion extends DisplacementBasedModule {
 
     public VesicleCytoplasmDiffusion() {
         // delta function
-        addDeltaFunction(this::calculateDisplacement, vesicle -> vesicle.getVesicleState() == VesicleStateRegistry.UNATTACHED);
+        addDeltaFunction(this::calculateDisplacement, vesicle -> vesicle.getState() == VesicleStateRegistry.UNATTACHED);
         // feature
         getRequiredFeatures().add(Diffusivity.class);
     }

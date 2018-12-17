@@ -74,6 +74,11 @@ public class Diffusivity extends ScalableQuantitativeFeature<Diffusivity> implem
         halfScaledQuantity = scaledQuantity * 0.5;
     }
 
+    public void setContent(Quantity<Diffusivity> quantity) {
+        featureContent = quantity;
+        scale();
+    }
+
     @Override
     public String getDescriptor() {
         return SYMBOL;

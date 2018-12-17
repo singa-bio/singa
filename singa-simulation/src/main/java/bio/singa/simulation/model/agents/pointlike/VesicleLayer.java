@@ -15,6 +15,7 @@ import bio.singa.mathematics.topology.grids.rectangular.RectangularCoordinate;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.simulation.model.agents.surfacelike.Membrane;
 import bio.singa.simulation.model.agents.surfacelike.MembraneSegment;
+import bio.singa.simulation.model.agents.volumelike.VolumeLikeAgent;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.modules.displacement.DisplacementBasedModule;
@@ -112,13 +113,18 @@ public class VesicleLayer {
                 }
             }
             // check for collisions with confined volumes
-            boolean exceedsConfinement = simulation.getModules().stream().filter(VesicleConfinedDiffusion.class::isInstance)
+            boolean exceedsConfinement = simulation.getModules().stream()
+                    .filter(VesicleConfinedDiffusion.class::isInstance)
                     .map(VesicleConfinedDiffusion.class::cast)
                     .anyMatch(vesicleConfinedDiffusion -> {
                         // has the confining state
-                        if (vesicle1.getVesicleState().equals(vesicleConfinedDiffusion.getConfiningState())) {
-                            // and is inside the volume
-                            return !vesicleConfinedDiffusion.getConfinedVolume().getArea().isInside(vesicle1.getNextPosition());
+                        if (vesicle1.getState().equals(vesicleConfinedDiffusion.getConfiningState())) {
+                            for (VolumeLikeAgent agent : simulation.getVolumeLayer().getAgents()) {
+                                if (agent.getCellRegion().equals(vesicleConfinedDiffusion.getConfinedVolume())) {
+                                    // and is not inside the volume
+                                    return !agent.getArea().isInside(vesicle1.getNextPosition());
+                                }
+                            }
                         }
                         return false;
                     });
@@ -203,8 +209,8 @@ public class VesicleLayer {
                     if (intersection.size() > 1) {
                         Iterator<Vector2D> iterator = intersection.iterator();
                         LineSegment sliceSegment = new SimpleLineSegment(iterator.next(), iterator.next());
-                        double sliceSurface = Spheres.calculateSphereSlice(vesicleCentre, vesicleRadius, sliceSegment)/totalSurface;
-                        double remainingSurface = 1-sliceSurface;
+                        double sliceSurface = Spheres.calculateSphereSlice(vesicleCentre, vesicleRadius, sliceSegment) / totalSurface;
+                        double remainingSurface = 1 - sliceSurface;
                         if (sliceSegment.isVertical()) {
                             if (sliceSegment.getStartingPoint().isLeftOf(node.getPosition())) {
                                 vesicle.addAssociatedNode(node, remainingSurface);

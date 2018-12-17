@@ -58,7 +58,7 @@ public class Vesicle implements Updatable, Featureable {
     private CellRegion region;
     private Map<AutomatonNode, Double> associatedNodes;
 
-    private VesicleState vesicleState;
+    private VesicleState state;
     private Direction targetDirection;
     private LineLikeAgent attachedFilament;
     private ListIterator<Vector2D> segmentIterator;
@@ -93,7 +93,7 @@ public class Vesicle implements Updatable, Featureable {
         concentrationManager = new ConcentrationDeltaManager(region.setUpConcentrationContainer());
         displacementManager = new DisplacementDeltaManager(position);
         associatedNodes = new HashMap<>();
-        vesicleState = VesicleStateRegistry.UNATTACHED;
+        state = VesicleStateRegistry.UNATTACHED;
     }
 
     public Vesicle(Vector2D position, Quantity<Length> radius) {
@@ -125,12 +125,12 @@ public class Vesicle implements Updatable, Featureable {
         return displacementManager.getNextPosition();
     }
 
-    public VesicleState getVesicleState() {
-        return vesicleState;
+    public VesicleState getState() {
+        return state;
     }
 
-    public void setVesicleState(VesicleState vesicleState) {
-        this.vesicleState = vesicleState;
+    public void setState(VesicleState state) {
+        this.state = state;
     }
 
     public LineLikeAgent getAttachedFilament() {
@@ -165,6 +165,13 @@ public class Vesicle implements Updatable, Featureable {
         this.region = region;
     }
 
+    public void clearAttachmentInformation() {
+        setState(VesicleStateRegistry.UNATTACHED);
+        setAttachedFilament(null);
+        setTargetDirection(null);
+        setSegmentIterator(null);
+    }
+
     public void addPotentialSpatialDelta(DisplacementDelta spatialDelta) {
         displacementManager.addPotentialDisplacementDelta(spatialDelta);
     }
@@ -186,8 +193,6 @@ public class Vesicle implements Updatable, Featureable {
 
     public void addAssociatedNode(AutomatonNode node, double relativeArea) {
         associatedNodes.put(node, relativeArea);
-        // CellSubsection subsection = node.getConcentrationContainer().getSubsection(CellTopology.INNER);
-        // getConcentrationContainer().putSubsectionPool(subsection, CellTopology.INNER, node.getConcentrationContainer().getPool(CellTopology.INNER).getValue());
     }
 
     public void clearAssociatedNodes() {

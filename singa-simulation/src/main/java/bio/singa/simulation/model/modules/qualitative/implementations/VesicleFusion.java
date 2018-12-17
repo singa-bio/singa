@@ -52,11 +52,11 @@ public class VesicleFusion extends QualitativeModule {
         fusingVesicles = new ArrayList<>();
         tetheringVesicles = new HashMap<>();
         // feature
-        getRequiredFeatures().add(TetheringTime.class);
+        getRequiredFeatures().add(FusionTime.class);
         getRequiredFeatures().add(AttachmentDistance.class);
         getRequiredFeatures().add(MatchingQSnares.class);
         getRequiredFeatures().add(MatchingRSnares.class);
-        getRequiredFeatures().add(FusionPairs.class);
+        getRequiredFeatures().add(SNAREFusionPairs.class);
     }
 
     public Map<Vesicle, Quantity<Time>> getTetheredVesicles() {
@@ -132,8 +132,8 @@ public class VesicleFusion extends QualitativeModule {
 
     private void tetherVesicle(Vesicle vesicle, TetheringSnares tetheringSnares) {
         // add tethering time to current time
-        ComparableQuantity<Time> tetheringTime = simulation.getElapsedTime().add(getFeature(TetheringTime.class).getContent());
-        vesicle.setVesicleState(VesicleStateRegistry.MEMBRANE_TETHERED);
+        ComparableQuantity<Time> tetheringTime = simulation.getElapsedTime().add(getFeature(FusionTime.class).getContent());
+        vesicle.setState(VesicleStateRegistry.MEMBRANE_TETHERED);
         // set time
         tetheredVesicles.put(vesicle, tetheringTime);
         // set target
@@ -158,8 +158,8 @@ public class VesicleFusion extends QualitativeModule {
         List<Vesicle> vesicles = simulation.getVesicleLayer().getVesicles();
         // for each vesicle
         for (Vesicle vesicle : vesicles) {
-            if (vesicle.getVesicleState() == VesicleStateRegistry.ACTIN_PROPELLED ||
-                    vesicle.getVesicleState() == VesicleStateRegistry.MEMBRANE_TETHERED) {
+            if (vesicle.getState() == VesicleStateRegistry.ACTIN_PROPELLED ||
+                    vesicle.getState() == VesicleStateRegistry.MEMBRANE_TETHERED) {
                 continue;
             }
             Vector2D currentPosition = vesicle.getCurrentPosition();
@@ -213,12 +213,12 @@ public class VesicleFusion extends QualitativeModule {
         for (Integer qSnareNumber : snarePattern.getQSnares().values()) {
             qSnareSum += qSnareNumber;
         }
-        int fusionPairs = getFeature(FusionPairs.class).getContent().getValue().intValue();
+        int fusionPairs = getFeature(SNAREFusionPairs.class).getContent().getValue().intValue();
         return rSnareSum >= fusionPairs && qSnareSum >= fusionPairs;
     }
 
     private void reserveSnares(Vesicle vesicle, TetheringSnares tetheringSnares) {
-        int fusionPairs = getFeature(FusionPairs.class).getContent().getValue().intValue();
+        int fusionPairs = getFeature(SNAREFusionPairs.class).getContent().getValue().intValue();
         List<ChemicalEntity> qSnareEntities = new ArrayList<>(tetheringSnares.getQSnares().keySet());
         List<ChemicalEntity> rSnareEntities = new ArrayList<>(tetheringSnares.getRSnares().keySet());
         for (int occupiedSnareCounter = 0; occupiedSnareCounter < fusionPairs; occupiedSnareCounter++) {

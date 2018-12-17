@@ -9,7 +9,7 @@ import java.util.Objects;
  */
 public abstract class AbstractFeature<FeatureContent> implements Feature<FeatureContent> {
 
-    private final FeatureContent featureContent;
+    protected FeatureContent featureContent;
     private List<Evidence> evidence;
 
     public AbstractFeature(FeatureContent featureContent, List<Evidence> evidence) {

@@ -1,9 +1,9 @@
 package bio.singa.simulation.features;
 
-import bio.singa.chemistry.features.MultiEntityFeature;
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.features.model.Evidence;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -11,14 +11,16 @@ import java.util.Set;
  */
 public class MatchingQSnares extends MultiEntityFeature {
 
-    private static final String SYMBOL = "es_QSnares";
+    public MatchingQSnares(Set<ChemicalEntity> chemicalEntities, List<Evidence> evidence) {
+        super(chemicalEntities, evidence);
+    }
 
     public MatchingQSnares(Set<ChemicalEntity> chemicalEntities, Evidence evidence) {
         super(chemicalEntities, evidence);
     }
 
-    @Override
-    public String getDescriptor() {
-        return SYMBOL;
+    public MatchingQSnares(Set<ChemicalEntity> chemicalEntities) {
+        super(chemicalEntities);
     }
+
 }

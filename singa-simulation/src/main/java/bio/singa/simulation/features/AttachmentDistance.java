@@ -1,11 +1,12 @@
 package bio.singa.simulation.features;
 
-import bio.singa.features.model.AbstractFeature;
 import bio.singa.features.model.Evidence;
+import bio.singa.features.model.QuantitativeFeature;
 import tec.uom.se.quantity.Quantities;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Length;
+import java.util.List;
 
 import static tec.uom.se.unit.MetricPrefix.NANO;
 import static tec.uom.se.unit.Units.METRE;
@@ -13,26 +14,23 @@ import static tec.uom.se.unit.Units.METRE;
 /**
  * @author cl
  */
-public class AttachmentDistance extends AbstractFeature<Quantity<Length>> {
+public class AttachmentDistance extends QuantitativeFeature<Length> {
 
     /**
      * Size of the dynein complex fom vesicle surface to microtubule.
      */
     public static final AttachmentDistance DEFAULT_DYNEIN_ATTACHMENT_DISTANCE = new AttachmentDistance(Quantities.getQuantity(61, NANO(METRE)), DefaultFeatureSources.JHA2015);
 
-    private static final String SYMBOL = "d_Attachment";
-
-    public AttachmentDistance(Quantity<Length> length, Evidence evidence) {
-        super(length, evidence);
+    public AttachmentDistance(Quantity<Length> quantity, List<Evidence> evidence) {
+        super(quantity, evidence);
     }
 
-    public AttachmentDistance(double length, Evidence evidence) {
-        super(Quantities.getQuantity(length, NANO(METRE)), evidence);
+    public AttachmentDistance(Quantity<Length> quantity, Evidence evidence) {
+        super(quantity, evidence);
     }
 
-    @Override
-    public String getDescriptor() {
-        return SYMBOL;
+    public AttachmentDistance(Quantity<Length> quantity) {
+        super(quantity);
     }
 
 }

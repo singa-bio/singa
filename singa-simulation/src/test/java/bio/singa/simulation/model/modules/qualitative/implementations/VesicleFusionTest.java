@@ -130,8 +130,8 @@ class VesicleFusionTest {
         MatchingRSnares rSnares = new MatchingRSnares(rSnareEntities, Evidence.NO_EVIDENCE);
         fusion.setFeature(rSnares);
         fusion.initializeComplexes();
-        fusion.setFeature(new FusionPairs(Quantities.getQuantity(3, ONE), Evidence.NO_EVIDENCE));
-        fusion.setFeature(TetheringTime.DEFAULT_TETHERING_TIME);
+        fusion.setFeature(new SNAREFusionPairs(Quantities.getQuantity(3, ONE), Evidence.NO_EVIDENCE));
+        fusion.setFeature(FusionTime.DEFAULT_FUSION_TIME);
         fusion.setFeature(AttachmentDistance.DEFAULT_DYNEIN_ATTACHMENT_DISTANCE);
         fusion.setSimulation(simulation);
         simulation.getModules().add(fusion);

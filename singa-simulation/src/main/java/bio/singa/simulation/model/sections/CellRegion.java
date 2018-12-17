@@ -9,23 +9,24 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
- *
- *
  * @author cl
  */
 public class CellRegion {
 
     public static CellRegion CYTOSOL_A = new CellRegion("Cytoplasm");
+
     static {
         CYTOSOL_A.addSubSection(CellTopology.INNER, CellSubsection.SECTION_A);
     }
 
     public static CellRegion CYTOSOL_B = new CellRegion("Cytoplasm");
+
     static {
         CYTOSOL_B.addSubSection(CellTopology.INNER, CellSubsection.SECTION_B);
     }
 
     public static CellRegion MEMBRANE = new CellRegion("Membrane");
+
     static {
         MEMBRANE.addSubSection(CellTopology.INNER, CellSubsection.SECTION_A);
         MEMBRANE.addSubSection(CellTopology.MEMBRANE, CellSubsection.MEMBRANE);
@@ -33,9 +34,9 @@ public class CellRegion {
     }
 
     public static CellRegion forVesicle(String identifier) {
-        CellRegion region = new CellRegion(identifier+"-region");
-        region.addSubSection(CellTopology.OUTER, new CellSubsection(identifier+"-cargo"));
-        region.addSubSection(CellTopology.MEMBRANE, new CellSubsection(identifier+"-coat"));
+        CellRegion region = new CellRegion(identifier + "-region");
+        region.addSubSection(CellTopology.OUTER, new CellSubsection(identifier + "-cargo"));
+        region.addSubSection(CellTopology.MEMBRANE, new CellSubsection(identifier + "-coat"));
         return region;
     }
 
@@ -95,7 +96,13 @@ public class CellRegion {
 
     @Override
     public String toString() {
-        return "Region "+identifier+" ("+getSubsections().stream().map(CellSubsection::getIdentifier).collect(Collectors.joining(","))+")";
+        String subsections = "";
+        if (!getSubsections().isEmpty()) {
+            subsections = " (" + getSubsections().stream()
+                    .map(CellSubsection::getIdentifier)
+                    .collect(Collectors.joining(", ")) + ")";
+        }
+        return "Region " + identifier + " " + goTerm.getContent() + (subsections.isEmpty() ? "" : " " + subsections);
     }
 
     @Override
