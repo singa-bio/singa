@@ -47,7 +47,6 @@ public class LineLikeAgentDetachment extends QualitativeModule {
     @Override
     public void optimizeTimeStep() {
         // FIXME if probability get too large slow time
-
     }
 
     @Override

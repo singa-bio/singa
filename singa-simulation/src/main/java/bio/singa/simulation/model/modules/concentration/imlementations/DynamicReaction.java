@@ -45,7 +45,11 @@ public class DynamicReaction extends ConcentrationBasedModule<UpdatableDeltaFunc
      */
     private KineticLaw kineticLaw;
 
-    public void initialize() {
+    public DynamicReaction() {
+
+    }
+
+    private void postConstruct() {
         // apply
         setApplicationCondition(updatable -> true);
         // function
@@ -53,8 +57,6 @@ public class DynamicReaction extends ConcentrationBasedModule<UpdatableDeltaFunc
         addDeltaFunction(function);
         // feature
         getRequiredFeatures().add(RateConstant.class);
-        // reference module in simulation
-        addModuleToSimulation();
     }
 
     public void addReactant(Reactant reactant) {
@@ -170,9 +172,11 @@ public class DynamicReaction extends ConcentrationBasedModule<UpdatableDeltaFunc
 
     public static class DynamicReactionBuilder implements KineticLawStep, ParameterStep, BuildStep, ModuleBuilder {
 
+        private final Simulation simulation;
         private DynamicReaction module;
 
         public DynamicReactionBuilder(Simulation simulation) {
+            this.simulation = simulation;
             createModule(simulation);
         }
 
@@ -266,7 +270,8 @@ public class DynamicReaction extends ConcentrationBasedModule<UpdatableDeltaFunc
 
         @Override
         public DynamicReaction build() {
-            module.initialize();
+            module.postConstruct();
+            simulation.addModule(module);
             return module;
         }
     }

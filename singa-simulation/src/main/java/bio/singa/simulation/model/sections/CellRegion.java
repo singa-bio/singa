@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  * @author cl
@@ -96,13 +95,7 @@ public class CellRegion {
 
     @Override
     public String toString() {
-        String subsections = "";
-        if (!getSubsections().isEmpty()) {
-            subsections = " (" + getSubsections().stream()
-                    .map(CellSubsection::getIdentifier)
-                    .collect(Collectors.joining(", ")) + ")";
-        }
-        return "Region " + identifier + " " + goTerm.getContent() + (subsections.isEmpty() ? "" : " " + subsections);
+        return identifier + (goTerm != null ? " (" + goTerm.getContent() + ")" : "");
     }
 
     @Override

@@ -272,10 +272,12 @@ public class SimulationManager extends Task<Simulation> {
             if (previousTimeMillis > 0) {
                 ComparableQuantity<Time> estimatesTimeRemaining = Quantities.getQuantity(estimatedMillisRemaining, MILLI(SECOND));
                 double speed = subtract.getValue().doubleValue() / Quantities.getQuantity(currentTimeMillis - previousTimeMillis, MILLI(SECOND)).to(SECOND).getValue().doubleValue();
+                String estimated = QuantityFormatter.formatTime(estimatesTimeRemaining);
                 if (Double.isInfinite(speed)) {
-                    logger.info("estimated time remaining: " + QuantityFormatter.formatTime(estimatesTimeRemaining) + ", current simulation speed: [very high] (Simulation Time) per s(Real Time)");
+                    logger.info("estimated time remaining: {}, current simulation speed: [very high] (Simulation Time) per s(Real Time)", estimated);
                 } else {
-                    logger.info("estimated time remaining: " + QuantityFormatter.formatTime(estimatesTimeRemaining) + ", current simulation speed: " + QuantityFormatter.formatTime(Quantities.getQuantity(speed, MICRO(SECOND))) + "(Simulation Time) per s(Real Time)");
+                    String estimatedSpeed = QuantityFormatter.formatTime(Quantities.getQuantity(speed, MICRO(SECOND)));
+                    logger.info("estimated time remaining: {}, current simulation speed: {} (Simulation Time) per s(Real Time)", estimated, estimatedSpeed);
                 }
             }
             previousTimeMillis = currentTimeMillis;
@@ -311,47 +313,12 @@ public class SimulationManager extends Task<Simulation> {
             }
         } catch (ExecutionException e) {
             // Exception occurred, deal with it
-            logger.error("Encountered an exception during simulation: " + e.getCause());
+            logger.error("Encountered an exception during simulation: ", e);
             e.printStackTrace();
         } catch (InterruptedException e) {
             // Shouldn't happen, we're invoked when computation is finished
             throw new AssertionError(e);
         }
-    }
-
-
-    private static String formatMillis(long millis) {
-        StringBuilder builder = new StringBuilder(20);
-        String sgn = "";
-
-        if (millis < 0) {
-            sgn = "-";
-            millis = Math.abs(millis);
-        }
-
-        append(builder, sgn, 0, (millis / 3600000));
-        millis %= 3600000;
-        builder.append(" h ");
-        append(builder, "", 2, (millis / 60000));
-        builder.append(" min");
-        return builder.toString();
-    }
-
-    /**
-     * Append a right-aligned and zero-padded numeric value to a `StringBuilder`.
-     */
-    private static void append(StringBuilder tgt, String pfx, int dgt, long val) {
-        tgt.append(pfx);
-        if (dgt > 1) {
-            int pad = (dgt - 1);
-            for (long xa = val; xa > 9 && pad > 0; xa /= 10) {
-                pad--;
-            }
-            for (int xa = 0; xa < pad; xa++) {
-                tgt.append('0');
-            }
-        }
-        tgt.append(val);
     }
 
 }

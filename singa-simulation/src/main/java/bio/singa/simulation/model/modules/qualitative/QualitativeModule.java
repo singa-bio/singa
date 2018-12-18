@@ -1,12 +1,10 @@
 package bio.singa.simulation.model.modules.qualitative;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
-import bio.singa.features.exceptions.FeatureUnassignableException;
 import bio.singa.features.model.Feature;
 import bio.singa.features.model.ScalableQuantitativeFeature;
 import bio.singa.simulation.model.modules.UpdateModule;
 import bio.singa.simulation.model.modules.concentration.ModuleState;
-import bio.singa.simulation.model.modules.displacement.DisplacementBasedModule;
 import bio.singa.simulation.model.parameters.FeatureManager;
 import bio.singa.simulation.model.simulation.Simulation;
 import bio.singa.simulation.model.simulation.UpdateScheduler;
@@ -23,9 +21,9 @@ import java.util.Set;
 public abstract class QualitativeModule implements UpdateModule {
 
     /**
-     * The logger.
+     * The logger
      */
-    private static final Logger logger = LoggerFactory.getLogger(DisplacementBasedModule.class);
+    private static final Logger logger = LoggerFactory.getLogger(QualitativeModule.class);
 
     /**
      * The simulation.
@@ -46,6 +44,11 @@ public abstract class QualitativeModule implements UpdateModule {
         referencedChemicalEntities = new HashSet<>();
         featureManager = new FeatureManager();
         state = ModuleState.PENDING;
+    }
+
+    @Override
+    public void initialize() {
+
     }
 
     public void setIdentifier(String identifier) {
@@ -97,9 +100,12 @@ public abstract class QualitativeModule implements UpdateModule {
 
     @Override
     public void checkFeatures() {
-        for (Class<? extends Feature> feature : featureManager.getRequiredFeatures()) {
-            if (!featureManager.hasFeature(feature)) {
-                throw new FeatureUnassignableException(toString()+" requires the "+feature+" feature");
+        for (Class<? extends Feature> featureClass : getRequiredFeatures()) {
+            if (featureManager.hasFeature(featureClass)) {
+                Feature feature = getFeature(featureClass);
+                logger.debug("Required feature {} has been set to {}.", feature.getDescriptor(), feature.getContent());
+            } else {
+                logger.warn("Required feature {} has not been set.", featureClass.getSimpleName());
             }
         }
     }
@@ -113,4 +119,8 @@ public abstract class QualitativeModule implements UpdateModule {
         return identifier;
     }
 
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + (getIdentifier() != null ? " " + getIdentifier() : "");
+    }
 }

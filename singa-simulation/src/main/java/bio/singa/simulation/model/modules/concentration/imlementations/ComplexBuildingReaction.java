@@ -5,7 +5,6 @@ import bio.singa.chemistry.entities.ComplexedChemicalEntity;
 import bio.singa.chemistry.features.reactions.BackwardsRateConstant;
 import bio.singa.chemistry.features.reactions.ForwardsRateConstant;
 import bio.singa.chemistry.features.reactions.RateConstant;
-import bio.singa.features.exceptions.FeatureUnassignableException;
 import bio.singa.features.model.Feature;
 import bio.singa.simulation.model.agents.pointlike.Vesicle;
 import bio.singa.simulation.model.graphs.AutomatonNode;
@@ -18,6 +17,8 @@ import bio.singa.simulation.model.sections.CellTopology;
 import bio.singa.simulation.model.sections.ConcentrationContainer;
 import bio.singa.simulation.model.simulation.Simulation;
 import bio.singa.simulation.model.simulation.Updatable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -69,6 +70,11 @@ import java.util.Map;
  */
 public class ComplexBuildingReaction extends ConcentrationBasedModule<UpdatableDeltaFunction> {
 
+    /**
+     * The logger
+     */
+    private static final Logger logger = LoggerFactory.getLogger(ComplexBuildingReaction.class);
+
     public static BindeeSelection inSimulation(Simulation simulation) {
         return new ComplexBuildingReactionBuilder(simulation);
     }
@@ -84,7 +90,11 @@ public class ComplexBuildingReaction extends ConcentrationBasedModule<UpdatableD
 
     private ComplexedChemicalEntity complex;
 
-    public void initialize() {
+    public ComplexBuildingReaction() {
+
+    }
+
+    private void postConstruct() {
         // apply
         // TODO apply condition ?
         setApplicationCondition(updatable -> true);
@@ -106,8 +116,6 @@ public class ComplexBuildingReaction extends ConcentrationBasedModule<UpdatableD
         addReferencedEntity(bindee);
         addReferencedEntity(binder);
         addReferencedEntity(complex);
-        // reference module in simulation
-        addModuleToSimulation();
     }
 
     private boolean containsReactants(ConcentrationContainer concentrationContainer) {
@@ -279,14 +287,19 @@ public class ComplexBuildingReaction extends ConcentrationBasedModule<UpdatableD
             // any forwards rate constant
             if (feature instanceof ForwardsRateConstant) {
                 forwardsRateFound = true;
+                logger.debug("Required feature {} has been set to {}.", feature.getDescriptor(), feature.getContent());
             }
             // any backwards rate constant
             if (feature instanceof BackwardsRateConstant) {
                 backwardsRateFound = true;
+                logger.debug("Required feature {} has been set to {}.", feature.getDescriptor(), feature.getContent());
             }
         }
-        if (!forwardsRateFound || !backwardsRateFound) {
-            throw new FeatureUnassignableException("Required reaction rates unavailable for reaction " + getIdentifier() + ".");
+        if (!forwardsRateFound) {
+            logger.warn("Required feature {} has not been set.", ForwardsRateConstant.class.getSimpleName());
+        }
+        if (!backwardsRateFound) {
+            logger.warn("Required feature {} has not been set.", BackwardsRateConstant.class.getSimpleName());
         }
     }
 
@@ -363,8 +376,11 @@ public class ComplexBuildingReaction extends ConcentrationBasedModule<UpdatableD
     public static class ComplexBuildingReactionBuilder implements BinderSelection, BinderSectionSelection, BindeeSelection, BindeeSectionSelection, BuilderStep, ModuleBuilder {
 
         private ComplexBuildingReaction module;
+        private Simulation simulation;
+
 
         public ComplexBuildingReactionBuilder(Simulation simulation) {
+            this.simulation = simulation;
             createModule(simulation);
         }
 
@@ -378,7 +394,6 @@ public class ComplexBuildingReaction extends ConcentrationBasedModule<UpdatableD
             module = ModuleFactory.setupModule(ComplexBuildingReaction.class,
                     ModuleFactory.Scope.SEMI_NEIGHBOURHOOD_DEPENDENT,
                     ModuleFactory.Specificity.UPDATABLE_SPECIFIC);
-            module.setSimulation(simulation);
             return module;
         }
 
@@ -432,7 +447,8 @@ public class ComplexBuildingReaction extends ConcentrationBasedModule<UpdatableD
 
         @Override
         public ComplexBuildingReaction build() {
-            module.initialize();
+            module.postConstruct();
+            simulation.addModule(module);
             return module;
         }
     }

@@ -41,7 +41,7 @@ public class KineticLawTest {
         KineticLaw kl = new KineticLaw("1-D*ATP");
         // reference a feature
         Diffusivity diffusivity = new Diffusivity(Quantities.getQuantity(0.01, SQUARE_CENTIMETRE_PER_SECOND), Evidence.NO_EVIDENCE);
-        kl.referenceFeature(diffusivity.getDescriptor(), diffusivity);
+        kl.referenceFeature("D", diffusivity);
         diffusivity.scale();
         // reference a reactant to get concentration from
         SmallMolecule atp = SmallMolecule.create("ATP")

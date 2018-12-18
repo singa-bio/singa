@@ -333,10 +333,6 @@ class ComplexBuildingReactionTest {
         AutomatonGraph graph = AutomatonGraphs.createRectangularAutomatonGraph(nodesHorizontal, nodesVertical);
         simulation.setGraph(graph);
 
-        // setup spatial representations
-        simulation.initializeGraph();
-        simulation.initializeSpatialRepresentations();
-
         // the rate constants
         RateConstant forwardRate = RateConstant.create(1.0e6)
                 .forward().secondOrder()
@@ -422,10 +418,6 @@ class ComplexBuildingReactionTest {
         // setup graph and assign regions
         AutomatonGraph graph = AutomatonGraphs.createRectangularAutomatonGraph(nodesHorizontal, nodesVertical);
         simulation.setGraph(graph);
-
-        // setup spatial representations
-        simulation.initializeGraph();
-        simulation.initializeSpatialRepresentations();
 
         // the rate constants
         RateConstant forwardRate = RateConstant.create(1.0e6)

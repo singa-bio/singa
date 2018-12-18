@@ -55,7 +55,11 @@ public class MembraneDiffusion extends ConcentrationBasedModule<UpdatableDeltaFu
 
     private ChemicalEntity cargo;
 
-    public void initialize() {
+    public MembraneDiffusion() {
+
+    }
+
+    private void postConstruct() {
         // apply
         setApplicationCondition(this::hasMembrane);
         // function
@@ -66,8 +70,6 @@ public class MembraneDiffusion extends ConcentrationBasedModule<UpdatableDeltaFu
         // add cargo
         cargo = getFeature(Cargo.class).getContent();
         addReferencedEntity(cargo);
-        // reference module in simulation
-        addModuleToSimulation();
     }
 
     private boolean hasMembrane(Updatable updatable) {
@@ -146,8 +148,10 @@ public class MembraneDiffusion extends ConcentrationBasedModule<UpdatableDeltaFu
     public static class MembraneDiffusionBuilder implements CargoStep, BuildStep, ModuleBuilder {
 
         private MembraneDiffusion module;
+        private Simulation simulation;
 
         public MembraneDiffusionBuilder(Simulation simulation) {
+            this.simulation = simulation;
             createModule(simulation);
         }
 
@@ -173,7 +177,8 @@ public class MembraneDiffusion extends ConcentrationBasedModule<UpdatableDeltaFu
 
         @Override
         public MembraneDiffusion build() {
-            module.initialize();
+            module.postConstruct();
+            simulation.addModule(module);
             return module;
         }
 

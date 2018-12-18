@@ -86,9 +86,7 @@ public class ComplexedChemicalEntity extends ChemicalEntity {
 
     @Override
     public String toString() {
-        return "ComplexedChemicalEntity " + super.getIdentifier() + " {" +
-                "associatedParts=" + associatedParts +
-                '}';
+        return "Complex Chemical Entity " + identifier;
     }
 
     public static class Builder extends ChemicalEntity.Builder<ComplexedChemicalEntity, Builder> {

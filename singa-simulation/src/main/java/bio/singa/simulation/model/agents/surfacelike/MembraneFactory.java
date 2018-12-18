@@ -35,6 +35,7 @@ public class MembraneFactory {
     private Membrane membrane;
 
     public static Membrane createLinearMembrane(Collection<Vector2D> vectors, CellRegion innerRegion, CellRegion membraneRegion, NeumannRectangularDirection innerDirection, AutomatonGraph graph, Map<Vector2D, CellRegion> regions, Rectangle globalClipper) {
+        logger.info("Initializing linear membrane from {} vectors", vectors.size());
         MembraneFactory factory = new MembraneFactory(vectors, graph, regions);
         factory.direction = innerDirection;
         factory.initializeMembrane(innerRegion, membraneRegion);
@@ -54,6 +55,7 @@ public class MembraneFactory {
     }
 
     public static Membrane createClosedMembrane(Collection<Vector2D> vectors, CellRegion innerRegion, CellRegion membraneRegion, AutomatonGraph graph, Map<Vector2D, CellRegion> regions) {
+        logger.info("Initializing closed membrane from {} vectors", vectors.size());
         MembraneFactory factory = new MembraneFactory(vectors, graph, regions);
         factory.initializeMembrane(innerRegion, membraneRegion);
         factory.polygon = factory.connectPolygonVectors(vectors);

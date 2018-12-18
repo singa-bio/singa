@@ -9,12 +9,19 @@ import bio.singa.simulation.model.agents.pointlike.Vesicle;
 import bio.singa.simulation.model.agents.pointlike.VesicleStateRegistry;
 import bio.singa.simulation.model.modules.displacement.DisplacementBasedModule;
 import bio.singa.simulation.model.modules.displacement.DisplacementDelta;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import tec.uom.se.quantity.Quantities;
 
 /**
  * @author cl
  */
 public class VesicleCytoplasmDiffusion extends DisplacementBasedModule {
+
+    /**
+     * The logger
+     */
+    private static final Logger logger = LoggerFactory.getLogger(VesicleCytoplasmDiffusion.class);
 
     private static final double SQRT2 = Math.sqrt(2.0);
 
@@ -32,8 +39,7 @@ public class VesicleCytoplasmDiffusion extends DisplacementBasedModule {
     }
 
     @Override
-    public String toString() {
-        return "Vesicle Diffusion";
+    public void checkFeatures() {
+        logger.debug("The module " + getClass().getSimpleName() + " requires the Feature Diffusivity to be annotated to all vesicles.");
     }
-
 }

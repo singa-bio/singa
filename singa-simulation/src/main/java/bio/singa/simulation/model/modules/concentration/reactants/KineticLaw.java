@@ -136,7 +136,6 @@ public class KineticLaw {
         // set parameters
         for (Map.Entry<String, Parameter> entry : parameterMap.entrySet()) {
             entry.getValue().scale();
-            // TODO these are possibly not rescaled with the latest changes (refactoring feature model)
             Quantity<?> parameterQuantity;
             if (isStrutCalculation) {
                 parameterQuantity = entry.getValue().getHalfScaledQuantity();

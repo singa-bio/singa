@@ -6,13 +6,23 @@ import bio.singa.chemistry.features.reactions.ForwardsRateConstant;
 import bio.singa.features.model.Evidence;
 
 import javax.measure.Quantity;
+import java.util.List;
 
 /**
  * @author cl
  */
 public class CargoAdditionRate extends FirstOrderRateConstant implements ForwardsRateConstant<FirstOrderRate> {
 
-    public CargoAdditionRate(Quantity<FirstOrderRate> firstOrderRateQuantity, Evidence evidence) {
-        super(firstOrderRateQuantity, evidence);
+    public CargoAdditionRate(Quantity<FirstOrderRate> quantity, List<Evidence> evidence) {
+        super(quantity, evidence);
     }
+
+    public CargoAdditionRate(Quantity<FirstOrderRate> quantity, Evidence evidence) {
+        super(quantity, evidence);
+    }
+
+    public CargoAdditionRate(Quantity<FirstOrderRate> quantity) {
+        super(quantity);
+    }
+
 }

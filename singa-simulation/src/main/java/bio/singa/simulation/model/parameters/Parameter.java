@@ -37,8 +37,13 @@ public class Parameter<QuantityType extends Quantity<QuantityType>> {
     }
 
     public void scale() {
-        scaledQuantity = UnitRegistry.scale(quantity);
-        halfScaledQuantity = scaledQuantity.multiply(0.5);
+        if (UnitRegistry.getTimeExponent(quantity.getUnit()) != 0) {
+            scaledQuantity = UnitRegistry.scale(quantity);
+            halfScaledQuantity = scaledQuantity.multiply(0.5);
+        } else {
+            scaledQuantity = quantity;
+            halfScaledQuantity = quantity;
+        }
     }
 
     public String getIdentifier() {

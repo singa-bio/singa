@@ -55,7 +55,7 @@ public class ActinCortexDiffusivityScaling extends QualitativeModule {
         double cortexDiffusivity = getFeature(ModifiedDiffusivity.class).getScaledQuantity();
         cytoplasmDiffusivity = getFeature(OriginalDiffusivity.class).getScaledQuantity();
         double concentration = getFeature(MaximalConcentration.class).getContent().getValue().doubleValue();
-        slope =(cortexDiffusivity - cytoplasmDiffusivity) / concentration;
+        slope = (cortexDiffusivity - cytoplasmDiffusivity) / concentration;
 
         for (Vesicle vesicle : simulation.getVesicleLayer().getVesicles()) {
             if (vesicle.getState().equals(VesicleStateRegistry.ACTIN_TETHERED)) {

@@ -11,19 +11,12 @@ import javax.measure.Unit;
  */
 public class FirstOrderBackwardsRateConstant extends FirstOrderRateConstant implements BackwardsRateConstant<FirstOrderRate> {
 
-    private static final String symbol = "k_bwd_1";
-
     public FirstOrderBackwardsRateConstant(Quantity<FirstOrderRate> firstOrderRateQuantity, Evidence evidence) {
         super(firstOrderRateQuantity, evidence);
     }
 
     public FirstOrderBackwardsRateConstant(double value, Unit<FirstOrderRate> firstOrderRateQuantity, Evidence evidence) {
         super(Quantities.getQuantity(value, firstOrderRateQuantity), evidence);
-    }
-
-    @Override
-    public String getDescriptor() {
-        return symbol;
     }
 
 }

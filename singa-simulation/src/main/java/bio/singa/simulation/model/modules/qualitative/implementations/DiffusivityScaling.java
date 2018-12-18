@@ -1,6 +1,7 @@
 package bio.singa.simulation.model.modules.qualitative.implementations;
 
 import bio.singa.chemistry.features.diffusivity.Diffusivity;
+import bio.singa.simulation.features.AppliedVesicleState;
 import bio.singa.simulation.features.ModifiedDiffusivity;
 import bio.singa.simulation.model.agents.pointlike.Vesicle;
 import bio.singa.simulation.model.agents.pointlike.VesicleStateRegistry;
@@ -14,21 +15,23 @@ import java.util.List;
 /**
  * @author cl
  */
-public class PerinuclearStorageDiffusivityScaling extends QualitativeModule {
+public class DiffusivityScaling extends QualitativeModule {
 
     List<Vesicle> storedVesicles;
 
-    public PerinuclearStorageDiffusivityScaling() {
+    public DiffusivityScaling() {
         storedVesicles = new ArrayList<>();
         // features
         getRequiredFeatures().add(ModifiedDiffusivity.class);
+        getRequiredFeatures().add(AppliedVesicleState.class);
     }
 
     @Override
     public void calculateUpdates() {
+        VesicleStateRegistry.VesicleState vesicleState = getFeature(AppliedVesicleState.class).getContent();
         double scaledDiffusivity = getScaledFeature(ModifiedDiffusivity.class);
         for (Vesicle vesicle : simulation.getVesicleLayer().getVesicles()) {
-            if (vesicle.getState().equals(VesicleStateRegistry.IN_STORAGE)) {
+            if (vesicle.getState().equals(vesicleState)) {
                 if (scaledDiffusivity != vesicle.getFeature(Diffusivity.class).getScaledQuantity()) {
                     storedVesicles.add(vesicle);
                 }

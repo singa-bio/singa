@@ -10,19 +10,12 @@ import javax.measure.Unit;
  */
 public class ZeroOrderForwardsRateConstant extends ZeroOrderRateConstant implements ForwardsRateConstant<ZeroOrderRate> {
 
-    private static final String symbol = "K_fwd_0";
-
     public ZeroOrderForwardsRateConstant(Quantity<ZeroOrderRate> zeroOrderRateQuantity, Evidence evidence) {
         super(zeroOrderRateQuantity, evidence);
     }
 
     public ZeroOrderForwardsRateConstant(double value, Unit<ZeroOrderRate> unit, Evidence evidence) {
         super(value, unit, evidence);
-    }
-
-    @Override
-    public String getDescriptor() {
-        return symbol;
     }
 
 }

@@ -64,7 +64,11 @@ public class SingleFileChannelMembraneTransport extends ConcentrationBasedModule
     private ChemicalEntity cargo;
     private Set<ChemicalEntity> solutes;
 
-    private void initialize() {
+    public SingleFileChannelMembraneTransport() {
+
+    }
+
+    private void postConstruct() {
         // apply
         setApplicationCondition(updatable -> updatable.getCellRegion().hasMembrane());
         // function
@@ -72,6 +76,9 @@ public class SingleFileChannelMembraneTransport extends ConcentrationBasedModule
         addDeltaFunction(function);
         // feature
         getRequiredFeatures().add(OsmoticPermeability.class);
+    }
+
+    public void initialize() {
         // reference entities for this module
         transporter = getFeature(Transporter.class).getContent();
         addReferencedEntity(transporter);
@@ -79,15 +86,6 @@ public class SingleFileChannelMembraneTransport extends ConcentrationBasedModule
         addReferencedEntity(cargo);
         solutes = getFeature(Solutes.class).getContent();
         addReferencedEntities(solutes);
-        // reference module in simulation
-        addModuleToSimulation();
-    }
-
-    @Override
-    public void checkFeatures() {
-        if (!transporter.hasFeature(OsmoticPermeability.class)) {
-            transporter.setFeature(OsmoticPermeability.class);
-        }
     }
 
     private Map<ConcentrationDeltaIdentifier, ConcentrationDelta> calculateDeltas(ConcentrationContainer container) {
@@ -120,11 +118,6 @@ public class SingleFileChannelMembraneTransport extends ConcentrationBasedModule
         return new SingleFileChannelMembraneTransportBuilder(simulation);
     }
 
-    @Override
-    public String toString() {
-        return getClass().getSimpleName() + " (" + transporter.getName() + ")";
-    }
-
     private boolean hasMembrane(ConcentrationContainer concentrationContainer) {
         return concentrationContainer.getSubsection(CellTopology.MEMBRANE) != null;
     }
@@ -152,8 +145,10 @@ public class SingleFileChannelMembraneTransport extends ConcentrationBasedModule
     public static class SingleFileChannelMembraneTransportBuilder implements TransporterStep, CargoStep, SolutesStep, BuildStep, ModuleBuilder {
 
         SingleFileChannelMembraneTransport module;
+        private Simulation simulation;
 
         public SingleFileChannelMembraneTransportBuilder(Simulation simulation) {
+            this.simulation = simulation;
             createModule(simulation);
         }
 
@@ -204,7 +199,8 @@ public class SingleFileChannelMembraneTransport extends ConcentrationBasedModule
 
         @Override
         public SingleFileChannelMembraneTransport build() {
-            module.initialize();
+            module.postConstruct();
+            simulation.addModule(module);
             return module;
         }
     }

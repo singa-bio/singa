@@ -11,8 +11,6 @@ import javax.measure.Unit;
  */
 public class ThirdOrderForwardsRateConstant extends ThirdOrderRateConstant implements ForwardsRateConstant<ThirdOrderRate> {
 
-    public static final String symbol = "k_fwd_3";
-
     public ThirdOrderForwardsRateConstant(Quantity<ThirdOrderRate> thirdOrderRateQuantity, Evidence evidence) {
         super(thirdOrderRateQuantity, evidence);
     }
@@ -20,11 +18,5 @@ public class ThirdOrderForwardsRateConstant extends ThirdOrderRateConstant imple
     public ThirdOrderForwardsRateConstant(double value, Unit<ThirdOrderRate> unit, Evidence evidence) {
         super(Quantities.getQuantity(value, unit), evidence);
     }
-
-    @Override
-    public String getDescriptor() {
-        return symbol;
-    }
-
 
 }

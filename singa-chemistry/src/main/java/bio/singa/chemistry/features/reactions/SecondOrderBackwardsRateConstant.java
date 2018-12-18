@@ -11,8 +11,6 @@ import javax.measure.Unit;
  */
 public class SecondOrderBackwardsRateConstant extends SecondOrderRateConstant implements BackwardsRateConstant<SecondOrderRate> {
 
-    public static final String symbol = "k_bwd_2";
-
     public SecondOrderBackwardsRateConstant(Quantity<SecondOrderRate> secondOrderRateQuantity, Evidence evidence) {
         super(secondOrderRateQuantity, evidence);
     }
@@ -21,8 +19,4 @@ public class SecondOrderBackwardsRateConstant extends SecondOrderRateConstant im
         super(Quantities.getQuantity(value, unit), evidence);
     }
 
-    @Override
-    public String getDescriptor() {
-        return symbol;
-    }
 }

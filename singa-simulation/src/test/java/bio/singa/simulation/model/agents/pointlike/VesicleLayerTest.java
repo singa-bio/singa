@@ -47,10 +47,6 @@ class VesicleLayerTest {
         AutomatonGraph graph = AutomatonGraphs.createRectangularAutomatonGraph(nodesHorizontal, nodesVertical);
         simulation.setGraph(graph);
 
-        // setup spatial representations
-        simulation.initializeGraph();
-        simulation.initializeSpatialRepresentations();
-
         // initialize vesicle layer
         VesicleLayer vesicleLayer = new VesicleLayer(simulation);
         simulation.setVesicleLayer(vesicleLayer);

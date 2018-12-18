@@ -3,7 +3,6 @@ package bio.singa.simulation.model.modules.concentration.imlementations;
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.chemistry.features.reactions.MichaelisConstant;
 import bio.singa.chemistry.features.reactions.TurnoverNumber;
-import bio.singa.features.exceptions.FeatureUnassignableException;
 import bio.singa.features.model.Feature;
 import bio.singa.simulation.model.modules.concentration.ConcentrationDelta;
 import bio.singa.simulation.model.modules.concentration.ModuleBuilder;
@@ -12,6 +11,8 @@ import bio.singa.simulation.model.modules.concentration.functions.SectionDeltaFu
 import bio.singa.simulation.model.modules.concentration.reactants.Reactant;
 import bio.singa.simulation.model.sections.ConcentrationContainer;
 import bio.singa.simulation.model.simulation.Simulation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +22,11 @@ import java.util.List;
  */
 public class MichaelisMentenReaction extends Reaction {
 
+    /**
+     * The logger
+     */
+    private static final Logger logger = LoggerFactory.getLogger(MichaelisMentenReaction.class);
+
     public static MichaelisMentenReactionBuilder inSimulation(Simulation simulation) {
         return new MichaelisMentenReactionBuilder(simulation);
     }
@@ -28,7 +34,7 @@ public class MichaelisMentenReaction extends Reaction {
     private ChemicalEntity enzyme;
 
     @Override
-    public void initialize() {
+    public void postConstruct() {
         // apply
         setApplicationCondition(updatable -> true);
         // function
@@ -37,14 +43,13 @@ public class MichaelisMentenReaction extends Reaction {
         // feature
         getRequiredFeatures().add(TurnoverNumber.class);
         getRequiredFeatures().add(MichaelisConstant.class);
-        // reference module in simulation
-        addModuleToSimulation();
     }
 
+    @Override
     protected List<ConcentrationDelta> calculateDeltas(ConcentrationContainer concentrationContainer) {
         if (enzyme.isMembraneAnchored()) {
             List<ConcentrationDelta> deltas = new ArrayList<>();
-            if (supplier.getCurrentSubsection().equals(concentrationContainer.getMembraneSubsection())){
+            if (supplier.getCurrentSubsection().equals(concentrationContainer.getMembraneSubsection())) {
                 double velocity = calculateMembraneBasedVelocity(concentrationContainer);
                 for (Reactant substrate : substrates) {
                     double deltaValue = -velocity * substrate.getStoichiometricNumber();
@@ -92,14 +97,19 @@ public class MichaelisMentenReaction extends Reaction {
             // any forwards rate constant
             if (feature instanceof TurnoverNumber) {
                 turnoverNumber = true;
+                logger.debug("Required feature {} has been set to {}.", feature.getDescriptor(), feature.getContent());
             }
             // any backwards rate constant
             if (feature instanceof MichaelisConstant) {
                 michaelisConstant = true;
+                logger.debug("Required feature {} has been set to {}.", feature.getDescriptor(), feature.getContent());
             }
         }
-        if (!turnoverNumber || !michaelisConstant) {
-            throw new FeatureUnassignableException("Required reaction rates unavailable.");
+        if (!turnoverNumber) {
+            logger.warn("Required feature {} has not been set.", TurnoverNumber.class.getSimpleName());
+        }
+        if (!michaelisConstant) {
+            logger.warn("Required feature {} has not been set.", MichaelisConstant.class.getSimpleName());
         }
     }
 
@@ -121,7 +131,6 @@ public class MichaelisMentenReaction extends Reaction {
             module.setSimulation(simulation);
             return module;
         }
-
 
 
         public MichaelisMentenReactionBuilder enzyme(ChemicalEntity enzyme) {

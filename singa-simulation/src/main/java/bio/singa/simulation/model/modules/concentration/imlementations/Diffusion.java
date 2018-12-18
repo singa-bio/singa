@@ -17,6 +17,8 @@ import bio.singa.simulation.model.modules.concentration.specifity.EntitySpecific
 import bio.singa.simulation.model.sections.CellSubsection;
 import bio.singa.simulation.model.sections.ConcentrationContainer;
 import bio.singa.simulation.model.simulation.Simulation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
@@ -47,11 +49,20 @@ import java.util.*;
  */
 public class Diffusion extends ConcentrationBasedModule<EntityDeltaFunction> {
 
+    /**
+     * The logger
+     */
+    private static final Logger logger = LoggerFactory.getLogger(Diffusion.class);
+
     public static SelectionStep inSimulation(Simulation simulation) {
         return new DiffusionBuilder(simulation);
     }
 
-    private void initialize() {
+    public Diffusion() {
+
+    }
+
+    private void postConstruct() {
         // apply
         setApplicationCondition(updatable -> updatable instanceof AutomatonNode);
         // function
@@ -61,7 +72,6 @@ public class Diffusion extends ConcentrationBasedModule<EntityDeltaFunction> {
         getRequiredFeatures().add(Diffusivity.class);
         Set<ChemicalEntity> cargoes = getFeature(Cargoes.class).getContent();
         addReferencedEntities(cargoes);
-        addModuleToSimulation();
     }
 
     private ConcentrationDelta calculateDelta(ConcentrationContainer concentrationContainer) {
@@ -138,6 +148,11 @@ public class Diffusion extends ConcentrationBasedModule<EntityDeltaFunction> {
         return currentNode.getCellRegion().hasMembrane() && !neighbour.getCellRegion().hasMembrane();
     }
 
+    @Override
+    public void checkFeatures() {
+        logger.debug("The module " + getClass().getSimpleName() + " requires the Feature Diffusivity to be annotated to all requested chemical entities.");
+    }
+
     public static ModuleBuilder getBuilder(Simulation simulation) {
         return new DiffusionBuilder(simulation);
     }
@@ -160,8 +175,10 @@ public class Diffusion extends ConcentrationBasedModule<EntityDeltaFunction> {
     public static class DiffusionBuilder implements SelectionStep, BuildStep, ModuleBuilder<Diffusion> {
 
         Diffusion module;
+        private Simulation simulation;
 
         public DiffusionBuilder(Simulation simulation) {
+            this.simulation = simulation;
             createModule(simulation);
         }
 
@@ -176,7 +193,6 @@ public class Diffusion extends ConcentrationBasedModule<EntityDeltaFunction> {
             module = ModuleFactory.setupModule(Diffusion.class,
                     ModuleFactory.Scope.NEIGHBOURHOOD_DEPENDENT,
                     ModuleFactory.Specificity.ENTITY_SPECIFIC);
-            module.setSimulation(simulation);
             return module;
         }
 
@@ -201,7 +217,8 @@ public class Diffusion extends ConcentrationBasedModule<EntityDeltaFunction> {
         }
 
         public Diffusion build() {
-            module.initialize();
+            module.postConstruct();
+            simulation.addModule(module);
             return module;
         }
 

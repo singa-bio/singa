@@ -17,8 +17,6 @@ import bio.singa.simulation.model.modules.UpdateModule;
 import bio.singa.simulation.model.modules.concentration.ConcentrationDelta;
 import bio.singa.simulation.model.rules.AssignmentRule;
 import bio.singa.simulation.model.rules.AssignmentRules;
-import bio.singa.simulation.model.sections.CellRegion;
-import bio.singa.simulation.model.sections.CellRegions;
 import bio.singa.simulation.model.sections.concentration.ConcentrationInitializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -103,8 +101,6 @@ public class Simulation {
 
     private Quantity<Time> maximalTimeStep;
 
-    private CellRegion standardRegion;
-
     private Map<Updatable, List<ConcentrationDelta>> observedDeltas;
 
     /**
@@ -120,7 +116,6 @@ public class Simulation {
         observedUpdatables = new HashSet<>();
         vesicleLayer = new VesicleLayer(this);
         scheduler = new UpdateScheduler(this);
-        standardRegion = CellRegions.EXTRACELLULAR_REGION;
         observedDeltas = new HashMap<>();
     }
 
@@ -131,9 +126,7 @@ public class Simulation {
         logger.debug("Starting epoch {} ({}).", epoch, elapsedTime);
         if (!initializationDone) {
             initializeModules();
-            initializeGraph();
             initializeConcentrations();
-            initializeSpatialRepresentations();
             initializeVesicleLayer();
             initializationDone = true;
         }
@@ -183,29 +176,16 @@ public class Simulation {
         }
     }
 
+    private void initializeModules() {
+        for (UpdateModule module : getModules()) {
+            module.initialize();
+        }
+    }
+
     private void initializeConcentrations() {
         if (concentrationInitializer != null) {
-            logger.info("Initializing starting concentrations");
+            logger.info("Initializing starting concentrations.");
             concentrationInitializer.initialize(this);
-        }
-    }
-
-    private void initializeModules() {
-        logger.info("Initializing features required for each module.");
-        for (UpdateModule module : modules) {
-            module.checkFeatures();
-        }
-    }
-
-    public void initializeGraph() {
-        logger.info("Initializing chemical entities.");
-        if (graph == null) {
-            throw new IllegalStateException("No graph has been assigned to the simulation.");
-        } else {
-//            for (AutomatonNode node : graph.getNodes()) {
-//                node.setCellRegion(standardRegion);
-//            }
-//            simulationRegion = new Rectangle(Environment.getSimulationExtend(), Environment.getSimulationExtend());
         }
     }
 
@@ -305,6 +285,22 @@ public class Simulation {
         return modules;
     }
 
+    public void addModule(UpdateModule module) {
+        logger.info("Adding module {}.", module.toString());
+        module.setSimulation(this);
+        module.checkFeatures();
+        for (ChemicalEntity referencedEntity : module.getReferencedEntities()) {
+            addReferencedEntity(referencedEntity);
+        }
+        modules.add(module);
+    }
+
+    public void setGraph(AutomatonGraph graph) {
+        logger.info("Adding graph.");
+        this.graph = graph;
+        initializeSpatialRepresentations();
+    }
+
     public UpdateScheduler getScheduler() {
         return scheduler;
     }
@@ -331,10 +327,6 @@ public class Simulation {
 
     public AutomatonGraph getGraph() {
         return graph;
-    }
-
-    public void setGraph(AutomatonGraph graph) {
-        this.graph = graph;
     }
 
     public long getEpoch() {
@@ -384,10 +376,6 @@ public class Simulation {
 
     public void clearPreviouslyObservedDeltas() {
         observedDeltas.clear();
-    }
-
-    public ConcentrationInitializer getConcentrationInitializer() {
-        return concentrationInitializer;
     }
 
     public void setConcentrationInitializer(ConcentrationInitializer concentrationInitializer) {

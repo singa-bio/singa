@@ -9,6 +9,8 @@ import bio.singa.mathematics.vectors.Vectors;
 import bio.singa.simulation.model.agents.surfacelike.Membrane;
 import bio.singa.simulation.model.agents.surfacelike.MembraneSegment;
 import bio.singa.simulation.model.sections.CellRegions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Length;
@@ -23,11 +25,14 @@ import java.util.stream.Collectors;
  */
 public class VolumeLikeAgentFactory {
 
+    private static final Logger logger = LoggerFactory.getLogger(VolumeLikeAgentFactory.class);
+
     private VolumeLikeAgentFactory() {
 
     }
 
     public static VolumeLikeAgent createCellCortex(Membrane cellMembrane, MooreRectangularDirection innerDirection, Quantity<Length> width, Quantity<Length> distance) {
+        logger.info("Initializing cell cortex.");
         ArrayDeque<Vector2D> vertices = new ArrayDeque<>();
         Iterator<MembraneSegment> segmentIterator = cellMembrane.getSegments().iterator();
         double distanceSimulation = Environment.convertSystemToSimulationScale(distance);
@@ -50,6 +55,7 @@ public class VolumeLikeAgentFactory {
     }
 
     public static VolumeLikeAgent createCellCortex(Membrane cellMembrane, Quantity<Length> width, Quantity<Length> distance) {
+        logger.info("Initializing cell cortex.");
         ArrayDeque<Vector2D> vertices = new ArrayDeque<>();
         Iterator<MembraneSegment> segmentIterator = cellMembrane.getSegments().iterator();
         double distanceSimulation = Environment.convertSystemToSimulationScale(distance);

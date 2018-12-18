@@ -115,6 +115,11 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
         identifier = getClass().getSimpleName();
     }
 
+    @Override
+    public void initialize() {
+
+    }
+
     /**
      * Adds a delta function to the module. Delta functions are applied according to {@link UpdateScope} and {@link
      * UpdateSpecificity}.
@@ -461,16 +466,6 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
         supplier.resetError();
     }
 
-    /**
-     * References the module and referenced entities to the referenced simulation.
-     */
-    protected void addModuleToSimulation() {
-        simulation.getModules().add(this);
-        for (ChemicalEntity chemicalEntity : referencedChemicalEntities) {
-            simulation.addReferencedEntity(chemicalEntity);
-        }
-    }
-
     @Override
     public Set<Class<? extends Feature>> getRequiredFeatures() {
         return featureManager.getRequiredFeatures();
@@ -550,17 +545,18 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
     @Override
     public void checkFeatures() {
         for (Class<? extends Feature> featureClass : getRequiredFeatures()) {
-            for (ChemicalEntity chemicalEntity : getReferencedEntities()) {
-                if (!chemicalEntity.hasFeature(featureClass)) {
-                    chemicalEntity.setFeature(featureClass);
-                }
+            if (featureManager.hasFeature(featureClass)) {
+                Feature feature = getFeature(featureClass);
+                logger.debug("Required feature {} has been set to {}.", feature.getDescriptor(), feature.getContent());
+            } else {
+                logger.warn("Required feature {} has not been set.", featureClass.getSimpleName());
             }
         }
     }
 
     @Override
     public String toString() {
-        return getClass().getSimpleName();
+        return getClass().getSimpleName() + (getIdentifier() != null ? " " + getIdentifier() : "");
     }
 
 }

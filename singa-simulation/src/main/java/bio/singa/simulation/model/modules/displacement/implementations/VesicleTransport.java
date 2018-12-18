@@ -105,9 +105,4 @@ public class VesicleTransport extends DisplacementBasedModule {
         return new Pair<>(previous, beforePrevious);
     }
 
-    @Override
-    public String toString() {
-        return "Vesicle Transport";
-    }
-
 }

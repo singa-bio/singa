@@ -28,7 +28,6 @@ public class Diffusivity extends ScalableQuantitativeFeature<Diffusivity> implem
 
     public static final Unit<Diffusivity> SQUARE_CENTIMETRE_PER_SECOND = new ProductUnit<>(METRE.divide(100).pow(2).divide(SECOND));
     public static final Unit<Diffusivity> SQUARE_METRE_PER_SECOND = new ProductUnit<>(METRE.pow(2).divide(SECOND));
-    public static final String SYMBOL = "D";
 
     private static final Evidence EINSTEIN1905 = new Evidence(Evidence.SourceType.PREDICTION, "Strokes-Einstein Equation", "Einstein, Albert. \"Über die von der molekularkinetischen Theorie der Wärme geforderte Bewegung von in ruhenden Flüssigkeiten suspendierten Teilchen.\" Annalen der physik 322.8 (1905): 549-560.");
 
@@ -77,11 +76,6 @@ public class Diffusivity extends ScalableQuantitativeFeature<Diffusivity> implem
     public void setContent(Quantity<Diffusivity> quantity) {
         featureContent = quantity;
         scale();
-    }
-
-    @Override
-    public String getDescriptor() {
-        return SYMBOL;
     }
 
     @Override

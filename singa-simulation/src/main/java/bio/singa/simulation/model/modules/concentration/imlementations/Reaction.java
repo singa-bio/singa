@@ -139,6 +139,8 @@ public abstract class Reaction extends ConcentrationBasedModule<SectionDeltaFunc
         return deltas;
     }
 
+    public abstract void postConstruct();
+
     /**
      * Calculates the reaction velocity, depending on the kinetic law.
      *
@@ -146,8 +148,6 @@ public abstract class Reaction extends ConcentrationBasedModule<SectionDeltaFunc
      * @return The reaction velocity.
      */
     public abstract double calculateVelocity(ConcentrationContainer concentrationContainer);
-
-    public abstract void initialize();
 
     /**
      * Returns {@code true} if this Reaction is considered elementary and {@code false} otherwise.
@@ -290,7 +290,8 @@ public abstract class Reaction extends ConcentrationBasedModule<SectionDeltaFunc
             if (!topLevelObject.isElementary()) {
                 topLevelObject.setElementary(true);
             }
-            topLevelObject.initialize();
+            topLevelObject.postConstruct();
+            topLevelObject.getSimulation().addModule(topLevelObject);
             return topLevelObject;
         }
 

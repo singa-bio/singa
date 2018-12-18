@@ -3,7 +3,6 @@ package bio.singa.simulation.model.modules.concentration.imlementations;
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.chemistry.features.reactions.RateConstant;
 import bio.singa.chemistry.features.reactions.ZeroOrderRateConstant;
-import bio.singa.features.exceptions.FeatureUnassignableException;
 import bio.singa.features.model.Feature;
 import bio.singa.simulation.model.modules.concentration.ModuleBuilder;
 import bio.singa.simulation.model.modules.concentration.ModuleFactory;
@@ -12,6 +11,8 @@ import bio.singa.simulation.model.modules.concentration.reactants.ReactantRole;
 import bio.singa.simulation.model.sections.CellSubsection;
 import bio.singa.simulation.model.sections.ConcentrationContainer;
 import bio.singa.simulation.model.simulation.Simulation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -22,14 +23,23 @@ import java.util.List;
  */
 public class NthOrderReaction extends Reaction {
 
+    /**
+     * The logger
+     */
+    private static final Logger logger = LoggerFactory.getLogger(NthOrderReaction.class);
+
     public static NthOrderReactionBuilder inSimulation(Simulation simulation) {
         return new NthOrderReactionBuilder(simulation);
     }
 
     private RateConstant rateConstant;
 
+    public NthOrderReaction() {
+
+    }
+
     @Override
-    public void initialize() {
+    public void postConstruct() {
         // apply
         setApplicationCondition(this::substratesAvailable);
         // function
@@ -37,8 +47,6 @@ public class NthOrderReaction extends Reaction {
         addDeltaFunction(function);
         // feature
         getRequiredFeatures().add(RateConstant.class);
-        // reference module in simulation
-        addModuleToSimulation();
     }
 
     private boolean containsSubstrate(ConcentrationContainer concentrationContainer) {
@@ -70,10 +78,11 @@ public class NthOrderReaction extends Reaction {
         for (Feature<?> feature : getFeatures()) {
             // any forwards rate constant
             if (feature instanceof RateConstant) {
+                logger.debug("Required feature {} has been set to {}.", feature.getDescriptor(), feature.getContent());
                 return;
             }
         }
-        throw new FeatureUnassignableException("Required reaction rate unavailable.");
+        logger.warn("Required feature {} has not been set.", RateConstant.class.getSimpleName());
     }
 
     private double getScaledReactionRate() {

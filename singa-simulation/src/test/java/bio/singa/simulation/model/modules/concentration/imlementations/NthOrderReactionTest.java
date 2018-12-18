@@ -118,18 +118,17 @@ class NthOrderReactionTest {
         int nodesVertical = 1;
         int numberOfMolecules = 60;
 
+        Simulation simulation = new Simulation();
+
         ComparableQuantity<Length> systemExtend = Quantities.getQuantity(2, MICRO(METRE));
         Environment.setSystemExtend(systemExtend);
         Environment.setSimulationExtend(simulationExtend);
         Environment.setNodeSpacingToDiameter(systemExtend, nodesHorizontal);
         Rectangle rectangle = new Rectangle(simulationExtend, simulationExtend);
 
-        Simulation simulation = new Simulation();
+        simulation.setSimulationRegion(rectangle);
         AutomatonGraph graph = AutomatonGraphs.createRectangularAutomatonGraph(nodesHorizontal, nodesVertical);
         simulation.setGraph(graph);
-        simulation.setSimulationRegion(rectangle);
-        simulation.initializeGraph();
-        simulation.initializeSpatialRepresentations();
 
         // prepare species
         SmallMolecule sm = SmallMolecule.create("A").build();

@@ -54,9 +54,4 @@ public class EndocytosisActinBoost extends DisplacementBasedModule {
         return new DisplacementDelta(this, delta);
     }
 
-    @Override
-    public String toString() {
-        return "Actin boost after endocytosis";
-    }
-
 }

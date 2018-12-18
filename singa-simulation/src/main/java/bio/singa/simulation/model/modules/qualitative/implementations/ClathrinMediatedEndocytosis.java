@@ -58,12 +58,28 @@ public class ClathrinMediatedEndocytosis extends QualitativeModule {
         maturedPits = new ArrayList<>();
         // features
         getRequiredFeatures().add(PitFormationRate.class);
+        getRequiredFeatures().add(AffectedRegion.class);
         getRequiredFeatures().add(VesicleRadius.class);
         getRequiredFeatures().add(CargoAdditionRate.class);
         getRequiredFeatures().add(EndocytosisCheckpointTime.class);
         getRequiredFeatures().add(EndocytosisCheckpointConcentration.class);
         getRequiredFeatures().add(Cargo.class);
         getRequiredFeatures().add(MaturationTime.class);
+    }
+
+    @Override
+    public void initialize() {
+        setMembraneRegion(getFeature(AffectedRegion.class).getContent());
+    }
+
+    public void setMembraneRegion(CellRegion region) {
+        for (AutomatonNode node : simulation.getGraph().getNodes()) {
+            // skip nodes with wrong region
+            if (!node.getCellRegion().equals(region)) {
+                continue;
+            }
+            segments.addAll(node.getMembraneSegments());
+        }
     }
 
     @Override
@@ -293,27 +309,12 @@ public class ClathrinMediatedEndocytosis extends QualitativeModule {
         abortedPits.clear();
     }
 
-    public void setMembraneRegion(CellRegion region) {
-        for (AutomatonNode node : simulation.getGraph().getNodes()) {
-            // skip nodes with wrong region
-            if (!node.getCellRegion().equals(region)) {
-                continue;
-            }
-            segments.addAll(node.getMembraneSegments());
-        }
-    }
-
     public void addMembraneCargo(Quantity<Area> referenceArea, double numberOfEntities, ChemicalEntity chemicalEntity) {
         initialMembraneCargo.put(chemicalEntity, new AbstractMap.SimpleEntry<>(referenceArea, numberOfEntities));
     }
 
     public List<Pit> getAspiringPits() {
         return aspiringPits;
-    }
-
-    @Override
-    public String toString() {
-        return "Clathrin-mediated endocytosis of " + getFeature(Cargo.class) + " vesicles";
     }
 
     public class Pit {

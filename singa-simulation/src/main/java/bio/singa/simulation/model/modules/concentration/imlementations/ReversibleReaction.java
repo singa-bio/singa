@@ -3,7 +3,6 @@ package bio.singa.simulation.model.modules.concentration.imlementations;
 import bio.singa.chemistry.features.reactions.BackwardsRateConstant;
 import bio.singa.chemistry.features.reactions.ForwardsRateConstant;
 import bio.singa.chemistry.features.reactions.RateConstant;
-import bio.singa.features.exceptions.FeatureUnassignableException;
 import bio.singa.features.model.Feature;
 import bio.singa.simulation.model.modules.concentration.ModuleBuilder;
 import bio.singa.simulation.model.modules.concentration.ModuleFactory;
@@ -12,6 +11,8 @@ import bio.singa.simulation.model.modules.concentration.scope.IndependentUpdate;
 import bio.singa.simulation.model.modules.concentration.specifity.SectionSpecific;
 import bio.singa.simulation.model.sections.ConcentrationContainer;
 import bio.singa.simulation.model.simulation.Simulation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static bio.singa.simulation.model.modules.concentration.reactants.ReactantRole.PRODUCT;
 import static bio.singa.simulation.model.modules.concentration.reactants.ReactantRole.SUBSTRATE;
@@ -54,6 +55,11 @@ import static bio.singa.simulation.model.modules.concentration.reactants.Reactan
  */
 public class ReversibleReaction extends Reaction {
 
+    /**
+     * The logger
+     */
+    private static final Logger logger = LoggerFactory.getLogger(ReversibleReaction.class);
+
     public static ReversibleReactionBuilder inSimulation(Simulation simulation) {
         return new ReversibleReactionBuilder(simulation);
     }
@@ -61,8 +67,12 @@ public class ReversibleReaction extends Reaction {
     private RateConstant forwardsReactionRate;
     private RateConstant backwardsReactionRate;
 
+    public ReversibleReaction() {
+
+    }
+
     @Override
-    public void initialize() {
+    public void postConstruct() {
         // apply
         setApplicationCondition(updatable -> true);
         // function
@@ -71,8 +81,6 @@ public class ReversibleReaction extends Reaction {
         // feature
         getRequiredFeatures().add(ForwardsRateConstant.class);
         getRequiredFeatures().add(BackwardsRateConstant.class);
-        // reference module in simulation
-        addModuleToSimulation();
     }
 
     public double calculateVelocity(ConcentrationContainer concentrationContainer) {
@@ -104,14 +112,19 @@ public class ReversibleReaction extends Reaction {
             // any forwards rate constant
             if (feature instanceof ForwardsRateConstant) {
                 forwardsRateFound = true;
+                logger.debug("Required feature {} has been set to {}.", feature.getDescriptor(), feature.getContent());
             }
             // any backwards rate constant
             if (feature instanceof BackwardsRateConstant) {
                 backwardsRateFound = true;
+                logger.debug("Required feature {} has been set to {}.", feature.getDescriptor(), feature.getContent());
             }
         }
-        if (!forwardsRateFound || !backwardsRateFound) {
-            throw new FeatureUnassignableException("Required reaction rates unavailable.");
+        if (!forwardsRateFound) {
+            logger.warn("Required feature {} has not been set.", ForwardsRateConstant.class.getSimpleName());
+        }
+        if (!backwardsRateFound) {
+            logger.warn("Required feature {} has not been set.", BackwardsRateConstant.class.getSimpleName());
         }
     }
 

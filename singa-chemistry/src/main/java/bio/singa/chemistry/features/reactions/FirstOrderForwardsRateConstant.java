@@ -12,8 +12,6 @@ import javax.measure.Unit;
  */
 public class FirstOrderForwardsRateConstant extends FirstOrderRateConstant implements ForwardsRateConstant<FirstOrderRate> {
 
-    private static final String symbol = "k_fwd_1";
-
     public FirstOrderForwardsRateConstant(Quantity<FirstOrderRate> firstOrderRateQuantity, Evidence evidence) {
         super(firstOrderRateQuantity, evidence);
     }
@@ -22,9 +20,5 @@ public class FirstOrderForwardsRateConstant extends FirstOrderRateConstant imple
         super(Quantities.getQuantity(value, unit), evidence);
     }
 
-    @Override
-    public String getDescriptor() {
-        return symbol;
-    }
 
 }

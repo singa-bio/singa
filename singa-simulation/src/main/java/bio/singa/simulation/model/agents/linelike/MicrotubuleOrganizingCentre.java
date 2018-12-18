@@ -3,27 +3,28 @@ package bio.singa.simulation.model.agents.linelike;
 import bio.singa.mathematics.geometry.faces.Circle;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.simulation.model.agents.surfacelike.MembraneLayer;
-import bio.singa.simulation.model.simulation.Simulation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author cl
  */
 public class MicrotubuleOrganizingCentre {
 
-    private Simulation simulation;
-    private MembraneLayer membraneLayer;
+    private static final Logger logger = LoggerFactory.getLogger(MicrotubuleOrganizingCentre.class);
 
+    private MembraneLayer membraneLayer;
     private Circle circleRepresentation;
     private int initialFilaments;
 
-    public MicrotubuleOrganizingCentre(Simulation simulation, MembraneLayer membraneLayer, Circle circleRepresentation, int initialFilaments) {
-        this.simulation = simulation;
+    public MicrotubuleOrganizingCentre(MembraneLayer membraneLayer, Circle circleRepresentation, int initialFilaments) {
         this.circleRepresentation = circleRepresentation;
         this.initialFilaments = initialFilaments;
         this.membraneLayer = membraneLayer;
     }
 
     public void initializeMicrotubules(LineLikeAgentLayer layer) {
+        logger.info("Initializing microtubule network with {} filaments.", initialFilaments);
         membraneLayer.setMicrotubuleOrganizingCentre(this);
         // initialize filaments
         int currentFilaments = 0;
@@ -47,6 +48,7 @@ public class MicrotubuleOrganizingCentre {
     }
 
     public void initializeActin(LineLikeAgentLayer layer) {
+        logger.info("Initializing actin network with {} filaments.", initialFilaments);
         membraneLayer.setMicrotubuleOrganizingCentre(this);
         // initialize filaments
         int currentFilaments = 0;

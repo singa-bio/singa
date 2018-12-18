@@ -67,6 +67,11 @@ public class DisplacementBasedModule implements UpdateModule {
     }
 
     @Override
+    public void initialize() {
+
+    }
+
+    @Override
     public void calculateUpdates() {
         processAllVesicles(simulation.getVesicleLayer().getVesicles());
         evaluateModuleState();
@@ -171,10 +176,11 @@ public class DisplacementBasedModule implements UpdateModule {
     @Override
     public void checkFeatures() {
         for (Class<? extends Feature> featureClass : getRequiredFeatures()) {
-            for (Vesicle vesicle : simulation.getVesicleLayer().getVesicles()) {
-                if (!vesicle.hasFeature(featureClass)) {
-                    vesicle.setFeature(featureClass);
-                }
+            if (featureManager.hasFeature(featureClass)) {
+                Feature feature = getFeature(featureClass);
+                logger.debug("Required feature {} has been set to {}.", feature.getDescriptor(), feature.getContent());
+            } else {
+                logger.warn("Required feature {} has not been set.", featureClass.getSimpleName());
             }
         }
     }
@@ -199,5 +205,9 @@ public class DisplacementBasedModule implements UpdateModule {
         return referencedChemicalEntities;
     }
 
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + (getIdentifier() != null ? " " + getIdentifier() : "");
+    }
 
 }

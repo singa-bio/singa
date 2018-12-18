@@ -12,12 +12,19 @@ import bio.singa.simulation.model.agents.pointlike.VesicleStateRegistry.VesicleS
 import bio.singa.simulation.model.modules.displacement.DisplacementBasedModule;
 import bio.singa.simulation.model.modules.displacement.DisplacementDelta;
 import bio.singa.simulation.model.sections.CellRegion;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import tec.uom.se.quantity.Quantities;
 
 /**
  * @author cl
  */
 public class VesicleConfinedDiffusion extends DisplacementBasedModule {
+
+    /**
+     * The logger
+     */
+    private static final Logger logger = LoggerFactory.getLogger(VesicleConfinedDiffusion.class);
 
     private static final double SQRT2 = Math.sqrt(2.0);
 
@@ -42,6 +49,11 @@ public class VesicleConfinedDiffusion extends DisplacementBasedModule {
 
     public CellRegion getConfinedVolume() {
         return getFeature(ContainmentRegion.class).getContent();
+    }
+
+    @Override
+    public void checkFeatures() {
+        logger.debug("The module " + getClass().getSimpleName() + " requires the Feature Diffusivity to be annotated to all vesicles.");
     }
 
 }
