@@ -14,17 +14,17 @@ public abstract class ScalableQuantitativeFeature<FeatureContent extends Quantit
     protected double halfScaledQuantity;
 
     public ScalableQuantitativeFeature(Quantity<FeatureContent> quantity, List<Evidence> evidence) {
-        super(UnitRegistry.convert(quantity), evidence);
+        super(quantity, evidence);
         FeatureRegistry.addScalableQuantitativeFeatures(this);
     }
 
     public ScalableQuantitativeFeature(Quantity<FeatureContent> quantity, Evidence evidence) {
-        super(UnitRegistry.convert(quantity), evidence);
+        super(quantity, evidence);
         FeatureRegistry.addScalableQuantitativeFeatures(this);
     }
 
     public ScalableQuantitativeFeature(Quantity<FeatureContent> quantity) {
-        super(UnitRegistry.convert(quantity));
+        super(quantity);
         FeatureRegistry.addScalableQuantitativeFeatures(this);
     }
 
