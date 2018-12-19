@@ -85,7 +85,7 @@ public class MembraneTracer {
         CellRegion region = node.getCellRegion();
         membrane.setMembraneRegion(region);
         CellRegion innerRegion = new CellRegion(region.getInnerSubsection().getIdentifier(), region.getInnerSubsection().getGoTerm());
-        innerRegion.addSubSection(CellTopology.INNER, region.getInnerSubsection());
+        innerRegion.addSubsection(CellTopology.INNER, region.getInnerSubsection());
         membrane.setInnerRegion(innerRegion);
         SimpleLineSegment segment = new SimpleLineSegment(start, end);
         membrane.addSegment(node, segment);
@@ -139,7 +139,7 @@ public class MembraneTracer {
                     Membrane membrane = new Membrane(region.getIdentifier());
                     membrane.setMembraneRegion(region);
                     CellRegion innerRegion = new CellRegion(region.getInnerSubsection().getIdentifier(), region.getInnerSubsection().getGoTerm());
-                    innerRegion.addSubSection(CellTopology.INNER, region.getInnerSubsection());
+                    innerRegion.addSubsection(CellTopology.INNER, region.getInnerSubsection());
                     membrane.setInnerRegion(innerRegion);
                     // check the direction of the membrane
                     Iterator<AutomatonNode> neighbours = currentNode.getNeighbours().iterator();

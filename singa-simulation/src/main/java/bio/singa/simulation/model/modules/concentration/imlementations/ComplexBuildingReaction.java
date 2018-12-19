@@ -136,21 +136,28 @@ public class ComplexBuildingReaction extends ConcentrationBasedModule<UpdatableD
             handlePartialDistributionInVesicles(deltas, (Vesicle) currentUpdatable);
         } else {
             double velocity = calculateVelocity(concentrationContainer);
-            // bindee concentration
-            CellSubsection bindeeSubsection = concentrationContainer.getSubsection(bindeeTopology);
-            addDelta(deltas, new ConcentrationDeltaIdentifier(supplier.getCurrentUpdatable(), bindeeSubsection, bindee), -velocity);
-            // binder concentration
-            CellSubsection binderSubsection = concentrationContainer.getSubsection(binderTopology);
-            addDelta(deltas, new ConcentrationDeltaIdentifier(supplier.getCurrentUpdatable(), binderSubsection, binder), -velocity);
-            // complex concentration
-            addDelta(deltas, new ConcentrationDeltaIdentifier(supplier.getCurrentUpdatable(), binderSubsection, complex), velocity);
+            if (velocity != 0) {
+                // bindee concentration
+                CellSubsection bindeeSubsection = concentrationContainer.getSubsection(bindeeTopology);
+                addDelta(deltas, new ConcentrationDeltaIdentifier(supplier.getCurrentUpdatable(), bindeeSubsection, bindee), -velocity);
+                // binder concentration
+                CellSubsection binderSubsection = concentrationContainer.getSubsection(binderTopology);
+                addDelta(deltas, new ConcentrationDeltaIdentifier(supplier.getCurrentUpdatable(), binderSubsection, binder), -velocity);
+                // complex concentration
+                addDelta(deltas, new ConcentrationDeltaIdentifier(supplier.getCurrentUpdatable(), binderSubsection, complex), velocity);
+            }
         }
         return deltas;
     }
 
     private void handlePartialDistributionInVesicles(Map<ConcentrationDeltaIdentifier, ConcentrationDelta> deltas, Vesicle vesicle) {
         Map<AutomatonNode, Double> associatedNodes = vesicle.getAssociatedNodes();
-        ConcentrationContainer vesicleContainer = vesicle.getConcentrationContainer();
+        ConcentrationContainer vesicleContainer;
+        if (supplier.isStrutCalculation()) {
+            vesicleContainer = getScope().getHalfStepConcentration(vesicle);
+        } else {
+            vesicleContainer = vesicle.getConcentrationContainer();
+        }
         for (Map.Entry<AutomatonNode, Double> entry : associatedNodes.entrySet()) {
             AutomatonNode node = entry.getKey();
             ConcentrationContainer nodeContainer;
@@ -162,30 +169,33 @@ public class ComplexBuildingReaction extends ConcentrationBasedModule<UpdatableD
             // assuming equal distribution of entities on the membrane surface the fraction of the associated surface is
             // used to scale the velocity
             double velocity = calculateVelocity(vesicleContainer, nodeContainer) * entry.getValue();
-            if (bindeeTopology.equals(CellTopology.MEMBRANE)) {
-                // bindee concentration in vesicle
-                CellSubsection bindeeSubsection = vesicleContainer.getMembraneSubsection();
-                addDelta(deltas, new ConcentrationDeltaIdentifier(vesicle, bindeeSubsection, bindee), -velocity);
-            } else {
-                // bindee concentration in node
-                CellSubsection bindeeSubsection = nodeContainer.getSubsection(bindeeTopology);
-                addDelta(deltas, new ConcentrationDeltaIdentifier(node, bindeeSubsection, bindee), -velocity);
-            }
-            if (binderTopology.equals(CellTopology.MEMBRANE)) {
-                // binder concentration in vesicle
-                CellSubsection binderSubsection = vesicleContainer.getMembraneSubsection();
-                addDelta(deltas, new ConcentrationDeltaIdentifier(vesicle, binderSubsection, binder), -velocity);
-                // complex concentration in vesicle
-                addDelta(deltas, new ConcentrationDeltaIdentifier(vesicle, binderSubsection, complex), velocity);
-            } else {
-                // binder concentration in node
-                CellSubsection binderSubsection = nodeContainer.getSubsection(binderTopology);
-                addDelta(deltas, new ConcentrationDeltaIdentifier(node, binderSubsection, binder), -velocity);
-                // complex concentration in node
-                addDelta(deltas, new ConcentrationDeltaIdentifier(node, binderSubsection, complex), velocity);
+            if (velocity != 0.0) {
+                if (bindeeTopology.equals(CellTopology.MEMBRANE)) {
+                    // bindee concentration in vesicle
+                    CellSubsection bindeeSubsection = vesicleContainer.getMembraneSubsection();
+                    addDelta(deltas, new ConcentrationDeltaIdentifier(vesicle, bindeeSubsection, bindee), -velocity);
+                } else {
+                    // bindee concentration in node
+                    CellSubsection bindeeSubsection = nodeContainer.getSubsection(bindeeTopology);
+                    addDelta(deltas, new ConcentrationDeltaIdentifier(node, bindeeSubsection, bindee), -velocity);
+                }
+                if (binderTopology.equals(CellTopology.MEMBRANE)) {
+                    // binder concentration in vesicle
+                    CellSubsection binderSubsection = vesicleContainer.getMembraneSubsection();
+                    addDelta(deltas, new ConcentrationDeltaIdentifier(vesicle, binderSubsection, binder), -velocity);
+                    // complex concentration in vesicle
+                    addDelta(deltas, new ConcentrationDeltaIdentifier(vesicle, binderSubsection, complex), velocity);
+                } else {
+                    // binder concentration in node
+                    CellSubsection binderSubsection = nodeContainer.getSubsection(binderTopology);
+                    addDelta(deltas, new ConcentrationDeltaIdentifier(node, binderSubsection, binder), -velocity);
+                    // complex concentration in node
+                    addDelta(deltas, new ConcentrationDeltaIdentifier(node, binderSubsection, complex), velocity);
+                }
             }
         }
     }
+
 
     private double calculateVelocity(ConcentrationContainer vesicleContainer, ConcentrationContainer nodeContainer) {
         // get rates

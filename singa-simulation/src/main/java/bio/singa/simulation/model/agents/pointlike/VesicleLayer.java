@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import javax.measure.Quantity;
 import javax.measure.quantity.Length;
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static bio.singa.mathematics.metrics.model.VectorMetricProvider.SQUARED_EUCLIDEAN_METRIC;
 
@@ -93,8 +94,10 @@ public class VesicleLayer {
                     double distance = distances.getValueForLabel(vesicle1, vesicle2);
                     double combinedRadii = firstRadius + Environment.convertSystemToSimulationScale(vesicle2.getRadius());
                     if (distance < combinedRadii) {
-                        vesicle1.resetNextPosition();
-                        continue vesicleLoop;
+                        if (ThreadLocalRandom.current().nextDouble() < 0.5) {
+                            vesicle1.resetNextPosition();
+                            continue vesicleLoop;
+                        }
                     }
                 }
             }

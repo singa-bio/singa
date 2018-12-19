@@ -152,11 +152,11 @@ public class UnitRegistry {
     }
 
     public static Unit<MolarConcentration> getConcentrationUnit() {
-        return getDefaultUnit(MOLE_PER_LITRE).asType(MolarConcentration.class);
+        return getDefaultUnit(MOLE_PER_LITRE);
     }
 
     public static Unit<Area> getAreaUnit() {
-        return getDefaultUnit(SQUARE_METRE).asType(Area.class);
+        return getDefaultUnit(SQUARE_METRE);
     }
 
     public static Quantity<Area> getArea() {
@@ -164,7 +164,7 @@ public class UnitRegistry {
     }
 
     public static Unit<Volume> getVolumeUnit() {
-        return getDefaultUnit(CUBIC_METRE).asType(Volume.class);
+        return getDefaultUnit(CUBIC_METRE);
     }
 
     public static Quantity<Volume> getVolume() {
@@ -233,7 +233,7 @@ public class UnitRegistry {
         }
     }
 
-    public static Unit<?> getDefaultUnit(Unit<?> unit) {
+    public static <UnitType extends Quantity<UnitType>> Unit<UnitType> getDefaultUnit(Unit<UnitType> unit) {
         Dimension dimension = unit.getDimension();
         if (!getInstance().defaultUnits.containsKey(dimension)) {
             // not base unit and not registered

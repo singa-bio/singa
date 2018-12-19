@@ -3,7 +3,7 @@ package bio.singa.simulation.events;
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.core.events.UpdateEventListener;
 import bio.singa.core.utility.GifWriter;
-import bio.singa.features.model.QuantityFormatter;
+import bio.singa.features.formatter.GeneralQuantityFormatter;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.renderer.AutomatonGraphRenderer;
@@ -38,7 +38,7 @@ import static tec.uom.se.unit.Units.SECOND;
 public class GraphImageWriter implements UpdateEventListener<GraphUpdatedEvent> {
 
     private static final Logger logger = LoggerFactory.getLogger(GraphImageWriter.class);
-    private static final QuantityFormatter<Time> TIME_FORMATTER = new QuantityFormatter<>(MICRO(SECOND), true);
+    private static final GeneralQuantityFormatter<Time> TIME_FORMATTER = new GeneralQuantityFormatter<>(MICRO(SECOND), true);
 
     /**
      * The path to the user defined workspace.

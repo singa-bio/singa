@@ -26,7 +26,7 @@ class CellRegionTest {
         UnitRegistry.setSpace(Quantities.getQuantity(1.0, MICRO(METRE)));
         // create region
         CellRegion region = new CellRegion("Cytoplasm");
-        region.addSubSection(CellTopology.INNER, CellSubsection.SECTION_A);
+        region.addSubsection(CellTopology.INNER, CellSubsection.SECTION_A);
         ConcentrationContainer concentrationContainer = region.setUpConcentrationContainer();
         // set concentration
         concentrationContainer.initialize(CellSubsection.SECTION_A, entityA, Quantities.getQuantity(1.0, MOLE_PER_LITRE));
@@ -42,9 +42,9 @@ class CellRegionTest {
         UnitRegistry.setSpace(Quantities.getQuantity(1.0, MICRO(METRE)));
         // create region
         CellRegion region = new CellRegion("Lateral membrane");
-        region.addSubSection(CellTopology.INNER, CellSubsection.SECTION_A);
-        region.addSubSection(CellTopology.MEMBRANE, CellSubsection.MEMBRANE);
-        region.addSubSection(CellTopology.OUTER, CellSubsection.SECTION_B);
+        region.addSubsection(CellTopology.INNER, CellSubsection.SECTION_A);
+        region.addSubsection(CellTopology.MEMBRANE, CellSubsection.MEMBRANE);
+        region.addSubsection(CellTopology.OUTER, CellSubsection.SECTION_B);
         ConcentrationContainer concentrationContainer = region.setUpConcentrationContainer();
         // set concentration
         concentrationContainer.initialize(CellSubsection.SECTION_A, entityA, Quantities.getQuantity(1.0, MOLE_PER_LITRE));

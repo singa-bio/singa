@@ -91,13 +91,13 @@ public class AutomatonGraphs {
         logger.debug("Splitting graph in inner ({}) and outer ({}) compartment with membrane.", innerSection.getIdentifier(), outerSection.getIdentifier());
         // distribute nodes to sections
         CellRegion outer = new CellRegion("Outer");
-        outer.addSubSection(CellTopology.INNER, outerSection);
+        outer.addSubsection(CellTopology.INNER, outerSection);
         CellRegion inner = new CellRegion("Inner");
-        inner.addSubSection(CellTopology.INNER, innerSection);
+        inner.addSubsection(CellTopology.INNER, innerSection);
         CellRegion membrane = new CellRegion("Membrane");
-        membrane.addSubSection(CellTopology.INNER, innerSection);
-        membrane.addSubSection(CellTopology.MEMBRANE, new CellSubsection("Membrane"));
-        membrane.addSubSection(CellTopology.OUTER, outerSection);
+        membrane.addSubsection(CellTopology.INNER, innerSection);
+        membrane.addSubsection(CellTopology.MEMBRANE, new CellSubsection("Membrane"));
+        membrane.addSubsection(CellTopology.OUTER, outerSection);
 
         int numberOfColumns = graph.getNumberOfColumns();
         for (AutomatonNode node : graph.getNodes()) {

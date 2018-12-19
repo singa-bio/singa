@@ -1,7 +1,5 @@
 package bio.singa.features.model;
 
-import bio.singa.features.units.UnitRegistry;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,7 +22,7 @@ public class FeatureRegistry {
     }
 
     public static void reinitialize() {
-        synchronized (UnitRegistry.class) {
+        synchronized (FeatureRegistry.class) {
             instance = new FeatureRegistry();
         }
     }

@@ -131,7 +131,7 @@ public class ConcentrationContainer {
         return chemicalEntities;
     }
 
-    public Optional<ChemicalEntity> containsEntity(CellTopology topology, ChemicalEntity entity) {
+    public Optional<ChemicalEntity> containsHiddenEntity(CellTopology topology, ChemicalEntity entity) {
         for (ChemicalEntity chemicalEntity : getPool(topology).getValue().getReferencedEntities()) {
             if (entity.equals(chemicalEntity)) {
                 return Optional.of(chemicalEntity);
@@ -147,6 +147,14 @@ public class ConcentrationContainer {
         return Optional.empty();
     }
 
+    public boolean containsEntity(CellTopology topology, ChemicalEntity entity) {
+        for (ChemicalEntity chemicalEntity : getPool(topology).getValue().getReferencedEntities()) {
+            if (entity.equals(chemicalEntity)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     /**
      * Returns the topology and concentration pool for the subsection.

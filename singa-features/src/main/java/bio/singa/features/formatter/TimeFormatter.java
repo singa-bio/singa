@@ -1,13 +1,13 @@
-package bio.singa.features.model;
+package bio.singa.features.formatter;
 
 import bio.singa.features.units.UnitProvider;
+import bio.singa.features.units.UnitRegistry;
 import tec.uom.se.ComparableQuantity;
 import tec.uom.se.quantity.Quantities;
 
 import javax.measure.Quantity;
 import javax.measure.Unit;
 import javax.measure.quantity.Time;
-import java.text.DecimalFormat;
 
 import static tec.uom.se.unit.MetricPrefix.FEMTO;
 import static tec.uom.se.unit.Units.SECOND;
@@ -15,27 +15,29 @@ import static tec.uom.se.unit.Units.SECOND;
 /**
  * @author cl
  */
-public class QuantityFormatter<UnitType extends Quantity<UnitType>> {
+public class TimeFormatter implements QuantityFormatter<Time> {
 
-    private static final DecimalFormat DEFAULT_VALUE_FORMAT = new DecimalFormat("0.0000");
+    private static TimeFormatter instance = getInstance();
 
-    private DecimalFormat valueFormat;
-    private Unit<UnitType> targetUnit;
-    private boolean displayUnit;
-
-    public QuantityFormatter(DecimalFormat valueFormat, Unit<UnitType> targetUnit, boolean displayUnit) {
-        this.valueFormat = valueFormat;
-        this.targetUnit = targetUnit;
-        this.displayUnit = displayUnit;
+    public static TimeFormatter getInstance() {
+        if (instance == null) {
+            reinitialize();
+        }
+        return instance;
     }
 
-    /**
-     * Formats the time to the shortest informative representation.
-     *
-     * @param time The time to be formatted.
-     * @return
-     */
-    public static String formatTime(Quantity<Time> time) {
+    private static void reinitialize() {
+        synchronized (TimeFormatter.class) {
+            instance = new TimeFormatter();
+        }
+    }
+
+    private TimeFormatter() {
+
+    }
+
+    @Override
+    public String format(Quantity<Time> time) {
         int bestInformativeDigits = Integer.MAX_VALUE;
         Unit<Time> bestUnit = FEMTO(SECOND);
         Unit<Time> nextBestUnit = null;
@@ -59,20 +61,13 @@ public class QuantityFormatter<UnitType extends Quantity<UnitType>> {
         return truncated + " " + bestUnit;
     }
 
-    public QuantityFormatter(Unit<UnitType> targetUnit, boolean displayUnit) {
-        this(DEFAULT_VALUE_FORMAT, targetUnit, displayUnit);
+    @Override
+    public String format(double defaultQuantity) {
+        return format(Quantities.getQuantity(defaultQuantity, UnitRegistry.getDefaultUnit(SECOND)));
     }
 
-    public String format(Quantity<UnitType> quantity) {
-        return valueFormat.format(quantity.to(targetUnit).getValue().doubleValue()) + (displayUnit ? " " + targetUnit.toString() : "");
-    }
-
-    public Unit<UnitType> getTargetUnit() {
-        return targetUnit;
-    }
-
-    public String format(double quantityValue) {
-        return valueFormat.format(quantityValue) + (displayUnit ? " " + targetUnit.toString() : "");
+    public static String formatTime(Quantity<Time> quantity) {
+        return getInstance().format(quantity);
     }
 
 }

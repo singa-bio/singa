@@ -3,9 +3,9 @@ package bio.singa.simulation.model.modules.displacement.implementations;
 import bio.singa.core.utility.Pair;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.vectors.Vector2D;
+import bio.singa.simulation.features.AppliedVesicleState;
 import bio.singa.simulation.features.MotorMovementVelocity;
 import bio.singa.simulation.model.agents.pointlike.Vesicle;
-import bio.singa.simulation.model.agents.pointlike.VesicleStateRegistry;
 import bio.singa.simulation.model.modules.displacement.DisplacementBasedModule;
 import bio.singa.simulation.model.modules.displacement.DisplacementDelta;
 import tec.uom.se.quantity.Quantities;
@@ -15,6 +15,7 @@ import javax.measure.quantity.Length;
 import java.util.ListIterator;
 
 import static bio.singa.simulation.features.MotorPullDirection.Direction.MINUS;
+import static bio.singa.simulation.model.agents.pointlike.VesicleStateRegistry.VesicleState;
 
 /**
  * @author cl
@@ -23,19 +24,15 @@ public class VesicleTransport extends DisplacementBasedModule {
 
     public VesicleTransport() {
         // delta function
-        addDeltaFunction(this::calculateDisplacement, VesicleTransport::isAttachedToFilament);
+        addDeltaFunction(this::calculateDisplacement, this::isAttachedToFilament);
         // feature
         getRequiredFeatures().add(MotorMovementVelocity.class);
+        getRequiredFeatures().add(AppliedVesicleState.class);
     }
 
-    private static boolean isAttachedToFilament(Vesicle vesicle) {
-        return vesicle.getState().equals(VesicleStateRegistry.MICROTUBULE_ATTACHED) ||
-                vesicle.getState().equals(VesicleStateRegistry.ACTIN_ATTACHED);
-    }
-
-    @Override
-    public void checkFeatures() {
-
+    private boolean isAttachedToFilament(Vesicle vesicle) {
+        VesicleState vesicleState = getFeature(AppliedVesicleState.class).getContent();
+        return vesicle.getState().equals(vesicleState);
     }
 
     public DisplacementDelta calculateDisplacement(Vesicle vesicle) {

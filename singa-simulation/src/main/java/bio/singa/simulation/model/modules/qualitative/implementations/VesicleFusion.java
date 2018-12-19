@@ -59,11 +59,8 @@ public class VesicleFusion extends QualitativeModule {
         getRequiredFeatures().add(SNAREFusionPairs.class);
     }
 
-    public Map<Vesicle, Quantity<Time>> getTetheredVesicles() {
-        return tetheredVesicles;
-    }
-
-    public void initializeComplexes() {
+    @Override
+    public void initialize() {
         MatchingQSnares qSnares = getFeature(MatchingQSnares.class);
         MatchingRSnares rSnares = getFeature(MatchingRSnares.class);
         for (ChemicalEntity qSnare : qSnares.getContent()) {
@@ -76,6 +73,10 @@ public class VesicleFusion extends QualitativeModule {
                 complexes.put(pair, complex);
             }
         }
+    }
+
+    public Map<Vesicle, Quantity<Time>> getTetheredVesicles() {
+        return tetheredVesicles;
     }
 
     @Override

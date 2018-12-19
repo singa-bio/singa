@@ -6,21 +6,20 @@ import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.chemistry.entities.ComplexedChemicalEntity;
 import bio.singa.chemistry.entities.Protein;
 import bio.singa.features.identifiers.UniProtIdentifier;
-import bio.singa.features.model.Evidence;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.geometry.faces.Rectangle;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.simulation.features.*;
+import bio.singa.simulation.model.agents.pointlike.Vesicle;
+import bio.singa.simulation.model.agents.pointlike.VesicleLayer;
 import bio.singa.simulation.model.agents.surfacelike.Membrane;
 import bio.singa.simulation.model.agents.surfacelike.MembraneLayer;
 import bio.singa.simulation.model.agents.surfacelike.MembraneTracer;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.graphs.AutomatonNode;
-import bio.singa.simulation.model.agents.pointlike.Vesicle;
-import bio.singa.simulation.model.agents.pointlike.VesicleLayer;
 import bio.singa.simulation.model.sections.CellRegion;
 import bio.singa.simulation.model.sections.CellTopology;
 import bio.singa.simulation.model.simulation.Simulation;
@@ -31,7 +30,6 @@ import tec.uom.se.quantity.Quantities;
 import javax.measure.quantity.Length;
 import java.util.HashSet;
 import java.util.List;
-
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static tec.uom.se.AbstractUnit.ONE;
@@ -121,20 +119,18 @@ class VesicleFusionTest {
         HashSet<ChemicalEntity> qSnareEntities = new HashSet<>();
         qSnareEntities.add(snareComplex1);
         qSnareEntities.add(snareComplex2);
-        MatchingQSnares qSnares = new MatchingQSnares(qSnareEntities, Evidence.NO_EVIDENCE);
+        MatchingQSnares qSnares = new MatchingQSnares(qSnareEntities);
         fusion.setFeature(qSnares);
 
         HashSet<ChemicalEntity> rSnareEntities = new HashSet<>();
         rSnareEntities.add(vamp2);
         rSnareEntities.add(vamp3);
-        MatchingRSnares rSnares = new MatchingRSnares(rSnareEntities, Evidence.NO_EVIDENCE);
+        MatchingRSnares rSnares = new MatchingRSnares(rSnareEntities);
         fusion.setFeature(rSnares);
-        fusion.initializeComplexes();
-        fusion.setFeature(new SNAREFusionPairs(Quantities.getQuantity(3, ONE), Evidence.NO_EVIDENCE));
+        fusion.setFeature(new SNAREFusionPairs(Quantities.getQuantity(3, ONE)));
         fusion.setFeature(FusionTime.DEFAULT_FUSION_TIME);
         fusion.setFeature(AttachmentDistance.DEFAULT_DYNEIN_ATTACHMENT_DISTANCE);
-        fusion.setSimulation(simulation);
-        simulation.getModules().add(fusion);
+        simulation.addModule(fusion);
 
         while (simulation.getElapsedTime().isLessThanOrEqualTo(Quantities.getQuantity(19.0, SECOND))) {
             simulation.nextEpoch();

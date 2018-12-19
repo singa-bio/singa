@@ -361,7 +361,7 @@ public class Simulation {
         chemicalEntities.put(chemicalEntity.getIdentifier(), chemicalEntity);
     }
 
-    public void observeNode(Updatable updatable) {
+    public void observe(Updatable updatable) {
         observedUpdatables.add(updatable);
         updatable.setObserved(true);
     }

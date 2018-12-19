@@ -2,10 +2,9 @@ package bio.singa.simulation.events;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.core.events.UpdateEventListener;
-import bio.singa.features.model.QuantityFormatter;
+import bio.singa.features.formatter.GeneralQuantityFormatter;
+import bio.singa.features.formatter.QuantityFormatter;
 import bio.singa.features.quantities.MolarConcentration;
-import bio.singa.features.units.UnitRegistry;
-import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.modules.UpdateModule;
 import bio.singa.simulation.model.modules.concentration.ConcentrationBasedModule;
 import bio.singa.simulation.model.modules.concentration.ConcentrationDelta;
@@ -36,7 +35,7 @@ import static tec.uom.se.unit.Units.SECOND;
  * This class can be used to write the concentration of chemical entities of a node and the changes applied to the node
  * to a file. The updates are written each time a event is received. The events can be scheduled by using the
  * {@link SimulationManager#setUpdateEmissionCondition(Predicate)}. A node is observed by calling
- * {@link EpochUpdateWriter#addNodeToObserve(AutomatonNode)}.
+ * {@link EpochUpdateWriter#addUpdatableToObserve(Updatable)}.
  *
  * @author cl
  */
@@ -92,12 +91,12 @@ public class EpochUpdateWriter implements UpdateEventListener<UpdatableUpdatedEv
     /**
      * The formatter for time based values.
      */
-    private QuantityFormatter<Time> timeFormatter = new QuantityFormatter<>(MILLI(SECOND), false);
+    private QuantityFormatter<Time> timeFormatter = new GeneralQuantityFormatter<>(MILLI(SECOND), false);
 
     /**
      * The formatter for concentration based values.
      */
-    private QuantityFormatter<MolarConcentration> concentrationFormatter = new QuantityFormatter<>(MOLE_PER_LITRE, false);
+    private QuantityFormatter<MolarConcentration> concentrationFormatter = new GeneralQuantityFormatter<>(MOLE_PER_LITRE, false);
 
 
     private Simulation simulation;
@@ -161,34 +160,34 @@ public class EpochUpdateWriter implements UpdateEventListener<UpdatableUpdatedEv
     }
 
     /**
-     * Initializes a node that will be observed during simulation. Also prepares the files that will be written during
+     * Initializes a updatable that will be observed during simulation. Also prepares the files that will be written during
      * simulation.
      *
-     * @param node The node to be observed.
+     * @param updatable The updatable to be observed.
      * @throws IOException If the file can not be created.
      */
-    public void addNodeToObserve(AutomatonNode node) throws IOException {
-        logger.info("Observing node {}, results will be written to {}.", node.getIdentifier(), workspaceFolder);
+    public void addUpdatableToObserve(Updatable updatable) throws IOException {
+        logger.info("Observing updatable {}, results will be written to {}.", updatable.getStringIdentifier(), workspaceFolder);
         // add concentration writers
-        Path concentrationFile = createFile("node_" + node.getIdentifier() + "_concentrations.csv");
+        Path concentrationFile = createFile("node_" + updatable.getStringIdentifier() + "_concentrations.csv");
         BufferedWriter concentrationWriter = Files.newBufferedWriter(concentrationFile);
-        concentrationWriters.put(node, concentrationWriter);
-        writeConcentrationFileHeader(node);
+        concentrationWriters.put(updatable, concentrationWriter);
+        writeConcentrationFileHeader(updatable);
         // add delta writers
-        Path deltaFile = createFile("node_" + node.getIdentifier() + "_deltas.csv");
+        Path deltaFile = createFile("node_" + updatable.getStringIdentifier() + "_deltas.csv");
         BufferedWriter deltaWriter = Files.newBufferedWriter(deltaFile);
-        deltaWriters.put(node, deltaWriter);
-        writeDeltaFileHeader(node);
+        deltaWriters.put(updatable, deltaWriter);
+        writeDeltaFileHeader(updatable);
     }
 
     /**
      * Writes the header for delta files.
      *
-     * @param node The node.
+     * @param updatable The updatable.
      * @throws IOException If the file could not be written.
      */
-    private void writeDeltaFileHeader(AutomatonNode node) throws IOException {
-        appendDeltaContent(node, prepareDeltaColumnHeader());
+    private void writeDeltaFileHeader(Updatable updatable) throws IOException {
+        appendDeltaContent(updatable, prepareDeltaColumnHeader());
     }
 
     /**
@@ -207,20 +206,19 @@ public class EpochUpdateWriter implements UpdateEventListener<UpdatableUpdatedEv
     /**
      * Writes the header for concentration files.
      *
-     * @param node The node.
+     * @param updatable The node.
      * @throws IOException If the file could not be written.
      */
-    private void writeConcentrationFileHeader(AutomatonNode node) throws IOException {
-        appendConcentrationContent(node, prepareConcentrationColumnHeader(node));
+    private void writeConcentrationFileHeader(Updatable updatable) throws IOException {
+        appendConcentrationContent(updatable, prepareConcentrationColumnHeader());
     }
 
     /**
      * Creates a String for the column header of concentration files.
      *
-     * @param node The node.
      * @return The column header.
      */
-    private String prepareConcentrationColumnHeader(AutomatonNode node) {
+    private String prepareConcentrationColumnHeader() {
         return "elapsed time" + SEPARATOR_CHARACTER +
                 "species" + SEPARATOR_CHARACTER +
                 "compartment" + SEPARATOR_CHARACTER +
@@ -321,7 +319,7 @@ public class EpochUpdateWriter implements UpdateEventListener<UpdatableUpdatedEv
                 .map(entry -> timeFormatter.format(event.getTime()) + SEPARATOR_CHARACTER
                         + entry.getKey() + SEPARATOR_CHARACTER
                         + concentrationFormatter.format(entry.getValue().stream()
-                        .mapToDouble(delta -> UnitRegistry.concentration(delta.getValue()).to(concentrationFormatter.getTargetUnit()).getValue().doubleValue())
+                        .mapToDouble(ConcentrationDelta::getValue)
                         .average()
                         .orElse(Double.NaN)))
                 .collect(Collectors.joining(LINEBREAK, "", LINEBREAK));

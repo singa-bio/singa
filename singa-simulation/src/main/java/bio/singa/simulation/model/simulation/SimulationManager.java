@@ -1,7 +1,7 @@
 package bio.singa.simulation.model.simulation;
 
 import bio.singa.core.events.UpdateEventListener;
-import bio.singa.features.model.QuantityFormatter;
+import bio.singa.features.formatter.GeneralQuantityFormatter;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.simulation.events.*;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
@@ -240,7 +240,7 @@ public class SimulationManager extends Task<Simulation> {
     protected Simulation call() {
         while (!isCancelled() && terminationCondition.test(simulation)) {
             if (emitCondition.test(simulation)) {
-                logger.debug("Emitting event after {} (epoch {}).", QuantityFormatter.formatTime(simulation.getElapsedTime()), simulation.getEpoch());
+                logger.debug("Emitting event after {} (epoch {}).", GeneralQuantityFormatter.formatTime(simulation.getElapsedTime()), simulation.getEpoch());
                 emitGraphEvent(simulation);
                 for (Updatable updatable : simulation.getObservedUpdatables()) {
                     emitNodeEvent(simulation, updatable);
@@ -272,11 +272,11 @@ public class SimulationManager extends Task<Simulation> {
             if (previousTimeMillis > 0) {
                 ComparableQuantity<Time> estimatesTimeRemaining = Quantities.getQuantity(estimatedMillisRemaining, MILLI(SECOND));
                 double speed = subtract.getValue().doubleValue() / Quantities.getQuantity(currentTimeMillis - previousTimeMillis, MILLI(SECOND)).to(SECOND).getValue().doubleValue();
-                String estimated = QuantityFormatter.formatTime(estimatesTimeRemaining);
+                String estimated = GeneralQuantityFormatter.formatTime(estimatesTimeRemaining);
                 if (Double.isInfinite(speed)) {
                     logger.info("estimated time remaining: {}, current simulation speed: [very high] (Simulation Time) per s(Real Time)", estimated);
                 } else {
-                    String estimatedSpeed = QuantityFormatter.formatTime(Quantities.getQuantity(speed, MICRO(SECOND)));
+                    String estimatedSpeed = GeneralQuantityFormatter.formatTime(Quantities.getQuantity(speed, MICRO(SECOND)));
                     logger.info("estimated time remaining: {}, current simulation speed: {} (Simulation Time) per s(Real Time)", estimated, estimatedSpeed);
                 }
             }
