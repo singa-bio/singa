@@ -3,6 +3,7 @@ package bio.singa.chemistry.entities;
 import bio.singa.chemistry.annotations.Annotation;
 import bio.singa.chemistry.annotations.AnnotationType;
 import bio.singa.chemistry.annotations.taxonomy.Organism;
+import bio.singa.features.identifiers.GoTerm;
 import bio.singa.features.identifiers.SimpleStringIdentifier;
 import bio.singa.features.model.Feature;
 
@@ -117,6 +118,15 @@ public class Protein extends ChemicalEntity {
      */
     public void setPrimaryGeneName(String primaryGeneName) {
         this.primaryGeneName = primaryGeneName;
+    }
+
+    /**
+     * Adds a new {@link GoTerm} to the protein.
+     *
+     * @param goTerm The {@link GoTerm} to be added.
+     */
+    public void addGoTerm(GoTerm goTerm) {
+        addAnnotation(new Annotation<>(AnnotationType.GO_TERM, goTerm));
     }
 
     public static class Builder extends ChemicalEntity.Builder<Protein, Builder> {

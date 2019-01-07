@@ -1,11 +1,13 @@
 package bio.singa.chemistry.features.databases.uniprot;
 
+import bio.singa.chemistry.annotations.Annotation;
 import bio.singa.chemistry.annotations.AnnotationType;
 import bio.singa.chemistry.annotations.taxonomy.Organism;
 import bio.singa.chemistry.entities.Protein;
 import bio.singa.chemistry.features.variants.SequenceVariant;
 import bio.singa.chemistry.features.variants.SequenceVariants;
 import bio.singa.features.identifiers.ENAAccessionNumber;
+import bio.singa.features.identifiers.GoTerm;
 import bio.singa.features.identifiers.UniProtIdentifier;
 import bio.singa.features.identifiers.model.Identifier;
 import bio.singa.features.identifiers.model.IdentifierPatternRegistry;
@@ -124,4 +126,17 @@ class UniProtParserTest {
         assertEquals("TTR", transthyretin.getPrimaryGeneName());
     }
 
+    @Test
+    void parseSubCellularLocation() {
+        List<Annotation> annotations = aars.getAnnotationsOfType(AnnotationType.GO_TERM);
+        assertEquals("GO:0005829", ((GoTerm) annotations.get(0).getContent()).getContent());
+        assertEquals("GO:0004815", ((GoTerm) annotations.get(1).getContent()).getContent());
+        assertEquals("GO:0005524", ((GoTerm) annotations.get(2).getContent()).getContent());
+        assertEquals("GO:0003676", ((GoTerm) annotations.get(3).getContent()).getContent());
+        assertEquals("GO:0006422", ((GoTerm) annotations.get(4).getContent()).getContent());
+
+        for (Annotation annotation : annotations) {
+            System.out.println(((GoTerm) annotation.getContent()).getTerm());
+        }
+    }
 }

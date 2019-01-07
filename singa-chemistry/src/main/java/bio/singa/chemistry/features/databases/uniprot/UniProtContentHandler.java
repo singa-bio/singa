@@ -8,10 +8,7 @@ import bio.singa.chemistry.entities.Enzyme;
 import bio.singa.chemistry.entities.Protein;
 import bio.singa.chemistry.features.variants.SequenceVariant;
 import bio.singa.chemistry.features.variants.SequenceVariants;
-import bio.singa.features.identifiers.ECNumber;
-import bio.singa.features.identifiers.ENAAccessionNumber;
-import bio.singa.features.identifiers.NCBITaxonomyIdentifier;
-import bio.singa.features.identifiers.UniProtIdentifier;
+import bio.singa.features.identifiers.*;
 import bio.singa.features.model.Evidence;
 import bio.singa.structure.features.molarmass.MolarMass;
 import bio.singa.structure.model.families.AminoAcidFamily;
@@ -53,6 +50,7 @@ public class UniProtContentHandler implements ContentHandler {
     private List<ECNumber> ecNumbers;
     private List<ENAAccessionNumber> genomicSequenceIdentifiers;
     private List<SequenceVariant> sequenceVariants;
+    private List<GoTerm> goTerms;
     private SequenceVariant currentSequenceVariant;
     private String primaryGeneName;
 
@@ -75,12 +73,18 @@ public class UniProtContentHandler implements ContentHandler {
     private boolean isScientificName = false;
     private boolean isCommonName = false;
     private boolean inEMBLReference = false;
+    private boolean inGoReference = false;
     private boolean inCitation;
     private boolean inSequenceVariant;
 
     private String proteinSequenceID;
     private String moleculeType;
     private int currentReferenceYear;
+    private String currentGoIdentifier;
+    private GoTerm currentGoReference;
+    private String currentGoTerm;
+    private String currentGoEvidence;
+    private String currentGoProject;
 
     public UniProtContentHandler() {
         additionalNames = new ArrayList<>();
@@ -89,6 +93,7 @@ public class UniProtContentHandler implements ContentHandler {
         genomicSequenceIdentifiers = new ArrayList<>();
         sequenceVariants = new ArrayList<>();
         evidenceMap = new HashMap<>();
+        goTerms = new ArrayList<>();
     }
 
     public UniProtContentHandler(String primaryIdentifier) {
@@ -122,6 +127,8 @@ public class UniProtContentHandler implements ContentHandler {
         textComments.forEach(protein::addAnnotation);
         // add ecNumbers
         ecNumbers.forEach(protein::addAdditionalIdentifier);
+        // add GO terms
+        goTerms.forEach(protein::addGoTerm);
         // add variants
         protein.setFeature(new SequenceVariants(sequenceVariants, UniProtDatabase.evidence));
         // add gene name
@@ -297,6 +304,10 @@ public class UniProtContentHandler implements ContentHandler {
                     if (atts.getValue("type").equals("EMBL")) {
                         inEMBLReference = true;
                     }
+                    if (atts.getValue("type").equals("GO")) {
+                        currentGoIdentifier = atts.getValue("id");
+                        inGoReference = true;
+                    }
                 }
                 break;
             }
@@ -307,6 +318,17 @@ public class UniProtContentHandler implements ContentHandler {
                     }
                     if (atts.getValue("type").equals("molecule type")) {
                         moleculeType = atts.getValue("value");
+                    }
+                }
+                if (inGoReference) {
+                    if (atts.getValue("type").equals("term")) {
+                        currentGoTerm = atts.getValue("value");
+                    }
+                    if (atts.getValue("type").equals("evidence")) {
+                        currentGoEvidence = atts.getValue("value");
+                    }
+                    if (atts.getValue("type").equals("project")) {
+                        currentGoProject = atts.getValue("value");
                     }
                 }
                 break;
@@ -378,6 +400,11 @@ public class UniProtContentHandler implements ContentHandler {
                     moleculeType = null;
                     proteinSequenceID = null;
                 }
+                if (inGoReference) {
+                    // add GO term
+                    goTerms.add(new GoTerm(currentGoIdentifier, currentGoTerm, new Evidence(DATABASE, currentGoEvidence, currentGoProject)));
+                    inGoReference = false;
+                }
                 inEMBLReference = false;
                 break;
             }
@@ -392,6 +419,7 @@ public class UniProtContentHandler implements ContentHandler {
             }
             case "gene": {
                 inGene = false;
+                inPrimaryGene = false;
                 break;
             }
         }

@@ -15,6 +15,10 @@ public class GoTerm extends AbstractIdentifier {
      * The pattern to verify the identifier.
      */
     public static final Pattern PATTERN = Pattern.compile("GO:(\\d{7})");
+    /**
+     * The full term.
+     */
+    private String term;
 
     /**
      * Creates a new identifier.
@@ -26,8 +30,23 @@ public class GoTerm extends AbstractIdentifier {
         super(identifier, PATTERN);
     }
 
-    public GoTerm(String identifier, Evidence evidence) throws IllegalArgumentException {
+    public GoTerm(String identifier, String term) throws IllegalArgumentException {
+        super(identifier, PATTERN);
+        this.term = term;
+    }
+
+    public GoTerm(String identifier, String term, Evidence evidence) throws IllegalArgumentException {
         super(identifier, PATTERN, evidence);
+        this.term = term;
+    }
+
+    /**
+     * Returns the human-readable description of this term.
+     *
+     * @return A human-readable description.
+     */
+    public String getTerm() {
+        return term;
     }
 
     /**
@@ -36,9 +55,9 @@ public class GoTerm extends AbstractIdentifier {
      * @return The consecutive number without the "GO:" part.
      */
     public int getConsecutiveNumber() {
-        Matcher matcherCHEBI = PATTERN.matcher(getContent());
-        if (matcherCHEBI.matches()) {
-            return Integer.parseInt(matcherCHEBI.group(1));
+        Matcher matcherGo = PATTERN.matcher(getContent());
+        if (matcherGo.matches()) {
+            return Integer.parseInt(matcherGo.group(1));
         } else {
             // should not be possible
             throw new IllegalStateException("This identifier has been created with an unexpected pattern.");
