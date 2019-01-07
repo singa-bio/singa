@@ -4,7 +4,6 @@ import bio.singa.chemistry.features.diffusivity.Diffusivity;
 import bio.singa.simulation.features.AppliedVesicleState;
 import bio.singa.simulation.features.ModifiedDiffusivity;
 import bio.singa.simulation.model.agents.pointlike.Vesicle;
-import bio.singa.simulation.model.agents.pointlike.VesicleStateRegistry;
 import bio.singa.simulation.model.modules.concentration.ModuleState;
 import bio.singa.simulation.model.modules.qualitative.QualitativeModule;
 
@@ -28,7 +27,7 @@ public class DiffusivityScaling extends QualitativeModule {
 
     @Override
     public void calculateUpdates() {
-        VesicleStateRegistry.VesicleState vesicleState = getFeature(AppliedVesicleState.class).getContent();
+        String vesicleState = getFeature(AppliedVesicleState.class).getContent();
         double scaledDiffusivity = getScaledFeature(ModifiedDiffusivity.class);
         for (Vesicle vesicle : simulation.getVesicleLayer().getVesicles()) {
             if (vesicle.getState().equals(vesicleState)) {

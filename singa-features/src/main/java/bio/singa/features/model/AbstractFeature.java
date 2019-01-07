@@ -19,14 +19,15 @@ public abstract class AbstractFeature<FeatureContent> implements Feature<Feature
 
     public AbstractFeature(FeatureContent featureContent, Evidence evidence) {
         this.featureContent = featureContent;
+        this.evidence = new ArrayList<>();
         if (evidence != null) {
-            this.evidence = new ArrayList<>();
             this.evidence.add(evidence);
         }
     }
 
     public AbstractFeature(FeatureContent featureContent) {
         this.featureContent = featureContent;
+        evidence = new ArrayList<>();
     }
 
     @Override
@@ -40,6 +41,11 @@ public abstract class AbstractFeature<FeatureContent> implements Feature<Feature
     @Override
     public List<Evidence> getAllEvidence() {
         return evidence;
+    }
+
+    @Override
+    public void addEvidence(Evidence evidence) {
+        this.evidence.add(evidence);
     }
 
     @Override

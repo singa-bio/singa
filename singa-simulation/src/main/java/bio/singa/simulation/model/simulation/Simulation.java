@@ -251,6 +251,10 @@ public class Simulation {
         this.simulationRegion = simulationRegion;
     }
 
+    public ConcentrationInitializer getConcentrationInitializer() {
+        return concentrationInitializer;
+    }
+
     public void collectUpdatables() {
         updatables = new ArrayList<>(graph.getNodes());
         updatables.addAll(vesicleLayer.getVesicles());

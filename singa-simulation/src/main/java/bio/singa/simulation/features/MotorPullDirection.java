@@ -1,30 +1,27 @@
 package bio.singa.simulation.features;
 
 import bio.singa.features.model.Evidence;
-import bio.singa.features.model.QualitativeFeature;
+import bio.singa.features.model.StringFeature;
 
 import java.util.List;
-
-import static bio.singa.simulation.features.MotorPullDirection.*;
 
 /**
  * @author cl
  */
-public class MotorPullDirection extends QualitativeFeature<Direction> {
+public class MotorPullDirection extends StringFeature {
 
-    public enum Direction {
-        PLUS, MINUS
-    }
+    public static final String PLUS = "+";
+    public static final String MINUS = "-";
 
-    public MotorPullDirection(Direction direction, List<Evidence> evidence) {
+    public MotorPullDirection(String direction, List<Evidence> evidence) {
         super(direction, evidence);
     }
 
-    public MotorPullDirection(Direction direction, Evidence evidence) {
+    public MotorPullDirection(String direction, Evidence evidence) {
         super(direction, evidence);
     }
 
-    public MotorPullDirection(Direction direction) {
+    public MotorPullDirection(String direction) {
         super(direction);
     }
 

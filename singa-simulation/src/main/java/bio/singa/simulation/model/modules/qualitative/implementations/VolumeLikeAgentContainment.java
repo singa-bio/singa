@@ -1,8 +1,8 @@
 package bio.singa.simulation.model.modules.qualitative.implementations;
 
+import bio.singa.simulation.features.AppliedVesicleState;
 import bio.singa.simulation.features.BlackListVesicleStates;
 import bio.singa.simulation.features.ContainmentRegion;
-import bio.singa.simulation.features.AppliedVesicleState;
 import bio.singa.simulation.model.agents.pointlike.Vesicle;
 import bio.singa.simulation.model.agents.volumelike.VolumeLikeAgent;
 import bio.singa.simulation.model.modules.concentration.ModuleState;
@@ -13,8 +13,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static bio.singa.simulation.model.agents.pointlike.VesicleStateRegistry.VesicleState;
 
 
 /**
@@ -52,7 +50,7 @@ public class VolumeLikeAgentContainment extends QualitativeModule {
             return;
         }
         // get black listed states
-        List<VesicleState> blacklistStates = getFeature(BlackListVesicleStates.class).getContent();
+        List<String> blacklistStates = getFeature(BlackListVesicleStates.class).getContent();
         // set containment
         for (Vesicle vesicle : simulation.getVesicleLayer().getVesicles()) {
             // ignore vesicles with blacklisted states
@@ -80,7 +78,7 @@ public class VolumeLikeAgentContainment extends QualitativeModule {
     @Override
     public void onCompletion() {
         // set new state
-        VesicleState state = getFeature(AppliedVesicleState.class).getContent();
+        String state = getFeature(AppliedVesicleState.class).getContent();
         for (Vesicle vesicle : containedVesicles) {
             vesicle.setState(state);
         }

@@ -90,7 +90,6 @@ public class MembraneConcentration implements InitialConcentration {
             if (membraneSubsection == null) {
                 continue;
             }
-
             // get representative area
             Quantity<Area> updatableArea;
             if (updatable instanceof Vesicle) {

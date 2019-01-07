@@ -1,26 +1,24 @@
 package bio.singa.simulation.features;
 
 import bio.singa.features.model.Evidence;
-import bio.singa.features.model.QualitativeFeature;
+import bio.singa.features.model.StringFeature;
 
 import java.util.List;
-
-import static bio.singa.simulation.model.agents.linelike.LineLikeAgent.FilamentType;
 
 /**
  * @author cl
  */
-public class AttachedFilament extends QualitativeFeature<FilamentType> {
+public class AttachedFilament extends StringFeature {
 
-    public AttachedFilament(FilamentType filamentType, List<Evidence> evidence) {
+    public AttachedFilament(String filamentType, List<Evidence> evidence) {
         super(filamentType, evidence);
     }
 
-    public AttachedFilament(FilamentType filamentType, Evidence evidence) {
+    public AttachedFilament(String filamentType, Evidence evidence) {
         super(filamentType, evidence);
     }
 
-    public AttachedFilament(FilamentType filamentType) {
+    public AttachedFilament(String filamentType) {
         super(filamentType);
     }
 

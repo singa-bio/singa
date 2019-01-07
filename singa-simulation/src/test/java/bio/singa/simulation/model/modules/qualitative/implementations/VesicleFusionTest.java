@@ -28,7 +28,7 @@ import tec.uom.se.ComparableQuantity;
 import tec.uom.se.quantity.Quantities;
 
 import javax.measure.quantity.Length;
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -116,13 +116,13 @@ class VesicleFusionTest {
 
         // setup fusion module
         VesicleFusion fusion = new VesicleFusion();
-        HashSet<ChemicalEntity> qSnareEntities = new HashSet<>();
+        List<ChemicalEntity> qSnareEntities = new ArrayList<>();
         qSnareEntities.add(snareComplex1);
         qSnareEntities.add(snareComplex2);
         MatchingQSnares qSnares = new MatchingQSnares(qSnareEntities);
         fusion.setFeature(qSnares);
 
-        HashSet<ChemicalEntity> rSnareEntities = new HashSet<>();
+        List<ChemicalEntity> rSnareEntities = new ArrayList<>();
         rSnareEntities.add(vamp2);
         rSnareEntities.add(vamp3);
         MatchingRSnares rSnares = new MatchingRSnares(rSnareEntities);

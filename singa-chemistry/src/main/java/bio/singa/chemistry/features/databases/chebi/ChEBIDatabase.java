@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ChEBIDatabase {
 
-    public static final Evidence evidence = new Evidence(Evidence.SourceType.DATABASE,
+    public static final Evidence DEGTYARENKO2008 = new Evidence(Evidence.SourceType.DATABASE,
             "ChEBI Database",
             "Degtyarenko, Kirill, et al. \"ChEBI: a database and ontology for chemical entities of " +
                     "biological interest.\" Nucleic acids research 36.suppl 1 (2008): D344-D350.");

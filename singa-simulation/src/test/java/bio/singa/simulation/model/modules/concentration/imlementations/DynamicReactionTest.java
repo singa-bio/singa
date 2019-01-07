@@ -41,7 +41,7 @@ public class DynamicReactionTest {
 
     @Test
     @DisplayName("example reaction - arbitrary law")
-    public void shouldPerformDynamicReaction() {
+    void shouldPerformDynamicReaction() {
 
         // the substrate
         ChemicalEntity substrate = new SmallMolecule.Builder("substrate")

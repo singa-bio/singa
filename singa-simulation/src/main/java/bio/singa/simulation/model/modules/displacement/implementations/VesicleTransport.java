@@ -14,8 +14,8 @@ import javax.measure.Quantity;
 import javax.measure.quantity.Length;
 import java.util.ListIterator;
 
-import static bio.singa.simulation.features.MotorPullDirection.Direction.MINUS;
-import static bio.singa.simulation.model.agents.pointlike.VesicleStateRegistry.VesicleState;
+import static bio.singa.simulation.features.MotorPullDirection.MINUS;
+
 
 /**
  * @author cl
@@ -31,7 +31,7 @@ public class VesicleTransport extends DisplacementBasedModule {
     }
 
     private boolean isAttachedToFilament(Vesicle vesicle) {
-        VesicleState vesicleState = getFeature(AppliedVesicleState.class).getContent();
+        String vesicleState = getFeature(AppliedVesicleState.class).getContent();
         return vesicle.getState().equals(vesicleState);
     }
 
@@ -42,7 +42,7 @@ public class VesicleTransport extends DisplacementBasedModule {
         ListIterator<Vector2D> segmentIterator = vesicle.getSegmentIterator();
         // path are sorted, such that the first element is the + end and the last element is the - end
         Vector2D guide = null;
-        if (vesicle.getTargetDirection() == MINUS) {
+        if (vesicle.getTargetDirection().equals(MINUS)) {
             // to get to minus go to next
             Pair<Vector2D> surroundingSegments = scoutMinusEnd(segmentIterator);
             Vector2D currentPosition = vesicle.getCurrentPosition();

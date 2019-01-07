@@ -25,7 +25,6 @@ import java.nio.file.Path;
 import java.util.*;
 
 import static bio.singa.mathematics.metrics.model.VectorMetricProvider.EUCLIDEAN_METRIC;
-import static bio.singa.simulation.model.agents.linelike.LineLikeAgent.FilamentType.MICROTUBULE;
 import static tec.uom.se.unit.MetricPrefix.NANO;
 import static tec.uom.se.unit.Units.METRE;
 
@@ -106,7 +105,7 @@ public class OrganelleImageParser {
             }
             // sort and connect
             List<Vector2D> vectors = Vectors.sortByCloseness(parser.groups.values().iterator().next(), plusDirection);
-            filaments.add(new LineLikeAgent(MICROTUBULE, vectors, plusDirection));
+            filaments.add(new LineLikeAgent(LineLikeAgent.MICROTUBULE, vectors, plusDirection));
         }
         return new LineLikeAgentTemplate(filaments, scale);
     }

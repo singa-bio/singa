@@ -5,31 +5,30 @@ import bio.singa.features.model.Evidence;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 /**
  * @author cl
  */
 public class MatchingQSnares extends MultiEntityFeature {
 
-    public MatchingQSnares(Set<ChemicalEntity> chemicalEntities, List<Evidence> evidence) {
+    public MatchingQSnares(List<ChemicalEntity> chemicalEntities, List<Evidence> evidence) {
         super(chemicalEntities, evidence);
     }
 
-    public MatchingQSnares(Set<ChemicalEntity> chemicalEntities, Evidence evidence) {
+    public MatchingQSnares(List<ChemicalEntity> chemicalEntities, Evidence evidence) {
         super(chemicalEntities, evidence);
     }
 
-    public MatchingQSnares(Set<ChemicalEntity> chemicalEntities) {
+    public MatchingQSnares(List<ChemicalEntity> chemicalEntities) {
         super(chemicalEntities);
     }
 
     public MatchingQSnares(ChemicalEntity chemicalEntity, Evidence evidence) {
-        super(Collections.singleton(chemicalEntity), evidence);
+        super(Collections.singletonList(chemicalEntity), evidence);
     }
 
     public MatchingQSnares(ChemicalEntity chemicalEntity) {
-        super(Collections.singleton(chemicalEntity));
+        super(Collections.singletonList(chemicalEntity));
     }
 
 }

@@ -8,7 +8,6 @@ import bio.singa.mathematics.vectors.Vectors;
 import bio.singa.simulation.features.AppliedVesicleState;
 import bio.singa.simulation.features.ContainmentRegion;
 import bio.singa.simulation.model.agents.pointlike.Vesicle;
-import bio.singa.simulation.model.agents.pointlike.VesicleStateRegistry.VesicleState;
 import bio.singa.simulation.model.modules.displacement.DisplacementBasedModule;
 import bio.singa.simulation.model.modules.displacement.DisplacementDelta;
 import bio.singa.simulation.model.sections.CellRegion;
@@ -43,7 +42,7 @@ public class VesicleConfinedDiffusion extends DisplacementBasedModule {
         return new DisplacementDelta(this, gaussian.multiply(scaling));
     }
 
-    public VesicleState getConfiningState() {
+    public String getConfiningState() {
         return getFeature(AppliedVesicleState.class).getContent();
     }
 

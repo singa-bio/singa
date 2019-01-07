@@ -29,9 +29,6 @@ import javax.measure.quantity.Volume;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static bio.singa.simulation.features.MotorPullDirection.Direction;
-import static bio.singa.simulation.model.agents.pointlike.VesicleStateRegistry.VesicleState;
-
 /**
  * @author cl
  */
@@ -58,8 +55,8 @@ public class Vesicle implements Updatable, Featureable {
     private CellRegion region;
     private Map<AutomatonNode, Double> associatedNodes;
 
-    private VesicleState state;
-    private Direction targetDirection;
+    private String state;
+    private String targetDirection;
     private LineLikeAgent attachedFilament;
     private ListIterator<Vector2D> segmentIterator;
 
@@ -125,11 +122,11 @@ public class Vesicle implements Updatable, Featureable {
         return displacementManager.getNextPosition();
     }
 
-    public VesicleState getState() {
+    public String getState() {
         return state;
     }
 
-    public void setState(VesicleState state) {
+    public void setState(String state) {
         this.state = state;
     }
 
@@ -141,11 +138,11 @@ public class Vesicle implements Updatable, Featureable {
         this.attachedFilament = attachedFilament;
     }
 
-    public Direction getTargetDirection() {
+    public String getTargetDirection() {
         return targetDirection;
     }
 
-    public void setTargetDirection(Direction targetDirection) {
+    public void setTargetDirection(String targetDirection) {
         this.targetDirection = targetDirection;
     }
 

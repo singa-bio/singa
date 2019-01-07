@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
  *
  * @author cl
  */
-public class SimpleStringIdentifier extends AbstractIdentifier{
+public class SimpleStringIdentifier extends AbstractIdentifier {
 
     /**
      * The pattern to verify the identifier.

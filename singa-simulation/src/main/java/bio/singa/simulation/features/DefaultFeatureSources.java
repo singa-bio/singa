@@ -7,7 +7,7 @@ import static bio.singa.features.model.Evidence.SourceType.*;
 /**
  * @author cl
  */
-public class DefaultFeatureSources {
+public final class DefaultFeatureSources {
 
     public static final Evidence BINESH2015 = new Evidence(LITERATURE, "Binesh 2015", "Binesh, A. R., and R. Kamali. \"Molecular dynamics insights into human aquaporin 2 water channel.\" Biophysical chemistry 207 (2015): 107-113.");
     public static final Evidence EHRLICH2004 = new Evidence(LITERATURE, "Ehrlich 2004", "Ehrlich, Marcelo, et al. \"Endocytosis by random initiation and stabilization of clathrin-coated pits.\" Cell 118.5 (2004): 591-605.");

@@ -17,8 +17,9 @@ import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
-import static bio.singa.simulation.model.agents.linelike.LineLikeAgent.FilamentType.*;
+import static bio.singa.simulation.model.agents.linelike.LineLikeAgent.ACTIN;
 import static bio.singa.simulation.model.agents.linelike.LineLikeAgent.GrowthBehaviour.STAGNANT;
+import static bio.singa.simulation.model.agents.linelike.LineLikeAgent.MICROTUBULE;
 
 /**
  * @author cl

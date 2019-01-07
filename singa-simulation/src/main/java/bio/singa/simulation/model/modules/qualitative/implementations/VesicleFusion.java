@@ -193,7 +193,7 @@ public class VesicleFusion extends QualitativeModule {
         return new TetheringSnares(countSnares(vesicle, getFeature(MatchingRSnares.class).getContent()), countSnares(node, getFeature(MatchingQSnares.class).getContent()), node);
     }
 
-    private Map<ChemicalEntity, Integer> countSnares(Updatable updatable, Set<ChemicalEntity> entitiesToCount) {
+    private Map<ChemicalEntity, Integer> countSnares(Updatable updatable, List<ChemicalEntity> entitiesToCount) {
         HashMap<ChemicalEntity, Integer> availableQSnares = new HashMap<>();
         for (ChemicalEntity snare : entitiesToCount) {
             double concentration = updatable.getConcentrationContainer().get(CellTopology.MEMBRANE, snare);

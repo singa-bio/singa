@@ -1,25 +1,23 @@
 package bio.singa.simulation.features;
 
 import bio.singa.features.model.Evidence;
-import bio.singa.features.model.QualitativeFeature;
-import bio.singa.simulation.model.agents.pointlike.VesicleStateRegistry.VesicleState;
 
 import java.util.List;
 
 /**
  * @author cl
  */
-public class BlackListVesicleStates  extends QualitativeFeature<List<VesicleState>> {
+public class BlackListVesicleStates  extends MultiStringFeature {
 
-    public BlackListVesicleStates(List<VesicleState> vesicleStates, List<Evidence> evidence) {
+    public BlackListVesicleStates(List<String> vesicleStates, List<Evidence> evidence) {
         super(vesicleStates, evidence);
     }
 
-    public BlackListVesicleStates(List<VesicleState> vesicleStates, Evidence evidence) {
+    public BlackListVesicleStates(List<String> vesicleStates, Evidence evidence) {
         super(vesicleStates, evidence);
     }
 
-    public BlackListVesicleStates(List<VesicleState> vesicleStates) {
+    public BlackListVesicleStates(List<String> vesicleStates) {
         super(vesicleStates);
     }
 

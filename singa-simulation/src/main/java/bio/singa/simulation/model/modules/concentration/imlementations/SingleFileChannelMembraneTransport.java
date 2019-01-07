@@ -62,7 +62,7 @@ public class SingleFileChannelMembraneTransport extends ConcentrationBasedModule
 
     private ChemicalEntity transporter;
     private ChemicalEntity cargo;
-    private Set<ChemicalEntity> solutes;
+    private List<ChemicalEntity> solutes;
 
     public SingleFileChannelMembraneTransport() {
 
@@ -181,19 +181,19 @@ public class SingleFileChannelMembraneTransport extends ConcentrationBasedModule
 
         @Override
         public BuildStep forSolute(ChemicalEntity solute) {
-            module.setFeature(new Solutes(Collections.singleton(solute), Evidence.NO_EVIDENCE));
+            module.setFeature(new Solutes(Collections.singletonList(solute), Evidence.NO_EVIDENCE));
             return this;
         }
 
         @Override
         public BuildStep forSolutes(ChemicalEntity... solutes) {
-            module.setFeature(new Solutes(new HashSet<>(Arrays.asList(solutes)), Evidence.NO_EVIDENCE));
+            module.setFeature(new Solutes(Arrays.asList(solutes), Evidence.NO_EVIDENCE));
             return this;
         }
 
         @Override
         public BuildStep forSolutes(Collection<ChemicalEntity> solutes) {
-            module.setFeature(new Solutes(new HashSet<>(solutes), Evidence.NO_EVIDENCE));
+            module.setFeature(new Solutes(new ArrayList<>(solutes), Evidence.NO_EVIDENCE));
             return this;
         }
 

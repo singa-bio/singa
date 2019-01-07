@@ -20,10 +20,6 @@ import tec.uom.se.ComparableQuantity;
 import javax.measure.Quantity;
 import javax.measure.quantity.Length;
 import java.util.*;
-
-import static bio.singa.simulation.model.agents.linelike.LineLikeAgent.FilamentType;
-import static bio.singa.simulation.model.agents.linelike.LineLikeAgent.FilamentType.MICROTUBULE;
-
 /**
  * @author cl
  */
@@ -78,7 +74,7 @@ public class LineLikeAgentAttachment extends QualitativeModule {
         LineLikeAgent closestFilament = null;
         Vector2D closestSegment = null;
         double closestDistance = Double.MAX_VALUE;
-        FilamentType filamentType = getFeature(AttachedFilament.class).getContent();
+        String filamentType = getFeature(AttachedFilament.class).getContent();
         // get closest relevant node
         for (AutomatonNode node : vesicle.getAssociatedNodes().keySet()) {
             // get relevant path
@@ -124,8 +120,8 @@ public class LineLikeAgentAttachment extends QualitativeModule {
     }
 
     private void attachVesicle(Vesicle vesicle, AttachmentInformation attachmentInformation) {
-        FilamentType filamentType = getFeature(AttachedFilament.class).getContent();
-        if (filamentType.equals(MICROTUBULE)) {
+        String filamentType = getFeature(AttachedFilament.class).getContent();
+        if (filamentType.equals(LineLikeAgent.MICROTUBULE)) {
             vesicle.setState(VesicleStateRegistry.MICROTUBULE_ATTACHED);
         } else {
             vesicle.setState(VesicleStateRegistry.ACTIN_ATTACHED);

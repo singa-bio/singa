@@ -70,7 +70,7 @@ public class Diffusion extends ConcentrationBasedModule<EntityDeltaFunction> {
         addDeltaFunction(function);
         // feature
         getRequiredFeatures().add(Diffusivity.class);
-        Set<ChemicalEntity> cargoes = getFeature(Cargoes.class).getContent();
+        List<ChemicalEntity> cargoes = getFeature(Cargoes.class).getContent();
         addReferencedEntities(cargoes);
     }
 
@@ -202,17 +202,17 @@ public class Diffusion extends ConcentrationBasedModule<EntityDeltaFunction> {
         }
 
         public BuildStep onlyFor(ChemicalEntity chemicalEntity) {
-            module.setFeature(new Cargoes(Collections.singleton(chemicalEntity), Evidence.NO_EVIDENCE));
+            module.setFeature(new Cargoes(Collections.singletonList(chemicalEntity), Evidence.NO_EVIDENCE));
             return this;
         }
 
         public BuildStep forAll(ChemicalEntity... chemicalEntities) {
-            module.setFeature(new Cargoes(new HashSet<>(Arrays.asList(chemicalEntities)), Evidence.NO_EVIDENCE));
+            module.setFeature(new Cargoes(Arrays.asList(chemicalEntities), Evidence.NO_EVIDENCE));
             return this;
         }
 
         public BuildStep forAll(Collection<ChemicalEntity> chemicalEntities) {
-            module.setFeature(new Cargoes(new HashSet<>(chemicalEntities), Evidence.NO_EVIDENCE));
+            module.setFeature(new Cargoes(new ArrayList<>(chemicalEntities), Evidence.NO_EVIDENCE));
             return this;
         }
 
