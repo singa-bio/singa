@@ -35,6 +35,10 @@ public class OsmoticPermeability extends ScalableQuantitativeFeature<OsmoticPerm
         super(osmoticPermeabilityQuantity, evidence);
     }
 
+    public OsmoticPermeability(Quantity<OsmoticPermeability> quantity) {
+        super(quantity);
+    }
+
     /**
      * Creates a new Instance of the {@link OsmoticPermeability} Feature. Quantity is interpreted as
      * {@link OsmoticPermeability#CUBIC_CENTIMETRE_PER_SECOND}.

@@ -15,7 +15,7 @@ public class CellRegions {
     public static final CellRegion EARLY_ENDOSOME_VESICLE_REGION = new CellRegion("Early Endosome", new GoTerm("GO:0005768", GOA_DATABASE));
 
     public static final CellRegion CELL_CORTEX = new CellRegion("Cell Cortex", new GoTerm("GO:0005938", GOA_DATABASE));
-    public static final CellRegion PERINUCLEAR_REGION = new CellRegion("", new GoTerm("GO:0048471", GOA_DATABASE));
+    public static final CellRegion PERINUCLEAR_REGION = new CellRegion("Perinuclear Region", new GoTerm("GO:0048471", GOA_DATABASE));
 
     static {
         CYTOPLASM_REGION.addSubsection(CellTopology.INNER, CellSubsections.CYTOPLASM);

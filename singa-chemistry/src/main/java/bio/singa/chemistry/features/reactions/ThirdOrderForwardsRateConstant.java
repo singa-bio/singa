@@ -19,4 +19,7 @@ public class ThirdOrderForwardsRateConstant extends ThirdOrderRateConstant imple
         super(Quantities.getQuantity(value, unit), evidence);
     }
 
+    public ThirdOrderForwardsRateConstant(Quantity<ThirdOrderRate> thirdOrderRateQuantity) {
+        super(thirdOrderRateQuantity);
+    }
 }

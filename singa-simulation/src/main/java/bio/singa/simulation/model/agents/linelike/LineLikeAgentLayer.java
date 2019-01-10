@@ -10,10 +10,7 @@ import bio.singa.simulation.model.agents.surfacelike.MembraneLayer;
 import bio.singa.simulation.model.agents.surfacelike.MembraneSegment;
 import bio.singa.simulation.model.simulation.Simulation;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
@@ -182,6 +179,10 @@ public class LineLikeAgentLayer {
             }
         }
         return false;
+    }
+
+    public void addFilaments(Collection<LineLikeAgent> filaments) {
+        this.filaments.addAll(filaments);
     }
 
     public void addMicrotubule(Vector2D initialPosition, Vector2D initialDirection) {

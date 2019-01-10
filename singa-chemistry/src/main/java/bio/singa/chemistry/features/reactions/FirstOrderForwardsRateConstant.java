@@ -20,5 +20,8 @@ public class FirstOrderForwardsRateConstant extends FirstOrderRateConstant imple
         super(Quantities.getQuantity(value, unit), evidence);
     }
 
+    public FirstOrderForwardsRateConstant(Quantity<FirstOrderRate> quantity) {
+        super(quantity);
+    }
 
 }

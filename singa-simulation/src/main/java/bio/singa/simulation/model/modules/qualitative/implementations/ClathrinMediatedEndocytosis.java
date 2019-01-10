@@ -13,16 +13,18 @@ import bio.singa.simulation.model.modules.concentration.ConcentrationDelta;
 import bio.singa.simulation.model.modules.concentration.ModuleState;
 import bio.singa.simulation.model.modules.qualitative.QualitativeModule;
 import bio.singa.simulation.model.sections.CellRegion;
+import bio.singa.simulation.model.sections.concentration.InitialConcentration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.measure.Quantity;
-import javax.measure.quantity.Area;
 import javax.measure.quantity.Length;
 import javax.measure.quantity.Time;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
+import static bio.singa.simulation.model.agents.pointlike.Vesicle.vesicleCounter;
 import static bio.singa.simulation.model.sections.CellTopology.MEMBRANE;
 
 /**
@@ -33,7 +35,7 @@ public class ClathrinMediatedEndocytosis extends QualitativeModule {
     private static final Logger logger = LoggerFactory.getLogger(ClathrinMediatedEndocytosis.class);
 
     private List<MembraneSegment> segments;
-    private Map<ChemicalEntity, AbstractMap.Entry<Quantity<Area>, Double>> initialMembraneCargo;
+    // private Map<ChemicalEntity, AbstractMap.Entry<Quantity<Area>, Double>> initialMembraneCargo;
 
     // pits that collect cargo
     private List<Pit> preAspiringPits;
@@ -47,7 +49,6 @@ public class ClathrinMediatedEndocytosis extends QualitativeModule {
     private List<Pit> maturedPits;
 
     public ClathrinMediatedEndocytosis() {
-        initialMembraneCargo = new HashMap<>();
         segments = new ArrayList<>();
         // pits
         preAspiringPits = new ArrayList<>();
@@ -215,7 +216,7 @@ public class ClathrinMediatedEndocytosis extends QualitativeModule {
     private void spawnVesicles() {
         for (Pit maturedPit : maturedPits) {
             logger.trace("Clathrin-coated pit at {} formed vesicle with {} cargo molecules.", maturedPit.spawnSite, MolarConcentration.concentrationToMolecules(maturedPit.getCargoConcentration()).getValue());
-            Vesicle vesicle = new Vesicle(maturedPit.getSpawnSite(), maturedPit.getSpawnRadius());
+            Vesicle vesicle = new Vesicle("Vesicle (endocytosis) " + vesicleCounter.getAndIncrement(), maturedPit.getSpawnSite(), maturedPit.getSpawnRadius());
             vesicle.setState(VesicleStateRegistry.ACTIN_PROPELLED);
             initializeCargo(vesicle, maturedPit);
             simulation.getVesicleLayer().addVesicle(vesicle);
@@ -231,18 +232,8 @@ public class ClathrinMediatedEndocytosis extends QualitativeModule {
      * @param maturedPit The original pit
      */
     private void initializeCargo(Vesicle vesicle, Pit maturedPit) {
-        for (Map.Entry<ChemicalEntity, Map.Entry<Quantity<Area>, Double>> entry : initialMembraneCargo.entrySet()) {
-            // get values
-            ChemicalEntity chemicalEntity = entry.getKey();
-            Quantity<Area> area = entry.getValue().getKey();
-            double number = entry.getValue().getValue();
-            // scale to vesicle surface
-            double molecules = vesicle.getArea().multiply(number / area.to(vesicle.getArea().getUnit())
-                    .getValue().doubleValue()).getValue().doubleValue();
-            // convert to concentration
-            double concentration = MolarConcentration.moleculesToConcentration(molecules);
-            // set concentration
-            vesicle.getConcentrationContainer().initialize(MEMBRANE, chemicalEntity, UnitRegistry.concentration(concentration));
+        for (InitialConcentration initialConcentration : simulation.getConcentrationInitializer().getInitialConcentrations()) {
+            initialConcentration.initialize(vesicle);
         }
         ChemicalEntity cargo = getFeature(Cargo.class).getContent();
         vesicle.getConcentrationContainer().initialize(MEMBRANE, cargo, UnitRegistry.concentration(maturedPit.getCargoConcentration()));
@@ -307,10 +298,6 @@ public class ClathrinMediatedEndocytosis extends QualitativeModule {
             aspiringPits.remove(abortedPit);
         }
         abortedPits.clear();
-    }
-
-    public void addMembraneCargo(Quantity<Area> referenceArea, double numberOfEntities, ChemicalEntity chemicalEntity) {
-        initialMembraneCargo.put(chemicalEntity, new AbstractMap.SimpleEntry<>(referenceArea, numberOfEntities));
     }
 
     public List<Pit> getAspiringPits() {

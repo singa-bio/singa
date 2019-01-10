@@ -206,8 +206,10 @@ public class Simulation {
     private void initializeVesicleLayer() {
         logger.info("Initializing vesicle layer and individual vesicles.");
         // initialize simulation space
+        if (simulationRegion == null) {
+            simulationRegion = new Rectangle(Environment.getSimulationExtend(), Environment.getSimulationExtend());
+        }
         vesicleLayer.setSimulation(this);
-        vesicleLayer.setSimulationRegion(new Rectangle(Environment.getSimulationExtend(), Environment.getSimulationExtend()));
         vesicleLayer.associateVesicles();
     }
 

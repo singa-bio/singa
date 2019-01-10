@@ -19,4 +19,8 @@ public class ThirdOrderBackwardsRateConstant extends ThirdOrderRateConstant impl
         super(Quantities.getQuantity(value, unit), evidence);
     }
 
+    public ThirdOrderBackwardsRateConstant(Quantity<ThirdOrderRate> quantity) {
+        super(quantity);
+    }
+
 }

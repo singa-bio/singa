@@ -117,7 +117,7 @@ public class LineLikeAgent {
         return plusEndBehaviour;
     }
 
-    void setPlusEndBehaviour(GrowthBehaviour plusEndBehaviour) {
+    public void setPlusEndBehaviour(GrowthBehaviour plusEndBehaviour) {
         this.plusEndBehaviour = plusEndBehaviour;
     }
 

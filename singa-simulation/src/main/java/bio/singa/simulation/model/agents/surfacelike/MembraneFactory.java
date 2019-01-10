@@ -65,14 +65,13 @@ public class MembraneFactory {
         return factory.membrane;
     }
 
-    public MembraneFactory(Collection<Vector2D> membraneVectors, AutomatonGraph graph, Map<Vector2D, CellRegion> regions) {
+    private MembraneFactory(Collection<Vector2D> membraneVectors, AutomatonGraph graph, Map<Vector2D, CellRegion> regions) {
         this.membraneVectors = membraneVectors;
         this.graph = graph;
         this.regions = regions;
     }
 
     private void initializeMembrane(CellRegion innerRegion, CellRegion membraneRegion) {
-        logger.info("Initializing membrane.");
         membrane = new Membrane(membraneRegion.getIdentifier());
         membrane.setInnerRegion(innerRegion);
         membrane.setMembraneRegion(membraneRegion);

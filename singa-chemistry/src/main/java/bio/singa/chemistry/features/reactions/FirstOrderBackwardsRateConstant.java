@@ -19,4 +19,8 @@ public class FirstOrderBackwardsRateConstant extends FirstOrderRateConstant impl
         super(Quantities.getQuantity(value, firstOrderRateQuantity), evidence);
     }
 
+    public FirstOrderBackwardsRateConstant(Quantity<FirstOrderRate> quantity) {
+        super(quantity);
+    }
+
 }

@@ -35,4 +35,5 @@ public class VolumeLikeAgent {
     public void setCellRegion(CellRegion cellRegion) {
         this.cellRegion = cellRegion;
     }
+
 }

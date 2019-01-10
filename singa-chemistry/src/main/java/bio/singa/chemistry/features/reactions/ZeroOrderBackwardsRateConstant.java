@@ -18,4 +18,8 @@ public class ZeroOrderBackwardsRateConstant extends ZeroOrderRateConstant implem
         super(value, unit, evidence);
     }
 
+    public ZeroOrderBackwardsRateConstant(Quantity<ZeroOrderRate> quantity) {
+        super(quantity);
+    }
+
 }

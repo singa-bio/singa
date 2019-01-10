@@ -19,4 +19,8 @@ public abstract class ZeroOrderRateConstant extends RateConstant<ZeroOrderRate> 
         super(Quantities.getQuantity(value, unit), evidence);
     }
 
+    public ZeroOrderRateConstant(Quantity<ZeroOrderRate> quantity) {
+        super(quantity);
+    }
+
 }

@@ -19,5 +19,8 @@ public class SecondOrderForwardsRateConstant extends SecondOrderRateConstant imp
         super(Quantities.getQuantity(value, unit), evidence);
     }
 
+    public SecondOrderForwardsRateConstant(Quantity<SecondOrderRate> quantity) {
+        super(quantity);
+    }
 
 }

@@ -34,7 +34,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class Vesicle implements Updatable, Featureable {
 
-    private static AtomicInteger vesicleCounter = new AtomicInteger();
+    public static AtomicInteger vesicleCounter = new AtomicInteger();
 
     protected static final Set<Class<? extends Feature>> availableFeatures = new HashSet<>();
 

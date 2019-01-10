@@ -73,6 +73,10 @@ public class VesicleLayer {
         vesicles.add(vesicle);
     }
 
+    public void addVesicles(Collection<Vesicle> vesicles) {
+        this.vesicles.addAll(vesicles);
+    }
+
     public void removeVesicle(Vesicle vesicle) {
         vesicles.remove(vesicle);
     }
