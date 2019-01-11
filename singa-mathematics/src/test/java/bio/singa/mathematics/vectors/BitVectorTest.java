@@ -62,4 +62,18 @@ class BitVectorTest {
         BitVector bitVector = BitVector.fromBitString(bitString);
         assertEquals(bitString, bitVector.toBitString());
     }
+
+    @Test
+    void isAllTrue() {
+    }
+
+    @Test
+    void isAllFalse() {
+    }
+
+    @Test
+    void concat() {
+        BitVector concat = firstBitVector.concat(secondBitVector);
+        assertArrayEquals(new boolean[]{true, false, true, true, false, true, true, true, false, true, false, false}, concat.getElements());
+    }
 }
