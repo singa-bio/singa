@@ -60,6 +60,7 @@ public abstract class Reaction extends ConcentrationBasedModule<SectionDeltaFunc
         } else {
             products.add(stoichiometricReactant);
         }
+        getSimulation().addReferencedEntity(stoichiometricReactant.getEntity());
     }
 
     public boolean substratesAvailable(Updatable updatable) {
@@ -235,49 +236,41 @@ public abstract class Reaction extends ConcentrationBasedModule<SectionDeltaFunc
 
         public BuilderType addSubstrate(ChemicalEntity chemicalEntity) {
             topLevelObject.addStochiometricReactant(new Reactant(chemicalEntity, SUBSTRATE));
-            topLevelObject.addReferencedEntity(chemicalEntity);
             return builderObject;
         }
 
         public BuilderType addSubstrate(ChemicalEntity chemicalEntity, CellTopology topology) {
             topLevelObject.addStochiometricReactant(new Reactant(chemicalEntity, SUBSTRATE, topology));
-            topLevelObject.addReferencedEntity(chemicalEntity);
             return builderObject;
         }
 
         public BuilderType addSubstrate(ChemicalEntity chemicalEntity, double stoichiometricNumber) {
             topLevelObject.addStochiometricReactant(new Reactant(chemicalEntity, SUBSTRATE, stoichiometricNumber));
-            topLevelObject.addReferencedEntity(chemicalEntity);
             return builderObject;
         }
 
         public BuilderType addSubstrate(ChemicalEntity chemicalEntity, CellTopology topology, double stoichiometricNumber) {
             topLevelObject.addStochiometricReactant(new Reactant(chemicalEntity, SUBSTRATE, topology, stoichiometricNumber));
-            topLevelObject.addReferencedEntity(chemicalEntity);
             return builderObject;
         }
 
         public BuilderType addSubstrate(ChemicalEntity chemicalEntity, double stoichiometricNumber, double reactionOrder) {
             topLevelObject.addStochiometricReactant(new Reactant(chemicalEntity, SUBSTRATE, stoichiometricNumber, reactionOrder));
-            topLevelObject.addReferencedEntity(chemicalEntity);
             return builderObject;
         }
 
         public BuilderType addProduct(ChemicalEntity chemicalEntity, CellTopology topology) {
             topLevelObject.addStochiometricReactant(new Reactant(chemicalEntity, PRODUCT, topology));
-            topLevelObject.addReferencedEntity(chemicalEntity);
             return builderObject;
         }
 
         public BuilderType addProduct(ChemicalEntity chemicalEntity) {
             topLevelObject.addStochiometricReactant(new Reactant(chemicalEntity, PRODUCT));
-            topLevelObject.addReferencedEntity(chemicalEntity);
             return builderObject;
         }
 
         public BuilderType addProduct(ChemicalEntity chemicalEntity, double stoichiometricNumber) {
             topLevelObject.addStochiometricReactant(new Reactant(chemicalEntity, PRODUCT, stoichiometricNumber));
-            topLevelObject.addReferencedEntity(chemicalEntity);
             return builderObject;
         }
 

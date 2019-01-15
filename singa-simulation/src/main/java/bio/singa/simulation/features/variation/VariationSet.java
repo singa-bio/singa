@@ -53,4 +53,8 @@ public class VariationSet {
         }
     }
 
+    @Override
+    public String toString() {
+        return variations.toString();
+    }
 }

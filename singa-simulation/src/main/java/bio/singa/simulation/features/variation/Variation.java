@@ -28,5 +28,4 @@ public abstract class Variation<FeatureType> {
 
     public abstract Object create(Object featureType);
 
-
 }

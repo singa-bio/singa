@@ -46,7 +46,7 @@ import static bio.singa.simulation.model.modules.concentration.reactants.Reactan
  *  // create reaction
  *  ReversibleReaction.inSimulation(simulation)
  *         .addSubstrate(speciesA)
- *         .addProduct(speciesB)
+ *         .addNode(speciesB)
  *         .forwardsRateConstant(forwardsRate)
  *         .backwardsRateConstant(backwardsRate)
  *         .build();</pre>

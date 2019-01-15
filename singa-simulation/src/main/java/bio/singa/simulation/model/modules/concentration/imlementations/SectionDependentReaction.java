@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static bio.singa.simulation.model.modules.concentration.reactants.ReactantRole.PRODUCT;
 import static bio.singa.simulation.model.modules.concentration.reactants.ReactantRole.SUBSTRATE;
@@ -101,6 +102,7 @@ public class SectionDependentReaction extends ConcentrationBasedModule<Updatable
         } else {
             products.add(stoichiometricReactant);
         }
+        getSimulation().addReferencedEntity(stoichiometricReactant.getEntity());
     }
 
     public boolean substratesAvailable(Updatable updatable) {
@@ -317,6 +319,38 @@ public class SectionDependentReaction extends ConcentrationBasedModule<Updatable
         return backwardsReactionRate.getScaledQuantity();
     }
 
+    /**
+     * Returns a nicely formatted string representation of the reaction.
+     *
+     * @return A nicely formatted string representation of the reaction.
+     */
+    public String getReactionString() {
+        String substrates = collectSubstrateString();
+        String products = collectProductsString();
+        if (substrates.length() > 1 && Character.isWhitespace(substrates.charAt(0))) {
+            substrates = substrates.substring(1);
+        }
+        return substrates + " \u27f6 " + products;
+    }
+
+    protected String collectSubstrateString() {
+        return substrates.stream()
+                .map(substrate -> (substrate.getStoichiometricNumber() > 1 ? substrate.getStoichiometricNumber() : "") + " "
+                        + substrate.getEntity().getIdentifier())
+                .collect(Collectors.joining(" +"));
+    }
+
+    protected String collectProductsString() {
+        return products.stream()
+                .map(product -> (product.getStoichiometricNumber() > 1 ? product.getStoichiometricNumber() : "") + " "
+                        + product.getEntity().getIdentifier())
+                .collect(Collectors.joining(" +"));
+    }
+
+    public static ModuleBuilder getBuilder(Simulation simulation) {
+        return new SectionDependentReaction.SectionDependentReactionBuilder(simulation);
+    }
+
     public static class SectionDependentReactionBuilder implements ModuleBuilder {
 
         private SectionDependentReaction module;
@@ -337,6 +371,7 @@ public class SectionDependentReaction extends ConcentrationBasedModule<Updatable
             module = ModuleFactory.setupModule(SectionDependentReaction.class,
                     ModuleFactory.Scope.SEMI_NEIGHBOURHOOD_DEPENDENT,
                     ModuleFactory.Specificity.UPDATABLE_SPECIFIC);
+            module.setSimulation(simulation);
             return module;
         }
 
