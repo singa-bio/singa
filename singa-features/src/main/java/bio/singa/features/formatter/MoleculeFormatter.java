@@ -9,7 +9,7 @@ import javax.measure.quantity.Dimensionless;
 /**
  * @author cl
  */
-public class MoleculeFormatter implements QuantityFormatter<MolarConcentration> {
+public class MoleculeFormatter implements GeneralConcentrationFormatter {
 
     private static MoleculeFormatter instance = getInstance();
 
@@ -26,17 +26,12 @@ public class MoleculeFormatter implements QuantityFormatter<MolarConcentration> 
         }
     }
 
-    private MoleculeFormatter() {
-
-    }
-
     @Override
     public String format(Quantity<MolarConcentration> quantity) {
         Quantity<Dimensionless> molecules = MolarConcentration.concentrationToMolecules(quantity.to(UnitRegistry.getConcentrationUnit()).getValue().doubleValue());
         return molecules.getValue().toString();
     }
 
-    @Override
     public String format(double defaultQuantity) {
         return format(UnitRegistry.concentration(defaultQuantity));
     }

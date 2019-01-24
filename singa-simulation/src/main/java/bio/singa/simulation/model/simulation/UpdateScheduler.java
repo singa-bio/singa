@@ -3,12 +3,14 @@ package bio.singa.simulation.model.simulation;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.simulation.model.modules.UpdateModule;
 import bio.singa.simulation.model.modules.concentration.LocalError;
-import bio.singa.simulation.model.modules.concentration.ModuleState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.ListIterator;
+import java.util.concurrent.CountDownLatch;
+
+import static bio.singa.simulation.model.modules.concentration.ModuleState.SUCCEEDED_WITH_PENDING_CHANGES;
 
 /**
  * @author cl
@@ -30,9 +32,10 @@ public class UpdateScheduler {
     private UpdateModule module;
     private double recalculationCutoff = DEFAULT_RECALCULATION_CUTOFF;
 
-    private boolean timestepRescaled = true;
+    private boolean timestepRescaled;
     private LocalError largestError;
-    private int processedModules;
+
+    private CountDownLatch countDownLatch;
 
     public UpdateScheduler(Simulation simulation) {
         this.simulation = simulation;
@@ -53,19 +56,39 @@ public class UpdateScheduler {
         simulation.collectUpdatables();
         updatables = simulation.getUpdatables();
         moduleIterator = modules.listIterator();
+
         // until all models passed
-        module = moduleIterator.next();
-        timestepRescaled = false;
         do {
-            processedModules = 0;
-            while (processedModules < modules.size()) {
-                processModuleByState(module.getState());
+            if (timestepRescaled) {
+                resetCalculation();
             }
-        } while (!spatialDisplacementIsValid());
+            timestepRescaled = false;
+
+            countDownLatch = new CountDownLatch(getNumberOfModules());
+            logger.debug("Starting with latch at {}.", countDownLatch.getCount());
+
+            int i = 0;
+            while (moduleIterator.hasNext()) {
+                i++;
+                module = moduleIterator.next();
+                Thread thread = new Thread(module, "Module " + i);
+                thread.start();
+            }
+
+            try {
+                countDownLatch.await();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            // evaluate total spatial displacement
+            spatialDisplacementIsValid();
+
+        } while (timestepRescaled);
 
         // resolve pending changes
         for (UpdateModule updateModule : modules) {
-            if (updateModule.getState() == ModuleState.SUCCEEDED_WITH_PENDING_CHANGES) {
+            if (updateModule.getState().equals(SUCCEEDED_WITH_PENDING_CHANGES)) {
                 updateModule.onCompletion();
             }
         }
@@ -74,52 +97,6 @@ public class UpdateScheduler {
         // wrap up
         finalizeDeltas();
         modules.forEach(UpdateModule::resetState);
-    }
-
-    private void processModuleByState(ModuleState state) {
-        logger.debug("{} is {}", module.toString(), module.getState().name());
-        switch (state) {
-            case PENDING:
-                // calculate update
-                module.calculateUpdates();
-                break;
-            case SUCCEEDED:
-            case SUCCEEDED_WITH_PENDING_CHANGES:
-                // continue with next module
-                if (moduleIterator.hasNext()) {
-                    module = moduleIterator.next();
-                }
-                processedModules++;
-                break;
-            case REQUIRING_RECALCULATION:
-                // optimize time step
-                module.optimizeTimeStep();
-                // reset states
-                modules.stream()
-                        .filter(m -> m != module)
-                        .forEach(UpdateModule::resetState);
-                // clear deltas that have previously been calculated
-                updatables.forEach(updatable -> updatable.clearPotentialDeltasBut(module));
-                // start from the beginning
-                moduleIterator = modules.listIterator();
-                module = moduleIterator.next();
-                break;
-            case ERRORED:
-                throw new IllegalStateException("Module " + module + " errored. Sorry.");
-        }
-    }
-
-    private boolean spatialDisplacementIsValid() {
-        if (simulation.getVesicleLayer().getVesicles().isEmpty()) {
-            return true;
-        }
-        if (!simulation.getVesicleLayer().deltasAreBelowDisplacementCutoff()) {
-            decreaseTimeStep();
-            simulation.getVesicleLayer().clearUpdates();
-            modules.forEach(UpdateModule::resetState);
-            return false;
-        }
-        return true;
     }
 
     public LocalError getLargestError() {
@@ -147,6 +124,41 @@ public class UpdateScheduler {
             updatable.shiftDeltas();
         }
         // potential updates for vesicles are already set during displacement evaluation
+    }
+
+    public CountDownLatch getCountDownLatch() {
+        return countDownLatch;
+    }
+
+    public int getNumberOfModules() {
+        return modules.size();
+    }
+
+    public void resetCalculation() {
+        logger.debug("Resetting calculations.");
+        // reset states
+        modules.stream()
+                .filter(m -> m != module)
+                .forEach(UpdateModule::resetState);
+        // clear deltas that have previously been calculated
+        updatables.forEach(updatable -> updatable.clearPotentialDeltasBut(module));
+        // start from the beginning
+        moduleIterator = modules.listIterator();
+        // start from the beginning
+        moduleIterator = modules.listIterator();
+    }
+
+    private boolean spatialDisplacementIsValid() {
+        if (simulation.getVesicleLayer().getVesicles().isEmpty()) {
+            return true;
+        }
+        if (!simulation.getVesicleLayer().deltasAreBelowDisplacementCutoff()) {
+            decreaseTimeStep();
+            simulation.getVesicleLayer().clearUpdates();
+            modules.forEach(UpdateModule::resetState);
+            return false;
+        }
+        return true;
     }
 
 }

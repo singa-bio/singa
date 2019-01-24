@@ -125,9 +125,6 @@ class ComplexBuildingReactionTest {
                 .additionalIdentifier(new ChEBIIdentifier("CHEBI:8364"))
                 .build();
 
-        // the corresponding rate constants
-        RateConstant forwardsRate = RateConstant.create(2.4e8).forward().secondOrder().concentrationUnit(MOLE_PER_LITRE).timeUnit(MINUTE).build();
-        RateConstant backwardsRate = RateConstant.create(0.018).backward().firstOrder().timeUnit(MINUTE).build();
         // alpha-1 adrenergic receptor, P35348
         Receptor receptor = new Receptor.Builder("receptor")
                 .name("alpha-1 adrenergic receptor")
@@ -145,6 +142,18 @@ class ComplexBuildingReactionTest {
         membraneNode.setCellRegion(CellRegion.MEMBRANE);
         membraneNode.getConcentrationContainer().initialize(SECTION_A, ligand, UnitRegistry.concentration(0.1, MOLE_PER_LITRE));
         membraneNode.getConcentrationContainer().initialize(CellSubsection.MEMBRANE, receptor, UnitRegistry.concentration(0.1, MOLE_PER_LITRE));
+
+        // the corresponding rate constants
+        RateConstant forwardsRate = RateConstant.create(2.4e8)
+                .forward().secondOrder()
+                .concentrationUnit(MOLE_PER_LITRE)
+                .timeUnit(MINUTE)
+                .build();
+
+        RateConstant backwardsRate = RateConstant.create(0.018)
+                .backward().firstOrder()
+                .timeUnit(MINUTE)
+                .build();
 
         // create and add module
         ComplexBuildingReaction reaction = ComplexBuildingReaction.inSimulation(simulation)

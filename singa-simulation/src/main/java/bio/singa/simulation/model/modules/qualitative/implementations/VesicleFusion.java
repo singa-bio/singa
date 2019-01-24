@@ -18,12 +18,17 @@ import bio.singa.simulation.model.sections.CellTopology;
 import bio.singa.simulation.model.sections.ConcentrationContainer;
 import bio.singa.simulation.model.sections.ConcentrationPool;
 import bio.singa.simulation.model.simulation.Updatable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import tec.uom.se.ComparableQuantity;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Length;
 import javax.measure.quantity.Time;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
 
@@ -31,6 +36,8 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author cl
  */
 public class VesicleFusion extends QualitativeModule {
+
+    private static final Logger logger = LoggerFactory.getLogger(VesicleFusion.class);
 
     private Map<Vesicle, Quantity<Time>> tetheredVesicles;
     private Map<Vesicle, AutomatonNode> tetheredNodes;
@@ -99,6 +106,7 @@ public class VesicleFusion extends QualitativeModule {
 
     @Override
     public void onCompletion() {
+        logger.debug("Applying pending changes for {}.", this);
         // fuse vesicles
         for (Vesicle fusingVesicle : fusingVesicles) {
             fuse(fusingVesicle);
@@ -108,7 +116,6 @@ public class VesicleFusion extends QualitativeModule {
         // tether vesicles
         for (Map.Entry<Vesicle, TetheringSnares> entry : tetheringVesicles.entrySet()) {
             tetherVesicle(entry.getKey(), entry.getValue());
-            // simulation.getVesicleLayer().removeVesicle(entry.getKey());
         }
     }
 

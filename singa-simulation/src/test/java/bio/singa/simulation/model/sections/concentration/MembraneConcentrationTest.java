@@ -10,6 +10,7 @@ import bio.singa.simulation.model.agents.surfacelike.MembraneTracer;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.graphs.AutomatonNode;
+import bio.singa.simulation.model.sections.CellRegion;
 import bio.singa.simulation.model.simulation.Simulation;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -18,7 +19,6 @@ import tec.uom.se.quantity.Quantities;
 import javax.measure.quantity.Area;
 
 import static bio.singa.simulation.model.sections.CellRegions.CELL_OUTER_MEMBRANE_REGION;
-import static bio.singa.simulation.model.sections.CellRegions.EARLY_ENDOSOME_VESICLE_REGION;
 import static bio.singa.simulation.model.sections.CellTopology.MEMBRANE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static tec.uom.se.unit.MetricPrefix.MICRO;
@@ -46,12 +46,9 @@ class MembraneConcentrationTest {
         // vesicles
         VesicleLayer vesicles = new VesicleLayer(simulation);
         Vesicle vesicle = new Vesicle(new Vector2D(20.0, 20.0), Quantities.getQuantity(50, NANO(METRE)));
-        vesicle.setRegion(EARLY_ENDOSOME_VESICLE_REGION);
         vesicles.addVesicle(vesicle);
         simulation.setVesicleLayer(vesicles);
         MembraneTracer.regionsToMembrane(graph);
-        // inititalize
-        simulation.initializeSpatialRepresentations();
     }
 
     @Test
@@ -66,7 +63,8 @@ class MembraneConcentrationTest {
     @Test
     void testVesicleMembraneInitialization() {
         ConcentrationInitializer ci = new ConcentrationInitializer();
-        ci.addInitialConcentration(new MembraneConcentration(EARLY_ENDOSOME_VESICLE_REGION, entity,
+        CellRegion vesicleRegion = new CellRegion("Vesicle");
+        ci.addInitialConcentration(new MembraneConcentration(vesicleRegion, entity,
                 Quantities.getQuantity(1, MICRO(METRE).pow(2)).asType(Area.class), 1000, Evidence.NO_EVIDENCE));
         ci.initialize(simulation);
         assertEquals(5.2167372504050236E-14, simulation.getVesicleLayer().getVesicles().iterator().next().getConcentrationContainer().get(MEMBRANE, entity));

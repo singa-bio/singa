@@ -4,9 +4,6 @@ import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.chemistry.entities.SmallMolecule;
 import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.features.units.UnitRegistry;
-import bio.singa.mathematics.vectors.Vector2D;
-import bio.singa.simulation.model.agents.pointlike.Vesicle;
-import bio.singa.simulation.model.agents.pointlike.VesicleLayer;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.graphs.AutomatonNode;
@@ -20,10 +17,7 @@ import tec.uom.se.quantity.Quantities;
 
 import static bio.singa.features.units.UnitProvider.NANO_MOLE_PER_LITRE;
 import static bio.singa.simulation.model.sections.CellRegions.CELL_OUTER_MEMBRANE_REGION;
-import static bio.singa.simulation.model.sections.CellRegions.EARLY_ENDOSOME_VESICLE_REGION;
-import static org.junit.jupiter.api.Assertions.*;
-import static tec.uom.se.unit.MetricPrefix.NANO;
-import static tec.uom.se.unit.Units.METRE;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author cl
@@ -43,13 +37,6 @@ class SectionConcentrationTest {
         simulation.setGraph(graph);
         // entity
         entity = SmallMolecule.create("entity").build();
-        // vesicles
-        VesicleLayer vesicles = new VesicleLayer(simulation);
-        Vesicle vesicle = new Vesicle(new Vector2D(20.0, 20.0), Quantities.getQuantity(20, NANO(METRE)));
-        vesicle.setRegion(EARLY_ENDOSOME_VESICLE_REGION);
-        simulation.setVesicleLayer(vesicles);
-        // inititalize
-        simulation.initializeSpatialRepresentations();
     }
 
     @Test

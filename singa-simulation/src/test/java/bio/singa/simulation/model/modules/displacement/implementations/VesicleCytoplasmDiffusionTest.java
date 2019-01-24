@@ -55,7 +55,6 @@ class VesicleCytoplasmDiffusionTest {
         VesicleCytoplasmDiffusion vesicleDiffusion = new VesicleCytoplasmDiffusion();
         vesicleDiffusion.setSimulation(simulation);
         simulation.getModules().add(vesicleDiffusion);
-        simulation.initializeSpatialRepresentations();
 
         for (int i = 0; i < 10; i++) {
             simulation.nextEpoch();

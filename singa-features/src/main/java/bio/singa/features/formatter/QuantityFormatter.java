@@ -9,6 +9,4 @@ public interface QuantityFormatter<UnitType extends Quantity<UnitType>>  {
 
     String format(Quantity<UnitType> quantity);
 
-    String format(double defaultQuantity);
-
 }

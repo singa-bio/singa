@@ -2,9 +2,10 @@ package bio.singa.simulation.events;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.core.events.UpdateEventListener;
+import bio.singa.features.formatter.ConcentrationFormatter;
+import bio.singa.features.formatter.GeneralConcentrationFormatter;
 import bio.singa.features.formatter.GeneralQuantityFormatter;
 import bio.singa.features.formatter.QuantityFormatter;
-import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.simulation.model.modules.UpdateModule;
 import bio.singa.simulation.model.modules.concentration.ConcentrationBasedModule;
 import bio.singa.simulation.model.modules.concentration.ConcentrationDelta;
@@ -96,7 +97,7 @@ public class EpochUpdateWriter implements UpdateEventListener<UpdatableUpdatedEv
     /**
      * The formatter for concentration based values.
      */
-    private QuantityFormatter<MolarConcentration> concentrationFormatter = new GeneralQuantityFormatter<>(MOLE_PER_LITRE, false);
+    private GeneralConcentrationFormatter concentrationFormatter = ConcentrationFormatter.forUnit(MOLE_PER_LITRE);
 
 
     private Simulation simulation;
@@ -385,7 +386,7 @@ public class EpochUpdateWriter implements UpdateEventListener<UpdatableUpdatedEv
 
     public interface ConcentrationUnitStep {
 
-        TimeUnitStep concentrationFormat(QuantityFormatter<MolarConcentration> quantityFormatter);
+        TimeUnitStep concentrationFormat(GeneralConcentrationFormatter quantityFormatter);
 
         EpochUpdateWriter build();
 
@@ -460,7 +461,7 @@ public class EpochUpdateWriter implements UpdateEventListener<UpdatableUpdatedEv
         }
 
         @Override
-        public TimeUnitStep concentrationFormat(QuantityFormatter<MolarConcentration> concentrationFormatter) {
+        public TimeUnitStep concentrationFormat(GeneralConcentrationFormatter concentrationFormatter) {
             writer.concentrationFormatter = concentrationFormatter;
             return this;
         }

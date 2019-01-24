@@ -61,7 +61,6 @@ public class TimeFormatter implements QuantityFormatter<Time> {
         return truncated + " " + bestUnit;
     }
 
-    @Override
     public String format(double defaultQuantity) {
         return format(Quantities.getQuantity(defaultQuantity, UnitRegistry.getDefaultUnit(SECOND)));
     }

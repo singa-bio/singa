@@ -248,7 +248,7 @@ public class VesicleLayer {
 
     public void clearUpdates() {
         for (Vesicle vesicle : vesicles) {
-            vesicle.clearPotentialConcentrationDeltas();
+            // vesicle.clearPotentialConcentrationDeltas();
             vesicle.clearPotentialDisplacementDeltas();
             vesicle.resetNextPosition();
         }

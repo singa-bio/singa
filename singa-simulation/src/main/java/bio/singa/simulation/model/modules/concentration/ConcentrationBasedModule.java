@@ -12,6 +12,7 @@ import bio.singa.simulation.model.modules.concentration.specifity.UpdateSpecific
 import bio.singa.simulation.model.parameters.FeatureManager;
 import bio.singa.simulation.model.simulation.Simulation;
 import bio.singa.simulation.model.simulation.Updatable;
+import bio.singa.simulation.model.simulation.UpdateScheduler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -118,6 +119,32 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
     @Override
     public void initialize() {
 
+    }
+
+    @Override
+    public void run() {
+        UpdateScheduler scheduler = getSimulation().getScheduler();
+        while (state == PENDING || state == REQUIRING_RECALCULATION) {
+            switch (state) {
+                case PENDING:
+                    // calculate update
+                    logger.debug("calculating updates for {}.", Thread.currentThread().getName());
+                    calculateUpdates();
+                    break;
+                case SUCCEEDED:
+                case SUCCEEDED_WITH_PENDING_CHANGES:
+                    break;
+                case REQUIRING_RECALCULATION:
+                    // optimize time step
+                    logger.debug("{} requires recalculation.", Thread.currentThread().getName());
+                    optimizeTimeStep();
+                    break;
+                case ERRORED:
+                    throw new IllegalStateException("Module " + getIdentifier() + " errored. Sorry.");
+            }
+        }
+        scheduler.getCountDownLatch().countDown();
+        logger.debug("successfully finished {}, latch at {}.", Thread.currentThread().getName(), scheduler.getCountDownLatch().getCount());
     }
 
     /**
@@ -402,7 +429,7 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
         // safety check
         Objects.requireNonNull(largestIdentifier);
         LocalError localError = new LocalError(largestIdentifier.getUpdatable(), largestIdentifier.getEntity(), largestLocalError);
-        logger.debug("The largest error was {} for {}", localError.getValue(), localError.getUpdatable());
+        logger.debug("The largest error for {} was {} at {}", Thread.currentThread().getName(), localError.getValue(), localError.getUpdatable().getStringIdentifier());
         // set local error and return local error
         return localError;
     }

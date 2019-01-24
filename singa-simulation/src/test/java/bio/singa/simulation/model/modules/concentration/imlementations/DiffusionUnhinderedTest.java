@@ -71,7 +71,7 @@ class DiffusionUnhinderedTest {
         Simulation simulation = setUpSimulation(10, hydrogen);
         Quantity<Time> actualHalfLifeTime = runSimulation(simulation, 10, hydrogen);
         // test results
-        assertEquals(Quantities.getQuantity(130, MICRO(SECOND)).getValue().doubleValue(), actualHalfLifeTime.getValue().doubleValue(), 1);
+        assertEquals(Quantities.getQuantity(133, MICRO(SECOND)).getValue().doubleValue(), actualHalfLifeTime.getValue().doubleValue(), 1);
         Environment.reset();
     }
 
@@ -82,7 +82,7 @@ class DiffusionUnhinderedTest {
         Simulation simulation = setUpSimulation(20, hydrogen);
         Quantity<Time> actualHalfLifeTime = runSimulation(simulation, 20, hydrogen);
         // test results
-        assertEquals(Quantities.getQuantity(134, MICRO(SECOND)).getValue().doubleValue(), actualHalfLifeTime.getValue().doubleValue(), 1);
+        assertEquals(Quantities.getQuantity(135, MICRO(SECOND)).getValue().doubleValue(), actualHalfLifeTime.getValue().doubleValue(), 1);
         Environment.reset();
     }
 
@@ -93,7 +93,7 @@ class DiffusionUnhinderedTest {
         Simulation simulation = setUpSimulation(30, ammonia);
         Quantity<Time> actualHalfLifeTime = runSimulation(simulation, 30, ammonia);
         // test results
-        assertEquals(Quantities.getQuantity(260, MICRO(SECOND)).getValue().doubleValue(), actualHalfLifeTime.getValue().doubleValue(), 1);
+        assertEquals(Quantities.getQuantity(261, MICRO(SECOND)).getValue().doubleValue(), actualHalfLifeTime.getValue().doubleValue(), 1);
         Environment.reset();
     }
 
@@ -104,7 +104,7 @@ class DiffusionUnhinderedTest {
         Simulation simulation = setUpSimulation(30, benzene);
         Quantity<Time> actualHalfLifeTime = runSimulation(simulation, 30, benzene);
         // test results
-        assertEquals(Quantities.getQuantity(544, MICRO(SECOND)).getValue().doubleValue(), actualHalfLifeTime.getValue().doubleValue(), 1);
+        assertEquals(Quantities.getQuantity(546, MICRO(SECOND)).getValue().doubleValue(), actualHalfLifeTime.getValue().doubleValue(), 1);
         Environment.reset();
     }
 

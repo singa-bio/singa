@@ -34,6 +34,6 @@ public enum ModuleState {
     /**
      * Some error has occurred during calculation.
      */
-    ERRORED
+    ERRORED;
 
 }

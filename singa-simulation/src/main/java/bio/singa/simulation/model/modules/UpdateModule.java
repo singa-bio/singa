@@ -12,7 +12,7 @@ import java.util.Set;
 /**
  * @author cl
  */
-public interface UpdateModule {
+public interface UpdateModule extends Runnable {
 
     String getIdentifier();
     Set<ChemicalEntity> getReferencedEntities();

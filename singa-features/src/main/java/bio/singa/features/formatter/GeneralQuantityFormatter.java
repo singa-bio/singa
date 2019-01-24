@@ -71,8 +71,4 @@ public class GeneralQuantityFormatter<UnitType extends Quantity<UnitType>> imple
         return targetUnit;
     }
 
-    public String format(double quantityValue) {
-        return valueFormat.format(quantityValue) + (displayUnit ? " " + targetUnit.toString() : "");
-    }
-
 }

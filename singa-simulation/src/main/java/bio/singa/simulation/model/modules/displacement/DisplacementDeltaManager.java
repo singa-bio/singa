@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -43,7 +44,7 @@ public class DisplacementDeltaManager {
     public DisplacementDeltaManager(Vector2D initialPosition) {
         currentPosition = initialPosition;
         nextPosition = initialPosition;
-        potentialSpatialDeltas = new ArrayList<>();
+        potentialSpatialDeltas = Collections.synchronizedList(new ArrayList<>());
     }
 
     /**
