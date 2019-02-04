@@ -134,7 +134,7 @@ public class MembraneDiffusion extends ConcentrationBasedModule<UpdatableDeltaFu
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + " (" + cargo.getName() + ")";
+        return getClass().getSimpleName() + " (" + cargo.getIdentifier() + ")";
     }
 
     public interface CargoStep {

@@ -4,6 +4,7 @@ import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.chemistry.features.reactions.RateConstant;
 import bio.singa.chemistry.features.reactions.ZeroOrderRateConstant;
 import bio.singa.features.model.Feature;
+import bio.singa.simulation.export.latexformat.FormatReactionEquation;
 import bio.singa.simulation.model.modules.concentration.ModuleBuilder;
 import bio.singa.simulation.model.modules.concentration.ModuleFactory;
 import bio.singa.simulation.model.modules.concentration.functions.SectionDeltaFunction;
@@ -17,8 +18,6 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 /**
- *
- *
  * @author cl
  */
 public class NthOrderReaction extends Reaction {
@@ -99,6 +98,11 @@ public class NthOrderReaction extends Reaction {
             return rateConstant.getHalfScaledQuantity();
         }
         return rateConstant.getScaledQuantity();
+    }
+
+    @Override
+    public String getReactionString() {
+        return FormatReactionEquation.formatASCII(this);
     }
 
     public static ModuleBuilder getBuilder(Simulation simulation) {

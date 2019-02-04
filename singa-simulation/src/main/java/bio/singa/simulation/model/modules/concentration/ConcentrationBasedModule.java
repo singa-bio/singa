@@ -137,14 +137,19 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
                 case REQUIRING_RECALCULATION:
                     // optimize time step
                     logger.debug("{} requires recalculation.", Thread.currentThread().getName());
-                    optimizeTimeStep();
+                    boolean prioritizedModule = scheduler.interruptAllBut(Thread.currentThread(), this);
+                    if (prioritizedModule) {
+                        optimizeTimeStep();
+                    } else {
+                        state = INTERRUPTED;
+                    }
                     break;
                 case ERRORED:
                     throw new IllegalStateException("Module " + getIdentifier() + " errored. Sorry.");
             }
         }
         scheduler.getCountDownLatch().countDown();
-        logger.debug("successfully finished {}, latch at {}.", Thread.currentThread().getName(), scheduler.getCountDownLatch().getCount());
+        logger.debug("Module finished {}, latch at {}.", Thread.currentThread().getName(), scheduler.getCountDownLatch().getCount());
     }
 
     /**
@@ -583,7 +588,7 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + (getIdentifier() != null ? " " + getIdentifier() : "");
+        return getIdentifier();
     }
 
 }

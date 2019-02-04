@@ -6,6 +6,7 @@ import bio.singa.chemistry.features.reactions.BackwardsRateConstant;
 import bio.singa.chemistry.features.reactions.ForwardsRateConstant;
 import bio.singa.chemistry.features.reactions.RateConstant;
 import bio.singa.features.model.Feature;
+import bio.singa.simulation.export.latexformat.FormatReactionEquation;
 import bio.singa.simulation.model.agents.pointlike.Vesicle;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.modules.concentration.*;
@@ -284,9 +285,7 @@ public class ComplexBuildingReaction extends ConcentrationBasedModule<UpdatableD
     }
 
     public String getReactionString() {
-        String substrates = binder.getIdentifier() + " + " + bindee.getIdentifier();
-        String products = complex.getIdentifier().toString();
-        return substrates + " \u21CB " + products;
+        return FormatReactionEquation.formatASCII(this);
     }
 
     @Override
@@ -352,7 +351,7 @@ public class ComplexBuildingReaction extends ConcentrationBasedModule<UpdatableD
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + ": " + getIdentifier() + " (" + getReactionString() + ")";
+        return getIdentifier() + " (" + getReactionString() + ")";
     }
 
     public interface BindeeSelection {

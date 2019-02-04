@@ -4,6 +4,7 @@ import bio.singa.chemistry.features.reactions.BackwardsRateConstant;
 import bio.singa.chemistry.features.reactions.ForwardsRateConstant;
 import bio.singa.chemistry.features.reactions.RateConstant;
 import bio.singa.features.model.Feature;
+import bio.singa.simulation.export.latexformat.FormatReactionEquation;
 import bio.singa.simulation.model.modules.concentration.ModuleBuilder;
 import bio.singa.simulation.model.modules.concentration.ModuleFactory;
 import bio.singa.simulation.model.modules.concentration.functions.SectionDeltaFunction;
@@ -95,16 +96,6 @@ public class ReversibleReaction extends Reaction {
     }
 
     @Override
-    public String getReactionString() {
-        String substrates = collectSubstrateString();
-        String products = collectProductsString();
-        if (Character.isWhitespace(substrates.charAt(0))) {
-            substrates = substrates.substring(1);
-        }
-        return substrates + " \u21CB" + products;
-    }
-
-    @Override
     public void checkFeatures() {
         boolean forwardsRateFound = false;
         boolean backwardsRateFound = false;
@@ -159,6 +150,11 @@ public class ReversibleReaction extends Reaction {
             return backwardsReactionRate.getHalfScaledQuantity();
         }
         return backwardsReactionRate.getScaledQuantity();
+    }
+
+    @Override
+    public String getReactionString() {
+        return FormatReactionEquation.formatASCII(this);
     }
 
     public static ModuleBuilder getBuilder(Simulation simulation) {

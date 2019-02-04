@@ -5,6 +5,7 @@ import bio.singa.chemistry.features.reactions.BackwardsRateConstant;
 import bio.singa.chemistry.features.reactions.ForwardsRateConstant;
 import bio.singa.chemistry.features.reactions.RateConstant;
 import bio.singa.features.model.Feature;
+import bio.singa.simulation.export.latexformat.FormatReactionEquation;
 import bio.singa.simulation.model.agents.pointlike.Vesicle;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.modules.concentration.*;
@@ -23,7 +24,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static bio.singa.simulation.model.modules.concentration.reactants.ReactantRole.PRODUCT;
 import static bio.singa.simulation.model.modules.concentration.reactants.ReactantRole.SUBSTRATE;
@@ -319,32 +319,13 @@ public class SectionDependentReaction extends ConcentrationBasedModule<Updatable
         return backwardsReactionRate.getScaledQuantity();
     }
 
-    /**
-     * Returns a nicely formatted string representation of the reaction.
-     *
-     * @return A nicely formatted string representation of the reaction.
-     */
     public String getReactionString() {
-        String substrates = collectSubstrateString();
-        String products = collectProductsString();
-        if (substrates.length() > 1 && Character.isWhitespace(substrates.charAt(0))) {
-            substrates = substrates.substring(1);
-        }
-        return substrates + " \u27f6 " + products;
+        return FormatReactionEquation.formatASCII(this);
     }
 
-    protected String collectSubstrateString() {
-        return substrates.stream()
-                .map(substrate -> (substrate.getStoichiometricNumber() > 1 ? substrate.getStoichiometricNumber() : "") + " "
-                        + substrate.getEntity().getIdentifier())
-                .collect(Collectors.joining(" +"));
-    }
-
-    protected String collectProductsString() {
-        return products.stream()
-                .map(product -> (product.getStoichiometricNumber() > 1 ? product.getStoichiometricNumber() : "") + " "
-                        + product.getEntity().getIdentifier())
-                .collect(Collectors.joining(" +"));
+    @Override
+    public String toString() {
+        return getIdentifier() + " (" + getReactionString() + ")";
     }
 
     public static ModuleBuilder getBuilder(Simulation simulation) {

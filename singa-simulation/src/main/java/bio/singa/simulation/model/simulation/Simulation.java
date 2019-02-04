@@ -179,6 +179,7 @@ public class Simulation {
     private void initializeModules() {
         for (UpdateModule module : getModules()) {
             module.initialize();
+            scheduler.addModule(module);
         }
     }
 

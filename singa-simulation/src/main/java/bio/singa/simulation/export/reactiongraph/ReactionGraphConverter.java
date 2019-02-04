@@ -1,4 +1,4 @@
-package bio.singa.simulation.renderer.reactiongraph;
+package bio.singa.simulation.export.reactiongraph;
 
 import bio.singa.simulation.model.modules.UpdateModule;
 import bio.singa.simulation.model.modules.concentration.imlementations.ComplexBuildingReaction;
@@ -15,10 +15,7 @@ import java.util.ArrayList;
  */
 public class ReactionGraphConverter {
 
-    private Simulation simulation;
-
     private ReactionGraph graph;
-
 
     public static ReactionGraph convert(Simulation simulation) {
         ReactionGraphConverter converter = new ReactionGraphConverter(simulation);
@@ -26,7 +23,6 @@ public class ReactionGraphConverter {
     }
 
     private ReactionGraphConverter(Simulation simulation) {
-        this.simulation = simulation;
         graph = new ReactionGraph();
         simulation.getModules().forEach(this::convertModule);
     }

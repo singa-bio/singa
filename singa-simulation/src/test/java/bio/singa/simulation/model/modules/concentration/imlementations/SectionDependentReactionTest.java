@@ -1,12 +1,12 @@
 package bio.singa.simulation.model.modules.concentration.imlementations;
 
-import bio.singa.chemistry.entities.ChemicalEntity;
-import bio.singa.chemistry.entities.ComplexedChemicalEntity;
-import bio.singa.chemistry.entities.Protein;
-import bio.singa.chemistry.entities.SmallMolecule;
+import bio.singa.chemistry.entities.*;
 import bio.singa.chemistry.features.reactions.RateConstant;
+import bio.singa.features.identifiers.ChEBIIdentifier;
+import bio.singa.features.identifiers.UniProtIdentifier;
 import bio.singa.features.model.Evidence;
 import bio.singa.features.parameters.Environment;
+import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.geometry.faces.Rectangle;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.simulation.model.agents.pointlike.Vesicle;
@@ -14,22 +14,26 @@ import bio.singa.simulation.model.agents.pointlike.VesicleLayer;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.graphs.AutomatonNode;
+import bio.singa.simulation.model.sections.CellRegion;
+import bio.singa.simulation.model.sections.CellSubsection;
 import bio.singa.simulation.model.simulation.Simulation;
 import bio.singa.structure.features.molarmass.MolarMass;
 import org.junit.jupiter.api.Test;
 import tec.uom.se.ComparableQuantity;
 import tec.uom.se.quantity.Quantities;
 
+import javax.measure.Quantity;
 import javax.measure.quantity.Length;
+import javax.measure.quantity.Time;
 
 import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
+import static bio.singa.simulation.model.sections.CellSubsection.SECTION_A;
 import static bio.singa.simulation.model.sections.CellTopology.INNER;
 import static bio.singa.simulation.model.sections.CellTopology.MEMBRANE;
-import static org.junit.jupiter.api.Assertions.*;
-import static tec.uom.se.unit.MetricPrefix.MICRO;
-import static tec.uom.se.unit.MetricPrefix.NANO;
-import static tec.uom.se.unit.Units.METRE;
-import static tec.uom.se.unit.Units.MINUTE;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static tec.uom.se.unit.MetricPrefix.*;
+import static tec.uom.se.unit.Units.*;
 
 /**
  * @author cl
@@ -142,6 +146,82 @@ class SectionDependentReactionTest {
             previousVesicleConcentration = currentVesicleConcentration;
         }
 
+
+    }
+
+    @Test
+    void testTransformedComplexBuilding() {
+        UnitRegistry.setSpace(Quantities.getQuantity(1.0, MILLI(METRE)));
+
+        // see Receptors (Lauffenburger) p. 30
+        // prazosin, CHEBI:8364
+        ChemicalEntity ligand = new SmallMolecule.Builder("ligand")
+                .name("prazosin")
+                .additionalIdentifier(new ChEBIIdentifier("CHEBI:8364"))
+                .build();
+
+        // alpha-1 adrenergic receptor, P35348
+        Receptor receptor = new Receptor.Builder("receptor")
+                .name("alpha-1 adrenergic receptor")
+                .additionalIdentifier(new UniProtIdentifier("P35348"))
+                .build();
+
+        ComplexedChemicalEntity complex = ComplexedChemicalEntity.from(receptor, ligand);
+
+        // create simulation
+        Simulation simulation = new Simulation();
+
+        // setup graph
+        final AutomatonGraph automatonGraph = AutomatonGraphs.singularGraph();
+        simulation.setGraph(automatonGraph);
+        // concentrations
+        AutomatonNode membraneNode = automatonGraph.getNode(0, 0);
+        membraneNode.setCellRegion(CellRegion.MEMBRANE);
+        membraneNode.getConcentrationContainer().initialize(SECTION_A, ligand, UnitRegistry.concentration(0.1, MOLE_PER_LITRE));
+        membraneNode.getConcentrationContainer().initialize(CellSubsection.MEMBRANE, receptor, UnitRegistry.concentration(0.1, MOLE_PER_LITRE));
+
+        // the corresponding rate constants
+        RateConstant kf = RateConstant.create(2.4e8)
+                .forward().secondOrder()
+                .concentrationUnit(MOLE_PER_LITRE)
+                .timeUnit(MINUTE)
+                .build();
+
+        RateConstant kb = RateConstant.create(0.018)
+                .backward().firstOrder()
+                .timeUnit(MINUTE)
+                .build();
+
+        // create and add module
+        SectionDependentReaction.inSimulation(simulation)
+                .identifier("binding_reaction")
+                .addSubstrate(ligand, INNER)
+                .addSubstrate(receptor, MEMBRANE)
+                .addProduct(complex, MEMBRANE)
+                .forwardsRate(kf)
+                .backwardsRate(kb)
+                .build();
+
+        // checkpoints
+        Quantity<Time> currentTime;
+        Quantity<Time> firstCheckpoint = Quantities.getQuantity(0.05, MILLI(SECOND));
+        boolean firstCheckpointPassed = false;
+        Quantity<Time> secondCheckpoint = Quantities.getQuantity(2.0, MILLI(SECOND));
+        // run simulation
+        while ((currentTime = simulation.getElapsedTime().to(MILLI(SECOND))).getValue().doubleValue() < secondCheckpoint.getValue().doubleValue()) {
+            simulation.nextEpoch();
+            if (!firstCheckpointPassed && currentTime.getValue().doubleValue() > firstCheckpoint.getValue().doubleValue()) {
+                assertEquals(0.00476, UnitRegistry.concentration(membraneNode.getConcentrationContainer().get(CellSubsection.MEMBRANE, receptor)).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
+                assertEquals(0.00476, UnitRegistry.concentration(membraneNode.getConcentrationContainer().get(INNER, ligand)).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
+                assertEquals(0.09523, UnitRegistry.concentration(membraneNode.getConcentrationContainer().get(CellSubsection.MEMBRANE, complex)).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
+                firstCheckpointPassed = true;
+            }
+        }
+
+        // check final values
+        assertEquals(0.0001, UnitRegistry.concentration(membraneNode.getConcentrationContainer().get(CellSubsection.MEMBRANE, receptor)).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
+        assertEquals(0.0001, UnitRegistry.concentration(membraneNode.getConcentrationContainer().get(INNER, ligand)).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
+        assertEquals(0.0998, UnitRegistry.concentration(membraneNode.getConcentrationContainer().get(CellSubsection.MEMBRANE, complex)).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
 
     }
 }

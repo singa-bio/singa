@@ -1,4 +1,4 @@
-package bio.singa.simulation.renderer.reactiongraph;
+package bio.singa.simulation.export.reactiongraph;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.mathematics.geometry.faces.Rectangle;

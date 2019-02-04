@@ -4,6 +4,7 @@ import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.chemistry.features.reactions.MichaelisConstant;
 import bio.singa.chemistry.features.reactions.TurnoverNumber;
 import bio.singa.features.model.Feature;
+import bio.singa.simulation.export.latexformat.FormatReactionEquation;
 import bio.singa.simulation.model.modules.concentration.ConcentrationDelta;
 import bio.singa.simulation.model.modules.concentration.ModuleBuilder;
 import bio.singa.simulation.model.modules.concentration.ModuleFactory;
@@ -43,6 +44,10 @@ public class MichaelisMentenReaction extends Reaction {
         // feature
         getRequiredFeatures().add(TurnoverNumber.class);
         getRequiredFeatures().add(MichaelisConstant.class);
+    }
+
+    public ChemicalEntity getEnzyme() {
+        return enzyme;
     }
 
     @Override
@@ -111,6 +116,11 @@ public class MichaelisMentenReaction extends Reaction {
         if (!michaelisConstant) {
             logger.warn("Required feature {} has not been set.", MichaelisConstant.class.getSimpleName());
         }
+    }
+
+    @Override
+    public String getReactionString() {
+        return FormatReactionEquation.formatASCII(this);
     }
 
     public static ModuleBuilder getBuilder(Simulation simulation) {

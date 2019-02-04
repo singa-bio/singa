@@ -2,14 +2,18 @@ package bio.singa.chemistry.entities;
 
 import bio.singa.features.identifiers.SimpleStringIdentifier;
 import bio.singa.features.model.Evidence;
+import bio.singa.features.model.Feature;
 import bio.singa.structure.features.molarmass.MolarMass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.measure.Quantity;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author cl
@@ -28,6 +32,20 @@ public class ComplexedChemicalEntity extends ChemicalEntity {
 
     public static Builder create(SimpleStringIdentifier identifier) {
         return new Builder(identifier);
+    }
+
+    private static String collectName(Stream<ChemicalEntity> components) {
+        return components.map(ChemicalEntity::getIdentifier)
+                .map(Feature::getContent)
+                .collect(Collectors.joining(":"));
+    }
+
+    public static ComplexedChemicalEntity from(ChemicalEntity... entities) {
+        ComplexedChemicalEntity complex = new ComplexedChemicalEntity(new SimpleStringIdentifier(collectName(Arrays.stream(entities))));
+        for (ChemicalEntity chemicalEntity : entities) {
+            complex.addAssociatedPart(chemicalEntity);
+        }
+        return complex;
     }
 
     private final Map<ChemicalEntity, Integer> associatedParts;

@@ -20,7 +20,7 @@ public enum UnitPrefix {
     DECA(1, "da", MetricPrefix.DEKA.getConverter()),
     DECI(-1, "d", MetricPrefix.DECI.getConverter()),
     CENTI(-2, "c", MetricPrefix.CENTI.getConverter()),
-    MILI(-3, "m", MetricPrefix.MILLI.getConverter()),
+    MILLI(-3, "m", MetricPrefix.MILLI.getConverter()),
     MICRO(-6, "\u00B5", MetricPrefix.MICRO.getConverter()),
     NANO(-9, "n", MetricPrefix.NANO.getConverter()),
     PICO(-12, "p", MetricPrefix.PICO.getConverter()),
@@ -39,11 +39,11 @@ public enum UnitPrefix {
     }
 
     public static EnumSet<UnitPrefix> getDefaultSpacePrefixes() {
-        return EnumSet.of(MILI, MICRO, NANO);
+        return EnumSet.of(MILLI, MICRO, NANO);
     }
 
     public static EnumSet<UnitPrefix> getDefaultTimePrefixes() {
-        return EnumSet.of(NO_PREFIX, MILI, MICRO, NANO);
+        return EnumSet.of(NO_PREFIX, MILLI, MICRO, NANO);
     }
 
     public int getScale() {

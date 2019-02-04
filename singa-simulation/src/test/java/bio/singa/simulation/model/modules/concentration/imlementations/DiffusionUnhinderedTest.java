@@ -71,7 +71,7 @@ class DiffusionUnhinderedTest {
         Simulation simulation = setUpSimulation(10, hydrogen);
         Quantity<Time> actualHalfLifeTime = runSimulation(simulation, 10, hydrogen);
         // test results
-        assertEquals(Quantities.getQuantity(133, MICRO(SECOND)).getValue().doubleValue(), actualHalfLifeTime.getValue().doubleValue(), 1);
+        assertEquals(Quantities.getQuantity(135, MICRO(SECOND)).getValue().doubleValue(), actualHalfLifeTime.getValue().doubleValue(), 1);
         Environment.reset();
     }
 
@@ -104,7 +104,7 @@ class DiffusionUnhinderedTest {
         Simulation simulation = setUpSimulation(30, benzene);
         Quantity<Time> actualHalfLifeTime = runSimulation(simulation, 30, benzene);
         // test results
-        assertEquals(Quantities.getQuantity(546, MICRO(SECOND)).getValue().doubleValue(), actualHalfLifeTime.getValue().doubleValue(), 1);
+        assertEquals(Quantities.getQuantity(547, MICRO(SECOND)).getValue().doubleValue(), actualHalfLifeTime.getValue().doubleValue(), 1);
         Environment.reset();
     }
 

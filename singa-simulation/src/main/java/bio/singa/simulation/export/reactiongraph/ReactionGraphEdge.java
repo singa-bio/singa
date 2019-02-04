@@ -1,4 +1,4 @@
-package bio.singa.simulation.renderer.reactiongraph;
+package bio.singa.simulation.export.reactiongraph;
 
 import bio.singa.mathematics.graphs.model.DirectedWeightedEdge;
 

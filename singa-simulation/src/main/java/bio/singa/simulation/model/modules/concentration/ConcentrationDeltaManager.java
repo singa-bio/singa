@@ -149,7 +149,7 @@ public class ConcentrationDeltaManager {
      * time step.
      */
     public void clearPotentialDeltas() {
-        potentialDeltas.clear();
+            potentialDeltas.clear();
     }
 
     /**
@@ -159,14 +159,18 @@ public class ConcentrationDeltaManager {
      * @param module The module.
      */
     public void clearPotentialDeltasBut(UpdateModule module) {
-        potentialDeltas.removeIf(delta -> delta.getModule() != module);
+        synchronized (potentialDeltas) {
+            potentialDeltas.removeIf(delta -> delta.getModule() != module);
+        }
     }
 
     /**
      * Shifts the deltas from the potential delta list to the final delta list.
      */
     public void shiftDeltas() {
-        finalDeltas.addAll(potentialDeltas);
+        synchronized (potentialDeltas) {
+            finalDeltas.addAll(potentialDeltas);
+        }
         if (!observed) {
             potentialDeltas.clear();
         }

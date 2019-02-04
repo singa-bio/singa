@@ -173,32 +173,11 @@ public abstract class Reaction extends ConcentrationBasedModule<SectionDeltaFunc
      *
      * @return A nicely formatted string representation of the reaction.
      */
-    public String getReactionString() {
-        String substrates = collectSubstrateString();
-        String products = collectProductsString();
-        if (substrates.length() > 1 && Character.isWhitespace(substrates.charAt(0))) {
-            substrates = substrates.substring(1);
-        }
-        return substrates + " \u27f6 " + products;
-    }
-
-    protected String collectSubstrateString() {
-        return substrates.stream()
-                .map(substrate -> (substrate.getStoichiometricNumber() > 1 ? substrate.getStoichiometricNumber() : "") + " "
-                        + substrate.getEntity().getIdentifier())
-                .collect(Collectors.joining(" +"));
-    }
-
-    protected String collectProductsString() {
-        return products.stream()
-                .map(product -> (product.getStoichiometricNumber() > 1 ? product.getStoichiometricNumber() : "") + " "
-                        + product.getEntity().getIdentifier())
-                .collect(Collectors.joining(" +"));
-    }
+    public abstract String getReactionString();
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + ": " + (getIdentifier() == null ? "" : getIdentifier()) + " (" + getReactionString() + ")";
+        return getIdentifier() + " (" + getReactionString() + ")";
     }
 
     public static abstract class Builder<TopLevelType extends Reaction, BuilderType extends Builder> implements ModuleBuilder {

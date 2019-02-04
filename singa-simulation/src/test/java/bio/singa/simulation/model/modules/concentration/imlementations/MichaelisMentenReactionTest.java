@@ -24,7 +24,7 @@ import javax.measure.quantity.Time;
 
 import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static bio.singa.simulation.model.sections.CellRegions.EXTRACELLULAR_REGION;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static tec.uom.se.AbstractUnit.ONE;
 import static tec.uom.se.unit.Units.MINUTE;
 import static tec.uom.se.unit.Units.SECOND;
@@ -72,7 +72,7 @@ class MichaelisMentenReactionTest {
         CellSubsection subsection = EXTRACELLULAR_REGION.getInnerSubsection();
         for (AutomatonNode node : graph.getNodes()) {
             node.getConcentrationContainer().initialize(subsection, fp, Quantities.getQuantity(1.0, MOLE_PER_LITRE));
-            node.getConcentrationContainer().initialize(subsection, aldolase, Quantities.getQuantity(0.01,  MOLE_PER_LITRE));
+            node.getConcentrationContainer().initialize(subsection, aldolase, Quantities.getQuantity(0.01, MOLE_PER_LITRE));
         }
 
         // setup reaction
