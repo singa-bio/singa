@@ -1,4 +1,4 @@
-package bio.singa.simulation.export.latexformat;
+package bio.singa.simulation.export.format;
 
 import bio.singa.chemistry.features.reactions.BackwardsRateConstant;
 import bio.singa.chemistry.features.reactions.ForwardsRateConstant;

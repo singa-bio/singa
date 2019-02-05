@@ -1,4 +1,4 @@
-package bio.singa.simulation.export.latexformat;
+package bio.singa.simulation.export.format;
 
 import bio.singa.chemistry.entities.*;
 import bio.singa.chemistry.features.reactions.MichaelisConstant;

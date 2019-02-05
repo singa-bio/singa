@@ -1,6 +1,8 @@
 package bio.singa.simulation.export.reactiontable;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author cl
@@ -10,9 +12,16 @@ public class ReactionTable {
     public static class ReactionTableRow {
 
         private String identifier;
-        private String reaction;
+        private String equation;
         private String kinetics;
         private String parameters;
+
+        public ReactionTableRow(String identifier, String equation, String kinetics, String parameters) {
+            this.identifier = identifier;
+            this.equation = equation;
+            this.kinetics = kinetics;
+            this.parameters = parameters;
+        }
 
         public String getIdentifier() {
             return identifier;
@@ -22,12 +31,12 @@ public class ReactionTable {
             this.identifier = identifier;
         }
 
-        public String getReaction() {
-            return reaction;
+        public String getEquation() {
+            return equation;
         }
 
-        public void setReaction(String reaction) {
-            this.reaction = reaction;
+        public void setEquation(String equation) {
+            this.equation = equation;
         }
 
         public String getKinetics() {
@@ -46,12 +55,16 @@ public class ReactionTable {
             this.parameters = parameters;
         }
 
+        public String toTexTableRow() {
+            return identifier+" & "+ equation + " & " + kinetics + "\\\\";
+        }
+
     }
 
     private List<ReactionTableRow> rows;
 
     public ReactionTable() {
-
+        rows = new ArrayList<>();
     }
 
     public List<ReactionTableRow> getRows() {
@@ -61,4 +74,15 @@ public class ReactionTable {
     public void setRows(List<ReactionTableRow> rows) {
         this.rows = rows;
     }
+
+    public void addRow(ReactionTableRow row) {
+        rows.add(row);
+    }
+
+    public String toTex() {
+        return rows.stream()
+                .map(ReactionTableRow::toTexTableRow)
+                .collect(Collectors.joining(System.lineSeparator()));
+    }
+
 }

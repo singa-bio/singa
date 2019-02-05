@@ -1,4 +1,4 @@
-package bio.singa.simulation.export.latexformat;
+package bio.singa.simulation.export.format;
 
 import bio.singa.chemistry.features.reactions.RateConstant;
 import bio.singa.features.model.Feature;
@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static bio.singa.features.units.UnitProvider.PICO_MOLE_PER_LITRE;
-import static org.junit.jupiter.api.Assertions.*;
 import static tec.uom.se.unit.Units.MINUTE;
 import static tec.uom.se.unit.Units.SECOND;
 

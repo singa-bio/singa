@@ -1,5 +1,7 @@
 package bio.singa.simulation.export.reactiontable;
 
+import bio.singa.simulation.export.format.FormatReactionEquation;
+import bio.singa.simulation.export.format.FormatReactionKinetics;
 import bio.singa.simulation.model.modules.UpdateModule;
 import bio.singa.simulation.model.modules.concentration.imlementations.ComplexBuildingReaction;
 import bio.singa.simulation.model.modules.concentration.imlementations.DynamicReaction;
@@ -38,21 +40,35 @@ public class ReactionTableConverter {
     }
 
     private void addContentOfModule(Reaction reaction) {
-        String identifier = reaction.getIdentifier();
-        String reactionString = reaction.getReactionString();
-        // reaction.get
+        String identifier = reaction.getIdentifier().replace("_", " ");
+        String equation = FormatReactionEquation.formatTex(reaction);
+        String kinetics = FormatReactionKinetics.formatTex(reaction);
+        ReactionTable.ReactionTableRow reactionTableRow = new ReactionTable.ReactionTableRow(identifier, equation, kinetics, null);
+        table.addRow(reactionTableRow);
     }
 
     private void addContentOfModule(SectionDependentReaction reaction) {
-
+        String identifier = reaction.getIdentifier().replace("_", " ");
+        String equation = FormatReactionEquation.formatTex(reaction);
+        String kinetics = FormatReactionKinetics.formatTex(reaction);
+        ReactionTable.ReactionTableRow reactionTableRow = new ReactionTable.ReactionTableRow(identifier, equation, kinetics, null);
+        table.addRow(reactionTableRow);
     }
 
     private void addContentOfModule(ComplexBuildingReaction reaction) {
-
+        String identifier = reaction.getIdentifier().replace("_", " ");
+        String equation = FormatReactionEquation.formatTex(reaction);
+        String kinetics = FormatReactionKinetics.formatTex(reaction);
+        ReactionTable.ReactionTableRow reactionTableRow = new ReactionTable.ReactionTableRow(identifier, equation, kinetics, null);
+        table.addRow(reactionTableRow);
     }
 
     private void addContentOfModule(DynamicReaction reaction) {
-
+        String identifier = reaction.getIdentifier().replace("_", " ");
+        String equation = FormatReactionEquation.formatTex(reaction);
+        String kinetics = FormatReactionKinetics.formatTex(reaction);
+        ReactionTable.ReactionTableRow reactionTableRow = new ReactionTable.ReactionTableRow(identifier, equation, kinetics, null);
+        table.addRow(reactionTableRow);
     }
 
 }

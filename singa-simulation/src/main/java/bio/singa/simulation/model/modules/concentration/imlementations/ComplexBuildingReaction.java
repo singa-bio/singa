@@ -6,7 +6,7 @@ import bio.singa.chemistry.features.reactions.BackwardsRateConstant;
 import bio.singa.chemistry.features.reactions.ForwardsRateConstant;
 import bio.singa.chemistry.features.reactions.RateConstant;
 import bio.singa.features.model.Feature;
-import bio.singa.simulation.export.latexformat.FormatReactionEquation;
+import bio.singa.simulation.export.format.FormatReactionEquation;
 import bio.singa.simulation.model.agents.pointlike.Vesicle;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.modules.concentration.*;

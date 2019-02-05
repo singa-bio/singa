@@ -1,4 +1,4 @@
-package bio.singa.simulation.export.latexformat;
+package bio.singa.simulation.export.format;
 
 import bio.singa.simulation.model.modules.concentration.imlementations.*;
 import bio.singa.simulation.model.modules.concentration.reactants.Reactant;
@@ -28,8 +28,8 @@ public class FormatReactionEquation {
     }
 
     private static String formatReactant(Reactant reactant) {
-        return (reactant.getStoichiometricNumber() > 1 ? (int) reactant.getStoichiometricNumber() : "") +
-                reactant.getEntity().getIdentifier().getContent();
+        return (reactant.getStoichiometricNumber() > 1 ? " "+(int) reactant.getStoichiometricNumber()+" " : "") +
+                reactant.getEntity().getIdentifier().getContent().replaceAll("(\\d)", " $1 ");
     }
 
     private static String formatSectionReactantsTex(Stream<Reactant> reactants) {
@@ -50,8 +50,8 @@ public class FormatReactionEquation {
                 section = "m";
                 break;
         }
-        return (reactant.getStoichiometricNumber() > 1 ? (int) reactant.getStoichiometricNumber() : "") +
-                reactant.getEntity().getIdentifier().getContent() + "$_" + section + "$";
+        return (reactant.getStoichiometricNumber() > 1 ? " "+(int) reactant.getStoichiometricNumber()+" " : "") +
+                reactant.getEntity().getIdentifier().getContent().replaceAll("(\\d)", " $1 ") + "$_" + section + "$";
     }
 
     private static String formatSectionReactantsASCII(Stream<Reactant> reactants) {
@@ -76,6 +76,16 @@ public class FormatReactionEquation {
                 reactant.getEntity().getIdentifier().getContent() + "(" + section + ")";
     }
 
+    public static String formatTex(Reaction reaction) {
+        if (reaction instanceof MichaelisMentenReaction) {
+            return formatTex(((MichaelisMentenReaction) reaction));
+        } else if (reaction instanceof NthOrderReaction) {
+            return formatTex(((NthOrderReaction) reaction));
+        } else if (reaction instanceof ReversibleReaction) {
+            return formatTex(((ReversibleReaction) reaction));
+        }
+        throw new IllegalArgumentException("The reaction class " + reaction.getClass() + " lacks an implemented latex format.");
+    }
 
     public static String formatTex(MichaelisMentenReaction reaction) {
         String substrates = formatReactants(reaction.getStoichiometricReactants().stream().filter(Reactant::isSubstrate));

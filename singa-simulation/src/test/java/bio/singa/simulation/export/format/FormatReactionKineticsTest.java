@@ -1,4 +1,4 @@
-package bio.singa.simulation.export.latexformat;
+package bio.singa.simulation.export.format;
 
 import bio.singa.chemistry.entities.*;
 import bio.singa.chemistry.features.reactions.MichaelisConstant;
@@ -46,7 +46,7 @@ class FormatReactionKineticsTest {
                 .addProduct(product)
                 .build();
 
-        assertEquals("$\\frac{k_{\\text{cat}} \\cdot [\\text{PDE4}] \\cdot [\\text{cAMP}]}{K_m \\cdot [\\text{cAMP}]}$", FormatReactionKinetics.formatReaction(reaction));
+        assertEquals("$\\frac{k_{\\text{cat}} \\cdot [\\text{PDE4}] \\cdot [\\text{cAMP}]}{K_m \\cdot [\\text{cAMP}]}$", FormatReactionKinetics.formatTex(reaction));
     }
 
     @Test
@@ -72,7 +72,7 @@ class FormatReactionKineticsTest {
                 .rateConstant(k)
                 .build();
 
-        assertEquals("$k \\cdot [\\text{A}] \\cdot [\\text{B}]$", FormatReactionKinetics.formatReaction(reaction));
+        assertEquals("$k \\cdot [\\text{A}] \\cdot [\\text{B}]$", FormatReactionKinetics.formatTex(reaction));
 
     }
 
@@ -100,7 +100,7 @@ class FormatReactionKineticsTest {
                 .backwardsRateConstant(kb)
                 .build();
 
-        assertEquals("$k_{1} \\cdot [\\text{A}] - k_{-1} \\cdot [\\text{B}]$", FormatReactionKinetics.formatReaction(reaction));
+        assertEquals("$k_{1} \\cdot [\\text{A}] - k_{-1} \\cdot [\\text{B}]$", FormatReactionKinetics.formatTex(reaction));
 
     }
 
@@ -130,7 +130,7 @@ class FormatReactionKineticsTest {
                 .backwardsRate(kb)
                 .build();
 
-        assertEquals("$k_{1} \\cdot \\text{[L]}_o \\cdot \\text{[R]}_m - k_{-1} \\cdot \\text{[L:R]}_m$", FormatReactionKinetics.formatReaction(reaction));
+        assertEquals("$k_{1} \\cdot \\text{[L]}_o \\cdot \\text{[R]}_m - k_{-1} \\cdot \\text{[L:R]}_m$", FormatReactionKinetics.formatTex(reaction));
     }
 
 
@@ -161,7 +161,7 @@ class FormatReactionKineticsTest {
                 .formingComplex(complex)
                 .build();
 
-        assertEquals("$k_{1} \\cdot \\text{[binder]}_m \\cdot \\text{[bindee]}_i- k_{-1} \\cdot \\text{[bindee:binder]}_m$", FormatReactionKinetics.formatReaction(reaction));
+        assertEquals("$k_{1} \\cdot \\text{[binder]}_m \\cdot \\text{[bindee]}_i- k_{-1} \\cdot \\text{[bindee:binder]}_m$", FormatReactionKinetics.formatTex(reaction));
     }
 
     @Test
@@ -195,7 +195,7 @@ class FormatReactionKineticsTest {
                 .referenceParameter(new Reactant(new SmallMolecule.Builder("CAMP").build(), ReactantRole.PRODUCT))
                 .build();
 
-        assertEquals("not supported", FormatReactionKinetics.formatReaction(reaction));
+        assertEquals("not supported", FormatReactionKinetics.formatTex(reaction));
     }
 
 }

@@ -4,7 +4,7 @@ import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.chemistry.features.reactions.RateConstant;
 import bio.singa.chemistry.features.reactions.ZeroOrderRateConstant;
 import bio.singa.features.model.Feature;
-import bio.singa.simulation.export.latexformat.FormatReactionEquation;
+import bio.singa.simulation.export.format.FormatReactionEquation;
 import bio.singa.simulation.model.modules.concentration.ModuleBuilder;
 import bio.singa.simulation.model.modules.concentration.ModuleFactory;
 import bio.singa.simulation.model.modules.concentration.functions.SectionDeltaFunction;
