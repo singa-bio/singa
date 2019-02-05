@@ -163,17 +163,35 @@ public class Simulation {
         // update epoch and elapsed time
         updateEpoch();
         // if time step did not change it can possibly be increased
-        if (!scheduler.timeStepWasRescaled()) {
-            // if no maximal time step is given or time step is not already maximal
-            if (maximalTimeStep == null || UnitRegistry.getTime().to(maximalTimeStep.getUnit()).getValue().doubleValue() < maximalTimeStep.getValue().doubleValue()) {
-                // if error was below tolerance threshold (10 percent of epsilon)
-                // TODO evaluate if the sign is right (< instead of >)
-                if (scheduler.getRecalculationCutoff() - scheduler.getLargestError().getValue() > 0.1 * scheduler.getRecalculationCutoff()) {
-                    // try larger time step next time
-                    scheduler.increaseTimeStep();
-                }
+        if (timestepShuldIncrease()) {
+            scheduler.increaseTimeStep();
+        }
+    }
+
+
+    private boolean timestepShuldIncrease() {
+        // if time step was reduced in this epoch there is no need to test if it should increase
+        if (scheduler.timeStepWasAlteredInThisEpoch()) {
+            return false;
+        }
+        // if a maximal time step is set
+        if (maximalTimeStep != null) {
+            final double currentTimeStep = UnitRegistry.getTime().to(maximalTimeStep.getUnit()).getValue().doubleValue();
+            final double maximalTimeStep = this.maximalTimeStep.getValue().doubleValue();
+            // if the current time step is already the maximal time step
+            if (currentTimeStep >= maximalTimeStep) {
+                return false;
             }
         }
+        // check if wou gould gain simulation speed by increasing the time step
+        // this can be done, if the the error that was computed previously is very small
+        final double recalculationCutoff = scheduler.getRecalculationCutoff();
+        final double latestError = scheduler.getLargestError().getValue();
+        if (recalculationCutoff - latestError > 0.2 * recalculationCutoff) {
+            // try larger time step
+            return true;
+        }
+        return false;
     }
 
     private void initializeModules() {

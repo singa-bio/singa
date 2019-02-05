@@ -15,8 +15,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import static bio.singa.simulation.model.modules.concentration.ModuleState.PENDING;
-import static bio.singa.simulation.model.modules.concentration.ModuleState.REQUIRING_RECALCULATION;
+import static bio.singa.simulation.model.modules.concentration.ModuleState.*;
 
 /**
  * @author cl
@@ -56,23 +55,23 @@ public abstract class QualitativeModule implements UpdateModule {
             switch (state) {
                 case PENDING:
                     // calculate update
-                    logger.debug("Calculating updates for {}.", Thread.currentThread().getName());
+                    logger.debug("calculating updates for {}.", Thread.currentThread().getName());
                     calculateUpdates();
-                    break;
-                case SUCCEEDED:
-                case SUCCEEDED_WITH_PENDING_CHANGES:
                     break;
                 case REQUIRING_RECALCULATION:
                     // optimize time step
                     logger.debug("{} requires recalculation.", Thread.currentThread().getName());
-                    optimizeTimeStep();
+                    boolean prioritizedModule = scheduler.interruptAllBut(Thread.currentThread(), this);
+                    if (prioritizedModule) {
+                        optimizeTimeStep();
+                    } else {
+                        state = INTERRUPTED;
+                    }
                     break;
-                case ERRORED:
-                    throw new IllegalStateException("Module " + getIdentifier() + " errored. Sorry.");
             }
         }
         scheduler.getCountDownLatch().countDown();
-        logger.debug("Successfully finished {}, latch at {}.", Thread.currentThread().getName(), scheduler.getCountDownLatch().getCount());
+        logger.debug("Module finished {}, latch at {}.", Thread.currentThread().getName(), scheduler.getCountDownLatch().getCount());
     }
 
     @Override

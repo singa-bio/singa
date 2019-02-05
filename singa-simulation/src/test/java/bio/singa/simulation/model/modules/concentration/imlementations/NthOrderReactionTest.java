@@ -1,8 +1,8 @@
 package bio.singa.simulation.model.modules.concentration.imlementations;
 
 import bio.singa.chemistry.entities.SmallMolecule;
-import bio.singa.chemistry.features.databases.chebi.ChEBIParserService;
 import bio.singa.chemistry.features.reactions.RateConstant;
+import bio.singa.features.identifiers.ChEBIIdentifier;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.features.units.UnitRegistry;
@@ -61,9 +61,17 @@ class NthOrderReactionTest {
         AutomatonGraph graph = AutomatonGraphs.singularGraph();
 
         // prepare species
-        SmallMolecule dpo = ChEBIParserService.parse("CHEBI:29802");
-        SmallMolecule ndo = ChEBIParserService.parse("CHEBI:33101");
-        SmallMolecule oxygen = ChEBIParserService.parse("CHEBI:15379");
+        SmallMolecule dpo = SmallMolecule.create("DPO")
+                .additionalIdentifier(new ChEBIIdentifier("CHEBI:29802"))
+                .build();
+
+        SmallMolecule ndo = SmallMolecule.create("NDO")
+                .additionalIdentifier(new ChEBIIdentifier("CHEBI:33101"))
+                .build();
+
+        SmallMolecule oxygen = SmallMolecule.create("O")
+                .additionalIdentifier(new ChEBIIdentifier("CHEBI:15379"))
+                .build();
 
         CellSubsection subsection = EXTRACELLULAR_REGION.getInnerSubsection();
         for (AutomatonNode node : graph.getNodes()) {

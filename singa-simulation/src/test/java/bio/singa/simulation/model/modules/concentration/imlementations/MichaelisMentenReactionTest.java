@@ -2,9 +2,9 @@ package bio.singa.simulation.model.modules.concentration.imlementations;
 
 import bio.singa.chemistry.entities.Enzyme;
 import bio.singa.chemistry.entities.SmallMolecule;
-import bio.singa.chemistry.features.databases.chebi.ChEBIParserService;
 import bio.singa.chemistry.features.reactions.MichaelisConstant;
 import bio.singa.chemistry.features.reactions.TurnoverNumber;
+import bio.singa.features.identifiers.ChEBIIdentifier;
 import bio.singa.features.model.Evidence;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
@@ -56,10 +56,18 @@ class MichaelisMentenReactionTest {
         // setup graph
         AutomatonGraph graph = AutomatonGraphs.singularGraph();
 
-        // prepare species
-        SmallMolecule fp = ChEBIParserService.parse("CHEBI:18105");
-        SmallMolecule gp = ChEBIParserService.parse("CHEBI:16108");
-        SmallMolecule ga = ChEBIParserService.parse("CHEBI:17378");
+        // prepare metabolites
+        SmallMolecule fp = SmallMolecule.create("FP")
+                .additionalIdentifier(new ChEBIIdentifier("CHEBI:18105"))
+                .build();
+
+        SmallMolecule gp = SmallMolecule.create("GP")
+                .additionalIdentifier(new ChEBIIdentifier("CHEBI:16108"))
+                .build();
+
+        SmallMolecule ga = SmallMolecule.create("GA")
+                .additionalIdentifier(new ChEBIIdentifier("CHEBI:17378"))
+                .build();
 
         // prepare enzyme
         Enzyme aldolase = new Enzyme.Builder("P07752")

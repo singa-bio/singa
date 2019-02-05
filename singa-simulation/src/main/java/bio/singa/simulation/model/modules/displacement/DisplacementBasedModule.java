@@ -19,8 +19,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import static bio.singa.simulation.model.modules.concentration.ModuleState.PENDING;
-import static bio.singa.simulation.model.modules.concentration.ModuleState.REQUIRING_RECALCULATION;
+import static bio.singa.simulation.model.modules.concentration.ModuleState.*;
 
 /**
  * @author cl
@@ -71,20 +70,20 @@ public class DisplacementBasedModule implements UpdateModule {
                     logger.debug("calculating updates for {}.", Thread.currentThread().getName());
                     calculateUpdates();
                     break;
-                case SUCCEEDED:
-                case SUCCEEDED_WITH_PENDING_CHANGES:
-                    break;
                 case REQUIRING_RECALCULATION:
                     // optimize time step
                     logger.debug("{} requires recalculation.", Thread.currentThread().getName());
-                    optimizeTimeStep();
+                    boolean prioritizedModule = scheduler.interruptAllBut(Thread.currentThread(), this);
+                    if (prioritizedModule) {
+                        optimizeTimeStep();
+                    } else {
+                        state = INTERRUPTED;
+                    }
                     break;
-                case ERRORED:
-                    throw new IllegalStateException("Module " + getIdentifier() + " errored. Sorry.");
             }
         }
         scheduler.getCountDownLatch().countDown();
-        logger.debug("successfully finished {}, latch at {}.", Thread.currentThread().getName(), scheduler.getCountDownLatch().getCount());
+        logger.debug("Module finished {}, latch at {}.", Thread.currentThread().getName(), scheduler.getCountDownLatch().getCount());
     }
 
     public void setIdentifier(String identifier) {

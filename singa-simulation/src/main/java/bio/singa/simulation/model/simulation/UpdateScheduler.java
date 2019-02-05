@@ -5,7 +5,12 @@ import bio.singa.simulation.model.modules.UpdateModule;
 import bio.singa.simulation.model.modules.concentration.LocalError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import tec.uom.se.AbstractUnit;
+import tec.uom.se.quantity.Quantities;
 
+import javax.measure.Quantity;
+import javax.measure.quantity.Frequency;
+import javax.measure.quantity.Time;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
 
@@ -29,7 +34,10 @@ public class UpdateScheduler {
     private Iterator<UpdateModule> moduleIterator;
     private double recalculationCutoff = DEFAULT_RECALCULATION_CUTOFF;
 
-    private boolean timestepRescaled;
+    private boolean timeStepRescaled;
+    private boolean timeStepAlteredInThisEpoch;
+    private long timestepsDecreased = 0;
+    private long timestepsIncreased = 0;
     private LocalError largestError;
 
     private CountDownLatch countDownLatch;
@@ -37,6 +45,10 @@ public class UpdateScheduler {
     private final Deque<UpdateModule> modules;
     private final List<Thread> threads;
     private volatile boolean interrupted;
+
+    private double previousError;
+    private Quantity<Time> previousTimeStep;
+    private Quantity<Frequency> accuracyGain;
 
     public UpdateScheduler(Simulation simulation) {
         this.simulation = simulation;
@@ -53,18 +65,31 @@ public class UpdateScheduler {
         this.recalculationCutoff = recalculationCutoff;
     }
 
+    public long getTimestepsDecreased() {
+        return timestepsDecreased;
+    }
+
+    public long getTimestepsIncreased() {
+        return timestepsIncreased;
+    }
+
     public void nextEpoch() {
         // initialize fields
+        timeStepAlteredInThisEpoch = false;
+        previousError = 0;
+        largestError = LocalError.MINIMAL_EMPTY_ERROR;
+        previousTimeStep = UnitRegistry.getTime();
         simulation.collectUpdatables();
         updatables = simulation.getUpdatables();
         moduleIterator = modules.iterator();
 
         // until all models passed
         do {
-            if (timestepRescaled || interrupted) {
+            if (timeStepRescaled || interrupted) {
+                largestError = LocalError.MINIMAL_EMPTY_ERROR;
                 resetCalculation();
             }
-            timestepRescaled = false;
+            timeStepRescaled = false;
             interrupted = false;
 
             countDownLatch = new CountDownLatch(getNumberOfModules());
@@ -97,7 +122,7 @@ public class UpdateScheduler {
             // evaluate total spatial displacement
             spatialDisplacementIsValid();
 
-        } while (interrupted || timestepRescaled);
+        } while (interrupted || timeStepRescaled);
 
         // resolve pending changes
         for (UpdateModule updateModule : modules) {
@@ -108,6 +133,7 @@ public class UpdateScheduler {
 
         logger.debug("Finished processing modules for epoch {}.", simulation.getEpoch());
         // wrap up
+        determineAccuracyGain();
         finalizeDeltas();
         modules.forEach(UpdateModule::resetState);
     }
@@ -116,20 +142,42 @@ public class UpdateScheduler {
         return largestError;
     }
 
+    public void setLargestError(LocalError localError) {
+        if (localError.getValue() > largestError.getValue()) {
+            largestError = localError;
+        }
+    }
+
     public boolean timeStepWasRescaled() {
-        return timestepRescaled;
+        return timeStepRescaled;
+    }
+
+    public boolean timeStepWasAlteredInThisEpoch() {
+        return timeStepAlteredInThisEpoch;
+    }
+
+    public Quantity<Frequency> getAccuracyGain() {
+        return accuracyGain;
     }
 
     public void increaseTimeStep() {
         UnitRegistry.setTime(UnitRegistry.getTime().multiply(1.2));
         logger.debug("Increasing time step to {}.", UnitRegistry.getTime());
-        timestepRescaled = true;
+        timestepsIncreased++;
+        timeStepRescaled = true;
     }
 
     public synchronized void decreaseTimeStep() {
+        // if time step is rescaled for the very fist time this epoch remember the initial error and time step
+        if (!timeStepWasAlteredInThisEpoch()) {
+            previousError = largestError.getValue();
+            previousTimeStep = UnitRegistry.getTime();
+        }
         UnitRegistry.setTime(UnitRegistry.getTime().multiply(0.8));
         logger.debug("Decreasing time step to {}.", UnitRegistry.getTime());
-        timestepRescaled = true;
+        timestepsDecreased++;
+        timeStepRescaled = true;
+        timeStepAlteredInThisEpoch = true;
     }
 
     private void finalizeDeltas() {
@@ -137,6 +185,14 @@ public class UpdateScheduler {
             updatable.shiftDeltas();
         }
         // potential updates for vesicles are already set during displacement evaluation
+    }
+
+    private void determineAccuracyGain() {
+        if (timeStepWasAlteredInThisEpoch()) {
+            final double errorDelta = previousError - largestError.getValue();
+            final Quantity<Time> timeDelta = previousTimeStep.subtract(UnitRegistry.getTime());
+            accuracyGain = Quantities.getQuantity(errorDelta, AbstractUnit.ONE).divide(timeDelta).asType(Frequency.class);
+        }
     }
 
     public CountDownLatch getCountDownLatch() {

@@ -2,6 +2,7 @@ package bio.singa.simulation.model.simulation;
 
 import bio.singa.core.events.UpdateEventListener;
 import bio.singa.features.formatter.GeneralQuantityFormatter;
+import bio.singa.features.formatter.TimeFormatter;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.simulation.events.*;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
@@ -77,6 +78,10 @@ public class SimulationManager extends Task<Simulation> {
     private long previousTimeMillis = 0;
 
     private Quantity<Time> previousTimeSimulation = Quantities.getQuantity(0.0, UnitRegistry.getTimeUnit());
+
+    private long previousEpochs;
+    private long previousIncreases;
+    private long previousDecreases;
 
     /**
      * The time for the next update to be issued (in simulation time).
@@ -269,6 +274,10 @@ public class SimulationManager extends Task<Simulation> {
             long timeRequired = System.currentTimeMillis() - startingTime;
             long estimatedMillisRemaining = (long) (timeRequired / fractionDone) - timeRequired;
             ComparableQuantity<Time> subtract = currentTimeSimulation.subtract(previousTimeSimulation);
+            // summarize epochs and time step rescaling
+            long currentEpochs = simulation.getEpoch();
+            long currentIncreases = simulation.getScheduler().getTimestepsIncreased();
+            long currentDecreases = simulation.getScheduler().getTimestepsDecreased();
             if (previousTimeMillis > 0) {
                 ComparableQuantity<Time> estimatesTimeRemaining = Quantities.getQuantity(estimatedMillisRemaining, MILLI(SECOND));
                 double speed = subtract.getValue().doubleValue() / Quantities.getQuantity(currentTimeMillis - previousTimeMillis, MILLI(SECOND)).to(SECOND).getValue().doubleValue();
@@ -278,10 +287,14 @@ public class SimulationManager extends Task<Simulation> {
                 } else {
                     String estimatedSpeed = GeneralQuantityFormatter.formatTime(Quantities.getQuantity(speed, MICRO(SECOND)));
                     logger.info("estimated time remaining: {}, current simulation speed: {} (Simulation Time) per s(Real Time)", estimated, estimatedSpeed);
+                    logger.info("summary: {}/{}/{} (epochs/inc/dec), last time step: {}, elapsed time: {}", currentEpochs-previousEpochs, currentIncreases-previousIncreases, currentDecreases-previousDecreases, TimeFormatter.formatTime(UnitRegistry.getTime()), TimeFormatter.formatTime(simulation.getElapsedTime()));
                 }
             }
             previousTimeMillis = currentTimeMillis;
             previousTimeSimulation = currentTimeSimulation;
+            previousEpochs = currentEpochs;
+            previousIncreases = currentIncreases;
+            previousDecreases = currentDecreases;
         }
     }
 

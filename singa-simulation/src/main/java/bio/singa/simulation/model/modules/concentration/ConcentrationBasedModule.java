@@ -131,9 +131,6 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
                     logger.debug("calculating updates for {}.", Thread.currentThread().getName());
                     calculateUpdates();
                     break;
-                case SUCCEEDED:
-                case SUCCEEDED_WITH_PENDING_CHANGES:
-                    break;
                 case REQUIRING_RECALCULATION:
                     // optimize time step
                     logger.debug("{} requires recalculation.", Thread.currentThread().getName());
@@ -144,8 +141,6 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
                         state = INTERRUPTED;
                     }
                     break;
-                case ERRORED:
-                    throw new IllegalStateException("Module " + getIdentifier() + " errored. Sorry.");
             }
         }
         scheduler.getCountDownLatch().countDown();
@@ -436,6 +431,7 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
         LocalError localError = new LocalError(largestIdentifier.getUpdatable(), largestIdentifier.getEntity(), largestLocalError);
         logger.debug("The largest error for {} was {} at {}", Thread.currentThread().getName(), localError.getValue(), localError.getUpdatable().getStringIdentifier());
         // set local error and return local error
+        simulation.getScheduler().setLargestError(localError);
         return localError;
     }
 
