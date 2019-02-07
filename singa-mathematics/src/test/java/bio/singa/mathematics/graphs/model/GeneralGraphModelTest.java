@@ -4,6 +4,8 @@ import bio.singa.mathematics.graphs.grid.GridCoordinateConverter;
 import bio.singa.mathematics.vectors.Vector2D;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class GeneralGraphModelTest {
@@ -54,6 +56,31 @@ class GeneralGraphModelTest {
         final Vector2D coordinate = new Vector2D(5, 3);
         assertEquals(26, rgc.convert(coordinate));
         assertArrayEquals(coordinate.getElements(), rgc.convert(26).getElements());
+    }
+
+    @Test
+    void getTouchingNodes() {
+        DirectedGraph<GenericNode<String>> graph = new DirectedGraph<>();
+
+        GenericNode<String> a = new GenericNode<>(graph.nextNodeIdentifier(), "A");
+        graph.addNode(a);
+        GenericNode<String> b = new GenericNode<>(graph.nextNodeIdentifier(), "B");
+        graph.addNode(b);
+        GenericNode<String> c = new GenericNode<>(graph.nextNodeIdentifier(), "C");
+        graph.addNode(c);
+        GenericNode<String> d = new GenericNode<>(graph.nextNodeIdentifier(), "D");
+        graph.addNode(d);
+
+        graph.addEdgeBetween(a, b);
+        graph.addEdgeBetween(c, b);
+        graph.addEdgeBetween(d, c);
+        graph.addEdgeBetween(b, d);
+
+        List<GenericNode<String>> touchingNodes = graph.getTouchingNodes(d);
+        assertTrue(touchingNodes.contains(b));
+        assertTrue(touchingNodes.contains(c));
+        assertFalse(touchingNodes.contains(a));
+        assertFalse(touchingNodes.contains(d));
     }
 
 }
