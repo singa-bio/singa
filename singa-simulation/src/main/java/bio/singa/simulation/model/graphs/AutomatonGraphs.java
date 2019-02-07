@@ -87,6 +87,15 @@ public class AutomatonGraphs {
         return automatonGraph;
     }
 
+    public static AutomatonGraph singularGraph(CellRegion region) {
+        AutomatonGraph automatonGraph = new AutomatonGraph(1, 1);
+        AutomatonNode node = new AutomatonNode(new RectangularCoordinate(0, 0));
+        node.setPosition(new Vector2D(0.0, 0.0));
+        node.setCellRegion(region);
+        automatonGraph.addNode(node);
+        return automatonGraph;
+    }
+
     public static CellRegion splitRectangularGraphWithMembrane(AutomatonGraph graph, CellSubsection innerSection, CellSubsection outerSection, boolean switchSides) {
         logger.debug("Splitting graph in inner ({}) and outer ({}) compartment with membrane.", innerSection.getIdentifier(), outerSection.getIdentifier());
         // distribute nodes to sections

@@ -224,4 +224,5 @@ class SectionDependentReactionTest {
         assertEquals(0.0998, UnitRegistry.concentration(membraneNode.getConcentrationContainer().get(CellSubsection.MEMBRANE, complex)).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
 
     }
+
 }

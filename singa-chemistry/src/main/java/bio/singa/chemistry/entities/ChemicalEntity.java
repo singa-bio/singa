@@ -187,10 +187,7 @@ public abstract class ChemicalEntity implements Identifiable<SimpleStringIdentif
 
     @Override
     public String toString() {
-        return "ChemicalEntity{" +
-                "identifier=" + identifier.getContent() +
-                ", name='" + name + '\'' +
-                '}';
+        return "Entity " + getIdentifier().getContent();
     }
 
     @Override

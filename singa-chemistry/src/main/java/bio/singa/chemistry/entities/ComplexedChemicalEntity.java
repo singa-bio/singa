@@ -8,10 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.measure.Quantity;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -79,8 +76,31 @@ public class ComplexedChemicalEntity extends ChemicalEntity {
         return associatedParts;
     }
 
-    public Set<ChemicalEntity> getAssociatedChemicalEntities() {
+    public Collection<ChemicalEntity> getAssociatedChemicalEntities() {
         return associatedParts.keySet();
+    }
+
+    public List<ChemicalEntity> getBuildingBlocks() {
+        List<ChemicalEntity> entities = new ArrayList<>();
+        for (ChemicalEntity chemicalEntity : associatedParts.keySet()) {
+            if (chemicalEntity instanceof ComplexedChemicalEntity) {
+                entities.addAll(((ComplexedChemicalEntity) chemicalEntity).getBuildingBlocks());
+            } else {
+                entities.add(chemicalEntity);
+            }
+        }
+        return entities;
+    }
+
+    public List<ChemicalEntity> getAllAssociatedChemicalEntities() {
+        List<ChemicalEntity> entities = new ArrayList<>();
+        for (ChemicalEntity chemicalEntity : associatedParts.keySet()) {
+            entities.add(chemicalEntity);
+            if (chemicalEntity instanceof ComplexedChemicalEntity) {
+                entities.addAll(((ComplexedChemicalEntity) chemicalEntity).getAllAssociatedChemicalEntities());
+            }
+        }
+        return entities;
     }
 
     private void computeMolarMass() {
@@ -104,7 +124,7 @@ public class ComplexedChemicalEntity extends ChemicalEntity {
 
     @Override
     public String toString() {
-        return "Complex Chemical Entity " + identifier;
+        return "Complex " + identifier;
     }
 
     public static class Builder extends ChemicalEntity.Builder<ComplexedChemicalEntity, Builder> {

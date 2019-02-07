@@ -44,7 +44,7 @@ public final class UnitProvider {
      * volume.
      */
     public static final Unit<MolarConcentration> MOLE_PER_LITRE = MOLE.divide(LITRE).asType(MolarConcentration.class);
-    public static final Unit<MolarConcentration> PICO_MOLE_PER_LITRE = NANO(MOLE).divide(LITRE).asType(MolarConcentration.class);
+    public static final Unit<MolarConcentration> PICO_MOLE_PER_LITRE = PICO(MOLE).divide(LITRE).asType(MolarConcentration.class);
     public static final Unit<MolarConcentration> NANO_MOLE_PER_LITRE = NANO(MOLE).divide(LITRE).asType(MolarConcentration.class);
     public static final Unit<MolarConcentration> MICRO_MOLE_PER_LITRE = MICRO(MOLE).divide(LITRE).asType(MolarConcentration.class);
     public static final Unit<MolarConcentration> MILLI_MOLE_PER_LITRE = MILLI(MOLE).divide(LITRE).asType(MolarConcentration.class);
