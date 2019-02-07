@@ -17,8 +17,8 @@ import java.util.function.Function;
  *     A subgraph isomorphism algorithm and its application to biochemical data.
  *     BMC Bioinformatics, 14 Suppl 7:S13.
  * </pre>
- * This subgraph detection algorithm can be applied on any {@link Graph} and allows the flexible definition of isomorphism
- * conditions via {@link Function}s.
+ * This subgraph detection algorithm can be applied on any {@link Graph} and allows the flexible definition of
+ * isomorphism conditions via {@link Function}s.
  *
  * @author fk
  */
@@ -28,7 +28,6 @@ public class RISubgraphFinder<NodeType extends Node<NodeType, VectorType, Identi
     private static final Logger logger = LoggerFactory.getLogger(RISubgraphFinder.class);
     private final List<NodeType> mu;
     private final List<NodeType> ptmu;
-
     private final GraphType patternGraph;
     private final GraphType targetGraph;
     private final BiFunction<NodeType, NodeType, Boolean> nodeConditionExtractor;
@@ -65,6 +64,14 @@ public class RISubgraphFinder<NodeType extends Node<NodeType, VectorType, Identi
         }
     }
 
+    public List<NodeType> getMu() {
+        return mu;
+    }
+
+    public List<NodeType> getPtmu() {
+        return ptmu;
+    }
+
     /**
      * Calculates the ordering of pattern nodes according to the GreatestConstraintFirst algorithm.
      */
@@ -74,10 +81,10 @@ public class RISubgraphFinder<NodeType extends Node<NodeType, VectorType, Identi
         if (v.isEmpty()) {
             throw new IllegalArgumentException("The pattern graph does not contain any nodes.");
         }
-        v.sort(Comparator.comparing(Node::getDegree));
+        v.sort(Comparator.comparing(node -> patternGraph.getTouchingNodes(node).size()));
         NodeType u0 = v.get(v.size() - 1);
 
-        logger.info("highest degree node is {} with degree {}", u0, u0.getDegree());
+        logger.info("highest degree node is {} with degree {}", u0, patternGraph.getTouchingNodes(u0).size());
 
         // initially remove highest degree node
         v.remove(u0);
@@ -96,7 +103,7 @@ public class RISubgraphFinder<NodeType extends Node<NodeType, VectorType, Identi
             int maxVmunv = Integer.MIN_VALUE;
 
             // neighbors of nodes in mu
-            neighboursOfMu.addAll(um.getNeighbours());
+            neighboursOfMu.addAll(patternGraph.getTouchingNodes(um));
 
             for (NodeType ui : v) {
                 int vuvis = calculateVuvis(ui);
@@ -128,7 +135,7 @@ public class RISubgraphFinder<NodeType extends Node<NodeType, VectorType, Identi
             mu.add(um);
 
             for (NodeType currentMu : mu) {
-                if (patternGraph.getEdgeBetween(um, currentMu).isPresent()) {
+                if (patternGraph.getEdgeBetween(um, currentMu).isPresent() || patternGraph.getEdgeBetween(currentMu, um).isPresent()) {
                     ptmu.add(currentMu);
                     break;
                 }
@@ -141,20 +148,20 @@ public class RISubgraphFinder<NodeType extends Node<NodeType, VectorType, Identi
     }
 
     private int calculateVuvis(NodeType ui) {
-        Set<NodeType> neighboursOfUi = new HashSet<>(ui.getNeighbours());
+        Set<NodeType> neighboursOfUi = new HashSet<>(patternGraph.getTouchingNodes(ui));
         neighboursOfUi.retainAll(mu);
         return neighboursOfUi.size();
     }
 
     private int calculateVmunv(NodeType ui, Set<NodeType> neighboursOfMu) {
-        Set<NodeType> neighboursOfUi = new HashSet<>(ui.getNeighbours());
+        Set<NodeType> neighboursOfUi = new HashSet<>(patternGraph.getTouchingNodes(ui));
         neighboursOfUi.removeAll(mu);
         neighboursOfUi.removeAll(neighboursOfMu);
         return neighboursOfUi.size();
     }
 
     private int calculateVmneig(NodeType ui, Set<NodeType> neighboursOfMu) {
-        Set<NodeType> neighboursOfUi = new HashSet<>(ui.getNeighbours());
+        Set<NodeType> neighboursOfUi = new HashSet<>(patternGraph.getTouchingNodes(ui));
         neighboursOfUi.removeAll(mu);
         neighboursOfUi.retainAll(neighboursOfMu);
         return neighboursOfUi.size();
@@ -252,7 +259,7 @@ public class RISubgraphFinder<NodeType extends Node<NodeType, VectorType, Identi
             // second condition (1b):
             // the target node matched to the pattern parent node of the current pattern node is a neighbour of the
             // current target node
-            if (noParent || mptui.getNeighbours().contains(candidateTargetNode)) {
+            if (noParent || targetGraph.getTouchingNodes(mptui).contains(candidateTargetNode)) {
                 // third condition (2)
                 // the labels of the node in the pattern graph is equal to the label of the node in the target graph
                 if (nodeConditionExtractor.apply(patternNode, candidateTargetNode)) {
@@ -337,7 +344,7 @@ public class RISubgraphFinder<NodeType extends Node<NodeType, VectorType, Identi
                             logger.debug("(4) Edge Condition failed: edge condition for pattern node {} and target node {} did not match", edgeConditionExtractor, patternNode, candidateTargetNode);
                         }
                     } else {
-                        logger.debug("(3) Connectivity Condition: pattern node neighbors {} are less than target node neighbors {}", patternNode.getNeighbours(), candidateTargetNode.getNeighbours());
+                        logger.debug("(3) Connectivity Condition: target node neighbors {} are less than pattern node neighbors {}", candidateTargetNode.getNeighbours(), patternNode.getNeighbours());
                     }
                 } else {
                     logger.debug("(2) Node Condition: node condition {} does not match for pattern node {} and target node {}", nodeConditionExtractor, patternNode, candidateTargetNode);
