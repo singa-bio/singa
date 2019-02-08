@@ -24,8 +24,24 @@ class RISubgraphFinderTest {
     private DirectedGraph<GenericNode<String>> target1;
 
     private DirectedGraph<GenericNode<String>> pattern2;
+    private DirectedGraph<GenericNode<String>> pattern2_1;
     private DirectedGraph<GenericNode<String>> target2;
+
     private DirectedGraph<GenericNode<String>> pattern3;
+    private DirectedGraph<GenericNode<String>> pattern3_1;
+    private DirectedGraph<GenericNode<String>> target3;
+
+    @BeforeEach
+    void initialize() {
+        pattern1 = createFirstPatternGraph();
+        target1 = createFirstTargetGraph();
+        pattern2 = createSecondPatternGraph();
+        target2 = createSecondTargetGraph();
+        pattern2_1 = createAlternativeSecondPatternGraph();
+        pattern3 = createThirdPatternGraph();
+        pattern3_1 = createAlternativeThirdPatternGraph();
+        target3 = createThirdTargetGraph();
+    }
 
     private static DirectedGraph<GenericNode<String>> createFirstPatternGraph() {
         DirectedGraph<GenericNode<String>> patternGraph = new DirectedGraph<>();
@@ -155,7 +171,7 @@ class RISubgraphFinderTest {
         return pattern;
     }
 
-    private static DirectedGraph<GenericNode<String>> createThirdPatternGraph() {
+    private static DirectedGraph<GenericNode<String>> createAlternativeSecondPatternGraph() {
         DirectedGraph<GenericNode<String>> pattern = new DirectedGraph<>();
 
         GenericNode<String> a = new GenericNode<>(pattern.nextNodeIdentifier(), "A");
@@ -189,13 +205,64 @@ class RISubgraphFinderTest {
         return target;
     }
 
-    @BeforeEach
-    void initialize() {
-        pattern1 = createFirstPatternGraph();
-        target1 = createFirstTargetGraph();
-        pattern2 = createSecondPatternGraph();
-        target2 = createSecondTargetGraph();
-        pattern3 = createThirdPatternGraph();
+    private DirectedGraph<GenericNode<String>> createAlternativeThirdPatternGraph() {
+        DirectedGraph<GenericNode<String>> pattern = new DirectedGraph<>();
+
+        GenericNode<String> a = new GenericNode<>(pattern.nextNodeIdentifier(), "A");
+        pattern.addNode(a);
+        GenericNode<String> b = new GenericNode<>(pattern.nextNodeIdentifier(), "B");
+        pattern.addNode(b);
+        GenericNode<String> c = new GenericNode<>(pattern.nextNodeIdentifier(), "C");
+        pattern.addNode(c);
+        GenericNode<String> d = new GenericNode<>(pattern.nextNodeIdentifier(), "D");
+        pattern.addNode(d);
+
+        pattern.addEdgeBetween(a, b);
+        pattern.addEdgeBetween(b, c);
+        pattern.addEdgeBetween(c, d);
+        pattern.addEdgeBetween(a, d);
+        return pattern;
+    }
+
+    private DirectedGraph<GenericNode<String>> createThirdTargetGraph() {
+        DirectedGraph<GenericNode<String>> target = new DirectedGraph<>();
+
+        GenericNode<String> a = new GenericNode<>(target.nextNodeIdentifier(), "A");
+        target.addNode(a);
+        GenericNode<String> b = new GenericNode<>(target.nextNodeIdentifier(), "B");
+        target.addNode(b);
+        GenericNode<String> c = new GenericNode<>(target.nextNodeIdentifier(), "C");
+        target.addNode(c);
+        GenericNode<String> d = new GenericNode<>(target.nextNodeIdentifier(), "D");
+        target.addNode(d);
+        GenericNode<String> e = new GenericNode<>(target.nextNodeIdentifier(), "E");
+        target.addNode(e);
+
+        target.addEdgeBetween(a, b);
+        target.addEdgeBetween(b, c);
+        target.addEdgeBetween(c, d);
+        target.addEdgeBetween(d, a);
+        target.addEdgeBetween(e, d);
+        return target;
+    }
+
+    private DirectedGraph<GenericNode<String>> createThirdPatternGraph() {
+        DirectedGraph<GenericNode<String>> pattern = new DirectedGraph<>();
+
+        GenericNode<String> a = new GenericNode<>(pattern.nextNodeIdentifier(), "A");
+        pattern.addNode(a);
+        GenericNode<String> b = new GenericNode<>(pattern.nextNodeIdentifier(), "B");
+        pattern.addNode(b);
+        GenericNode<String> c = new GenericNode<>(pattern.nextNodeIdentifier(), "C");
+        pattern.addNode(c);
+        GenericNode<String> d = new GenericNode<>(pattern.nextNodeIdentifier(), "D");
+        pattern.addNode(d);
+
+        pattern.addEdgeBetween(a, b);
+        pattern.addEdgeBetween(b, c);
+        pattern.addEdgeBetween(c, d);
+        pattern.addEdgeBetween(d, a);
+        return pattern;
     }
 
     @Test
@@ -245,10 +312,32 @@ class RISubgraphFinderTest {
                 (first, second) -> first.getContent().equals(second.getContent());
 
         RISubgraphFinder<GenericNode<String>, DirectedEdge<GenericNode<String>>, Vector2D, Integer, DirectedGraph<GenericNode<String>>> finder
-                = new RISubgraphFinder<>(pattern3, target2, nodeConditionExtractor, (first, second) -> true);
+                = new RISubgraphFinder<>(pattern2_1, target2, nodeConditionExtractor, (first, second) -> true);
 
         // assert first position in mu is highest degree node "B"
-        assertEquals(pattern3.getNode(1), finder.getMu().get(0));
+        assertEquals(pattern2_1.getNode(1), finder.getMu().get(0));
+        assertEquals(0, finder.getFullMatches().size());
+    }
+
+    @Test
+    void shouldFindFullDirectedCyclicMatch() {
+        BiFunction<GenericNode<String>, GenericNode<String>, Boolean> nodeConditionExtractor =
+                (first, second) -> first.getContent().equals(second.getContent());
+
+        RISubgraphFinder<GenericNode<String>, DirectedEdge<GenericNode<String>>, Vector2D, Integer, DirectedGraph<GenericNode<String>>> finder
+                = new RISubgraphFinder<>(pattern3, target3, nodeConditionExtractor, (first, second) -> true);
+
+        assertEquals(1, finder.getFullMatches().size());
+    }
+
+    @Test
+    void shouldNotFindFullDirectedCyclicMatch() {
+        BiFunction<GenericNode<String>, GenericNode<String>, Boolean> nodeConditionExtractor =
+                (first, second) -> first.getContent().equals(second.getContent());
+
+        RISubgraphFinder<GenericNode<String>, DirectedEdge<GenericNode<String>>, Vector2D, Integer, DirectedGraph<GenericNode<String>>> finder
+                = new RISubgraphFinder<>(pattern3_1, target3, nodeConditionExtractor, (first, second) -> true);
+
         assertEquals(0, finder.getFullMatches().size());
     }
 }
