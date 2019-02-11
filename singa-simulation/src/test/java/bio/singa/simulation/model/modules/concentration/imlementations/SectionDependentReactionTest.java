@@ -1,6 +1,7 @@
 package bio.singa.simulation.model.modules.concentration.imlementations;
 
 import bio.singa.chemistry.entities.*;
+import bio.singa.chemistry.entities.ComplexEntity;
 import bio.singa.chemistry.features.reactions.RateConstant;
 import bio.singa.features.identifiers.ChEBIIdentifier;
 import bio.singa.features.identifiers.UniProtIdentifier;
@@ -84,10 +85,7 @@ class SectionDependentReactionTest {
                 .assignFeature(new MolarMass(100, Evidence.NO_EVIDENCE))
                 .build();
 
-        ComplexedChemicalEntity complex = ComplexedChemicalEntity.create("complex")
-                .addAssociatedPart(bindee)
-                .addAssociatedPart(binder)
-                .build();
+        ComplexEntity complex = ComplexEntity.from(binder, bindee);
 
         // create and add module
         SectionDependentReaction.inSimulation(simulation)
@@ -146,7 +144,6 @@ class SectionDependentReactionTest {
             previousVesicleConcentration = currentVesicleConcentration;
         }
 
-
     }
 
     @Test
@@ -161,12 +158,12 @@ class SectionDependentReactionTest {
                 .build();
 
         // alpha-1 adrenergic receptor, P35348
-        Receptor receptor = new Receptor.Builder("receptor")
+        Protein receptor = new Protein.Builder("receptor")
                 .name("alpha-1 adrenergic receptor")
                 .additionalIdentifier(new UniProtIdentifier("P35348"))
                 .build();
 
-        ComplexedChemicalEntity complex = ComplexedChemicalEntity.from(receptor, ligand);
+        ComplexEntity complex = ComplexEntity.from(receptor, ligand);
 
         // create simulation
         Simulation simulation = new Simulation();

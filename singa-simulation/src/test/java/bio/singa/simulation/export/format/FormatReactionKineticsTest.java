@@ -1,6 +1,7 @@
 package bio.singa.simulation.export.format;
 
 import bio.singa.chemistry.entities.*;
+import bio.singa.chemistry.entities.ComplexEntity;
 import bio.singa.chemistry.features.reactions.MichaelisConstant;
 import bio.singa.chemistry.features.reactions.RateConstant;
 import bio.singa.chemistry.features.reactions.TurnoverNumber;
@@ -110,7 +111,7 @@ class FormatReactionKineticsTest {
 
         SmallMolecule ligand = SmallMolecule.create("L").build();
         Protein receptor = new Protein.Builder("R").build();
-        ComplexedChemicalEntity complex = ComplexedChemicalEntity.create("L:R").build();
+        ComplexEntity complex = ComplexEntity.from(ligand,receptor);
 
         RateConstant kf = RateConstant.create(2.0)
                 .forward().firstOrder()
@@ -130,7 +131,7 @@ class FormatReactionKineticsTest {
                 .backwardsRate(kb)
                 .build();
 
-        assertEquals("$k_{1} \\cdot \\text{[L]}_o \\cdot \\text{[R]}_m - k_{-1} \\cdot \\text{[L:R]}_m$", FormatReactionKinetics.formatTex(reaction));
+        assertEquals("$k_{1} \\cdot \\text{[L]}_o \\cdot \\text{[R]}_m - k_{-1} \\cdot \\text{[(L,R)]}_m$", FormatReactionKinetics.formatTex(reaction));
     }
 
 
@@ -140,7 +141,7 @@ class FormatReactionKineticsTest {
 
         Protein binder = new Protein.Builder("binder").build();
         ChemicalEntity bindee = new SmallMolecule.Builder("bindee").build();
-        ComplexedChemicalEntity complex = ComplexedChemicalEntity.from(bindee, binder);
+        ComplexEntity complex = ComplexEntity.from(bindee, binder);
 
         RateConstant kf = RateConstant.create(2.0)
                 .forward().secondOrder()
@@ -161,7 +162,7 @@ class FormatReactionKineticsTest {
                 .formingComplex(complex)
                 .build();
 
-        assertEquals("$k_{1} \\cdot \\text{[binder]}_m \\cdot \\text{[bindee]}_i- k_{-1} \\cdot \\text{[bindee:binder]}_m$", FormatReactionKinetics.formatTex(reaction));
+        assertEquals("$k_{1} \\cdot \\text{[binder]}_m \\cdot \\text{[bindee]}_i- k_{-1} \\cdot \\text{[(bindee,binder)]}_m$", FormatReactionKinetics.formatTex(reaction));
     }
 
     @Test

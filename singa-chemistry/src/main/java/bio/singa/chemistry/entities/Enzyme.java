@@ -7,7 +7,6 @@ import bio.singa.chemistry.features.reactions.TurnoverNumber;
 import bio.singa.features.identifiers.SimpleStringIdentifier;
 import bio.singa.features.identifiers.UniProtIdentifier;
 import bio.singa.features.model.Feature;
-import bio.singa.structure.features.molarmass.MolarMass;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -28,7 +27,7 @@ public class Enzyme extends Protein {
     private static final Set<Class<? extends Feature>> availableFeatures = new HashSet<>();
 
     static {
-        Enzyme.availableFeatures.addAll(ChemicalEntity.availableFeatures);
+        Enzyme.availableFeatures.addAll(AbstractChemicalEntity.availableFeatures);
         availableFeatures.add(MichaelisConstant.class);
         availableFeatures.add(TurnoverNumber.class);
     }
@@ -49,10 +48,10 @@ public class Enzyme extends Protein {
 
     @Override
     public String toString() {
-        return "Enzyme: " + getIdentifier() + " " + getName() + " weight: " + getFeature(MolarMass.class);
+        return "Enzyme " + getIdentifier();
     }
 
-    public static class Builder extends ChemicalEntity.Builder<Enzyme, Builder> {
+    public static class Builder extends AbstractChemicalEntity.Builder<Enzyme, Builder> {
 
         public Builder(SimpleStringIdentifier identifier) {
             super(identifier);

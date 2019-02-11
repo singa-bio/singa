@@ -3,8 +3,8 @@ package bio.singa.simulation.model.modules.qualitative.implementations;
 import bio.singa.chemistry.annotations.Annotation;
 import bio.singa.chemistry.annotations.AnnotationType;
 import bio.singa.chemistry.entities.ChemicalEntity;
-import bio.singa.chemistry.entities.ComplexedChemicalEntity;
 import bio.singa.chemistry.entities.Protein;
+import bio.singa.chemistry.entities.ComplexEntity;
 import bio.singa.features.identifiers.UniProtIdentifier;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.quantities.MolarConcentration;
@@ -81,17 +81,8 @@ class VesicleFusionTest {
                 .annotation(new Annotation<>(AnnotationType.NOTE, "SNARE type", "Qbc-SNARE"))
                 .build();
 
-        ComplexedChemicalEntity snareComplex1 = ComplexedChemicalEntity.create(syntaxin3.getIdentifier().getContent() + ":" + snap23.getIdentifier().getContent())
-                .addAssociatedPart(syntaxin3)
-                .addAssociatedPart(snap23)
-                .annotation(new Annotation<>(AnnotationType.NOTE, "SNARE type", "Qabc-SNARE"))
-                .build();
-
-        ComplexedChemicalEntity snareComplex2 = ComplexedChemicalEntity.create(syntaxin4.getIdentifier().getContent() + ":" + snap23.getIdentifier().getContent())
-                .addAssociatedPart(syntaxin4)
-                .addAssociatedPart(snap23)
-                .annotation(new Annotation<>(AnnotationType.NOTE, "SNARE type", "Qabc-SNARE"))
-                .build();
+        ComplexEntity snareComplex1 = ComplexEntity.from(syntaxin3, snap23);
+        ComplexEntity snareComplex2 = ComplexEntity.from(syntaxin4, snap23);
 
         // setup graph
         AutomatonGraph graph = AutomatonGraphs.singularGraph();

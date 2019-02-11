@@ -1,7 +1,7 @@
 package bio.singa.simulation.model.simulation;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
-import bio.singa.chemistry.entities.ComplexedChemicalEntity;
+import bio.singa.chemistry.entities.ComplexEntity;
 import bio.singa.features.identifiers.SimpleStringIdentifier;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.units.UnitRegistry;
@@ -371,8 +371,8 @@ public class Simulation {
         Set<ChemicalEntity> entities = new HashSet<>();
         for (ChemicalEntity entity : chemicalEntities.values()) {
             entities.add(entity);
-            if (entity instanceof ComplexedChemicalEntity) {
-                entities.addAll(((ComplexedChemicalEntity) entity).getAssociatedChemicalEntities());
+            if (entity instanceof ComplexEntity) {
+                entities.addAll(((ComplexEntity) entity).getAllData());
             }
         }
         return entities;

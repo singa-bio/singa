@@ -1,6 +1,7 @@
 package bio.singa.simulation.model.modules.concentration.imlementations;
 
 import bio.singa.chemistry.entities.*;
+import bio.singa.chemistry.entities.ComplexEntity;
 import bio.singa.chemistry.features.reactions.RateConstant;
 import bio.singa.features.identifiers.ChEBIIdentifier;
 import bio.singa.features.identifiers.UniProtIdentifier;
@@ -81,7 +82,7 @@ class ComplexBuildingReactionTest {
                 .by(binder, backwardRate)
                 .to(MEMBRANE)
                 .build();
-        ComplexedChemicalEntity complex = binding.getComplex();
+        ComplexEntity complex = binding.getComplex();
 
         // setup graph
         final AutomatonGraph automatonGraph = AutomatonGraphs.singularGraph();
@@ -126,7 +127,7 @@ class ComplexBuildingReactionTest {
                 .build();
 
         // alpha-1 adrenergic receptor, P35348
-        Receptor receptor = new Receptor.Builder("receptor")
+        Protein receptor = new Protein.Builder("receptor")
                 .name("alpha-1 adrenergic receptor")
                 .additionalIdentifier(new UniProtIdentifier("P35348"))
                 .build();
@@ -163,7 +164,7 @@ class ComplexBuildingReactionTest {
                 .by(receptor, backwardsRate)
                 .to(MEMBRANE)
                 .build();
-        ComplexedChemicalEntity complex = reaction.getComplex();
+        ComplexEntity complex = reaction.getComplex();
 
         // checkpoints
         Quantity<Time> currentTime;
@@ -397,10 +398,12 @@ class ComplexBuildingReactionTest {
             simulation.nextEpoch();
             // node assertion
             double currentNodeConcentration = node.getConcentrationContainer().get(INNER, bindee);
+            System.out.println("b:" +currentNodeConcentration);
             assertTrue(currentNodeConcentration < previousNodeConcentration);
             previousNodeConcentration = currentNodeConcentration;
             // vesicle assertion
             double currentVesicleConcentration = vesicle.getConcentrationContainer().get(MEMBRANE, binding.getComplex());
+            System.out.println("c:" +currentVesicleConcentration);
             assertTrue(currentVesicleConcentration > previousVesicleConcentration);
             previousVesicleConcentration = currentVesicleConcentration;
         }
@@ -480,24 +483,25 @@ class ComplexBuildingReactionTest {
         AutomatonNode second = graph.getNode(0, 1);
         second.getConcentrationContainer().initialize(INNER, bindee, Quantities.getQuantity(0.5, MOLE_PER_LITRE));
 
-        double previousFirstConcentration = 1.0;
-        double previousSecondConcentration = 0.5;
-        double previousVesicleConcentration = 0.0;
-        for (int i = 0; i < 10; i++) {
+        // checkpoints
+        Quantity<Time> firstCheckpoint = Quantities.getQuantity(50, MICRO(SECOND));
+        boolean firstCheckpointPassed = false;
+        Quantity<Time> secondCheckpoint = Quantities.getQuantity(500, MICRO(SECOND));
+        // run simulation
+        while (simulation.getElapsedTime().isLessThanOrEqualTo(secondCheckpoint)) {
             simulation.nextEpoch();
-            // first node assertions
-            double currentFirstConcentration = first.getConcentrationContainer().get(INNER, bindee);
-            assertTrue(currentFirstConcentration < previousFirstConcentration);
-            previousFirstConcentration = currentFirstConcentration;
-            // first node assertions
-            double currentSecondConcentration = second.getConcentrationContainer().get(INNER, bindee);
-            assertTrue(currentSecondConcentration < previousSecondConcentration);
-            previousSecondConcentration = currentSecondConcentration;
-            // outer assertions
-            double currentVesicleConcentration = vesicle.getConcentrationContainer().get(MEMBRANE, binding.getComplex());
-            assertTrue(currentVesicleConcentration > previousVesicleConcentration);
-            previousVesicleConcentration = currentVesicleConcentration;
+            if (!firstCheckpointPassed && simulation.getElapsedTime().isGreaterThanOrEqualTo(firstCheckpoint)) {
+                assertEquals(9.693E-7, first.getConcentrationContainer().get(INNER, bindee), 1e-10);
+                assertEquals(4.846E-7, second.getConcentrationContainer().get(INNER, bindee), 1e-10);
+                assertEquals(4.603E-8, vesicle.getConcentrationContainer().get(MEMBRANE, binding.getComplex()), 1e-10);
+                firstCheckpointPassed = true;
+            }
         }
+
+        // check final values
+        assertEquals(9.335E-7, first.getConcentrationContainer().get(INNER, bindee), 1e-10);
+        assertEquals(4.667E-7, second.getConcentrationContainer().get(INNER, bindee), 1e-10);
+        assertEquals(9.972E-8, vesicle.getConcentrationContainer().get(MEMBRANE, binding.getComplex()), 1e-10);
     }
 
 }

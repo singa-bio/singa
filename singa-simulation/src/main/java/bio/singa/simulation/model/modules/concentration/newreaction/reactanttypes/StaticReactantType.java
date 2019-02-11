@@ -2,6 +2,7 @@ package bio.singa.simulation.model.modules.concentration.newreaction.reactanttyp
 
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.simulation.model.modules.concentration.reactants.Reactant;
+import bio.singa.simulation.model.simulation.Updatable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -59,7 +60,7 @@ public class StaticReactantType implements ReactantType {
     }
 
     @Override
-    public List<ReactantSet> generateReactantSets() {
+    public List<ReactantSet> generateReactantSets(Updatable updatable) {
         return Collections.singletonList(new ReactantSet(substrates, products, catalysts));
     }
 

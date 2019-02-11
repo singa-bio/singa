@@ -4,7 +4,7 @@ import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.chemistry.features.reactions.RateConstant;
 import bio.singa.simulation.model.modules.concentration.ModuleBuilder;
 import bio.singa.simulation.model.modules.concentration.ModuleFactory;
-import bio.singa.simulation.model.modules.concentration.reactants.EntityExtractionCondition;
+import bio.singa.simulation.model.modules.concentration.reactants.EntityCompositionCondition;
 import bio.singa.simulation.model.modules.concentration.reactants.Reactant;
 import bio.singa.simulation.model.sections.CellTopology;
 import bio.singa.simulation.model.simulation.Simulation;
@@ -51,7 +51,7 @@ public class SectionDependentReactionBuilder implements ModuleBuilder {
         return this;
     }
 
-    public SectionDependentReactionBuilder addSubstrate(EntityExtractionCondition... substrateExtractionCondition) {
+    public SectionDependentReactionBuilder addSubstrate(EntityCompositionCondition... substrateExtractionCondition) {
         module.addSubstrateCondition(Arrays.asList(substrateExtractionCondition));
         return this;
     }

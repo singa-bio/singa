@@ -89,7 +89,7 @@ class UniProtParserTest {
     @DisplayName("parse uniprot - ena accession")
     void parseENAAccessionNumber() {
         // annotation
-        final List<Identifier> additionalIdentifiers = aars.getAdditionalIdentifiers();
+        final List<Identifier> additionalIdentifiers = aars.getAllIdentifiers();
         final Optional<ENAAccessionNumber> firstIdentifier = IdentifierPatternRegistry.find(ENAAccessionNumber.class, additionalIdentifiers);
         assertEquals("CAA37932.1", firstIdentifier.get().toString());
     }

@@ -8,8 +8,9 @@ import bio.singa.simulation.model.modules.concentration.ModuleBuilder;
 import bio.singa.simulation.model.modules.concentration.ModuleFactory;
 import bio.singa.simulation.model.modules.concentration.newreaction.kineticlawtypes.IrreversibleKineticLaw;
 import bio.singa.simulation.model.modules.concentration.newreaction.kineticlawtypes.ReversibleKineticLaw;
+import bio.singa.simulation.model.modules.concentration.newreaction.reactanttypes.DynamicReactantType;
 import bio.singa.simulation.model.modules.concentration.newreaction.reactanttypes.StaticReactantType;
-import bio.singa.simulation.model.modules.concentration.reactants.EntityExtractionCondition;
+import bio.singa.simulation.model.modules.concentration.reactants.DynamicChemicalEntity;
 import bio.singa.simulation.model.modules.concentration.reactants.Reactant;
 import bio.singa.simulation.model.sections.CellTopology;
 import bio.singa.simulation.model.simulation.Simulation;
@@ -32,7 +33,7 @@ public class ReactionBuilder {
 
     public interface DynamicReactantStep {
 
-        DynamicReactantStep addSubstrate(EntityExtractionCondition... conditions);
+        DynamicReactantStep addSubstrate(DynamicChemicalEntity dynamicChemicalEntity);
 
         DynamicReactantStep addSubstrate(ChemicalEntity chemicalEntity);
 
@@ -42,6 +43,8 @@ public class ReactionBuilder {
 
         DynamicReactantStep addSubstrate(ChemicalEntity chemicalEntity, CellTopology topology, double stoichiometricNumber);
 
+
+        DynamicReactantStep addProduct(DynamicChemicalEntity dynamicChemicalEntity);
 
         DynamicReactantStep addProduct(ChemicalEntity chemicalEntity);
 
@@ -209,53 +212,72 @@ public class ReactionBuilder {
 
     public static class DynamicBuilder extends GeneralReactionBuilder implements DynamicReactantStep {
 
+        private DynamicReactantType dynamicReactantType;
+
         public DynamicBuilder(Simulation simulation) {
             super(simulation);
+            dynamicReactantType = new DynamicReactantType();
+            reaction.setReactantType(dynamicReactantType);
         }
 
         @Override
-        public DynamicReactantStep addSubstrate(EntityExtractionCondition... conditions) {
-            return null;
+        public DynamicReactantStep addSubstrate(DynamicChemicalEntity dynamicChemicalEntity) {
+            dynamicReactantType.addDynamicSubstrate(dynamicChemicalEntity);
+            return this;
         }
 
         @Override
         public DynamicReactantStep addSubstrate(ChemicalEntity chemicalEntity) {
-            return null;
+            dynamicReactantType.addStaticSubstrate(new Reactant(chemicalEntity, SUBSTRATE));
+            return this;
         }
 
         @Override
         public DynamicReactantStep addSubstrate(ChemicalEntity chemicalEntity, CellTopology topology) {
-            return null;
+            dynamicReactantType.addStaticSubstrate(new Reactant(chemicalEntity, SUBSTRATE, topology));
+            return this;
         }
 
         @Override
         public DynamicReactantStep addSubstrate(ChemicalEntity chemicalEntity, double stoichiometricNumber) {
-            return null;
+            dynamicReactantType.addStaticSubstrate(new Reactant(chemicalEntity, SUBSTRATE, stoichiometricNumber));
+            return this;
         }
 
         @Override
         public DynamicReactantStep addSubstrate(ChemicalEntity chemicalEntity, CellTopology topology, double stoichiometricNumber) {
-            return null;
+            dynamicReactantType.addStaticSubstrate(new Reactant(chemicalEntity, SUBSTRATE, topology, stoichiometricNumber));
+            return this;
+        }
+
+        @Override
+        public DynamicReactantStep addProduct(DynamicChemicalEntity dynamicChemicalEntity) {
+            dynamicReactantType.addDynamicSubstrate(dynamicChemicalEntity);
+            return this;
         }
 
         @Override
         public DynamicReactantStep addProduct(ChemicalEntity chemicalEntity) {
-            return null;
+            dynamicReactantType.addStaticSubstrate(new Reactant(chemicalEntity, PRODUCT));
+            return this;
         }
 
         @Override
         public DynamicReactantStep addProduct(ChemicalEntity chemicalEntity, CellTopology topology) {
-            return null;
+            dynamicReactantType.addStaticSubstrate(new Reactant(chemicalEntity, PRODUCT, topology));
+            return this;
         }
 
         @Override
         public DynamicReactantStep addProduct(ChemicalEntity chemicalEntity, double stoichiometricNumber) {
-            return null;
+            dynamicReactantType.addStaticSubstrate(new Reactant(chemicalEntity, PRODUCT, stoichiometricNumber));
+            return this;
         }
 
         @Override
         public DynamicReactantStep addProduct(ChemicalEntity chemicalEntity, CellTopology topology, double stoichiometricNumber) {
-            return null;
+            dynamicReactantType.addStaticSubstrate(new Reactant(chemicalEntity, PRODUCT, topology, stoichiometricNumber));
+            return this;
         }
 
     }

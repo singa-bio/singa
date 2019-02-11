@@ -13,12 +13,12 @@ import java.util.Set;
 /**
  * @author cl
  */
-public class Protein extends ChemicalEntity {
+public class Protein extends AbstractChemicalEntity {
 
     private static final Set<Class<? extends Feature>> availableFeatures = new HashSet<>();
 
     static {
-        Protein.availableFeatures.addAll(ChemicalEntity.availableFeatures);
+        Protein.availableFeatures.addAll(AbstractChemicalEntity.availableFeatures);
     }
 
     /**
@@ -101,7 +101,7 @@ public class Protein extends ChemicalEntity {
         return availableFeatures;
     }
 
-    public static class Builder extends ChemicalEntity.Builder<Protein, Builder> {
+    public static class Builder extends AbstractChemicalEntity.Builder<Protein, Builder> {
 
         public Builder(SimpleStringIdentifier identifier) {
             super(identifier);

@@ -164,7 +164,6 @@ public class UpdateScheduler {
         UnitRegistry.setTime(UnitRegistry.getTime().multiply(1.2));
         logger.debug("Increasing time step to {}.", UnitRegistry.getTime());
         timestepsIncreased++;
-        timeStepRescaled = true;
     }
 
     public synchronized void decreaseTimeStep() {

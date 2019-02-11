@@ -1,7 +1,7 @@
 package bio.singa.simulation.model.modules.concentration.reactants;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
-import bio.singa.chemistry.entities.ComplexedChemicalEntity;
+import bio.singa.chemistry.entities.ComplexEntity;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,8 +16,8 @@ public class EntityReducer {
     private EntityReducer() {
     }
 
-    public static EntityExtractionCondition hasPart(ChemicalEntity reducer) {
-        return new EntityExtractionCondition("HAS_NOT_PART", reducer, EntityReducer::hasPartFunction);
+    public static EntityCompositionCondition hasPart(ChemicalEntity reducer) {
+        return new EntityCompositionCondition("HAS_NOT_PART", reducer, EntityReducer::hasPartFunction);
     }
 
     private static List<ChemicalEntity> hasPartFunction(Collection<ChemicalEntity> entities, ChemicalEntity reducer) {
@@ -25,8 +25,8 @@ public class EntityReducer {
         for (ChemicalEntity entity : entities) {
             if (entity.equals(reducer)) {
                 reducedEntities.add(entity);
-            } else if (entity instanceof ComplexedChemicalEntity) {
-                if (((ComplexedChemicalEntity) entity).getAllAssociatedChemicalEntities().contains(reducer)) {
+            } else if (entity instanceof ComplexEntity) {
+                if (((ComplexEntity) entity).find(reducer) != null) {
                     reducedEntities.add(entity);
                 }
             }
@@ -34,8 +34,8 @@ public class EntityReducer {
         return reducedEntities;
     }
 
-    public static EntityExtractionCondition hasNotPart(ChemicalEntity reducer) {
-        return new EntityExtractionCondition("HAS_NOT_PART", reducer, EntityReducer::hasNotPartFunction);
+    public static EntityCompositionCondition hasNotPart(ChemicalEntity reducer) {
+        return new EntityCompositionCondition("HAS_NOT_PART", reducer, EntityReducer::hasNotPartFunction);
     }
 
     private static List<ChemicalEntity> hasNotPartFunction(Collection<ChemicalEntity> entities, ChemicalEntity reducer) {
@@ -43,8 +43,8 @@ public class EntityReducer {
         for (ChemicalEntity entity : entities) {
             if (entity.equals(reducer)) {
                 continue;
-            } else if (entity instanceof ComplexedChemicalEntity) {
-                if (((ComplexedChemicalEntity) entity).getAllAssociatedChemicalEntities().contains(reducer)) {
+            } else if (entity instanceof ComplexEntity) {
+                if (((ComplexEntity) entity).find(reducer) != null) {
                     continue;
                 }
             }
@@ -53,13 +53,13 @@ public class EntityReducer {
         return reducedEntities;
     }
 
-    public static List<ChemicalEntity> apply(Collection<ChemicalEntity> entities, EntityExtractionCondition... conditions) {
+    public static List<ChemicalEntity> apply(Collection<ChemicalEntity> entities, EntityCompositionCondition... conditions) {
         return apply(entities, Arrays.asList(conditions));
     }
 
-    public static List<ChemicalEntity> apply(Collection<ChemicalEntity> entities, Collection<EntityExtractionCondition> conditions) {
+    public static List<ChemicalEntity> apply(Collection<ChemicalEntity> entities, Collection<EntityCompositionCondition> conditions) {
         List<ChemicalEntity> reducedEntities = new ArrayList<>(entities);
-        for (EntityExtractionCondition condition : conditions) {
+        for (EntityCompositionCondition condition : conditions) {
             reducedEntities = condition.reduce(reducedEntities, condition.getEntity());
         }
         return reducedEntities;

@@ -1,7 +1,7 @@
 package bio.singa.simulation.model.modules.concentration.imlementations;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
-import bio.singa.simulation.model.modules.concentration.reactants.EntityExtractionCondition;
+import bio.singa.simulation.model.modules.concentration.reactants.EntityCompositionCondition;
 import bio.singa.chemistry.features.reactions.BackwardsRateConstant;
 import bio.singa.chemistry.features.reactions.ForwardsRateConstant;
 import bio.singa.chemistry.features.reactions.RateConstant;
@@ -40,7 +40,7 @@ public class SectionDependentReaction extends ConcentrationBasedModule<Updatable
     private List<Reactant> substrates;
     private List<Reactant> products;
 
-    private List<List<EntityExtractionCondition>> substrateConditions;
+    private List<List<EntityCompositionCondition>> substrateConditions;
     private List<ChemicalEntity> dynamicSubstrates;
 
     private RateConstant forwardsReactionRate;
@@ -97,11 +97,11 @@ public class SectionDependentReaction extends ConcentrationBasedModule<Updatable
         products.add(product);
     }
 
-    public List<List<EntityExtractionCondition>> getSubstrateConditions() {
+    public List<List<EntityCompositionCondition>> getSubstrateConditions() {
         return substrateConditions;
     }
 
-    public void addSubstrateCondition(List<EntityExtractionCondition> substrateConditions) {
+    public void addSubstrateCondition(List<EntityCompositionCondition> substrateConditions) {
         this.substrateConditions.add(substrateConditions);
     }
 
@@ -141,10 +141,10 @@ public class SectionDependentReaction extends ConcentrationBasedModule<Updatable
 
     private void determineSubstrates(ConcentrationContainer container) {
         dynamicSubstrates = new ArrayList<>();
-        for (List<EntityExtractionCondition> catalystCondition : substrateConditions) {
+        for (List<EntityCompositionCondition> catalystCondition : substrateConditions) {
             dynamicSubstrates.addAll(EntityReducer.apply(container.getPool(INNER).getValue().getReferencedEntities(), catalystCondition));
         }
-        for (List<EntityExtractionCondition> catalystCondition : substrateConditions) {
+        for (List<EntityCompositionCondition> catalystCondition : substrateConditions) {
             dynamicSubstrates.addAll(EntityReducer.apply(container.getPool(MEMBRANE).getValue().getReferencedEntities(), catalystCondition));
         }
     }

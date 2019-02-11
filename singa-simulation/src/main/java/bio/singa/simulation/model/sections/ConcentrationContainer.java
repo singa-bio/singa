@@ -1,7 +1,7 @@
 package bio.singa.simulation.model.sections;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
-import bio.singa.chemistry.entities.ComplexedChemicalEntity;
+import bio.singa.chemistry.entities.ComplexEntity;
 import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.features.units.UnitRegistry;
 
@@ -136,8 +136,8 @@ public class ConcentrationContainer {
             if (entity.equals(chemicalEntity)) {
                 return Optional.of(chemicalEntity);
             }
-            if (chemicalEntity instanceof ComplexedChemicalEntity) {
-                for (ChemicalEntity associatedChemicalEntity : ((ComplexedChemicalEntity) chemicalEntity).getAssociatedChemicalEntities()) {
+            if (chemicalEntity instanceof ComplexEntity) {
+                for (ChemicalEntity associatedChemicalEntity : ((ComplexEntity) chemicalEntity).getAllData()) {
                     if (entity.equals(associatedChemicalEntity)) {
                         return Optional.of(chemicalEntity);
                     }

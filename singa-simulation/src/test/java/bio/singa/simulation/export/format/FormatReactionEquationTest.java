@@ -1,6 +1,7 @@
 package bio.singa.simulation.export.format;
 
 import bio.singa.chemistry.entities.*;
+import bio.singa.chemistry.entities.ComplexEntity;
 import bio.singa.chemistry.features.reactions.MichaelisConstant;
 import bio.singa.chemistry.features.reactions.RateConstant;
 import bio.singa.chemistry.features.reactions.TurnoverNumber;
@@ -74,7 +75,7 @@ class FormatReactionEquationTest {
                 .rateConstant(k)
                 .build();
 
-        assertEquals("\\ch{2A + B -> C + D}", FormatReactionEquation.formatTex(reaction));
+        assertEquals("\\ch{ 2 A + B -> C + D}", FormatReactionEquation.formatTex(reaction));
 
     }
 
@@ -112,7 +113,7 @@ class FormatReactionEquationTest {
 
         SmallMolecule ligand = SmallMolecule.create("L").build();
         Protein receptor = new Protein.Builder("R").build();
-        ComplexedChemicalEntity complex = ComplexedChemicalEntity.create("L:R").build();
+        ComplexEntity complex = ComplexEntity.from(ligand, receptor);
 
         RateConstant kf = RateConstant.create(2.0)
                 .forward().firstOrder()
@@ -141,7 +142,7 @@ class FormatReactionEquationTest {
 
         Protein binder = new Protein.Builder("binder").build();
         ChemicalEntity bindee = new SmallMolecule.Builder("bindee").build();
-        ComplexedChemicalEntity complex = ComplexedChemicalEntity.from(bindee, binder);
+        ComplexEntity complex = ComplexEntity.from(bindee, binder);
 
         RateConstant kf = RateConstant.create(2.0)
                 .forward().secondOrder()
@@ -162,7 +163,7 @@ class FormatReactionEquationTest {
                 .formingComplex(complex)
                 .build();
 
-        assertEquals("\\ch{binder$_m$ + bindee$_i$ <=> bindee:binder$_m$}", FormatReactionEquation.formatTex(reaction));
+        assertEquals("\\ch{L$_o$ + R$_m$ <=> (L,R)$_m$}", FormatReactionEquation.formatTex(reaction));
     }
 
     @Test
@@ -196,7 +197,7 @@ class FormatReactionEquationTest {
                 .referenceParameter(new Reactant(new SmallMolecule.Builder("CAMP").build(), ReactantRole.PRODUCT))
                 .build();
 
-        assertEquals("\\ch{ATP$_i$ ->[ ATP$_i$, GAT$_i$, AC6$_m$ ] CAMP$_i$}", FormatReactionEquation.formatTex(reaction));
+        assertEquals("\\ch{binder$_m$ + bindee$_i$ <=> (bindee,binder)$_m$}", FormatReactionEquation.formatTex(reaction));
     }
 
 }

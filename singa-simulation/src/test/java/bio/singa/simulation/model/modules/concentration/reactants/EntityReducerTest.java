@@ -1,8 +1,8 @@
 package bio.singa.simulation.model.modules.concentration.reactants;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
-import bio.singa.chemistry.entities.ComplexedChemicalEntity;
 import bio.singa.chemistry.entities.SmallMolecule;
+import bio.singa.chemistry.entities.ComplexEntity;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -26,9 +26,10 @@ class EntityReducerTest {
         SmallMolecule d = SmallMolecule.create("D").build();
         SmallMolecule e = SmallMolecule.create("E").build();
 
-        ComplexedChemicalEntity ab = ComplexedChemicalEntity.from(a, b);
-        ComplexedChemicalEntity abc = ComplexedChemicalEntity.from(ab, c);
-        ComplexedChemicalEntity abcde = ComplexedChemicalEntity.from(abc, d, e);
+        ComplexEntity ab = ComplexEntity.from(a, b);
+        ComplexEntity abc = ComplexEntity.from(ab, c);
+        ComplexEntity abcd = ComplexEntity.from(abc, d);
+        ComplexEntity abcde = ComplexEntity.from(abcd, e);
 
         List<ChemicalEntity> firstTest = new ArrayList<>();
         firstTest.add(a);

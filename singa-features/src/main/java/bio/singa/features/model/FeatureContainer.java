@@ -1,7 +1,11 @@
 package bio.singa.features.model;
 
+import bio.singa.features.identifiers.model.Identifier;
+
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * @author cl
@@ -30,6 +34,16 @@ public abstract class FeatureContainer {
 
     public Collection<Feature<?>> getAllFeatures() {
         return content.values();
+    }
+
+    public List<Identifier> getAdditionalIdentifiers() {
+        List<Identifier> identifiers = new ArrayList<>();
+        for (Feature<?> feature : getAllFeatures()) {
+            if (feature instanceof Identifier) {
+                identifiers.add((Identifier) feature);
+            }
+        }
+        return identifiers;
     }
 
 }

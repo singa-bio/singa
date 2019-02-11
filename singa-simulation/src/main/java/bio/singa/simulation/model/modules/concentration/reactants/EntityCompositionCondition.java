@@ -9,14 +9,14 @@ import java.util.function.BiFunction;
 /**
  * @author cl
  */
-public class EntityExtractionCondition {
+public class EntityCompositionCondition {
 
     private String identifier;
 
     private ChemicalEntity entity;
     private BiFunction<Collection<ChemicalEntity>, ChemicalEntity, List<ChemicalEntity>> function;
 
-    public EntityExtractionCondition(String identifier, ChemicalEntity entity, BiFunction<Collection<ChemicalEntity>, ChemicalEntity, List<ChemicalEntity>> function) {
+    public EntityCompositionCondition(String identifier, ChemicalEntity entity, BiFunction<Collection<ChemicalEntity>, ChemicalEntity, List<ChemicalEntity>> function) {
         this.identifier = identifier;
         this.entity = entity;
         this.function = function;

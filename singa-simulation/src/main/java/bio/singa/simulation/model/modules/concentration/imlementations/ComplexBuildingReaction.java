@@ -1,7 +1,7 @@
 package bio.singa.simulation.model.modules.concentration.imlementations;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
-import bio.singa.chemistry.entities.ComplexedChemicalEntity;
+import bio.singa.chemistry.entities.ComplexEntity;
 import bio.singa.chemistry.features.reactions.BackwardsRateConstant;
 import bio.singa.chemistry.features.reactions.ForwardsRateConstant;
 import bio.singa.chemistry.features.reactions.RateConstant;
@@ -89,7 +89,7 @@ public class ComplexBuildingReaction extends ConcentrationBasedModule<UpdatableD
     private ChemicalEntity bindee;
     private CellTopology bindeeTopology;
 
-    private ComplexedChemicalEntity complex;
+    private ComplexEntity complex;
 
     public ComplexBuildingReaction() {
 
@@ -108,10 +108,7 @@ public class ComplexBuildingReaction extends ConcentrationBasedModule<UpdatableD
         getRequiredFeatures().add(BackwardsRateConstant.class);
         // in no complex has been set create it
         if (complex == null) {
-            complex = new ComplexedChemicalEntity.Builder(binder.getIdentifier().getContent() + ":" + bindee.getIdentifier().getContent())
-                    .addAssociatedPart(binder)
-                    .addAssociatedPart(bindee)
-                    .build();
+            complex = ComplexEntity.from(binder, bindee);
         }
         // reference entities for this module
         addReferencedEntity(bindee);
@@ -244,11 +241,11 @@ public class ComplexBuildingReaction extends ConcentrationBasedModule<UpdatableD
         }
     }
 
-    public ComplexedChemicalEntity getComplex() {
+    public ComplexEntity getComplex() {
         return complex;
     }
 
-    public void setComplex(ComplexedChemicalEntity complex) {
+    public void setComplex(ComplexEntity complex) {
         this.complex = complex;
     }
 
@@ -377,7 +374,7 @@ public class ComplexBuildingReaction extends ConcentrationBasedModule<UpdatableD
     }
 
     public interface BuilderStep {
-        BuilderStep formingComplex(ComplexedChemicalEntity complex);
+        BuilderStep formingComplex(ComplexEntity complex);
 
         ComplexBuildingReaction build();
     }
@@ -449,7 +446,7 @@ public class ComplexBuildingReaction extends ConcentrationBasedModule<UpdatableD
         }
 
         @Override
-        public BuilderStep formingComplex(ComplexedChemicalEntity complex) {
+        public BuilderStep formingComplex(ComplexEntity complex) {
             module.complex = complex;
             return this;
         }
