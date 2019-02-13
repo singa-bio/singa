@@ -16,9 +16,9 @@ import static tec.uom.se.unit.Units.METRE;
  */
 class CellRegionTest {
 
-    private final ChemicalEntity entityA = new SmallMolecule.Builder("A").build();
-    private final ChemicalEntity entityB = new SmallMolecule.Builder("B").build();
-    private final ChemicalEntity entityC = new SmallMolecule.Builder("C").build();
+    private final ChemicalEntity entityA = SmallMolecule.create("A").build();
+    private final ChemicalEntity entityB = SmallMolecule.create("B").build();
+    private final ChemicalEntity entityC = SmallMolecule.create("C").build();
 
     @Test
     void resembleSingleContainer() {

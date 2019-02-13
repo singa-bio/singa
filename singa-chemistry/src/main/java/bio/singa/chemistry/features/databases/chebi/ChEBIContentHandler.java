@@ -52,7 +52,7 @@ public class ChEBIContentHandler implements ContentHandler {
             primaryIdentifier = identifier.toString();
         }
 
-        SmallMolecule species = new SmallMolecule.Builder(primaryIdentifier)
+        SmallMolecule species = SmallMolecule.create(primaryIdentifier)
                 .name(name)
                 .additionalIdentifier(inChIKey)
                 .build();

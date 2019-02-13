@@ -14,7 +14,7 @@ class DiffusivityTest {
 
     @Test
     void shouldResolveRequiredFeature() {
-        SmallMolecule testSpecies = new SmallMolecule.Builder("dnp")
+        SmallMolecule testSpecies = SmallMolecule.create("dnp")
                 .additionalIdentifier(new ChEBIIdentifier("CHEBI:29802"))
                 .build();
         Diffusivity diffusivity = testSpecies.getFeature(Diffusivity.class);
@@ -26,7 +26,7 @@ class DiffusivityTest {
 
     @Test
     void shouldUseWilkeToCalculateDiffusifity() {
-        SmallMolecule testSpecies = new SmallMolecule.Builder("light entity")
+        SmallMolecule testSpecies = SmallMolecule.create("light entity")
                 .assignFeature(new MolarMass(100))
                 .build();
         // get feature
@@ -39,7 +39,7 @@ class DiffusivityTest {
 
     @Test
     void shouldUseYoungToCalculateDiffusifity() {
-        SmallMolecule testSpecies = new SmallMolecule.Builder("heavy entity")
+        SmallMolecule testSpecies = SmallMolecule.create("heavy entity")
                 .assignFeature(new MolarMass(10000))
                 .build();
         // get feature

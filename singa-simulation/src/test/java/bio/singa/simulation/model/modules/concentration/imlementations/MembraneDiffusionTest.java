@@ -15,6 +15,7 @@ import bio.singa.simulation.model.agents.surfacelike.MembraneTracer;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.graphs.AutomatonNode;
+import bio.singa.simulation.model.modules.concentration.imlementations.transport.MembraneDiffusion;
 import bio.singa.simulation.model.sections.CellTopology;
 import bio.singa.simulation.model.simulation.Simulation;
 import org.junit.jupiter.api.AfterEach;
@@ -47,7 +48,7 @@ import static tec.uom.se.unit.Units.SECOND;
  */
 class MembraneDiffusionTest {
 
-    private final SmallMolecule water = new SmallMolecule.Builder("water")
+    private final SmallMolecule water = SmallMolecule.create("water")
             .name("water")
             .assignFeature(new MembranePermeability(Quantities.getQuantity(3.5E-03, CENTIMETRE_PER_SECOND), Evidence.NO_EVIDENCE))
             .build();
@@ -142,7 +143,7 @@ class MembraneDiffusionTest {
         }
 
         // setup species
-        SmallMolecule water = new SmallMolecule.Builder("water")
+        SmallMolecule water = SmallMolecule.create("water")
                 .name("water")
                 .assignFeature(new MembranePermeability(Quantities.getQuantity(3.5E-03, CENTIMETRE_PER_SECOND), Evidence.NO_EVIDENCE))
                 .build();

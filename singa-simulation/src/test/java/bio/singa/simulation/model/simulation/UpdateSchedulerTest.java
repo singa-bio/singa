@@ -5,7 +5,7 @@ import bio.singa.chemistry.features.reactions.RateConstant;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.graphs.AutomatonNode;
-import bio.singa.simulation.model.modules.concentration.imlementations.SectionDependentReaction;
+import bio.singa.simulation.model.modules.concentration.imlementations.reactions.ReactionBuilder;
 import bio.singa.simulation.model.sections.CellRegions;
 import bio.singa.simulation.model.sections.CellSubsections;
 import bio.singa.simulation.model.sections.concentration.ConcentrationInitializer;
@@ -64,12 +64,13 @@ class UpdateSchedulerTest {
                 .timeUnit(SECOND)
                 .build();
 
-        SectionDependentReaction.inSimulation(simulation)
+        ReactionBuilder.staticReactants(simulation)
                 .addSubstrate(firstSubstrate)
                 .addSubstrate(secondSubstrate)
                 .addProduct(product)
-                .forwardsRate(kf)
-                .backwardsRate(kb)
+                .complexBuilding()
+                .associationRate(kf)
+                .dissociationRate(kb)
                 .build();
 
         for (int i = 0; i < 100; i++) {

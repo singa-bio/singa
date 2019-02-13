@@ -2,7 +2,6 @@ package bio.singa.simulation.model.modules.concentration.functions;
 
 import bio.singa.simulation.model.modules.concentration.ConcentrationBasedModule;
 import bio.singa.simulation.model.modules.concentration.ConcentrationDelta;
-import bio.singa.simulation.model.modules.concentration.imlementations.Reaction;
 import bio.singa.simulation.model.modules.concentration.specifity.SectionSpecific;
 import bio.singa.simulation.model.sections.CellSubsection;
 import bio.singa.simulation.model.sections.ConcentrationContainer;

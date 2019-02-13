@@ -66,7 +66,7 @@ public class SmallMolecule extends AbstractChemicalEntity {
             super(identifier);
         }
 
-        public Builder(String identifier) {
+        private Builder(String identifier) {
             this(new SimpleStringIdentifier(identifier));
         }
 

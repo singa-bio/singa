@@ -14,8 +14,8 @@ import bio.singa.simulation.model.agents.pointlike.VesicleLayer;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.graphs.AutomatonNode;
+import bio.singa.simulation.model.modules.concentration.imlementations.reactions.ReactionBuilder;
 import bio.singa.simulation.model.sections.CellSubsection;
-import bio.singa.simulation.model.sections.CellTopology;
 import bio.singa.simulation.model.simulation.Simulation;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -31,6 +31,7 @@ import javax.measure.quantity.Time;
 
 import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static bio.singa.simulation.model.sections.CellRegions.EXTRACELLULAR_REGION;
+import static bio.singa.simulation.model.sections.CellTopology.MEMBRANE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static tec.uom.se.unit.MetricPrefix.*;
 import static tec.uom.se.unit.Units.METRE;
@@ -84,11 +85,12 @@ class NthOrderReactionTest {
                 .build();
 
         // create reaction
-        NthOrderReaction.inSimulation(simulation)
+        ReactionBuilder.dynamicReactants(simulation)
                 .addSubstrate(dpo, 2)
                 .addProduct(ndo, 4)
                 .addProduct(oxygen)
-                .rateConstant(rateConstant)
+                .irreversible()
+                .rate(rateConstant)
                 .build();
 
         // add graph
@@ -143,27 +145,28 @@ class NthOrderReactionTest {
 
         VesicleLayer layer = new VesicleLayer(simulation);
         Vesicle vesicle = new Vesicle(new Vector2D(400, 400.0), Quantities.getQuantity(50, NANO(METRE)));
-        vesicle.getConcentrationContainer().set(CellTopology.MEMBRANE, sm, MolarConcentration.moleculesToConcentration(numberOfMolecules));
+        vesicle.getConcentrationContainer().set(MEMBRANE, sm, MolarConcentration.moleculesToConcentration(numberOfMolecules));
         layer.addVesicle(vesicle);
         simulation.setVesicleLayer(layer);
 
-        RateConstant rateConstant = RateConstant.create(MolarConcentration.moleculesToConcentration(60) / 11.0)
+        RateConstant rateConstant = RateConstant.create(MolarConcentration.moleculesToConcentration(numberOfMolecules) / 11.0)
                 .forward().zeroOrder()
                 .concentrationUnit(UnitRegistry.getConcentrationUnit())
                 .timeUnit(SECOND)
                 .evidence(DefaultFeatureSources.EHRLICH2004)
                 .build();
 
-        NthOrderReaction.inSimulation(simulation)
-                .rateConstant(rateConstant)
-                .addSubstrate(sm)
+        ReactionBuilder.staticReactants(simulation)
+                .addSubstrate(sm, MEMBRANE)
+                .irreversible()
+                .rate(rateConstant)
                 .build();
 
-        Quantity<Dimensionless> molecules = MolarConcentration.concentrationToMolecules(vesicle.getConcentrationContainer().get(CellTopology.MEMBRANE, sm));
+        Quantity<Dimensionless> molecules = MolarConcentration.concentrationToMolecules(vesicle.getConcentrationContainer().get(MEMBRANE, sm));
         assertEquals(60, molecules.getValue().intValue());
         while (simulation.getElapsedTime().isLessThanOrEqualTo(Quantities.getQuantity(11, SECOND))) {
             simulation.nextEpoch();
-            molecules = MolarConcentration.concentrationToMolecules(vesicle.getConcentrationContainer().get(CellTopology.MEMBRANE, sm));
+            molecules = MolarConcentration.concentrationToMolecules(vesicle.getConcentrationContainer().get(MEMBRANE, sm));
         }
         assertEquals(0, molecules.getValue().intValue());
     }

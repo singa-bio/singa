@@ -1,16 +1,13 @@
 package bio.singa.simulation.export.format;
 
-import bio.singa.chemistry.entities.*;
 import bio.singa.chemistry.entities.ComplexEntity;
+import bio.singa.chemistry.entities.Enzyme;
+import bio.singa.chemistry.entities.Protein;
+import bio.singa.chemistry.entities.SmallMolecule;
 import bio.singa.chemistry.features.reactions.MichaelisConstant;
 import bio.singa.chemistry.features.reactions.RateConstant;
 import bio.singa.chemistry.features.reactions.TurnoverNumber;
 import bio.singa.features.model.Evidence;
-import bio.singa.features.units.UnitRegistry;
-import bio.singa.simulation.model.modules.concentration.imlementations.*;
-import bio.singa.simulation.model.modules.concentration.reactants.Reactant;
-import bio.singa.simulation.model.modules.concentration.reactants.ReactantRole;
-import bio.singa.simulation.model.sections.CellTopology;
 import bio.singa.simulation.model.simulation.Simulation;
 import org.junit.jupiter.api.Test;
 import tec.uom.se.quantity.Quantities;
@@ -18,9 +15,8 @@ import tec.uom.se.unit.ProductUnit;
 
 import static bio.singa.features.model.Evidence.SourceType.PREDICTION;
 import static bio.singa.features.units.UnitProvider.MICRO_MOLE_PER_LITRE;
-import static bio.singa.features.units.UnitProvider.MILLI_MOLE_PER_LITRE;
 import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 import static tec.uom.se.AbstractUnit.ONE;
 import static tec.uom.se.unit.Units.MINUTE;
 import static tec.uom.se.unit.Units.SECOND;
@@ -41,13 +37,14 @@ class FormatReactionKineticsTest {
         SmallMolecule substrate = SmallMolecule.create("cAMP").build();
         SmallMolecule product = SmallMolecule.create("AMP").build();
 
-        MichaelisMentenReaction reaction = MichaelisMentenReaction.inSimulation(simulation)
-                .enzyme(enzyme)
-                .addSubstrate(substrate)
-                .addProduct(product)
-                .build();
-
-        assertEquals("$\\frac{k_{\\text{cat}} \\cdot [\\text{PDE4}] \\cdot [\\text{cAMP}]}{K_m \\cdot [\\text{cAMP}]}$", FormatReactionKinetics.formatTex(reaction));
+//        MichaelisMentenReaction reaction = MichaelisMentenReaction.inSimulation(simulation)
+//                .enzyme(enzyme)
+//                .addSubstrate(substrate)
+//                .addProduct(product)
+//                .build();
+//
+//        assertEquals("$\\frac{k_{\\text{cat}} \\cdot [\\text{PDE4}] \\cdot [\\text{cAMP}]}{K_m \\cdot [\\text{cAMP}]}$", FormatReactionKinetics.formatTex(reaction));
+        fail();
     }
 
     @Test
@@ -65,15 +62,18 @@ class FormatReactionKineticsTest {
                 .timeUnit(SECOND)
                 .build();
 
-        NthOrderReaction reaction = NthOrderReaction.inSimulation(simulation)
-                .addSubstrate(substrate1)
-                .addSubstrate(substrate2)
-                .addProduct(product1)
-                .addProduct(product2)
-                .rateConstant(k)
-                .build();
+//        ReactionBuilder.staticReactants(simulation)
+//                .addSubstrate(substrate1)
+//                .addSubstrate(substrate2)
+//                .addProduct(product1)
+//                .addProduct(product2)
+//                .irreversible()
+//                .rate(k)
+//                .build();
+//
+//        assertEquals("$k \\cdot [\\text{A}] \\cdot [\\text{B}]$", FormatReactionKinetics.formatTex(reaction));
 
-        assertEquals("$k \\cdot [\\text{A}] \\cdot [\\text{B}]$", FormatReactionKinetics.formatTex(reaction));
+        fail();
 
     }
 
@@ -94,14 +94,16 @@ class FormatReactionKineticsTest {
                 .timeUnit(SECOND)
                 .build();
 
-        ReversibleReaction reaction = ReversibleReaction.inSimulation(simulation)
-                .addSubstrate(substrate)
-                .addProduct(product)
-                .forwardsRateConstant(kf)
-                .backwardsRateConstant(kb)
-                .build();
-
-        assertEquals("$k_{1} \\cdot [\\text{A}] - k_{-1} \\cdot [\\text{B}]$", FormatReactionKinetics.formatTex(reaction));
+//        ReactionBuilder.staticReactants(simulation)
+//                .addSubstrate(substrate)
+//                .addProduct(product)
+//                .reversible()
+//                .forwardReactionRate(kf)
+//                .backwardReactionRate(kb)
+//                .build();
+//
+//        assertEquals("$k_{1} \\cdot [\\text{A}] - k_{-1} \\cdot [\\text{B}]$", FormatReactionKinetics.formatTex(reaction));
+        fail();
 
     }
 
@@ -123,46 +125,17 @@ class FormatReactionKineticsTest {
                 .timeUnit(SECOND)
                 .build();
 
-        SectionDependentReaction reaction = SectionDependentReaction.inSimulation(simulation)
-                .addSubstrate(ligand, CellTopology.OUTER)
-                .addSubstrate(receptor, CellTopology.MEMBRANE)
-                .addProduct(complex, CellTopology.MEMBRANE)
-                .forwardsRate(kf)
-                .backwardsRate(kb)
-                .build();
+//        SectionDependentReaction reaction = SectionDependentReaction.inSimulation(simulation)
+//                .addSubstrate(ligand, CellTopology.OUTER)
+//                .addSubstrate(receptor, CellTopology.MEMBRANE)
+//                .addProduct(complex, CellTopology.MEMBRANE)
+//                .forwardsRate(kf)
+//                .backwardsRate(kb)
+//                .build();
+//
+//        assertEquals("$k_{1} \\cdot \\text{[L]}_o \\cdot \\text{[R]}_m - k_{-1} \\cdot \\text{[(L,R)]}_m$", FormatReactionKinetics.formatTex(reaction));
 
-        assertEquals("$k_{1} \\cdot \\text{[L]}_o \\cdot \\text{[R]}_m - k_{-1} \\cdot \\text{[(L,R)]}_m$", FormatReactionKinetics.formatTex(reaction));
-    }
-
-
-    @Test
-    void testComplexBuildingReactionFormat() {
-        Simulation simulation = new Simulation();
-
-        Protein binder = new Protein.Builder("binder").build();
-        ChemicalEntity bindee = new SmallMolecule.Builder("bindee").build();
-        ComplexEntity complex = ComplexEntity.from(bindee, binder);
-
-        RateConstant kf = RateConstant.create(2.0)
-                .forward().secondOrder()
-                .concentrationUnit(MILLI_MOLE_PER_LITRE)
-                .timeUnit(SECOND)
-                .build();
-
-        RateConstant kb = RateConstant.create(1.0)
-                .backward().firstOrder()
-                .timeUnit(SECOND)
-                .build();
-
-        ComplexBuildingReaction reaction = ComplexBuildingReaction.inSimulation(simulation)
-                .of(bindee, kf)
-                .in(CellTopology.INNER)
-                .by(binder, kb)
-                .to(CellTopology.MEMBRANE)
-                .formingComplex(complex)
-                .build();
-
-        assertEquals("$k_{1} \\cdot \\text{[binder]}_m \\cdot \\text{[bindee]}_i- k_{-1} \\cdot \\text{[(bindee,binder)]}_m$", FormatReactionKinetics.formatTex(reaction));
+        fail();
     }
 
     @Test
@@ -177,26 +150,27 @@ class FormatReactionKineticsTest {
 
         MichaelisConstant km = new MichaelisConstant(Quantities.getQuantity(20, MICRO_MOLE_PER_LITRE), Evidence.NO_EVIDENCE);
 
-        DynamicReaction reaction = DynamicReaction.inSimulation(simulation)
-                .identifier("Adenylate Cyclase Reaction")
-                // derived from v = kCat*E*S/(kM+s), where kCat has is a pseudo first order rate derived from regression
-                // the scaling parameter determines the unit of the equation
-                .kineticLaw("(1/((p01/cATPuM)^p02+(p03/cGAuM)^p04))*us*cAC6*(cATP/(kM+cATP))")
-                // matlab regression
-                .referenceParameter("p01", 6.144e5)
-                .referenceParameter("p02", 0.3063)
-                .referenceParameter("p03", 1.196)
-                .referenceParameter("p04", 1.153)
-                .referenceParameter("us", scaling)
-                .referenceParameter("kM", UnitRegistry.scale(km.getContent()).getValue().doubleValue())
-                .referenceParameter("cATPuM", new Reactant(new SmallMolecule.Builder("ATP").build(), ReactantRole.CATALYTIC, MICRO_MOLE_PER_LITRE))
-                .referenceParameter("cGAuM", new Reactant(new SmallMolecule.Builder("GAT").build(), ReactantRole.CATALYTIC, MICRO_MOLE_PER_LITRE))
-                .referenceParameter("cAC6", new Reactant(new SmallMolecule.Builder("AC6").build(), ReactantRole.CATALYTIC, CellTopology.MEMBRANE))
-                .referenceParameter("cATP", new Reactant(new SmallMolecule.Builder("ATP").build(), ReactantRole.SUBSTRATE))
-                .referenceParameter(new Reactant(new SmallMolecule.Builder("CAMP").build(), ReactantRole.PRODUCT))
-                .build();
-
-        assertEquals("not supported", FormatReactionKinetics.formatTex(reaction));
+//        ReactionBuilder.staticReactants(simulation)
+//                // derived from v = kCat*E*S/(kM+s), where kCat has is a pseudo first order rate derived from regression
+//                // the scaling parameter determines the unit of the equation
+//                .kineticLaw("(1/((p01/cATPuM)^p02+(p03/cGAuM)^p04))*us*cAC6*(cATP/(kM+cATP))")
+//                // matlab regression
+//                .referenceParameter("p01", 6.144e5)
+//                .referenceParameter("p02", 0.3063)
+//                .referenceParameter("p03", 1.196)
+//                .referenceParameter("p04", 1.153)
+//                .referenceParameter("us", scaling)
+//                .referenceParameter("kM", UnitRegistry.scale(km.getContent()).getValue().doubleValue())
+//                .referenceParameter("cATPuM", new Reactant(SmallMolecule.create("ATP").build(), ReactantRole.CATALYTIC, MICRO_MOLE_PER_LITRE))
+//                .referenceParameter("cGAuM", new Reactant(SmallMolecule.create("GAT").build(), ReactantRole.CATALYTIC, MICRO_MOLE_PER_LITRE))
+//                .referenceParameter("cAC6", new Reactant(SmallMolecule.create("AC6").build(), ReactantRole.CATALYTIC, CellTopology.MEMBRANE))
+//                .referenceParameter("cATP", new Reactant(SmallMolecule.create("ATP").build(), ReactantRole.SUBSTRATE))
+//                .referenceParameter(new Reactant(SmallMolecule.create("CAMP").build(), ReactantRole.PRODUCT))
+//                .identifier("Adenylate Cyclase Reaction")
+//                .build();
+//
+//        assertEquals("not supported", FormatReactionKinetics.formatTex(reaction));
+        fail();
     }
 
 }

@@ -9,8 +9,6 @@ import bio.singa.features.formatter.QuantityFormatter;
 import bio.singa.simulation.model.modules.UpdateModule;
 import bio.singa.simulation.model.modules.concentration.ConcentrationBasedModule;
 import bio.singa.simulation.model.modules.concentration.ConcentrationDelta;
-import bio.singa.simulation.model.modules.concentration.imlementations.ComplexBuildingReaction;
-import bio.singa.simulation.model.modules.concentration.imlementations.Reaction;
 import bio.singa.simulation.model.sections.CellSubsection;
 import bio.singa.simulation.model.simulation.Simulation;
 import bio.singa.simulation.model.simulation.SimulationManager;
@@ -333,13 +331,7 @@ public class EpochUpdateWriter implements UpdateEventListener<UpdatableUpdatedEv
     }
 
     private String getModuleRepresentativeString(UpdateModule module) {
-        if (module instanceof Reaction) {
-            return ((Reaction) module).getReactionString();
-        } else if (module instanceof ComplexBuildingReaction) {
-            return ((ComplexBuildingReaction) module).getReactionString();
-        } else {
-            return module.toString();
-        }
+        return module.toString();
     }
 
     public Path getWorkspaceFolder() {

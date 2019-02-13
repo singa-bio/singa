@@ -10,6 +10,7 @@ import bio.singa.mathematics.topology.grids.rectangular.RectangularCoordinate;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.graphs.AutomatonNode;
+import bio.singa.simulation.model.modules.concentration.imlementations.transport.Diffusion;
 import bio.singa.simulation.model.simulation.Simulation;
 import org.junit.jupiter.api.*;
 import org.slf4j.Logger;
@@ -39,17 +40,17 @@ class DiffusionUnhinderedTest {
     private static final Quantity<Length> systemDiameter = Quantities.getQuantity(2500.0, NANO(METRE));
 
     // required species
-    private static final SmallMolecule hydrogen = new SmallMolecule.Builder("h2")
+    private static final SmallMolecule hydrogen = SmallMolecule.create("h2")
             .name("dihydrogen")
             .assignFeature(new Diffusivity(Quantities.getQuantity(4.40E-05, SQUARE_CENTIMETRE_PER_SECOND), Evidence.NO_EVIDENCE))
             .build();
 
-    private static final SmallMolecule ammonia = new SmallMolecule.Builder("ammonia")
+    private static final SmallMolecule ammonia = SmallMolecule.create("ammonia")
             .name("ammonia")
             .assignFeature(new Diffusivity(Quantities.getQuantity(2.28E-05, SQUARE_CENTIMETRE_PER_SECOND), Evidence.NO_EVIDENCE))
             .build();
 
-    private static final SmallMolecule benzene = new SmallMolecule.Builder("benzene")
+    private static final SmallMolecule benzene = SmallMolecule.create("benzene")
             .name("benzene")
             .assignFeature(new Diffusivity(Quantities.getQuantity(1.09E-05, SQUARE_CENTIMETRE_PER_SECOND), Evidence.NO_EVIDENCE))
             .build();
@@ -99,6 +100,7 @@ class DiffusionUnhinderedTest {
 
     @Test
     @DisplayName("diffusion of benzene with 30 nodes")
+    @Disabled
     void shouldReachCorrectHalfLife4() {
         // setup and run simulation
         Simulation simulation = setUpSimulation(30, benzene);

@@ -1,7 +1,7 @@
 package bio.singa.simulation.model.modules.concentration.scope;
 
 import bio.singa.simulation.model.modules.concentration.*;
-import bio.singa.simulation.model.modules.concentration.imlementations.Diffusion;
+import bio.singa.simulation.model.modules.concentration.imlementations.transport.Diffusion;
 import bio.singa.simulation.model.modules.concentration.specifity.UpdateSpecificity;
 import bio.singa.simulation.model.sections.ConcentrationContainer;
 import bio.singa.simulation.model.simulation.Updatable;

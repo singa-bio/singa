@@ -10,6 +10,7 @@ import bio.singa.mathematics.graphs.model.Graphs;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.graphs.AutomatonNode;
+import bio.singa.simulation.model.modules.concentration.imlementations.transport.Diffusion;
 import bio.singa.simulation.model.sections.CellRegion;
 import bio.singa.simulation.model.sections.CellSubsection;
 import bio.singa.simulation.model.simulation.Simulation;
@@ -35,7 +36,7 @@ import static tec.uom.se.unit.Units.METRE;
 class DiffusionAtMembranesTest {
 
     // ammonia
-    private static final SmallMolecule ammonia = new SmallMolecule.Builder("ammonia")
+    private static final SmallMolecule ammonia = SmallMolecule.create("ammonia")
             .name("ammonia")
             .assignFeature(new Diffusivity(Quantities.getQuantity(2.28E-05, SQUARE_CENTIMETRE_PER_SECOND), Evidence.NO_EVIDENCE))
             .build();

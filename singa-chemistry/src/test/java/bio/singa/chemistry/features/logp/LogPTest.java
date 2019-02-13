@@ -13,7 +13,7 @@ class LogPTest {
 
     @Test
     void shouldUsePubChemToFetchLogP() {
-        SmallMolecule testSpecies = new SmallMolecule.Builder("CID:5957").build();
+        SmallMolecule testSpecies = SmallMolecule.create("CID:5957").build();
         // get feature
         LogP feature = testSpecies.getFeature(LogP.class);
         // assert attributes and values

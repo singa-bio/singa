@@ -17,6 +17,14 @@ public class Protein extends AbstractChemicalEntity {
 
     private static final Set<Class<? extends Feature>> availableFeatures = new HashSet<>();
 
+    public static Builder create(String identifier) {
+        return new Builder(identifier);
+    }
+
+    public static Builder create(SimpleStringIdentifier identifier) {
+        return new Builder(identifier);
+    }
+
     static {
         Protein.availableFeatures.addAll(AbstractChemicalEntity.availableFeatures);
     }

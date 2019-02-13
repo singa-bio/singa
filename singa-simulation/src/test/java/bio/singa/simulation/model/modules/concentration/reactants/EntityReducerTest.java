@@ -3,6 +3,7 @@ package bio.singa.simulation.model.modules.concentration.reactants;
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.chemistry.entities.SmallMolecule;
 import bio.singa.chemistry.entities.ComplexEntity;
+import bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.reactants.EntityReducer;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

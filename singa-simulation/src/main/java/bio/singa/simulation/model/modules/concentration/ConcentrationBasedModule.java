@@ -572,13 +572,15 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
 
     @Override
     public void checkFeatures() {
+        outer:
         for (Class<? extends Feature> featureClass : getRequiredFeatures()) {
-            if (featureManager.hasFeature(featureClass)) {
-                Feature feature = getFeature(featureClass);
-                logger.debug("Required feature {} has been set to {}.", feature.getDescriptor(), feature.getContent());
-            } else {
-                logger.warn("Required feature {} has not been set.", featureClass.getSimpleName());
+            for (Feature<?> feature : featureManager.getFeatures()) {
+                if (featureClass.isInstance(feature)) {
+                    logger.info("Required feature {}: {} will be used and is set to {}.", featureClass.getSimpleName(), feature.getClass().getSimpleName(), feature.getContent());
+                    continue outer;
+                }
             }
+            logger.warn("Required feature {} has not been set.", featureClass.getSimpleName());
         }
     }
 

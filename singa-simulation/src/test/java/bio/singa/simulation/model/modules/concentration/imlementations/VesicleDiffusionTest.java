@@ -14,6 +14,7 @@ import bio.singa.simulation.model.agents.pointlike.VesicleLayer;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.graphs.AutomatonNode;
+import bio.singa.simulation.model.modules.concentration.imlementations.transport.MembraneDiffusion;
 import bio.singa.simulation.model.modules.displacement.implementations.VesicleCytoplasmDiffusion;
 import bio.singa.simulation.model.sections.CellRegion;
 import bio.singa.simulation.model.simulation.Simulation;
@@ -107,7 +108,7 @@ class VesicleDiffusionTest {
         }
 
         // setup species
-        SmallMolecule water = new SmallMolecule.Builder("water")
+        SmallMolecule water = SmallMolecule.create("water")
                 .name("water")
                 .assignFeature(new MembranePermeability(Quantities.getQuantity(1.75e-3, CENTIMETRE_PER_SECOND), Evidence.NO_EVIDENCE))
                 .assignFeature(new Diffusivity(Quantities.getQuantity(2.6e-6, SQUARE_CENTIMETRE_PER_SECOND), Evidence.NO_EVIDENCE))

@@ -1,8 +1,7 @@
 package bio.singa.simulation.export.format;
 
-import bio.singa.simulation.model.modules.concentration.imlementations.*;
-import bio.singa.simulation.model.modules.concentration.reactants.Reactant;
-import bio.singa.simulation.model.modules.concentration.reactants.ReactantRole;
+import bio.singa.simulation.model.modules.concentration.imlementations.reactions.Reaction;
+import bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.reactants.Reactant;
 
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -45,48 +44,36 @@ public class FormatReactionKinetics {
     }
 
     public static String formatTex(Reaction reaction) {
-        if (reaction instanceof MichaelisMentenReaction) {
-            return formatTex(((MichaelisMentenReaction) reaction));
-        } else if (reaction instanceof NthOrderReaction) {
-            return formatTex(((NthOrderReaction) reaction));
-        } else if (reaction instanceof ReversibleReaction) {
-            return formatTex(((ReversibleReaction) reaction));
-        }
-        throw new IllegalArgumentException("The reaction class " + reaction.getClass() + " lacks an implemented latex format.");
+
+        // throw new IllegalArgumentException("The reaction class " + reaction.getClass() + " lacks an implemented latex format.");
+        return "";
     }
 
-    public static String formatTex(MichaelisMentenReaction reaction) {
-        String substrate = reaction.getSubstrateEntities().iterator().next().getIdentifier().getContent();
-        String enzyme = reaction.getEnzyme().getIdentifier().getContent();
-        return String.format(michaelisMentenTemplate, enzyme, substrate, substrate);
-    }
+//    public static String formatTex(MichaelisMentenReaction reaction) {
+//        String substrate = reaction.getSubstrateEntities().iterator().next().getIdentifier().getContent();
+//        String enzyme = reaction.getEnzyme().getIdentifier().getContent();
+//        return String.format(michaelisMentenTemplate, enzyme, substrate, substrate);
+//    }
 
-    public static String formatTex(NthOrderReaction reaction) {
-        String substrates = formatReactants(reaction.getStoichiometricReactants().stream().filter(Reactant::isSubstrate));
-        return "$k \\cdot " + substrates + "$";
-    }
+//    public static String formatTex(NthOrderReaction reaction) {
+//        String substrates = formatReactants(reaction.getStoichiometricReactants().stream().filter(Reactant::isSubstrate));
+//        return "$k \\cdot " + substrates + "$";
+//    }
 
-    public static String formatTex(ReversibleReaction reaction) {
-        String substrates = formatReactants(reaction.getStoichiometricReactants().stream().filter(Reactant::isSubstrate));
-        String products = formatReactants(reaction.getStoichiometricReactants().stream().filter(Reactant::isProduct));
-        return "$k_{1} \\cdot " + substrates + " - k_{-1} \\cdot " + products + "$";
-    }
+//    public static String formatTex(ReversibleReaction reaction) {
+//        String substrates = formatReactants(reaction.getStoichiometricReactants().stream().filter(Reactant::isSubstrate));
+//        String products = formatReactants(reaction.getStoichiometricReactants().stream().filter(Reactant::isProduct));
+//        return "$k_{1} \\cdot " + substrates + " - k_{-1} \\cdot " + products + "$";
+//    }
 
-    public static String formatTex(SectionDependentReaction reaction) {
-        String substrates = formatSectionReactants(reaction.getSubstrates().stream());
-        String products = formatSectionReactants(reaction.getProducts().stream());
-        return "$k_{1} \\cdot " + substrates + " - k_{-1} \\cdot " + products + "$";
-    }
+//    public static String formatTex(SectionDependentReaction reaction) {
+//        String substrates = formatSectionReactants(reaction.getSubstrates().stream());
+//        String products = formatSectionReactants(reaction.getProducts().stream());
+//        return "$k_{1} \\cdot " + substrates + " - k_{-1} \\cdot " + products + "$";
+//    }
 
-    public static String formatTex(ComplexBuildingReaction reaction) {
-        String binder = formatSectionReactant(new Reactant(reaction.getBinder(), ReactantRole.SUBSTRATE, reaction.getBinderTopology()));
-        String bindee = formatSectionReactant(new Reactant(reaction.getBindee(), ReactantRole.SUBSTRATE, reaction.getBindeeTopology()));
-        String complex = formatSectionReactant(new Reactant(reaction.getComplex(), ReactantRole.PRODUCT, reaction.getBinderTopology()));
-        return "$k_{1} \\cdot " + binder + " \\cdot " + bindee + "- k_{-1} \\cdot " + complex + "$";
-    }
-
-    public static String formatTex(DynamicReaction reaction) {
-        return "not supported";
-    }
+//    public static String formatTex(DynamicReaction reaction) {
+//        return "not supported";
+//    }
 
 }

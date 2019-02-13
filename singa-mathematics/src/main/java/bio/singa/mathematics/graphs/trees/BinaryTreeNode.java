@@ -112,16 +112,15 @@ public class BinaryTreeNode<T> implements Serializable {
         if (currentNode == null) {
             return null;
         }
-        if (!currentNode.hasLeft() && !currentNode.hasRight()) {
-            // neither left nor right
-            currentPath.removeLast();
-        }
         if (currentNode.hasLeft()) {
             currentPath.addLast(currentNode.getLeft());
             if (currentNode.getLeft().getData().equals(data)) {
                 return currentPath;
             }
             currentPath = pathTo(data, currentNode.getLeft(), currentPath);
+            if (!currentPath.getLast().getData().equals(data)) {
+                currentPath.removeLast();
+            }
         }
         if (currentNode.hasRight()) {
             currentPath.addLast(currentNode.getRight());
@@ -129,6 +128,9 @@ public class BinaryTreeNode<T> implements Serializable {
                 return currentPath;
             }
             currentPath = pathTo(data, currentNode.getRight(), currentPath);
+            if (!currentPath.getLast().getData().equals(data)) {
+                currentPath.removeLast();
+            }
         }
         return currentPath;
     }
@@ -194,8 +196,12 @@ public class BinaryTreeNode<T> implements Serializable {
         return right != null;
     }
 
+    public boolean isLeaf() {
+        return right == null && left == null;
+    }
+
     public int size() {
-        if (hasLeft() && hasRight()) {
+        if (!isLeaf()) {
             return 1 + left.size() + right.size();
         }
         if (hasLeft()) {
@@ -240,7 +246,7 @@ public class BinaryTreeNode<T> implements Serializable {
         if (hasRight()) {
             rightString = right.toNewickString(extractor);
         }
-        if (!hasLeft() && !hasRight()) {
+        if (isLeaf()) {
             return leftString + extractor.apply(data) + rightString;
         } else {
             return "(" + leftString + "," + rightString + ")";

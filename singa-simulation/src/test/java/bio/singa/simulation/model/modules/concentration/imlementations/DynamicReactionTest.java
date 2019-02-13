@@ -7,8 +7,9 @@ import bio.singa.features.units.UnitRegistry;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.graphs.AutomatonNode;
-import bio.singa.simulation.model.modules.concentration.reactants.Reactant;
-import bio.singa.simulation.model.modules.concentration.reactants.ReactantRole;
+import bio.singa.simulation.model.modules.concentration.imlementations.reactions.ReactionBuilder;
+import bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.reactants.Reactant;
+import bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.reactants.ReactantRole;
 import bio.singa.simulation.model.sections.CellRegion;
 import bio.singa.simulation.model.sections.concentration.ConcentrationInitializer;
 import bio.singa.simulation.model.sections.concentration.SectionConcentration;
@@ -43,40 +44,27 @@ public class DynamicReactionTest {
     @DisplayName("example reaction - arbitrary law")
     void shouldPerformDynamicReaction() {
 
-        // the substrate
-        ChemicalEntity substrate = new SmallMolecule.Builder("substrate")
-                .name("substrate")
-                .build();
-
-        // the product
-        ChemicalEntity product = new SmallMolecule.Builder("product")
-                .name("product")
-                .build();
-
-        // the catalytic reactant
-        ChemicalEntity catalyt = new SmallMolecule.Builder("catalyt")
-                .name("catalyt")
-                .build();
+        // reactant
+        ChemicalEntity substrate = SmallMolecule.create("substrate").build();
+        ChemicalEntity product = SmallMolecule.create("product").build();
+        ChemicalEntity catalyst = SmallMolecule.create("catalyst").build();
 
         // create simulation
         Simulation simulation = new Simulation();
 
         RateConstant rateConstant = RateConstant.create(0.1)
-                .forward()
-                .firstOrder()
+                .forward().firstOrder()
                 .timeUnit(SECOND)
                 .build();
 
         // create and add module
-        DynamicReaction.inSimulation(simulation)
-                .kineticLaw("substrate*sin(catalyt)*k/product")
+        ReactionBuilder.staticReactants(simulation)
+                .kineticLaw("substrate*sin(catalyst)*k/product")
                 .referenceParameter(new Reactant(substrate, ReactantRole.SUBSTRATE, INNER))
                 .referenceParameter(new Reactant(product, ReactantRole.PRODUCT, INNER))
-                .referenceParameter(new Reactant(catalyt, ReactantRole.CATALYTIC, INNER))
+                .referenceParameter(new Reactant(catalyst, ReactantRole.CATALYTIC, INNER))
                 .referenceParameter("k", rateConstant)
                 .build();
-
-        // TODO clean up reaction interface / abstract class (reaction based interface defining default methods?)
 
         // setup graph
         final AutomatonGraph automatonGraph = AutomatonGraphs.singularGraph();
@@ -88,11 +76,14 @@ public class DynamicReactionTest {
         ConcentrationInitializer ci = new ConcentrationInitializer();
         ci.addInitialConcentration(new SectionConcentration(SECTION_A, substrate, Quantities.getQuantity(200, NANO_MOLE_PER_LITRE)));
         ci.addInitialConcentration(new SectionConcentration(SECTION_A, product, Quantities.getQuantity(100, NANO_MOLE_PER_LITRE)));
-        ci.addInitialConcentration(new SectionConcentration(SECTION_A, catalyt, Quantities.getQuantity(30, NANO_MOLE_PER_LITRE)));
+        ci.addInitialConcentration(new SectionConcentration(SECTION_A, catalyst, Quantities.getQuantity(30, NANO_MOLE_PER_LITRE)));
         simulation.setConcentrationInitializer(ci);
 
         for (int i = 0; i < 10; i++) {
             simulation.nextEpoch();
+            System.out.println(node.getConcentrationContainer().get(SECTION_A, substrate));
+            System.out.println(node.getConcentrationContainer().get(SECTION_A, product));
+            System.out.println(node.getConcentrationContainer().get(SECTION_A, catalyst));
         }
     }
 

@@ -11,6 +11,7 @@ import bio.singa.features.units.UnitRegistry;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.graphs.AutomatonNode;
+import bio.singa.simulation.model.modules.concentration.imlementations.transport.SingleFileChannelMembraneTransport;
 import bio.singa.simulation.model.sections.CellRegion;
 import bio.singa.simulation.model.sections.CellTopology;
 import bio.singa.simulation.model.simulation.Simulation;
@@ -48,7 +49,7 @@ class SingleFileChannelMembraneTransportTest {
         // water
         SmallMolecule water = ChEBIParserService.parse("CHEBI:15377", "water");
         // solutes
-        SmallMolecule solute = new SmallMolecule.Builder("solutes")
+        SmallMolecule solute = SmallMolecule.create("solutes")
                 .name("solutes")
                 .build();
         // aqp2

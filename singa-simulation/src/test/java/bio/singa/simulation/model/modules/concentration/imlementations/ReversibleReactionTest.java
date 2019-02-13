@@ -6,6 +6,7 @@ import bio.singa.features.units.UnitRegistry;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.graphs.AutomatonNode;
+import bio.singa.simulation.model.modules.concentration.imlementations.reactions.ReactionBuilder;
 import bio.singa.simulation.model.sections.CellSubsection;
 import bio.singa.simulation.model.simulation.Simulation;
 import org.junit.jupiter.api.AfterEach;
@@ -19,7 +20,7 @@ import javax.measure.quantity.Time;
 
 import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static bio.singa.simulation.model.sections.CellRegions.EXTRACELLULAR_REGION;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static tec.uom.se.unit.MetricPrefix.MILLI;
 import static tec.uom.se.unit.Units.SECOND;
 
@@ -48,10 +49,8 @@ class ReversibleReactionTest {
         AutomatonGraph graph = AutomatonGraphs.singularGraph();
 
         // prepare species
-        SmallMolecule speciesA = new SmallMolecule.Builder("Species A")
-                .build();
-        SmallMolecule speciesB = new SmallMolecule.Builder("Species B")
-                .build();
+        SmallMolecule speciesA = SmallMolecule.create("A").build();
+        SmallMolecule speciesB = SmallMolecule.create("B").build();
 
         // set concentrations
         CellSubsection subsection = EXTRACELLULAR_REGION.getInnerSubsection();
@@ -70,11 +69,12 @@ class ReversibleReactionTest {
                 .build();
 
         // setup reaction
-        ReversibleReaction.inSimulation(simulation)
+        ReactionBuilder.staticReactants(simulation)
                 .addSubstrate(speciesA)
                 .addProduct(speciesB)
-                .forwardsRateConstant(forwardsRate)
-                .backwardsRateConstant(backwardsRate)
+                .reversible()
+                .forwardReactionRate(forwardsRate)
+                .backwardReactionRate(backwardsRate)
                 .build();
 
         // add graph

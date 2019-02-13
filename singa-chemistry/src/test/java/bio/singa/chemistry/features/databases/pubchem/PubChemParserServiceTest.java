@@ -34,7 +34,7 @@ class PubChemParserServiceTest {
 
     @Test
     void shouldResolveInChIKey() {
-        SmallMolecule species = new SmallMolecule.Builder("CID:5957").name("ATP").build();
+        SmallMolecule species = SmallMolecule.create("CID:5957").name("ATP").build();
         InChIKey feature = species.getFeature(InChIKey.class);
         assertEquals("ZKHQWZAMYRWXGA-KQYNXXCUSA-N", feature.getContent());
     }

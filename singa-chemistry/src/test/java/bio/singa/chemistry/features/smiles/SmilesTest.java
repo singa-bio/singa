@@ -12,7 +12,7 @@ class SmilesTest {
 
     @Test
     void shouldUseChEBIToFetchSmiles() {
-        SmallMolecule testSpecies = new SmallMolecule.Builder("CHEBI:29802").build();
+        SmallMolecule testSpecies = SmallMolecule.create("CHEBI:29802").build();
         // assign feature
         testSpecies.setFeature(Smiles.class);
         // get feature

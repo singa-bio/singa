@@ -15,7 +15,7 @@ class MolarMassTest {
 
     @Test
     void shouldUseChEBIToFetchMolarMass() {
-        SmallMolecule testSpecies = new SmallMolecule.Builder("CHEBI:29802").build();
+        SmallMolecule testSpecies = SmallMolecule.create("CHEBI:29802").build();
         // get feature
         MolarMass feature = testSpecies.getFeature(MolarMass.class);
         // assert attributes and values

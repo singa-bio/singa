@@ -6,7 +6,7 @@ import bio.singa.simulation.model.modules.concentration.ConcentrationBasedModule
 import bio.singa.simulation.model.modules.concentration.ConcentrationDelta;
 import bio.singa.simulation.model.modules.concentration.ConcentrationDeltaIdentifier;
 import bio.singa.simulation.model.modules.concentration.FieldSupplier;
-import bio.singa.simulation.model.modules.concentration.imlementations.MembraneDiffusion;
+import bio.singa.simulation.model.modules.concentration.imlementations.transport.MembraneDiffusion;
 import bio.singa.simulation.model.modules.concentration.specifity.UpdateSpecificity;
 import bio.singa.simulation.model.sections.ConcentrationContainer;
 import bio.singa.simulation.model.simulation.Updatable;
