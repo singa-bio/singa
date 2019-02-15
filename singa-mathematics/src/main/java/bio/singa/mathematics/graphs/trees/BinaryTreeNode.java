@@ -2,6 +2,7 @@ package bio.singa.mathematics.graphs.trees;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class BinaryTreeNode<T> implements Serializable {
@@ -60,6 +61,22 @@ public class BinaryTreeNode<T> implements Serializable {
 
     public void addRight(T data) {
         right = new BinaryTreeNode<>(data);
+    }
+
+    public void append(T data) {
+        if (!hasLeft()) {
+            addLeft(data);
+        } else if (!hasRight()) {
+            addRight(data);
+        }
+    }
+
+    public void append(BinaryTreeNode<T> node) {
+        if (!hasLeft()) {
+            setLeft(node);
+        } else if (!hasRight()) {
+            setRight(node);
+        }
     }
 
     public Collection<T> getLeafData() {
@@ -237,25 +254,43 @@ public class BinaryTreeNode<T> implements Serializable {
         return leftString + rightString + data.toString() + " ";
     }
 
-    public String toNewickString(Function<T, String> extractor) {
+    public String toNewickString() {
+        return toNewickString(Objects::toString, ",");
+    }
+
+    public String toNewickString(Function<T, String> extractor, String separator) {
         String leftString = "";
         String rightString = "";
         if (hasLeft()) {
-            leftString = left.toNewickString(extractor);
+            leftString = left.toNewickString(extractor, separator);
         }
         if (hasRight()) {
-            rightString = right.toNewickString(extractor);
+            rightString = right.toNewickString(extractor, separator);
         }
         if (isLeaf()) {
             return leftString + extractor.apply(data) + rightString;
         } else {
-            return "(" + leftString + "," + rightString + ")";
+            return "(" + leftString + separator + rightString + ")";
         }
+    }
+
+    public void inOrderTraversal(Consumer<BinaryTreeNode<T>> operation) {
+        inOrderTraversal(this, operation);
+    }
+
+    private void inOrderTraversal(BinaryTreeNode<T> current, Consumer<BinaryTreeNode<T>> operation) {
+        if (current.hasLeft()) {
+            inOrderTraversal(current.getLeft(), operation);
+        }
+        if (current.hasRight()) {
+            inOrderTraversal(current.getRight(), operation);
+        }
+        operation.accept(current);
     }
 
     @Override
     public String toString() {
-        return data + ": " + toNewickString(Objects::toString);
+        return data + ": " + toNewickString(Objects::toString, ",");
     }
 
     public void print() {

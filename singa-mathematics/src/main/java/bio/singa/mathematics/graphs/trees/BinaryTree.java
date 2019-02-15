@@ -94,7 +94,7 @@ public class BinaryTree<T> implements Serializable {
      * @return a formatted String formatted in Newick that contains the leaves.
      */
     public String toNewickString() {
-        return root.toNewickString(Objects::toString) + ";";
+        return root.toNewickString(Objects::toString, ",") + ";";
     }
 
     public boolean containsNode(T nodeData) {

@@ -62,6 +62,13 @@ public class Reactant {
         this.preferredTopology = preferredTopology;
     }
 
+    public Reactant(ChemicalEntity entity, ReactantRole role, CellTopology preferredTopology, Unit<MolarConcentration> preferredConcentrationUnit) {
+        this.entity = entity;
+        this.role = role;
+        this.preferredTopology = preferredTopology;
+        this.preferredConcentrationUnit = preferredConcentrationUnit;
+    }
+
     public Reactant(ChemicalEntity entity, ReactantRole role, double stoichiometricNumber) {
         this(entity, role);
         this.stoichiometricNumber = stoichiometricNumber;

@@ -1,8 +1,10 @@
-package bio.singa.chemistry.entities.newcomplex;
+package bio.singa.chemistry.entities;
 
-import bio.singa.chemistry.entities.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static bio.singa.chemistry.entities.ComplexModification.Operation.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -30,11 +32,59 @@ class ComplexEntityTest {
         ChemicalEntity b = SmallMolecule.create("B").build();
         ChemicalEntity c = SmallMolecule.create("C").build();
 
-        ComplexEntity ab = ComplexEntity.from(a, b);
-        ComplexEntity abc = ComplexEntity.from(ab, c);
-        assertEquals(ab, abc.getLeft().getData());
-        assertEquals(c, abc.getRight().getData());
+        ComplexEntity abc = ComplexEntity.from(a, b, c);
+        assertNotNull(abc.find(a));
+        assertNotNull(abc.find(b));
+        assertNotNull(abc.find(c));
     }
+
+    @Test
+    @DisplayName("complex entity - parse from string")
+    void createFromString() {
+        ChemicalEntity a = SmallMolecule.create("A").build();
+        ChemicalEntity b = SmallMolecule.create("B").build();
+        ChemicalEntity c = SmallMolecule.create("C").build();
+        List<ChemicalEntity> reference = new ArrayList<>();
+        reference.add(a);
+        reference.add(b);
+        reference.add(c);
+
+        // TODO make a copy of newick parser and modify for complex entities
+
+//        BinaryTreeNode<String> template = NewickParser.parseNewick("((A:B):(A:B))", ':');
+//
+//        LeafFirstBinaryTreeIterator<String> iterator = new LeafFirstBinaryTreeIterator<>(template);
+//
+//        ComplexEntity tree = new ComplexEntity();
+//
+//        while (iterator.hasNext()) {
+//            BinaryTreeNode<String> templateNode = iterator.next();
+//            if (templateNode.isLeaf()) {
+//                tree.append(get(reference, templateNode.getData()));
+//            } else {
+//                if (tree.hasLeft() && tree.hasRight()) {
+//                    ComplexEntity temp = ComplexEntity.from(tree.getLeft().getData(), tree.getRight().getData());
+//                    if (iterator.hasNext()) {
+//                        tree = new ComplexEntity();
+//                        tree.append((ChemicalEntity) temp);
+//                    }
+//                }
+//            }
+//
+//        }
+//
+//        tree.print();
+
+    }
+
+//    private ChemicalEntity get(List<ChemicalEntity> reference, String identifier) {
+//        for (ChemicalEntity chemicalEntity : reference) {
+//            if (chemicalEntity.getIdentifier().getContent().equals(identifier)) {
+//                return chemicalEntity;
+//            }
+//        }
+//        return null;
+//    }
 
     @Test
     @DisplayName("complex entity - add part modification")
@@ -68,9 +118,6 @@ class ComplexEntityTest {
         ComplexModification modification = new ComplexModification(REPLACE, pkar, pka);
         ComplexEntity reducedComplex = complex.apply(modification);
         // assert removal
-        complex.print();
-        System.out.println(modification);
-        reducedComplex.print();
         assertNull(reducedComplex.find(pka));
         assertNotNull(reducedComplex.find(akap));
         assertNotNull(reducedComplex.find(pkar));
@@ -90,9 +137,6 @@ class ComplexEntityTest {
         ComplexModification modification = new ComplexModification(REMOVE, pkar, pka);
         ComplexEntity reducedComplex = complex.apply(modification);
         // assert removal
-        complex.print();
-        System.out.println(modification);
-        reducedComplex.print();
         assertNull(reducedComplex.find(pkar));
         assertNotNull(reducedComplex.find(pkac));
     }

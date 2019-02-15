@@ -52,11 +52,22 @@ public class ComplexEntity extends BinaryTreeNode<ChemicalEntity> implements Che
 
     private boolean membraneAnchored;
 
-    private ComplexEntity() {
+    public ComplexEntity() {
     }
 
     private ComplexEntity(SimpleStringIdentifier identifier) {
         this.identifier = identifier;
+    }
+
+    public static ComplexEntity from(ChemicalEntity... entities) {
+        if (entities.length < 2) {
+            throw new IllegalArgumentException("At least two entities are required to create a complex.");
+        }
+        ChemicalEntity currentEntity = entities[0];
+        for (int i = 1; i < entities.length; i++) {
+            currentEntity = from(currentEntity, entities[i]);
+        }
+        return (ComplexEntity) currentEntity;
     }
 
     public static ComplexEntity from(ChemicalEntity first, ChemicalEntity second) {
@@ -72,8 +83,28 @@ public class ComplexEntity extends BinaryTreeNode<ChemicalEntity> implements Che
             complexEntity.addRight(second);
         }
         complexEntity.setData(complexEntity);
-        complexEntity.setIdentifier(complexEntity.toNewickString(t -> t.getIdentifier().getContent()));
+        complexEntity.setIdentifier(complexEntity.toNewickString(t -> t.getIdentifier().getContent(), ":"));
         return complexEntity;
+    }
+
+
+    @Override
+    public void append(ChemicalEntity data) {
+        if (!hasLeft()) {
+            if (data instanceof ComplexEntity) {
+                setLeft((ComplexEntity) data);
+            } else {
+                addLeft(data);
+            }
+        } else if (!hasRight()) {
+            if (data instanceof ComplexEntity) {
+                setRight((ComplexEntity) data);
+            } else {
+                addRight(data);
+            }
+        }
+        setData(this);
+        setIdentifier(toNewickString(t -> t.getIdentifier().getContent(), ":"));
     }
 
     @Override
@@ -165,25 +196,8 @@ public class ComplexEntity extends BinaryTreeNode<ChemicalEntity> implements Che
         return copy;
     }
 
-
     public ComplexEntity apply(ComplexModification modification) {
         return ComplexModification.apply(this, modification);
-    }
-
-    public String complexNotation() {
-        String leftString = "";
-        String rightString = "";
-        if (hasLeft()) {
-            leftString = complexNotation();
-        }
-        if (hasRight()) {
-            rightString = complexNotation();
-        }
-        if (!hasLeft() && !hasRight()) {
-            return leftString + getIdentifier().toString() + rightString;
-        } else {
-            return leftString + ":" + rightString;
-        }
     }
 
     @Override
@@ -201,7 +215,7 @@ public class ComplexEntity extends BinaryTreeNode<ChemicalEntity> implements Che
 
     @Override
     public String toString() {
-        return "Complex "+identifier;
+        return "Complex " + identifier;
     }
 
 }
