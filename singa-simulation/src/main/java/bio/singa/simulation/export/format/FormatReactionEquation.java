@@ -1,6 +1,10 @@
 package bio.singa.simulation.export.format;
 
 import bio.singa.simulation.model.modules.concentration.imlementations.reactions.Reaction;
+import bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.kineticlaws.DynamicKineticLaw;
+import bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.kineticlaws.IrreversibleKineticLaw;
+import bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.kineticlaws.MichaelisMentenKineticLaw;
+import bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.kineticlaws.ReversibleKineticLaw;
 import bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.reactants.Reactant;
 
 import java.util.stream.Collectors;
@@ -14,12 +18,10 @@ public class FormatReactionEquation {
     private static String michaelisMentenTexTemplate = "\\ch{%s ->[ %s ] %s}";
     private static String nthOrderTexTemplate = "\\ch{%s -> %s}";
     private static String reversibleTexTemplate = "\\ch{%s <=> %s}";
-    private static String complexTexTemplate = "\\ch{%s + %s <=> %s}";
 
     private static String michaelisMentenASCIITemplate = "%s - %s -> %s}";
-    private static String nthOrderASCIITemplate = "%s -> %s";
+    private static String irreversibleASCIITemplate = "%s -> %s";
     private static String reversibleASCIITemplate = "%s <=> %s";
-    private static String complexASCIITemplate = "%s + %s <=> %s";
 
     private static String formatReactants(Stream<Reactant> reactants) {
         return reactants.map(FormatReactionEquation::formatReactant)
@@ -81,6 +83,24 @@ public class FormatReactionEquation {
         return "";
     }
 
+    public static String formatASCII(Reaction reaction) {
+        String substrates = formatSectionReactantsASCII(reaction.getReactantBehavior().getSubstrates().stream());
+        String products = formatSectionReactantsASCII(reaction.getReactantBehavior().getProducts().stream());
+        String catalysts = formatSectionReactantsASCII(reaction.getReactantBehavior().getCatalysts().stream()).replace(" +", ",");
+
+        if (reaction.getKineticLaw() instanceof ReversibleKineticLaw) {
+            return String.format(reversibleASCIITemplate, substrates, products);
+        } else if (reaction.getKineticLaw() instanceof IrreversibleKineticLaw) {
+            return String.format(irreversibleASCIITemplate, substrates, products);
+        } else if (reaction.getKineticLaw() instanceof MichaelisMentenKineticLaw) {
+            return String.format(michaelisMentenASCIITemplate, substrates, products);
+        } else if (reaction.getKineticLaw() instanceof DynamicKineticLaw) {
+            return String.format(michaelisMentenASCIITemplate, substrates, catalysts, products);
+        } else {
+            throw new IllegalArgumentException("The kinetic law "+reaction.getKineticLaw().getClass()+" has no implemented ASCII representation.");
+        }
+    }
+
 //    public static String formatTex(MichaelisMentenReaction reaction) {
 //        String substrates = formatReactants(reaction.getStoichiometricReactants().stream().filter(Reactant::isSubstrate));
 //        String products = formatReactants(reaction.getStoichiometricReactants().stream().filter(Reactant::isProduct));
@@ -111,38 +131,6 @@ public class FormatReactionEquation {
 //        String products = formatSectionReactantsTex(reaction.getProducts().stream());
 //        String catalysts = formatSectionReactantsTex(reaction.getCatalysts().stream()).replace(" +", ",");
 //        // escape number with [space]'number'[space]
-//        return String.format(michaelisMentenTexTemplate, substrates, catalysts, products);
-//    }
-
-//    public static String formatASCII(MichaelisMentenReaction reaction) {
-//        String substrates = formatReactants(reaction.getStoichiometricReactants().stream().filter(Reactant::isSubstrate));
-//        String products = formatReactants(reaction.getStoichiometricReactants().stream().filter(Reactant::isProduct));
-//        String enzyme = reaction.getEnzyme().getIdentifier().getContent();
-//        return String.format(michaelisMentenASCIITemplate, substrates, enzyme, products);
-//    }
-
-//    public static String formatASCII(NthOrderReaction reaction) {
-//        String substrates = formatReactants(reaction.getStoichiometricReactants().stream().filter(Reactant::isSubstrate));
-//        String products = formatReactants(reaction.getStoichiometricReactants().stream().filter(Reactant::isProduct));
-//        return String.format(nthOrderASCIITemplate, substrates, products);
-//    }
-
-//    public static String formatASCII(ReversibleReaction reaction) {
-//        String substrates = formatReactants(reaction.getStoichiometricReactants().stream().filter(Reactant::isSubstrate));
-//        String products = formatReactants(reaction.getStoichiometricReactants().stream().filter(Reactant::isProduct));
-//        return String.format(reversibleASCIITemplate, substrates, products);
-//    }
-
-//    public static String formatASCII(SectionDependentReaction reaction) {
-//        String substrates = formatSectionReactantsASCII(reaction.getSubstrates().stream());
-//        String products = formatSectionReactantsASCII(reaction.getProducts().stream());
-//        return String.format(reversibleASCIITemplate, substrates, products);
-//    }
-
-//    public static String formatASCII(DynamicReaction reaction) {
-//        String substrates = formatSectionReactantsASCII(reaction.getSubstrates().stream());
-//        String products = formatSectionReactantsASCII(reaction.getProducts().stream());
-//        String catalysts = formatSectionReactantsASCII(reaction.getCatalysts().stream()).replace(" +", ",");
 //        return String.format(michaelisMentenTexTemplate, substrates, catalysts, products);
 //    }
 

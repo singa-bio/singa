@@ -16,6 +16,10 @@ public class Cargoes extends MultiEntityFeature {
         super(chemicalEntities, evidence);
     }
 
+    public Cargoes(List<ChemicalEntity> chemicalEntities) {
+        super(chemicalEntities);
+    }
+
     @Override
     public String getDescriptor() {
         return SYMBOL;

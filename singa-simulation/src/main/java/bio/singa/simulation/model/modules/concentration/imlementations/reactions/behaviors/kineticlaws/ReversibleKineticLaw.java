@@ -14,6 +14,8 @@ public class ReversibleKineticLaw extends AbstractKineticLaw {
 
     public ReversibleKineticLaw(Reaction reaction) {
         super(reaction);
+        reaction.getRequiredFeatures().add(ForwardsRateConstant.class);
+        reaction.getRequiredFeatures().add(BackwardsRateConstant.class);
     }
 
     @Override

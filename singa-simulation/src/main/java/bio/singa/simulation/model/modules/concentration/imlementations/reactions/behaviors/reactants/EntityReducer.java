@@ -17,7 +17,7 @@ public class EntityReducer {
     }
 
     public static EntityCompositionCondition hasPart(ChemicalEntity reducer) {
-        return new EntityCompositionCondition("HAS_NOT_PART", reducer, EntityReducer::hasPartFunction);
+        return new EntityCompositionCondition("HAS_PART", reducer, EntityReducer::hasPartFunction);
     }
 
     private static List<ChemicalEntity> hasPartFunction(Collection<ChemicalEntity> entities, ChemicalEntity reducer) {

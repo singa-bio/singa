@@ -26,6 +26,10 @@ public class MembranePermeability extends ScalableQuantitativeFeature<MembranePe
         super(membranePermeabilityQuantity, evidence);
     }
 
+    public MembranePermeability(Quantity<MembranePermeability> membranePermeabilityQuantity) {
+        super(membranePermeabilityQuantity);
+    }
+
     @Override
     public void scale() {
         scaledQuantity = UnitRegistry.scale(getContent()).getValue().doubleValue();

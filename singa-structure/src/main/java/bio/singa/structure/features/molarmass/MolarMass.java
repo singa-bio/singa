@@ -30,6 +30,10 @@ public class MolarMass extends AbstractFeature<Quantity<MolarMass>> implements Q
         super(Quantities.getQuantity(quantity, GRAM_PER_MOLE), evidence);
     }
 
+    public MolarMass(Quantity<MolarMass> quantity) {
+        super(quantity);
+    }
+
     public MolarMass(double quantity) {
         super(Quantities.getQuantity(quantity, GRAM_PER_MOLE));
     }

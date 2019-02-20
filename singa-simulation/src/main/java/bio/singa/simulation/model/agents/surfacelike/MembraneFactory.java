@@ -109,7 +109,7 @@ public class MembraneFactory {
                         membrane.addSegment(node, lineSegment);
                         node.setCellRegion(regions.get(startingPoint));
                         break;
-                    } else if (startIsInside) {
+                    } else if (startIsInside && intersections.size() != 2) {
                         // end outside or on line
                         Vector2D intersectionPoint = intersections.iterator().next();
                         if (!intersectionPoint.equals(startingPoint)) {
@@ -117,7 +117,7 @@ public class MembraneFactory {
                             node.setCellRegion(regions.get(startingPoint));
                             isContained = false;
                         }
-                    } else if (endIsInside) {
+                    } else if (endIsInside && intersections.size() != 2) {
                         // start outside or on line
                         Vector2D intersectionPoint = intersections.iterator().next();
                         if (!intersectionPoint.equals(endingPoint)) {

@@ -25,12 +25,15 @@ public class DynamicReactantBehavior implements ReactantBehavior {
     private List<DynamicChemicalEntity> dynamicSubstrates;
     private Map<DynamicChemicalEntity, List<ComplexModification>> dynamicProducts;
 
+    private Map<Set<ChemicalEntity>, List<ReactantSet>> compositionCache;
+
     public DynamicReactantBehavior() {
         staticSubstrates = new ArrayList<>();
         staticProducts = new ArrayList<>();
         staticCatalysts = new ArrayList<>();
         dynamicSubstrates = new ArrayList<>();
         dynamicProducts = new HashMap<>();
+        compositionCache = new HashMap<>();
     }
 
     @Override
@@ -80,11 +83,23 @@ public class DynamicReactantBehavior implements ReactantBehavior {
         dynamicSubstrates.add(dynamicSubstrate);
     }
 
+    public void setDynamicSubstrates(List<DynamicChemicalEntity> dynamicSubstrates) {
+        this.dynamicSubstrates = dynamicSubstrates;
+    }
+
+    public Map<DynamicChemicalEntity, List<ComplexModification>> getDynamicProducts() {
+        return dynamicProducts;
+    }
+
     public void addDynamicProduct(DynamicChemicalEntity dynamicSubstrate, ComplexModification modification) {
         if (!dynamicProducts.containsKey(dynamicSubstrate)) {
             dynamicProducts.put(dynamicSubstrate, new ArrayList<>());
         }
         dynamicProducts.get(dynamicSubstrate).add(modification);
+    }
+
+    public void addDynamicProduct(DynamicChemicalEntity dynamicSubstrate, List<ComplexModification> modifications) {
+        dynamicProducts.put(dynamicSubstrate, modifications);
     }
 
     @Override
@@ -104,41 +119,49 @@ public class DynamicReactantBehavior implements ReactantBehavior {
 
     @Override
     public List<ReactantSet> generateReactantSets(Updatable updatable) {
-        List<List<Reactant>> possibleSubstrates = new ArrayList<>();
-        List<List<Reactant>> possibleProducts = new ArrayList<>();
-        if (updatable instanceof Vesicle) {
-            throw new IllegalArgumentException("not implemented yet");
+        Set<ChemicalEntity> referencedEntities = updatable.getConcentrationContainer().getReferencedEntities();
+        if (compositionCache.containsKey(referencedEntities)) {
+            return compositionCache.get(referencedEntities);
         } else {
-            // each dynamic substrate can result in a number of reactions
-            for (DynamicChemicalEntity dynamicSubstrate : dynamicSubstrates) {
-                List<Reactant> matchingSubstrates = collectPossibleSubstrates(updatable, dynamicSubstrate);
-                // if any substrate cannot be found the reaction cannot happen
-                if (matchingSubstrates.isEmpty()) {
-                    return Collections.emptyList();
+            List<List<Reactant>> possibleSubstrates = new ArrayList<>();
+            List<List<Reactant>> possibleProducts = new ArrayList<>();
+            if (updatable instanceof Vesicle) {
+                throw new IllegalArgumentException("not implemented yet");
+            } else {
+                // each dynamic substrate can result in a number of reactions
+                for (DynamicChemicalEntity dynamicSubstrate : dynamicSubstrates) {
+                    List<Reactant> matchingSubstrates = collectPossibleSubstrates(updatable, dynamicSubstrate);
+                    // if any substrate cannot be found the reaction cannot happen
+                    if (matchingSubstrates.isEmpty()) {
+                        compositionCache.put(referencedEntities, Collections.emptyList());
+                        return Collections.emptyList();
+                    }
+                    possibleSubstrates.add(matchingSubstrates);
+                    // prepare corresponding products
+                    List<Reactant> resultingProducts = collectPossibleProducts(matchingSubstrates, dynamicSubstrate);
+                    possibleProducts.add(resultingProducts);
                 }
-                possibleSubstrates.add(matchingSubstrates);
-                // prepare corresponding products
-                List<Reactant> resultingProducts = collectPossibleProducts(matchingSubstrates, dynamicSubstrate);
-                possibleProducts.add(resultingProducts);
+                // generate reaction sets
+                for (Reactant staticSubstrate : staticSubstrates) {
+                    possibleSubstrates.add(Collections.singletonList(staticSubstrate));
+                }
+                for (Reactant staticProduct : staticProducts) {
+                    possibleProducts.add(Collections.singletonList(staticProduct));
+                }
             }
-            // generate reaction sets
-            for (Reactant staticSubstrate : staticSubstrates) {
-                possibleSubstrates.add(Collections.singletonList(staticSubstrate));
+            // create all possible combinations of substrate
+            List<List<Reactant>> allSubstrates = StreamPermutations.permutations(possibleSubstrates);
+            // create resulting products
+            List<List<Reactant>> allProducts = StreamPermutations.permutations(possibleProducts);
+            // combine substrates and products to reactant sets
+            List<ReactantSet> sets = new ArrayList<>();
+            for (int i = 0; i < allSubstrates.size(); i++) {
+                sets.add(new ReactantSet(allSubstrates.get(i), allProducts.get(i)));
             }
-            for (Reactant staticProduct : staticProducts) {
-                possibleProducts.add(Collections.singletonList(staticProduct));
-            }
+            // cache results
+            compositionCache.put(referencedEntities, sets);
+            return sets;
         }
-        // create all possible combinations of substrate
-        List<List<Reactant>> allSubstrates = StreamPermutations.permutations(possibleSubstrates);
-        // create resulting products
-        List<List<Reactant>> allProducts = StreamPermutations.permutations(possibleProducts);
-        // combine substrates and products to reactant sets
-        List<ReactantSet> sets = new ArrayList<>();
-        for (int i = 0; i < allSubstrates.size(); i++) {
-            sets.add(new ReactantSet(allSubstrates.get(i), allProducts.get(i)));
-        }
-        return sets;
     }
 
     private List<Reactant> collectPossibleSubstrates(Updatable updatable, DynamicChemicalEntity dynamicSubstrate) {

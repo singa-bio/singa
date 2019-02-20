@@ -8,7 +8,6 @@ import bio.singa.chemistry.features.permeability.MembranePermeability;
 import bio.singa.chemistry.features.structure3d.Structure3D;
 import bio.singa.features.identifiers.*;
 import bio.singa.features.identifiers.model.Identifier;
-import bio.singa.features.identifiers.model.IdentifierPatternRegistry;
 import bio.singa.features.model.Feature;
 import bio.singa.features.model.FeatureContainer;
 import bio.singa.features.quantities.MolarVolume;
@@ -64,7 +63,7 @@ public abstract class AbstractChemicalEntity implements ChemicalEntity {
         membraneAnchored = false;
         annotations = new ArrayList<>();
         features = new ChemistryFeatureContainer();
-        IdentifierPatternRegistry.instantiate(identifier.getContent()).ifPresent(this::setFeature);
+        // IdentifierPatternRegistry.instantiate(identifier.getContent()).ifPresent(this::setFeature);
     }
 
     @Override

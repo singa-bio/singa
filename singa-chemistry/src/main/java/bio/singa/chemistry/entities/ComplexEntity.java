@@ -1,6 +1,7 @@
 package bio.singa.chemistry.entities;
 
 import bio.singa.chemistry.annotations.Annotation;
+import bio.singa.chemistry.features.ChemistryFeatureContainer;
 import bio.singa.chemistry.features.diffusivity.Diffusivity;
 import bio.singa.chemistry.features.permeability.MembranePermeability;
 import bio.singa.chemistry.features.structure3d.Structure3D;
@@ -53,6 +54,8 @@ public class ComplexEntity extends BinaryTreeNode<ChemicalEntity> implements Che
     private boolean membraneAnchored;
 
     public ComplexEntity() {
+        annotations = new ArrayList<>();
+        features = new ChemistryFeatureContainer();
     }
 
     private ComplexEntity(SimpleStringIdentifier identifier) {
@@ -88,8 +91,7 @@ public class ComplexEntity extends BinaryTreeNode<ChemicalEntity> implements Che
     }
 
 
-    @Override
-    public void append(ChemicalEntity data) {
+    public void appendEntity(ChemicalEntity data) {
         if (!hasLeft()) {
             if (data instanceof ComplexEntity) {
                 setLeft((ComplexEntity) data);
@@ -104,7 +106,7 @@ public class ComplexEntity extends BinaryTreeNode<ChemicalEntity> implements Che
             }
         }
         setData(this);
-        setIdentifier(toNewickString(t -> t.getIdentifier().getContent(), ":"));
+        // setIdentifier(toNewickString(t -> t.getIdentifier().getContent(), ":"));
     }
 
     @Override

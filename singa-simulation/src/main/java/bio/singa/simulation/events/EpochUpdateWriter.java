@@ -283,7 +283,7 @@ public class EpochUpdateWriter implements UpdateEventListener<UpdatableUpdatedEv
         Set<CellSubsection> referencedSections = node.getAllReferencedSections();
         StringBuilder sb = new StringBuilder();
 
-        for (ChemicalEntity entity : observedEntities) {
+        for (ChemicalEntity entity : node.getConcentrationContainer().getReferencedEntities()) {
             for (CellSubsection cellSection : referencedSections) {
                 sb.append(timeFormatter.format(event.getTime())).append(SEPARATOR_CHARACTER)
                         .append(entity.getIdentifier()).append(SEPARATOR_CHARACTER)

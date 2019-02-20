@@ -13,6 +13,8 @@ public class MichaelisMentenKineticLaw extends AbstractKineticLaw {
 
     public MichaelisMentenKineticLaw(Reaction reaction) {
         super(reaction);
+        reaction.getRequiredFeatures().add(MichaelisConstant.class);
+        reaction.getRequiredFeatures().add(TurnoverNumber.class);
     }
 
     @Override

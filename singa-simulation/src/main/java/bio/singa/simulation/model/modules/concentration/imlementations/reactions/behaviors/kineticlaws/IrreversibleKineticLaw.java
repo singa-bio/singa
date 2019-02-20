@@ -13,6 +13,7 @@ public class IrreversibleKineticLaw extends AbstractKineticLaw {
 
     public IrreversibleKineticLaw(Reaction reaction) {
         super(reaction);
+        reaction.getRequiredFeatures().add(ForwardsRateConstant.class);
     }
 
     @Override

@@ -2,6 +2,7 @@ package bio.singa.simulation.model.simulation;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.chemistry.entities.ComplexEntity;
+import bio.singa.features.formatter.TimeFormatter;
 import bio.singa.features.identifiers.SimpleStringIdentifier;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.units.UnitRegistry;
@@ -336,6 +337,7 @@ public class Simulation {
 
     public void setMaximalTimeStep(Quantity<Time> maximalTimeStep) {
         this.maximalTimeStep = maximalTimeStep;
+        logger.info("Maximal timestep set to" + TimeFormatter.formatTime(maximalTimeStep));
     }
 
     /**

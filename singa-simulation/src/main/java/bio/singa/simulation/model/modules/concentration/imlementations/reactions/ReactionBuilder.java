@@ -193,10 +193,7 @@ public class ReactionBuilder {
 
     }
 
-
-
-
-    public static abstract class GeneralReactionBuilder implements ModuleBuilder, ReversibleReactionStep, IrreversibleReactionStep, ComplexBuildingReactionStep, MichaelisMentenReactionStep, ParameterStep {
+    public static class GeneralReactionBuilder implements ModuleBuilder, ReversibleReactionStep, IrreversibleReactionStep, ComplexBuildingReactionStep, MichaelisMentenReactionStep, ParameterStep {
 
         protected Simulation simulation;
         protected Reaction reaction;
@@ -224,28 +221,21 @@ public class ReactionBuilder {
 
         public ReversibleReactionStep reversible() {
             reaction.setKineticLaw(new ReversibleKineticLaw(reaction));
-            reaction.getRequiredFeatures().add(ForwardsRateConstant.class);
-            reaction.getRequiredFeatures().add(BackwardsRateConstant.class);
             return this;
         }
 
         public IrreversibleReactionStep irreversible() {
             reaction.setKineticLaw(new IrreversibleKineticLaw(reaction));
-            reaction.getRequiredFeatures().add(ForwardsRateConstant.class);
             return this;
         }
 
         public ComplexBuildingReactionStep complexBuilding() {
             reaction.setKineticLaw(new ReversibleKineticLaw(reaction));
-            reaction.getRequiredFeatures().add(ForwardsRateConstant.class);
-            reaction.getRequiredFeatures().add(BackwardsRateConstant.class);
             return this;
         }
 
         public MichaelisMentenReactionStep michaelisMenten() {
             reaction.setKineticLaw(new MichaelisMentenKineticLaw(reaction));
-            reaction.getRequiredFeatures().add(MichaelisConstant.class);
-            reaction.getRequiredFeatures().add(TurnoverNumber.class);
             if (reaction.getReactantBehavior().getSubstrates().size() > 1) {
                 logger.warn("Only one substrate is considered in classical Michaelis-Meten kinetics.");
             }
