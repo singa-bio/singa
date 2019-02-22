@@ -1,7 +1,6 @@
 package bio.singa.simulation.model.modules.concentration.imlementations.transport;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
-import bio.singa.chemistry.entities.Protein;
 import bio.singa.chemistry.features.permeability.OsmoticPermeability;
 import bio.singa.features.model.Evidence;
 import bio.singa.features.quantities.MolarConcentration;
@@ -123,7 +122,7 @@ public class SingleFileChannelMembraneTransport extends ConcentrationBasedModule
     }
 
     public interface TransporterStep {
-        CargoStep transporter(Protein transporter);
+        CargoStep transporter(ChemicalEntity transporter);
     }
 
     public interface CargoStep {
@@ -168,7 +167,7 @@ public class SingleFileChannelMembraneTransport extends ConcentrationBasedModule
 
 
         @Override
-        public CargoStep transporter(Protein transporter) {
+        public CargoStep transporter(ChemicalEntity transporter) {
             module.setFeature(new Transporter(transporter, Evidence.NO_EVIDENCE));
             return this;
         }

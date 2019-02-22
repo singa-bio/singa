@@ -111,6 +111,8 @@ public class ReactionBuilder {
 
         DynamicReactantStep addProduct(DynamicChemicalEntity referenceEntity, ComplexModification modification);
 
+        DynamicReactantStep targetProduct(ChemicalEntity splitTarget, CellTopology topologyTarget);
+
         DynamicReactantStep addProduct(ChemicalEntity chemicalEntity);
 
         DynamicReactantStep addProduct(ChemicalEntity chemicalEntity, CellTopology topology);
@@ -226,11 +228,6 @@ public class ReactionBuilder {
 
         public IrreversibleReactionStep irreversible() {
             reaction.setKineticLaw(new IrreversibleKineticLaw(reaction));
-            return this;
-        }
-
-        public ComplexBuildingReactionStep complexBuilding() {
-            reaction.setKineticLaw(new ReversibleKineticLaw(reaction));
             return this;
         }
 
@@ -360,6 +357,20 @@ public class ReactionBuilder {
             reaction.setReactantBehavior(dynamicReactantBehavior);
         }
 
+        public ComplexBuildingReactionStep complexBuilding() {
+            if (dynamicReactantBehavior.getDynamicSubstrates().size() == 1) {
+                reaction.setKineticLaw(new ReversibleKineticLaw(reaction));
+            }
+            if (dynamicReactantBehavior.getDynamicSubstrates().size() == 2) {
+                reaction.setKineticLaw(new ReversibleKineticLaw(reaction));
+                dynamicReactantBehavior.setDynamicComplex(true);
+            } else {
+                throw new IllegalStateException("Complex building reactions with more than two dynamic components are " +
+                        "currently not implemented");
+            }
+            return this;
+        }
+
         @Override
         public DynamicReactantStep addSubstrate(DynamicChemicalEntity dynamicChemicalEntity) {
             dynamicReactantBehavior.addDynamicSubstrate(dynamicChemicalEntity);
@@ -393,6 +404,12 @@ public class ReactionBuilder {
         @Override
         public DynamicReactantStep addProduct(DynamicChemicalEntity dynamicChemicalEntity, ComplexModification modification) {
             dynamicReactantBehavior.addDynamicProduct(dynamicChemicalEntity, modification);
+            return this;
+        }
+
+        @Override
+        public DynamicReactantStep targetProduct(ChemicalEntity splitTarget, CellTopology topologyTarget) {
+            dynamicReactantBehavior.addSplitTarget(splitTarget, topologyTarget);
             return this;
         }
 
@@ -441,6 +458,11 @@ public class ReactionBuilder {
             super(simulation);
             staticReactantBehavior = new StaticReactantBehavior();
             reaction.setReactantBehavior(staticReactantBehavior);
+        }
+
+        public ComplexBuildingReactionStep complexBuilding() {
+            reaction.setKineticLaw(new ReversibleKineticLaw(reaction));
+            return this;
         }
 
         @Override

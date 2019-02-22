@@ -10,6 +10,7 @@ import bio.singa.simulation.model.simulation.Updatable;
 
 import java.util.*;
 
+import static bio.singa.chemistry.entities.ComplexModification.Operation.SPLIT;
 import static bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.reactants.ReactantRole.PRODUCT;
 import static bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.reactants.ReactantRole.SUBSTRATE;
 
@@ -26,6 +27,10 @@ public class DynamicReactantBehavior implements ReactantBehavior {
     private Map<DynamicChemicalEntity, List<ComplexModification>> dynamicProducts;
 
     private Map<Set<ChemicalEntity>, List<ReactantSet>> compositionCache;
+    private Map<ChemicalEntity, CellTopology> splitTarget;
+    private boolean splitEntity = false;
+
+    private boolean dynamicComplex;
 
     public DynamicReactantBehavior() {
         staticSubstrates = new ArrayList<>();
@@ -34,6 +39,8 @@ public class DynamicReactantBehavior implements ReactantBehavior {
         dynamicSubstrates = new ArrayList<>();
         dynamicProducts = new HashMap<>();
         compositionCache = new HashMap<>();
+        splitTarget = new HashMap<>();
+        dynamicComplex = false;
     }
 
     @Override
@@ -87,6 +94,14 @@ public class DynamicReactantBehavior implements ReactantBehavior {
         this.dynamicSubstrates = dynamicSubstrates;
     }
 
+    public boolean isDynamicComplex() {
+        return dynamicComplex;
+    }
+
+    public void setDynamicComplex(boolean dynamicComplex) {
+        this.dynamicComplex = dynamicComplex;
+    }
+
     public Map<DynamicChemicalEntity, List<ComplexModification>> getDynamicProducts() {
         return dynamicProducts;
     }
@@ -100,6 +115,10 @@ public class DynamicReactantBehavior implements ReactantBehavior {
 
     public void addDynamicProduct(DynamicChemicalEntity dynamicSubstrate, List<ComplexModification> modifications) {
         dynamicProducts.put(dynamicSubstrate, modifications);
+    }
+
+    public void addSplitTarget(ChemicalEntity splitTargetEntity, CellTopology targetTopology) {
+        splitTarget.put(splitTargetEntity, targetTopology);
     }
 
     @Override
@@ -123,46 +142,113 @@ public class DynamicReactantBehavior implements ReactantBehavior {
         if (compositionCache.containsKey(referencedEntities)) {
             return compositionCache.get(referencedEntities);
         } else {
-            List<List<Reactant>> possibleSubstrates = new ArrayList<>();
-            List<List<Reactant>> possibleProducts = new ArrayList<>();
-            if (updatable instanceof Vesicle) {
-                throw new IllegalArgumentException("not implemented yet");
-            } else {
-                // each dynamic substrate can result in a number of reactions
-                for (DynamicChemicalEntity dynamicSubstrate : dynamicSubstrates) {
-                    List<Reactant> matchingSubstrates = collectPossibleSubstrates(updatable, dynamicSubstrate);
-                    // if any substrate cannot be found the reaction cannot happen
-                    if (matchingSubstrates.isEmpty()) {
-                        compositionCache.put(referencedEntities, Collections.emptyList());
-                        return Collections.emptyList();
-                    }
-                    possibleSubstrates.add(matchingSubstrates);
-                    // prepare corresponding products
-                    List<Reactant> resultingProducts = collectPossibleProducts(matchingSubstrates, dynamicSubstrate);
-                    possibleProducts.add(resultingProducts);
-                }
-                // generate reaction sets
-                for (Reactant staticSubstrate : staticSubstrates) {
-                    possibleSubstrates.add(Collections.singletonList(staticSubstrate));
-                }
-                for (Reactant staticProduct : staticProducts) {
-                    possibleProducts.add(Collections.singletonList(staticProduct));
-                }
-            }
-            // create all possible combinations of substrate
-            List<List<Reactant>> allSubstrates = StreamPermutations.permutations(possibleSubstrates);
-            // create resulting products
-            List<List<Reactant>> allProducts = StreamPermutations.permutations(possibleProducts);
-            // combine substrates and products to reactant sets
             List<ReactantSet> sets = new ArrayList<>();
-            for (int i = 0; i < allSubstrates.size(); i++) {
-                sets.add(new ReactantSet(allSubstrates.get(i), allProducts.get(i)));
+            if (dynamicComplex) {
+                // get binder and bindee
+                List<Reactant> binders = collectPossibleSubstrates(updatable, dynamicSubstrates.get(0));
+                List<Reactant> bindees = collectPossibleSubstrates(updatable, dynamicSubstrates.get(1));
+                // combine them using permutation
+                List<List<Reactant>> rawSubstrates = new ArrayList<>();
+                rawSubstrates.add(bindees);
+                rawSubstrates.add(binders);
+                List<List<Reactant>> permutations = StreamPermutations.permutations(rawSubstrates);
+                // create corresponding products and resulting reaction sets
+                for (List<Reactant> substrates : permutations) {
+                    Reactant firstSubstrate = substrates.get(0);
+                    Reactant secondSubstrate = substrates.get(1);
+                    ComplexEntity productEntity = ComplexEntity.from(firstSubstrate.getEntity(), secondSubstrate.getEntity());
+                    Reactant reactant = null;
+                    for (ChemicalEntity targetEntity : splitTarget.keySet()) {
+                        if (productEntity.find(targetEntity) != null) {
+                            reactant = new Reactant(productEntity, PRODUCT, splitTarget.get(targetEntity));
+                            break;
+                        }
+                    }
+                    if (reactant == null) {
+                        reactant = new Reactant(productEntity, PRODUCT, firstSubstrate.getPreferredTopology());
+                    }
+                    List<Reactant> products = Collections.singletonList(reactant);
+                    sets.add(new ReactantSet(substrates, products));
+                }
+            } else {
+                List<List<Reactant>> possibleSubstrates = new ArrayList<>();
+                List<List<Reactant>> possibleProducts = new ArrayList<>();
+                if (updatable instanceof Vesicle) {
+                    throw new IllegalArgumentException("not implemented yet");
+                } else {
+                    // each dynamic substrate can result in a number of reactions
+                    splitEntity = false;
+                    for (DynamicChemicalEntity dynamicSubstrate : dynamicSubstrates) {
+                        List<Reactant> matchingSubstrates = collectPossibleSubstrates(updatable, dynamicSubstrate);
+                        // if any substrate cannot be found the reaction cannot happen
+                        if (matchingSubstrates.isEmpty()) {
+                            compositionCache.put(referencedEntities, Collections.emptyList());
+                            return Collections.emptyList();
+                        }
+                        // prepare corresponding products
+                        List<Reactant> resultingProducts = collectPossibleProducts(matchingSubstrates, dynamicSubstrate);
+                        if (splitEntity) {
+                            // resulting products has to be separated if any splitting took place
+                            // this hurts to look at
+                            // count substrate
+                            int j = 0;
+                            for (int i = 0; i < resultingProducts.size(); i = i + 2) {
+                                List<Reactant> splitProducts = new ArrayList<>();
+                                splitProducts.add(resultingProducts.get(i));
+                                splitProducts.add(resultingProducts.get(i + 1));
+                                possibleProducts.add(splitProducts);
+                                possibleSubstrates.add(Collections.singletonList(matchingSubstrates.get(j)));
+                                j++;
+                            }
+                        } else {
+                            possibleSubstrates.add(matchingSubstrates);
+                            possibleProducts.add(resultingProducts);
+                        }
+                    }
+                    if (splitEntity) {
+                        for (Reactant staticSubstrate : staticSubstrates) {
+                            for (List<Reactant> possibleSubstrate : possibleSubstrates) {
+                                possibleSubstrate.add(staticSubstrate);
+                            }
+                        }
+                        for (Reactant staticProduct : staticProducts) {
+                            for (List<Reactant> possibleProduct : possibleProducts) {
+                                possibleProduct.add(staticProduct);
+                            }
+                        }
+                    } else {
+                        // generate reaction sets
+                        for (Reactant staticSubstrate : staticSubstrates) {
+                            possibleSubstrates.add(Collections.singletonList(staticSubstrate));
+                        }
+                        for (Reactant staticProduct : staticProducts) {
+                            possibleProducts.add(Collections.singletonList(staticProduct));
+                        }
+                    }
+                }
+                // create all possible combinations of substrate
+
+                if (splitEntity) {
+                    for (int i = 0; i < possibleSubstrates.size(); i++) {
+                        sets.add(new ReactantSet(possibleSubstrates.get(i), possibleProducts.get(i)));
+                    }
+                } else {
+                    List<List<Reactant>> allSubstrates = StreamPermutations.permutations(possibleSubstrates);
+                    // create resulting products
+                    List<List<Reactant>> allProducts = StreamPermutations.permutations(possibleProducts);
+
+                    // combine substrates and products to reactant sets
+                    for (int i = 0; i < allSubstrates.size(); i++) {
+                        sets.add(new ReactantSet(allSubstrates.get(i), allProducts.get(i)));
+                    }
+                }
             }
             // cache results
             compositionCache.put(referencedEntities, sets);
             return sets;
         }
     }
+
 
     private List<Reactant> collectPossibleSubstrates(Updatable updatable, DynamicChemicalEntity dynamicSubstrate) {
         List<Reactant> possibleSubstrates = new ArrayList<>();
@@ -184,13 +270,51 @@ public class DynamicReactantBehavior implements ReactantBehavior {
         for (Reactant matchingSubstrate : matchingSubstrates) {
             ChemicalEntity entity = matchingSubstrate.getEntity();
             // apply all modifications
+            boolean split = false;
             for (ComplexModification modification : dynamicProducts.get(dynamicSubstrate)) {
                 if (entity instanceof ComplexEntity) {
-                    entity = ((ComplexEntity) entity).apply(modification);
+                    if (modification.getOperation().equals(SPLIT)) {
+                        split = true;
+                    } else {
+                        entity = ((ComplexEntity) entity).apply(modification);
+                    }
                 }
             }
             // add to products
-            resultingProducts.add(new Reactant(entity, PRODUCT, matchingSubstrate.getPreferredTopology()));
+            if (split) {
+                splitEntity = true;
+                // handle left split
+                ComplexEntity leftSplit = (ComplexEntity) ((ComplexEntity) entity).getLeft();
+                ChemicalEntity leftEntity = leftSplit.getData();
+                int size = resultingProducts.size();
+                for (ChemicalEntity targetEntity : splitTarget.keySet()) {
+                    if (leftSplit.find(targetEntity) != null) {
+                        resultingProducts.add(new Reactant(leftEntity, PRODUCT, splitTarget.get(targetEntity)));
+                        break;
+                    }
+                }
+                // no target was defined
+                if (resultingProducts.size() == size) {
+                    resultingProducts.add(new Reactant(leftEntity, PRODUCT, matchingSubstrate.getPreferredTopology()));
+                }
+
+                // handle right split
+                ComplexEntity rightSplit = (ComplexEntity) ((ComplexEntity) entity).getRight();
+                ChemicalEntity rightEntity = rightSplit.getData();
+                size = resultingProducts.size();
+                for (ChemicalEntity targetEntity : splitTarget.keySet()) {
+                    if (rightSplit.find(targetEntity) != null) {
+                        resultingProducts.add(new Reactant(rightEntity, PRODUCT, splitTarget.get(targetEntity)));
+                        break;
+                    }
+                }
+                // no target was defined
+                if (resultingProducts.size() == size) {
+                    resultingProducts.add(new Reactant(rightEntity, PRODUCT, matchingSubstrate.getPreferredTopology()));
+                }
+            } else {
+                resultingProducts.add(new Reactant(entity, PRODUCT, matchingSubstrate.getPreferredTopology()));
+            }
         }
         return resultingProducts;
     }

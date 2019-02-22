@@ -4,7 +4,6 @@ import bio.singa.chemistry.annotations.Annotation;
 import bio.singa.chemistry.annotations.AnnotationType;
 import bio.singa.chemistry.annotations.taxonomy.Organism;
 import bio.singa.chemistry.annotations.taxonomy.Taxon;
-import bio.singa.chemistry.entities.Enzyme;
 import bio.singa.chemistry.entities.Protein;
 import bio.singa.chemistry.features.variants.SequenceVariant;
 import bio.singa.chemistry.features.variants.SequenceVariants;
@@ -97,12 +96,12 @@ public class UniProtContentHandler implements ContentHandler {
         // create base enzyme
         Protein protein;
         if (primaryIdentifier == null) {
-            protein = new Protein.Builder(identifier.toString())
+            protein = Protein.create(identifier.toString())
                     .name(recommendedName)
                     .assignFeature(new MolarMass(molarMass, UniProtDatabase.evidence))
                     .build();
         } else {
-            protein = new Enzyme.Builder(primaryIdentifier)
+            protein = Protein.create(primaryIdentifier)
                     .additionalIdentifier(identifier)
                     .name(recommendedName)
                     .assignFeature(new MolarMass(molarMass, UniProtDatabase.evidence))

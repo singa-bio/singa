@@ -11,10 +11,13 @@ import java.util.Objects;
  */
 public class ComplexModification {
 
+    public static ComplexModification SPLIT = new ComplexModification(Operation.SPLIT, null, null);
+
     public enum Operation {
         ADD(" to "),
         REMOVE(" from "),
-        REPLACE(" with ");
+        REPLACE(" with "),
+        SPLIT("");
 
         private String text;
 

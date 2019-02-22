@@ -1,6 +1,6 @@
 package bio.singa.simulation.model.simulation;
 
-import bio.singa.chemistry.entities.Enzyme;
+import bio.singa.chemistry.entities.Protein;
 import bio.singa.chemistry.entities.SmallMolecule;
 import bio.singa.chemistry.features.databases.chebi.ChEBIParserService;
 import bio.singa.chemistry.features.diffusivity.Diffusivity;
@@ -14,8 +14,8 @@ import bio.singa.mathematics.graphs.model.Graphs;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.graphs.AutomatonNode;
-import bio.singa.simulation.model.modules.concentration.imlementations.transport.Diffusion;
 import bio.singa.simulation.model.modules.concentration.imlementations.reactions.ReactionBuilder;
+import bio.singa.simulation.model.modules.concentration.imlementations.transport.Diffusion;
 import bio.singa.simulation.model.sections.CellRegions;
 import bio.singa.simulation.model.sections.CellSubsection;
 import bio.singa.simulation.model.sections.CellSubsections;
@@ -156,7 +156,7 @@ public class SimulationExamples {
         SmallMolecule fructosePhosphate = ChEBIParserService.parse("CHEBI:18105");
         SmallMolecule glyceronePhosphate = ChEBIParserService.parse("CHEBI:16108");
         SmallMolecule glyceraldehyde = ChEBIParserService.parse("CHEBI:17378");
-        Enzyme aldolase = new Enzyme.Builder("P07752").name("Fructose-bisphosphate aldolase").build();
+        Protein aldolase = Protein.create("P07752").name("Fructose-bisphosphate aldolase").build();
 
         // rates
         MichaelisConstant michaelisConstant = new MichaelisConstant(Quantities.getQuantity(9.0e-3, MOLE_PER_LITRE), Evidence.NO_EVIDENCE);

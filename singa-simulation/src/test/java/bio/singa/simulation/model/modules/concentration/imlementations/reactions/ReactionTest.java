@@ -1,6 +1,8 @@
 package bio.singa.simulation.model.modules.concentration.imlementations.reactions;
 
 import bio.singa.chemistry.entities.*;
+import bio.singa.chemistry.entities.ComplexModification;
+import bio.singa.chemistry.entities.ModificationSite;
 import bio.singa.chemistry.features.reactions.RateConstant;
 import bio.singa.features.identifiers.ChEBIIdentifier;
 import bio.singa.features.identifiers.UniProtIdentifier;
@@ -33,6 +35,7 @@ import javax.measure.Quantity;
 import javax.measure.quantity.Length;
 import javax.measure.quantity.Time;
 
+import static bio.singa.chemistry.entities.ComplexModification.Operation.ADD;
 import static bio.singa.chemistry.entities.ComplexModification.Operation.REMOVE;
 import static bio.singa.features.units.UnitProvider.MICRO_MOLE_PER_LITRE;
 import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
@@ -496,6 +499,98 @@ class ReactionTest {
             // System.out.println(simulation.getGraph().getNode(0, 0).getConcentrationContainer().get(CYTOPLASM, ) + " " + simulation.getGraph().getNode(0, 0).getConcentrationContainer().get(MEMBRANE, b) + " " + simulation.getGraph().getNode(0, 0).getConcentrationContainer().get(MEMBRANE, c));
         }
     }
+
+    @Test
+    void complexBuildingDynamicReactants() {
+        Simulation simulation = new Simulation();
+
+        AutomatonGraph automatonGraph = AutomatonGraphs.singularGraph(CELL_OUTER_MEMBRANE_REGION);
+        simulation.setGraph(automatonGraph);
+
+        ModificationSite ps = ModificationSite.create("PS").build();
+        ChemicalEntity aqp2protein = Protein.create("AQP2").build();
+        ChemicalEntity pp1protein = Protein.create("PP1").build();
+        ComplexEntity aqp2 = ComplexEntity.from(aqp2protein, ps);
+        ComplexEntity pp1 = ComplexEntity.from(pp1protein, ps);
+
+        ChemicalEntity pkac = Protein.create("PKA").build();
+        ModificationSite m1 = ModificationSite.create("C1").build();
+        ModificationSite m2 = ModificationSite.create("C2").build();
+        ModificationSite m3 = ModificationSite.create("C3").build();
+
+        ComplexEntity pka1 = ComplexEntity.from(pkac, m1);
+        ComplexEntity pka2 = ComplexEntity.from(pkac, m2);
+        ComplexEntity pka3 = ComplexEntity.from(pkac, m3);
+
+        ChemicalEntity pho = SmallMolecule.create("P").build();
+
+        ConcentrationInitializer ci = new ConcentrationInitializer();
+        ci.addInitialConcentration(CELL_OUTER_MEMBRANE, aqp2, Quantities.getQuantity(1, MICRO_MOLE_PER_LITRE));
+        ci.addInitialConcentration(CELL_OUTER_MEMBRANE, pp1, Quantities.getQuantity(1, MICRO_MOLE_PER_LITRE));
+        ci.addInitialConcentration(CELL_OUTER_MEMBRANE, pka1, Quantities.getQuantity(1, MICRO_MOLE_PER_LITRE));
+        ci.addInitialConcentration(CELL_OUTER_MEMBRANE, pka2, Quantities.getQuantity(1, MICRO_MOLE_PER_LITRE));
+        ci.addInitialConcentration(CELL_OUTER_MEMBRANE, pka3, Quantities.getQuantity(1, MICRO_MOLE_PER_LITRE));
+        simulation.setConcentrationInitializer(ci);
+
+        RateConstant forwardRate = RateConstant.create(1.0)
+                .forward().secondOrder()
+                .concentrationUnit(MICRO_MOLE_PER_LITRE)
+                .timeUnit(MINUTE)
+                .build();
+
+        RateConstant backwardRate = RateConstant.create(0.01)
+                .backward().firstOrder()
+                .timeUnit(MINUTE)
+                .build();
+
+        DynamicChemicalEntity anyPKA = DynamicChemicalEntity.create("*PKA & !PS")
+                .addCompositionCondition(EntityReducer.hasPart(pkac))
+                .addCompositionCondition(EntityReducer.hasNotPart(ps))
+                .addPossibleTopology(MEMBRANE)
+                .build();
+
+        DynamicChemicalEntity anyPS = DynamicChemicalEntity.create("*PS & !PKA")
+                .addCompositionCondition(EntityReducer.hasPart(ps))
+                .addCompositionCondition(EntityReducer.hasNotPart(pkac))
+                .addPossibleTopology(MEMBRANE)
+                .build();
+
+        ReactionBuilder.dynamicReactants(simulation)
+                .addSubstrate(anyPKA)
+                .addSubstrate(anyPS)
+                .complexBuilding()
+                .associationRate(forwardRate)
+                .dissociationRate(backwardRate)
+                .identifier("complex building")
+                .build();
+
+        // phosphorylation of aqp2 to aqp2p effective catalytic constant
+        RateConstant kCat = RateConstant.create(50)
+                .forward().firstOrder()
+                .timeUnit(SECOND)
+                .build();
+
+        DynamicChemicalEntity transformable = DynamicChemicalEntity.create("*PS & *PKAC")
+                .addCompositionCondition(EntityReducer.hasPart(ps))
+                .addCompositionCondition(EntityReducer.hasPart(pkac))
+                .addPossibleTopology(MEMBRANE)
+                .build();
+
+        ReactionBuilder.dynamicReactants(simulation)
+                .addSubstrate(transformable)
+                .addProduct(transformable, new ComplexModification(ADD, pho, ps))
+                .addProduct(transformable, ComplexModification.SPLIT)
+                .irreversible()
+                .rate(kCat)
+                .identifier("phosphorylation")
+                .build();
+
+        for (int i = 0; i < 100; i++) {
+            simulation.nextEpoch();
+            // System.out.println(simulation.getGraph().getNode(0, 0).getConcentrationContainer().get(CYTOPLASM, ) + " " + simulation.getGraph().getNode(0, 0).getConcentrationContainer().get(MEMBRANE, b) + " " + simulation.getGraph().getNode(0, 0).getConcentrationContainer().get(MEMBRANE, c));
+        }
+    }
+
 
 
 }

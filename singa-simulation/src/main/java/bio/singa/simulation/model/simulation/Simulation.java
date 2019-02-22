@@ -337,7 +337,7 @@ public class Simulation {
 
     public void setMaximalTimeStep(Quantity<Time> maximalTimeStep) {
         this.maximalTimeStep = maximalTimeStep;
-        logger.info("Maximal timestep set to" + TimeFormatter.formatTime(maximalTimeStep));
+        logger.info("Maximal timestep set to {}.", TimeFormatter.formatTime(maximalTimeStep));
     }
 
     /**

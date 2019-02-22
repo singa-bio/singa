@@ -2,6 +2,7 @@ package bio.singa.simulation.model.modules.concentration.imlementations.reaction
 
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author cl
@@ -36,4 +37,14 @@ public class ReactantSet {
         return catalysts;
     }
 
+    @Override
+    public String toString() {
+        List<String> substrateStrings = substrates.stream()
+                .map(reactant -> reactant.getEntity().getIdentifier().getContent())
+                .collect(Collectors.toList());
+        List<String> productStrings = products.stream()
+                .map(reactant -> reactant.getEntity().getIdentifier().getContent())
+                .collect(Collectors.toList());
+        return String.join(" + ", substrateStrings) + " -> " + String.join(" + ", productStrings);
+    }
 }

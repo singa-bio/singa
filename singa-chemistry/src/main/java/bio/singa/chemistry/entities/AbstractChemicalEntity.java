@@ -54,9 +54,9 @@ public abstract class AbstractChemicalEntity implements ChemicalEntity {
     private boolean membraneAnchored;
 
     /**
-     * Creates a new Chemical Entity with the given identifier.
+     * Creates a new chemical entity with the given identifier.
      *
-     * @param identifier The pdbIdentifier.
+     * @param identifier The identifier.
      */
     protected AbstractChemicalEntity(SimpleStringIdentifier identifier) {
         this.identifier = identifier;
@@ -239,6 +239,7 @@ public abstract class AbstractChemicalEntity implements ChemicalEntity {
         }
 
         public TopLevelType build() {
+
             return topLevelObject;
         }
 

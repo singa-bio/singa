@@ -1,7 +1,6 @@
 package bio.singa.simulation.export.format;
 
 import bio.singa.chemistry.entities.ComplexEntity;
-import bio.singa.chemistry.entities.Enzyme;
 import bio.singa.chemistry.entities.Protein;
 import bio.singa.chemistry.entities.SmallMolecule;
 import bio.singa.chemistry.features.reactions.MichaelisConstant;
@@ -30,7 +29,7 @@ class FormatReactionKineticsTest {
     void testMichaelisMentenStringFormat() {
         Simulation simulation = new Simulation();
 
-        Enzyme enzyme = new Enzyme.Builder("PDE4")
+        Protein enzyme = Protein.create("PDE4")
                 .assignFeature(new MichaelisConstant(Quantities.getQuantity(9.0e-3, MOLE_PER_LITRE), Evidence.NO_EVIDENCE))
                 .assignFeature(new TurnoverNumber(76, new ProductUnit<>(ONE.divide(MINUTE)), Evidence.NO_EVIDENCE))
                 .build();
