@@ -25,6 +25,7 @@ public class DynamicReactantBehavior implements ReactantBehavior {
 
     private List<DynamicChemicalEntity> dynamicSubstrates;
     private Map<DynamicChemicalEntity, List<ComplexModification>> dynamicProducts;
+    private List<ChemicalEntity> previousProducts;
 
     private Map<Set<ChemicalEntity>, List<ReactantSet>> compositionCache;
     private Map<ChemicalEntity, CellTopology> splitTarget;
@@ -38,6 +39,7 @@ public class DynamicReactantBehavior implements ReactantBehavior {
         staticCatalysts = new ArrayList<>();
         dynamicSubstrates = new ArrayList<>();
         dynamicProducts = new HashMap<>();
+        previousProducts = new ArrayList<>();
         compositionCache = new HashMap<>();
         splitTarget = new HashMap<>();
         dynamicComplex = false;
@@ -147,6 +149,8 @@ public class DynamicReactantBehavior implements ReactantBehavior {
                 // get binder and bindee
                 List<Reactant> binders = collectPossibleSubstrates(updatable, dynamicSubstrates.get(0));
                 List<Reactant> bindees = collectPossibleSubstrates(updatable, dynamicSubstrates.get(1));
+                clearPreviousProducts(bindees);
+                clearPreviousProducts(binders);
                 // combine them using permutation
                 List<List<Reactant>> rawSubstrates = new ArrayList<>();
                 rawSubstrates.add(bindees);
@@ -157,17 +161,18 @@ public class DynamicReactantBehavior implements ReactantBehavior {
                     Reactant firstSubstrate = substrates.get(0);
                     Reactant secondSubstrate = substrates.get(1);
                     ComplexEntity productEntity = ComplexEntity.from(firstSubstrate.getEntity(), secondSubstrate.getEntity());
-                    Reactant reactant = null;
+                    Reactant product = null;
                     for (ChemicalEntity targetEntity : splitTarget.keySet()) {
                         if (productEntity.find(targetEntity) != null) {
-                            reactant = new Reactant(productEntity, PRODUCT, splitTarget.get(targetEntity));
+                            product = new Reactant(productEntity, PRODUCT, splitTarget.get(targetEntity));
                             break;
                         }
                     }
-                    if (reactant == null) {
-                        reactant = new Reactant(productEntity, PRODUCT, firstSubstrate.getPreferredTopology());
+                    if (product == null) {
+                        product = new Reactant(productEntity, PRODUCT, firstSubstrate.getPreferredTopology());
                     }
-                    List<Reactant> products = Collections.singletonList(reactant);
+                    previousProducts.add(product.getEntity());
+                    List<Reactant> products = Collections.singletonList(product);
                     sets.add(new ReactantSet(substrates, products));
                 }
             } else {
@@ -236,7 +241,6 @@ public class DynamicReactantBehavior implements ReactantBehavior {
                     List<List<Reactant>> allSubstrates = StreamPermutations.permutations(possibleSubstrates);
                     // create resulting products
                     List<List<Reactant>> allProducts = StreamPermutations.permutations(possibleProducts);
-
                     // combine substrates and products to reactant sets
                     for (int i = 0; i < allSubstrates.size(); i++) {
                         sets.add(new ReactantSet(allSubstrates.get(i), allProducts.get(i)));
@@ -247,6 +251,10 @@ public class DynamicReactantBehavior implements ReactantBehavior {
             compositionCache.put(referencedEntities, sets);
             return sets;
         }
+    }
+
+    private void clearPreviousProducts(List<Reactant> reactants) {
+        reactants.removeIf(next -> previousProducts.contains(next.getEntity()));
     }
 
 

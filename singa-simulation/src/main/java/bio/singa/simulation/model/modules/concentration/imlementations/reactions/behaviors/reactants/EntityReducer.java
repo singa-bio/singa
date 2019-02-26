@@ -20,6 +20,14 @@ public class EntityReducer {
         return new EntityCompositionCondition("HAS_PART", reducer, EntityReducer::hasPartFunction);
     }
 
+    public static EntityCompositionCondition hasOnce(ChemicalEntity reducer) {
+        return new EntityCompositionCondition("HAS_PART_ONCE", reducer, EntityReducer::hasOnceFunction);
+    }
+
+    public static EntityCompositionCondition hasTwice(ChemicalEntity reducer) {
+        return new EntityCompositionCondition("HAS_PART_TWICE", reducer, EntityReducer::hasTwiceFunction);
+    }
+
     private static List<ChemicalEntity> hasPartFunction(Collection<ChemicalEntity> entities, ChemicalEntity reducer) {
         List<ChemicalEntity> reducedEntities = new ArrayList<>();
         for (ChemicalEntity entity : entities) {
@@ -32,6 +40,44 @@ public class EntityReducer {
             }
         }
         return reducedEntities;
+    }
+
+    private static List<ChemicalEntity> hasTwiceFunction(Collection<ChemicalEntity> entities, ChemicalEntity reducer) {
+        List<ChemicalEntity> reducedEntities = new ArrayList<>();
+        for (ChemicalEntity entity : entities) {
+            if (entity.equals(reducer)) {
+                reducedEntities.add(entity);
+            } else if (entity instanceof ComplexEntity) {
+                if (containsTwice(((ComplexEntity) entity).getAllData(), reducer, 2)) {
+                    reducedEntities.add(entity);
+                }
+            }
+        }
+        return reducedEntities;
+    }
+
+    private static List<ChemicalEntity> hasOnceFunction(Collection<ChemicalEntity> entities, ChemicalEntity reducer) {
+        List<ChemicalEntity> reducedEntities = new ArrayList<>();
+        for (ChemicalEntity entity : entities) {
+            if (entity.equals(reducer)) {
+                reducedEntities.add(entity);
+            } else if (entity instanceof ComplexEntity) {
+                if (containsTwice(((ComplexEntity) entity).getAllData(), reducer, 1)) {
+                    reducedEntities.add(entity);
+                }
+            }
+        }
+        return reducedEntities;
+    }
+
+    private static boolean containsTwice(Collection<ChemicalEntity> entities, ChemicalEntity searched, int count) {
+        int i = 0;
+        for (ChemicalEntity current : entities) {
+            if (current.equals(searched)) {
+                i++;
+            }
+        }
+        return i == count;
     }
 
     public static EntityCompositionCondition hasNotPart(ChemicalEntity reducer) {
