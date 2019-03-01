@@ -2,6 +2,8 @@ package bio.singa.chemistry.features.identifiers;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.chemistry.entities.SmallMolecule;
+import bio.singa.features.identifiers.ChEBIIdentifier;
+import bio.singa.features.identifiers.InChIKey;
 import bio.singa.features.identifiers.PDBLigandIdentifier;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -20,9 +22,13 @@ class PDBLigandIdentiferProviderTest {
     @BeforeAll
     static void initialize() {
         // tetrahydrocannabinol
-        chebiEntity = SmallMolecule.create("CHEBI:66964").build();
+        chebiEntity = SmallMolecule.create("CHEBI:66964")
+                .additionalIdentifier(new ChEBIIdentifier("CHEBI:66964"))
+                .build();
         // 6-(4-azanyl-4-methyl-piperidin-1-yl)-3-[2,3-bis(chloranyl)phenyl]pyrazin-2-amine
-        inchiEntity = SmallMolecule.create("YGUFCDOEKKVKJK-UHFFFAOYSA-N").build();
+        inchiEntity = SmallMolecule.create("YGUFCDOEKKVKJK-UHFFFAOYSA-N")
+                .additionalIdentifier(new InChIKey("GUFCDOEKKVKJK-UHFFFAOYSA-N"))
+                .build();
     }
 
     @Test

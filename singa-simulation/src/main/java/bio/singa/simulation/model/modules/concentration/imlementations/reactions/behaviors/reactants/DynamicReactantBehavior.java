@@ -28,7 +28,7 @@ public class DynamicReactantBehavior implements ReactantBehavior {
     private List<ChemicalEntity> previousProducts;
 
     private Map<Set<ChemicalEntity>, List<ReactantSet>> compositionCache;
-    private Map<ChemicalEntity, CellTopology> splitTarget;
+    private Map<ChemicalEntity, CellTopology> targetTopology;
     private boolean splitEntity = false;
 
     private boolean dynamicComplex;
@@ -41,7 +41,7 @@ public class DynamicReactantBehavior implements ReactantBehavior {
         dynamicProducts = new HashMap<>();
         previousProducts = new ArrayList<>();
         compositionCache = new HashMap<>();
-        splitTarget = new HashMap<>();
+        targetTopology = new HashMap<>();
         dynamicComplex = false;
     }
 
@@ -120,7 +120,7 @@ public class DynamicReactantBehavior implements ReactantBehavior {
     }
 
     public void addSplitTarget(ChemicalEntity splitTargetEntity, CellTopology targetTopology) {
-        splitTarget.put(splitTargetEntity, targetTopology);
+        this.targetTopology.put(splitTargetEntity, targetTopology);
     }
 
     @Override
@@ -148,9 +148,9 @@ public class DynamicReactantBehavior implements ReactantBehavior {
             if (dynamicComplex) {
                 // get binder and bindee
                 List<Reactant> binders = collectPossibleSubstrates(updatable, dynamicSubstrates.get(0));
+                clearPreviousProducts(binders);
                 List<Reactant> bindees = collectPossibleSubstrates(updatable, dynamicSubstrates.get(1));
                 clearPreviousProducts(bindees);
-                clearPreviousProducts(binders);
                 // combine them using permutation
                 List<List<Reactant>> rawSubstrates = new ArrayList<>();
                 rawSubstrates.add(bindees);
@@ -158,21 +158,13 @@ public class DynamicReactantBehavior implements ReactantBehavior {
                 List<List<Reactant>> permutations = StreamPermutations.permutations(rawSubstrates);
                 // create corresponding products and resulting reaction sets
                 for (List<Reactant> substrates : permutations) {
-                    Reactant firstSubstrate = substrates.get(0);
-                    Reactant secondSubstrate = substrates.get(1);
-                    ComplexEntity productEntity = ComplexEntity.from(firstSubstrate.getEntity(), secondSubstrate.getEntity());
-                    Reactant product = null;
-                    for (ChemicalEntity targetEntity : splitTarget.keySet()) {
-                        if (productEntity.find(targetEntity) != null) {
-                            product = new Reactant(productEntity, PRODUCT, splitTarget.get(targetEntity));
-                            break;
-                        }
-                    }
-                    if (product == null) {
-                        product = new Reactant(productEntity, PRODUCT, firstSubstrate.getPreferredTopology());
-                    }
-                    previousProducts.add(product.getEntity());
-                    List<Reactant> products = Collections.singletonList(product);
+                    Reactant leftPart = substrates.get(0);
+                    Reactant rightPart = substrates.get(1);
+                    ComplexEntity complexEntity = ComplexEntity.from(leftPart.getEntity(), rightPart.getEntity());
+                    // add to previous products to prevent using any product again as a substrate in the same reaction
+                    previousProducts.add(complexEntity);
+                    Reactant complexReactant = createTargetedReactant(leftPart, complexEntity);
+                    List<Reactant> products = Collections.singletonList(complexReactant);
                     sets.add(new ReactantSet(substrates, products));
                 }
             } else {
@@ -291,40 +283,47 @@ public class DynamicReactantBehavior implements ReactantBehavior {
             // add to products
             if (split) {
                 splitEntity = true;
+                ComplexEntity complexEntity = (ComplexEntity) entity;
                 // handle left split
-                ComplexEntity leftSplit = (ComplexEntity) ((ComplexEntity) entity).getLeft();
-                ChemicalEntity leftEntity = leftSplit.getData();
-                int size = resultingProducts.size();
-                for (ChemicalEntity targetEntity : splitTarget.keySet()) {
-                    if (leftSplit.find(targetEntity) != null) {
-                        resultingProducts.add(new Reactant(leftEntity, PRODUCT, splitTarget.get(targetEntity)));
-                        break;
-                    }
-                }
-                // no target was defined
-                if (resultingProducts.size() == size) {
-                    resultingProducts.add(new Reactant(leftEntity, PRODUCT, matchingSubstrate.getPreferredTopology()));
-                }
-
-                // handle right split
-                ComplexEntity rightSplit = (ComplexEntity) ((ComplexEntity) entity).getRight();
-                ChemicalEntity rightEntity = rightSplit.getData();
-                size = resultingProducts.size();
-                for (ChemicalEntity targetEntity : splitTarget.keySet()) {
-                    if (rightSplit.find(targetEntity) != null) {
-                        resultingProducts.add(new Reactant(rightEntity, PRODUCT, splitTarget.get(targetEntity)));
-                        break;
-                    }
-                }
-                // no target was defined
-                if (resultingProducts.size() == size) {
-                    resultingProducts.add(new Reactant(rightEntity, PRODUCT, matchingSubstrate.getPreferredTopology()));
-                }
+                resultingProducts.add(createTargetedReactant(matchingSubstrate, complexEntity.getLeft().getData()));
+                resultingProducts.add(createTargetedReactant(matchingSubstrate, complexEntity.getRight().getData()));
             } else {
                 resultingProducts.add(new Reactant(entity, PRODUCT, matchingSubstrate.getPreferredTopology()));
             }
         }
         return resultingProducts;
+    }
+
+    /**
+     * Creates a reactant from an entity the should be split. Mainly determines topology where the split result should
+     * be placed.
+     *
+     * @param originalSubstrate The substrate the split resulted from.
+     * @param productEntity The entity that should be converted to a reactant.
+     * @return The resulting reactant
+     */
+    private Reactant createTargetedReactant(Reactant originalSubstrate, ChemicalEntity productEntity) {
+        if (productEntity instanceof ComplexEntity) {
+            // if complex
+            ComplexEntity complex = ((ComplexEntity) productEntity);
+            for (ChemicalEntity targetEntity : targetTopology.keySet()) {
+                // check if the complex contains any of the split targets
+                if (complex.find(targetEntity) != null) {
+                    ChemicalEntity entity = complex.getData();
+                    return new Reactant(entity, PRODUCT, targetTopology.get(targetEntity));
+                }
+            }
+        } else {
+            // if regular entity
+            for (ChemicalEntity targetEntity : targetTopology.keySet()) {
+                // check inf the entity is defined as a split target
+                if (productEntity.equals(targetEntity)) {
+                    return new Reactant(productEntity, PRODUCT, targetTopology.get(targetEntity));
+                }
+            }
+        }
+        // if no target was defined us the topology of the substrate
+        return new Reactant(productEntity, PRODUCT, originalSubstrate.getPreferredTopology());
     }
 
 

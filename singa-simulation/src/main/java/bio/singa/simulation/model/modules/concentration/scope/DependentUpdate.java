@@ -85,8 +85,10 @@ public class DependentUpdate implements UpdateScope {
     }
 
     @Override
-    public void clearPotentialDeltas(Updatable updatable) {
-        module.getSimulation().getUpdatables().forEach(Updatable::clearPotentialConcentrationDeltas);
+    public void clearPotentialDeltas() {
+        for (Updatable current : module.getSimulation().getUpdatables()) {
+            current.getConcentrationManager().clearPotentialDeltas();
+        }
     }
 
     /**

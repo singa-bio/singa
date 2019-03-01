@@ -75,7 +75,7 @@ class ConcentrationContainerTest {
         containerA.initializeSubsection(subsectionA, INNER);
         containerA.initializeSubsection(subsectionB, OUTER);
 
-        assertEquals(containerA.getReferencedSubSections().size(), 2);
+        assertEquals(containerA.getReferencedSubsections().size(), 2);
     }
 
     @Test

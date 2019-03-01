@@ -117,20 +117,22 @@ public class VesicleFusion extends QualitativeModule {
 
     private void fuse(Vesicle tetheredVesicle) {
         // merge concentrations
-        ConcentrationContainer vesicleContainer = tetheredVesicle.getConcentrationContainer();
+        ConcentrationContainer vesicleContainer = tetheredVesicle.getConcentrationManager().getOriginalConcentrations();
         AutomatonNode node = tetheredNodes.get(tetheredVesicle);
         // merge membranes
         for (Map.Entry<ChemicalEntity, Double> entry : vesicleContainer.getPool(CellTopology.MEMBRANE).getValue().getConcentrations().entrySet()) {
             node.addPotentialDelta(new ConcentrationDelta(this, node.getCellRegion().getMembraneSubsection(), entry.getKey(), entry.getValue()));
+            System.out.println("reserved " + entry.getKey() + " " + MolarConcentration.concentrationToMolecules(entry.getValue()) + " snares");
         }
         // merge inner concentrations
         for (Map.Entry<ChemicalEntity, Double> entry : vesicleContainer.getPool(CellTopology.OUTER).getValue().getConcentrations().entrySet()) {
-            node.addPotentialDelta(new ConcentrationDelta(this, node.getCellRegion().getInnerSubsection(), entry.getKey(),  entry.getValue()));
+            node.addPotentialDelta(new ConcentrationDelta(this, node.getCellRegion().getInnerSubsection(), entry.getKey(), entry.getValue()));
         }
         // add occupied snares
         ConcentrationPool concentrationPool = occupiedSnares.get(tetheredVesicle);
         for (Map.Entry<ChemicalEntity, Double> entry : concentrationPool.getConcentrations().entrySet()) {
             node.addPotentialDelta(new ConcentrationDelta(this, node.getCellRegion().getMembraneSubsection(), entry.getKey(), entry.getValue()));
+            System.out.println("reserved " + entry.getKey() + " " + MolarConcentration.concentrationToMolecules(entry.getValue()));
         }
     }
 
@@ -199,7 +201,7 @@ public class VesicleFusion extends QualitativeModule {
     private Map<ChemicalEntity, Integer> countSnares(Updatable updatable, List<ChemicalEntity> entitiesToCount) {
         HashMap<ChemicalEntity, Integer> availableQSnares = new HashMap<>();
         for (ChemicalEntity snare : entitiesToCount) {
-            double concentration = updatable.getConcentrationContainer().get(CellTopology.MEMBRANE, snare);
+            double concentration = updatable.getConcentrationManager().getOriginalConcentrations().get(CellTopology.MEMBRANE, snare);
             int numberOfSnares = MolarConcentration.concentrationToMolecules(concentration).getValue().intValue();
             if (numberOfSnares > 0) {
                 availableQSnares.put(snare, numberOfSnares);
@@ -239,9 +241,11 @@ public class VesicleFusion extends QualitativeModule {
             double concentration = MolarConcentration.moleculesToConcentration(-1.0);
             // rsnare in vesicle
             vesicle.addPotentialDelta(new ConcentrationDelta(this, vesicle.getCellRegion().getMembraneSubsection(), rSnare, concentration));
+            // System.out.println("reserved during tethering " + rSnare + " " + MolarConcentration.concentrationToMolecules(concentration) + " snares");
             // qsnare in node
             AutomatonNode target = tetheringSnares.getTetheringTarget();
             target.addPotentialDelta(new ConcentrationDelta(this, target.getCellRegion().getMembraneSubsection(), qSnare, concentration));
+            // System.out.println("reserved during tethering " + qSnare + " " + MolarConcentration.concentrationToMolecules(concentration) + " snares");
         }
 
     }
@@ -255,6 +259,7 @@ public class VesicleFusion extends QualitativeModule {
         // add complex to occupied concentration
         double addedQuantity = occupiedSnares.get(vesicle).get(snareComplex) + concentration;
         occupiedSnares.get(vesicle).set(snareComplex, addedQuantity);
+        // System.out.println("reserved during tethering " + snareComplex + " " + MolarConcentration.concentrationToMolecules(concentration) + " snares");
     }
 
     private class TetheringSnares {

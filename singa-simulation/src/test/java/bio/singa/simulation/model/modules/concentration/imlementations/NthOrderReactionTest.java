@@ -119,7 +119,7 @@ class NthOrderReactionTest {
     }
 
     @Test
-    @DisplayName("rate independence from space scale")
+    @DisplayName("rate independence from space scale and approaching 0")
     void testReactionSpeedScaling() {
         Environment.reset();
         // create simulation
@@ -129,6 +129,7 @@ class NthOrderReactionTest {
         int numberOfMolecules = 60;
 
         Simulation simulation = new Simulation();
+        simulation.setMaximalTimeStep(Quantities.getQuantity(0.5, SECOND));
 
         ComparableQuantity<Length> systemExtend = Quantities.getQuantity(2, MICRO(METRE));
         Environment.setSystemExtend(systemExtend);
@@ -168,7 +169,7 @@ class NthOrderReactionTest {
             simulation.nextEpoch();
             molecules = MolarConcentration.concentrationToMolecules(vesicle.getConcentrationContainer().get(MEMBRANE, sm));
         }
-        assertEquals(0, molecules.getValue().intValue());
+        assertEquals(0.0, molecules.getValue().doubleValue());
     }
 
 }

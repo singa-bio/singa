@@ -10,7 +10,6 @@ import bio.singa.mathematics.geometry.faces.Circle;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.simulation.model.agents.linelike.LineLikeAgent;
 import bio.singa.simulation.model.graphs.AutomatonNode;
-import bio.singa.simulation.model.modules.UpdateModule;
 import bio.singa.simulation.model.modules.concentration.ConcentrationDelta;
 import bio.singa.simulation.model.modules.concentration.ConcentrationDeltaManager;
 import bio.singa.simulation.model.modules.displacement.DisplacementBasedModule;
@@ -213,6 +212,11 @@ public class Vesicle implements Updatable, Featureable {
         displacementManager.updatePosition();
     }
 
+    @Override
+    public ConcentrationDeltaManager getConcentrationManager() {
+        return concentrationManager;
+    }
+
     /**
      * Returns {@code true} if this node is observed.
      *
@@ -243,43 +247,12 @@ public class Vesicle implements Updatable, Featureable {
 
     @Override
     public Set<CellSubsection> getAllReferencedSections() {
-        return concentrationManager.getConcentrationContainer().getReferencedSubSections();
-    }
-
-    @Override
-    public List<ConcentrationDelta> getPotentialConcentrationDeltas() {
-        return concentrationManager.getPotentialDeltas();
+        return concentrationManager.getConcentrationContainer().getReferencedSubsections();
     }
 
     @Override
     public void addPotentialDelta(ConcentrationDelta delta) {
         concentrationManager.addPotentialDelta(delta);
-    }
-
-    @Override
-    public void clearPotentialConcentrationDeltas() {
-        concentrationManager.clearPotentialDeltas();
-    }
-
-    @Override
-    public void clearPotentialDeltasBut(UpdateModule module) {
-        concentrationManager.clearPotentialDeltasBut(module);
-        clearPotentialDisplacementDeltas();
-    }
-
-    @Override
-    public boolean hasDeltas() {
-        return !concentrationManager.getFinalDeltas().isEmpty();
-    }
-
-    @Override
-    public void shiftDeltas() {
-        concentrationManager.shiftDeltas();
-    }
-
-    @Override
-    public void applyDeltas() {
-        concentrationManager.applyDeltas();
     }
 
     public Circle getCircleRepresentation() {

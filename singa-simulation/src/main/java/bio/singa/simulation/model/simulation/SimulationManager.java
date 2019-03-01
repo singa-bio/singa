@@ -287,7 +287,8 @@ public class SimulationManager extends Task<Simulation> {
                 } else {
                     String estimatedSpeed = GeneralQuantityFormatter.formatTime(Quantities.getQuantity(speed, MICRO(SECOND)));
                     logger.info("estimated time remaining: {}, current simulation speed: {} (Simulation Time) per s(Real Time)", estimated, estimatedSpeed);
-                    logger.info("summary: {}/{}/{} (epochs/inc/dec), last time step: {}, elapsed time: {}", currentEpochs-previousEpochs, currentIncreases-previousIncreases, currentDecreases-previousDecreases, TimeFormatter.formatTime(UnitRegistry.getTime()), TimeFormatter.formatTime(simulation.getElapsedTime()));
+                    logger.info("summary: {}/{}/{} (epochs/inc/dec), ", currentEpochs-previousEpochs, currentIncreases-previousIncreases, currentDecreases-previousDecreases);
+                    logger.info("{}({})/{} (le/ge), {}/{} (et/ts)", simulation.getScheduler().getLargestLocalError().getValue(), simulation.getScheduler().getLargestLocalError().getChemicalEntity(), simulation.getScheduler().getLargestGlobalError(),  TimeFormatter.formatTime(simulation.getElapsedTime()), TimeFormatter.formatTime(UnitRegistry.getTime()));
                 }
             }
             previousTimeMillis = currentTimeMillis;

@@ -1,6 +1,7 @@
 package bio.singa.chemistry.features.smiles;
 
 import bio.singa.chemistry.entities.SmallMolecule;
+import bio.singa.features.identifiers.ChEBIIdentifier;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -12,7 +13,8 @@ class SmilesTest {
 
     @Test
     void shouldUseChEBIToFetchSmiles() {
-        SmallMolecule testSpecies = SmallMolecule.create("CHEBI:29802").build();
+        SmallMolecule testSpecies = SmallMolecule.create("CHEBI:29802")
+                .additionalIdentifier(new ChEBIIdentifier("CHEBI:29802")).build();
         // assign feature
         testSpecies.setFeature(Smiles.class);
         // get feature

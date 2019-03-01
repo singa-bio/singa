@@ -138,12 +138,12 @@ public class Simulation {
                 if (!observedDeltas.containsKey(observedUpdatable)) {
                     observedDeltas.put(observedUpdatable, new ArrayList<>());
                 }
-                for (ConcentrationDelta delta : observedUpdatable.getPotentialConcentrationDeltas()) {
+                for (ConcentrationDelta delta : observedUpdatable.getConcentrationManager().getPotentialDeltas()) {
                     // adjust to time step
                     observedDeltas.get(observedUpdatable).add(delta.multiply(1.0 / UnitRegistry.getTime().to(MICRO(SECOND)).getValue().doubleValue()));
                 }
                 // clear them
-                observedUpdatable.clearPotentialConcentrationDeltas();
+                observedUpdatable.getConcentrationManager().clearPotentialDeltas();
             }
         }
         // apply all modules
@@ -151,9 +151,9 @@ public class Simulation {
         // apply generated deltas
         logger.debug("Applying deltas.");
         for (Updatable updatable : updatables) {
-            if (updatable.hasDeltas()) {
+            if (updatable.getConcentrationManager().hasDeltas()) {
                 logger.trace("Deltas in {}:", updatable.getStringIdentifier());
-                updatable.applyDeltas();
+                updatable.getConcentrationManager().applyDeltas();
             }
         }
         // move vesicles
@@ -164,13 +164,13 @@ public class Simulation {
         // update epoch and elapsed time
         updateEpoch();
         // if time step did not change it can possibly be increased
-        if (timestepShuldIncrease()) {
+        if (timeStepShouldIncrease()) {
             scheduler.increaseTimeStep();
         }
     }
 
 
-    private boolean timestepShuldIncrease() {
+    private boolean timeStepShouldIncrease() {
         // if time step was reduced in this epoch there is no need to test if it should increase
         if (scheduler.timeStepWasAlteredInThisEpoch()) {
             return false;
@@ -184,14 +184,20 @@ public class Simulation {
                 return false;
             }
         }
-        // check if wou gould gain simulation speed by increasing the time step
+        // check if it is possible to gain simulation speed by increasing the time step
         // this can be done, if the the error that was computed previously is very small
         final double recalculationCutoff = scheduler.getRecalculationCutoff();
-        final double latestError = scheduler.getLargestError().getValue();
-        if (recalculationCutoff - latestError > 0.2 * recalculationCutoff) {
-            // try larger time step
-            return true;
+        final double latestGlobalError = scheduler.getLargestGlobalError();
+        if (recalculationCutoff - latestGlobalError > 0.1 * recalculationCutoff) {
+            // System.out.println("global error "+ latestGlobalError);
+            final double latestLocalError = scheduler.getLargestLocalError().getValue();
+            // System.out.println("local error "+ latestLocalError);
+            if (recalculationCutoff - latestLocalError > 0.1 * recalculationCutoff) {
+                // try larger time step
+                return true;
+            }
         }
+
         return false;
     }
 

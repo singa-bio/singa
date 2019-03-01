@@ -2,7 +2,9 @@ package bio.singa.chemistry.features.identifiers;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.chemistry.entities.SmallMolecule;
+import bio.singa.features.identifiers.ChEBIIdentifier;
 import bio.singa.features.identifiers.InChIKey;
+import bio.singa.features.identifiers.PubChemIdentifier;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,9 +22,13 @@ class InChIKeyProviderTest {
     @BeforeAll
     static void initialize() {
         // salicin
-        chebiEntity = SmallMolecule.create("CHEBI:17814").build();
+        chebiEntity = SmallMolecule.create("CHEBI:17814")
+                .additionalIdentifier(new ChEBIIdentifier("CHEBI:17814"))
+                .build();
         // epoprostenol
-        pubchemEntity = SmallMolecule.create("CID:5282411").build();
+        pubchemEntity = SmallMolecule.create("CID:5282411")
+                .additionalIdentifier(new PubChemIdentifier("CID:5282411"))
+                .build();
     }
 
     @Test

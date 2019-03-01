@@ -105,7 +105,7 @@ public class ConcentrationContainer {
      *
      * @return All subsections, referenced in this container.
      */
-    public Set<CellSubsection> getReferencedSubSections() {
+    public Set<CellSubsection> getReferencedSubsections() {
         return concentrations.keySet();
     }
 
@@ -149,6 +149,15 @@ public class ConcentrationContainer {
 
     public boolean containsEntity(CellTopology topology, ChemicalEntity entity) {
         for (ChemicalEntity chemicalEntity : getPool(topology).getValue().getReferencedEntities()) {
+            if (entity.equals(chemicalEntity)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean containsEntity(CellSubsection subsection, ChemicalEntity entity) {
+        for (ChemicalEntity chemicalEntity : getPool(subsection).getValue().getReferencedEntities()) {
             if (entity.equals(chemicalEntity)) {
                 return true;
             }

@@ -8,7 +8,6 @@ import bio.singa.mathematics.topology.grids.rectangular.RectangularCoordinate;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.simulation.model.agents.linelike.LineLikeAgent;
 import bio.singa.simulation.model.agents.surfacelike.MembraneSegment;
-import bio.singa.simulation.model.modules.UpdateModule;
 import bio.singa.simulation.model.modules.concentration.ConcentrationDelta;
 import bio.singa.simulation.model.modules.concentration.ConcentrationDeltaManager;
 import bio.singa.simulation.model.sections.CellRegion;
@@ -31,7 +30,7 @@ import java.util.*;
 public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, RectangularCoordinate> implements Updatable {
 
     private CellRegion cellRegion;
-    private ConcentrationDeltaManager updateManager;
+    private ConcentrationDeltaManager concentrationManager;
     private Polygon spatialRepresentation;
     private Map<LineLikeAgent, Set<Vector2D>> microtubuleSegments;
     private List<MembraneSegment> membraneSegments;
@@ -46,7 +45,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
         subsectionRepresentations = new HashMap<>();
         membraneSegments = new ArrayList<>();
         cellRegion = CellRegions.EXTRACELLULAR_REGION;
-        updateManager = new ConcentrationDeltaManager(cellRegion.setUpConcentrationContainer());
+        concentrationManager = new ConcentrationDeltaManager(cellRegion.setUpConcentrationContainer());
     }
 
     public AutomatonNode(int column, int row) {
@@ -63,44 +62,12 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
      * @param potentialDelta The potential delta.
      */
     public void addPotentialDelta(ConcentrationDelta potentialDelta) {
-        updateManager.addPotentialDelta(potentialDelta);
-    }
-
-    /**
-     * Clears the list of potential deltas. Usually done after {@link AutomatonNode#shiftDeltas()} or after rejecting a
-     * time step.
-     */
-    public void clearPotentialConcentrationDeltas() {
-        updateManager.clearPotentialDeltas();
+        concentrationManager.addPotentialDelta(potentialDelta);
     }
 
     @Override
-    public void clearPotentialDeltasBut(UpdateModule module) {
-        updateManager.clearPotentialDeltasBut(module);
-    }
-
-    /**
-     * Shifts the deltas from the potential delta list to the final delta list.
-     */
-    public void shiftDeltas() {
-        updateManager.shiftDeltas();
-    }
-
-    /**
-     * Applies all final deltas and clears the delta list.
-     */
-    public void applyDeltas() {
-        updateManager.applyDeltas();
-    }
-
-    @Override
-    public boolean hasDeltas() {
-        return !updateManager.getFinalDeltas().isEmpty();
-    }
-
-    @Override
-    public List<ConcentrationDelta> getPotentialConcentrationDeltas() {
-        return updateManager.getPotentialDeltas();
+    public ConcentrationDeltaManager getConcentrationManager() {
+        return concentrationManager;
     }
 
     /**
@@ -109,7 +76,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
      * @return all referenced sections in this node.
      */
     public Set<CellSubsection> getAllReferencedSections() {
-        return updateManager.getConcentrationContainer().getReferencedSubSections();
+        return concentrationManager.getConcentrationContainer().getReferencedSubsections();
     }
 
     /**
@@ -118,7 +85,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
      * @return {@code true} if this node is observed.
      */
     public boolean isObserved() {
-        return updateManager.isObserved();
+        return concentrationManager.isObserved();
     }
 
     /**
@@ -127,15 +94,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
      * @param isObserved {@code true} if this node is observed.
      */
     public void setObserved(boolean isObserved) {
-        updateManager.setObserved(isObserved);
-    }
-
-    public boolean isConcentrationFixed() {
-        return updateManager.isConcentrationFixed();
-    }
-
-    public void setConcentrationFixed(boolean concentrationFixed) {
-        updateManager.setConcentrationFixed(concentrationFixed);
+        concentrationManager.setObserved(isObserved);
     }
 
     @Override
@@ -145,7 +104,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
 
     public void setCellRegion(CellRegion cellRegion) {
         this.cellRegion = cellRegion;
-        updateManager.setConcentrationContainer(cellRegion.setUpConcentrationContainer());
+        concentrationManager.setConcentrationContainer(cellRegion.setUpConcentrationContainer());
     }
 
     @Override
@@ -159,7 +118,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
      * @return The {@link ConcentrationContainer} used by this node.
      */
     public ConcentrationContainer getConcentrationContainer() {
-        return updateManager.getConcentrationContainer();
+        return concentrationManager.getConcentrationContainer();
     }
 
     /**
@@ -168,7 +127,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
      * @param concentrationContainer The {@link ConcentrationContainer} for this node.
      */
     public void setConcentrationContainer(ConcentrationContainer concentrationContainer) {
-        updateManager.setConcentrationContainer(concentrationContainer);
+        concentrationManager.setConcentrationContainer(concentrationContainer);
     }
 
     public Polygon getSpatialRepresentation() {
@@ -179,12 +138,8 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
         this.spatialRepresentation = spatialRepresentation;
     }
 
-    public ConcentrationDeltaManager getUpdateManager() {
-        return updateManager;
-    }
-
-    public void setUpdateManager(ConcentrationDeltaManager updateManager) {
-        this.updateManager = updateManager;
+    public void setConcentrationManager(ConcentrationDeltaManager concentrationManager) {
+        this.concentrationManager = concentrationManager;
     }
 
     public Map<LineLikeAgent, Set<Vector2D>> getAssociatedLineLikeAgents() {

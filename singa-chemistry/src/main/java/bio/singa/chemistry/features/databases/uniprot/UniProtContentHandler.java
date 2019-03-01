@@ -97,6 +97,7 @@ public class UniProtContentHandler implements ContentHandler {
         Protein protein;
         if (primaryIdentifier == null) {
             protein = Protein.create(identifier.toString())
+                    .additionalIdentifier(identifier)
                     .name(recommendedName)
                     .assignFeature(new MolarMass(molarMass, UniProtDatabase.evidence))
                     .build();

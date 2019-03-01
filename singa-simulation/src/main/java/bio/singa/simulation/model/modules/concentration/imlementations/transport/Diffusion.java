@@ -86,7 +86,7 @@ public class Diffusion extends ConcentrationBasedModule<EntityDeltaFunction> {
         // traverse each neighbouring cells
         for (AutomatonNode neighbour : node.getNeighbours()) {
 
-            if (neighbour.getConcentrationContainer().getReferencedSubSections().contains(subsection)) {
+            if (neighbour.getConcentrationContainer().getReferencedSubsections().contains(subsection)) {
                 // if the neighbour actually contains the same subsection, that is currently handled
                 if (chemicalEntityIsNotMembraneAnchored() || bothAreNonMembrane(node, neighbour) || bothAreMembrane(node, neighbour)) {
                     // if entity is not anchored in membrane

@@ -111,7 +111,7 @@ public class ReactionBuilder {
 
         DynamicReactantStep addProduct(DynamicChemicalEntity referenceEntity, ComplexModification modification);
 
-        DynamicReactantStep targetProduct(ChemicalEntity splitTarget, CellTopology topologyTarget);
+        DynamicReactantStep targetProductToTopology(ChemicalEntity affectedEntity, CellTopology targetTopology);
 
         DynamicReactantStep addProduct(ChemicalEntity chemicalEntity);
 
@@ -408,8 +408,8 @@ public class ReactionBuilder {
         }
 
         @Override
-        public DynamicReactantStep targetProduct(ChemicalEntity splitTarget, CellTopology topologyTarget) {
-            dynamicReactantBehavior.addSplitTarget(splitTarget, topologyTarget);
+        public DynamicReactantStep targetProductToTopology(ChemicalEntity affectedEntity, CellTopology targetTopology) {
+            dynamicReactantBehavior.addSplitTarget(affectedEntity, targetTopology);
             return this;
         }
 

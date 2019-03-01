@@ -1,10 +1,11 @@
 package bio.singa.simulation.model.modules.concentration;
 
+import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.core.events.UpdateEventListener;
-import bio.singa.simulation.model.graphs.AutomatonNode;
+import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.simulation.model.modules.UpdateModule;
+import bio.singa.simulation.model.sections.CellSubsection;
 import bio.singa.simulation.model.sections.ConcentrationContainer;
-import bio.singa.simulation.model.simulation.Updatable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,14 +27,27 @@ public class ConcentrationDeltaManager {
     private static final Logger logger = LoggerFactory.getLogger(ConcentrationDeltaManager.class);
 
     /**
+     * The current concentration, this is modified during calculations and might not be the actual value.
+     */
+    private ConcentrationContainer currentConcentrations;
+
+    /**
+     * A copy of the original concentrations used to calculate the full step concentrations for the evaluation of the
+     * global error.
+     */
+    private ConcentrationContainer interimConcentrations;
+
+    /**
+     * A copy of the concentrations at the start of the global error evaluation to revert to if recalculations are
+     * required.
+     */
+    private ConcentrationContainer originalConcentrations;
+
+    /**
      * A list of potential deltas.
      */
     private final List<ConcentrationDelta> potentialDeltas;
 
-    /**
-     * The current concentrations.
-     */
-    private ConcentrationContainer currentConcentrations;
 
     /**
      * Deltas that are to be applied to the node.
@@ -81,6 +95,10 @@ public class ConcentrationDeltaManager {
         currentConcentrations = concentrations;
     }
 
+    public ConcentrationContainer getOriginalConcentrations() {
+        return originalConcentrations;
+    }
+
     /**
      * Returns true if the concentrations are observed.
      *
@@ -117,6 +135,62 @@ public class ConcentrationDeltaManager {
         this.concentrationFixed = concentrationFixed;
     }
 
+    public boolean hasDeltas() {
+        return !getFinalDeltas().isEmpty();
+    }
+
+    public void setInterimAndUpdateCurrentConcentrations() {
+        currentConcentrations = originalConcentrations.fullCopy();
+        interimConcentrations = originalConcentrations.fullCopy();
+        for (ConcentrationDelta delta : potentialDeltas) {
+            double updatedHalfConcentration = currentConcentrations.get(delta.getCellSubsection(), delta.getChemicalEntity()) + delta.getValue() * 0.5;
+            double updatedFullConcentration = interimConcentrations.get(delta.getCellSubsection(), delta.getChemicalEntity()) + delta.getValue();
+            if (updatedFullConcentration < 0.0) {
+                if (MolarConcentration.concentrationToMolecules(Math.abs(delta.getValue())).getValue().doubleValue() < 0.1) {
+                    // prevent errors, the concentration will be zeroed when applying deltas
+                    updatedHalfConcentration = 0.0;
+                    updatedFullConcentration = 0.0;
+                }
+            }
+            currentConcentrations.set(delta.getCellSubsection(), delta.getChemicalEntity(), updatedHalfConcentration);
+            interimConcentrations.set(delta.getCellSubsection(), delta.getChemicalEntity(), updatedFullConcentration);
+        }
+        potentialDeltas.clear();
+    }
+
+    public void determineComparisionConcentrations() {
+        currentConcentrations = originalConcentrations.fullCopy();
+        for (ConcentrationDelta delta : potentialDeltas) {
+            // add to original (0) concentrations full delta (1) = 1
+            double updatedConcentration = currentConcentrations.get(delta.getCellSubsection(), delta.getChemicalEntity()) + delta.getValue();
+            if (updatedConcentration < 0.0) {
+                // add to half concentrations (0.5) half the delta (0.5) = 1
+                // TODO this may not be safe in every case but then determine concentrations should warn already
+                updatedConcentration = currentConcentrations.get(delta.getCellSubsection(), delta.getChemicalEntity()) + delta.getValue() * 0.5;
+            }
+            currentConcentrations.set(delta.getCellSubsection(), delta.getChemicalEntity(), updatedConcentration);
+        }
+    }
+
+    public double determineGlobalNumericalError() {
+        double largestError = 0.0;
+        for (ChemicalEntity entity : currentConcentrations.getReferencedEntities()) {
+            for (CellSubsection subsection : currentConcentrations.getReferencedSubsections()) {
+                double interimConcentration = interimConcentrations.get(subsection, entity);
+                double currentConcentration = currentConcentrations.get(subsection, entity);
+                if (currentConcentration != 0.0 && interimConcentration != 0.0) {
+                    double globalError = Math.abs(1 - (interimConcentration / currentConcentration));
+                    if (globalError > largestError) {
+                        largestError = globalError;
+                    }
+                }
+            }
+        }
+        logger.debug("Largest global error is {}.", largestError);
+        return largestError;
+    }
+
+
     /**
      * Returns all deltas that are going to be applied to this node.
      *
@@ -144,17 +218,25 @@ public class ConcentrationDeltaManager {
         potentialDeltas.add(potentialDelta);
     }
 
+    public void backupConcentrations() {
+        originalConcentrations = currentConcentrations.fullCopy();
+    }
+
+    public void revertToOriginalConcentrations() {
+        currentConcentrations = originalConcentrations.fullCopy();
+    }
+
     /**
-     * Clears the list of potential deltas. Usually done after {@link AutomatonNode#shiftDeltas()} or after rejecting a
+     * Clears the list of potential deltas. Usually done after {@link ConcentrationDeltaManager#shiftDeltas()} or after rejecting a
      * time step.
      */
     public void clearPotentialDeltas() {
-            potentialDeltas.clear();
+        potentialDeltas.clear();
     }
 
     /**
      * Clears the list of potential deltas retaining updates from a specific module. Usually done after
-     * {@link Updatable#shiftDeltas()} or after rejecting a time step.
+     * {@link ConcentrationDeltaManager#shiftDeltas()} or after rejecting a time step.
      *
      * @param module The module.
      */
@@ -180,19 +262,25 @@ public class ConcentrationDeltaManager {
      * Applies all final deltas and clears the delta list.
      */
     public void applyDeltas() {
-        if (!concentrationFixed) {
-            for (ConcentrationDelta delta : finalDeltas) {
-                double previousConcentration = currentConcentrations.get(delta.getCellSubsection(), delta.getChemicalEntity());
-                double updatedConcentration = previousConcentration + delta.getValue();
-                if (updatedConcentration < 0.0) {
-                    // FIXME updated concentration should probably not be capped
-                    // FIXME the the delta that resulted in the decrease probably had a corresponding increase
+        currentConcentrations = originalConcentrations;
+        interimConcentrations = originalConcentrations;
+        for (ConcentrationDelta delta : finalDeltas) {
+            // it may happen that concentrations are calculated as strut points that have no representations in the
+            // original concentrations and therefore non existent entities would be removed
+            double previousConcentration = currentConcentrations.get(delta.getCellSubsection(), delta.getChemicalEntity());
+            double updatedConcentration = previousConcentration + delta.getValue();
+            if (updatedConcentration < 0.0) {
+                if (MolarConcentration.concentrationToMolecules(Math.abs(delta.getValue())).getValue().doubleValue() < 0.1) {
+                    logger.warn("Updates for {} have reached a cutoff value where less than a 1/10 of a molecule would remain, setting concentration to 0.", delta.getChemicalEntity());
                     updatedConcentration = 0.0;
                 }
-                logger.trace("Setting c({}) in {} from {} to {} ", delta.getChemicalEntity().getIdentifier(), delta.getCellSubsection().getIdentifier(), previousConcentration, updatedConcentration);
-                currentConcentrations.set(delta.getCellSubsection(), delta.getChemicalEntity(), updatedConcentration);
             }
+            logger.trace("Setting {} in {} from {} to {} ", delta.getChemicalEntity(), delta.getCellSubsection().getIdentifier(), previousConcentration, updatedConcentration);
+            currentConcentrations.set(delta.getCellSubsection(), delta.getChemicalEntity(), updatedConcentration);
+            // System.out.println(delta + " -> "+updatedConcentration);  61.694187144482875 61.69423320010245
         }
         finalDeltas.clear();
     }
+
+
 }

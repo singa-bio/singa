@@ -1,8 +1,6 @@
 package bio.singa.simulation.model.modules.concentration.imlementations.reactions;
 
 import bio.singa.chemistry.entities.*;
-import bio.singa.chemistry.entities.ComplexModification;
-import bio.singa.chemistry.entities.ModificationSite;
 import bio.singa.chemistry.features.reactions.RateConstant;
 import bio.singa.features.identifiers.ChEBIIdentifier;
 import bio.singa.features.identifiers.UniProtIdentifier;
@@ -37,8 +35,7 @@ import javax.measure.quantity.Time;
 
 import static bio.singa.chemistry.entities.ComplexModification.Operation.ADD;
 import static bio.singa.chemistry.entities.ComplexModification.Operation.REMOVE;
-import static bio.singa.features.units.UnitProvider.MICRO_MOLE_PER_LITRE;
-import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
+import static bio.singa.features.units.UnitProvider.*;
 import static bio.singa.simulation.model.sections.CellRegions.CELL_OUTER_MEMBRANE_REGION;
 import static bio.singa.simulation.model.sections.CellRegions.CYTOPLASM_REGION;
 import static bio.singa.simulation.model.sections.CellSubsection.SECTION_A;
@@ -99,7 +96,7 @@ class ReactionTest {
 
         for (int i = 0; i < 100; i++) {
             simulation.nextEpoch();
-            System.out.println(simulation.getGraph().getNode(0, 0).getConcentrationContainer().get(CYTOPLASM, a) + " " + simulation.getGraph().getNode(0, 0).getConcentrationContainer().get(CYTOPLASM, b) + " " + simulation.getGraph().getNode(0, 0).getConcentrationContainer().get(CYTOPLASM, c));
+            // System.out.println(simulation.getGraph().getNode(0, 0).getConcentrationContainer().get(CYTOPLASM, a) + " " + simulation.getGraph().getNode(0, 0).getConcentrationContainer().get(CYTOPLASM, b) + " " + simulation.getGraph().getNode(0, 0).getConcentrationContainer().get(CYTOPLASM, c));
         }
 
     }
@@ -137,7 +134,7 @@ class ReactionTest {
 
         for (int i = 0; i < 100; i++) {
             simulation.nextEpoch();
-            System.out.println(simulation.getGraph().getNode(0, 0).getConcentrationContainer().get(CYTOPLASM, a) + " " + simulation.getGraph().getNode(0, 0).getConcentrationContainer().get(MEMBRANE, b) + " " + simulation.getGraph().getNode(0, 0).getConcentrationContainer().get(MEMBRANE, c));
+            // System.out.println(simulation.getGraph().getNode(0, 0).getConcentrationContainer().get(CYTOPLASM, a) + " " + simulation.getGraph().getNode(0, 0).getConcentrationContainer().get(MEMBRANE, b) + " " + simulation.getGraph().getNode(0, 0).getConcentrationContainer().get(MEMBRANE, c));
         }
     }
 
@@ -174,7 +171,7 @@ class ReactionTest {
 
         for (int i = 0; i < 100; i++) {
             simulation.nextEpoch();
-            System.out.println(simulation.getGraph().getNode(0, 0).getConcentrationContainer().get(CYTOPLASM, a) + " " + simulation.getGraph().getNode(0, 0).getConcentrationContainer().get(CYTOPLASM, b) + " " + simulation.getGraph().getNode(0, 0).getConcentrationContainer().get(CYTOPLASM, c));
+            // System.out.println(simulation.getGraph().getNode(0, 0).getConcentrationContainer().get(CYTOPLASM, a) + " " + simulation.getGraph().getNode(0, 0).getConcentrationContainer().get(CYTOPLASM, b) + " " + simulation.getGraph().getNode(0, 0).getConcentrationContainer().get(CYTOPLASM, c));
         }
     }
 
@@ -333,8 +330,8 @@ class ReactionTest {
         while (simulation.getElapsedTime().isLessThanOrEqualTo(secondCheckpoint)) {
             simulation.nextEpoch();
             if (!firstCheckpointPassed && simulation.getElapsedTime().isGreaterThanOrEqualTo(firstCheckpoint)) {
-                assertEquals(9.446E-7, node.getConcentrationContainer().get(INNER, bindee), 1e-10);
-                assertEquals(5.537E-8, vesicle.getConcentrationContainer().get(MEMBRANE, complex), 1e-10);
+                assertEquals(9.449E-7, node.getConcentrationContainer().get(INNER, bindee), 1e-10);
+                assertEquals(5.507E-8, vesicle.getConcentrationContainer().get(MEMBRANE, complex), 1e-10);
                 firstCheckpointPassed = true;
             }
         }
@@ -428,9 +425,9 @@ class ReactionTest {
         while (simulation.getElapsedTime().isLessThanOrEqualTo(secondCheckpoint)) {
             simulation.nextEpoch();
             if (!firstCheckpointPassed && simulation.getElapsedTime().isGreaterThanOrEqualTo(firstCheckpoint)) {
-                assertEquals(9.693E-7, first.getConcentrationContainer().get(INNER, bindee), 1e-10);
-                assertEquals(4.846E-7, second.getConcentrationContainer().get(INNER, bindee), 1e-10);
-                assertEquals(4.603E-8, vesicle.getConcentrationContainer().get(MEMBRANE, complex), 1e-10);
+                assertEquals(9.694E-7, first.getConcentrationContainer().get(INNER, bindee), 1e-10);
+                assertEquals(4.847E-7, second.getConcentrationContainer().get(INNER, bindee), 1e-10);
+                assertEquals(4.589E-8, vesicle.getConcentrationContainer().get(MEMBRANE, complex), 1e-10);
                 firstCheckpointPassed = true;
             }
         }
@@ -503,44 +500,38 @@ class ReactionTest {
     @Test
     void complexBuildingDynamicReactants() {
         Simulation simulation = new Simulation();
-
         AutomatonGraph automatonGraph = AutomatonGraphs.singularGraph(CELL_OUTER_MEMBRANE_REGION);
         simulation.setGraph(automatonGraph);
 
         ModificationSite ps = ModificationSite.create("PS").build();
+        ChemicalEntity p = SmallMolecule.create("P").build();
+        ComplexEntity.from(ps, p);
+
         ChemicalEntity aqp2protein = Protein.create("AQP2").build();
-        ChemicalEntity pp1protein = Protein.create("PP1").build();
         ComplexEntity aqp2 = ComplexEntity.from(aqp2protein, ps);
+        ComplexEntity aqp2p = aqp2.apply(new ComplexModification(ADD, p, ps));
+
+        ChemicalEntity pp1protein = Protein.create("PP1").build();
         ComplexEntity pp1 = ComplexEntity.from(pp1protein, ps);
+        ComplexEntity pp1p = pp1.apply(new ComplexModification(ADD, p, ps));
 
         ChemicalEntity pkac = Protein.create("PKA").build();
-        ModificationSite m1 = ModificationSite.create("C1").build();
-        ModificationSite m2 = ModificationSite.create("C2").build();
-        ModificationSite m3 = ModificationSite.create("C3").build();
-
-        ComplexEntity pka1 = ComplexEntity.from(pkac, m1);
-        ComplexEntity pka2 = ComplexEntity.from(pkac, m2);
-        ComplexEntity pka3 = ComplexEntity.from(pkac, m3);
-
-        ChemicalEntity pho = SmallMolecule.create("P").build();
 
         ConcentrationInitializer ci = new ConcentrationInitializer();
-        ci.addInitialConcentration(CELL_OUTER_MEMBRANE, aqp2, Quantities.getQuantity(1, MICRO_MOLE_PER_LITRE));
-        ci.addInitialConcentration(CELL_OUTER_MEMBRANE, pp1, Quantities.getQuantity(1, MICRO_MOLE_PER_LITRE));
-        ci.addInitialConcentration(CELL_OUTER_MEMBRANE, pka1, Quantities.getQuantity(1, MICRO_MOLE_PER_LITRE));
-        ci.addInitialConcentration(CELL_OUTER_MEMBRANE, pka2, Quantities.getQuantity(1, MICRO_MOLE_PER_LITRE));
-        ci.addInitialConcentration(CELL_OUTER_MEMBRANE, pka3, Quantities.getQuantity(1, MICRO_MOLE_PER_LITRE));
+        ci.addInitialConcentration(CELL_OUTER_MEMBRANE, aqp2, Quantities.getQuantity(100, MICRO_MOLE_PER_LITRE));
+        ci.addInitialConcentration(CYTOPLASM, pp1, Quantities.getQuantity(100, MICRO_MOLE_PER_LITRE));
+        ci.addInitialConcentration(CELL_OUTER_MEMBRANE, pkac, Quantities.getQuantity(100, MICRO_MOLE_PER_LITRE));
         simulation.setConcentrationInitializer(ci);
 
-        RateConstant forwardRate = RateConstant.create(1.0)
+        RateConstant forwardRate = RateConstant.create(200)
                 .forward().secondOrder()
-                .concentrationUnit(MICRO_MOLE_PER_LITRE)
-                .timeUnit(MINUTE)
+                .concentrationUnit(MILLI_MOLE_PER_LITRE)
+                .timeUnit(SECOND)
                 .build();
 
-        RateConstant backwardRate = RateConstant.create(0.01)
+        RateConstant backwardRate = RateConstant.create(8)
                 .backward().firstOrder()
-                .timeUnit(MINUTE)
+                .timeUnit(SECOND)
                 .build();
 
         DynamicChemicalEntity anyPKA = DynamicChemicalEntity.create("*PKA & !PS")
@@ -553,11 +544,13 @@ class ReactionTest {
                 .addCompositionCondition(EntityReducer.hasPart(ps))
                 .addCompositionCondition(EntityReducer.hasNotPart(pkac))
                 .addPossibleTopology(MEMBRANE)
+                .addPossibleTopology(INNER)
                 .build();
 
         ReactionBuilder.dynamicReactants(simulation)
                 .addSubstrate(anyPKA)
                 .addSubstrate(anyPS)
+                .targetProductToTopology(pkac, MEMBRANE)
                 .complexBuilding()
                 .associationRate(forwardRate)
                 .dissociationRate(backwardRate)
@@ -573,24 +566,27 @@ class ReactionTest {
         DynamicChemicalEntity transformable = DynamicChemicalEntity.create("*PS & *PKAC")
                 .addCompositionCondition(EntityReducer.hasPart(ps))
                 .addCompositionCondition(EntityReducer.hasPart(pkac))
+                .addCompositionCondition(EntityReducer.hasNotPart(p))
                 .addPossibleTopology(MEMBRANE)
                 .build();
 
         ReactionBuilder.dynamicReactants(simulation)
                 .addSubstrate(transformable)
-                .addProduct(transformable, new ComplexModification(ADD, pho, ps))
+                .addProduct(transformable, new ComplexModification(ADD, p, ps))
                 .addProduct(transformable, ComplexModification.SPLIT)
+                .targetProductToTopology(pp1protein, INNER)
+                .targetProductToTopology(aqp2protein, MEMBRANE)
                 .irreversible()
                 .rate(kCat)
                 .identifier("phosphorylation")
                 .build();
 
-        for (int i = 0; i < 100; i++) {
+        while (simulation.getElapsedTime().isLessThan(Quantities.getQuantity(1, SECOND))) {
             simulation.nextEpoch();
-            // System.out.println(simulation.getGraph().getNode(0, 0).getConcentrationContainer().get(CYTOPLASM, ) + " " + simulation.getGraph().getNode(0, 0).getConcentrationContainer().get(MEMBRANE, b) + " " + simulation.getGraph().getNode(0, 0).getConcentrationContainer().get(MEMBRANE, c));
         }
+        assertEquals(5.504E-13, simulation.getGraph().getNode(0, 0).getConcentrationContainer().get(INNER, pp1), 1E-15);
+        assertEquals(6.169E-11, simulation.getGraph().getNode(0, 0).getConcentrationContainer().get(INNER, pp1p), 1E-13);
+        assertEquals(6.169E-11, simulation.getGraph().getNode(0, 0).getConcentrationContainer().get(MEMBRANE, aqp2p), 1E-13);
     }
-
-
 
 }

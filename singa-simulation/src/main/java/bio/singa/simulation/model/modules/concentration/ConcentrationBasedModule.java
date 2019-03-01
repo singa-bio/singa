@@ -405,7 +405,7 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
             return LocalError.MINIMAL_EMPTY_ERROR;
         }
         if (supplier.getCurrentFullDeltas().size() != supplier.getCurrentHalfDeltas().size()) {
-            logger.warn("The deltas that should be applied have fallen below " +
+            logger.trace("The deltas that should be applied have fallen below " +
                     "the threshold of " + deltaCutoff + ". (Module: " + getIdentifier() + ")");
             return LocalError.MINIMAL_EMPTY_ERROR;
         }
@@ -431,7 +431,7 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
         LocalError localError = new LocalError(largestIdentifier.getUpdatable(), largestIdentifier.getEntity(), largestLocalError);
         logger.debug("The largest error for {} was {} at {}", Thread.currentThread().getName(), localError.getValue(), localError.getUpdatable().getStringIdentifier());
         // set local error and return local error
-        simulation.getScheduler().setLargestError(localError);
+        simulation.getScheduler().setLargestLocalError(localError);
         return localError;
     }
 
@@ -484,7 +484,7 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
             logger.trace("Recalculation required for error {}.", supplier.getLargestLocalError().getValue());
             state = REQUIRING_RECALCULATION;
             supplier.clearDeltas();
-            scope.clearPotentialDeltas(supplier.getLargestLocalError().getUpdatable());
+            scope.clearPotentialDeltas();
         }
     }
 
