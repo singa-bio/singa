@@ -89,8 +89,8 @@ class ReversibleReactionTest {
         while ((currentTime = simulation.getElapsedTime().to(MILLI(SECOND))).getValue().doubleValue() < secondCheckpoint.getValue().doubleValue()) {
             simulation.nextEpoch();
             if (!firstCheckpointPassed && currentTime.getValue().doubleValue() > firstCheckpoint.getValue().doubleValue()) {
-                assertEquals(0.8891, UnitRegistry.concentration(node.getConcentrationContainer().get(subsection, speciesA)).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
-                assertEquals(0.1108, UnitRegistry.concentration(node.getConcentrationContainer().get(subsection, speciesB)).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
+                assertEquals(0.8906, UnitRegistry.concentration(node.getConcentrationContainer().get(subsection, speciesA)).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
+                assertEquals(0.1093, UnitRegistry.concentration(node.getConcentrationContainer().get(subsection, speciesB)).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
                 firstCheckpointPassed = true;
             }
         }

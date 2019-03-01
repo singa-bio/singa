@@ -27,7 +27,7 @@ class PDBLigandIdentiferProviderTest {
                 .build();
         // 6-(4-azanyl-4-methyl-piperidin-1-yl)-3-[2,3-bis(chloranyl)phenyl]pyrazin-2-amine
         inchiEntity = SmallMolecule.create("YGUFCDOEKKVKJK-UHFFFAOYSA-N")
-                .additionalIdentifier(new InChIKey("GUFCDOEKKVKJK-UHFFFAOYSA-N"))
+                .additionalIdentifier(new InChIKey("YGUFCDOEKKVKJK-UHFFFAOYSA-N"))
                 .build();
     }
 

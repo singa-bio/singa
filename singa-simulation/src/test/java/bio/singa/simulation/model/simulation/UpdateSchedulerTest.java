@@ -13,22 +13,12 @@ import org.junit.jupiter.api.Test;
 import tec.uom.se.quantity.Quantities;
 
 import static bio.singa.features.units.UnitProvider.MICRO_MOLE_PER_LITRE;
-import static org.junit.jupiter.api.Assertions.fail;
 import static tec.uom.se.unit.Units.SECOND;
 
 /**
  * @author cl
  */
 class UpdateSchedulerTest {
-
-
-    @Test
-    void testParallelExecution() {
-
-        fail();
-
-    }
-
 
     @Test
     void testAccuracyGainCalculation() {

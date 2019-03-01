@@ -123,7 +123,7 @@ class VesicleFusionTest {
         fusion.setFeature(AttachmentDistance.DEFAULT_DYNEIN_ATTACHMENT_DISTANCE);
         simulation.addModule(fusion);
 
-        while (simulation.getElapsedTime().isLessThanOrEqualTo(Quantities.getQuantity(19.0, SECOND))) {
+        while (simulation.getElapsedTime().isLessThanOrEqualTo(Quantities.getQuantity(20.0, SECOND))) {
             simulation.nextEpoch();
         }
 
