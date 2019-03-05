@@ -116,6 +116,12 @@ class SmilesParserTest {
                 .count());
     }
 
+    @Test
+    void shouldParseFragment() {
+        String smilesString = "CC(=O)N(C)C";
+        MoleculeGraph moleculeGraph = SmilesParser.parse(smilesString);
+    }
+
     // with nested branches
     // Clc(c(Cl)c(Cl)c1C(=O)O)c(Cl)c1Cl
 
