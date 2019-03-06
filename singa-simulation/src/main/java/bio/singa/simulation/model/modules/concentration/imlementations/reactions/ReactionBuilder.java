@@ -403,13 +403,13 @@ public class ReactionBuilder {
 
         @Override
         public DynamicReactantStep addProduct(DynamicChemicalEntity dynamicChemicalEntity, ComplexModification modification) {
-            dynamicReactantBehavior.addDynamicProduct(dynamicChemicalEntity, modification);
+            dynamicReactantBehavior.addDynamicProduct(dynamicChemicalEntity.getIdentifier().getContent(), modification);
             return this;
         }
 
         @Override
         public DynamicReactantStep targetProductToTopology(ChemicalEntity affectedEntity, CellTopology targetTopology) {
-            dynamicReactantBehavior.addSplitTarget(affectedEntity, targetTopology);
+            dynamicReactantBehavior.addTargetTopology(affectedEntity, targetTopology);
             return this;
         }
 
