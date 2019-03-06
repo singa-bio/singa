@@ -1,14 +1,21 @@
 package bio.singa.simulation.export.format;
 
+import bio.singa.chemistry.entities.ComplexModification;
 import bio.singa.simulation.model.modules.concentration.imlementations.reactions.Reaction;
 import bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.kineticlaws.DynamicKineticLaw;
 import bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.kineticlaws.IrreversibleKineticLaw;
 import bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.kineticlaws.MichaelisMentenKineticLaw;
 import bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.kineticlaws.ReversibleKineticLaw;
+import bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.reactants.DynamicChemicalEntity;
+import bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.reactants.DynamicReactantBehavior;
 import bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.reactants.Reactant;
 import bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.reactants.StaticReactantBehavior;
+import bio.singa.simulation.model.sections.CellTopology;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -35,20 +42,9 @@ public class FormatReactionEquation {
     }
 
     private static String formatSectionReactantTex(Reactant reactant) {
-        String section = null;
-        switch (reactant.getPreferredTopology()) {
-            case INNER:
-                section = "i";
-                break;
-            case OUTER:
-                section = "o";
-                break;
-            case MEMBRANE:
-                section = "m";
-                break;
-        }
+        String topology = mapTopologyToString(reactant.getPreferredTopology());
         return (reactant.getStoichiometricNumber() > 1 ? " " + (int) reactant.getStoichiometricNumber() + " " : "") +
-                reactant.getEntity().getIdentifier().getContent().replaceAll("(\\d)", " $1 ") + "$_" + section + "$";
+                reactant.getEntity().getIdentifier().getContent().replaceAll("(\\d)", " $1 ") + "$_" + topology + "$";
     }
 
     private static String formatSectionReactantsASCII(Collection<Reactant> reactants, String delimiter) {
@@ -58,20 +54,54 @@ public class FormatReactionEquation {
     }
 
     private static String formatSectionReactantASCII(Reactant reactant) {
-        String section = null;
-        switch (reactant.getPreferredTopology()) {
-            case INNER:
-                section = "i";
-                break;
-            case OUTER:
-                section = "o";
-                break;
-            case MEMBRANE:
-                section = "m";
-                break;
-        }
+        String topologies = mapTopologyToString(reactant.getPreferredTopology());
         return (reactant.getStoichiometricNumber() > 1 ? (int) reactant.getStoichiometricNumber() : "") +
-                reactant.getEntity().getIdentifier().getContent() + "(" + section + ")";
+                reactant.getEntity().getIdentifier().getContent() + "(" + topologies + ")";
+    }
+
+    private static String formatDynamicSubstrates(Collection<DynamicChemicalEntity> substrates) {
+        return substrates.stream()
+                .map(FormatReactionEquation::formatDynamicSubstrate)
+                .collect(Collectors.joining(" + "));
+    }
+
+    private static String formatDynamicSubstrate(DynamicChemicalEntity substrate) {
+        String topologies = substrate.getPossibleTopologies().stream()
+                .map(FormatReactionEquation::mapTopologyToString)
+                .collect(Collectors.joining(","));
+        return "[" + substrate.getIdentifier().getContent() + "]" + "(" + topologies + ")";
+    }
+
+    private static String mapTopologyToString(CellTopology topology) {
+        switch (topology) {
+            case INNER:
+                return "i";
+            case OUTER:
+                return "o";
+            default:
+                return "m";
+        }
+    }
+
+    private static String formatDynamicProducts(Map<String, List<ComplexModification>> dynamicProducts) {
+        List<String> results = new ArrayList<>();
+        for (Map.Entry<String, List<ComplexModification>> entry : dynamicProducts.entrySet()) {
+            results.add("["+entry.getKey() + formatComplexModificaitions(entry.getValue()) + "]");
+        }
+        return String.join(" + ", results);
+    }
+
+    private static String formatComplexModificaitions(List<ComplexModification> complexModifications) {
+        return complexModifications.stream()
+                .map(FormatReactionEquation::mapComplexModificationToString)
+                .collect(Collectors.joining(" "));
+    }
+
+    private static String mapComplexModificationToString(ComplexModification complexModification) {
+        if (complexModification.equals(ComplexModification.SPLIT)) {
+            return ComplexModification.Operation.SPLIT.getText();
+        }
+        return complexModification.getOperation().getText() + complexModification.getModificator().getIdentifier().getContent();
     }
 
     public static String formatTex(Reaction reaction) {
@@ -87,20 +117,38 @@ public class FormatReactionEquation {
             }
         }
 
-        String arrow = "";
+        String arrow;
         if (reaction.getKineticLaw() instanceof ReversibleKineticLaw) {
             arrow = reversibleArrow;
         } else {
             arrow = irreversibleArrow;
         }
 
-        return texPrefix + substrates +" " + arrow +" "+ catalysts + products + texSuffix;
+        return texPrefix + substrates + " " + arrow + " " + catalysts + products + texSuffix;
     }
 
     public static String formatASCII(Reaction reaction) {
+
         String substrates = formatSectionReactantsASCII(reaction.getReactantBehavior().getSubstrates(), " +");
         String products = formatSectionReactantsASCII(reaction.getReactantBehavior().getProducts(), " +");
         String catalysts = formatSectionReactantsASCII(reaction.getReactantBehavior().getCatalysts(), ",");
+
+        if (reaction.getReactantBehavior() instanceof DynamicReactantBehavior) {
+            DynamicReactantBehavior reactantBehaviour = (DynamicReactantBehavior) reaction.getReactantBehavior();
+            if (substrates.equals("")) {
+                substrates = formatDynamicSubstrates(reactantBehaviour.getDynamicSubstrates());
+            } else {
+                substrates += " + " + formatDynamicSubstrates(reactantBehaviour.getDynamicSubstrates());
+            }
+            if (products.equals("")) {
+                products = formatDynamicProducts(reactantBehaviour.getDynamicProducts());
+            } else {
+                products += " + " + formatDynamicProducts(reactantBehaviour.getDynamicProducts());
+            }
+            if (products.isEmpty() && reactantBehaviour.isDynamicComplex()) {
+                products = "[complex]";
+            }
+        }
 
         if (reaction.getKineticLaw() instanceof ReversibleKineticLaw) {
             return String.format(reversibleASCIITemplate, substrates, products);
@@ -114,38 +162,4 @@ public class FormatReactionEquation {
             throw new IllegalArgumentException("The kinetic law " + reaction.getKineticLaw().getClass() + " has no implemented ASCII representation.");
         }
     }
-
-//    public static String formatTex(MichaelisMentenReaction reaction) {
-//        String substrates = formatReactants(reaction.getStoichiometricReactants().stream().filter(Reactant::isSubstrate));
-//        String products = formatReactants(reaction.getStoichiometricReactants().stream().filter(Reactant::isProduct));
-//        String enzyme = reaction.getEnzyme().getIdentifier().getContent();
-//        return String.format(michaelisMentenTexTemplate, substrates, enzyme, products);
-//    }
-
-//    public static String formatTex(NthOrderReaction reaction) {
-//        String substrates = formatReactants(reaction.getStoichiometricReactants().stream().filter(Reactant::isSubstrate));
-//        String products = formatReactants(reaction.getStoichiometricReactants().stream().filter(Reactant::isProduct));
-//        return String.format(nthOrderTexTemplate, substrates, products);
-//    }
-
-//    public static String formatTex(ReversibleReaction reaction) {
-//        String substrates = formatReactants(reaction.getStoichiometricReactants().stream().filter(Reactant::isSubstrate));
-//        String products = formatReactants(reaction.getStoichiometricReactants().stream().filter(Reactant::isProduct));
-//        return String.format(reversibleTexTemplate, substrates, products);
-//    }
-
-//    public static String formatTex(SectionDependentReaction reaction) {
-//        String substrates = formatSectionReactantsTex(reaction.getSubstrates().stream());
-//        String products = formatSectionReactantsTex(reaction.getProducts().stream());
-//        return String.format(reversibleTexTemplate, substrates, products);
-//    }
-
-//    public static String formatTex(DynamicReaction reaction) {
-//        String substrates = formatSectionReactantsTex(reaction.getSubstrates().stream());
-//        String products = formatSectionReactantsTex(reaction.getProducts().stream());
-//        String catalysts = formatSectionReactantsTex(reaction.getCatalysts().stream()).replace(" +", ",");
-//        // escape number with [space]'number'[space]
-//        return String.format(michaelisMentenTexTemplate, substrates, catalysts, products);
-//    }
-
 }

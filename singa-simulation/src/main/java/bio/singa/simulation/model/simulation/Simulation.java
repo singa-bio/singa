@@ -184,8 +184,15 @@ public class Simulation {
                 return false;
             }
         }
-        // check if it is possible to gain simulation speed by increasing the time step
-        // this can be done, if the the error that was computed previously is very small
+
+//        // if the ratio between local and global error (local/global) is large (local error has little influence on
+//        // global error)
+//        double errorRatio = scheduler.getLargestLocalError().getValue() / scheduler.getLargestGlobalError();
+//        if (errorRatio > 100000) {
+//            return true;
+//        }
+
+        // if the the error that was computed previously is very small
         final double recalculationCutoff = scheduler.getRecalculationCutoff();
         final double latestGlobalError = scheduler.getLargestGlobalError();
         if (recalculationCutoff - latestGlobalError > 0.1 * recalculationCutoff) {

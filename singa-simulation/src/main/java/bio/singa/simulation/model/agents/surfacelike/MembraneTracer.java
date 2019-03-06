@@ -249,6 +249,30 @@ public class MembraneTracer {
             entry.setEndingPoint(intersections.iterator().next());
         }
 
+//        MembraneSegment firstSegment = membrane.getSegments().get(0);
+//        MembraneSegment lastSegment = membrane.getSegments().get(membrane.getSegments().size() - 1);
+//
+//        int maxRow = graph.getGrid().getHeight();
+//
+//        RectangularCoordinate firstIdentifier = firstSegment.getNode().getIdentifier();
+//        RectangularCoordinate secondIdentfier = lastSegment.getNode().getIdentifier();
+//        if (firstIdentifier.getRow() == 0) {
+//            // at top
+//            firstSegment.setStartingPoint(new Vector2D(firstSegment.getStartingPoint().getX(), 0.0));
+//        } else if (firstIdentifier.getRow() == maxRow) {
+//            // at bottom
+//            firstSegment.setEndingPoint(new Vector2D(firstSegment.getStartingPoint().getX(), firstSegment.getNode().getSpatialRepresentation().getMaximalY()));
+//        }
+//
+//        if (secondIdentfier.getRow() == 0) {
+//            // at top
+//            lastSegment.setStartingPoint(new Vector2D(lastSegment.getStartingPoint().getX(), 0.0));
+//        } else if (secondIdentfier.getRow() == maxRow) {
+//            // at bottom
+//            lastSegment.setEndingPoint(new Vector2D(lastSegment.getStartingPoint().getX(), lastSegment.getNode().getSpatialRepresentation().getMaximalY()));
+//        }
+
+
     }
 
     /**

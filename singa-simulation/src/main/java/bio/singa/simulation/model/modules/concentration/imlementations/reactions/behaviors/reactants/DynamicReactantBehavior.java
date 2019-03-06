@@ -24,11 +24,11 @@ public class DynamicReactantBehavior implements ReactantBehavior {
     private List<Reactant> staticCatalysts;
 
     private List<DynamicChemicalEntity> dynamicSubstrates;
-    private Map<DynamicChemicalEntity, List<ComplexModification>> dynamicProducts;
+    private Map<String, List<ComplexModification>> dynamicProducts;
     private List<ChemicalEntity> previousProducts;
 
     private Map<Set<ChemicalEntity>, List<ReactantSet>> compositionCache;
-    private Map<ChemicalEntity, CellTopology> targetTopology;
+    private Map<ChemicalEntity, CellTopology> targetTopologies;
     private boolean splitEntity = false;
 
     private boolean dynamicComplex;
@@ -41,7 +41,7 @@ public class DynamicReactantBehavior implements ReactantBehavior {
         dynamicProducts = new HashMap<>();
         previousProducts = new ArrayList<>();
         compositionCache = new HashMap<>();
-        targetTopology = new HashMap<>();
+        targetTopologies = new HashMap<>();
         dynamicComplex = false;
     }
 
@@ -104,23 +104,27 @@ public class DynamicReactantBehavior implements ReactantBehavior {
         this.dynamicComplex = dynamicComplex;
     }
 
-    public Map<DynamicChemicalEntity, List<ComplexModification>> getDynamicProducts() {
+    public Map<String, List<ComplexModification>> getDynamicProducts() {
         return dynamicProducts;
     }
 
-    public void addDynamicProduct(DynamicChemicalEntity dynamicSubstrate, ComplexModification modification) {
+    public void addDynamicProduct(String dynamicSubstrate, ComplexModification modification) {
         if (!dynamicProducts.containsKey(dynamicSubstrate)) {
             dynamicProducts.put(dynamicSubstrate, new ArrayList<>());
         }
         dynamicProducts.get(dynamicSubstrate).add(modification);
     }
 
-    public void addDynamicProduct(DynamicChemicalEntity dynamicSubstrate, List<ComplexModification> modifications) {
+    public void addDynamicProduct(String dynamicSubstrate, List<ComplexModification> modifications) {
         dynamicProducts.put(dynamicSubstrate, modifications);
     }
 
-    public void addSplitTarget(ChemicalEntity splitTargetEntity, CellTopology targetTopology) {
-        this.targetTopology.put(splitTargetEntity, targetTopology);
+    public void addTargetTopology(ChemicalEntity splitTargetEntity, CellTopology targetTopology) {
+        this.targetTopologies.put(splitTargetEntity, targetTopology);
+    }
+
+    public Map<ChemicalEntity, CellTopology> getTargetTopologies() {
+        return targetTopologies;
     }
 
     @Override
@@ -271,7 +275,7 @@ public class DynamicReactantBehavior implements ReactantBehavior {
             ChemicalEntity entity = matchingSubstrate.getEntity();
             // apply all modifications
             boolean split = false;
-            for (ComplexModification modification : dynamicProducts.get(dynamicSubstrate)) {
+            for (ComplexModification modification : dynamicProducts.get(dynamicSubstrate.getIdentifier().getContent())) {
                 if (entity instanceof ComplexEntity) {
                     if (modification.getOperation().equals(SPLIT)) {
                         split = true;
@@ -306,19 +310,19 @@ public class DynamicReactantBehavior implements ReactantBehavior {
         if (productEntity instanceof ComplexEntity) {
             // if complex
             ComplexEntity complex = ((ComplexEntity) productEntity);
-            for (ChemicalEntity targetEntity : targetTopology.keySet()) {
+            for (ChemicalEntity targetEntity : targetTopologies.keySet()) {
                 // check if the complex contains any of the split targets
                 if (complex.find(targetEntity) != null) {
                     ChemicalEntity entity = complex.getData();
-                    return new Reactant(entity, PRODUCT, targetTopology.get(targetEntity));
+                    return new Reactant(entity, PRODUCT, targetTopologies.get(targetEntity));
                 }
             }
         } else {
             // if regular entity
-            for (ChemicalEntity targetEntity : targetTopology.keySet()) {
+            for (ChemicalEntity targetEntity : targetTopologies.keySet()) {
                 // check inf the entity is defined as a split target
                 if (productEntity.equals(targetEntity)) {
-                    return new Reactant(productEntity, PRODUCT, targetTopology.get(targetEntity));
+                    return new Reactant(productEntity, PRODUCT, targetTopologies.get(targetEntity));
                 }
             }
         }

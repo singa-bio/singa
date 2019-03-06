@@ -413,6 +413,7 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
         // compare full and half deltas
         double largestLocalError = -Double.MAX_VALUE;
         ConcentrationDeltaIdentifier largestIdentifier = null;
+        double associatedDelta = 0.0;
         for (ConcentrationDeltaIdentifier identifier : supplier.getCurrentFullDeltas().keySet()) {
             double fullDelta = supplier.getCurrentFullDeltas().get(identifier).getValue();
             double halfDelta = supplier.getCurrentHalfDeltas().get(identifier).getValue();
@@ -424,6 +425,7 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
             if (largestLocalError < localError) {
                 largestIdentifier = identifier;
                 largestLocalError = localError;
+                associatedDelta = fullDelta;
             }
         }
         // safety check
@@ -431,7 +433,7 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
         LocalError localError = new LocalError(largestIdentifier.getUpdatable(), largestIdentifier.getEntity(), largestLocalError);
         logger.debug("The largest error for {} was {} at {}", Thread.currentThread().getName(), localError.getValue(), localError.getUpdatable().getStringIdentifier());
         // set local error and return local error
-        simulation.getScheduler().setLargestLocalError(localError);
+        simulation.getScheduler().setLargestLocalError(localError, this, associatedDelta);
         return localError;
     }
 
@@ -478,7 +480,8 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
      * a recalculation.
      */
     private void evaluateModuleState() {
-        if (supplier.getLargestLocalError().getValue() < simulation.getScheduler().getRecalculationCutoff()) {
+        // calculate ration of local and global error
+        if (localErrorIsAcceptable()) {
             state = SUCCEEDED;
         } else {
             logger.trace("Recalculation required for error {}.", supplier.getLargestLocalError().getValue());
@@ -486,6 +489,18 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
             supplier.clearDeltas();
             scope.clearPotentialDeltas();
         }
+    }
+
+    private boolean localErrorIsAcceptable() {
+        boolean errorRatioIsValid = false;
+        if (simulation.getScheduler().getLargestGlobalError() != 0.0) {
+            // calculate ratio of local and global error
+            double errorRatio = supplier.getLargestLocalError().getValue() / simulation.getScheduler().getLargestGlobalError();
+            errorRatioIsValid = errorRatio > 100000;
+        }
+        // use threshold
+        boolean thresholdIsValid = supplier.getLargestLocalError().getValue() < simulation.getScheduler().getRecalculationCutoff();
+        return errorRatioIsValid || thresholdIsValid;
     }
 
     @Override

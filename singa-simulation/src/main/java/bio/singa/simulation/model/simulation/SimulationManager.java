@@ -286,9 +286,12 @@ public class SimulationManager extends Task<Simulation> {
                     logger.info("estimated time remaining: {}, current simulation speed: [very high] (Simulation Time) per s(Real Time)", estimated);
                 } else {
                     String estimatedSpeed = GeneralQuantityFormatter.formatTime(Quantities.getQuantity(speed, MICRO(SECOND)));
-                    logger.info("estimated time remaining: {}, current simulation speed: {} (Simulation Time) per s(Real Time)", estimated, estimatedSpeed);
-                    logger.info("summary: {}/{}/{} (epochs/inc/dec), ", currentEpochs-previousEpochs, currentIncreases-previousIncreases, currentDecreases-previousDecreases);
-                    logger.info("{}({})/{} (le/ge), {}/{} (et/ts)", simulation.getScheduler().getLargestLocalError().getValue(), simulation.getScheduler().getLargestLocalError().getChemicalEntity(), simulation.getScheduler().getLargestGlobalError(),  TimeFormatter.formatTime(simulation.getElapsedTime()), TimeFormatter.formatTime(UnitRegistry.getTime()));
+                    logger.info("PROGRESS: {} time remaining - {} passed time in simulation",
+                            estimated, TimeFormatter.formatTime(simulation.getElapsedTime()));
+                    logger.info("SPEED   : {} ({},{}) epochs (increases, decreases) - {} (simulation time) per s(real time)",
+                            currentEpochs-previousEpochs, currentIncreases-previousIncreases, currentDecreases-previousDecreases, estimatedSpeed);
+                    logger.info("ERROR   : {} ({}) delta error (critical delta) - {} global error",
+                            simulation.getScheduler().getLargestLocalError().getValue(), simulation.getScheduler().getLocalErrorUpdate(), simulation.getScheduler().getLargestGlobalError());
                 }
             }
             previousTimeMillis = currentTimeMillis;

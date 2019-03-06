@@ -159,14 +159,17 @@ public class ConcentrationDeltaManager {
     }
 
     public void determineComparisionConcentrations() {
+        ConcentrationContainer bu = currentConcentrations.fullCopy();
         currentConcentrations = originalConcentrations.fullCopy();
         for (ConcentrationDelta delta : potentialDeltas) {
             // add to original (0) concentrations full delta (1) = 1
             double updatedConcentration = currentConcentrations.get(delta.getCellSubsection(), delta.getChemicalEntity()) + delta.getValue();
             if (updatedConcentration < 0.0) {
                 // add to half concentrations (0.5) half the delta (0.5) = 1
-                // TODO this may not be safe in every case but then determine concentrations should warn already
-                updatedConcentration = currentConcentrations.get(delta.getCellSubsection(), delta.getChemicalEntity()) + delta.getValue() * 0.5;
+                // TODO is does not really perform...
+                // the global error somehow approaches a constant value and is reduced until nearly 0 then cut and finally stabilizes itself
+                // this should be alright but is not desirable
+                updatedConcentration = bu.get(delta.getCellSubsection(), delta.getChemicalEntity()) + delta.getValue() * 0.5;
             }
             currentConcentrations.set(delta.getCellSubsection(), delta.getChemicalEntity(), updatedConcentration);
         }

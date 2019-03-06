@@ -48,7 +48,9 @@ public class MembraneFactory {
         List<Vector2D> sortedVectors = Vectors.sortByCloseness(factory.membraneVectors, vectorDirection);
         List<LineSegment> segments = Vectors.connectToSegments(sortedVectors);
         factory.associateToGraph(segments);
-        factory.fillInternalNodes();
+        if (graph.getNodes().size() > 1) {
+            factory.fillInternalNodes();
+        }
         factory.createPolygonForLinearMembrane(globalClipper, sortedVectors);
         factory.setupSubsectionRepresentations(factory.polygon);
         return factory.membrane;

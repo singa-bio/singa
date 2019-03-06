@@ -1,6 +1,7 @@
 package bio.singa.simulation.model.simulation;
 
 import bio.singa.features.formatter.TimeFormatter;
+import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.simulation.model.modules.UpdateModule;
 import bio.singa.simulation.model.modules.concentration.LocalError;
@@ -40,6 +41,9 @@ public class UpdateScheduler {
     private long timestepsDecreased = 0;
     private long timestepsIncreased = 0;
     private LocalError largestLocalError;
+    private UpdateModule localErrorModule;
+    private double localErrorUpdate;
+
     private double largestGlobalError;
 
     private CountDownLatch countDownLatch;
@@ -83,7 +87,6 @@ public class UpdateScheduler {
         timeStepAlteredInThisEpoch = false;
         previousError = 0;
         largestLocalError = LocalError.MINIMAL_EMPTY_ERROR;
-        largestGlobalError = 0.0;
         previousTimeStep = UnitRegistry.getTime();
         simulation.collectUpdatables();
         updatables = simulation.getUpdatables();
@@ -190,8 +193,8 @@ public class UpdateScheduler {
             } else {
                 // System.out.println("accepted global error: "+largestGlobalError+ " @ "+TimeFormatter.formatTime(UnitRegistry.getTime()));
                 globalErrorAcceptable = true;
-                this.largestGlobalError = largestGlobalError;
             }
+            this.largestGlobalError = largestGlobalError;
         }
 
     }
@@ -214,10 +217,20 @@ public class UpdateScheduler {
         return largestLocalError;
     }
 
-    public void setLargestLocalError(LocalError localError) {
+    public void setLargestLocalError(LocalError localError, UpdateModule associatedModule, double associatedConcentration) {
         if (localError.getValue() > largestLocalError.getValue()) {
             largestLocalError = localError;
+            localErrorModule = associatedModule;
+            localErrorUpdate = associatedConcentration;
         }
+    }
+
+    public UpdateModule getLocalErrorModule() {
+        return localErrorModule;
+    }
+
+    public double getLocalErrorUpdate() {
+        return MolarConcentration.concentrationToMolecules(localErrorUpdate).getValue().doubleValue();
     }
 
     public double getLargestGlobalError() {
@@ -292,7 +305,6 @@ public class UpdateScheduler {
      */
     public synchronized boolean interruptAllBut(Thread callingThread, UpdateModule callingModule) {
         // interrupt all threads but the calling thread and count down their latch
-
         if (!interrupted) {
             logger.debug("Module {} triggered interrupt.", callingModule);
             interrupted = true;

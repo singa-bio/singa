@@ -14,10 +14,10 @@ public class ComplexModification {
     public static ComplexModification SPLIT = new ComplexModification(Operation.SPLIT, null, null);
 
     public enum Operation {
-        ADD(" to "),
-        REMOVE(" from "),
-        REPLACE(" with "),
-        SPLIT("");
+        ADD("+"),
+        REMOVE("-"),
+        REPLACE("%"),
+        SPLIT("$");
 
         private String text;
 
@@ -174,11 +174,11 @@ public class ComplexModification {
     @Override
     public String toString() {
         if (operation.equals(Operation.REPLACE)) {
-            return operation + " " + modificationPosition + operation.getText() + modificator;
+            return operation + " " + modificationPosition + " with " + modificator;
         }
         if (operation.equals(Operation.REMOVE) && Objects.isNull(modificationPosition)) {
             return operation + " " + modificator;
         }
-        return operation + " " + modificator + operation.getText() + modificationPosition;
+        return operation + " " + modificator + " to " + modificationPosition;
     }
 }
