@@ -291,7 +291,7 @@ public class SmilesParser {
         // OrganicSymbol ::= 'B' 'r'? | 'C' 'l'? | 'N' | 'O' | 'P' | 'S' | 'F' | 'I'
         switch (currentSymbol) {
             case 'B': {
-                if (symbols.peek() == 'r') {
+                if (symbols.peek() != null && symbols.peek() == 'r') {
                     // Brom
                     dispose();
                     if (addLater) {
@@ -309,7 +309,7 @@ public class SmilesParser {
                 return true;
             }
             case 'C': {
-                if (symbols.peek() == 'l') {
+                if (symbols.peek() != null && symbols.peek() == 'l') {
                     // Chlor
                     dispose();
                     if (addLater) {
@@ -460,7 +460,7 @@ public class SmilesParser {
         }
 
         if (currentSymbol == 's') {
-            if (symbols.peek() == 'e') {
+            if (symbols.peek() != null && symbols.peek() == 'e') {
                 // parse selenium
                 dispose();
                 currentElement = ElementProvider.SELENIUM;
@@ -470,7 +470,7 @@ public class SmilesParser {
             }
             return false;
         } else if (currentSymbol == 'a') {
-            if (symbols.peek() == 's') {
+            if (symbols.peek() != null && symbols.peek() == 's') {
                 // parse arsenic
                 dispose();
                 currentElement = ElementProvider.ARSENIC;
@@ -517,7 +517,7 @@ public class SmilesParser {
                 poll();
                 return true;
             } else if (currentSymbol == 'T') {
-                if (symbols.peek() == 'H') {
+                if (symbols.peek() != null && symbols.peek() == 'H') {
                     addThisAndNext();
                     poll();
                     if (isInRage('1', '2')) {
@@ -525,7 +525,7 @@ public class SmilesParser {
                         poll();
                         return true;
                     }
-                } else if (symbols.peek() == 'B') {
+                } else if (symbols.peek() != null && symbols.peek() == 'B') {
                     addThisAndNext();
                     poll();
                     if (currentSymbol == '1') {
@@ -551,7 +551,7 @@ public class SmilesParser {
                     }
                 }
             } else if (currentSymbol == 'A') {
-                if (symbols.peek() == 'L') {
+                if (symbols.peek() != null && symbols.peek() == 'L') {
                     addThisAndNext();
                     poll();
                     if (isInRage('1', '2')) {
@@ -561,7 +561,7 @@ public class SmilesParser {
                     }
                 }
             } else if (currentSymbol == 'S') {
-                if (symbols.peek() == 'P') {
+                if (symbols.peek() != null && symbols.peek() == 'P') {
                     addThisAndNext();
                     poll();
                     if (isInRage('1', '3')) {
@@ -571,7 +571,7 @@ public class SmilesParser {
                     }
                 }
             } else if (currentSymbol == 'O') {
-                if (symbols.peek() == 'H') {
+                if (symbols.peek() != null && symbols.peek() == 'H') {
                     addThisAndNext();
                     poll();
                     if (currentSymbol == '1') {
@@ -888,7 +888,7 @@ public class SmilesParser {
     }
 
     private void closeBranch() {
-        if (symbols.peek() == '(') {
+        if (symbols.peek() != null && symbols.peek() == '(') {
             sameChainReference = true;
         }
         firstAtomInBranch = true;
