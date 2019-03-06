@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * The ConcentrationDeltaManager handles current concentrations of an updatable and the updates to those
@@ -140,39 +141,65 @@ public class ConcentrationDeltaManager {
     }
 
     public void setInterimAndUpdateCurrentConcentrations() {
-        currentConcentrations = originalConcentrations.fullCopy();
-        interimConcentrations = originalConcentrations.fullCopy();
-        for (ConcentrationDelta delta : potentialDeltas) {
-            double updatedHalfConcentration = currentConcentrations.get(delta.getCellSubsection(), delta.getChemicalEntity()) + delta.getValue() * 0.5;
-            double updatedFullConcentration = interimConcentrations.get(delta.getCellSubsection(), delta.getChemicalEntity()) + delta.getValue();
-            if (updatedFullConcentration < 0.0) {
-                if (MolarConcentration.concentrationToMolecules(Math.abs(delta.getValue())).getValue().doubleValue() < 0.1) {
-                    // prevent errors, the concentration will be zeroed when applying deltas
-                    updatedHalfConcentration = 0.0;
-                    updatedFullConcentration = 0.0;
+        boolean repeat;
+        do {
+            repeat = false;
+            currentConcentrations = originalConcentrations.fullCopy();
+            interimConcentrations = originalConcentrations.fullCopy();
+            for (ConcentrationDelta delta : potentialDeltas) {
+                // if delta would add a new entity do not consider it during stability evaluation
+                if (currentConcentrations.get(delta.getCellSubsection(), delta.getChemicalEntity()) == 0.0) {
+                    continue;
                 }
+                double updatedHalfConcentration = currentConcentrations.get(delta.getCellSubsection(), delta.getChemicalEntity()) + delta.getValue() * 0.5;
+                double updatedFullConcentration = interimConcentrations.get(delta.getCellSubsection(), delta.getChemicalEntity()) + delta.getValue();
+                if (updatedFullConcentration < 0.0) {
+                    capDeltas(delta.getModule(), delta);
+                    repeat = true;
+                    break;
+                }
+                currentConcentrations.set(delta.getCellSubsection(), delta.getChemicalEntity(), updatedHalfConcentration);
+                interimConcentrations.set(delta.getCellSubsection(), delta.getChemicalEntity(), updatedFullConcentration);
             }
-            currentConcentrations.set(delta.getCellSubsection(), delta.getChemicalEntity(), updatedHalfConcentration);
-            interimConcentrations.set(delta.getCellSubsection(), delta.getChemicalEntity(), updatedFullConcentration);
-        }
+        } while (repeat);
         potentialDeltas.clear();
     }
 
     public void determineComparisionConcentrations() {
-        ConcentrationContainer bu = currentConcentrations.fullCopy();
-        currentConcentrations = originalConcentrations.fullCopy();
-        for (ConcentrationDelta delta : potentialDeltas) {
-            // add to original (0) concentrations full delta (1) = 1
-            double updatedConcentration = currentConcentrations.get(delta.getCellSubsection(), delta.getChemicalEntity()) + delta.getValue();
-            if (updatedConcentration < 0.0) {
-                // add to half concentrations (0.5) half the delta (0.5) = 1
-                // TODO is does not really perform...
-                // the global error somehow approaches a constant value and is reduced until nearly 0 then cut and finally stabilizes itself
-                // this should be alright but is not desirable
-                updatedConcentration = bu.get(delta.getCellSubsection(), delta.getChemicalEntity()) + delta.getValue() * 0.5;
+        boolean repeat;
+        do {
+            repeat = false;
+            currentConcentrations = originalConcentrations.fullCopy();
+            for (ConcentrationDelta delta : potentialDeltas) {
+                // add to original (0) concentrations full delta (1) = 1
+                double updatedConcentration = currentConcentrations.get(delta.getCellSubsection(), delta.getChemicalEntity()) + delta.getValue();
+                if (updatedConcentration < 0.0) {
+                    // cap deltas such that the minimal value of the delta can be zero
+                    capDeltas(delta.getModule(), delta);
+                    repeat = true;
+                    break;
+                }
+                currentConcentrations.set(delta.getCellSubsection(), delta.getChemicalEntity(), updatedConcentration);
             }
-            currentConcentrations.set(delta.getCellSubsection(), delta.getChemicalEntity(), updatedConcentration);
+        } while (repeat);
+    }
+
+    private void capDeltas(UpdateModule module, ConcentrationDelta delta) {
+        double remainingConcentration = currentConcentrations.get(delta.getCellSubsection(), delta.getChemicalEntity());
+        List<ConcentrationDelta> affectedDeltas = potentialDeltas.stream()
+                .filter(element -> element.getModule().equals(module))
+                .collect(Collectors.toList());
+        double deltaValue = delta.getValue();
+        for (ConcentrationDelta affectedDelta : affectedDeltas) {
+            if (affectedDelta.equals(delta)) {
+                delta.setValue(-remainingConcentration);
+            } else {
+                // determine relationship
+                double factor = affectedDelta.getValue() / deltaValue;
+                affectedDelta.setValue(Math.signum(affectedDelta.getValue()) * remainingConcentration * factor);
+            }
         }
+
     }
 
     public double determineGlobalNumericalError() {

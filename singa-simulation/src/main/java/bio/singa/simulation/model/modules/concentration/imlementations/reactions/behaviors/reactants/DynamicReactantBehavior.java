@@ -5,6 +5,7 @@ import bio.singa.chemistry.entities.ComplexEntity;
 import bio.singa.chemistry.entities.ComplexModification;
 import bio.singa.mathematics.combinatorics.StreamPermutations;
 import bio.singa.simulation.model.agents.pointlike.Vesicle;
+import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.sections.CellTopology;
 import bio.singa.simulation.model.simulation.Updatable;
 
@@ -151,9 +152,9 @@ public class DynamicReactantBehavior implements ReactantBehavior {
             List<ReactantSet> sets = new ArrayList<>();
             if (dynamicComplex) {
                 // get binder and bindee
-                List<Reactant> binders = collectPossibleSubstrates(updatable, dynamicSubstrates.get(0));
+                List<Reactant> binders = determineAvailableSubstrates(updatable, dynamicSubstrates.get(0));
                 clearPreviousProducts(binders);
-                List<Reactant> bindees = collectPossibleSubstrates(updatable, dynamicSubstrates.get(1));
+                List<Reactant> bindees = determineAvailableSubstrates(updatable, dynamicSubstrates.get(1));
                 clearPreviousProducts(bindees);
                 // combine them using permutation
                 List<List<Reactant>> rawSubstrates = new ArrayList<>();
@@ -167,45 +168,45 @@ public class DynamicReactantBehavior implements ReactantBehavior {
                     ComplexEntity complexEntity = ComplexEntity.from(leftPart.getEntity(), rightPart.getEntity());
                     // add to previous products to prevent using any product again as a substrate in the same reaction
                     previousProducts.add(complexEntity);
-                    Reactant complexReactant = createTargetedReactant(leftPart, complexEntity);
+                    Reactant complexReactant = createTargetedProduct(leftPart, complexEntity);
                     List<Reactant> products = Collections.singletonList(complexReactant);
                     sets.add(new ReactantSet(substrates, products));
                 }
             } else {
                 List<List<Reactant>> possibleSubstrates = new ArrayList<>();
                 List<List<Reactant>> possibleProducts = new ArrayList<>();
-                if (updatable instanceof Vesicle) {
-                    throw new IllegalArgumentException("not implemented yet");
-                } else {
-                    // each dynamic substrate can result in a number of reactions
-                    splitEntity = false;
-                    for (DynamicChemicalEntity dynamicSubstrate : dynamicSubstrates) {
-                        List<Reactant> matchingSubstrates = collectPossibleSubstrates(updatable, dynamicSubstrate);
-                        // if any substrate cannot be found the reaction cannot happen
-                        if (matchingSubstrates.isEmpty()) {
-                            compositionCache.put(referencedEntities, Collections.emptyList());
-                            return Collections.emptyList();
-                        }
-                        // prepare corresponding products
-                        List<Reactant> resultingProducts = collectPossibleProducts(matchingSubstrates, dynamicSubstrate);
-                        if (splitEntity) {
-                            // resulting products has to be separated if any splitting took place
-                            // this hurts to look at
-                            // count substrate
-                            int j = 0;
-                            for (int i = 0; i < resultingProducts.size(); i = i + 2) {
-                                List<Reactant> splitProducts = new ArrayList<>();
-                                splitProducts.add(resultingProducts.get(i));
-                                splitProducts.add(resultingProducts.get(i + 1));
-                                possibleProducts.add(splitProducts);
-                                possibleSubstrates.add(Collections.singletonList(matchingSubstrates.get(j)));
-                                j++;
-                            }
-                        } else {
-                            possibleSubstrates.add(matchingSubstrates);
-                            possibleProducts.add(resultingProducts);
-                        }
+//                if (updatable instanceof Vesicle) {
+//                    throw new IllegalArgumentException("not implemented yet");
+//                } else {
+                // each dynamic substrate can result in a number of reactions
+                splitEntity = false;
+                for (DynamicChemicalEntity dynamicSubstrate : dynamicSubstrates) {
+                    List<Reactant> matchingSubstrates = determineAvailableSubstrates(updatable, dynamicSubstrate);
+                    // if any substrate cannot be found the reaction cannot happen
+                    if (matchingSubstrates.isEmpty()) {
+                        compositionCache.put(referencedEntities, Collections.emptyList());
+                        return Collections.emptyList();
                     }
+                    // prepare corresponding products
+                    List<Reactant> resultingProducts = modifySubstrateToProduct(matchingSubstrates, dynamicSubstrate);
+                    if (splitEntity) {
+                        // resulting products has to be separated if any splitting took place
+                        // this hurts to look at
+                        // count substrate
+                        int j = 0;
+                        for (int i = 0; i < resultingProducts.size(); i = i + 2) {
+                            List<Reactant> splitProducts = new ArrayList<>();
+                            splitProducts.add(resultingProducts.get(i));
+                            splitProducts.add(resultingProducts.get(i + 1));
+                            possibleProducts.add(splitProducts);
+                            possibleSubstrates.add(Collections.singletonList(matchingSubstrates.get(j)));
+                            j++;
+                        }
+                    } else {
+                        possibleSubstrates.add(matchingSubstrates);
+                        possibleProducts.add(resultingProducts);
+                    }
+                    //}
                     if (splitEntity) {
                         for (Reactant staticSubstrate : staticSubstrates) {
                             for (List<Reactant> possibleSubstrate : possibleSubstrates) {
@@ -254,8 +255,9 @@ public class DynamicReactantBehavior implements ReactantBehavior {
     }
 
 
-    private List<Reactant> collectPossibleSubstrates(Updatable updatable, DynamicChemicalEntity dynamicSubstrate) {
+    private List<Reactant> determineAvailableSubstrates(Updatable updatable, DynamicChemicalEntity dynamicSubstrate) {
         List<Reactant> possibleSubstrates = new ArrayList<>();
+        // check own compartments
         // check each allowed topology
         for (CellTopology possibleTopology : dynamicSubstrate.getPossibleTopologies()) {
             // and filter by composition of the entity
@@ -265,10 +267,28 @@ public class DynamicReactantBehavior implements ReactantBehavior {
                 possibleSubstrates.add(new Reactant(substrateEntity, SUBSTRATE, possibleTopology));
             }
         }
+        if (updatable instanceof Vesicle) {
+            // check foreign compartments
+            Vesicle vesicle = (Vesicle) updatable;
+            // check each allowed topology
+            for (CellTopology possibleTopology : dynamicSubstrate.getPossibleTopologies()) {
+                // only look at inner compartments of nodes
+                if (possibleTopology.equals(CellTopology.INNER)) {
+                    for (AutomatonNode node : vesicle.getAssociatedNodes().keySet()) {
+                        // and filter by composition of the entity
+                        List<ChemicalEntity> substrateEntities = dynamicSubstrate.getMatchingEntities(node, possibleTopology);
+                        // add remaining entities as possible substrates
+                        for (ChemicalEntity substrateEntity : substrateEntities) {
+                            possibleSubstrates.add(new Reactant(substrateEntity, SUBSTRATE, possibleTopology));
+                        }
+                    }
+                }
+            }
+        }
         return possibleSubstrates;
     }
 
-    private List<Reactant> collectPossibleProducts(List<Reactant> matchingSubstrates, DynamicChemicalEntity dynamicSubstrate) {
+    private List<Reactant> modifySubstrateToProduct(List<Reactant> matchingSubstrates, DynamicChemicalEntity dynamicSubstrate) {
         List<Reactant> resultingProducts = new ArrayList<>();
         // for each substrate
         for (Reactant matchingSubstrate : matchingSubstrates) {
@@ -289,8 +309,8 @@ public class DynamicReactantBehavior implements ReactantBehavior {
                 splitEntity = true;
                 ComplexEntity complexEntity = (ComplexEntity) entity;
                 // handle left split
-                resultingProducts.add(createTargetedReactant(matchingSubstrate, complexEntity.getLeft().getData()));
-                resultingProducts.add(createTargetedReactant(matchingSubstrate, complexEntity.getRight().getData()));
+                resultingProducts.add(createTargetedProduct(matchingSubstrate, complexEntity.getLeft().getData()));
+                resultingProducts.add(createTargetedProduct(matchingSubstrate, complexEntity.getRight().getData()));
             } else {
                 resultingProducts.add(new Reactant(entity, PRODUCT, matchingSubstrate.getPreferredTopology()));
             }
@@ -306,7 +326,7 @@ public class DynamicReactantBehavior implements ReactantBehavior {
      * @param productEntity The entity that should be converted to a reactant.
      * @return The resulting reactant
      */
-    private Reactant createTargetedReactant(Reactant originalSubstrate, ChemicalEntity productEntity) {
+    private Reactant createTargetedProduct(Reactant originalSubstrate, ChemicalEntity productEntity) {
         if (productEntity instanceof ComplexEntity) {
             // if complex
             ComplexEntity complex = ((ComplexEntity) productEntity);

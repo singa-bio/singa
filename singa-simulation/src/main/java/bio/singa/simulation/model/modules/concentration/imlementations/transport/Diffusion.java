@@ -85,34 +85,12 @@ public class Diffusion extends ConcentrationBasedModule<EntityDeltaFunction> {
         double concentration = 0;
         // traverse each neighbouring cells
         for (AutomatonNode neighbour : node.getNeighbours()) {
-
             if (neighbour.getConcentrationContainer().getReferencedSubsections().contains(subsection)) {
-                // if the neighbour actually contains the same subsection, that is currently handled
-                if (chemicalEntityIsNotMembraneAnchored() || bothAreNonMembrane(node, neighbour) || bothAreMembrane(node, neighbour)) {
-                    // if entity is not anchored in membrane
-                    // if current is membrane and neighbour is membrane
-                    // if current is non-membrane and neighbour is non-membrane
-                    // classical diffusion
-                    // if the neighbour actually contains the same subsection
-                    double availableConcentration = neighbour.getConcentrationContainer().get(subsection, entity);
-                    concentration += availableConcentration;
-                    numberOfNeighbors++;
-
-                } else {
-                    // if current is non-membrane and neighbour is membrane
-                    if (neighborIsPotentialSource(node, neighbour)) {
-                        // leaving amount stays unchanged, but entering concentration is relevant
-                        double availableConcentration = neighbour.getConcentrationContainer().get(subsection, entity);
-                        concentration += availableConcentration;
-                    }
-                    // if current is membrane and neighbour is non-membrane
-                    if (neighborIsPotentialTarget(node, neighbour)) {
-                        // assert effect on leaving concentration but entering concentration stays unchanged
-                        numberOfNeighbors++;
-                    }
-                }
+                // if the neighbour actually contains the same subsection
+                double availableConcentration = neighbour.getConcentrationContainer().get(subsection, entity);
+                concentration += availableConcentration;
+                numberOfNeighbors++;
             }
-
         }
         // entering amount
         final double enteringConcentration = concentration * diffusivity;
@@ -126,26 +104,6 @@ public class Diffusion extends ConcentrationBasedModule<EntityDeltaFunction> {
 
     private boolean onlyForReferencedEntities(ConcentrationContainer container) {
         return getReferencedEntities().contains(supplier.getCurrentEntity());
-    }
-
-    private boolean chemicalEntityIsNotMembraneAnchored() {
-        return !supplier.getCurrentEntity().isMembraneAnchored();
-    }
-
-    private boolean bothAreNonMembrane(AutomatonNode currentNode, AutomatonNode neighbour) {
-        return !currentNode.getCellRegion().hasMembrane() && !neighbour.getCellRegion().hasMembrane();
-    }
-
-    private boolean bothAreMembrane(AutomatonNode currentNode, AutomatonNode neighbour) {
-        return currentNode.getCellRegion().hasMembrane() && neighbour.getCellRegion().hasMembrane();
-    }
-
-    private boolean neighborIsPotentialTarget(AutomatonNode currentNode, AutomatonNode neighbour) {
-        return !currentNode.getCellRegion().hasMembrane() && neighbour.getCellRegion().hasMembrane();
-    }
-
-    private boolean neighborIsPotentialSource(AutomatonNode currentNode, AutomatonNode neighbour) {
-        return currentNode.getCellRegion().hasMembrane() && !neighbour.getCellRegion().hasMembrane();
     }
 
     @Override

@@ -85,7 +85,7 @@ class NthOrderReactionTest {
                 .build();
 
         // create reaction
-        ReactionBuilder.dynamicReactants(simulation)
+        ReactionBuilder.staticReactants(simulation)
                 .addSubstrate(dpo, 2)
                 .addProduct(ndo, 4)
                 .addProduct(oxygen)

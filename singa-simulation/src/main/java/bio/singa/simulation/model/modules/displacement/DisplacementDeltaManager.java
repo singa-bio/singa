@@ -24,7 +24,7 @@ public class DisplacementDeltaManager {
     /**
      * The list of potential deltas.
      */
-    private List<DisplacementDelta> potentialSpatialDeltas;
+    private final List<DisplacementDelta> potentialSpatialDeltas;
 
     /**
      * The current position.
@@ -67,13 +67,16 @@ public class DisplacementDeltaManager {
 
     /**
      * Returns a specific delta applied by the given module.
+     *
      * @param module The module.
      * @return The displacement delta.
      */
     public DisplacementDelta getPotentialDisplacementDelta(DisplacementBasedModule module) {
-        for (DisplacementDelta potentialSpatialDelta : potentialSpatialDeltas) {
-            if (potentialSpatialDelta.getModule().equals(module)) {
-                return potentialSpatialDelta;
+        synchronized (potentialSpatialDeltas) {
+            for (DisplacementDelta potentialSpatialDelta : potentialSpatialDeltas) {
+                if (potentialSpatialDelta.getModule().equals(module)) {
+                    return potentialSpatialDelta;
+                }
             }
         }
         return null;

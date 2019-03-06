@@ -7,6 +7,7 @@ import bio.singa.simulation.model.sections.CellTopology;
 import bio.singa.simulation.model.simulation.Updatable;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -62,10 +63,13 @@ public class DynamicChemicalEntity extends AbstractChemicalEntity {
     }
 
     public List<ChemicalEntity> getMatchingEntities(Updatable updatable, CellTopology topology) {
-        Set<ChemicalEntity> entities = updatable.getConcentrationContainer().getPool(topology).getValue().getReferencedEntities();
-        return EntityReducer.apply(entities, composition);
+        if (updatable.getConcentrationContainer().getPool(topology) != null) {
+            Set<ChemicalEntity> entities = updatable.getConcentrationContainer().getPool(topology).getValue().getReferencedEntities();
+            return EntityReducer.apply(entities, composition);
+        } else {
+            return Collections.emptyList();
+        }
     }
-
 
 
     public static class Builder extends AbstractChemicalEntity.Builder<DynamicChemicalEntity, Builder> {
