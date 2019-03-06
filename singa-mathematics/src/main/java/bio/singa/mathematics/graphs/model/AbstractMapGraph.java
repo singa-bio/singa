@@ -43,8 +43,7 @@ public abstract class AbstractMapGraph<NodeType extends Node<NodeType, VectorTyp
     }
 
     /**
-     * Creates a new Graph object with an initial load capacity for the node and
-     * edge list.
+     * Creates a new Graph object with an initial load capacity for the node and edge list.
      *
      * @param nodeCapacity The initial capacity for the node list.
      * @param edgeCapacity The initial capacity for the edge list.
@@ -101,6 +100,38 @@ public abstract class AbstractMapGraph<NodeType extends Node<NodeType, VectorTyp
         nodes.remove(identifier);
         edges.entrySet().removeIf(edge -> edge.getValue().containsNode(nodeToBeRemoved));
         return nodeToBeRemoved;
+    }
+
+    public EdgeType removeEdge(EdgeType edgeToRemove) {
+        EdgeType correspondingEdge = edges.entrySet().stream()
+                .filter(edge -> edge.getValue().equals(edgeToRemove))
+                .map(Map.Entry::getValue)
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Could not remove edge " + edgeToRemove + "."));
+        // remove references between source and target
+        NodeType source = correspondingEdge.getSource();
+        NodeType target = correspondingEdge.getTarget();
+        source.getNeighbours().remove(target);
+        target.getNeighbours().remove(source);
+        edges.entrySet().removeIf(edge -> edge.getValue().equals(correspondingEdge));
+        nextEdgeIdentifier--;
+        return correspondingEdge;
+    }
+
+    public EdgeType removeEdge(int edgeIdentifierToRemove) {
+        EdgeType correspondingEdge = edges.entrySet().stream()
+                .filter(edge -> edge.getValue().getIdentifier() == edgeIdentifierToRemove)
+                .map(Map.Entry::getValue)
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Could not remove edge with identifier " + edgeIdentifierToRemove + "."));
+        // remove references between source and target
+        NodeType source = correspondingEdge.getSource();
+        NodeType target = correspondingEdge.getTarget();
+        source.getNeighbours().remove(target);
+        target.getNeighbours().remove(source);
+        edges.entrySet().removeIf(edge -> edge.getValue().equals(correspondingEdge));
+        nextEdgeIdentifier--;
+        return correspondingEdge;
     }
 
 
