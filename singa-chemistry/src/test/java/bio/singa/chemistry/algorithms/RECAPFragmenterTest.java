@@ -6,17 +6,17 @@ import bio.singa.mathematics.graphs.model.GenericNode;
 import bio.singa.structure.model.molecules.MoleculeGraph;
 import org.junit.jupiter.api.Test;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 class RECAPFragmenterTest {
 
     @Test
     void fragment() {
-
-        Set<MoleculeGraph> compounds = new HashSet<>();
-        compounds.add(SmilesParser.parse("CC1=NN=C(S1)SCC2=C(N3C(C(C3=O)NC(=O)CN4C=NN=N4)SC2)C(=O)O"));
-        RECAPFragmenter recapFragmenter = new RECAPFragmenter(compounds);
-        DirectedGraph<GenericNode<MoleculeGraph>> fragments = recapFragmenter.getFragmentGraph();
+        MoleculeGraph molecule = SmilesParser.parse("CCCCN(C(=O)N(C)C(=[OH]C1CC1)N(C)Cl)c2ccccc2");
+        RECAPFragmenter recapFragmenter = new RECAPFragmenter(molecule);
+        DirectedGraph<GenericNode<MoleculeGraph>> fragments = recapFragmenter.getFragmentSpace();
+        List<MoleculeGraph> uniqueList = new ArrayList<>(recapFragmenter.getUniqueFragments());
+        System.out.println();
     }
 }
