@@ -11,6 +11,7 @@ import bio.singa.structure.model.oak.BondType;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author cl
@@ -117,5 +118,11 @@ public class MoleculeGraph extends AbstractMapGraph<MoleculeAtom, MoleculeBond, 
         List<MoleculeAtom> thisNodes = new ArrayList<>(getNodes());
         List<MoleculeAtom> thatNodes = new ArrayList<>(that.getNodes());
         return thisEdges.equals(thatEdges) && thisNodes.equals(thatNodes);
+    }
+
+    @Override
+    public int hashCode() {
+        // TODO a weird conversion to array lists is done here to generate hashes, this must be solvable better?
+        return Objects.hash(new ArrayList<>(getNodes()), new ArrayList<>(getEdges()));
     }
 }

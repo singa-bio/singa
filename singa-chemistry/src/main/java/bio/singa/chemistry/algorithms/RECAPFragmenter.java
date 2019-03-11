@@ -40,20 +40,40 @@ public class RECAPFragmenter {
         return uniqueFragments;
     }
 
-    public void initRules() {
+    private void initRules() {
         // 1 - amide rule
         MoleculeGraph amideGraph = SmilesParser.parse("CC(=O)N(C)C");
         fragmentationRules.put(1, new FragmentationRule("amide", amideGraph, Stream.of(3).collect(Collectors.toSet()), 0, 4, 5));
         // 2 - ester rule
         MoleculeGraph esterGraph = SmilesParser.parse("CC(=O)OC");
         fragmentationRules.put(2, new FragmentationRule("ester", esterGraph, Stream.of(3).collect(Collectors.toSet()), 0, 4));
-//        // 3 - amine rule
+        // 3 - amine rule
         MoleculeGraph amineGraph = SmilesParser.parse("CN(C)C");
         fragmentationRules.put(3, new FragmentationRule("amine", amineGraph, Stream.of(0, 1, 2).collect(Collectors.toSet()), 0, 2, 3));
         // 4 - urea rule
         MoleculeGraph ureaGraph = SmilesParser.parse("CN(C)C(=O)N(C)C");
         fragmentationRules.put(4, new FragmentationRule("urea", ureaGraph, Stream.of(4, 5).collect(Collectors.toSet()), 0, 2, 6, 7));
-        // TODO implement remaining fragmentation rules here
+        // 5 - ether rule
+        MoleculeGraph etherGraph = SmilesParser.parse("COC");
+        fragmentationRules.put(5, new FragmentationRule("ether", etherGraph, Stream.of(0, 1).collect(Collectors.toSet()), 0, 2));
+        // 6 - olefin
+        MoleculeGraph olefinGraph = SmilesParser.parse("CC(=C(C)C)C");
+        fragmentationRules.put(6, new FragmentationRule("olefin", olefinGraph, Stream.of(1).collect(Collectors.toSet()), 0, 3, 4, 5));
+        // 7 - quaternary nitrogen
+        MoleculeGraph quartNitrogenGraph = SmilesParser.parse("C[N+](C)(C)C");
+        fragmentationRules.put(7, new FragmentationRule("quaternary nitrogen", quartNitrogenGraph, Stream.of(0, 1, 2, 3).collect(Collectors.toSet()), 0, 2, 3, 4));
+        // 8 - aromatic nitrogen, aliphatic chain
+        MoleculeGraph aromaticNitrogenGraph = SmilesParser.parse("CC(C)(C)N1C=NC=N1");
+        fragmentationRules.put(8, new FragmentationRule("aromatic nitrogen to aliphatic chain", aromaticNitrogenGraph, Stream.of(7).collect(Collectors.toSet()), 0, 1, 2, 3));
+        // 9 - lactam nitrogen, aliphatic carbon
+        MoleculeGraph lactamNitrogenGraph = SmilesParser.parse("CC(C)(C)N1CCCCC1=O");
+        fragmentationRules.put(9, new FragmentationRule("lactam nitrogen to aliphatic carbon", lactamNitrogenGraph, Stream.of(9).collect(Collectors.toSet()), 0, 1, 2, 3));
+        // 10 - two aromatic carbons systems
+        MoleculeGraph aromaticCarbonsGraph = SmilesParser.parse("C1=CC=C(C=C1)C2=CC=NC=C2");
+        fragmentationRules.put(10, new FragmentationRule("aromatic carbon to aromatic carbon", aromaticCarbonsGraph, Stream.of(12).collect(Collectors.toSet())));
+        // 11 - sulphonamide graph
+        MoleculeGraph sulfonAmideGraph = SmilesParser.parse("CN(C)S(=O)(=O)C");
+        fragmentationRules.put(11, new FragmentationRule("sulphonamide", sulfonAmideGraph, Stream.of(3).collect(Collectors.toSet()), 0, 2, 6));
     }
 
     private void fragment() {
@@ -83,7 +103,7 @@ public class RECAPFragmenter {
                 }
             }
         }
-        logger.info("fragmentation yielded {} unique uniqueFragments in total", fragmentSpace.getNodes().size());
+        logger.info("fragmentation yielded {} unique fragments in total", fragmentSpace.getNodes().size());
     }
 
     public DirectedGraph<GenericNode<MoleculeGraph>> getFragmentSpace() {
@@ -161,15 +181,14 @@ public class RECAPFragmenter {
                         if (disconnectedSubgraphs.size() > 1) {
                             for (MoleculeGraph disconnectedSubgraph : disconnectedSubgraphs) {
                                 // TODO for some reason uniqueness is not guaranteed by set representation and this nasty stream check has to be done :(
-                                if (uniqueFragments.stream()
-                                        .noneMatch(fragment -> fragment.equals(disconnectedSubgraph))) {
+                                if (!uniqueFragments.contains(disconnectedSubgraph)) {
                                     GenericNode<MoleculeGraph> successor = new GenericNode<>(fragmentSpace.nextNodeIdentifier(), disconnectedSubgraph);
                                     fragmentSpace.addNode(successor);
                                     fragmentSpace.addEdgeBetween(currentNode, successor);
                                     uniqueFragments.add(disconnectedSubgraph);
                                 }
                             }
-                            logger.info("new uniqueFragments produced: {}", disconnectedSubgraphs);
+                            logger.info("new fragments produced: {}", disconnectedSubgraphs);
                         }
                     }
                 }

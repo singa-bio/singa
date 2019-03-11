@@ -114,7 +114,6 @@ public abstract class AbstractMapGraph<NodeType extends Node<NodeType, VectorTyp
         source.getNeighbours().remove(target);
         target.getNeighbours().remove(source);
         edges.entrySet().removeIf(edge -> edge.getValue().equals(correspondingEdge));
-        nextEdgeIdentifier--;
         return correspondingEdge;
     }
 
@@ -130,7 +129,6 @@ public abstract class AbstractMapGraph<NodeType extends Node<NodeType, VectorTyp
         source.getNeighbours().remove(target);
         target.getNeighbours().remove(source);
         edges.entrySet().removeIf(edge -> edge.getValue().equals(correspondingEdge));
-        nextEdgeIdentifier--;
         return correspondingEdge;
     }
 
