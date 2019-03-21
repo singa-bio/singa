@@ -25,6 +25,11 @@ public class MoleculeBond extends AbstractEdge<MoleculeAtom> {
         this.type = type;
     }
 
+    public MoleculeBond(MoleculeBond moleculeBond) {
+        super(moleculeBond);
+        type = moleculeBond.type;
+    }
+
     public MoleculeBondType getType() {
         return type;
     }
@@ -45,5 +50,10 @@ public class MoleculeBond extends AbstractEdge<MoleculeAtom> {
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), type);
+    }
+
+    @Override
+    public MoleculeBond getCopy() {
+        return new MoleculeBond(this);
     }
 }

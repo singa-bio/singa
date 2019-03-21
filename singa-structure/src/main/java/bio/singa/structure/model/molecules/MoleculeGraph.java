@@ -88,7 +88,7 @@ public class MoleculeGraph extends AbstractMapGraph<MoleculeAtom, MoleculeBond, 
         for (MoleculeAtom node : getNodes()) {
             copy.addNode(new MoleculeAtom(node.getIdentifier(),
                     new Vector2D(node.getPosition().getElements()),
-                    ElementProvider.getElementBySymbol(node.getElement().getSymbol()).orElse(ElementProvider.UNKOWN)));
+                    node.getElement()));
         }
         // copy each edge
         for (MoleculeBond edge : getEdges()) {

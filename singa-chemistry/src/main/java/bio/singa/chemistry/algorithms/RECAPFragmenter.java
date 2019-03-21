@@ -21,6 +21,16 @@ import java.util.stream.Stream;
 
 import static bio.singa.structure.algorithms.molecules.MoleculeIsomorphismFinder.BondConditions.isSameType;
 
+/**
+ * An enhanced implementation of the RECAP fragmentation algorithm, according to:
+ * <pre>
+ * Lewell, XQ, Judd, DB, Watson, SP, Hann, MM (1998). RECAP--retrosynthetic combinatorial analysis procedure: a powerful
+ * new technique for identifying privileged molecular fragments with useful applications in combinatorial chemistry. J
+ * Chem Inf Comput Sci, 38, 3:511-22.
+ * </pre>
+ * The implementation here uses a depth-first based fragmentation, such that a fragmentation graph is retreived that
+ * contains all possible fragments.
+ */
 public class RECAPFragmenter {
 
     private static final Logger logger = LoggerFactory.getLogger(RECAPFragmenter.class);
@@ -34,10 +44,6 @@ public class RECAPFragmenter {
         this.molecule = molecule;
         initRules();
         fragment();
-    }
-
-    public Set<MoleculeGraph> getUniqueFragments() {
-        return uniqueFragments;
     }
 
     private void initRules() {
@@ -86,22 +92,22 @@ public class RECAPFragmenter {
         fragmentSpace.addNode(rootNode);
         stack.add(rootNode);
         visitedNodes.add(rootNode.getIdentifier());
+
         // depth-first search strategy to build fragment graph
         while (!stack.isEmpty()) {
 
             GenericNode<MoleculeGraph> currentNode = stack.pop();
-
-            // fragment current node with all rules
             fragmentationRules.forEach((integer, fragmentationRule) -> fragmentationRule.applyTo(currentNode));
 
             List<GenericNode<MoleculeGraph>> neighbours = currentNode.getNeighbours();
             for (int i = 0; i < neighbours.size(); i++) {
                 GenericNode<MoleculeGraph> neighbor = neighbours.get(i);
                 if (!visitedNodes.contains(neighbor.getIdentifier())) {
+                    // fragment current node with all rules
                     stack.add(neighbor);
-                    visitedNodes.add(neighbor.getIdentifier());
                 }
             }
+            visitedNodes.add(currentNode.getIdentifier());
         }
         logger.info("fragmentation yielded {} unique fragments in total", fragmentSpace.getNodes().size());
     }
@@ -110,6 +116,13 @@ public class RECAPFragmenter {
         return fragmentSpace;
     }
 
+    public Set<MoleculeGraph> getUniqueFragments() {
+        return uniqueFragments;
+    }
+
+    /**
+     * A class that describes the fragmentation rules defined by the RECAP algorithm.
+     */
     private class FragmentationRule {
         private String name;
         private MoleculeGraph fragmentGraph;
@@ -131,7 +144,7 @@ public class RECAPFragmenter {
                 if (equivalentAtomSet.contains(atom1.getIdentifier()) && !atom2.getElement().equals(ElementProvider.UNKOWN)) {
                     return true;
                 } else {
-                    return atom1.getElement().equals(atom2.getElement());
+                    return atom1.getElement().getSymbol().equals(atom2.getElement().getSymbol());
                 }
             };
         }
@@ -171,16 +184,42 @@ public class RECAPFragmenter {
                     Optional<MoleculeBond> edgeToRemove = moleculeGraph.getEdgeBetween(moleculeGraph.getNode(sourceToCleave), moleculeGraph.getNode(targetToCleave));
                     if (edgeToRemove.isPresent()) {
 
-                        // TODO implement routine to store fragmentation information at atoms where bonds were cut here
+                        // change isotopic state of cut elements to maintain chemical environment information
+                        MoleculeBond bondToRemove = edgeToRemove.get();
+                        MoleculeAtom sourceAtom = bondToRemove.getSource();
+                        MoleculeAtom targetAtom = bondToRemove.getTarget();
+                        int electronsGained;
+                        switch (bondToRemove.getType()) {
+                            case SINGLE_BOND:
+                                electronsGained = 1;
+                                break;
+                            case DOUBLE_BOND:
+                                electronsGained = 2;
+                                break;
+                            case TRIPLE_BOND:
+                                electronsGained = 3;
+                                break;
+                            case QUADRUPLE_BOND:
+                                electronsGained = 4;
+                                break;
+                            default:
+                                electronsGained = 1;
+                        }
+                        sourceAtom.setElement(sourceAtom.getElement().asAnion(electronsGained));
+                        targetAtom.setElement(targetAtom.getElement().asAnion(electronsGained));
 
                         // remove cleavage bond
-                        moleculeGraph.removeEdge(edgeToRemove.get());
+                        moleculeGraph.removeEdge(bondToRemove);
 
                         // check if new fragmentation was achieved
                         List<MoleculeGraph> disconnectedSubgraphs = DisconnectedSubgraphFinder.findDisconnectedSubgraphs(moleculeGraph);
                         if (disconnectedSubgraphs.size() > 1) {
                             for (MoleculeGraph disconnectedSubgraph : disconnectedSubgraphs) {
-                                // TODO for some reason uniqueness is not guaranteed by set representation and this nasty stream check has to be done :(
+                                // ignore single atom fragments
+                                if (disconnectedSubgraph.getNodes().size() == 1) {
+                                    logger.debug("ignoring single atom fragment {}", disconnectedSubgraph);
+                                    continue;
+                                }
                                 if (!uniqueFragments.contains(disconnectedSubgraph)) {
                                     GenericNode<MoleculeGraph> successor = new GenericNode<>(fragmentSpace.nextNodeIdentifier(), disconnectedSubgraph);
                                     fragmentSpace.addNode(successor);

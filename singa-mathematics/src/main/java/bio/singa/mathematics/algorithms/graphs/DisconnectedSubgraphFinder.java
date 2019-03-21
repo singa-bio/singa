@@ -146,9 +146,10 @@ public class DisconnectedSubgraphFinder<NodeType extends Node<NodeType, VectorTy
             // create and add edges for the nodes (preserving edge identifier)
             List<EdgeType> edges = edgesOfSubgraphs.get(i);
             for (EdgeType edge : edges) {
+                EdgeType edgeCopy = edge.getCopy();
                 NodeType source = subgraph.getNode(edge.getSource().getIdentifier());
                 NodeType target = subgraph.getNode(edge.getTarget().getIdentifier());
-                subgraph.addEdgeBetween(edge.getIdentifier(), source, target);
+                subgraph.addEdgeBetween(edgeCopy, source, target);
             }
             // add to list of subgraphs
             subgraphs.add(subgraph);
