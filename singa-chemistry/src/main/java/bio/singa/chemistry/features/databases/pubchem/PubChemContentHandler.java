@@ -20,33 +20,26 @@ class PubChemContentHandler implements ContentHandler {
     // species attributes
     private PubChemIdentifier pubChemIdentifier;
     private String name;
-    private String smilesRepresentation;
-    private double molarMass;
-    private double logP;
 
     // parser attributes
     private String currentTag;
 
-    // reading name
-    private boolean inRecordTitle;
-    private boolean inRecordTitleInformation;
-
     // reading SMILES
-    private boolean inCanonicalSMILES;
-    private boolean inCanonicalSMILESInformation;
+    private String smiles;
+    private boolean inSmiles;
 
     // reading molar mass
-    private boolean inComputedProperties;
-    private boolean inMolecularWeightInformation;
+    private double molarMass;
+    private boolean inMolarMass;
+
+    // reading logP value
+    private double logP;
+    private boolean inLogP;
 
     // reading additional identifiers
     private List<Identifier> identifiers;
     private boolean inSynonyms;
-    private boolean inSynonymsInformation;
 
-    // reading logP value
-    private boolean inLogP;
-    private boolean inLogPInformation;
 
     public PubChemContentHandler() {
         currentTag = "";
@@ -55,12 +48,18 @@ class PubChemContentHandler implements ContentHandler {
 
     public SmallMolecule getSpecies() {
         SmallMolecule species = SmallMolecule.create(pubChemIdentifier.getContent())
-                .assignFeature(new MolarMass(molarMass, PubChemDatabase.evidence))
-                .assignFeature(new Smiles(smilesRepresentation, PubChemDatabase.evidence))
-                .assignFeature(new LogP(logP, PubChemDatabase.evidence))
                 .build();
         if (name != null) {
             species.addName(name);
+        }
+        if (molarMass != 0.0) {
+            species.setFeature(new MolarMass(molarMass, PubChemDatabase.evidence));
+        }
+        if (logP != 0.0) {
+            species.setFeature(new LogP(logP, PubChemDatabase.evidence));
+        }
+        if (smiles != null && !smiles.isEmpty()) {
+            species.setFeature(new Smiles(smiles, PubChemDatabase.evidence));
         }
         identifiers.forEach(species::addAdditionalIdentifier);
         return species;
@@ -69,70 +68,56 @@ class PubChemContentHandler implements ContentHandler {
 
     @Override
     public void characters(char[] ch, int start, int length) {
-
         switch (currentTag) {
             case "RecordNumber": {
                 // set pubchem identifier
                 pubChemIdentifier = new PubChemIdentifier("CID:" + new String(ch, start, length));
                 break;
             }
+            case "RecordTitle": {
+                // set name
+                name = new String(ch, start, length);
+            }
             case "TOCHeading": {
                 String value = new String(ch, start, length);
                 switch (value) {
-                    case "Record Title":
-                        inRecordTitle = true;
+                    case "Molecular Weight":
+                        inMolarMass = true;
                         break;
                     case "Canonical SMILES":
-                        inCanonicalSMILES = true;
-                        break;
-                    case "Computed Properties":
-                        inComputedProperties = true;
+                        inSmiles = true;
                         break;
                     case "Depositor-Supplied Synonyms":
                         inSynonyms = true;
                         break;
-                    case "LogP":
+                    case "Octanol/Water Partition Coefficient":
                         inLogP = true;
                         break;
                 }
                 break;
             }
-            case "StringValue": {
-                if (inRecordTitle && inRecordTitleInformation) {
-                    // set name
-                    name = new String(ch, start, length);
-                    inRecordTitle = false;
-                    inRecordTitleInformation = false;
-                } else if (inCanonicalSMILES && inCanonicalSMILESInformation) {
-                    // set smiles
-                    smilesRepresentation = new String(ch, start, length);
-                    inCanonicalSMILES = false;
-                    inCanonicalSMILESInformation = false;
-                } else if (inComputedProperties) {
-                    // set logP
-                    if ("Molecular Weight".equals(new String(ch, start, length))) {
-                        inMolecularWeightInformation = true;
-                    }
-                } else if (inLogP && inLogPInformation) {
-                    // set logP
-                    String logPString = new String(ch, start, length);
-                    // explicitly stated as log KOW
-                    if (logPString.contains("log Kow")) {
-                        // remove "non double characters" (very simple for now)
-                        String cleanedString = logPString.replaceAll("[^0-9.]", "");
-                        logP = Double.parseDouble(cleanedString);
-                        inLogP = false;
-                        inLogPInformation = false;
-                    } else if (logPString.matches("[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?")) {
-                        logP = Double.parseDouble(logPString);
-                        inLogP = false;
-                        inLogPInformation = false;
-                    }
+            case "Name": {
+                String value = new String(ch, start, length);
+                switch (value) {
+                    case "Depositor-Supplied Synonyms":
+                        inSynonyms = true;
+                        break;
                 }
                 break;
             }
-            case "StringValueList": {
-                if (inSynonyms && inSynonymsInformation) {
+            case "String": {
+                if (inSmiles) {
+                    // set smiles
+                    smiles = new String(ch, start, length);
+                    inSmiles = false;
+                } else if (inLogP) {
+                    // set logP
+                    String logPString = new String(ch, start, length);
+                    if (logPString.matches("[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?")) {
+                        logP = Double.parseDouble(logPString);
+                        inLogP = false;
+                    }
+                } else if (inSynonyms) {
                     String potentialIdentifier = new String(ch, start, length);
                     if (ChEBIIdentifier.PATTERN.matcher(potentialIdentifier).matches()) {
                         identifiers.add(new ChEBIIdentifier(potentialIdentifier, PubChemDatabase.evidence));
@@ -143,19 +128,18 @@ class PubChemContentHandler implements ContentHandler {
                 }
                 break;
             }
-            case "NumValue": {
-                if (inComputedProperties && inMolecularWeightInformation) {
+            case "Number": {
+                if (inMolarMass) {
                     // set molecular weight
                     molarMass = Double.parseDouble(new String(ch, start, length));
-                    inMolecularWeightInformation = false;
-                    inComputedProperties = false;
-                } else if (inLogP && inLogPInformation) {
+                    inMolarMass = false;
+                } else if (inLogP) {
                     // set logP
                     String logPString = new String(ch, start, length);
-                    // explicitly stated as log KOW
-                    logP = Double.parseDouble(logPString);
-                    inLogP = false;
-                    inLogPInformation = false;
+                    if (logPString.matches("[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?")) {
+                        logP = Double.parseDouble(logPString);
+                        inLogP = false;
+                    }
                 }
                 break;
             }
@@ -172,25 +156,21 @@ class PubChemContentHandler implements ContentHandler {
 
         switch (currentTag) {
             case "RecordNumber":
+            case "RecordTitle":
             case "TOCHeading":
-            case "StringValue":
-            case "NumValue":
-            case "StringValueList": {
+            case "String":
+            case "Number":
+                currentTag = "";
+                break;
+            case "Section": {
+                inMolarMass = false;
+                inSmiles = false;
+                inSynonyms = false;
+                inLogP = false;
                 currentTag = "";
                 break;
             }
-            case "Information": {
-                if (inSynonymsInformation) {
-                    inSynonymsInformation = false;
-                }
-            }
-            case "Section": {
-                inRecordTitle = false;
-                inCanonicalSMILES = false;
-                inComputedProperties = false;
-                inSynonyms = false;
-                inLogP = false;
-            }
+
         }
 
     }
@@ -225,24 +205,12 @@ class PubChemContentHandler implements ContentHandler {
 
         switch (qName) {
             case "RecordNumber":
+            case "RecordTitle":
             case "TOCHeading":
-            case "StringValue":
-            case "NumValue":
-            case "StringValueList":
+            case "String":
+            case "Number":
+            case "Section":
                 currentTag = qName;
-                break;
-            case "Information":
-                if (inRecordTitle) {
-                    inRecordTitleInformation = true;
-                } else if (inCanonicalSMILES) {
-                    inCanonicalSMILESInformation = true;
-                }
-                if (inSynonyms) {
-                    inSynonymsInformation = true;
-                }
-                if (inLogP) {
-                    inLogPInformation = true;
-                }
                 break;
         }
 
