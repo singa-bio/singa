@@ -29,5 +29,5 @@ public abstract class AbstractIdentifier extends StringFeature implements Identi
     public String toString() {
         return getContent();
     }
-    
+
 }
