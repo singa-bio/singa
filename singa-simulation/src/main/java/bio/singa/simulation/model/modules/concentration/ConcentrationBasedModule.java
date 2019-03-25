@@ -591,7 +591,7 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
         for (Class<? extends Feature> featureClass : getRequiredFeatures()) {
             for (Feature<?> feature : featureManager.getFeatures()) {
                 if (featureClass.isInstance(feature)) {
-                    logger.info("Required feature {}: {} will be used and is set to {}.", featureClass.getSimpleName(), feature.getClass().getSimpleName(), feature.getContent());
+                    // logger.info("Required feature {}: {} will be used and is set to {}.", featureClass.getSimpleName(), feature.getClass().getSimpleName(), feature.getContent());
                     continue outer;
                 }
             }
@@ -602,6 +602,19 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
     @Override
     public String toString() {
         return getIdentifier();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ConcentrationBasedModule<?> that = (ConcentrationBasedModule<?>) o;
+        return Objects.equals(identifier, that.identifier);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(identifier);
     }
 
 }

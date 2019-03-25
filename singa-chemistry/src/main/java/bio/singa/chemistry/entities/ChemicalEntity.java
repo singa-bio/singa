@@ -24,10 +24,6 @@ public interface ChemicalEntity extends Identifiable<SimpleStringIdentifier>, An
 
     String getName();
 
-    void setMembraneAnchored(boolean membraneAnchored);
-
-    boolean isMembraneAnchored();
-
-    public List<Identifier> getAllIdentifiers();
+    List<Identifier> getAllIdentifiers();
 
 }

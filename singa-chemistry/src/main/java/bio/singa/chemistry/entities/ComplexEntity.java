@@ -218,16 +218,6 @@ public class ComplexEntity extends BinaryTreeNode<ChemicalEntity> implements Che
     }
 
     @Override
-    public void setMembraneAnchored(boolean membraneAnchored) {
-        this.membraneAnchored = membraneAnchored;
-    }
-
-    @Override
-    public boolean isMembraneAnchored() {
-        return membraneAnchored;
-    }
-
-    @Override
     public List<Annotation> getAnnotations() {
         return annotations;
     }

@@ -290,7 +290,7 @@ public class BinaryTreeNode<T> implements Serializable {
 
     @Override
     public String toString() {
-        return data + ": " + toNewickString(Objects::toString, ",");
+        return data + (isLeaf() ? "" : ": " + toNewickString(Objects::toString, ","));
     }
 
     public void print() {

@@ -81,15 +81,19 @@ public class Vesicle implements Updatable, Featureable {
         return radius.multiply(radius).multiply(Math.PI).multiply(4.0).asType(Area.class);
     }
 
-    public Vesicle(String identifier, Vector2D position, Quantity<Length> radius) {
+    public Vesicle(String identifier, CellRegion region, Vector2D position, Quantity<Length> radius) {
         this.identifier = identifier;
+        this.region = region;
         features = new ChemistryFeatureContainer();
         setRadius(radius);
-        region = CellRegion.forVesicle(identifier);
         concentrationManager = new ConcentrationDeltaManager(region.setUpConcentrationContainer());
         displacementManager = new DisplacementDeltaManager(position);
         associatedNodes = new HashMap<>();
         state = VesicleStateRegistry.UNATTACHED;
+    }
+
+    public Vesicle(String identifier, Vector2D position, Quantity<Length> radius) {
+        this(identifier, CellRegion.forVesicle(identifier), position, radius);
     }
 
     public Vesicle(Vector2D position, Quantity<Length> radius) {

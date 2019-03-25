@@ -4,6 +4,8 @@ import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.chemistry.entities.ComplexEntity;
 import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.features.units.UnitRegistry;
+import bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.reactants.DynamicChemicalEntity;
+import bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.reactants.EntityReducer;
 
 import javax.measure.Quantity;
 import java.util.*;
@@ -222,6 +224,21 @@ public class ConcentrationContainer {
         }
         return get(subsection, entity);
     }
+
+    public double sumOf(DynamicChemicalEntity dynamicEntity) {
+        double sum = 0.0;
+        for (CellTopology topology : dynamicEntity.getPossibleTopologies()) {
+            if (getPool(topology) != null) {
+                Set<ChemicalEntity> originalEntities = getPool(topology).getValue().getReferencedEntities();
+                List<ChemicalEntity> reducedEntities = EntityReducer.apply(originalEntities, dynamicEntity.getComposition());
+                for (ChemicalEntity entity : reducedEntities) {
+                    sum += get(topology, entity);
+                }
+            }
+        }
+        return sum;
+    }
+
 
     /**
      * Sets the concentration of the given entity in the given subsection.

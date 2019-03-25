@@ -206,11 +206,6 @@ public abstract class AbstractChemicalEntity implements ChemicalEntity {
             return builderObject;
         }
 
-        public BuilderType setMembraneAnchored(boolean membraneAnchored) {
-            topLevelObject.setMembraneAnchored(membraneAnchored);
-            return builderObject;
-        }
-
         public BuilderType assignFeature(Feature feature) {
             topLevelObject.setFeature(feature);
             return builderObject;

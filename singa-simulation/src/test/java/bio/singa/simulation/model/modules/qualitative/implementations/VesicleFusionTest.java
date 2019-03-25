@@ -56,27 +56,27 @@ class VesicleFusionTest {
         UnitRegistry.setTime(Quantities.getQuantity(1, MICRO(SECOND)));
 
         // setup snares for fusion
-        Protein vamp2 = new Protein.Builder("VAMP2")
+        Protein vamp2 = Protein.create("VAMP2")
                 .assignFeature(new UniProtIdentifier("Q15836"))
                 .annotation(new Annotation<>(AnnotationType.NOTE, "SNARE type", "R-SNARE"))
                 .build();
 
-        Protein vamp3 = new Protein.Builder("VAMP3")
+        Protein vamp3 = Protein.create("VAMP3")
                 .assignFeature(new UniProtIdentifier("P63027"))
                 .annotation(new Annotation<>(AnnotationType.NOTE, "SNARE type", "R-SNARE"))
                 .build();
 
-        Protein syntaxin3 = new Protein.Builder("Syntaxin 3")
+        Protein syntaxin3 = Protein.create("Syntaxin 3")
                 .assignFeature(new UniProtIdentifier("Q13277"))
                 .annotation(new Annotation<>(AnnotationType.NOTE, "SNARE type", "Qa-SNARE"))
                 .build();
 
-        Protein syntaxin4 = new Protein.Builder("Syntaxin 4")
+        Protein syntaxin4 = Protein.create("Syntaxin 4")
                 .assignFeature(new UniProtIdentifier("Q12846"))
                 .annotation(new Annotation<>(AnnotationType.NOTE, "SNARE type", "Qa-SNARE"))
                 .build();
 
-        Protein snap23 = new Protein.Builder("SNAP23")
+        Protein snap23 = Protein.create("SNAP23")
                 .assignFeature(new UniProtIdentifier("O00161"))
                 .annotation(new Annotation<>(AnnotationType.NOTE, "SNARE type", "Qbc-SNARE"))
                 .build();

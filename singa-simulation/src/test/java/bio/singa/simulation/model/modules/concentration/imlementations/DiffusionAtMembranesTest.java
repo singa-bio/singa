@@ -44,7 +44,6 @@ class DiffusionAtMembranesTest {
     private static final Protein globularProtein = new Protein.Builder("GP")
             .name("globular protein")
             .assignFeature(new MolarMass(1000, Evidence.NO_EVIDENCE))
-            .setMembraneAnchored(false)
             .build();
 
     private static Simulation setupAnchorSimulation() {

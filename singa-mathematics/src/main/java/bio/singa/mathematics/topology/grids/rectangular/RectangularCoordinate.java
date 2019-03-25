@@ -20,7 +20,7 @@ public class RectangularCoordinate implements DiscreteCoordinate<RectangularCoor
     }
 
     public static RectangularCoordinate fromString(String string) {
-        Pattern pattern = Pattern.compile("\\((\\d+), (\\d+)\\)");
+        Pattern pattern = Pattern.compile("\\((\\d+), ?(\\d+)\\)");
         Matcher matcher = pattern.matcher(string);
         if (matcher.matches()) {
             int column = Integer.valueOf(matcher.group(1));

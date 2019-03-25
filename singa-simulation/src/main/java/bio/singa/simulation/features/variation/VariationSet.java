@@ -32,21 +32,22 @@ public class VariationSet {
                 .collect(Collectors.joining(","));
     }
 
-    public List<Set<?>> generateAllCombinations() {
-        List<Set<?>> result = new ArrayList<>();
-        collectAllCombinations(variations, result, 0, new HashSet<>());
+    public List<List<?>> generateAllCombinations() {
+        List<List<?>> result = new ArrayList<>();
+        collectAllCombinations(variations, result, 0, new ArrayList<>());
+
         return result;
     }
 
     // generate all combinations
-    private void collectAllCombinations(List<Variation<?>> originalData, List<Set<?>> result, int depth, Set<?> permutation) {
+    private void collectAllCombinations(List<Variation<?>> originalData, List<List<?>> result, int depth, List<?> permutation) {
         if (depth == originalData.size()) {
             result.add(permutation);
             return;
         }
         Variation<?> current = originalData.get(depth);
         for (Object variation : current.getVariations()) {
-            HashSet<Object> newPermutation = new HashSet<>(permutation);
+            List<Object> newPermutation = new ArrayList<>(permutation);
             Object instance = current.create(variation);
             newPermutation.add(instance);
             collectAllCombinations(originalData, result, depth + 1, newPermutation);

@@ -122,7 +122,6 @@ public class VesicleFusion extends QualitativeModule {
         // merge membranes
         for (Map.Entry<ChemicalEntity, Double> entry : vesicleContainer.getPool(CellTopology.MEMBRANE).getValue().getConcentrations().entrySet()) {
             node.addPotentialDelta(new ConcentrationDelta(this, node.getCellRegion().getMembraneSubsection(), entry.getKey(), entry.getValue()));
-            System.out.println("reserved " + entry.getKey() + " " + MolarConcentration.concentrationToMolecules(entry.getValue()) + " snares");
         }
         // merge inner concentrations
         for (Map.Entry<ChemicalEntity, Double> entry : vesicleContainer.getPool(CellTopology.OUTER).getValue().getConcentrations().entrySet()) {
@@ -132,7 +131,6 @@ public class VesicleFusion extends QualitativeModule {
         ConcentrationPool concentrationPool = occupiedSnares.get(tetheredVesicle);
         for (Map.Entry<ChemicalEntity, Double> entry : concentrationPool.getConcentrations().entrySet()) {
             node.addPotentialDelta(new ConcentrationDelta(this, node.getCellRegion().getMembraneSubsection(), entry.getKey(), entry.getValue()));
-            System.out.println("reserved " + entry.getKey() + " " + MolarConcentration.concentrationToMolecules(entry.getValue()));
         }
     }
 

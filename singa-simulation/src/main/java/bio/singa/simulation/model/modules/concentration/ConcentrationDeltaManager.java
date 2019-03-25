@@ -307,7 +307,6 @@ public class ConcentrationDeltaManager {
             }
             logger.trace("Setting {} in {} from {} to {} ", delta.getChemicalEntity(), delta.getCellSubsection().getIdentifier(), previousConcentration, updatedConcentration);
             currentConcentrations.set(delta.getCellSubsection(), delta.getChemicalEntity(), updatedConcentration);
-            // System.out.println(delta + " -> "+updatedConcentration);  61.694187144482875 61.69423320010245
         }
         finalDeltas.clear();
     }

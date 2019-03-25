@@ -23,6 +23,10 @@ public class TurnoverNumber extends FirstOrderRateConstant implements ForwardsRa
         super(Quantities.getQuantity(value, unit), evidence);
     }
 
+    public TurnoverNumber(Quantity<FirstOrderRate> firstOrderRateQuantity) {
+        super(firstOrderRateQuantity);
+    }
+
     @Override
     public String getDescriptor() {
         return SYMBOL;

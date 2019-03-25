@@ -19,6 +19,10 @@ public class MichaelisConstant extends QuantitativeFeature<MolarConcentration> {
         super(molarConcentration, evidence);
     }
 
+    public MichaelisConstant(Quantity<MolarConcentration> quantity) {
+        super(quantity);
+    }
+
     @Override
     public String getDescriptor() {
         return SYMBOL;

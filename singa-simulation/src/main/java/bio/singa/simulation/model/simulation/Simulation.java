@@ -4,6 +4,7 @@ import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.chemistry.entities.ComplexEntity;
 import bio.singa.features.formatter.TimeFormatter;
 import bio.singa.features.identifiers.SimpleStringIdentifier;
+import bio.singa.features.model.Feature;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.geometry.faces.Rectangle;
@@ -209,15 +210,20 @@ public class Simulation {
     }
 
     private void initializeModules() {
+        logger.info("Initializing modules:");
         for (UpdateModule module : getModules()) {
             module.initialize();
             scheduler.addModule(module);
+            logger.info("Module {}", module.getIdentifier());
+            for (Feature<?> feature : module.getFeatures()) {
+                logger.info("  Feature {} = {}", feature.getClass().getSimpleName(), feature.getContent());
+            }
         }
     }
 
     private void initializeConcentrations() {
         if (concentrationInitializer != null) {
-            logger.info("Initializing starting concentrations.");
+            logger.info("Initializing starting concentrations:");
             concentrationInitializer.initialize(this);
         }
     }
@@ -325,7 +331,7 @@ public class Simulation {
     }
 
     public void addModule(UpdateModule module) {
-        logger.info("Adding module {}.", module.toString());
+        // logger.info("Adding module {}.", module.toString());
         module.setSimulation(this);
         module.checkFeatures();
         for (ChemicalEntity referencedEntity : module.getReferencedEntities()) {
@@ -335,7 +341,7 @@ public class Simulation {
     }
 
     public void setGraph(AutomatonGraph graph) {
-        logger.info("Adding graph.");
+        // logger.info("Adding graph.");
         this.graph = graph;
         initializeSpatialRepresentations();
     }

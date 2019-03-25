@@ -1,5 +1,7 @@
 package bio.singa.chemistry.entities;
 
+import bio.singa.mathematics.graphs.trees.BinaryTreeNode;
+
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
@@ -38,7 +40,7 @@ public class ComplexEntityParser {
     private ComplexEntity parse() {
         tokenize();
         buildTree();
-        nameIntermediateNodes();
+        finalizeComplex();
         return tree;
     }
 
@@ -90,12 +92,20 @@ public class ComplexEntityParser {
     }
 
 
-    private void nameIntermediateNodes() {
+    private void finalizeComplex() {
         tree.inOrderTraversal(node -> {
             if (!node.isLeaf()) {
                 ComplexEntity entity = (ComplexEntity) node;
+                // generate identifiers for inner nodes
                 entity.setData(entity);
                 entity.setIdentifier(entity.toNewickString(t -> t.getIdentifier().getContent(), ":"));
+                // replace leaf subtrees with actual entity representations
+                if (!(entity.getLeft().getData() instanceof ComplexEntity)) {
+                    entity.setLeft(new BinaryTreeNode<>(entity.getLeft().getData()));
+                }
+                if (!(entity.getRight().getData() instanceof ComplexEntity)) {
+                    entity.setRight(new BinaryTreeNode<>(entity.getRight().getData()));
+                }
             }
         });
     }

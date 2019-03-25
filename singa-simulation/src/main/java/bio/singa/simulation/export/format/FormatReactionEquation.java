@@ -98,7 +98,7 @@ public class FormatReactionEquation {
     }
 
     private static String mapComplexModificationToString(ComplexModification complexModification) {
-        if (complexModification.equals(ComplexModification.SPLIT)) {
+        if (complexModification.getOperation().getText().equals(ComplexModification.Operation.SPLIT.getText())) {
             return ComplexModification.Operation.SPLIT.getText();
         }
         return complexModification.getOperation().getText() + complexModification.getModificator().getIdentifier().getContent();
@@ -155,7 +155,7 @@ public class FormatReactionEquation {
         } else if (reaction.getKineticLaw() instanceof IrreversibleKineticLaw) {
             return String.format(irreversibleASCIITemplate, substrates, products);
         } else if (reaction.getKineticLaw() instanceof MichaelisMentenKineticLaw) {
-            return String.format(michaelisMentenASCIITemplate, substrates, products);
+            return String.format(michaelisMentenASCIITemplate, substrates, catalysts, products);
         } else if (reaction.getKineticLaw() instanceof DynamicKineticLaw) {
             return String.format(michaelisMentenASCIITemplate, substrates, catalysts, products);
         } else {
