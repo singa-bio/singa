@@ -13,8 +13,6 @@ import javax.measure.Unit;
  */
 public class TurnoverNumber extends FirstOrderRateConstant implements ForwardsRateConstant<FirstOrderRate> {
 
-    public static final String SYMBOL = "k_cat";
-
     public TurnoverNumber(Quantity<FirstOrderRate> firstOrderRateQuantity, Evidence evidence) {
         super(firstOrderRateQuantity, evidence);
     }
@@ -25,11 +23,6 @@ public class TurnoverNumber extends FirstOrderRateConstant implements ForwardsRa
 
     public TurnoverNumber(Quantity<FirstOrderRate> firstOrderRateQuantity) {
         super(firstOrderRateQuantity);
-    }
-
-    @Override
-    public String getDescriptor() {
-        return SYMBOL;
     }
 
 }

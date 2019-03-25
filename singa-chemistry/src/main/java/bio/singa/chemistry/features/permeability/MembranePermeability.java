@@ -20,8 +20,6 @@ public class MembranePermeability extends ScalableQuantitativeFeature<MembranePe
     private static Unit<Length> CENTIMETRE = CENTI(METRE);
     public static final Unit<MembranePermeability> CENTIMETRE_PER_SECOND = new ProductUnit<>(CENTIMETRE.divide(SECOND));
 
-    public static final String SYMBOL = "P_d";
-
     public MembranePermeability(Quantity<MembranePermeability> membranePermeabilityQuantity, Evidence evidence) {
         super(membranePermeabilityQuantity, evidence);
     }
@@ -34,11 +32,6 @@ public class MembranePermeability extends ScalableQuantitativeFeature<MembranePe
     public void scale() {
         scaledQuantity = UnitRegistry.scale(getContent()).getValue().doubleValue();
         halfScaledQuantity = scaledQuantity * 0.5;
-    }
-
-    @Override
-    public String getDescriptor() {
-        return SYMBOL;
     }
 
     @Override

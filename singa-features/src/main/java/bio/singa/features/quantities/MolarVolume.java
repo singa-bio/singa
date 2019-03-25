@@ -23,7 +23,6 @@ public class MolarVolume extends AbstractFeature<Quantity<MolarVolume>> implemen
     public static final Unit<MolarVolume> CUBIC_METRE_PER_MOLE = new ProductUnit<>(CUBIC_METRE.divide(MOLE));
     public static final Unit<MolarVolume> LITRE_PER_MOLE = new ProductUnit<>(LITRE.divide(MOLE));
     public static final Unit<MolarVolume> CUBIC_ANGSTROEM_PER_MOLE = new ProductUnit<>(ANGSTROEM.multiply(ANGSTROEM).multiply(ANGSTROEM).divide(MOLE));
-    public static final String SYMBOL = "V_m";
 
     public MolarVolume(Quantity<MolarVolume> quantity, Evidence evidence) {
         super(quantity, evidence);
@@ -86,11 +85,6 @@ public class MolarVolume extends AbstractFeature<Quantity<MolarVolume>> implemen
     @Override
     public Unit<MolarVolume> getUnit() {
         return getContent().getUnit();
-    }
-
-    @Override
-    public String getDescriptor() {
-        return SYMBOL;
     }
 
 }

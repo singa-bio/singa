@@ -20,7 +20,6 @@ import static tec.uom.se.unit.Units.MOLE;
 public class MolarMass extends AbstractFeature<Quantity<MolarMass>> implements Quantity<MolarMass> {
 
     public static final Unit<MolarMass> GRAM_PER_MOLE = new ProductUnit<>(GRAM.divide(MOLE));
-    public static final String SYMBOL = "M";
 
     public MolarMass(Quantity<MolarMass> quantity, Evidence evidence) {
         super(quantity, evidence);
@@ -93,8 +92,4 @@ public class MolarMass extends AbstractFeature<Quantity<MolarMass>> implements Q
         return getContent().getUnit();
     }
 
-    @Override
-    public String getDescriptor() {
-        return SYMBOL;
-    }
 }

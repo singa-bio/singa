@@ -11,8 +11,6 @@ import java.util.List;
  */
 public class Cargoes extends MultiEntityFeature {
 
-    private static final String SYMBOL = "es_Cargoes";
-
     public Cargoes(List<ChemicalEntity> chemicalEntities, Evidence evidence) {
         super(chemicalEntities, evidence);
     }
@@ -25,8 +23,4 @@ public class Cargoes extends MultiEntityFeature {
         super(Arrays.asList(entities));
     }
 
-    @Override
-    public String getDescriptor() {
-        return SYMBOL;
-    }
 }

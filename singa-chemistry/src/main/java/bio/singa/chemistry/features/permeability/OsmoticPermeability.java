@@ -23,8 +23,6 @@ public class OsmoticPermeability extends ScalableQuantitativeFeature<OsmoticPerm
      */
     public static final Unit<OsmoticPermeability> CUBIC_CENTIMETRE_PER_SECOND = new ProductUnit<>(METRE.divide(100).pow(3).divide(SECOND));
 
-    public static final String SYMBOL = "p_f";
-
     /**
      * Creates a new Instance of the {@link OsmoticPermeability} Feature.
      *
@@ -105,8 +103,4 @@ public class OsmoticPermeability extends ScalableQuantitativeFeature<OsmoticPerm
         return getContent().getUnit();
     }
 
-    @Override
-    public String getDescriptor() {
-        return SYMBOL;
-    }
 }
