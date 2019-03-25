@@ -20,7 +20,7 @@ class PubChemParserServiceTest {
     void shouldParseSpecies() {
         SmallMolecule species = PubChemParserService.parse("CID:962");
         // name
-        assertEquals("water", species.getName().toLowerCase());
+        assertEquals("water", species.getNames().iterator().next().toLowerCase());
         // molar mass
         assertEquals(18.015, species.getFeature(MolarMass.class).getValue().doubleValue());
         // molar mass
@@ -37,7 +37,6 @@ class PubChemParserServiceTest {
     void shouldResolveInChIKey() {
         SmallMolecule species = SmallMolecule.create("CID:5957")
                 .additionalIdentifier(new PubChemIdentifier("CID:5957"))
-                .name("ATP")
                 .build();
 
         InChIKey feature = species.getFeature(InChIKey.class);

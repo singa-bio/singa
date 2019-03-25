@@ -53,13 +53,11 @@ class SectionDependentReactionTest {
         // see Receptors (Lauffenburger) p. 30
         // prazosin, CHEBI:8364
         ChemicalEntity ligand = SmallMolecule.create("ligand")
-                .name("prazosin")
                 .additionalIdentifier(new ChEBIIdentifier("CHEBI:8364"))
                 .build();
 
         // alpha-1 adrenergic receptor, P35348
         Protein receptor = new Protein.Builder("receptor")
-                .name("alpha-1 adrenergic receptor")
                 .additionalIdentifier(new UniProtIdentifier("P35348"))
                 .build();
 

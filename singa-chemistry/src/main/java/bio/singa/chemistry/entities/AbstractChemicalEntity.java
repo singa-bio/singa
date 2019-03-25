@@ -40,18 +40,11 @@ public abstract class AbstractChemicalEntity implements ChemicalEntity {
     protected final SimpleStringIdentifier identifier;
 
     /**
-     * The name by which this entity is referenced.
-     */
-    protected String name = "Unnamed chemical entity";
-
-    /**
      * All annotations of this entity.
      */
     protected List<Annotation> annotations;
 
     protected FeatureContainer features;
-
-    private boolean membraneAnchored;
 
     /**
      * Creates a new chemical entity with the given identifier.
@@ -60,7 +53,6 @@ public abstract class AbstractChemicalEntity implements ChemicalEntity {
      */
     protected AbstractChemicalEntity(SimpleStringIdentifier identifier) {
         this.identifier = identifier;
-        membraneAnchored = false;
         annotations = new ArrayList<>();
         features = new ChemistryFeatureContainer();
         // IdentifierPatternRegistry.instantiate(identifier.getContent()).ifPresent(this::setFeature);
@@ -71,39 +63,18 @@ public abstract class AbstractChemicalEntity implements ChemicalEntity {
         return identifier;
     }
 
-    public String getName() {
-        return name.equals("Unnamed chemical entity") ? identifier.getContent() : name;
-    }
-
-    /**
-     * Sets the name.
-     *
-     * @param name The name.
-     */
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public boolean isMembraneAnchored() {
-        return membraneAnchored;
-    }
-
-    public void setMembraneAnchored(boolean membraneAnchored) {
-        this.membraneAnchored = membraneAnchored;
-    }
-
     @Override
     public List<Annotation> getAnnotations() {
         return annotations;
     }
 
     /**
-     * Adds an additional name as an annotation to this chemical entity.
+     * Adds an name as an annotation to this chemical entity.
      *
-     * @param additionalName An alternative name.
+     * @param name An alternative name.
      */
-    public void addAdditionalName(String additionalName) {
-        addAnnotation(new Annotation<>(AnnotationType.ADDITIONAL_NAME, additionalName));
+    public void addName(String name) {
+        addAnnotation(new Annotation<>(AnnotationType.NAME, name));
     }
 
     /**
@@ -111,8 +82,8 @@ public abstract class AbstractChemicalEntity implements ChemicalEntity {
      *
      * @return All alternative names.
      */
-    public List<String> getAdditionalNames() {
-        return getContentOfAnnotations(String.class, AnnotationType.ADDITIONAL_NAME);
+    public List<String> getNames() {
+        return getContentOfAnnotations(String.class, AnnotationType.NAME);
     }
 
     public void addAdditionalIdentifiers(Collection<Identifier> identifiers) {
@@ -200,11 +171,6 @@ public abstract class AbstractChemicalEntity implements ChemicalEntity {
         protected abstract TopLevelType createObject(SimpleStringIdentifier primaryIdentifer);
 
         protected abstract BuilderType getBuilder();
-
-        public BuilderType name(String name) {
-            topLevelObject.setName(name);
-            return builderObject;
-        }
 
         public BuilderType assignFeature(Feature feature) {
             topLevelObject.setFeature(feature);

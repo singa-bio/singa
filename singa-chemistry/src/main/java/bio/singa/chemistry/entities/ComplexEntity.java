@@ -40,11 +40,6 @@ public class ComplexEntity extends BinaryTreeNode<ChemicalEntity> implements Che
     private SimpleStringIdentifier identifier;
 
     /**
-     * The name by which this entity is referenced.
-     */
-    private String name = "Unnamed chemical entity";
-
-    /**
      * All annotations of this entity.
      */
     private List<Annotation> annotations;
@@ -205,16 +200,6 @@ public class ComplexEntity extends BinaryTreeNode<ChemicalEntity> implements Che
         for (BinaryTreeNode<ChemicalEntity> current : path) {
             ((ComplexEntity) current).setIdentifier(current.toNewickString(t -> t.getIdentifier().getContent(), ":"));
         }
-    }
-
-    @Override
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    @Override
-    public String getName() {
-        return name;
     }
 
     @Override

@@ -49,7 +49,6 @@ import static tec.uom.se.unit.Units.SECOND;
 class MembraneDiffusionTest {
 
     private final SmallMolecule water = SmallMolecule.create("water")
-            .name("water")
             .assignFeature(new MembranePermeability(Quantities.getQuantity(3.5E-03, CENTIMETRE_PER_SECOND), Evidence.NO_EVIDENCE))
             .build();
 
@@ -141,12 +140,6 @@ class MembraneDiffusionTest {
             node.setCellRegion(CYTOSOL_A);
             node.getConcentrationContainer().initialize(INNER, water, Quantities.getQuantity(40.0, MOLE_PER_LITRE));
         }
-
-        // setup species
-        SmallMolecule water = SmallMolecule.create("water")
-                .name("water")
-                .assignFeature(new MembranePermeability(Quantities.getQuantity(3.5E-03, CENTIMETRE_PER_SECOND), Evidence.NO_EVIDENCE))
-                .build();
 
         // add diffusion
         MembraneDiffusion.inSimulation(simulation)

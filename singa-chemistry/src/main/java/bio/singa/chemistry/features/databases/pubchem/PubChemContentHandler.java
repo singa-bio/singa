@@ -55,11 +55,13 @@ class PubChemContentHandler implements ContentHandler {
 
     public SmallMolecule getSpecies() {
         SmallMolecule species = SmallMolecule.create(pubChemIdentifier.getContent())
-                .name(name)
                 .assignFeature(new MolarMass(molarMass, PubChemDatabase.evidence))
                 .assignFeature(new Smiles(smilesRepresentation, PubChemDatabase.evidence))
                 .assignFeature(new LogP(logP, PubChemDatabase.evidence))
                 .build();
+        if (name != null) {
+            species.addName(name);
+        }
         identifiers.forEach(species::addAdditionalIdentifier);
         return species;
 
@@ -71,7 +73,7 @@ class PubChemContentHandler implements ContentHandler {
         switch (currentTag) {
             case "RecordNumber": {
                 // set pubchem identifier
-                pubChemIdentifier = new PubChemIdentifier("CID:"+new String(ch, start, length));
+                pubChemIdentifier = new PubChemIdentifier("CID:" + new String(ch, start, length));
                 break;
             }
             case "TOCHeading": {

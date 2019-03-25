@@ -20,10 +20,6 @@ import java.util.List;
  */
 public interface ChemicalEntity extends Identifiable<SimpleStringIdentifier>, Annotatable, Featureable {
 
-    void setName(String name);
-
-    String getName();
-
     List<Identifier> getAllIdentifiers();
 
 }

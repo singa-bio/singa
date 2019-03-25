@@ -1,6 +1,5 @@
 package bio.singa.simulation.model.modules.concentration.imlementations;
 
-import bio.singa.chemistry.entities.Protein;
 import bio.singa.chemistry.entities.SmallMolecule;
 import bio.singa.chemistry.features.diffusivity.Diffusivity;
 import bio.singa.features.model.Evidence;
@@ -14,7 +13,6 @@ import bio.singa.simulation.model.modules.concentration.imlementations.transport
 import bio.singa.simulation.model.sections.CellRegion;
 import bio.singa.simulation.model.sections.CellSubsection;
 import bio.singa.simulation.model.simulation.Simulation;
-import bio.singa.structure.features.molarmass.MolarMass;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -36,31 +34,8 @@ class DiffusionAtMembranesTest {
 
     // ammonia
     private static final SmallMolecule ammonia = SmallMolecule.create("ammonia")
-            .name("ammonia")
             .assignFeature(new Diffusivity(Quantities.getQuantity(2.28E-05, SQUARE_CENTIMETRE_PER_SECOND), Evidence.NO_EVIDENCE))
             .build();
-
-    // unanchored protein
-    private static final Protein globularProtein = new Protein.Builder("GP")
-            .name("globular protein")
-            .assignFeature(new MolarMass(1000, Evidence.NO_EVIDENCE))
-            .build();
-
-    private static Simulation setupAnchorSimulation() {
-        // create simulation
-        Simulation simulation = new Simulation();
-        // create graph
-        AutomatonGraph graph = AutomatonGraphs.createRectangularAutomatonGraph(1, 2);
-        simulation.setGraph(graph);
-        // distribute nodes to sections
-        graph.getNodesOfRow(0).forEach(node -> node.setCellRegion(CellRegion.MEMBRANE));
-        graph.getNodesOfRow(1).forEach(node -> node.setCellRegion(CellRegion.CYTOSOL_A));
-        // add diffusion
-        Diffusion.inSimulation(simulation)
-                .onlyFor(globularProtein)
-                .build();
-        return simulation;
-    }
 
     @BeforeAll
     static void initialize() {

@@ -50,7 +50,6 @@ class SingleFileChannelMembraneTransportTest {
         SmallMolecule water = ChEBIParserService.parse("CHEBI:15377", "water");
         // solutes
         SmallMolecule solute = SmallMolecule.create("solutes")
-                .name("solutes")
                 .build();
         // aqp2
         Protein aquaporin2 = UniProtParserService.parse("P41181", "aqp2");

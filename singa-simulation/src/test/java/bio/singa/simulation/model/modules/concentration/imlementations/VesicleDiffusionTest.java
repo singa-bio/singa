@@ -109,7 +109,6 @@ class VesicleDiffusionTest {
 
         // setup species
         SmallMolecule water = SmallMolecule.create("water")
-                .name("water")
                 .assignFeature(new MembranePermeability(Quantities.getQuantity(1.75e-3, CENTIMETRE_PER_SECOND), Evidence.NO_EVIDENCE))
                 .assignFeature(new Diffusivity(Quantities.getQuantity(2.6e-6, SQUARE_CENTIMETRE_PER_SECOND), Evidence.NO_EVIDENCE))
                 .build();

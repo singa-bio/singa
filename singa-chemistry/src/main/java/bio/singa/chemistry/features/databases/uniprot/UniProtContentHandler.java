@@ -45,7 +45,7 @@ public class UniProtContentHandler implements ContentHandler {
     private UniProtIdentifier identifier;
     private String recommendedName;
     private double molarMass;
-    private List<String> additionalNames;
+    private List<String> names;
     private String aminoAcidSequence;
     private Organism sourceOrganism;
     private List<Annotation<String>> textComments;
@@ -79,7 +79,7 @@ public class UniProtContentHandler implements ContentHandler {
     private int currentReferenceYear;
 
     public UniProtContentHandler() {
-        additionalNames = new ArrayList<>();
+        names = new ArrayList<>();
         textComments = new ArrayList<>();
         ecNumbers = new ArrayList<>();
         genomicSequenceIdentifiers = new ArrayList<>();
@@ -98,13 +98,11 @@ public class UniProtContentHandler implements ContentHandler {
         if (primaryIdentifier == null) {
             protein = Protein.create(identifier.toString())
                     .additionalIdentifier(identifier)
-                    .name(recommendedName)
                     .assignFeature(new MolarMass(molarMass, UniProtDatabase.evidence))
                     .build();
         } else {
             protein = Protein.create(primaryIdentifier)
                     .additionalIdentifier(identifier)
-                    .name(recommendedName)
                     .assignFeature(new MolarMass(molarMass, UniProtDatabase.evidence))
                     .build();
         }
@@ -114,7 +112,7 @@ public class UniProtContentHandler implements ContentHandler {
         protein.addAminoAcidSequence(aminoAcidSequence.replaceAll("\\s", ""));
         genomicSequenceIdentifiers.forEach(protein::addAdditionalIdentifier);
         // add additional names
-        additionalNames.forEach(protein::addAdditionalName);
+        names.forEach(protein::addName);
         // add text comments
         textComments.forEach(protein::addAnnotation);
         // add ecNumbers
@@ -392,10 +390,10 @@ public class UniProtContentHandler implements ContentHandler {
             case "fullName": {
                 if (inRecommendedName) {
                     // set recommended name
-                    recommendedName = new String(ch, start, length);
+                    names.add(new String(ch, start, length));
                 } else if (inAlternativeName) {
                     // add alternative name
-                    additionalNames.add(new String(ch, start, length));
+                    names.add(new String(ch, start, length));
                 }
                 break;
             }

@@ -53,9 +53,11 @@ public class ChEBIContentHandler implements ContentHandler {
         }
 
         SmallMolecule species = SmallMolecule.create(primaryIdentifier)
-                .name(name)
                 .additionalIdentifier(inChIKey)
                 .build();
+        if (name != null) {
+            species.addName(name);
+        }
         if (! smilesBuilder.toString().isEmpty()) {
             species.setFeature(new Smiles(smilesBuilder.toString(), ChEBIDatabase.DEGTYARENKO2008));
         }

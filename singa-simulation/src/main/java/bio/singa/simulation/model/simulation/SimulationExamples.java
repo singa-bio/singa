@@ -156,7 +156,7 @@ public class SimulationExamples {
         SmallMolecule fructosePhosphate = ChEBIParserService.parse("CHEBI:18105");
         SmallMolecule glyceronePhosphate = ChEBIParserService.parse("CHEBI:16108");
         SmallMolecule glyceraldehyde = ChEBIParserService.parse("CHEBI:17378");
-        Protein aldolase = Protein.create("P07752").name("Fructose-bisphosphate aldolase").build();
+        Protein aldolase = Protein.create("P07752").build();
 
         // rates
         MichaelisConstant michaelisConstant = new MichaelisConstant(Quantities.getQuantity(9.0e-3, MOLE_PER_LITRE), Evidence.NO_EVIDENCE);
