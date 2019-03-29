@@ -12,11 +12,15 @@ import java.text.DecimalFormat;
 public class ConcentrationFormatter extends GeneralQuantityFormatter<MolarConcentration> implements GeneralConcentrationFormatter {
 
     public static ConcentrationFormatter forUnit(Unit<MolarConcentration> targetUnit) {
-        return new ConcentrationFormatter(new DecimalFormat("0.0000E00"), targetUnit, false);
+        return new ConcentrationFormatter(targetUnit);
     }
 
     private ConcentrationFormatter(DecimalFormat valueFormat, Unit<MolarConcentration> targetUnit, boolean displayUnit) {
         super(valueFormat, targetUnit, displayUnit);
+    }
+
+    public ConcentrationFormatter(Unit<MolarConcentration> targetUnit) {
+        super(targetUnit);
     }
 
     public String format(double quantityValue) {

@@ -65,6 +65,12 @@ public class TimeFormatter implements QuantityFormatter<Time> {
         return format(Quantities.getQuantity(defaultQuantity, UnitRegistry.getDefaultUnit(SECOND)));
     }
 
+    /**
+     * Formats the time to the shortest informative representation.
+     *
+     * @param quantity The time to be formatted.
+     * @return
+     */
     public static String formatTime(Quantity<Time> quantity) {
         return getInstance().format(quantity);
     }

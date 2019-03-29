@@ -1,7 +1,6 @@
 package bio.singa.simulation.model.simulation;
 
 import bio.singa.core.events.UpdateEventListener;
-import bio.singa.features.formatter.GeneralQuantityFormatter;
 import bio.singa.features.formatter.TimeFormatter;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.simulation.events.*;
@@ -73,15 +72,7 @@ public class SimulationManager extends Task<Simulation> {
      */
     private long nextTick = System.currentTimeMillis();
 
-    private long startingTime = System.currentTimeMillis();
-
     private long previousTimeMillis = 0;
-
-    private Quantity<Time> previousTimeSimulation = Quantities.getQuantity(0.0, UnitRegistry.getTimeUnit());
-
-    private long previousEpochs;
-    private long previousIncreases;
-    private long previousDecreases;
 
     /**
      * The time for the next update to be issued (in simulation time).
@@ -93,6 +84,7 @@ public class SimulationManager extends Task<Simulation> {
     private boolean keepPlatformOpen = DEFAULT_KEEP_PLATFORM_OPEN;
 
     private CountDownLatch terminationLatch;
+    private final SimulationStatus simulationStatus;
 
     /**
      * Creates a new simulation manager for the given simulation.
@@ -104,6 +96,8 @@ public class SimulationManager extends Task<Simulation> {
         this.simulation = simulation;
         nodeEventEmitter = new NodeEventEmitter();
         graphEventEmitter = new GraphEventEmitter();
+        simulationStatus = new SimulationStatus(simulation);
+        graphEventEmitter.addEventListener(simulationStatus);
         // emit every event if not specified otherwise
         emitCondition = s -> true;
     }
@@ -157,6 +151,7 @@ public class SimulationManager extends Task<Simulation> {
      */
     public void setSimulationTerminationToTime(Quantity<Time> time) {
         terminationTime = time.to(MICRO(SECOND));
+        simulationStatus.setTerminationTime(terminationTime);
         setTerminationCondition(s -> s.getElapsedTime().isLessThan(time));
     }
 
@@ -212,6 +207,10 @@ public class SimulationManager extends Task<Simulation> {
         };
     }
 
+    public SimulationStatus getSimulationStatus() {
+        return simulationStatus;
+    }
+
     public void setTerminationLatch(CountDownLatch terminationLatch) {
         this.terminationLatch = terminationLatch;
     }
@@ -245,7 +244,7 @@ public class SimulationManager extends Task<Simulation> {
     protected Simulation call() {
         while (!isCancelled() && terminationCondition.test(simulation)) {
             if (emitCondition.test(simulation)) {
-                logger.debug("Emitting event after {} (epoch {}).", GeneralQuantityFormatter.formatTime(simulation.getElapsedTime()), simulation.getEpoch());
+                logger.debug("Emitting event after {} (epoch {}).", TimeFormatter.formatTime(simulation.getElapsedTime()), simulation.getEpoch());
                 emitGraphEvent(simulation);
                 for (Updatable updatable : simulation.getObservedUpdatables()) {
                     emitNodeEvent(simulation, updatable);
@@ -268,37 +267,17 @@ public class SimulationManager extends Task<Simulation> {
         ComparableQuantity<Time> timeSinceLastReport = Quantities.getQuantity(millisSinceLastReport, MILLI(SECOND));
         // if it has been 1 second since last report
         if (timeSinceLastReport.isGreaterThanOrEqualTo(REPORT_THRESHOLD)) {
-            // calculate time remaining
-            ComparableQuantity<Time> currentTimeSimulation = simulation.getElapsedTime().to(MICRO(SECOND));
-            double fractionDone = currentTimeSimulation.getValue().doubleValue() / terminationTime.getValue().doubleValue();
-            long timeRequired = System.currentTimeMillis() - startingTime;
-            long estimatedMillisRemaining = (long) (timeRequired / fractionDone) - timeRequired;
-            ComparableQuantity<Time> subtract = currentTimeSimulation.subtract(previousTimeSimulation);
-            // summarize epochs and time step rescaling
-            long currentEpochs = simulation.getEpoch();
-            long currentIncreases = simulation.getScheduler().getTimestepsIncreased();
-            long currentDecreases = simulation.getScheduler().getTimestepsDecreased();
+            // only report if there is actually anything to report
             if (previousTimeMillis > 0) {
-                ComparableQuantity<Time> estimatesTimeRemaining = Quantities.getQuantity(estimatedMillisRemaining, MILLI(SECOND));
-                double speed = subtract.getValue().doubleValue() / Quantities.getQuantity(currentTimeMillis - previousTimeMillis, MILLI(SECOND)).to(SECOND).getValue().doubleValue();
-                String estimated = GeneralQuantityFormatter.formatTime(estimatesTimeRemaining);
-                if (Double.isInfinite(speed)) {
-                    logger.info("estimated time remaining: {}, current simulation speed: [very high] (Simulation Time) per s(Real Time)", estimated);
-                } else {
-                    String estimatedSpeed = GeneralQuantityFormatter.formatTime(Quantities.getQuantity(speed, MICRO(SECOND)));
-                    logger.info("PROGRESS: {} time remaining - {} passed time in simulation",
-                            estimated, TimeFormatter.formatTime(simulation.getElapsedTime()));
-                    logger.info("SPEED   : {} ({},{}) epochs (increases, decreases) - {} (simulation time) per s(real time)",
-                            currentEpochs-previousEpochs, currentIncreases-previousIncreases, currentDecreases-previousDecreases, estimatedSpeed);
-                    logger.info("ERROR   : {} ({}) delta error (critical delta) - {} global error",
-                            simulation.getScheduler().getLargestLocalError().getValue(), simulation.getScheduler().getLocalErrorUpdate(), simulation.getScheduler().getLargestGlobalError());
-                }
+                // calculate time remaining
+                logger.info("PROGRESS: {} time remaining - {} passed time in simulation",
+                        simulationStatus.getEstimatedTimeRemaining(), simulationStatus.getElapsedTime());
+                logger.info("SPEED   : {} ({},{}) epochs (increases, decreases) - {} (simulation time) per s(real time)",
+                        simulationStatus.getNumberOfEpochsSinceLastUpdate(), simulationStatus.getNumberOfTimeStepIncreasesSinceLastUpdate(), simulationStatus.getNumberOfTimeStepDecreasesSinceLastUpdate(), simulationStatus.getEstimatedSpeed());
+                logger.info("ERROR   : {} ({}) delta error (critical delta) - {} global error",
+                        simulationStatus.getLargestLocalError(), simulationStatus.getLargestLocalErrorUpdate(), simulationStatus.getLargestGlobalError());
             }
             previousTimeMillis = currentTimeMillis;
-            previousTimeSimulation = currentTimeSimulation;
-            previousEpochs = currentEpochs;
-            previousIncreases = currentIncreases;
-            previousDecreases = currentDecreases;
         }
     }
 
@@ -309,13 +288,6 @@ public class SimulationManager extends Task<Simulation> {
             for (UpdateEventListener<UpdatableUpdatedEvent> nodeEventListener : getNodeListeners()) {
                 if (nodeEventListener instanceof EpochUpdateWriter) {
                     ((EpochUpdateWriter) nodeEventListener).closeWriters();
-                }
-            }
-            for (UpdateEventListener<GraphUpdatedEvent> graphEventListener : getGraphListeners()) {
-                if (graphEventListener instanceof GraphImageWriter) {
-                    GraphImageWriter graphImageWriter = (GraphImageWriter) graphEventListener;
-                    graphImageWriter.shutDown();
-                    graphImageWriter.combineToGif();
                 }
             }
             if (terminationLatch != null) {
