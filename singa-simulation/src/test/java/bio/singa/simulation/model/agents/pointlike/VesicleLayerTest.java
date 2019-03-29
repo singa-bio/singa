@@ -53,14 +53,14 @@ class VesicleLayerTest {
 
         ComparableQuantity<Length> radius = Quantities.getQuantity(20, NANO(METRE));
         // vesicle contained
-        Vesicle v1 = new Vesicle("Contained", new Vector2D(25.0,25.0), radius);
+        Vesicle v1 = new Vesicle(new Vector2D(25.0,25.0), radius);
         // vesicle halved
-        Vesicle v2 = new Vesicle("Halved", new Vector2D(25.0,50.0), radius);
+        Vesicle v2 = new Vesicle(new Vector2D(25.0,50.0), radius);
         // vesicle quartered
-        Vesicle vSE = new Vesicle("Quartered SE", new Vector2D(50.1,50.1), radius);
-        Vesicle vSW = new Vesicle("Quartered SW", new Vector2D(99.9,50.1), radius);
-        Vesicle vNE = new Vesicle("Quartered NE", new Vector2D(50.1,99.9), radius);
-        Vesicle vNW = new Vesicle("Quartered NW", new Vector2D(99.9,99.9), radius);
+        Vesicle vSE = new Vesicle(new Vector2D(50.1,50.1), radius);
+        Vesicle vSW = new Vesicle(new Vector2D(99.9,50.1), radius);
+        Vesicle vNE = new Vesicle(new Vector2D(50.1,99.9), radius);
+        Vesicle vNW = new Vesicle(new Vector2D(99.9,99.9), radius);
 
         vesicleLayer.addVesicle(v1);
         vesicleLayer.addVesicle(v2);
@@ -71,25 +71,37 @@ class VesicleLayerTest {
 
         vesicleLayer.associateVesicles();
 
-        Set<RectangularCoordinate> coordinatesSE = vSE.getAssociatedNodes().keySet().stream().map(AutomatonNode::getIdentifier).collect(Collectors.toSet());
+        Set<RectangularCoordinate> coordinatesSE = vSE.getAssociatedNodes().keySet().stream()
+                .map(AutomatonNode::getIdentifier)
+                .collect(Collectors.toSet());
+
         assertTrue(coordinatesSE.contains(new RectangularCoordinate(1,1)));
         assertTrue(coordinatesSE.contains(new RectangularCoordinate(0,0)));
         assertTrue(coordinatesSE.contains(new RectangularCoordinate(0,1)));
         assertTrue(coordinatesSE.contains(new RectangularCoordinate(1,0)));
 
-        Set<RectangularCoordinate> coordinatesSW = vSW.getAssociatedNodes().keySet().stream().map(AutomatonNode::getIdentifier).collect(Collectors.toSet());
+        Set<RectangularCoordinate> coordinatesSW = vSW.getAssociatedNodes().keySet().stream()
+                .map(AutomatonNode::getIdentifier)
+                .collect(Collectors.toSet());
+
         assertTrue(coordinatesSW.contains(new RectangularCoordinate(2,1)));
         assertTrue(coordinatesSW.contains(new RectangularCoordinate(1,0)));
         assertTrue(coordinatesSW.contains(new RectangularCoordinate(1,1)));
         assertTrue(coordinatesSW.contains(new RectangularCoordinate(2,0)));
 
-        Set<RectangularCoordinate> coordinatesNE = vNE.getAssociatedNodes().keySet().stream().map(AutomatonNode::getIdentifier).collect(Collectors.toSet());
+        Set<RectangularCoordinate> coordinatesNE = vNE.getAssociatedNodes().keySet().stream()
+                .map(AutomatonNode::getIdentifier)
+                .collect(Collectors.toSet());
+
         assertTrue(coordinatesNE.contains(new RectangularCoordinate(1,1)));
         assertTrue(coordinatesNE.contains(new RectangularCoordinate(1,2)));
         assertTrue(coordinatesNE.contains(new RectangularCoordinate(0,1)));
         assertTrue(coordinatesNE.contains(new RectangularCoordinate(0,2)));
 
-        Set<RectangularCoordinate> coordinatesNW = vNW.getAssociatedNodes().keySet().stream().map(AutomatonNode::getIdentifier).collect(Collectors.toSet());
+        Set<RectangularCoordinate> coordinatesNW = vNW.getAssociatedNodes().keySet().stream()
+                .map(AutomatonNode::getIdentifier)
+                .collect(Collectors.toSet());
+
         assertTrue(coordinatesNW.contains(new RectangularCoordinate(2,1)));
         assertTrue(coordinatesNW.contains(new RectangularCoordinate(2,2)));
         assertTrue(coordinatesNW.contains(new RectangularCoordinate(1,1)));

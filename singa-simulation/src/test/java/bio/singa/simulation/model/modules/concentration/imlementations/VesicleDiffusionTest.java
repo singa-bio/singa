@@ -49,7 +49,7 @@ class VesicleDiffusionTest {
         Environment.setSimulationExtend(500);
         UnitRegistry.setTime(Quantities.getQuantity(1, MICRO(SECOND)));
 
-        Vesicle vesicle = new Vesicle("0",
+        Vesicle vesicle = new Vesicle(
                 new Vector2D(50, 50),
                 Quantities.getQuantity(ThreadLocalRandom.current().nextDouble(100, 200), NANO(METRE)));
 
@@ -66,9 +66,7 @@ class VesicleDiffusionTest {
         Environment.setSimulationExtend(500);
         UnitRegistry.setTime(Quantities.getQuantity(1, MICRO(SECOND)));
 
-        Vesicle vesicle = new Vesicle("0",
-                new Vector2D(50, 50),
-                Quantities.getQuantity(100, NANO(METRE)));
+        Vesicle vesicle = new Vesicle(new Vector2D(50, 50), Quantities.getQuantity(100, NANO(METRE)));
 
         assertEquals(2.1460983910913096E-9, vesicle.getFeature(Diffusivity.class).getValue().doubleValue(), 1e-8);
         UnitRegistry.setTime(Quantities.getQuantity(2, MICRO(SECOND)));
@@ -86,10 +84,7 @@ class VesicleDiffusionTest {
 
         Simulation simulation = new Simulation();
 
-        Vesicle vesicle = new Vesicle("0",
-                new Vector2D(220, 220),
-                Quantities.getQuantity(150, NANO(METRE))
-                        .to(UnitRegistry.getSpaceUnit()));
+        Vesicle vesicle = new Vesicle(new Vector2D(220, 220), Quantities.getQuantity(150, NANO(METRE)));
 
         vesicle.getConcentrationContainer().set(OUTER, water, 50.0);
 

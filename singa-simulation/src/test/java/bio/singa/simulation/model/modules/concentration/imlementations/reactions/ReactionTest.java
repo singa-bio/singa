@@ -307,10 +307,8 @@ class ReactionTest {
         VesicleLayer vesicleLayer = new VesicleLayer(simulation);
         simulation.setVesicleLayer(vesicleLayer);
 
-        ComparableQuantity<Length> radius = Quantities.getQuantity(20, NANO(METRE));
-
         // vesicle contained
-        Vesicle vesicle = new Vesicle("Vesicle", new Vector2D(25.0, 25.0), radius);
+        Vesicle vesicle = new Vesicle(new Vector2D(25.0, 25.0), Quantities.getQuantity(20, NANO(METRE)));
         vesicle.getConcentrationContainer().initialize(MEMBRANE, binder, Quantities.getQuantity(0.1, MOLE_PER_LITRE));
         vesicleLayer.addVesicle(vesicle);
 
@@ -397,10 +395,8 @@ class ReactionTest {
         VesicleLayer vesicleLayer = new VesicleLayer(simulation);
         simulation.setVesicleLayer(vesicleLayer);
 
-        ComparableQuantity<Length> radius = Quantities.getQuantity(20, NANO(METRE));
-
         // vesicle contained
-        Vesicle vesicle = new Vesicle("Vesicle", new Vector2D(25.0, 50.0), radius);
+        Vesicle vesicle = new Vesicle(new Vector2D(25.0, 50.0), Quantities.getQuantity(20, NANO(METRE)));
         vesicle.getConcentrationContainer().initialize(MEMBRANE, binder, Quantities.getQuantity(0.1, MOLE_PER_LITRE));
         vesicle.getConcentrationContainer().initialize(MEMBRANE, complex, Quantities.getQuantity(0.0, MOLE_PER_LITRE));
         vesicleLayer.addVesicle(vesicle);

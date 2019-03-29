@@ -32,13 +32,6 @@ public class CellRegion {
         MEMBRANE.addSubsection(CellTopology.OUTER, CellSubsection.SECTION_B);
     }
 
-    public static CellRegion forVesicle(String identifier) {
-        CellRegion region = new CellRegion(identifier + "-region");
-        region.addSubsection(CellTopology.OUTER, new CellSubsection(identifier + "-cargo"));
-        region.addSubsection(CellTopology.MEMBRANE, new CellSubsection(identifier + "-coat"));
-        return region;
-    }
-
     private String identifier;
     private GoTerm goTerm;
     private Map<CellTopology, CellSubsection> cellSubSections;

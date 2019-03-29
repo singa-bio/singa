@@ -16,12 +16,17 @@ public interface Updatable {
     String getStringIdentifier();
 
     ConcentrationDeltaManager getConcentrationManager();
+
     ConcentrationContainer getConcentrationContainer();
+
     void addPotentialDelta(ConcentrationDelta potentialDelta);
 
     CellRegion getCellRegion();
+
     Set<CellSubsection> getAllReferencedSections();
 
     void setObserved(boolean observed);
+
     boolean isObserved();
+
 }

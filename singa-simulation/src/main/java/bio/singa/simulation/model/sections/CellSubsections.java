@@ -32,6 +32,9 @@ public class CellSubsections {
     public static final CellSubsection EARLY_ENDOSOME_MEMBRANE = addSection(new CellSubsection("early endosome membrane", new GoTerm("GO:0031901", GOA_DATABASE)), orange);
     public static final CellSubsection EXTRACELLULAR_REGION = addSection(new CellSubsection("extracellular region", new GoTerm("GO:0005576", GOA_DATABASE)), lightBlue);
 
+    public static final CellSubsection VESICLE_MEMBRANE = new CellSubsection("vesicle membrane", new GoTerm("GO:0012506", GOA_DATABASE));
+    public static final CellSubsection VESICLE_LUMEN = new CellSubsection("vesicle lumen", new GoTerm("GO:0031983", GOA_DATABASE));
+
     private static CellSubsection addSection(CellSubsection subsection, Color color) {
         colorMap.put(subsection.getGoTerm(), color);
         return subsection;

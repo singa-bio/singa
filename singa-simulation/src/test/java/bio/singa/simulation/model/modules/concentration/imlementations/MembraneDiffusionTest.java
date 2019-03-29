@@ -119,11 +119,7 @@ class MembraneDiffusionTest {
 
         Simulation simulation = new Simulation();
 
-        Vesicle vesicle = new Vesicle("0",
-                new Vector2D(20, 20),
-                Quantities.getQuantity(ThreadLocalRandom.current()
-                        .nextDouble(100, 200), NANO(METRE))
-                        .to(UnitRegistry.getSpaceUnit()));
+        Vesicle vesicle = new Vesicle(new Vector2D(20, 20), Quantities.getQuantity(ThreadLocalRandom.current().nextDouble(100, 200), NANO(METRE)));
 
         vesicle.getConcentrationContainer().initialize(OUTER, water, Quantities.getQuantity(50.0, MOLE_PER_LITRE));
 

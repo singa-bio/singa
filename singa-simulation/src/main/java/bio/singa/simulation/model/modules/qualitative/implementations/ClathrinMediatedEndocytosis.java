@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
-import static bio.singa.simulation.model.agents.pointlike.Vesicle.vesicleCounter;
 import static bio.singa.simulation.model.sections.CellTopology.MEMBRANE;
 
 /**
@@ -216,7 +215,7 @@ public class ClathrinMediatedEndocytosis extends QualitativeModule {
     private void spawnVesicles() {
         for (Pit maturedPit : maturedPits) {
             logger.trace("Clathrin-coated pit at {} formed vesicle with {} cargo molecules.", maturedPit.spawnSite, MolarConcentration.concentrationToMolecules(maturedPit.getCargoConcentration()).getValue());
-            Vesicle vesicle = new Vesicle("Vesicle (endocytosis) " + vesicleCounter.getAndIncrement(), maturedPit.getSpawnSite(), maturedPit.getSpawnRadius());
+            Vesicle vesicle = new Vesicle(maturedPit.getSpawnSite(), maturedPit.getSpawnRadius());
             vesicle.setState(VesicleStateRegistry.ACTIN_PROPELLED);
             initializeCargo(vesicle, maturedPit);
             simulation.getVesicleLayer().addVesicle(vesicle);

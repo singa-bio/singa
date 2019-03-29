@@ -76,6 +76,6 @@ public class RectangularCoordinate implements DiscreteCoordinate<RectangularCoor
 
     @Override
     public String toString() {
-        return "(" + column + ", " + row + ")";
+        return "(" + column + "," + row + ")";
     }
 }

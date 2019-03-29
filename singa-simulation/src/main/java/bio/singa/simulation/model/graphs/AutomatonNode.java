@@ -109,7 +109,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
 
     @Override
     public String getStringIdentifier() {
-        return "Node " + getIdentifier().toString();
+        return "n" + getIdentifier().toString();
     }
 
     /**

@@ -37,10 +37,7 @@ class VesicleCytoplasmDiffusionTest {
         Simulation simulation = new Simulation();
 
         Vector2D previousPosition = new Vector2D(220, 220);
-        Vesicle vesicle = new Vesicle("0",
-                previousPosition,
-                Quantities.getQuantity(150, NANO(METRE))
-                        .to(UnitRegistry.getSpaceUnit()));
+        Vesicle vesicle = new Vesicle(previousPosition, Quantities.getQuantity(150, NANO(METRE)));
 
         // add vesicle transport layer
         VesicleLayer layer = new VesicleLayer(simulation);
@@ -76,7 +73,7 @@ class VesicleCytoplasmDiffusionTest {
         Environment.setSimulationExtend(100);
         // initialize vesicle
         Vector2D initialPosition = new Vector2D(50, 50);
-        Vesicle vesicle = new Vesicle("0", initialPosition, Quantities.getQuantity(100, NANO(METRE)));
+        Vesicle vesicle = new Vesicle(initialPosition, Quantities.getQuantity(100, NANO(METRE)));
         // add vesicle transport layer
         VesicleLayer layer = new VesicleLayer(simulation);
         layer.addVesicle(vesicle);

@@ -6,6 +6,8 @@ import bio.singa.features.model.Feature;
 import bio.singa.features.model.FeatureContainer;
 import bio.singa.features.model.Featureable;
 import bio.singa.features.parameters.Environment;
+import bio.singa.features.quantities.Geometry;
+import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.geometry.faces.Circle;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.simulation.model.agents.linelike.LineLikeAgent;
@@ -15,10 +17,7 @@ import bio.singa.simulation.model.modules.concentration.ConcentrationDeltaManage
 import bio.singa.simulation.model.modules.displacement.DisplacementBasedModule;
 import bio.singa.simulation.model.modules.displacement.DisplacementDelta;
 import bio.singa.simulation.model.modules.displacement.DisplacementDeltaManager;
-import bio.singa.simulation.model.sections.CellRegion;
-import bio.singa.simulation.model.sections.CellSubsection;
-import bio.singa.simulation.model.sections.CellTopology;
-import bio.singa.simulation.model.sections.ConcentrationContainer;
+import bio.singa.simulation.model.sections.*;
 import bio.singa.simulation.model.simulation.Updatable;
 
 import javax.measure.Quantity;
@@ -27,6 +26,8 @@ import javax.measure.quantity.Length;
 import javax.measure.quantity.Volume;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import static bio.singa.simulation.model.sections.CellRegions.*;
 
 /**
  * @author cl
@@ -59,30 +60,12 @@ public class Vesicle implements Updatable, Featureable {
     private LineLikeAgent attachedFilament;
     private ListIterator<Vector2D> segmentIterator;
 
-    /**
-     * The volume of a sphere is calculated by
-     * V = 4/3 * pi * radius * radius * radius
-     *
-     * @param radius the radius of the vesicle
-     * @return The volume.
-     */
-    private static Quantity<Volume> calculateVolume(Quantity<Length> radius) {
-        return radius.multiply(radius).multiply(radius).multiply(Math.PI).multiply(4.0 / 3.0).asType(Volume.class);
+    private static String generateIdentifier() {
+        return "v"+vesicleCounter.getAndIncrement();
     }
 
-    /**
-     * The area of a sphere is calculated by
-     * V = 4/3 * pi * radius * radius * radius
-     *
-     * @param radius the radius of the vesicle
-     * @return The area.
-     */
-    private static Quantity<Area> calculateArea(Quantity<Length> radius) {
-        return radius.multiply(radius).multiply(Math.PI).multiply(4.0).asType(Area.class);
-    }
-
-    public Vesicle(String identifier, CellRegion region, Vector2D position, Quantity<Length> radius) {
-        this.identifier = identifier;
+    public Vesicle(CellRegion region, Vector2D position, Quantity<Length> radius) {
+        identifier = generateIdentifier();
         this.region = region;
         features = new ChemistryFeatureContainer();
         setRadius(radius);
@@ -92,12 +75,8 @@ public class Vesicle implements Updatable, Featureable {
         state = VesicleStateRegistry.UNATTACHED;
     }
 
-    public Vesicle(String identifier, Vector2D position, Quantity<Length> radius) {
-        this(identifier, CellRegion.forVesicle(identifier), position, radius);
-    }
-
     public Vesicle(Vector2D position, Quantity<Length> radius) {
-        this("Vesicle " + vesicleCounter.getAndIncrement(), position, radius);
+        this(VESICLE_REGION, position, radius);
     }
 
     @Override
@@ -181,9 +160,9 @@ public class Vesicle implements Updatable, Featureable {
     }
 
     public void setRadius(Quantity<Length> radius) {
-        this.radius = radius;
-        area = calculateArea(radius);
-        volume = calculateVolume(radius);
+        this.radius = radius.to(UnitRegistry.getSpaceUnit());
+        area = Geometry.calculateArea(radius);
+        volume = Geometry.calculateVolume(radius);
         setFeature(Diffusivity.calculate(radius));
     }
 
@@ -298,7 +277,7 @@ public class Vesicle implements Updatable, Featureable {
 
     @Override
     public String toString() {
-        return "Vesicle: " + identifier + " radius = " + radius + " " + " position = " + displacementManager.getCurrentPosition();
+        return identifier + " radius = " + radius + " " + " position = " + displacementManager.getCurrentPosition();
     }
 
 }
