@@ -101,16 +101,6 @@ public class VariationSet {
         }
     }
 
-    public static void createFolderForVariationSet(Path currentVariationSetPath) {
-        if (!Files.exists(currentVariationSetPath)) {
-            try {
-                Files.createDirectories(currentVariationSetPath);
-            } catch (IOException e) {
-                throw new UncheckedIOException("Unable to create folder " + currentVariationSetPath + " for current simulation variation.", e);
-            }
-        }
-    }
-
     public static void writeVariationLog(Path currentVariationSetPath, List<?> currentVariationSet) {
         String collect = currentVariationSet.stream()
                 .map(Object::toString)

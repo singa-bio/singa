@@ -79,6 +79,10 @@ public class Vesicle implements Updatable, Featureable {
         this(VESICLE_REGION, position, radius);
     }
 
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
+    }
+
     @Override
     public String getStringIdentifier() {
         return identifier;

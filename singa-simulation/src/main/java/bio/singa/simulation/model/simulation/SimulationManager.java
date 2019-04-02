@@ -6,6 +6,7 @@ import bio.singa.features.units.UnitRegistry;
 import bio.singa.simulation.events.*;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonNode;
+import bio.singa.simulation.trajectories.flat.FlatUpdateRecorder;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import org.slf4j.Logger;
@@ -26,7 +27,7 @@ import static tec.uom.se.unit.Units.SECOND;
 
 /**
  * Changes in simulations can be observed by tagging {@link AutomatonNode}s of the {@link AutomatonGraph}. As a standard
- * implementation there is the {@link EpochUpdateWriter} that can be added to the Simulation that will write log files
+ * implementation there is the {@link FlatUpdateRecorder} that can be added to the Simulation that will write log files
  * to the specified file locations.
  *
  * @author cl
@@ -286,8 +287,8 @@ public class SimulationManager extends Task<Simulation> {
         try {
             logger.info("Simulation finished.");
             for (UpdateEventListener<UpdatableUpdatedEvent> nodeEventListener : getNodeListeners()) {
-                if (nodeEventListener instanceof EpochUpdateWriter) {
-                    ((EpochUpdateWriter) nodeEventListener).closeWriters();
+                if (nodeEventListener instanceof FlatUpdateRecorder) {
+                    ((FlatUpdateRecorder) nodeEventListener).closeWriters();
                 }
             }
             if (terminationLatch != null) {

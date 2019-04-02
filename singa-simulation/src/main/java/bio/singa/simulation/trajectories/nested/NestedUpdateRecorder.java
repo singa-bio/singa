@@ -1,4 +1,4 @@
-package bio.singa.simulation.trajectories;
+package bio.singa.simulation.trajectories.nested;
 
 import bio.singa.core.events.UpdateEventListener;
 import bio.singa.features.quantities.MolarConcentration;
@@ -11,15 +11,15 @@ import javax.measure.quantity.Time;
 /**
  * @author cl
  */
-public class TrajectoryObserver implements UpdateEventListener<GraphUpdatedEvent> {
+public class NestedUpdateRecorder implements UpdateEventListener<GraphUpdatedEvent> {
 
     private Trajectories trajectories;
 
-    public TrajectoryObserver() {
+    public NestedUpdateRecorder() {
         trajectories = new Trajectories(UnitRegistry.getTimeUnit(), UnitRegistry.getConcentrationUnit());
     }
 
-    public TrajectoryObserver(Unit<Time> timeUnit, Unit<MolarConcentration> concentrationUnit) {
+    public NestedUpdateRecorder(Unit<Time> timeUnit, Unit<MolarConcentration> concentrationUnit) {
         trajectories = new Trajectories(timeUnit, concentrationUnit);
     }
 

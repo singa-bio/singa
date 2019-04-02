@@ -32,10 +32,6 @@ public class TimeFormatter implements QuantityFormatter<Time> {
         }
     }
 
-    private TimeFormatter() {
-
-    }
-
     @Override
     public String format(Quantity<Time> time) {
         int bestInformativeDigits = Integer.MAX_VALUE;

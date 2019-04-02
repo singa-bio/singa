@@ -9,6 +9,10 @@ import java.text.DecimalFormat;
  */
 public class GeneralQuantityFormatter<UnitType extends Quantity<UnitType>> implements QuantityFormatter<UnitType> {
 
+    public static <UnitType  extends Quantity<UnitType>> QuantityFormatter<UnitType> forUnit(Unit<UnitType> targetUnit) {
+        return new GeneralQuantityFormatter<>(targetUnit);
+    }
+
     private static final DecimalFormat DEFAULT_VALUE_FORMAT = new DecimalFormat("0.0000");
 
     private DecimalFormat valueFormat;

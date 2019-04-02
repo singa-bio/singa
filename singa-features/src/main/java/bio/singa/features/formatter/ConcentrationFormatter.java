@@ -11,7 +11,7 @@ import java.text.DecimalFormat;
  */
 public class ConcentrationFormatter extends GeneralQuantityFormatter<MolarConcentration> implements GeneralConcentrationFormatter {
 
-    public static ConcentrationFormatter forUnit(Unit<MolarConcentration> targetUnit) {
+    public static ConcentrationFormatter create(Unit<MolarConcentration> targetUnit) {
         return new ConcentrationFormatter(targetUnit);
     }
 

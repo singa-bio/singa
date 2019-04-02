@@ -77,7 +77,7 @@ public class OrganelleImageParser {
                 throw new UncheckedIOException("Filament image could not be parsed.", e);
             }
         } else {
-            throw new IllegalArgumentException("Image folder " + imageFolder + " is no folder.");
+            throw new IllegalArgumentException("Image directory " + imageFolder + " is no directory.");
         }
 
         Collections.sort(filamentFiles);

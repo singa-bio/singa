@@ -1,4 +1,4 @@
-package bio.singa.simulation.trajectories;
+package bio.singa.simulation.trajectories.nested;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.features.quantities.MolarConcentration;
