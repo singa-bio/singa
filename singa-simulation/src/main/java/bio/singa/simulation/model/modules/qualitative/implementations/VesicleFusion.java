@@ -166,7 +166,7 @@ public class VesicleFusion extends QualitativeModule {
                     vesicle.getState() == VesicleStateRegistry.MEMBRANE_TETHERED) {
                 continue;
             }
-            Vector2D currentPosition = vesicle.getCurrentPosition();
+            Vector2D currentPosition = vesicle.getPosition();
             // for each associated node
             nodesLoop:
             for (Map.Entry<AutomatonNode, Double> entry : vesicle.getAssociatedNodes().entrySet()) {

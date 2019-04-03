@@ -88,7 +88,8 @@ public class Vesicle implements Updatable, Featureable {
         return identifier;
     }
 
-    public Vector2D getCurrentPosition() {
+    @Override
+    public Vector2D getPosition() {
         return displacementManager.getCurrentPosition();
     }
 

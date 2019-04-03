@@ -127,7 +127,7 @@ public class DisplacementBasedModule implements UpdateModule {
     private void logDelta(Vesicle vesicle, DisplacementDelta delta) {
         logger.trace("Displacement delta for {} at {} is {}",
                 vesicle.getStringIdentifier(),
-                vesicle.getCurrentPosition(),
+                vesicle.getPosition(),
                 delta.getDeltaVector());
     }
 

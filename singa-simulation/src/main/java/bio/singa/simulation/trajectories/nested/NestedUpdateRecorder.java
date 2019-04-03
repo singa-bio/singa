@@ -4,6 +4,7 @@ import bio.singa.core.events.UpdateEventListener;
 import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.simulation.events.GraphUpdatedEvent;
+import bio.singa.simulation.model.simulation.Simulation;
 
 import javax.measure.Unit;
 import javax.measure.quantity.Time;
@@ -14,12 +15,15 @@ import javax.measure.quantity.Time;
 public class NestedUpdateRecorder implements UpdateEventListener<GraphUpdatedEvent> {
 
     private Trajectories trajectories;
+    private Simulation simulation;
 
-    public NestedUpdateRecorder() {
-        trajectories = new Trajectories(UnitRegistry.getTimeUnit(), UnitRegistry.getConcentrationUnit());
+    public NestedUpdateRecorder(Simulation simulation) {
+        this(simulation, UnitRegistry.getTimeUnit(), UnitRegistry.getConcentrationUnit());
+
     }
 
-    public NestedUpdateRecorder(Unit<Time> timeUnit, Unit<MolarConcentration> concentrationUnit) {
+    public NestedUpdateRecorder(Simulation simulation, Unit<Time> timeUnit, Unit<MolarConcentration> concentrationUnit) {
+        this.simulation = simulation;
         trajectories = new Trajectories(timeUnit, concentrationUnit);
     }
 
@@ -30,7 +34,7 @@ public class NestedUpdateRecorder implements UpdateEventListener<GraphUpdatedEve
     @Override
     public void onEventReceived(GraphUpdatedEvent event) {
         trajectories.addTrajectoryData(event.getElapsedTime().to(trajectories.getTimeUnit()).getValue().doubleValue(),
-                TrajectoryData.of(event.getGraph().getNodes(), trajectories.getConcentrationUnit()));
+                TrajectoryData.of(simulation.getUpdatables(), trajectories.getConcentrationUnit()));
     }
 
 }

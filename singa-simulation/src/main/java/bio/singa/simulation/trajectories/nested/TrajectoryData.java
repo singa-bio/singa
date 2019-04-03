@@ -1,33 +1,33 @@
 package bio.singa.simulation.trajectories.nested;
 
 import bio.singa.features.quantities.MolarConcentration;
-import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.simulation.Updatable;
 
 import javax.measure.Unit;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.Comparator;
 import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * @author cl
  */
 public class TrajectoryData {
 
-    private Map<Updatable, ConcentrationData> concentrationData;
+    private Map<Updatable, TrajactoryDataPoint> concentrationData;
 
     private TrajectoryData() {
-        concentrationData = new HashMap<>();
+        concentrationData = new TreeMap<>(Comparator.comparing(Updatable::getStringIdentifier, String::compareTo));
     }
 
-    public Map<Updatable, ConcentrationData> getConcentrationData() {
+    public Map<Updatable, TrajactoryDataPoint> getConcentrationData() {
         return concentrationData;
     }
 
-    public static TrajectoryData of(Collection<AutomatonNode> updatables, Unit<MolarConcentration> concentrationUnit) {
+    public static TrajectoryData of(Collection<Updatable> updatables, Unit<MolarConcentration> concentrationUnit) {
         TrajectoryData data = new TrajectoryData();
         for (Updatable updatable : updatables) {
-            data.concentrationData.put(updatable, ConcentrationData.of(updatable, concentrationUnit));
+            data.concentrationData.put(updatable, TrajactoryDataPoint.of(updatable, concentrationUnit));
         }
         return data;
     }

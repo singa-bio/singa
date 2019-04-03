@@ -45,7 +45,7 @@ public class VesicleTransport extends DisplacementBasedModule {
         if (vesicle.getTargetDirection().equals(MINUS)) {
             // to get to minus go to next
             Pair<Vector2D> surroundingSegments = scoutMinusEnd(segmentIterator);
-            Vector2D currentPosition = vesicle.getCurrentPosition();
+            Vector2D currentPosition = vesicle.getPosition();
             double distanceNext = currentPosition.distanceTo(surroundingSegments.getFirst());
             if (surroundingSegments.getSecond() != null) {
                 double distanceAfterNext = currentPosition.distanceTo(surroundingSegments.getSecond());
@@ -57,7 +57,7 @@ public class VesicleTransport extends DisplacementBasedModule {
         } else {
             // to get to plus go to previous
             Pair<Vector2D> surroundingSegments = scoutPlusEnd(segmentIterator);
-            Vector2D currentPosition = vesicle.getCurrentPosition();
+            Vector2D currentPosition = vesicle.getPosition();
             double distancePrevious = currentPosition.distanceTo(surroundingSegments.getFirst());
             if (surroundingSegments.getSecond() != null) {
                 double distanceAfterPrevious = currentPosition.distanceTo(surroundingSegments.getSecond());

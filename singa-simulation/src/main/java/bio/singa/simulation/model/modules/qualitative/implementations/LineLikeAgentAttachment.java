@@ -70,7 +70,7 @@ public class LineLikeAgentAttachment extends QualitativeModule {
     }
 
     private AttachmentInformation determineClosestSegment(Vesicle vesicle) {
-        Vector2D centre = vesicle.getCurrentPosition();
+        Vector2D centre = vesicle.getPosition();
         LineLikeAgent closestFilament = null;
         Vector2D closestSegment = null;
         double closestDistance = Double.MAX_VALUE;

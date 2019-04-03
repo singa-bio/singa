@@ -1,5 +1,6 @@
 package bio.singa.simulation.model.simulation;
 
+import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.simulation.model.modules.concentration.ConcentrationDelta;
 import bio.singa.simulation.model.modules.concentration.ConcentrationDeltaManager;
 import bio.singa.simulation.model.sections.CellRegion;
@@ -14,6 +15,8 @@ import java.util.Set;
 public interface Updatable {
 
     String getStringIdentifier();
+
+    Vector2D getPosition();
 
     ConcentrationDeltaManager getConcentrationManager();
 

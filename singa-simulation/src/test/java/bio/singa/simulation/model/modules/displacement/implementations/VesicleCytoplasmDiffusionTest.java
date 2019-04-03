@@ -55,7 +55,7 @@ class VesicleCytoplasmDiffusionTest {
 
         for (int i = 0; i < 10; i++) {
             simulation.nextEpoch();
-            Vector2D currentPosition = simulation.getVesicleLayer().getVesicles().get(0).getCurrentPosition();
+            Vector2D currentPosition = simulation.getVesicleLayer().getVesicles().get(0).getPosition();
             assertNotEquals(currentPosition, previousPosition);
             previousPosition = currentPosition;
         }
@@ -88,7 +88,7 @@ class VesicleCytoplasmDiffusionTest {
         // check distance travelled
         for (int i = 0; i < 10; i++) {
             simulation.nextEpoch();
-            Vector2D currentPosition = simulation.getVesicleLayer().getVesicles().iterator().next().getCurrentPosition();
+            Vector2D currentPosition = simulation.getVesicleLayer().getVesicles().iterator().next().getPosition();
             double distance = initialPosition.subtract(currentPosition).getMagnitude()/UnitRegistry.getTimeScale();
             // variance is high because of random gaussian
             assertEquals(0.000346, distance, 8e-3);

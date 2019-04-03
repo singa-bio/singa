@@ -109,8 +109,8 @@ public class VesicleLayer {
             if (simulation.getMembraneLayer() != null) {
                 for (Membrane macroscopicMembrane : simulation.getMembraneLayer().getMembranes()) {
                     for (MembraneSegment membraneSegment : macroscopicMembrane.getSegments()) {
-                        if (!vesicle1.getCurrentPosition().equals(vesicle1.getNextPosition())) {
-                            SimpleLineSegment displacementVector = new SimpleLineSegment(vesicle1.getCurrentPosition(), vesicle1.getNextPosition());
+                        if (!vesicle1.getPosition().equals(vesicle1.getNextPosition())) {
+                            SimpleLineSegment displacementVector = new SimpleLineSegment(vesicle1.getPosition(), vesicle1.getNextPosition());
                             if (displacementVector.getIntersectionWith(membraneSegment).isPresent()) {
                                 vesicle1.resetNextPosition();
                                 continue vesicleLoop;
@@ -181,7 +181,7 @@ public class VesicleLayer {
             // get representative region of the node
             Polygon polygon = node.getSpatialRepresentation();
             // associate vesicle to the node with the largest part of the vesicle (midpoint is inside)
-            if (polygon.isInside(vesicle.getCurrentPosition())) {
+            if (polygon.isInside(vesicle.getPosition())) {
                 // check if vesicle intersects with more than two regions at once
                 for (Vector2D polygonVertex : polygon.getVertices()) {
                     // this is the case if the distance to the edge is smaller than the radius

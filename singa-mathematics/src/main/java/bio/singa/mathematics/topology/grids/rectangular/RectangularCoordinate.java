@@ -2,6 +2,7 @@ package bio.singa.mathematics.topology.grids.rectangular;
 
 import bio.singa.mathematics.topology.model.DiscreteCoordinate;
 
+import java.util.Comparator;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -10,6 +11,13 @@ import java.util.regex.Pattern;
  * @author cl
  */
 public class RectangularCoordinate implements DiscreteCoordinate<RectangularCoordinate, NeumannRectangularDirection> {
+
+    public static Comparator<RectangularCoordinate> COLUMN_FIRST = Comparator.comparing(RectangularCoordinate::getColumn)
+            .thenComparing(RectangularCoordinate::getRow);
+
+    public static Comparator<RectangularCoordinate> ROW_FIRST = Comparator.comparing(RectangularCoordinate::getRow)
+            .thenComparing(RectangularCoordinate::getColumn);
+
 
     private final int column;
     private final int row;
