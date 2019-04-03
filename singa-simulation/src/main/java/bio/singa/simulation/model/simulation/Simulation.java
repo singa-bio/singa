@@ -17,6 +17,7 @@ import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.modules.UpdateModule;
 import bio.singa.simulation.model.modules.concentration.ConcentrationDelta;
+import bio.singa.simulation.model.modules.displacement.DisplacementBasedModule;
 import bio.singa.simulation.model.rules.AssignmentRule;
 import bio.singa.simulation.model.rules.AssignmentRules;
 import bio.singa.simulation.model.sections.concentration.ConcentrationInitializer;
@@ -99,11 +100,12 @@ public class Simulation {
 
     private ConcentrationInitializer concentrationInitializer;
 
-    private boolean initializationDone;
-
     private Quantity<Time> maximalTimeStep;
 
     private Map<Updatable, List<ConcentrationDelta>> observedDeltas;
+
+    private boolean initializationDone;
+    private boolean vesiclesWillMove;
 
     /**
      * Creates a new plain simulation.
@@ -115,6 +117,7 @@ public class Simulation {
         elapsedTime = Quantities.getQuantity(0.0, UnitRegistry.getTimeUnit());
         epoch = 0;
         initializationDone = false;
+        vesiclesWillMove = false;
         observedUpdatables = new HashSet<>();
         vesicleLayer = new VesicleLayer(this);
         scheduler = new UpdateScheduler(this);
@@ -157,17 +160,22 @@ public class Simulation {
                 updatable.getConcentrationManager().applyDeltas();
             }
         }
-        // move vesicles
-        if (vesicleLayer != null) {
+
+        if (vesicleLayer != null && vesiclesWillMove) {
+            // move vesicles
             vesicleLayer.applyDeltas();
+            // associate nodes
             vesicleLayer.associateVesicles();
+
         }
+
         // update epoch and elapsed time
         updateEpoch();
         // if time step did not change it can possibly be increased
         if (timeStepShouldIncrease()) {
             scheduler.increaseTimeStep();
         }
+
     }
 
 
@@ -217,6 +225,12 @@ public class Simulation {
             logger.info("Module {}", module.getIdentifier());
             for (Feature<?> feature : module.getFeatures()) {
                 logger.info("  Feature {} = {}", feature.getClass().getSimpleName(), feature.getContent());
+            }
+            // save some computation time in case vesicles will not move; this effects:
+            // associations between nodes and vesicles are only calculated once
+            // no collisions are checked
+            if (module instanceof DisplacementBasedModule) {
+                vesiclesWillMove = true;
             }
         }
     }

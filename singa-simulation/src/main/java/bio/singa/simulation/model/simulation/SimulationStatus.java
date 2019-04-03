@@ -80,7 +80,7 @@ public class SimulationStatus implements UpdateEventListener<GraphUpdatedEvent> 
         estimatedTimeRemaining = Quantities.getQuantity(estimatedMillisRemaining, MILLI(SECOND));
         // calculate speed
         double speedInMicroSecondsPerSecond = currentTimeSimulation.subtract(previousTimeSimulation).getValue().doubleValue() / Quantities.getQuantity(currentTimeMillis - previousTimeMillis, MILLI(SECOND)).to(SECOND).getValue().doubleValue();
-        estimatedSpeed =  Quantities.getQuantity(speedInMicroSecondsPerSecond, MICRO(SECOND));
+        estimatedSpeed = Quantities.getQuantity(speedInMicroSecondsPerSecond, MICRO(SECOND));
         // update previous values
         previousTimeMillis = currentTimeMillis;
         previousTimeSimulation = currentTimeSimulation;
@@ -115,11 +115,17 @@ public class SimulationStatus implements UpdateEventListener<GraphUpdatedEvent> 
     }
 
     public String getEstimatedTimeRemaining() {
-        return TimeFormatter.formatTime(estimatedTimeRemaining);
+        if (estimatedTimeRemaining != null) {
+            return TimeFormatter.formatTime(estimatedTimeRemaining);
+        }
+        return "";
     }
 
     public String getEstimatedSpeed() {
-        return TimeFormatter.formatTime(estimatedSpeed);
+        if (estimatedSpeed != null) {
+            return TimeFormatter.formatTime(estimatedSpeed);
+        }
+        return "";
     }
 
     public String getElapsedTime() {
@@ -127,7 +133,10 @@ public class SimulationStatus implements UpdateEventListener<GraphUpdatedEvent> 
     }
 
     public String getAccuracyGain() {
-        return simulation.getScheduler().getAccuracyGain().toString();
+        if (simulation.getScheduler().getAccuracyGain() != null) {
+            return simulation.getScheduler().getAccuracyGain().toString();
+        }
+        return "";
     }
 
 }

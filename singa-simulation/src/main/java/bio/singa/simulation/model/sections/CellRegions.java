@@ -19,7 +19,7 @@ public class CellRegions {
     public static final CellRegion VESICLE_REGION = new CellRegion("vesicle", new GoTerm("GO:0031982", GOA_DATABASE));
 
     static {
-                CYTOPLASM_REGION.addSubsection(CellTopology.INNER, CellSubsections.CYTOPLASM);
+        CYTOPLASM_REGION.addSubsection(CellTopology.INNER, CellSubsections.CYTOPLASM);
         EXTRACELLULAR_REGION.addSubsection(CellTopology.INNER, CellSubsections.EXTRACELLULAR_REGION);
 
         CELL_OUTER_MEMBRANE_REGION.addSubsection(CellTopology.INNER, CellSubsections.CYTOPLASM);
@@ -27,7 +27,7 @@ public class CellRegions {
         CELL_OUTER_MEMBRANE_REGION.addSubsection(CellTopology.OUTER, CellSubsections.EXTRACELLULAR_REGION);
 
         VESICLE_REGION.addSubsection(CellTopology.MEMBRANE, CellSubsections.VESICLE_MEMBRANE);
-        VESICLE_REGION.addSubsection(CellTopology.INNER, CellSubsections.VESICLE_LUMEN);
+        VESICLE_REGION.addSubsection(CellTopology.OUTER, CellSubsections.VESICLE_LUMEN);
     }
 
 }

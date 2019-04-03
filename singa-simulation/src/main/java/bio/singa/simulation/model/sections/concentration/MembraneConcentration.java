@@ -81,11 +81,7 @@ public class MembraneConcentration implements InitialConcentration {
     @Override
     public void initialize(Updatable updatable) {
         // if this is vesicle
-        if (updatable instanceof Vesicle) {
-            if (!updatable.getStringIdentifier().startsWith(region.getIdentifier())) {
-                return;
-            }
-        } else if (!updatable.getCellRegion().equals(region)) {
+        if (!updatable.getCellRegion().equals(region)) {
             // skip wrong regions
             return;
         }
