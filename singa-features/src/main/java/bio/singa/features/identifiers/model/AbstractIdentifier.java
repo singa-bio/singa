@@ -1,7 +1,7 @@
 package bio.singa.features.identifiers.model;
 
 import bio.singa.features.model.Evidence;
-import bio.singa.features.model.QualitativeFeature;
+import bio.singa.features.model.StringFeature;
 
 import java.util.regex.Pattern;
 
@@ -11,10 +11,10 @@ import java.util.regex.Pattern;
  *
  * @author cl
  */
-public abstract class AbstractIdentifier extends QualitativeFeature<String> implements Identifier  {
+public abstract class AbstractIdentifier extends StringFeature implements Identifier  {
 
     public AbstractIdentifier(String identifier, Pattern pattern) {
-        this(identifier, pattern, Evidence.NO_EVIDENCE);
+        this(identifier, pattern, null);
     }
 
     public AbstractIdentifier(String identifier, Pattern pattern, Evidence evidence) throws IllegalArgumentException {
@@ -29,4 +29,5 @@ public abstract class AbstractIdentifier extends QualitativeFeature<String> impl
     public String toString() {
         return getContent();
     }
+
 }

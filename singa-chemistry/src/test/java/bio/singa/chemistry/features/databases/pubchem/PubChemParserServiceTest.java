@@ -5,6 +5,7 @@ import bio.singa.chemistry.features.logp.LogP;
 import bio.singa.chemistry.features.smiles.Smiles;
 import bio.singa.features.identifiers.ChEBIIdentifier;
 import bio.singa.features.identifiers.InChIKey;
+import bio.singa.features.identifiers.PubChemIdentifier;
 import bio.singa.structure.features.molarmass.MolarMass;
 import org.junit.jupiter.api.Test;
 
@@ -19,7 +20,7 @@ class PubChemParserServiceTest {
     void shouldParseSpecies() {
         SmallMolecule species = PubChemParserService.parse("CID:962");
         // name
-        assertEquals("water", species.getName().toLowerCase());
+        assertEquals("water", species.getNames().iterator().next().toLowerCase());
         // molar mass
         assertEquals(18.015, species.getFeature(MolarMass.class).getValue().doubleValue());
         // molar mass
@@ -34,7 +35,10 @@ class PubChemParserServiceTest {
 
     @Test
     void shouldResolveInChIKey() {
-        SmallMolecule species = new SmallMolecule.Builder("CID:5957").name("ATP").build();
+        SmallMolecule species = SmallMolecule.create("CID:5957")
+                .additionalIdentifier(new PubChemIdentifier("CID:5957"))
+                .build();
+
         InChIKey feature = species.getFeature(InChIKey.class);
         assertEquals("ZKHQWZAMYRWXGA-KQYNXXCUSA-N", feature.getContent());
     }

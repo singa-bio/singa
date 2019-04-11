@@ -6,20 +6,18 @@ import bio.singa.features.model.Feature;
 import bio.singa.features.model.FeatureContainer;
 import bio.singa.features.model.Featureable;
 import bio.singa.features.parameters.Environment;
+import bio.singa.features.quantities.Geometry;
+import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.geometry.faces.Circle;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.simulation.model.agents.linelike.LineLikeAgent;
 import bio.singa.simulation.model.graphs.AutomatonNode;
-import bio.singa.simulation.model.modules.UpdateModule;
 import bio.singa.simulation.model.modules.concentration.ConcentrationDelta;
 import bio.singa.simulation.model.modules.concentration.ConcentrationDeltaManager;
 import bio.singa.simulation.model.modules.displacement.DisplacementBasedModule;
 import bio.singa.simulation.model.modules.displacement.DisplacementDelta;
 import bio.singa.simulation.model.modules.displacement.DisplacementDeltaManager;
-import bio.singa.simulation.model.sections.CellRegion;
-import bio.singa.simulation.model.sections.CellSubsection;
-import bio.singa.simulation.model.sections.CellTopology;
-import bio.singa.simulation.model.sections.ConcentrationContainer;
+import bio.singa.simulation.model.sections.*;
 import bio.singa.simulation.model.simulation.Updatable;
 
 import javax.measure.Quantity;
@@ -29,15 +27,14 @@ import javax.measure.quantity.Volume;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static bio.singa.simulation.features.MotorPullDirection.Direction;
-import static bio.singa.simulation.model.agents.pointlike.VesicleStateRegistry.VesicleState;
+import static bio.singa.simulation.model.sections.CellRegions.*;
 
 /**
  * @author cl
  */
 public class Vesicle implements Updatable, Featureable {
 
-    private static AtomicInteger vesicleCounter = new AtomicInteger();
+    public static AtomicInteger vesicleCounter = new AtomicInteger();
 
     protected static final Set<Class<? extends Feature>> availableFeatures = new HashSet<>();
 
@@ -58,46 +55,32 @@ public class Vesicle implements Updatable, Featureable {
     private CellRegion region;
     private Map<AutomatonNode, Double> associatedNodes;
 
-    private VesicleState vesicleState;
-    private Direction targetDirection;
+    private String state;
+    private String targetDirection;
     private LineLikeAgent attachedFilament;
     private ListIterator<Vector2D> segmentIterator;
 
-    /**
-     * The volume of a sphere is calculated by
-     * V = 4/3 * pi * radius * radius * radius
-     *
-     * @param radius the radius of the vesicle
-     * @return The volume.
-     */
-    private static Quantity<Volume> calculateVolume(Quantity<Length> radius) {
-        return radius.multiply(radius).multiply(radius).multiply(Math.PI).multiply(4.0 / 3.0).asType(Volume.class);
+    private static String generateIdentifier() {
+        return "v"+vesicleCounter.getAndIncrement();
     }
 
-    /**
-     * The area of a sphere is calculated by
-     * V = 4/3 * pi * radius * radius * radius
-     *
-     * @param radius the radius of the vesicle
-     * @return The area.
-     */
-    private static Quantity<Area> calculateArea(Quantity<Length> radius) {
-        return radius.multiply(radius).multiply(Math.PI).multiply(4.0).asType(Area.class);
-    }
-
-    public Vesicle(String identifier, Vector2D position, Quantity<Length> radius) {
-        this.identifier = identifier;
+    public Vesicle(CellRegion region, Vector2D position, Quantity<Length> radius) {
+        identifier = generateIdentifier();
+        this.region = region;
         features = new ChemistryFeatureContainer();
         setRadius(radius);
-        region = CellRegion.forVesicle(identifier);
         concentrationManager = new ConcentrationDeltaManager(region.setUpConcentrationContainer());
         displacementManager = new DisplacementDeltaManager(position);
         associatedNodes = new HashMap<>();
-        vesicleState = VesicleStateRegistry.UNATTACHED;
+        state = VesicleStateRegistry.UNATTACHED;
     }
 
     public Vesicle(Vector2D position, Quantity<Length> radius) {
-        this("Vesicle " + vesicleCounter.getAndIncrement(), position, radius);
+        this(VESICLE_REGION, position, radius);
+    }
+
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
     }
 
     @Override
@@ -105,7 +88,8 @@ public class Vesicle implements Updatable, Featureable {
         return identifier;
     }
 
-    public Vector2D getCurrentPosition() {
+    @Override
+    public Vector2D getPosition() {
         return displacementManager.getCurrentPosition();
     }
 
@@ -125,12 +109,12 @@ public class Vesicle implements Updatable, Featureable {
         return displacementManager.getNextPosition();
     }
 
-    public VesicleState getVesicleState() {
-        return vesicleState;
+    public String getState() {
+        return state;
     }
 
-    public void setVesicleState(VesicleState vesicleState) {
-        this.vesicleState = vesicleState;
+    public void setState(String state) {
+        this.state = state;
     }
 
     public LineLikeAgent getAttachedFilament() {
@@ -141,11 +125,11 @@ public class Vesicle implements Updatable, Featureable {
         this.attachedFilament = attachedFilament;
     }
 
-    public Direction getTargetDirection() {
+    public String getTargetDirection() {
         return targetDirection;
     }
 
-    public void setTargetDirection(Direction targetDirection) {
+    public void setTargetDirection(String targetDirection) {
         this.targetDirection = targetDirection;
     }
 
@@ -165,6 +149,13 @@ public class Vesicle implements Updatable, Featureable {
         this.region = region;
     }
 
+    public void clearAttachmentInformation() {
+        setState(VesicleStateRegistry.UNATTACHED);
+        setAttachedFilament(null);
+        setTargetDirection(null);
+        setSegmentIterator(null);
+    }
+
     public void addPotentialSpatialDelta(DisplacementDelta spatialDelta) {
         displacementManager.addPotentialDisplacementDelta(spatialDelta);
     }
@@ -174,10 +165,10 @@ public class Vesicle implements Updatable, Featureable {
     }
 
     public void setRadius(Quantity<Length> radius) {
-        this.radius = radius;
-        area = calculateArea(radius);
-        volume = calculateVolume(radius);
-        setFeature(Diffusivity.calculate(radius));
+        this.radius = radius.to(UnitRegistry.getSpaceUnit());
+        area = Geometry.calculateArea(this.radius);
+        volume = Geometry.calculateVolume(this.radius);
+        setFeature(Diffusivity.calculate(this.radius));
     }
 
     public Map<AutomatonNode, Double> getAssociatedNodes() {
@@ -186,8 +177,6 @@ public class Vesicle implements Updatable, Featureable {
 
     public void addAssociatedNode(AutomatonNode node, double relativeArea) {
         associatedNodes.put(node, relativeArea);
-        // CellSubsection subsection = node.getConcentrationContainer().getSubsection(CellTopology.INNER);
-        // getConcentrationContainer().putSubsectionPool(subsection, CellTopology.INNER, node.getConcentrationContainer().getPool(CellTopology.INNER).getValue());
     }
 
     public void clearAssociatedNodes() {
@@ -209,6 +198,11 @@ public class Vesicle implements Updatable, Featureable {
 
     public void updatePosition() {
         displacementManager.updatePosition();
+    }
+
+    @Override
+    public ConcentrationDeltaManager getConcentrationManager() {
+        return concentrationManager;
     }
 
     /**
@@ -241,43 +235,12 @@ public class Vesicle implements Updatable, Featureable {
 
     @Override
     public Set<CellSubsection> getAllReferencedSections() {
-        return concentrationManager.getConcentrationContainer().getReferencedSubSections();
-    }
-
-    @Override
-    public List<ConcentrationDelta> getPotentialConcentrationDeltas() {
-        return concentrationManager.getPotentialDeltas();
+        return concentrationManager.getConcentrationContainer().getReferencedSubsections();
     }
 
     @Override
     public void addPotentialDelta(ConcentrationDelta delta) {
         concentrationManager.addPotentialDelta(delta);
-    }
-
-    @Override
-    public void clearPotentialConcentrationDeltas() {
-        concentrationManager.clearPotentialDeltas();
-    }
-
-    @Override
-    public void clearPotentialDeltasBut(UpdateModule module) {
-        concentrationManager.clearPotentialDeltasBut(module);
-        clearPotentialDisplacementDeltas();
-    }
-
-    @Override
-    public boolean hasDeltas() {
-        return !concentrationManager.getFinalDeltas().isEmpty();
-    }
-
-    @Override
-    public void shiftDeltas() {
-        concentrationManager.shiftDeltas();
-    }
-
-    @Override
-    public void applyDeltas() {
-        concentrationManager.applyDeltas();
     }
 
     public Circle getCircleRepresentation() {
@@ -319,7 +282,7 @@ public class Vesicle implements Updatable, Featureable {
 
     @Override
     public String toString() {
-        return "Vesicle: " + identifier + " radius = " + radius + " " + " position = " + displacementManager.getCurrentPosition();
+        return identifier + " radius = " + radius + " " + " position = " + displacementManager.getCurrentPosition();
     }
 
 }

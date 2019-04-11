@@ -12,6 +12,7 @@ import bio.singa.simulation.model.modules.concentration.specifity.UpdateSpecific
 import bio.singa.simulation.model.parameters.FeatureManager;
 import bio.singa.simulation.model.simulation.Simulation;
 import bio.singa.simulation.model.simulation.Updatable;
+import bio.singa.simulation.model.simulation.UpdateScheduler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -113,6 +114,37 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
         state = PENDING;
         applicationCondition = updatable -> true;
         identifier = getClass().getSimpleName();
+    }
+
+    @Override
+    public void initialize() {
+
+    }
+
+    @Override
+    public void run() {
+        UpdateScheduler scheduler = getSimulation().getScheduler();
+        while (state == PENDING || state == REQUIRING_RECALCULATION) {
+            switch (state) {
+                case PENDING:
+                    // calculate update
+                    logger.debug("calculating updates for {}.", Thread.currentThread().getName());
+                    calculateUpdates();
+                    break;
+                case REQUIRING_RECALCULATION:
+                    // optimize time step
+                    logger.debug("{} requires recalculation.", Thread.currentThread().getName());
+                    boolean prioritizedModule = scheduler.interruptAllBut(Thread.currentThread(), this);
+                    if (prioritizedModule) {
+                        optimizeTimeStep();
+                    } else {
+                        state = INTERRUPTED;
+                    }
+                    break;
+            }
+        }
+        scheduler.getCountDownLatch().countDown();
+        logger.debug("Module finished {}, latch at {}.", Thread.currentThread().getName(), scheduler.getCountDownLatch().getCount());
     }
 
     /**
@@ -373,7 +405,7 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
             return LocalError.MINIMAL_EMPTY_ERROR;
         }
         if (supplier.getCurrentFullDeltas().size() != supplier.getCurrentHalfDeltas().size()) {
-            logger.warn("The deltas that should be applied have fallen below " +
+            logger.trace("The deltas that should be applied have fallen below " +
                     "the threshold of " + deltaCutoff + ". (Module: " + getIdentifier() + ")");
             return LocalError.MINIMAL_EMPTY_ERROR;
         }
@@ -381,6 +413,7 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
         // compare full and half deltas
         double largestLocalError = -Double.MAX_VALUE;
         ConcentrationDeltaIdentifier largestIdentifier = null;
+        double associatedDelta = 0.0;
         for (ConcentrationDeltaIdentifier identifier : supplier.getCurrentFullDeltas().keySet()) {
             double fullDelta = supplier.getCurrentFullDeltas().get(identifier).getValue();
             double halfDelta = supplier.getCurrentHalfDeltas().get(identifier).getValue();
@@ -392,13 +425,14 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
             if (largestLocalError < localError) {
                 largestIdentifier = identifier;
                 largestLocalError = localError;
+                associatedDelta = fullDelta;
             }
         }
         // safety check
         Objects.requireNonNull(largestIdentifier);
         LocalError localError = new LocalError(largestIdentifier.getUpdatable(), largestIdentifier.getEntity(), largestLocalError);
-        logger.debug("The largest error was {} for {}", localError.getValue(), localError.getUpdatable());
         // set local error and return local error
+        simulation.getScheduler().setLargestLocalError(localError, this, associatedDelta);
         return localError;
     }
 
@@ -445,30 +479,33 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
      * a recalculation.
      */
     private void evaluateModuleState() {
-        if (supplier.getLargestLocalError().getValue() < simulation.getScheduler().getRecalculationCutoff()) {
+        // calculate ration of local and global error
+        if (localErrorIsAcceptable()) {
             state = SUCCEEDED;
         } else {
             logger.trace("Recalculation required for error {}.", supplier.getLargestLocalError().getValue());
             state = REQUIRING_RECALCULATION;
             supplier.clearDeltas();
-            scope.clearPotentialDeltas(supplier.getLargestLocalError().getUpdatable());
+            scope.clearPotentialDeltas();
         }
+    }
+
+    private boolean localErrorIsAcceptable() {
+        boolean errorRatioIsValid = false;
+        if (simulation.getScheduler().getLargestGlobalError() != 0.0) {
+            // calculate ratio of local and global error
+            double errorRatio = supplier.getLargestLocalError().getValue() / simulation.getScheduler().getLargestGlobalError();
+            errorRatioIsValid = errorRatio > 100000;
+        }
+        // use threshold
+        boolean thresholdIsValid = supplier.getLargestLocalError().getValue() < simulation.getScheduler().getRecalculationCutoff();
+        return errorRatioIsValid || thresholdIsValid;
     }
 
     @Override
     public void resetState() {
         state = PENDING;
         supplier.resetError();
-    }
-
-    /**
-     * References the module and referenced entities to the referenced simulation.
-     */
-    protected void addModuleToSimulation() {
-        simulation.getModules().add(this);
-        for (ChemicalEntity chemicalEntity : referencedChemicalEntities) {
-            simulation.addReferencedEntity(chemicalEntity);
-        }
     }
 
     @Override
@@ -549,18 +586,34 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
 
     @Override
     public void checkFeatures() {
+        outer:
         for (Class<? extends Feature> featureClass : getRequiredFeatures()) {
-            for (ChemicalEntity chemicalEntity : getReferencedEntities()) {
-                if (!chemicalEntity.hasFeature(featureClass)) {
-                    chemicalEntity.setFeature(featureClass);
+            for (Feature<?> feature : featureManager.getFeatures()) {
+                if (featureClass.isInstance(feature)) {
+                    // logger.info("Required feature {}: {} will be used and is set to {}.", featureClass.getSimpleName(), feature.getClass().getSimpleName(), feature.getContent());
+                    continue outer;
                 }
             }
+            logger.warn("Required feature {} has not been set.", featureClass.getSimpleName());
         }
     }
 
     @Override
     public String toString() {
-        return getClass().getSimpleName();
+        return getIdentifier();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ConcentrationBasedModule<?> that = (ConcentrationBasedModule<?>) o;
+        return Objects.equals(identifier, that.identifier);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(identifier);
     }
 
 }

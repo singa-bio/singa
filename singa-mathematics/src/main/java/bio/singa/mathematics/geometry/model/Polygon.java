@@ -56,6 +56,12 @@ public interface Polygon extends Polytope<Vector2D> {
         return new Vector2D(sum[0] / vectorCount, sum[1] / vectorCount);
     }
 
+    default double getMaximalY() {
+        return getVertices().stream()
+                .mapToDouble(Vector2D::getY)
+                .max().getAsDouble();
+    }
+
     default boolean isInside(Vector2D point) {
         return Polygons.isInside(this, point);
     }

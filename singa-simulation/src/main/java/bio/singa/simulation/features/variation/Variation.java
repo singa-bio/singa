@@ -1,24 +1,24 @@
 package bio.singa.simulation.features.variation;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author cl
  */
 public abstract class Variation<FeatureType> {
 
-    private Set<FeatureType> variations;
+    private List<FeatureType> variations;
 
     public Variation() {
-        variations = new HashSet<>();
+        variations = new ArrayList<>();
     }
 
-    public Set<FeatureType> getVariations() {
+    public List<FeatureType> getVariations() {
         return variations;
     }
 
-    public void setVariations(Set<FeatureType> variations) {
+    public void setVariations(List<FeatureType> variations) {
         this.variations = variations;
     }
 
@@ -27,6 +27,5 @@ public abstract class Variation<FeatureType> {
     }
 
     public abstract Object create(Object featureType);
-
 
 }

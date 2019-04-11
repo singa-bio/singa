@@ -4,7 +4,6 @@ import bio.singa.chemistry.annotations.Annotation;
 import bio.singa.chemistry.annotations.AnnotationType;
 import bio.singa.chemistry.annotations.taxonomy.Organism;
 import bio.singa.chemistry.annotations.taxonomy.Taxon;
-import bio.singa.chemistry.entities.Enzyme;
 import bio.singa.chemistry.entities.Protein;
 import bio.singa.chemistry.features.variants.SequenceVariant;
 import bio.singa.chemistry.features.variants.SequenceVariants;
@@ -15,7 +14,7 @@ import bio.singa.structure.model.families.AminoAcidFamily;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.Locator;
-import tec.uom.se.quantity.Quantities;
+import tec.units.indriya.quantity.Quantities;
 
 import javax.measure.Quantity;
 import java.util.*;
@@ -43,7 +42,7 @@ public class UniProtContentHandler implements ContentHandler {
     private UniProtIdentifier identifier;
     private String recommendedName;
     private double molarMass;
-    private List<String> additionalNames;
+    private List<String> names;
     private String aminoAcidSequence;
     private Organism sourceOrganism;
     private List<Annotation<String>> textComments;
@@ -87,7 +86,7 @@ public class UniProtContentHandler implements ContentHandler {
     private String currentGoProject;
 
     public UniProtContentHandler() {
-        additionalNames = new ArrayList<>();
+        names = new ArrayList<>();
         textComments = new ArrayList<>();
         ecNumbers = new ArrayList<>();
         genomicSequenceIdentifiers = new ArrayList<>();
@@ -105,14 +104,13 @@ public class UniProtContentHandler implements ContentHandler {
         // create base enzyme
         Protein protein;
         if (primaryIdentifier == null) {
-            protein = new Protein.Builder(identifier.toString())
-                    .name(recommendedName)
+            protein = Protein.create(identifier.toString())
+                    .additionalIdentifier(identifier)
                     .assignFeature(new MolarMass(molarMass, UniProtDatabase.evidence))
                     .build();
         } else {
-            protein = new Enzyme.Builder(primaryIdentifier)
+            protein = Protein.create(primaryIdentifier)
                     .additionalIdentifier(identifier)
-                    .name(recommendedName)
                     .assignFeature(new MolarMass(molarMass, UniProtDatabase.evidence))
                     .build();
         }
@@ -122,7 +120,7 @@ public class UniProtContentHandler implements ContentHandler {
         protein.addAminoAcidSequence(aminoAcidSequence.replaceAll("\\s", ""));
         genomicSequenceIdentifiers.forEach(protein::addAdditionalIdentifier);
         // add additional names
-        additionalNames.forEach(protein::addAdditionalName);
+        names.forEach(protein::addName);
         // add text comments
         textComments.forEach(protein::addAnnotation);
         // add ecNumbers
@@ -442,10 +440,10 @@ public class UniProtContentHandler implements ContentHandler {
             case "fullName": {
                 if (inRecommendedName) {
                     // set recommended name
-                    recommendedName = new String(ch, start, length);
+                    names.add(new String(ch, start, length));
                 } else if (inAlternativeName) {
                     // add alternative name
-                    additionalNames.add(new String(ch, start, length));
+                    names.add(new String(ch, start, length));
                 }
                 break;
             }

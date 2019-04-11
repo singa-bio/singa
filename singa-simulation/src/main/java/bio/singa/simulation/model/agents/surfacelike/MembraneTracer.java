@@ -85,7 +85,7 @@ public class MembraneTracer {
         CellRegion region = node.getCellRegion();
         membrane.setMembraneRegion(region);
         CellRegion innerRegion = new CellRegion(region.getInnerSubsection().getIdentifier(), region.getInnerSubsection().getGoTerm());
-        innerRegion.addSubSection(CellTopology.INNER, region.getInnerSubsection());
+        innerRegion.addSubsection(CellTopology.INNER, region.getInnerSubsection());
         membrane.setInnerRegion(innerRegion);
         SimpleLineSegment segment = new SimpleLineSegment(start, end);
         membrane.addSegment(node, segment);
@@ -139,7 +139,7 @@ public class MembraneTracer {
                     Membrane membrane = new Membrane(region.getIdentifier());
                     membrane.setMembraneRegion(region);
                     CellRegion innerRegion = new CellRegion(region.getInnerSubsection().getIdentifier(), region.getInnerSubsection().getGoTerm());
-                    innerRegion.addSubSection(CellTopology.INNER, region.getInnerSubsection());
+                    innerRegion.addSubsection(CellTopology.INNER, region.getInnerSubsection());
                     membrane.setInnerRegion(innerRegion);
                     // check the direction of the membrane
                     Iterator<AutomatonNode> neighbours = currentNode.getNeighbours().iterator();
@@ -248,6 +248,30 @@ public class MembraneTracer {
             // starting point should be always associated node
             entry.setEndingPoint(intersections.iterator().next());
         }
+
+//        MembraneSegment firstSegment = membrane.getSegments().get(0);
+//        MembraneSegment lastSegment = membrane.getSegments().get(membrane.getSegments().size() - 1);
+//
+//        int maxRow = graph.getGrid().getHeight();
+//
+//        RectangularCoordinate firstIdentifier = firstSegment.getNode().getIdentifier();
+//        RectangularCoordinate secondIdentfier = lastSegment.getNode().getIdentifier();
+//        if (firstIdentifier.getRow() == 0) {
+//            // at top
+//            firstSegment.setStartingPoint(new Vector2D(firstSegment.getStartingPoint().getX(), 0.0));
+//        } else if (firstIdentifier.getRow() == maxRow) {
+//            // at bottom
+//            firstSegment.setEndingPoint(new Vector2D(firstSegment.getStartingPoint().getX(), firstSegment.getNode().getSpatialRepresentation().getMaximalY()));
+//        }
+//
+//        if (secondIdentfier.getRow() == 0) {
+//            // at top
+//            lastSegment.setStartingPoint(new Vector2D(lastSegment.getStartingPoint().getX(), 0.0));
+//        } else if (secondIdentfier.getRow() == maxRow) {
+//            // at bottom
+//            lastSegment.setEndingPoint(new Vector2D(lastSegment.getStartingPoint().getX(), lastSegment.getNode().getSpatialRepresentation().getMaximalY()));
+//        }
+
 
     }
 

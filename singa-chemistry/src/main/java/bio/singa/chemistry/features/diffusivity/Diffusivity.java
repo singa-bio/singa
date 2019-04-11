@@ -6,16 +6,16 @@ import bio.singa.features.model.ScalableQuantitativeFeature;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.quantities.NaturalConstants;
 import bio.singa.features.units.UnitRegistry;
-import tec.uom.se.quantity.Quantities;
-import tec.uom.se.unit.ProductUnit;
+import tec.units.indriya.quantity.Quantities;
+import tec.units.indriya.unit.ProductUnit;
 
 import javax.measure.Quantity;
 import javax.measure.Unit;
 import javax.measure.quantity.Length;
 import java.util.List;
 
-import static tec.uom.se.unit.Units.METRE;
-import static tec.uom.se.unit.Units.SECOND;
+import static tec.units.indriya.unit.Units.METRE;
+import static tec.units.indriya.unit.Units.SECOND;
 
 /**
  * Diffusivity or diffusion coefficient is a proportionality constant between the molar flux due to molecular diffusion
@@ -28,7 +28,6 @@ public class Diffusivity extends ScalableQuantitativeFeature<Diffusivity> implem
 
     public static final Unit<Diffusivity> SQUARE_CENTIMETRE_PER_SECOND = new ProductUnit<>(METRE.divide(100).pow(2).divide(SECOND));
     public static final Unit<Diffusivity> SQUARE_METRE_PER_SECOND = new ProductUnit<>(METRE.pow(2).divide(SECOND));
-    public static final String SYMBOL = "D";
 
     private static final Evidence EINSTEIN1905 = new Evidence(Evidence.SourceType.PREDICTION, "Strokes-Einstein Equation", "Einstein, Albert. \"Über die von der molekularkinetischen Theorie der Wärme geforderte Bewegung von in ruhenden Flüssigkeiten suspendierten Teilchen.\" Annalen der physik 322.8 (1905): 549-560.");
 
@@ -74,9 +73,9 @@ public class Diffusivity extends ScalableQuantitativeFeature<Diffusivity> implem
         halfScaledQuantity = scaledQuantity * 0.5;
     }
 
-    @Override
-    public String getDescriptor() {
-        return SYMBOL;
+    public void setContent(Quantity<Diffusivity> quantity) {
+        featureContent = quantity;
+        scale();
     }
 
     @Override

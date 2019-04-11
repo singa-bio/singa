@@ -30,20 +30,20 @@ public class ConcentrationDelta {
     /**
      * The change in concentration.
      */
-    private double quantity;
+    private double value;
 
     /**
      * Creates a new concentration delta.
      * @param module The module the delta was calculated by.
      * @param cellSubsection The subsection the delta is applied to
      * @param chemicalEntity The chemical entity the delta is applied to.
-     * @param quantity The actual quantity of the change.
+     * @param value The actual value of the change.
      */
-    public ConcentrationDelta(UpdateModule module, CellSubsection cellSubsection, ChemicalEntity chemicalEntity, double quantity) {
+    public ConcentrationDelta(UpdateModule module, CellSubsection cellSubsection, ChemicalEntity chemicalEntity, double value) {
         this.module = module;
         this.chemicalEntity = chemicalEntity;
         this.cellSubsection = cellSubsection;
-        this.quantity = quantity;
+        this.value = value;
     }
 
     /**
@@ -74,12 +74,17 @@ public class ConcentrationDelta {
     }
 
     /**
-     * Returns the quantity of the change.
+     * Returns the value of the change.
      *
-     * @return The quantity of the change.
+     * @return The value of the change.
      */
     public double getValue() {
-        return quantity;
+        return value;
+    }
+
+
+    public void setValue(double value) {
+        this.value = value;
     }
 
     /**
@@ -89,17 +94,17 @@ public class ConcentrationDelta {
      * @return This multiplied delta.
      */
     public ConcentrationDelta multiply(double multiplicand) {
-        quantity = quantity * multiplicand;
+        value = value * multiplicand;
         return this;
     }
 
     public ConcentrationDelta add(double summand) {
-        quantity = quantity + summand;
+        value = value + summand;
         return this;
     }
 
     @Override
     public String toString() {
-        return module + " : " + cellSubsection.getIdentifier() + "-" + chemicalEntity.getIdentifier() + " = " + quantity;
+        return module + " : " + cellSubsection.getIdentifier() + "-" + chemicalEntity.getIdentifier() + " = " + value;
     }
 }

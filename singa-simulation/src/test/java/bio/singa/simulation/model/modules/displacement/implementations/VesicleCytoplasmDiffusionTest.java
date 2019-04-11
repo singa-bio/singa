@@ -10,16 +10,16 @@ import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.simulation.Simulation;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import tec.uom.se.ComparableQuantity;
-import tec.uom.se.quantity.Quantities;
+import tec.units.indriya.ComparableQuantity;
+import tec.units.indriya.quantity.Quantities;
 
 import javax.measure.quantity.Length;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static tec.uom.se.unit.MetricPrefix.MICRO;
-import static tec.uom.se.unit.MetricPrefix.NANO;
-import static tec.uom.se.unit.Units.METRE;
+import static tec.units.indriya.unit.MetricPrefix.MICRO;
+import static tec.units.indriya.unit.MetricPrefix.NANO;
+import static tec.units.indriya.unit.Units.METRE;
 
 /**
  * @author cl
@@ -37,10 +37,7 @@ class VesicleCytoplasmDiffusionTest {
         Simulation simulation = new Simulation();
 
         Vector2D previousPosition = new Vector2D(220, 220);
-        Vesicle vesicle = new Vesicle("0",
-                previousPosition,
-                Quantities.getQuantity(150, NANO(METRE))
-                        .to(UnitRegistry.getSpaceUnit()));
+        Vesicle vesicle = new Vesicle(previousPosition, Quantities.getQuantity(150, NANO(METRE)));
 
         // add vesicle transport layer
         VesicleLayer layer = new VesicleLayer(simulation);
@@ -55,11 +52,10 @@ class VesicleCytoplasmDiffusionTest {
         VesicleCytoplasmDiffusion vesicleDiffusion = new VesicleCytoplasmDiffusion();
         vesicleDiffusion.setSimulation(simulation);
         simulation.getModules().add(vesicleDiffusion);
-        simulation.initializeSpatialRepresentations();
 
         for (int i = 0; i < 10; i++) {
             simulation.nextEpoch();
-            Vector2D currentPosition = simulation.getVesicleLayer().getVesicles().get(0).getCurrentPosition();
+            Vector2D currentPosition = simulation.getVesicleLayer().getVesicles().get(0).getPosition();
             assertNotEquals(currentPosition, previousPosition);
             previousPosition = currentPosition;
         }
@@ -77,7 +73,7 @@ class VesicleCytoplasmDiffusionTest {
         Environment.setSimulationExtend(100);
         // initialize vesicle
         Vector2D initialPosition = new Vector2D(50, 50);
-        Vesicle vesicle = new Vesicle("0", initialPosition, Quantities.getQuantity(100, NANO(METRE)));
+        Vesicle vesicle = new Vesicle(initialPosition, Quantities.getQuantity(100, NANO(METRE)));
         // add vesicle transport layer
         VesicleLayer layer = new VesicleLayer(simulation);
         layer.addVesicle(vesicle);
@@ -92,7 +88,7 @@ class VesicleCytoplasmDiffusionTest {
         // check distance travelled
         for (int i = 0; i < 10; i++) {
             simulation.nextEpoch();
-            Vector2D currentPosition = simulation.getVesicleLayer().getVesicles().iterator().next().getCurrentPosition();
+            Vector2D currentPosition = simulation.getVesicleLayer().getVesicles().iterator().next().getPosition();
             double distance = initialPosition.subtract(currentPosition).getMagnitude()/UnitRegistry.getTimeScale();
             // variance is high because of random gaussian
             assertEquals(0.000346, distance, 8e-3);

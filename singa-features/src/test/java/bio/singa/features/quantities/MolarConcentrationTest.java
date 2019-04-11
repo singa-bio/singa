@@ -4,8 +4,8 @@ import bio.singa.features.units.UnitRegistry;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import tec.uom.se.ComparableQuantity;
-import tec.uom.se.quantity.Quantities;
+import tec.units.indriya.ComparableQuantity;
+import tec.units.indriya.quantity.Quantities;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.AmountOfSubstance;
@@ -14,9 +14,9 @@ import javax.measure.quantity.Volume;
 
 import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static tec.uom.se.AbstractUnit.ONE;
-import static tec.uom.se.unit.MetricPrefix.MILLI;
-import static tec.uom.se.unit.Units.*;
+import static tec.units.indriya.AbstractUnit.ONE;
+import static tec.units.indriya.unit.MetricPrefix.MILLI;
+import static tec.units.indriya.unit.Units.*;
 
 /**
  * @author cl

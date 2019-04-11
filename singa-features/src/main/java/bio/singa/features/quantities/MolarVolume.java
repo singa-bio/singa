@@ -2,14 +2,14 @@ package bio.singa.features.quantities;
 
 import bio.singa.features.model.AbstractFeature;
 import bio.singa.features.model.Evidence;
-import tec.uom.se.quantity.Quantities;
-import tec.uom.se.unit.ProductUnit;
+import tec.units.indriya.quantity.Quantities;
+import tec.units.indriya.unit.ProductUnit;
 
 import javax.measure.Quantity;
 import javax.measure.Unit;
 
 import static bio.singa.features.units.UnitProvider.ANGSTROEM;
-import static tec.uom.se.unit.Units.*;
+import static tec.units.indriya.unit.Units.*;
 
 /**
  * The molar volume, symbol Vm, is the volume occupied by one mole of a substance (chemical element or chemical
@@ -23,7 +23,6 @@ public class MolarVolume extends AbstractFeature<Quantity<MolarVolume>> implemen
     public static final Unit<MolarVolume> CUBIC_METRE_PER_MOLE = new ProductUnit<>(CUBIC_METRE.divide(MOLE));
     public static final Unit<MolarVolume> LITRE_PER_MOLE = new ProductUnit<>(LITRE.divide(MOLE));
     public static final Unit<MolarVolume> CUBIC_ANGSTROEM_PER_MOLE = new ProductUnit<>(ANGSTROEM.multiply(ANGSTROEM).multiply(ANGSTROEM).divide(MOLE));
-    public static final String SYMBOL = "V_m";
 
     public MolarVolume(Quantity<MolarVolume> quantity, Evidence evidence) {
         super(quantity, evidence);
@@ -86,11 +85,6 @@ public class MolarVolume extends AbstractFeature<Quantity<MolarVolume>> implemen
     @Override
     public Unit<MolarVolume> getUnit() {
         return getContent().getUnit();
-    }
-
-    @Override
-    public String getDescriptor() {
-        return SYMBOL;
     }
 
 }

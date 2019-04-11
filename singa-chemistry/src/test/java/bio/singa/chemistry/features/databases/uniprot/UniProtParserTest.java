@@ -44,14 +44,14 @@ class UniProtParserTest {
     @Test
     @DisplayName("parse uniprot - primary name")
     void parseName() {
-        assertEquals("Aspartate aminotransferase, mitochondrial", aminotransferase.getName());
+        assertEquals("Aspartate aminotransferase, mitochondrial", aminotransferase.getNames().iterator().next());
     }
 
     @Test
     @DisplayName("parse uniprot - additional names")
     void parseAdditionalNames() {
-        assertTrue(aminotransferase.getAdditionalNames().contains("Glutamate oxaloacetate transaminase 2"));
-        assertTrue(aminotransferase.getAdditionalNames().contains("Plasma membrane-associated fatty acid-binding protein"));
+        assertTrue(aminotransferase.getNames().contains("Glutamate oxaloacetate transaminase 2"));
+        assertTrue(aminotransferase.getNames().contains("Plasma membrane-associated fatty acid-binding protein"));
     }
 
     @Test
@@ -91,7 +91,7 @@ class UniProtParserTest {
     @DisplayName("parse uniprot - ena accession")
     void parseENAAccessionNumber() {
         // annotation
-        final List<Identifier> additionalIdentifiers = aars.getAdditionalIdentifiers();
+        final List<Identifier> additionalIdentifiers = aars.getAllIdentifiers();
         final Optional<ENAAccessionNumber> firstIdentifier = IdentifierPatternRegistry.find(ENAAccessionNumber.class, additionalIdentifiers);
         assertEquals("CAA37932.1", firstIdentifier.get().toString());
     }

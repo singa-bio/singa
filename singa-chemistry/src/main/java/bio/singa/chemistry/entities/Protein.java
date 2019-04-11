@@ -14,12 +14,20 @@ import java.util.Set;
 /**
  * @author cl
  */
-public class Protein extends ChemicalEntity {
+public class Protein extends AbstractChemicalEntity {
 
     private static final Set<Class<? extends Feature>> availableFeatures = new HashSet<>();
 
+    public static Builder create(String identifier) {
+        return new Builder(identifier);
+    }
+
+    public static Builder create(SimpleStringIdentifier identifier) {
+        return new Builder(identifier);
+    }
+
     static {
-        Protein.availableFeatures.addAll(ChemicalEntity.availableFeatures);
+        Protein.availableFeatures.addAll(AbstractChemicalEntity.availableFeatures);
     }
 
     private String primaryGeneName;
@@ -130,6 +138,7 @@ public class Protein extends ChemicalEntity {
     }
 
     public static class Builder extends ChemicalEntity.Builder<Protein, Builder> {
+    public static class Builder extends AbstractChemicalEntity.Builder<Protein, Builder> {
 
         public Builder(SimpleStringIdentifier identifier) {
             super(identifier);
@@ -145,7 +154,7 @@ public class Protein extends ChemicalEntity {
         }
 
         @Override
-        protected Builder getBuilder() {
+        protected Protein.Builder getBuilder() {
             return this;
         }
 

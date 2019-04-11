@@ -9,7 +9,7 @@ public enum AnnotationType {
 
     NOTE("Note"),
     AMINO_ACID_SEQUENCE("Sequence"),
-    ADDITIONAL_NAME("Additional Name"),
+    NAME("Additional Name"),
     ORGANISM("Organism"),
     GO_TERM("GO"),
     ADDITIONAL_IDENTIFIER("Additional Identifier");

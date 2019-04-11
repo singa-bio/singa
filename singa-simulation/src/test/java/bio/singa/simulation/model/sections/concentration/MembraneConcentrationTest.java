@@ -10,20 +10,21 @@ import bio.singa.simulation.model.agents.surfacelike.MembraneTracer;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.graphs.AutomatonNode;
+import bio.singa.simulation.model.sections.CellRegions;
 import bio.singa.simulation.model.simulation.Simulation;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import tec.uom.se.quantity.Quantities;
+import tec.units.indriya.ComparableQuantity;
+import tec.units.indriya.quantity.Quantities;
 
 import javax.measure.quantity.Area;
 
 import static bio.singa.simulation.model.sections.CellRegions.CELL_OUTER_MEMBRANE_REGION;
-import static bio.singa.simulation.model.sections.CellRegions.EARLY_ENDOSOME_VESICLE_REGION;
 import static bio.singa.simulation.model.sections.CellTopology.MEMBRANE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static tec.uom.se.unit.MetricPrefix.MICRO;
-import static tec.uom.se.unit.MetricPrefix.NANO;
-import static tec.uom.se.unit.Units.METRE;
+import static tec.units.indriya.unit.MetricPrefix.MICRO;
+import static tec.units.indriya.unit.MetricPrefix.NANO;
+import static tec.units.indriya.unit.Units.METRE;
 
 /**
  * @author cl
@@ -46,12 +47,9 @@ class MembraneConcentrationTest {
         // vesicles
         VesicleLayer vesicles = new VesicleLayer(simulation);
         Vesicle vesicle = new Vesicle(new Vector2D(20.0, 20.0), Quantities.getQuantity(50, NANO(METRE)));
-        vesicle.setRegion(EARLY_ENDOSOME_VESICLE_REGION);
         vesicles.addVesicle(vesicle);
         simulation.setVesicleLayer(vesicles);
         MembraneTracer.regionsToMembrane(graph);
-        // inititalize
-        simulation.initializeSpatialRepresentations();
     }
 
     @Test
@@ -66,10 +64,10 @@ class MembraneConcentrationTest {
     @Test
     void testVesicleMembraneInitialization() {
         ConcentrationInitializer ci = new ConcentrationInitializer();
-        ci.addInitialConcentration(new MembraneConcentration(EARLY_ENDOSOME_VESICLE_REGION, entity,
-                Quantities.getQuantity(1, MICRO(METRE).pow(2)).asType(Area.class), 1000, Evidence.NO_EVIDENCE));
+        ComparableQuantity<Area> area = Quantities.getQuantity(1, MICRO(METRE).pow(2)).asType(Area.class);
+        ci.addInitialConcentration(new MembraneConcentration(CellRegions.VESICLE_REGION, entity, area, 1000, Evidence.NO_EVIDENCE));
         ci.initialize(simulation);
-        assertEquals(5.2167372504050236E-14, simulation.getVesicleLayer().getVesicles().iterator().next().getConcentrationContainer().get(MEMBRANE, entity));
+        assertEquals(5.216737250405024E-14, simulation.getVesicleLayer().getVesicles().iterator().next().getConcentrationContainer().get(MEMBRANE, entity));
     }
 
 }

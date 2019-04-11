@@ -1,25 +1,28 @@
 package bio.singa.simulation.features;
 
-import bio.singa.features.model.AbstractFeature;
 import bio.singa.features.model.Evidence;
+import bio.singa.features.model.StringFeature;
+
+import java.util.List;
 
 /**
  * @author cl
  */
-public class MotorPullDirection extends AbstractFeature<MotorPullDirection.Direction> {
+public class MotorPullDirection extends StringFeature {
 
-    private static final String SYMBOL = "direction";
+    public static final String PLUS = "+";
+    public static final String MINUS = "-";
 
-    public enum Direction {
-        PLUS, MINUS
-    }
-
-    public MotorPullDirection(Direction direction, Evidence evidence) {
+    public MotorPullDirection(String direction, List<Evidence> evidence) {
         super(direction, evidence);
     }
 
-    @Override
-    public String getDescriptor() {
-        return SYMBOL;
+    public MotorPullDirection(String direction, Evidence evidence) {
+        super(direction, evidence);
     }
+
+    public MotorPullDirection(String direction) {
+        super(direction);
+    }
+
 }

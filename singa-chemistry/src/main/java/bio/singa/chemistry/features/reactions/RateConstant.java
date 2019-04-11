@@ -3,16 +3,17 @@ package bio.singa.chemistry.features.reactions;
 import bio.singa.features.model.Evidence;
 import bio.singa.features.model.ScalableQuantitativeFeature;
 import bio.singa.features.quantities.MolarConcentration;
-import tec.uom.se.unit.ProductUnit;
+import tec.units.indriya.unit.ProductUnit;
 
 import javax.measure.Quantity;
 import javax.measure.Unit;
 import javax.measure.quantity.Time;
+import java.util.List;
 
 import static bio.singa.chemistry.features.reactions.RateConstant.Direction.BACKWARDS;
 import static bio.singa.chemistry.features.reactions.RateConstant.Direction.FORWARDS;
 import static bio.singa.chemistry.features.reactions.RateConstant.Order.*;
-import static tec.uom.se.AbstractUnit.ONE;
+import static tec.units.indriya.AbstractUnit.ONE;
 
 /**
  * @author cl
@@ -31,8 +32,16 @@ public abstract class RateConstant<ReactionRateType extends ReactionRate<Reactio
         ZERO, FIRST, SECOND, THIRD
     }
 
-    protected RateConstant(Quantity<ReactionRateType> quantityTypeQuantity, Evidence evidence) {
-        super(quantityTypeQuantity, evidence);
+    public RateConstant(Quantity<ReactionRateType> quantity, List<Evidence> evidence) {
+        super(quantity, evidence);
+    }
+
+    public RateConstant(Quantity<ReactionRateType> quantity, Evidence evidence) {
+        super(quantity, evidence);
+    }
+
+    public RateConstant(Quantity<ReactionRateType> quantity) {
+        super(quantity);
     }
 
     public interface DirectionStep {

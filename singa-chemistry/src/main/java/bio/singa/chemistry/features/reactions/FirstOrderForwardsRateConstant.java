@@ -2,7 +2,7 @@ package bio.singa.chemistry.features.reactions;
 
 
 import bio.singa.features.model.Evidence;
-import tec.uom.se.quantity.Quantities;
+import tec.units.indriya.quantity.Quantities;
 
 import javax.measure.Quantity;
 import javax.measure.Unit;
@@ -12,8 +12,6 @@ import javax.measure.Unit;
  */
 public class FirstOrderForwardsRateConstant extends FirstOrderRateConstant implements ForwardsRateConstant<FirstOrderRate> {
 
-    private static final String symbol = "k_fwd_1";
-
     public FirstOrderForwardsRateConstant(Quantity<FirstOrderRate> firstOrderRateQuantity, Evidence evidence) {
         super(firstOrderRateQuantity, evidence);
     }
@@ -22,9 +20,8 @@ public class FirstOrderForwardsRateConstant extends FirstOrderRateConstant imple
         super(Quantities.getQuantity(value, unit), evidence);
     }
 
-    @Override
-    public String getDescriptor() {
-        return symbol;
+    public FirstOrderForwardsRateConstant(Quantity<FirstOrderRate> quantity) {
+        super(quantity);
     }
 
 }

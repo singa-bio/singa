@@ -14,7 +14,7 @@ class ChEBIParserServiceTest {
     @Test
     void shouldParseMethanolFromChEBIOnline() {
         SmallMolecule methanol = ChEBIParserService.parse("CHEBI:17790");
-        assertEquals("methanol", methanol.getName().toLowerCase());
+        assertEquals("methanol", methanol.getNames().iterator().next().toLowerCase());
         assertEquals(32.04186, methanol.getFeature(MolarMass.class).getValue().doubleValue());
     }
 

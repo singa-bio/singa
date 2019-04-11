@@ -1,32 +1,27 @@
 package bio.singa.simulation.features;
 
-import bio.singa.features.model.AbstractFeature;
 import bio.singa.features.model.Evidence;
-import tec.uom.se.quantity.Quantities;
+import bio.singa.features.model.QuantitativeFeature;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Time;
-
-import static tec.uom.se.unit.Units.SECOND;
+import java.util.List;
 
 /**
  * @author cl
  */
-public class EndocytosisCheckpointTime extends AbstractFeature<Quantity<Time>> {
+public class EndocytosisCheckpointTime extends QuantitativeFeature<Time> {
 
-    private static final String SYMBOL = "t_check";
-
-    public EndocytosisCheckpointTime(Quantity<Time> time, Evidence evidence) {
-        super(time, evidence);
+    public EndocytosisCheckpointTime(Quantity<Time> quantity, List<Evidence> evidence) {
+        super(quantity, evidence);
     }
 
-    public EndocytosisCheckpointTime(double time, Evidence evidence) {
-        super(Quantities.getQuantity(time, SECOND), evidence);
+    public EndocytosisCheckpointTime(Quantity<Time> quantity, Evidence evidence) {
+        super(quantity, evidence);
     }
 
-    @Override
-    public String getDescriptor() {
-        return SYMBOL;
+    public EndocytosisCheckpointTime(Quantity<Time> quantity) {
+        super(quantity);
     }
 
 }

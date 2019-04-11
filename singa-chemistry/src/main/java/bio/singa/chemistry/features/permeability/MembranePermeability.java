@@ -3,15 +3,15 @@ package bio.singa.chemistry.features.permeability;
 import bio.singa.features.model.Evidence;
 import bio.singa.features.model.ScalableQuantitativeFeature;
 import bio.singa.features.units.UnitRegistry;
-import tec.uom.se.unit.ProductUnit;
+import tec.units.indriya.unit.ProductUnit;
 
 import javax.measure.Quantity;
 import javax.measure.Unit;
 import javax.measure.quantity.Length;
 
-import static tec.uom.se.unit.MetricPrefix.CENTI;
-import static tec.uom.se.unit.Units.METRE;
-import static tec.uom.se.unit.Units.SECOND;
+import static tec.units.indriya.unit.MetricPrefix.CENTI;
+import static tec.units.indriya.unit.Units.METRE;
+import static tec.units.indriya.unit.Units.SECOND;
 
 
 public class MembranePermeability extends ScalableQuantitativeFeature<MembranePermeability> implements Quantity<MembranePermeability> {
@@ -20,21 +20,18 @@ public class MembranePermeability extends ScalableQuantitativeFeature<MembranePe
     private static Unit<Length> CENTIMETRE = CENTI(METRE);
     public static final Unit<MembranePermeability> CENTIMETRE_PER_SECOND = new ProductUnit<>(CENTIMETRE.divide(SECOND));
 
-    public static final String SYMBOL = "P_d";
-
     public MembranePermeability(Quantity<MembranePermeability> membranePermeabilityQuantity, Evidence evidence) {
         super(membranePermeabilityQuantity, evidence);
+    }
+
+    public MembranePermeability(Quantity<MembranePermeability> membranePermeabilityQuantity) {
+        super(membranePermeabilityQuantity);
     }
 
     @Override
     public void scale() {
         scaledQuantity = UnitRegistry.scale(getContent()).getValue().doubleValue();
         halfScaledQuantity = scaledQuantity * 0.5;
-    }
-
-    @Override
-    public String getDescriptor() {
-        return SYMBOL;
     }
 
     @Override

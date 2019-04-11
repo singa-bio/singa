@@ -25,9 +25,8 @@ public class LineLikeAgent {
         GROW, SHRINK, STAGNANT, FOLLOW
     }
 
-    public enum FilamentType {
-        ACTIN, MICROTUBULE
-    }
+    public static final String ACTIN = "ACTIN";
+    public static final String MICROTUBULE = "MICROTUBULE";
 
     /**
      * Modifier for the randomness of the direction.
@@ -35,7 +34,7 @@ public class LineLikeAgent {
     private static double rd = 0.05;
 
     private VectorPath path;
-    private FilamentType type;
+    private String type;
     private Set<AutomatonNode> associatedNodes;
     private AutomatonGraph graph;
 
@@ -46,13 +45,13 @@ public class LineLikeAgent {
     private GrowthBehaviour minusEndBehaviour;
     private GrowthBehaviour plusEndBehaviour;
 
-    public LineLikeAgent(FilamentType type) {
+    public LineLikeAgent(String type) {
         this.type = type;
         path = new VectorPath();
         associatedNodes = new HashSet<>();
     }
 
-    public LineLikeAgent(FilamentType type, Vector2D initialPosition, Vector2D initialDirection, AutomatonGraph graph) {
+    public LineLikeAgent(String type, Vector2D initialPosition, Vector2D initialDirection, AutomatonGraph graph) {
         this(type);
         setGraph(graph);
         minusEndBehaviour = STAGNANT;
@@ -61,7 +60,7 @@ public class LineLikeAgent {
         path.addToTail(initialDirection.normalize().add(initialPosition));
     }
 
-    public LineLikeAgent(FilamentType type, List<Vector2D> segments, NeumannRectangularDirection plusDirection) {
+    public LineLikeAgent(String type, List<Vector2D> segments, NeumannRectangularDirection plusDirection) {
         this(type);
         if (orderingIsReversed(segments, plusDirection)) {
             Collections.reverse(segments);
@@ -101,11 +100,11 @@ public class LineLikeAgent {
         return path.getTail();
     }
 
-    public FilamentType getType() {
+    public String getType() {
         return type;
     }
 
-    public void setType(FilamentType type) {
+    public void setType(String type) {
         this.type = type;
     }
 
@@ -118,7 +117,7 @@ public class LineLikeAgent {
         return plusEndBehaviour;
     }
 
-    void setPlusEndBehaviour(GrowthBehaviour plusEndBehaviour) {
+    public void setPlusEndBehaviour(GrowthBehaviour plusEndBehaviour) {
         this.plusEndBehaviour = plusEndBehaviour;
     }
 

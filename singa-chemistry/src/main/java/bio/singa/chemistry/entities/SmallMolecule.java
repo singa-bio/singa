@@ -19,7 +19,7 @@ import java.util.Set;
  * @see ChemicalEntity
  * @see <a href="https://de.wikipedia.org/wiki/Simplified_Molecular_Input_Line_Entry_Specification">Wikipedia: SMILES</a>
  */
-public class SmallMolecule extends ChemicalEntity {
+public class SmallMolecule extends AbstractChemicalEntity {
 
     public static Builder create(String identifier) {
         return new Builder(identifier);
@@ -32,7 +32,7 @@ public class SmallMolecule extends ChemicalEntity {
     public static final Set<Class<? extends Feature>> availableFeatures = new HashSet<>();
 
     static {
-        SmallMolecule.availableFeatures.addAll(ChemicalEntity.availableFeatures);
+        SmallMolecule.availableFeatures.addAll(AbstractChemicalEntity.availableFeatures);
         availableFeatures.add(Smiles.class);
         availableFeatures.add(LogP.class);
     }
@@ -60,19 +60,19 @@ public class SmallMolecule extends ChemicalEntity {
         return availableFeatures;
     }
 
-    public static class Builder extends ChemicalEntity.Builder<SmallMolecule, Builder> {
+    public static class Builder extends AbstractChemicalEntity.Builder<SmallMolecule, Builder> {
 
         public Builder(SimpleStringIdentifier identifier) {
             super(identifier);
         }
 
-        public Builder(String identifier) {
+        private Builder(String identifier) {
             this(new SimpleStringIdentifier(identifier));
         }
 
         @Override
         protected SmallMolecule createObject(SimpleStringIdentifier primaryIdentifer) {
-            return new SmallMolecule(primaryIdentifer.getContent());
+            return new SmallMolecule(primaryIdentifer);
         }
 
         @Override

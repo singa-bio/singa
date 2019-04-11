@@ -20,6 +20,8 @@ public class GoTerm extends AbstractIdentifier {
      */
     private String term;
 
+    public static final Evidence GOA_DATABASE = new Evidence(Evidence.SourceType.DATABASE, "Gene Onthology Annotation Database", "Huntley, Rachael P., et al. \"The GOA database: gene ontology annotation updates for 2015.\" Nucleic acids research 43.D1 (2014): D1057-D1063.");
+
     /**
      * Creates a new identifier.
      *

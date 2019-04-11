@@ -4,7 +4,6 @@ import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.simulation.model.modules.concentration.ConcentrationBasedModule;
 import bio.singa.simulation.model.modules.concentration.ConcentrationDelta;
 import bio.singa.simulation.model.modules.concentration.FieldSupplier;
-import bio.singa.simulation.model.modules.concentration.imlementations.Reaction;
 import bio.singa.simulation.model.modules.concentration.specifity.UpdateSpecificity;
 import bio.singa.simulation.model.sections.CellSubsection;
 import bio.singa.simulation.model.sections.ConcentrationContainer;
@@ -33,6 +32,7 @@ public class IndependentUpdate implements UpdateScope {
 
     /**
      * Initializes the update scope for the corresponding module.
+     *
      * @param module The module.
      */
     public IndependentUpdate(ConcentrationBasedModule module) {
@@ -41,6 +41,7 @@ public class IndependentUpdate implements UpdateScope {
 
     /**
      * Returns a object, managing shared properties of the module.
+     *
      * @return The supplier.
      */
     private FieldSupplier supply() {
@@ -49,6 +50,7 @@ public class IndependentUpdate implements UpdateScope {
 
     /**
      * Returns the update specificity behaviour of the module, required for the actual computation of the updates.
+     *
      * @return The update specificity behaviour.
      */
     private UpdateSpecificity specify() {
@@ -84,8 +86,10 @@ public class IndependentUpdate implements UpdateScope {
     }
 
     @Override
-    public void clearPotentialDeltas(Updatable updatable) {
-        module.getSimulation().getUpdatables().forEach(Updatable::clearPotentialConcentrationDeltas);
+    public void clearPotentialDeltas() {
+        for (Updatable current : module.getSimulation().getUpdatables()) {
+            current.getConcentrationManager().clearPotentialDeltas();
+        }
     }
 
     /**
@@ -102,7 +106,7 @@ public class IndependentUpdate implements UpdateScope {
             // get full concentration
             double fullConcentration = halfConcentration.get(currentSubsection, currentEntity);
             // add half of the full delta
-            double halfStepConcentration = fullConcentration + (fullDelta.getValue() *0.5);
+            double halfStepConcentration = fullConcentration + (fullDelta.getValue() * 0.5);
             // update concentration
             halfConcentration.set(currentSubsection, currentEntity, halfStepConcentration);
         }

@@ -15,15 +15,11 @@ import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.modules.concentration.ModuleState;
 import bio.singa.simulation.model.modules.qualitative.QualitativeModule;
 import bio.singa.simulation.model.sections.CellTopology;
-import tec.uom.se.ComparableQuantity;
+import tec.units.indriya.ComparableQuantity;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Length;
 import java.util.*;
-
-import static bio.singa.simulation.model.agents.linelike.LineLikeAgent.FilamentType;
-import static bio.singa.simulation.model.agents.linelike.LineLikeAgent.FilamentType.MICROTUBULE;
-
 /**
  * @author cl
  */
@@ -50,7 +46,7 @@ public class LineLikeAgentAttachment extends QualitativeModule {
         ChemicalEntity motor = getFeature(AttachedMotor.class).getContent();
         for (Vesicle vesicle : vesicles) {
             // at least one motor is available
-            Optional<ChemicalEntity> motorEntity = vesicle.getConcentrationContainer().containsEntity(CellTopology.MEMBRANE, motor);
+            Optional<ChemicalEntity> motorEntity = vesicle.getConcentrationContainer().containsHiddenEntity(CellTopology.MEMBRANE, motor);
             if (motorEntity.isPresent()) {
                 double molarConcentrationQuantity = vesicle.getConcentrationContainer().get(CellTopology.MEMBRANE, motorEntity.get());
                 if (MolarConcentration.concentrationToMolecules(molarConcentrationQuantity).getValue().intValue() < 1) {
@@ -60,7 +56,7 @@ public class LineLikeAgentAttachment extends QualitativeModule {
                 continue;
             }
             // and the current vesicle is unattached
-            if (!vesicle.getVesicleState().equals(VesicleStateRegistry.UNATTACHED)) {
+            if (!vesicle.getState().equals(VesicleStateRegistry.UNATTACHED)) {
                 continue;
             }
             // attach if there is any close filament
@@ -74,11 +70,11 @@ public class LineLikeAgentAttachment extends QualitativeModule {
     }
 
     private AttachmentInformation determineClosestSegment(Vesicle vesicle) {
-        Vector2D centre = vesicle.getCurrentPosition();
+        Vector2D centre = vesicle.getPosition();
         LineLikeAgent closestFilament = null;
         Vector2D closestSegment = null;
         double closestDistance = Double.MAX_VALUE;
-        FilamentType filamentType = getFeature(AttachedFilament.class).getContent();
+        String filamentType = getFeature(AttachedFilament.class).getContent();
         // get closest relevant node
         for (AutomatonNode node : vesicle.getAssociatedNodes().keySet()) {
             // get relevant path
@@ -124,11 +120,11 @@ public class LineLikeAgentAttachment extends QualitativeModule {
     }
 
     private void attachVesicle(Vesicle vesicle, AttachmentInformation attachmentInformation) {
-        FilamentType filamentType = getFeature(AttachedFilament.class).getContent();
-        if (filamentType.equals(MICROTUBULE)) {
-            vesicle.setVesicleState(VesicleStateRegistry.MICROTUBULE_ATTACHED);
+        String filamentType = getFeature(AttachedFilament.class).getContent();
+        if (filamentType.equals(LineLikeAgent.MICROTUBULE)) {
+            vesicle.setState(VesicleStateRegistry.MICROTUBULE_ATTACHED);
         } else {
-            vesicle.setVesicleState(VesicleStateRegistry.ACTIN_ATTACHED);
+            vesicle.setState(VesicleStateRegistry.ACTIN_ATTACHED);
         }
         vesicle.setTargetDirection(getFeature(MotorPullDirection.class).getContent());
         vesicle.setAttachedFilament(attachmentInformation.getClosestFilament());

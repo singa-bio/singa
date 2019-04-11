@@ -26,10 +26,11 @@ public class ChemicalEntities {
 
         // collect requirements
         for (ChemicalEntity targetEntity : entities) {
-            if (targetEntity instanceof ComplexedChemicalEntity) {
+            if (targetEntity instanceof ComplexEntity) {
                 // check if it is required elsewhere
-                creationRequirements.get(targetEntity)
-                        .addAll(((ComplexedChemicalEntity) targetEntity).getAssociatedChemicalEntities());
+                Collection<ChemicalEntity> allData = ((ComplexEntity) targetEntity).getAllData();
+                allData.remove(targetEntity);
+                creationRequirements.get(targetEntity).addAll(allData);
             }
         }
 

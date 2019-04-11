@@ -22,9 +22,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>tec.uom</groupId>
-            <artifactId>uom-se</artifactId>
-            <version>1.0.8</version>
+            <groupId>tec.units</groupId>
+            <artifactId>indriya</artifactId>
+            <version>1.0</version>
         </dependency>
     </dependencies>
 

@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -23,7 +24,7 @@ public class DisplacementDeltaManager {
     /**
      * The list of potential deltas.
      */
-    private List<DisplacementDelta> potentialSpatialDeltas;
+    private final List<DisplacementDelta> potentialSpatialDeltas;
 
     /**
      * The current position.
@@ -43,7 +44,7 @@ public class DisplacementDeltaManager {
     public DisplacementDeltaManager(Vector2D initialPosition) {
         currentPosition = initialPosition;
         nextPosition = initialPosition;
-        potentialSpatialDeltas = new ArrayList<>();
+        potentialSpatialDeltas = Collections.synchronizedList(new ArrayList<>());
     }
 
     /**
@@ -66,13 +67,16 @@ public class DisplacementDeltaManager {
 
     /**
      * Returns a specific delta applied by the given module.
+     *
      * @param module The module.
      * @return The displacement delta.
      */
     public DisplacementDelta getPotentialDisplacementDelta(DisplacementBasedModule module) {
-        for (DisplacementDelta potentialSpatialDelta : potentialSpatialDeltas) {
-            if (potentialSpatialDelta.getModule().equals(module)) {
-                return potentialSpatialDelta;
+        synchronized (potentialSpatialDeltas) {
+            for (DisplacementDelta potentialSpatialDelta : potentialSpatialDeltas) {
+                if (potentialSpatialDelta.getModule().equals(module)) {
+                    return potentialSpatialDelta;
+                }
             }
         }
         return null;

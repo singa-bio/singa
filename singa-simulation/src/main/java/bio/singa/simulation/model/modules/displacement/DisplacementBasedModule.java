@@ -19,6 +19,8 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import static bio.singa.simulation.model.modules.concentration.ModuleState.*;
+
 /**
  * @author cl
  */
@@ -58,12 +60,43 @@ public class DisplacementBasedModule implements UpdateModule {
         state = ModuleState.PENDING;
     }
 
+    @Override
+    public void run() {
+        UpdateScheduler scheduler = getSimulation().getScheduler();
+        while (state == PENDING || state == REQUIRING_RECALCULATION) {
+            switch (state) {
+                case PENDING:
+                    // calculate update
+                    logger.debug("calculating updates for {}.", Thread.currentThread().getName());
+                    calculateUpdates();
+                    break;
+                case REQUIRING_RECALCULATION:
+                    // optimize time step
+                    logger.debug("{} requires recalculation.", Thread.currentThread().getName());
+                    boolean prioritizedModule = scheduler.interruptAllBut(Thread.currentThread(), this);
+                    if (prioritizedModule) {
+                        optimizeTimeStep();
+                    } else {
+                        state = INTERRUPTED;
+                    }
+                    break;
+            }
+        }
+        scheduler.getCountDownLatch().countDown();
+        logger.debug("Module finished {}, latch at {}.", Thread.currentThread().getName(), scheduler.getCountDownLatch().getCount());
+    }
+
     public void setIdentifier(String identifier) {
         this.identifier = identifier;
     }
 
     public void addDeltaFunction(Function<Vesicle, DisplacementDelta> deltaFunction, Predicate<Vesicle> predicate) {
         deltaFunctions.put(deltaFunction, predicate);
+    }
+
+    @Override
+    public void initialize() {
+
     }
 
     @Override
@@ -94,13 +127,17 @@ public class DisplacementBasedModule implements UpdateModule {
     private void logDelta(Vesicle vesicle, DisplacementDelta delta) {
         logger.trace("Displacement delta for {} at {} is {}",
                 vesicle.getStringIdentifier(),
-                vesicle.getCurrentPosition(),
+                vesicle.getPosition(),
                 delta.getDeltaVector());
     }
 
     public void setSimulation(Simulation simulation) {
         this.simulation = simulation;
         updateScheduler = simulation.getScheduler();
+    }
+
+    public Simulation getSimulation() {
+        return simulation;
     }
 
     @Override
@@ -171,10 +208,11 @@ public class DisplacementBasedModule implements UpdateModule {
     @Override
     public void checkFeatures() {
         for (Class<? extends Feature> featureClass : getRequiredFeatures()) {
-            for (Vesicle vesicle : simulation.getVesicleLayer().getVesicles()) {
-                if (!vesicle.hasFeature(featureClass)) {
-                    vesicle.setFeature(featureClass);
-                }
+            if (featureManager.hasFeature(featureClass)) {
+                Feature feature = getFeature(featureClass);
+                logger.debug("Required feature {} has been set to {}.", feature.getDescriptor(), feature.getContent());
+            } else {
+                logger.warn("Required feature {} has not been set.", featureClass.getSimpleName());
             }
         }
     }
@@ -199,5 +237,9 @@ public class DisplacementBasedModule implements UpdateModule {
         return referencedChemicalEntities;
     }
 
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + (getIdentifier() != null ? " " + getIdentifier() : "");
+    }
 
 }

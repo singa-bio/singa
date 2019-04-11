@@ -1,24 +1,26 @@
 package bio.singa.simulation.features;
 
-import bio.singa.chemistry.features.MultiEntityFeature;
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.features.model.Evidence;
 
-import java.util.Set;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author cl
  */
 public class Cargoes extends MultiEntityFeature {
 
-    private static final String SYMBOL = "es_Cargoes";
-
-    public Cargoes(Set<ChemicalEntity> chemicalEntities, Evidence evidence) {
+    public Cargoes(List<ChemicalEntity> chemicalEntities, Evidence evidence) {
         super(chemicalEntities, evidence);
     }
 
-    @Override
-    public String getDescriptor() {
-        return SYMBOL;
+    public Cargoes(List<ChemicalEntity> chemicalEntities) {
+        super(chemicalEntities);
     }
+
+    public Cargoes(ChemicalEntity... entities) {
+        super(Arrays.asList(entities));
+    }
+
 }
