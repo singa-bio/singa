@@ -137,7 +137,6 @@ public class Protein extends AbstractChemicalEntity {
         addAnnotation(new Annotation<>(AnnotationType.GO_TERM, goTerm));
     }
 
-    public static class Builder extends ChemicalEntity.Builder<Protein, Builder> {
     public static class Builder extends AbstractChemicalEntity.Builder<Protein, Builder> {
 
         public Builder(SimpleStringIdentifier identifier) {

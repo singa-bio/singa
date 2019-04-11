@@ -24,16 +24,16 @@ public class CellSubsections {
 
     private static final Map<GoTerm, Color> colorMap = new HashMap<>();
 
-    public static final CellSubsection CYTOPLASM =  addSection(new CellSubsection("cytoplasm", new GoTerm("GO:0005737", GOA_DATABASE)), yellow);
-    public static final CellSubsection CELL_OUTER_MEMBRANE = addSection(new CellSubsection("cell outer membrane", new GoTerm("GO:0009279", GOA_DATABASE)), yellow);
-    public static final CellSubsection NUCLEOPLASM = addSection(new CellSubsection("nucleoplasm", new GoTerm("GO:0005654", GOA_DATABASE)), violett);
-    public static final CellSubsection NUCLEAR_MEMBRANE = addSection(new CellSubsection("nuclear membrane", new GoTerm("GO:0031965", GOA_DATABASE)), violett);
-    public static final CellSubsection EARLY_ENDOSOME_LUMEN = addSection(new CellSubsection("early endosome lumen", new GoTerm("GO:0031905", GOA_DATABASE)), orange);
-    public static final CellSubsection EARLY_ENDOSOME_MEMBRANE = addSection(new CellSubsection("early endosome membrane", new GoTerm("GO:0031901", GOA_DATABASE)), orange);
-    public static final CellSubsection EXTRACELLULAR_REGION = addSection(new CellSubsection("extracellular region", new GoTerm("GO:0005576", GOA_DATABASE)), lightBlue);
+    public static final CellSubsection CYTOPLASM =  addSection(new CellSubsection("cytoplasm", new GoTerm("GO:0005737","cytoplasm", GOA_DATABASE)), yellow);
+    public static final CellSubsection CELL_OUTER_MEMBRANE = addSection(new CellSubsection("cell outer membrane", new GoTerm("GO:0009279","cell outer membrane", GOA_DATABASE)), yellow);
+    public static final CellSubsection NUCLEOPLASM = addSection(new CellSubsection("nucleoplasm", new GoTerm("GO:0005654","nucleoplasm", GOA_DATABASE)), violett);
+    public static final CellSubsection NUCLEAR_MEMBRANE = addSection(new CellSubsection("nuclear membrane", new GoTerm("GO:0031965", "nuclear membrane", GOA_DATABASE)), violett);
+    public static final CellSubsection EARLY_ENDOSOME_LUMEN = addSection(new CellSubsection("early endosome lumen", new GoTerm("GO:0031905","early endosome lumen", GOA_DATABASE)),  orange);
+    public static final CellSubsection EARLY_ENDOSOME_MEMBRANE = addSection(new CellSubsection("early endosome membrane", new GoTerm("GO:0031901","early endosome membrane", GOA_DATABASE)), orange);
+    public static final CellSubsection EXTRACELLULAR_REGION = addSection(new CellSubsection("extracellular region", new GoTerm("GO:0005576","extracellular region", GOA_DATABASE)), lightBlue);
 
-    public static final CellSubsection VESICLE_MEMBRANE = new CellSubsection("vesicle membrane", new GoTerm("GO:0012506", GOA_DATABASE));
-    public static final CellSubsection VESICLE_LUMEN = new CellSubsection("vesicle lumen", new GoTerm("GO:0031983", GOA_DATABASE));
+    public static final CellSubsection VESICLE_MEMBRANE = new CellSubsection("vesicle membrane", new GoTerm("GO:0012506", "vesicle membrane",GOA_DATABASE));
+    public static final CellSubsection VESICLE_LUMEN = new CellSubsection("vesicle lumen", new GoTerm("GO:0031983", "vesicle lumen",GOA_DATABASE));
 
     private static CellSubsection addSection(CellSubsection subsection, Color color) {
         colorMap.put(subsection.getGoTerm(), color);
