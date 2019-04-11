@@ -3,12 +3,13 @@ package bio.singa.simulation.model.simulation;
 import bio.singa.core.events.UpdateEventListener;
 import bio.singa.features.formatter.TimeFormatter;
 import bio.singa.features.units.UnitRegistry;
-import bio.singa.simulation.events.*;
+import bio.singa.simulation.events.GraphEventEmitter;
+import bio.singa.simulation.events.GraphUpdatedEvent;
+import bio.singa.simulation.events.NodeEventEmitter;
+import bio.singa.simulation.events.UpdatableUpdatedEvent;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.trajectories.flat.FlatUpdateRecorder;
-import javafx.application.Platform;
-import javafx.concurrent.Task;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tec.units.indriya.ComparableQuantity;
@@ -18,7 +19,6 @@ import javax.measure.Quantity;
 import javax.measure.quantity.Time;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutionException;
 import java.util.function.Predicate;
 
 import static tec.units.indriya.unit.MetricPrefix.MICRO;
@@ -32,7 +32,7 @@ import static tec.units.indriya.unit.Units.SECOND;
  *
  * @author cl
  */
-public class SimulationManager extends Task<Simulation> {
+public class SimulationManager implements Runnable {
 
     /**
      * The logger.
@@ -242,23 +242,37 @@ public class SimulationManager extends Task<Simulation> {
     }
 
     @Override
-    protected Simulation call() {
-        while (!isCancelled() && terminationCondition.test(simulation)) {
-            if (emitCondition.test(simulation)) {
-                logger.debug("Emitting event after {} (epoch {}).", TimeFormatter.formatTime(simulation.getElapsedTime()), simulation.getEpoch());
-                emitGraphEvent(simulation);
-                for (Updatable updatable : simulation.getObservedUpdatables()) {
-                    emitNodeEvent(simulation, updatable);
-                    logger.debug("Emitted next epoch event for node {}.", updatable.getStringIdentifier());
+    public void run() {
+        try {
+            while (terminationCondition.test(simulation)) {
+                if (emitCondition.test(simulation)) {
+                    logger.debug("Emitting event after {} (epoch {}).", TimeFormatter.formatTime(simulation.getElapsedTime()), simulation.getEpoch());
+                    emitGraphEvent(simulation);
+                    for (Updatable updatable : simulation.getObservedUpdatables()) {
+                        emitNodeEvent(simulation, updatable);
+                        logger.debug("Emitted next epoch event for node {}.", updatable.getStringIdentifier());
+                    }
+                    simulation.clearPreviouslyObservedDeltas();
+                    if (terminationTime != null) {
+                        estimateRuntime();
+                    }
                 }
-                simulation.clearPreviouslyObservedDeltas();
-                if (terminationTime != null) {
-                    estimateRuntime();
-                }
+                simulation.nextEpoch();
             }
-            simulation.nextEpoch();
+        } catch (Exception e) {
+            logger.error("Encountered an exception during simulation: ", e);
+            System.exit(1);
         }
-        return simulation;
+        logger.info("Simulation finished.");
+        // close writers
+        for (UpdateEventListener<UpdatableUpdatedEvent> nodeEventListener : getNodeListeners()) {
+            if (nodeEventListener instanceof FlatUpdateRecorder) {
+                ((FlatUpdateRecorder) nodeEventListener).closeWriters();
+            }
+        }
+        if (terminationLatch != null) {
+            terminationLatch.countDown();
+        }
     }
 
     private void estimateRuntime() {
@@ -279,35 +293,6 @@ public class SimulationManager extends Task<Simulation> {
                         simulationStatus.getLargestLocalError(), simulationStatus.getLargestLocalErrorUpdate(), simulationStatus.getLargestGlobalError());
             }
             previousTimeMillis = currentTimeMillis;
-        }
-    }
-
-    @Override
-    protected void done() {
-        try {
-            logger.info("Simulation finished.");
-            for (UpdateEventListener<UpdatableUpdatedEvent> nodeEventListener : getNodeListeners()) {
-                if (nodeEventListener instanceof FlatUpdateRecorder) {
-                    ((FlatUpdateRecorder) nodeEventListener).closeWriters();
-                }
-            }
-            if (terminationLatch != null) {
-                terminationLatch.countDown();
-            }
-            // will exit jfx when simulation finishes
-            if (!keepPlatformOpen) {
-                Platform.exit();
-            }
-            if (!isCancelled()) {
-                get();
-            }
-        } catch (ExecutionException e) {
-            // Exception occurred, deal with it
-            logger.error("Encountered an exception during simulation: ", e);
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            // Shouldn't happen, we're invoked when computation is finished
-            throw new AssertionError(e);
         }
     }
 

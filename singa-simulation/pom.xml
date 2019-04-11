@@ -18,27 +18,7 @@
     <dependencies>
         <dependency>
             <groupId>bio.singa</groupId>
-            <artifactId>singa-core</artifactId>
-            <version>0.5.0</version>
-        </dependency>
-        <dependency>
-            <groupId>bio.singa</groupId>
-            <artifactId>singa-features</artifactId>
-            <version>0.5.0</version>
-        </dependency>
-        <dependency>
-            <groupId>bio.singa</groupId>
-            <artifactId>singa-mathematics</artifactId>
-            <version>0.5.0</version>
-        </dependency>
-        <dependency>
-            <groupId>bio.singa</groupId>
             <artifactId>singa-chemistry</artifactId>
-            <version>0.5.0</version>
-        </dependency>
-        <dependency>
-            <groupId>bio.singa</groupId>
-            <artifactId>singa-javafx</artifactId>
             <version>0.5.0</version>
         </dependency>
     </dependencies>
