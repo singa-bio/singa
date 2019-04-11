@@ -39,6 +39,7 @@ public class MembraneFactory {
         MembraneFactory factory = new MembraneFactory(vectors, graph, regions);
         factory.direction = innerDirection;
         factory.initializeMembrane(innerRegion, membraneRegion);
+        factory.membrane.setInnerDirection(innerDirection);
         NeumannRectangularDirection vectorDirection;
         if (innerDirection == NORTH || innerDirection == SOUTH) {
             vectorDirection = WEST;
@@ -53,6 +54,7 @@ public class MembraneFactory {
         }
         factory.createPolygonForLinearMembrane(globalClipper, sortedVectors);
         factory.setupSubsectionRepresentations(factory.polygon);
+        factory.membrane.setRegionMap(factory.reconstructRegionMap());
         return factory.membrane;
     }
 
@@ -64,6 +66,7 @@ public class MembraneFactory {
         factory.associateToGraph(factory.polygon.getEdges());
         factory.fillInternalNodes();
         factory.setupSubsectionRepresentations(factory.polygon);
+        factory.membrane.setRegionMap(factory.reconstructRegionMap());
         return factory.membrane;
     }
 
@@ -77,6 +80,17 @@ public class MembraneFactory {
         membrane = new Membrane(membraneRegion.getIdentifier());
         membrane.setInnerRegion(innerRegion);
         membrane.setMembraneRegion(membraneRegion);
+    }
+
+    private Map<CellRegion, Set<Vector2D>> reconstructRegionMap() {
+        Map<CellRegion, Set<Vector2D>> regionMap = new HashMap<>();
+        for (Map.Entry<Vector2D, CellRegion> entry : regions.entrySet()) {
+            if (!regionMap.containsKey(entry.getValue())) {
+                regionMap.put(entry.getValue(), new HashSet<>());
+            }
+            regionMap.get(entry.getValue()).add(entry.getKey());
+        }
+        return regionMap;
     }
 
     private Polygon connectPolygonVectors(Collection<Vector2D> vectors) {

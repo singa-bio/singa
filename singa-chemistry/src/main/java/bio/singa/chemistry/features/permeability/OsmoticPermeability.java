@@ -2,14 +2,14 @@ package bio.singa.chemistry.features.permeability;
 
 import bio.singa.features.model.Evidence;
 import bio.singa.features.model.ScalableQuantitativeFeature;
-import tec.uom.se.quantity.Quantities;
-import tec.uom.se.unit.ProductUnit;
+import tec.units.indriya.quantity.Quantities;
+import tec.units.indriya.unit.ProductUnit;
 
 import javax.measure.Quantity;
 import javax.measure.Unit;
 
-import static tec.uom.se.unit.Units.METRE;
-import static tec.uom.se.unit.Units.SECOND;
+import static tec.units.indriya.unit.Units.METRE;
+import static tec.units.indriya.unit.Units.SECOND;
 
 /**
  * Represents the rate at which a substrate of a Transporter may be transported through the membrane.

@@ -11,7 +11,7 @@ import bio.singa.simulation.model.agents.pointlike.VesicleStateRegistry;
 import bio.singa.simulation.model.modules.displacement.DisplacementBasedModule;
 import bio.singa.simulation.model.modules.displacement.DisplacementDelta;
 import bio.singa.simulation.model.sections.CellTopology;
-import tec.uom.se.quantity.Quantities;
+import tec.units.indriya.quantity.Quantities;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Length;

@@ -30,8 +30,8 @@ import java.util.stream.Collectors;
 import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static bio.singa.simulation.trajectories.Recorders.appendTimestampedFolder;
 import static bio.singa.simulation.trajectories.Recorders.createDirectories;
-import static tec.uom.se.unit.MetricPrefix.MILLI;
-import static tec.uom.se.unit.Units.SECOND;
+import static tec.units.indriya.unit.MetricPrefix.MILLI;
+import static tec.units.indriya.unit.Units.SECOND;
 
 /**
  * This class can be used to write the concentration of chemical entities of a node and the changes applied to the node

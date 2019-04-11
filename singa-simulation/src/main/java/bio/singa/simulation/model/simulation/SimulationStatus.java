@@ -4,15 +4,15 @@ import bio.singa.core.events.UpdateEventListener;
 import bio.singa.features.formatter.TimeFormatter;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.simulation.events.GraphUpdatedEvent;
-import tec.uom.se.ComparableQuantity;
-import tec.uom.se.quantity.Quantities;
+import tec.units.indriya.ComparableQuantity;
+import tec.units.indriya.quantity.Quantities;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Time;
 
-import static tec.uom.se.unit.MetricPrefix.MICRO;
-import static tec.uom.se.unit.MetricPrefix.MILLI;
-import static tec.uom.se.unit.Units.SECOND;
+import static tec.units.indriya.unit.MetricPrefix.MICRO;
+import static tec.units.indriya.unit.MetricPrefix.MILLI;
+import static tec.units.indriya.unit.Units.SECOND;
 
 /**
  * @author cl

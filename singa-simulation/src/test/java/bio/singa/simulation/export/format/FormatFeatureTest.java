@@ -8,8 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static bio.singa.features.units.UnitProvider.PICO_MOLE_PER_LITRE;
-import static tec.uom.se.unit.Units.MINUTE;
-import static tec.uom.se.unit.Units.SECOND;
+import static tec.units.indriya.unit.Units.MINUTE;
+import static tec.units.indriya.unit.Units.SECOND;
 
 /**
  * @author cl

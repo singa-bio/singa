@@ -16,7 +16,7 @@ import bio.singa.simulation.model.simulation.Simulation;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import tec.uom.se.quantity.Quantities;
+import tec.units.indriya.quantity.Quantities;
 
 import static bio.singa.chemistry.features.diffusivity.Diffusivity.SQUARE_CENTIMETRE_PER_SECOND;
 import static bio.singa.simulation.model.sections.CellSubsection.SECTION_A;
@@ -24,8 +24,8 @@ import static bio.singa.simulation.model.sections.CellSubsection.SECTION_B;
 import static bio.singa.simulation.model.sections.CellTopology.INNER;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static tec.uom.se.unit.MetricPrefix.NANO;
-import static tec.uom.se.unit.Units.METRE;
+import static tec.units.indriya.unit.MetricPrefix.NANO;
+import static tec.units.indriya.unit.Units.METRE;
 
 /**
  * @author cl

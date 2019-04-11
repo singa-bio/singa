@@ -431,7 +431,6 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
         // safety check
         Objects.requireNonNull(largestIdentifier);
         LocalError localError = new LocalError(largestIdentifier.getUpdatable(), largestIdentifier.getEntity(), largestLocalError);
-        logger.debug("The largest error for {} was {} at {}", Thread.currentThread().getName(), localError.getValue(), localError.getUpdatable().getStringIdentifier());
         // set local error and return local error
         simulation.getScheduler().setLargestLocalError(localError, this, associatedDelta);
         return localError;

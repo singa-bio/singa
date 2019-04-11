@@ -216,7 +216,6 @@ public class ConcentrationDeltaManager {
                 }
             }
         }
-        logger.debug("Largest global error is {}.", largestError);
         return largestError;
     }
 

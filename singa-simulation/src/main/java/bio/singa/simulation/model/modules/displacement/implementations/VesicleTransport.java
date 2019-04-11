@@ -8,7 +8,7 @@ import bio.singa.simulation.features.MotorMovementVelocity;
 import bio.singa.simulation.model.agents.pointlike.Vesicle;
 import bio.singa.simulation.model.modules.displacement.DisplacementBasedModule;
 import bio.singa.simulation.model.modules.displacement.DisplacementDelta;
-import tec.uom.se.quantity.Quantities;
+import tec.units.indriya.quantity.Quantities;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Length;

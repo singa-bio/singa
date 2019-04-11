@@ -23,15 +23,15 @@ import bio.singa.simulation.model.rules.AssignmentRules;
 import bio.singa.simulation.model.sections.concentration.ConcentrationInitializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tec.uom.se.ComparableQuantity;
-import tec.uom.se.quantity.Quantities;
+import tec.units.indriya.ComparableQuantity;
+import tec.units.indriya.quantity.Quantities;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Time;
 import java.util.*;
 
-import static tec.uom.se.unit.MetricPrefix.MICRO;
-import static tec.uom.se.unit.Units.SECOND;
+import static tec.units.indriya.unit.MetricPrefix.MICRO;
+import static tec.units.indriya.unit.Units.SECOND;
 
 /**
  * @author cl

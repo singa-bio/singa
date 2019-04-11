@@ -26,8 +26,8 @@ import bio.singa.simulation.model.modules.concentration.imlementations.reactions
 import bio.singa.simulation.model.sections.CellRegion;
 import bio.singa.simulation.model.simulation.Simulation;
 import org.junit.jupiter.api.Test;
-import tec.uom.se.ComparableQuantity;
-import tec.uom.se.quantity.Quantities;
+import tec.units.indriya.ComparableQuantity;
+import tec.units.indriya.quantity.Quantities;
 
 import javax.measure.quantity.Length;
 import java.util.List;
@@ -36,10 +36,10 @@ import static bio.singa.simulation.model.agents.pointlike.VesicleStateRegistry.I
 import static bio.singa.simulation.model.agents.pointlike.VesicleStateRegistry.UNATTACHED;
 import static bio.singa.simulation.model.sections.CellTopology.MEMBRANE;
 import static org.junit.jupiter.api.Assertions.fail;
-import static tec.uom.se.unit.MetricPrefix.MICRO;
-import static tec.uom.se.unit.MetricPrefix.NANO;
-import static tec.uom.se.unit.Units.METRE;
-import static tec.uom.se.unit.Units.SECOND;
+import static tec.units.indriya.unit.MetricPrefix.MICRO;
+import static tec.units.indriya.unit.MetricPrefix.NANO;
+import static tec.units.indriya.unit.Units.METRE;
+import static tec.units.indriya.unit.Units.SECOND;
 
 /**
  * @author cl

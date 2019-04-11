@@ -28,8 +28,7 @@ import java.util.*;
  * is only applied for automaton nodes for the entities specified during the build process (via
  * {@link DiffusionBuilder}). Diffusion is parametrized by the {@link Diffusivity} {@link Feature}, therefore
  * Diffusivity must be assigned to each entity or a {@link FeatureProvider} will try to resolve it.
- * Entities might be anchored to membranes ({@link ChemicalEntity#setMembraneAnchored(boolean)}), which permits
- * diffusion to nodes with non membrane regions.
+
  * <pre>
  *  // define the feature to parametrize the diffusion
  *  Diffusivity diffusivity = new Diffusivity(Quantities.getValue(2.28E-05, SQUARE_CENTIMETRE_PER_SECOND),

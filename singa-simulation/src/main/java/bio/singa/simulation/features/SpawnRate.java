@@ -1,14 +1,14 @@
 package bio.singa.simulation.features;
 
-import tec.uom.se.unit.ProductUnit;
+import tec.units.indriya.unit.ProductUnit;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Area;
 
-import static tec.uom.se.AbstractUnit.ONE;
-import static tec.uom.se.unit.MetricPrefix.NANO;
-import static tec.uom.se.unit.Units.METRE;
-import static tec.uom.se.unit.Units.SECOND;
+import static tec.units.indriya.AbstractUnit.ONE;
+import static tec.units.indriya.unit.MetricPrefix.NANO;
+import static tec.units.indriya.unit.Units.METRE;
+import static tec.units.indriya.unit.Units.SECOND;
 
 /**
  * @author cl

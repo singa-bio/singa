@@ -2,16 +2,16 @@ package bio.singa.simulation.features;
 
 import bio.singa.features.model.Evidence;
 import bio.singa.features.model.ScalableQuantitativeFeature;
-import tec.uom.se.unit.ProductUnit;
+import tec.units.indriya.unit.ProductUnit;
 
 import javax.measure.Quantity;
 import javax.measure.Unit;
 import javax.measure.quantity.Speed;
 import java.util.List;
 
-import static tec.uom.se.unit.MetricPrefix.NANO;
-import static tec.uom.se.unit.Units.METRE;
-import static tec.uom.se.unit.Units.SECOND;
+import static tec.units.indriya.unit.MetricPrefix.NANO;
+import static tec.units.indriya.unit.Units.METRE;
+import static tec.units.indriya.unit.Units.SECOND;
 
 /**
  * @author cl

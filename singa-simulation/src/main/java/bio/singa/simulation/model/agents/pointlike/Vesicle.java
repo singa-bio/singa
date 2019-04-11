@@ -166,9 +166,9 @@ public class Vesicle implements Updatable, Featureable {
 
     public void setRadius(Quantity<Length> radius) {
         this.radius = radius.to(UnitRegistry.getSpaceUnit());
-        area = Geometry.calculateArea(radius);
-        volume = Geometry.calculateVolume(radius);
-        setFeature(Diffusivity.calculate(radius));
+        area = Geometry.calculateArea(this.radius);
+        volume = Geometry.calculateVolume(this.radius);
+        setFeature(Diffusivity.calculate(this.radius));
     }
 
     public Map<AutomatonNode, Double> getAssociatedNodes() {

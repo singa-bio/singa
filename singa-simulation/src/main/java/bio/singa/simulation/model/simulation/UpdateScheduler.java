@@ -7,8 +7,8 @@ import bio.singa.simulation.model.modules.UpdateModule;
 import bio.singa.simulation.model.modules.concentration.LocalError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tec.uom.se.AbstractUnit;
-import tec.uom.se.quantity.Quantities;
+import tec.units.indriya.AbstractUnit;
+import tec.units.indriya.quantity.Quantities;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Frequency;
@@ -194,6 +194,12 @@ public class UpdateScheduler {
                 // System.out.println("accepted global error: "+largestGlobalError+ " @ "+TimeFormatter.formatTime(UnitRegistry.getTime()));
                 globalErrorAcceptable = true;
             }
+            if (getLargestLocalError().getValue() != LocalError.MINIMAL_EMPTY_ERROR.getValue()) {
+                logger.debug("Largest local error : {} ({}, {}, {})", getLargestLocalError().getValue(), getLargestLocalError().getChemicalEntity(), getLargestLocalError().getUpdatable().getStringIdentifier(), getLocalErrorModule());
+            } else {
+                logger.debug("Largest local error : minimal");
+            }
+            logger.debug("Largest global error: {} ", largestGlobalError);
             this.largestGlobalError = largestGlobalError;
         }
 

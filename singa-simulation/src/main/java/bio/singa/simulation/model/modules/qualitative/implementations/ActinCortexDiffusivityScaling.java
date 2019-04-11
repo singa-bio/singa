@@ -12,7 +12,7 @@ import bio.singa.simulation.model.agents.pointlike.VesicleStateRegistry;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.modules.concentration.ModuleState;
 import bio.singa.simulation.model.modules.qualitative.QualitativeModule;
-import tec.uom.se.quantity.Quantities;
+import tec.units.indriya.quantity.Quantities;
 
 import javax.measure.Quantity;
 import java.util.HashMap;
@@ -20,10 +20,10 @@ import java.util.Map;
 
 import static bio.singa.simulation.features.DefaultFeatureSources.LANG2000;
 import static bio.singa.simulation.model.sections.CellTopology.INNER;
-import static tec.uom.se.unit.MetricPrefix.MICRO;
-import static tec.uom.se.unit.MetricPrefix.NANO;
-import static tec.uom.se.unit.Units.METRE;
-import static tec.uom.se.unit.Units.SECOND;
+import static tec.units.indriya.unit.MetricPrefix.MICRO;
+import static tec.units.indriya.unit.MetricPrefix.NANO;
+import static tec.units.indriya.unit.Units.METRE;
+import static tec.units.indriya.unit.Units.SECOND;
 
 /**
  * @author cl

@@ -4,7 +4,7 @@ import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.chemistry.entities.SmallMolecule;
 import bio.singa.features.units.UnitRegistry;
 import org.junit.jupiter.api.Test;
-import tec.uom.se.quantity.Quantities;
+import tec.units.indriya.quantity.Quantities;
 
 import java.util.Map;
 import java.util.Set;
@@ -13,8 +13,8 @@ import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static bio.singa.simulation.model.sections.CellTopology.INNER;
 import static bio.singa.simulation.model.sections.CellTopology.OUTER;
 import static org.junit.jupiter.api.Assertions.*;
-import static tec.uom.se.unit.MetricPrefix.MICRO;
-import static tec.uom.se.unit.Units.METRE;
+import static tec.units.indriya.unit.MetricPrefix.MICRO;
+import static tec.units.indriya.unit.Units.METRE;
 
 /**
  * @author cl

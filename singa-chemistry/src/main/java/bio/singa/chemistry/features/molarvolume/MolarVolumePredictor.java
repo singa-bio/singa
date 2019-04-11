@@ -8,7 +8,7 @@ import bio.singa.features.quantities.MolarVolume;
 import bio.singa.mathematics.algorithms.geometry.SphereVolumeEstimaton;
 import bio.singa.mathematics.geometry.bodies.Sphere;
 import bio.singa.structure.model.oak.Structures;
-import tec.uom.se.quantity.Quantities;
+import tec.units.indriya.quantity.Quantities;
 
 import java.util.List;
 

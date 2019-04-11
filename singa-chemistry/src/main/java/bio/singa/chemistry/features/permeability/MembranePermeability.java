@@ -3,15 +3,15 @@ package bio.singa.chemistry.features.permeability;
 import bio.singa.features.model.Evidence;
 import bio.singa.features.model.ScalableQuantitativeFeature;
 import bio.singa.features.units.UnitRegistry;
-import tec.uom.se.unit.ProductUnit;
+import tec.units.indriya.unit.ProductUnit;
 
 import javax.measure.Quantity;
 import javax.measure.Unit;
 import javax.measure.quantity.Length;
 
-import static tec.uom.se.unit.MetricPrefix.CENTI;
-import static tec.uom.se.unit.Units.METRE;
-import static tec.uom.se.unit.Units.SECOND;
+import static tec.units.indriya.unit.MetricPrefix.CENTI;
+import static tec.units.indriya.unit.Units.METRE;
+import static tec.units.indriya.unit.Units.SECOND;
 
 
 public class MembranePermeability extends ScalableQuantitativeFeature<MembranePermeability> implements Quantity<MembranePermeability> {

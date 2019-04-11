@@ -25,8 +25,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import tec.uom.se.ComparableQuantity;
-import tec.uom.se.quantity.Quantities;
+import tec.units.indriya.ComparableQuantity;
+import tec.units.indriya.quantity.Quantities;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Length;
@@ -37,8 +37,8 @@ import static bio.singa.simulation.model.sections.CellSubsection.SECTION_A;
 import static bio.singa.simulation.model.sections.CellTopology.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static tec.uom.se.unit.MetricPrefix.*;
-import static tec.uom.se.unit.Units.*;
+import static tec.units.indriya.unit.MetricPrefix.*;
+import static tec.units.indriya.unit.Units.*;
 
 /**
  * @author cl

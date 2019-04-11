@@ -17,8 +17,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import tec.uom.se.quantity.Quantities;
-import tec.uom.se.unit.ProductUnit;
+import tec.units.indriya.quantity.Quantities;
+import tec.units.indriya.unit.ProductUnit;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Time;
@@ -26,9 +26,9 @@ import javax.measure.quantity.Time;
 import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static bio.singa.simulation.model.sections.CellRegions.EXTRACELLULAR_REGION;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static tec.uom.se.AbstractUnit.ONE;
-import static tec.uom.se.unit.Units.MINUTE;
-import static tec.uom.se.unit.Units.SECOND;
+import static tec.units.indriya.AbstractUnit.ONE;
+import static tec.units.indriya.unit.Units.MINUTE;
+import static tec.units.indriya.unit.Units.SECOND;
 
 /**
  * @author cl

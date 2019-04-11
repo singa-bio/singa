@@ -11,7 +11,7 @@ import bio.singa.simulation.model.modules.displacement.DisplacementBasedModule;
 import bio.singa.simulation.model.modules.displacement.DisplacementDelta;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tec.uom.se.quantity.Quantities;
+import tec.units.indriya.quantity.Quantities;
 
 /**
  * @author cl

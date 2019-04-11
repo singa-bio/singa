@@ -14,17 +14,17 @@ import bio.singa.simulation.model.sections.CellRegions;
 import bio.singa.simulation.model.simulation.Simulation;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import tec.uom.se.ComparableQuantity;
-import tec.uom.se.quantity.Quantities;
+import tec.units.indriya.ComparableQuantity;
+import tec.units.indriya.quantity.Quantities;
 
 import javax.measure.quantity.Area;
 
 import static bio.singa.simulation.model.sections.CellRegions.CELL_OUTER_MEMBRANE_REGION;
 import static bio.singa.simulation.model.sections.CellTopology.MEMBRANE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static tec.uom.se.unit.MetricPrefix.MICRO;
-import static tec.uom.se.unit.MetricPrefix.NANO;
-import static tec.uom.se.unit.Units.METRE;
+import static tec.units.indriya.unit.MetricPrefix.MICRO;
+import static tec.units.indriya.unit.MetricPrefix.NANO;
+import static tec.units.indriya.unit.Units.METRE;
 
 /**
  * @author cl
@@ -67,7 +67,7 @@ class MembraneConcentrationTest {
         ComparableQuantity<Area> area = Quantities.getQuantity(1, MICRO(METRE).pow(2)).asType(Area.class);
         ci.addInitialConcentration(new MembraneConcentration(CellRegions.VESICLE_REGION, entity, area, 1000, Evidence.NO_EVIDENCE));
         ci.initialize(simulation);
-        assertEquals(5.2167372504050236E-14, simulation.getVesicleLayer().getVesicles().iterator().next().getConcentrationContainer().get(MEMBRANE, entity));
+        assertEquals(5.216737250405024E-14, simulation.getVesicleLayer().getVesicles().iterator().next().getConcentrationContainer().get(MEMBRANE, entity));
     }
 
 }
