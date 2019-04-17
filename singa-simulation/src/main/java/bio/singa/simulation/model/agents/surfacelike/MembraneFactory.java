@@ -34,7 +34,7 @@ public class MembraneFactory {
     private Map<Vector2D, CellRegion> regions;
     private Membrane membrane;
 
-    public static Membrane createLinearMembrane(Collection<Vector2D> vectors, CellRegion innerRegion, CellRegion membraneRegion, NeumannRectangularDirection innerDirection, AutomatonGraph graph, Map<Vector2D, CellRegion> regions, Rectangle globalClipper) {
+    static Membrane createLinearMembrane(Collection<Vector2D> vectors, CellRegion innerRegion, CellRegion membraneRegion, NeumannRectangularDirection innerDirection, AutomatonGraph graph, Map<Vector2D, CellRegion> regions, Rectangle globalClipper, boolean isSorted) {
         logger.info("Initializing linear membrane from {} vectors", vectors.size());
         MembraneFactory factory = new MembraneFactory(vectors, graph, regions);
         factory.direction = innerDirection;
@@ -46,7 +46,12 @@ public class MembraneFactory {
         } else {
             vectorDirection = NORTH;
         }
-        List<Vector2D> sortedVectors = Vectors.sortByCloseness(factory.membraneVectors, vectorDirection);
+        List<Vector2D> sortedVectors;
+        if (isSorted) {
+            sortedVectors = new ArrayList<>(vectors);
+        } else {
+            sortedVectors = Vectors.sortByCloseness(factory.membraneVectors, vectorDirection);
+        }
         List<LineSegment> segments = Vectors.connectToSegments(sortedVectors);
         factory.associateToGraph(segments);
         if (graph.getNodes().size() > 1) {
