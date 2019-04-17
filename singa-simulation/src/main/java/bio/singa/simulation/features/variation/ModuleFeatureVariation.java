@@ -38,7 +38,7 @@ public class ModuleFeatureVariation<FeatureType> extends Variation<FeatureType> 
             feature.addEvidence(new Evidence(Evidence.SourceType.PREDICTION, "Variation", "Parameter variation"));
             return new ModuleFeatureVariationEntry(module, feature);
         } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            throw new IllegalStateException("Unable to create Feature.", e);
+            throw new IllegalStateException("Unable to create Feature "+featureType+".", e);
         }
     }
 
