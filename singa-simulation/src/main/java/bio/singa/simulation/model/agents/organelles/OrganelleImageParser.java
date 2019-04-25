@@ -104,7 +104,7 @@ public class OrganelleImageParser {
                 scale = parser.scale;
             }
             // sort and connect
-            List<Vector2D> vectors = Vectors.sortByCloseness(parser.groups.values().iterator().next(), plusDirection);
+            List<Vector2D> vectors = Vectors.sortByCloseness(parser.groups.values().iterator().next());
             filaments.add(new LineLikeAgent(LineLikeAgent.MICROTUBULE, vectors, plusDirection));
         }
         return new LineLikeAgentTemplate(filaments, scale);
