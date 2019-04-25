@@ -6,8 +6,8 @@ import bio.singa.mathematics.graphs.grid.GridGraph;
 import bio.singa.mathematics.graphs.grid.GridNode;
 import bio.singa.mathematics.graphs.trees.BinaryTree;
 import bio.singa.mathematics.graphs.trees.BinaryTreeNode;
-import bio.singa.mathematics.topology.grids.rectangular.RectangularCoordinate;
 import bio.singa.mathematics.topology.grids.rectangular.NeumannRectangularDirection;
+import bio.singa.mathematics.topology.grids.rectangular.RectangularCoordinate;
 import bio.singa.mathematics.vectors.Vector;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.mathematics.vectors.Vectors;
@@ -23,8 +23,9 @@ import java.util.List;
  */
 public class Graphs {
 
-    public static final Rectangle DEFAULT_BOUNDING_BOX = new Rectangle(400, 400);
     private static final Logger logger = LoggerFactory.getLogger(Graphs.class);
+
+    public static final Rectangle DEFAULT_BOUNDING_BOX = new Rectangle(400, 400);
 
     /**
      * Generates a linear graph with the given number of nodes. Each node will be connected to its predecessor.

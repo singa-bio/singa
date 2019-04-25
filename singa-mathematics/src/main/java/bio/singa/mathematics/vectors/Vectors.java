@@ -4,7 +4,6 @@ import bio.singa.mathematics.concepts.Addable;
 import bio.singa.mathematics.geometry.edges.LineSegment;
 import bio.singa.mathematics.geometry.edges.SimpleLineSegment;
 import bio.singa.mathematics.geometry.faces.Rectangle;
-import bio.singa.mathematics.topology.grids.rectangular.NeumannRectangularDirection;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
@@ -84,20 +83,9 @@ public class Vectors {
         return new Vector3D(x, y, z);
     }
 
-    public static List<Vector2D> sortByCloseness(Collection<Vector2D> vectors, NeumannRectangularDirection startingDirection) {
-        TreeSet<Vector2D> sortedCopy;
-        switch (startingDirection) {
-            case NORTH:
-            case SOUTH:
-                sortedCopy = new TreeSet<>(Comparator.comparingDouble(Vector2D::getY));
-                break;
-            default:
-                sortedCopy = new TreeSet<>(Comparator.comparingDouble(Vector2D::getX));
-                break;
-        }
 
-        sortedCopy.addAll(vectors);
-        final Vector2D first = sortedCopy.iterator().next();
+    public static List<Vector2D> sortByCloseness(Collection<Vector2D> vectors) {
+        final Vector2D first = vectors.iterator().next();
         List<Vector2D> copy = new ArrayList<>(vectors);
         List<Vector2D> result = new ArrayList<>();
         result.add(first);

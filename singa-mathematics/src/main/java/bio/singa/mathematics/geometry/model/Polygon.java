@@ -4,12 +4,11 @@ import bio.singa.mathematics.geometry.edges.LineSegment;
 import bio.singa.mathematics.geometry.edges.SimpleLineSegment;
 import bio.singa.mathematics.geometry.faces.Circle;
 import bio.singa.mathematics.geometry.faces.Polygons;
+import bio.singa.mathematics.graphs.model.RegularNode;
+import bio.singa.mathematics.graphs.model.UndirectedGraph;
 import bio.singa.mathematics.vectors.Vector2D;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * A polygon is the two dimensional representation of a polytope.
@@ -45,6 +44,47 @@ public interface Polygon extends Polytope<Vector2D> {
         return intersections;
     }
 
+    /**
+     * Returns the intersection and the nodes, which connecting edge was intersected.
+     *
+     * @param lineSegment The line segment.
+     */
+    default List<IntersectionFragment> getIntersectionFragments(LineSegment lineSegment) {
+        List<IntersectionFragment> intersections = new ArrayList<>();
+        for (LineSegment polygonSegment : getEdges()) {
+            Optional<Vector2D> intersection = polygonSegment.getIntersectionWith(lineSegment);
+            intersection.ifPresent(vector2D -> intersections.add(new IntersectionFragment(vector2D, polygonSegment.getStartingPoint(), polygonSegment.getEndingPoint())));
+        }
+        return intersections;
+    }
+
+    default UndirectedGraph toGraph() {
+        UndirectedGraph graph = new UndirectedGraph();
+        for (LineSegment lineSegment : getEdges()) {
+            Vector2D startingPoint = lineSegment.getStartingPoint();
+            Vector2D endingPoint = lineSegment.getEndingPoint();
+            // get source node
+            RegularNode startingNode = graph.getNode(node -> node.getPosition().equals(startingPoint))
+                    // add if it is not already present
+                    .orElseGet(() -> {
+                        RegularNode node = new RegularNode(graph.nextNodeIdentifier(), startingPoint);
+                        graph.addNode(node);
+                        return node;
+                    });
+            // get target node
+            RegularNode endingNode = graph.getNode(node -> node.getPosition().equals(endingPoint))
+                    // add if it is not already present
+                    .orElseGet(() -> {
+                        RegularNode node = new RegularNode(graph.nextNodeIdentifier(), endingPoint);
+                        graph.addNode(node);
+                        return node;
+                    });
+            // add edge between nodes
+            graph.addEdgeBetween(startingNode, endingNode);
+        }
+        return graph;
+    }
+
     default Vector2D getCentroid() {
         List<Vector2D> vertices = getVertices();
         int vectorCount = vertices.size();
@@ -73,4 +113,30 @@ public interface Polygon extends Polytope<Vector2D> {
     void scale(double scalingFactor);
 
     Set<Vector2D> reduce(int times);
+
+    class IntersectionFragment {
+
+        private final Vector2D intersection;
+        private final Vector2D intersectedSource;
+        private final Vector2D intersectedTarget;
+
+        public IntersectionFragment(Vector2D intersection, Vector2D intersectedSource, Vector2D intersectedTarget) {
+            this.intersection = intersection;
+            this.intersectedSource = intersectedSource;
+            this.intersectedTarget = intersectedTarget;
+        }
+
+        public Vector2D getIntersection() {
+            return intersection;
+        }
+
+        public Vector2D getIntersectedStart() {
+            return intersectedSource;
+        }
+
+        public Vector2D getIntersectedEnd() {
+            return intersectedTarget;
+        }
+
+    }
 }
