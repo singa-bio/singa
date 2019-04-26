@@ -65,6 +65,17 @@ public interface LineSegment {
         return getStartingPoint().getY() == getEndingPoint().getY();
     }
 
+    default boolean isCongruentTo(LineSegment otherSegment) {
+            return (getStartingPoint().equals(otherSegment.getStartingPoint()) && getEndingPoint().equals(otherSegment.getEndingPoint())) ||
+                    (getStartingPoint().equals(otherSegment.getEndingPoint()) && getEndingPoint().equals(otherSegment.getStartingPoint()));
+    }
+
+    default Vector2D getUnitVector() {
+        return getEndingPoint().subtract(getStartingPoint()).normalize();
+    }
+
+
+
     default Set<Vector2D> getIntersectionWith(Circle circle) {
         Set<Vector2D> intersections = new HashSet<>();
         // see http://mathworld.wolfram.com/Circle-LineIntersection.html

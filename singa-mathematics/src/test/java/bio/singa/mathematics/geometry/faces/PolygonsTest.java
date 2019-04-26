@@ -1,10 +1,15 @@
 package bio.singa.mathematics.geometry.faces;
 
+import bio.singa.core.utility.Pair;
+import bio.singa.mathematics.geometry.edges.LineSegment;
+import bio.singa.mathematics.geometry.edges.SimpleLineSegment;
 import bio.singa.mathematics.geometry.model.Polygon;
 import bio.singa.mathematics.vectors.Vector2D;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -57,6 +62,50 @@ class PolygonsTest {
         assertTrue(Polygons.isInside(complexPentagon, new Vector2D(6.0, 3.0)));
         assertFalse(Polygons.isInside(complexPentagon, new Vector2D(6.0, 4.0)));
         assertTrue(Polygons.isInside(complexPentagon, new Vector2D(6.0, 5.0)));
+    }
+
+    @Test
+    void getTouchingLineSegments() {
+
+        Polygon first = new Rectangle(new Vector2D(100, 100), new Vector2D(200, 200));
+        Polygon second = new Rectangle(new Vector2D(200, 150), new Vector2D(300, 200));
+
+        Map<Pair<LineSegment>, LineSegment> touchingLineSegments = Polygons.getTouchingLineSegments(first, second);
+        Map.Entry<Pair<LineSegment>, LineSegment> entry = touchingLineSegments.entrySet().iterator().next();
+
+        assertTrue(new SimpleLineSegment(new Vector2D(200.0, 100.0), new Vector2D(200.0, 200.0)).isCongruentTo(entry.getKey().getFirst()));
+        assertTrue(new SimpleLineSegment(new Vector2D(200.0, 200.0), new Vector2D(200.0, 150.0)).isCongruentTo(entry.getKey().getSecond()));
+        assertTrue(new SimpleLineSegment(new Vector2D(200.0, 200.0), new Vector2D(200.0, 150.0)).isCongruentTo(entry.getValue()));
+    }
+
+    @Test
+    void getTouchingLineSegmentsTrivial() {
+
+        Polygon first = new Rectangle(new Vector2D(100, 100), new Vector2D(200, 200));
+        Polygon second = new Rectangle(new Vector2D(200, 100), new Vector2D(300, 200));
+
+        Map<Pair<LineSegment>, LineSegment> touchingLineSegments = Polygons.getTouchingLineSegments(first, second);
+        Map.Entry<Pair<LineSegment>, LineSegment> entry = touchingLineSegments.entrySet().iterator().next();
+
+        assertTrue(new SimpleLineSegment(new Vector2D(200.0, 100.0), new Vector2D(200.0, 200.0)).isCongruentTo(entry.getKey().getFirst()));
+        assertTrue(new SimpleLineSegment(new Vector2D(200.0, 200.0), new Vector2D(200.0, 100.0)).isCongruentTo(entry.getKey().getSecond()));
+        assertTrue(new SimpleLineSegment(new Vector2D(200.0, 200.0), new Vector2D(200.0, 100.0)).isCongruentTo(entry.getValue()));
+    }
+
+    @Test
+    void getTouchingLineSegmentsOverlapping() {
+
+        Polygon first = new Rectangle(new Vector2D(100, 100), new Vector2D(200, 200));
+        Polygon second = new Rectangle(new Vector2D(200, 150), new Vector2D(300, 250));
+
+        Map<Pair<LineSegment>, LineSegment> touchingLineSegments = Polygons.getTouchingLineSegments(first, second);
+        Map.Entry<Pair<LineSegment>, LineSegment> entry = touchingLineSegments.entrySet().iterator().next();
+        System.out.println(entry.getKey().getSecond());
+
+        assertTrue(new SimpleLineSegment(new Vector2D(200.0, 100.0), new Vector2D(200.0, 200.0)).isCongruentTo(entry.getKey().getFirst()));
+        assertTrue(new SimpleLineSegment(new Vector2D(200.0, 250.0), new Vector2D(200.0, 150.0)).isCongruentTo(entry.getKey().getSecond()));
+        assertTrue(new SimpleLineSegment(new Vector2D(200.0, 200.0), new Vector2D(200.0, 150.0)).isCongruentTo(entry.getValue()));
+
     }
 
 }
