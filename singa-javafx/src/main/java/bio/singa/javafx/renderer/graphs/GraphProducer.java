@@ -23,7 +23,7 @@ public class GraphProducer<NodeType extends Node<NodeType, Vector2D, IdentifierT
 
     @Override
     public void run() {
-        GraphDrawingTool<NodeType, EdgeType, IdentifierType, GraphType> gdt = new GraphDrawingTool<>(graph,
+        ForceDirectedGraphLayout<NodeType, EdgeType, IdentifierType, GraphType> gdt = new ForceDirectedGraphLayout<>(graph,
                 renderer.drawingWidthProperty(), renderer.drawingHeightProperty(), 100);
         for (int i = 0; i < totalIterations; i++) {
             renderer.getGraphQueue().add(gdt.arrangeGraph(i));

@@ -1,8 +1,5 @@
 package bio.singa.javafx.renderer.graphs;
 
-import bio.singa.mathematics.forces.AttractiveForce;
-import bio.singa.mathematics.forces.Force;
-import bio.singa.mathematics.forces.RepulsiveForce;
 import bio.singa.mathematics.functions.DecayFunctions;
 import bio.singa.mathematics.graphs.model.Edge;
 import bio.singa.mathematics.graphs.model.Graph;
@@ -21,15 +18,38 @@ import java.util.HashMap;
  *
  * @author cl
  */
-public class GraphDrawingTool<NodeType extends Node<NodeType, Vector2D, IdentifierType>, EdgeType extends Edge<NodeType>,
+public class ForceDirectedGraphLayout<NodeType extends Node<NodeType, Vector2D, IdentifierType>, EdgeType extends Edge<NodeType>,
         IdentifierType, GraphType extends Graph<NodeType, EdgeType, IdentifierType>> {
+
+
+    public Force<NodeType> attractiveForce(double forceConstant) {
+        return (v1, v2) -> {
+            // d = n1 - n2
+            Vector2D distance = v1.getPosition().subtract(v2.getPosition());
+            // m = |d|
+            double magnitude = distance.getMagnitude();
+            // v = unit(d) * force(m)
+            return distance.normalize().multiply((magnitude * magnitude) / forceConstant);
+        };
+    }
+
+    public Force<NodeType> repulsiveForce(double forceConstant) {
+        return (v1, v2) -> {
+            // d = n1 - n2
+            Vector2D distance = v1.getPosition().subtract(v2.getPosition());
+            // m = |d|
+            double magnitude = distance.getMagnitude();
+            // v = unit(d) * force(m)
+            return distance.normalize().multiply((forceConstant * forceConstant) / magnitude);
+        };
+    }
 
     private final int totalIterations;
     private final DoubleProperty drawingWidth;
     private final DoubleProperty drawingHeight;
-    private final Force repulsiveForce;
-    private final Force attractiveForce;
-    private final Force boundaryForce;
+    private final Force<NodeType> repulsiveForce;
+    private final Force<NodeType> attractiveForce;
+    private final Force<NodeType> boundaryForce;
 
     private final GraphType graph;
     private final HashMap<NodeType, Vector2D> velocities;
@@ -42,7 +62,7 @@ public class GraphDrawingTool<NodeType extends Node<NodeType, Vector2D, Identifi
      * @param drawingHeight The height property.
      * @param drawingWidth The width property.
      */
-    public GraphDrawingTool(GraphType graph, DoubleProperty drawingWidth, DoubleProperty drawingHeight, int totalIterations) {
+    public ForceDirectedGraphLayout(GraphType graph, DoubleProperty drawingWidth, DoubleProperty drawingHeight, int totalIterations) {
         this.drawingWidth = drawingWidth;
         this.drawingHeight = drawingHeight;
         this.totalIterations = totalIterations;
@@ -50,11 +70,11 @@ public class GraphDrawingTool<NodeType extends Node<NodeType, Vector2D, Identifi
         // force constant = sqrt(drawing area / desired area per node)
         double forceConstant = Math.sqrt((drawingHeight.get() * drawingWidth.get()) / (graph.getNodes().size() * 20));
         // repulsive force between nodes
-        repulsiveForce = new RepulsiveForce(forceConstant);
+        repulsiveForce = repulsiveForce(forceConstant);
         // repulsive force from boundaries
-        boundaryForce = new RepulsiveForce(forceConstant * 2);
+        boundaryForce = repulsiveForce(forceConstant * 2);
         // attractive force between nodes
-        attractiveForce = new AttractiveForce(forceConstant);
+        attractiveForce = attractiveForce(forceConstant);
         // temporary velocities
         velocities = new HashMap<>();
         for (NodeType n : graph.getNodes()) {
@@ -82,8 +102,7 @@ public class GraphDrawingTool<NodeType extends Node<NodeType, Vector2D, Identifi
                 // if source and target are different
                 if (!sourceNode.equals(targetNode)) {
                     // calculate repulsive acceleration
-                    Vector2D acceleration = repulsiveForce.calculateAcceleration(sourceNode.getPosition(),
-                            targetNode.getPosition());
+                    Vector2D acceleration = repulsiveForce.apply(sourceNode, targetNode);
                     // add acceleration to current velocity
                     Vector2D velocity = velocities.get(sourceNode).add(acceleration);
                     velocities.put(sourceNode, velocity);
@@ -99,15 +118,13 @@ public class GraphDrawingTool<NodeType extends Node<NodeType, Vector2D, Identifi
             NodeType targetNode = edge.getTarget();
 
             // calculate attractive acceleration
-            Vector2D acceleration = attractiveForce.calculateAcceleration(sourceNode.getPosition(),
-                    targetNode.getPosition());
+            Vector2D acceleration = attractiveForce.apply(sourceNode, targetNode);
 
             // add acceleration to targets's velocities
             Vector2D velocityTarget = velocities.get(targetNode).add(acceleration);
             velocities.put(targetNode, velocityTarget);
 
-            // subtract acceleration to source's velocities (fling to opposite
-            // direction)
+            // subtract acceleration to source's velocities (fling to opposite direction)
             Vector2D velocitySource = velocities.get(sourceNode).subtract(acceleration);
             velocities.put(sourceNode, velocitySource);
 

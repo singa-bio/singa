@@ -52,7 +52,7 @@ public class GraphRenderer<NodeType extends Node<NodeType, Vector2D, IdentifierT
     }
 
     public void arrangeOnce(GraphType graph) {
-        GraphDrawingTool<NodeType, EdgeType, IdentifierType, GraphType> gdt = new GraphDrawingTool<>(graph,
+        ForceDirectedGraphLayout<NodeType, EdgeType, IdentifierType, GraphType> gdt = new ForceDirectedGraphLayout<>(graph,
                 drawingWidthProperty(), drawingHeightProperty(), 100);
         render(gdt.arrangeGraph(80));
     }
