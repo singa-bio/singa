@@ -1,8 +1,10 @@
 package bio.singa.simulation.model.simulation;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
-import bio.singa.chemistry.entities.ComplexedChemicalEntity;
+import bio.singa.chemistry.entities.ComplexEntity;
+import bio.singa.features.formatter.TimeFormatter;
 import bio.singa.features.identifiers.SimpleStringIdentifier;
+import bio.singa.features.model.Feature;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.geometry.faces.Rectangle;
@@ -15,22 +17,21 @@ import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.modules.UpdateModule;
 import bio.singa.simulation.model.modules.concentration.ConcentrationDelta;
+import bio.singa.simulation.model.modules.displacement.DisplacementBasedModule;
 import bio.singa.simulation.model.rules.AssignmentRule;
 import bio.singa.simulation.model.rules.AssignmentRules;
-import bio.singa.simulation.model.sections.CellRegion;
-import bio.singa.simulation.model.sections.CellRegions;
 import bio.singa.simulation.model.sections.concentration.ConcentrationInitializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tec.uom.se.ComparableQuantity;
-import tec.uom.se.quantity.Quantities;
+import tec.units.indriya.ComparableQuantity;
+import tec.units.indriya.quantity.Quantities;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Time;
 import java.util.*;
 
-import static tec.uom.se.unit.MetricPrefix.MICRO;
-import static tec.uom.se.unit.Units.SECOND;
+import static tec.units.indriya.unit.MetricPrefix.MICRO;
+import static tec.units.indriya.unit.Units.SECOND;
 
 /**
  * @author cl
@@ -99,13 +100,12 @@ public class Simulation {
 
     private ConcentrationInitializer concentrationInitializer;
 
-    private boolean initializationDone;
-
     private Quantity<Time> maximalTimeStep;
 
-    private CellRegion standardRegion;
-
     private Map<Updatable, List<ConcentrationDelta>> observedDeltas;
+
+    private boolean initializationDone;
+    private boolean vesiclesWillMove;
 
     /**
      * Creates a new plain simulation.
@@ -117,10 +117,10 @@ public class Simulation {
         elapsedTime = Quantities.getQuantity(0.0, UnitRegistry.getTimeUnit());
         epoch = 0;
         initializationDone = false;
+        vesiclesWillMove = false;
         observedUpdatables = new HashSet<>();
         vesicleLayer = new VesicleLayer(this);
         scheduler = new UpdateScheduler(this);
-        standardRegion = CellRegions.EXTRACELLULAR_REGION;
         observedDeltas = new HashMap<>();
     }
 
@@ -131,9 +131,7 @@ public class Simulation {
         logger.debug("Starting epoch {} ({}).", epoch, elapsedTime);
         if (!initializationDone) {
             initializeModules();
-            initializeGraph();
             initializeConcentrations();
-            initializeSpatialRepresentations();
             initializeVesicleLayer();
             initializationDone = true;
         }
@@ -144,12 +142,12 @@ public class Simulation {
                 if (!observedDeltas.containsKey(observedUpdatable)) {
                     observedDeltas.put(observedUpdatable, new ArrayList<>());
                 }
-                for (ConcentrationDelta delta : observedUpdatable.getPotentialConcentrationDeltas()) {
+                for (ConcentrationDelta delta : observedUpdatable.getConcentrationManager().getPotentialDeltas()) {
                     // adjust to time step
                     observedDeltas.get(observedUpdatable).add(delta.multiply(1.0 / UnitRegistry.getTime().to(MICRO(SECOND)).getValue().doubleValue()));
                 }
                 // clear them
-                observedUpdatable.clearPotentialConcentrationDeltas();
+                observedUpdatable.getConcentrationManager().clearPotentialDeltas();
             }
         }
         // apply all modules
@@ -157,55 +155,90 @@ public class Simulation {
         // apply generated deltas
         logger.debug("Applying deltas.");
         for (Updatable updatable : updatables) {
-            if (updatable.hasDeltas()) {
+            if (updatable.getConcentrationManager().hasDeltas()) {
                 logger.trace("Deltas in {}:", updatable.getStringIdentifier());
-                updatable.applyDeltas();
+                updatable.getConcentrationManager().applyDeltas();
             }
         }
-        // move vesicles
-        if (vesicleLayer != null) {
+
+        if (vesicleLayer != null && vesiclesWillMove) {
+            // move vesicles
             vesicleLayer.applyDeltas();
+            // associate nodes
             vesicleLayer.associateVesicles();
+
         }
+
         // update epoch and elapsed time
         updateEpoch();
         // if time step did not change it can possibly be increased
-        if (!scheduler.timeStepWasRescaled()) {
-            // if no maximal time step is given or time step is not already maximal
-            if (maximalTimeStep == null || UnitRegistry.getTime().to(maximalTimeStep.getUnit()).getValue().doubleValue() < maximalTimeStep.getValue().doubleValue()) {
-                // if error was below tolerance threshold (10 percent of epsilon)
-                // TODO evaluate if the sign is right (< instead of >)
-                if (scheduler.getRecalculationCutoff() - scheduler.getLargestError().getValue() > 0.1 * scheduler.getRecalculationCutoff()) {
-                    // try larger time step next time
-                    scheduler.increaseTimeStep();
-                }
+        if (timeStepShouldIncrease()) {
+            scheduler.increaseTimeStep();
+        }
+
+    }
+
+
+    private boolean timeStepShouldIncrease() {
+        // if time step was reduced in this epoch there is no need to test if it should increase
+        if (scheduler.timeStepWasAlteredInThisEpoch()) {
+            return false;
+        }
+        // if a maximal time step is set
+        if (maximalTimeStep != null) {
+            final double currentTimeStep = UnitRegistry.getTime().to(maximalTimeStep.getUnit()).getValue().doubleValue();
+            final double maximalTimeStep = this.maximalTimeStep.getValue().doubleValue();
+            // if the current time step is already the maximal time step
+            if (currentTimeStep >= maximalTimeStep) {
+                return false;
+            }
+        }
+
+//        // if the ratio between local and global error (local/global) is large (local error has little influence on
+//        // global error)
+//        double errorRatio = scheduler.getLargestLocalError().getValue() / scheduler.getLargestGlobalError();
+//        if (errorRatio > 100000) {
+//            return true;
+//        }
+
+        // if the the error that was computed previously is very small
+        final double recalculationCutoff = scheduler.getRecalculationCutoff();
+        final double latestGlobalError = scheduler.getLargestGlobalError();
+        if (recalculationCutoff - latestGlobalError > 0.1 * recalculationCutoff) {
+            // System.out.println("global error "+ latestGlobalError);
+            final double latestLocalError = scheduler.getLargestLocalError().getValue();
+            // System.out.println("local error "+ latestLocalError);
+            if (recalculationCutoff - latestLocalError > 0.1 * recalculationCutoff) {
+                // try larger time step
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private void initializeModules() {
+        logger.info("Initializing modules:");
+        for (UpdateModule module : getModules()) {
+            module.initialize();
+            scheduler.addModule(module);
+            logger.info("Module {}", module.getIdentifier());
+            for (Feature<?> feature : module.getFeatures()) {
+                logger.info("  Feature {} = {}", feature.getClass().getSimpleName(), feature.getContent());
+            }
+            // save some computation time in case vesicles will not move; this effects:
+            // associations between nodes and vesicles are only calculated once
+            // no collisions are checked
+            if (module instanceof DisplacementBasedModule) {
+                vesiclesWillMove = true;
             }
         }
     }
 
     private void initializeConcentrations() {
         if (concentrationInitializer != null) {
-            logger.info("Initializing starting concentrations");
+            logger.info("Initializing starting concentrations:");
             concentrationInitializer.initialize(this);
-        }
-    }
-
-    private void initializeModules() {
-        logger.info("Initializing features required for each module.");
-        for (UpdateModule module : modules) {
-            module.checkFeatures();
-        }
-    }
-
-    public void initializeGraph() {
-        logger.info("Initializing chemical entities.");
-        if (graph == null) {
-            throw new IllegalStateException("No graph has been assigned to the simulation.");
-        } else {
-//            for (AutomatonNode node : graph.getNodes()) {
-//                node.setCellRegion(standardRegion);
-//            }
-//            simulationRegion = new Rectangle(Environment.getSimulationExtend(), Environment.getSimulationExtend());
         }
     }
 
@@ -226,8 +259,10 @@ public class Simulation {
     private void initializeVesicleLayer() {
         logger.info("Initializing vesicle layer and individual vesicles.");
         // initialize simulation space
+        if (simulationRegion == null) {
+            simulationRegion = new Rectangle(Environment.getSimulationExtend(), Environment.getSimulationExtend());
+        }
         vesicleLayer.setSimulation(this);
-        vesicleLayer.setSimulationRegion(new Rectangle(Environment.getSimulationExtend(), Environment.getSimulationExtend()));
         vesicleLayer.associateVesicles();
     }
 
@@ -271,6 +306,10 @@ public class Simulation {
         this.simulationRegion = simulationRegion;
     }
 
+    public ConcentrationInitializer getConcentrationInitializer() {
+        return concentrationInitializer;
+    }
+
     public void collectUpdatables() {
         updatables = new ArrayList<>(graph.getNodes());
         updatables.addAll(vesicleLayer.getVesicles());
@@ -305,6 +344,22 @@ public class Simulation {
         return modules;
     }
 
+    public void addModule(UpdateModule module) {
+        // logger.info("Adding module {}.", module.toString());
+        module.setSimulation(this);
+        module.checkFeatures();
+        for (ChemicalEntity referencedEntity : module.getReferencedEntities()) {
+            addReferencedEntity(referencedEntity);
+        }
+        modules.add(module);
+    }
+
+    public void setGraph(AutomatonGraph graph) {
+        // logger.info("Adding graph.");
+        this.graph = graph;
+        initializeSpatialRepresentations();
+    }
+
     public UpdateScheduler getScheduler() {
         return scheduler;
     }
@@ -315,6 +370,7 @@ public class Simulation {
 
     public void setMaximalTimeStep(Quantity<Time> maximalTimeStep) {
         this.maximalTimeStep = maximalTimeStep;
+        logger.info("Maximal timestep set to {}.", TimeFormatter.formatTime(maximalTimeStep));
     }
 
     /**
@@ -331,10 +387,6 @@ public class Simulation {
 
     public AutomatonGraph getGraph() {
         return graph;
-    }
-
-    public void setGraph(AutomatonGraph graph) {
-        this.graph = graph;
     }
 
     public long getEpoch() {
@@ -354,8 +406,8 @@ public class Simulation {
         Set<ChemicalEntity> entities = new HashSet<>();
         for (ChemicalEntity entity : chemicalEntities.values()) {
             entities.add(entity);
-            if (entity instanceof ComplexedChemicalEntity) {
-                entities.addAll(((ComplexedChemicalEntity) entity).getAssociatedChemicalEntities());
+            if (entity instanceof ComplexEntity) {
+                entities.addAll(((ComplexEntity) entity).getAllData());
             }
         }
         return entities;
@@ -369,7 +421,7 @@ public class Simulation {
         chemicalEntities.put(chemicalEntity.getIdentifier(), chemicalEntity);
     }
 
-    public void observeNode(Updatable updatable) {
+    public void observe(Updatable updatable) {
         observedUpdatables.add(updatable);
         updatable.setObserved(true);
     }
@@ -384,10 +436,6 @@ public class Simulation {
 
     public void clearPreviouslyObservedDeltas() {
         observedDeltas.clear();
-    }
-
-    public ConcentrationInitializer getConcentrationInitializer() {
-        return concentrationInitializer;
     }
 
     public void setConcentrationInitializer(ConcentrationInitializer concentrationInitializer) {

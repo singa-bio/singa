@@ -52,20 +52,22 @@ public class ChEBIContentHandler implements ContentHandler {
             primaryIdentifier = identifier.toString();
         }
 
-        SmallMolecule species = new SmallMolecule.Builder(primaryIdentifier)
-                .name(name)
+        SmallMolecule species = SmallMolecule.create(primaryIdentifier)
                 .additionalIdentifier(inChIKey)
                 .build();
+        if (name != null) {
+            species.addName(name);
+        }
         if (! smilesBuilder.toString().isEmpty()) {
-            species.setFeature(new Smiles(smilesBuilder.toString(), ChEBIDatabase.evidence));
+            species.setFeature(new Smiles(smilesBuilder.toString(), ChEBIDatabase.DEGTYARENKO2008));
         }
         if (molarMass != null) {
             species.setFeature(molarMass);
         }
         if (ligand3D != null) {
-            species.setFeature(new Structure3D(ligand3D, ChEBIDatabase.evidence));
+            species.setFeature(new Structure3D(ligand3D, ChEBIDatabase.DEGTYARENKO2008));
         } else if (ligand2D != null){
-            species.setFeature(new Structure3D(ligand2D, ChEBIDatabase.evidence));
+            species.setFeature(new Structure3D(ligand2D, ChEBIDatabase.DEGTYARENKO2008));
         }
         return species;
     }
@@ -169,7 +171,7 @@ public class ChEBIContentHandler implements ContentHandler {
             }
             case "mass": {
                 final String precursorString = new String(ch, start, length);
-                molarMass = new MolarMass(Double.valueOf(precursorString), ChEBIDatabase.evidence);
+                molarMass = new MolarMass(Double.valueOf(precursorString), ChEBIDatabase.DEGTYARENKO2008);
                 break;
             }
             case "smiles": {

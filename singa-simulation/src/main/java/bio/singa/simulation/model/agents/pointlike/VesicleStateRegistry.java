@@ -7,61 +7,17 @@ import java.util.*;
  */
 public class VesicleStateRegistry {
 
-    public static class VesicleState {
-
-        private String identifier;
-        private String description;
-
-        public VesicleState(String identifier, String description) {
-            this.identifier = identifier;
-            this.description = description;
-        }
-
-        public String getIdentifier() {
-            return identifier;
-        }
-
-        public void setIdentifier(String identifier) {
-            this.identifier = identifier;
-        }
-
-        public String getDescription() {
-            return description;
-        }
-
-        public void setDescription(String description) {
-            this.description = description;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            VesicleState that = (VesicleState) o;
-            return Objects.equals(identifier, that.identifier);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(identifier);
-        }
-
-        @Override
-        public String toString() {
-            return "State: " + identifier;
-        }
-    }
-
     private static VesicleStateRegistry instance = getInstance();
 
-    public static final VesicleState ACTIN_PROPELLED = new VesicleState("ACTIN_PROPELLED", "propelled by actin depolymerization");
-    public static final VesicleState ACTIN_ATTACHED = new VesicleState("ACTIN_ATTACHED", "attached to actin with motor protein");
-    public static final VesicleState ACTIN_TETHERED = new VesicleState("ACTIN_TETHERED", "tethered to actin filaments.");
-    public static final VesicleState MICROTUBULE_ATTACHED = new VesicleState("MICROTUBULE_ATTACHED", "attached to micotubule with motor protein");
-    public static final VesicleState MEMBRANE_TETHERED = new VesicleState("MEMBRANE_TETHERED", "tethered to membrane");
-    public static final VesicleState UNATTACHED = new VesicleState("UNATTACHED", "unattached from any cellular component");
+    public static final String ACTIN_PROPELLED = "ACTIN_PROPELLED";
+    public static final String ACTIN_ATTACHED = "ACTIN_ATTACHED";
+    public static final String ACTIN_TETHERED = "ACTIN_TETHERED";
+    public static final String MICROTUBULE_ATTACHED = "MICROTUBULE_ATTACHED";
+    public static final String MEMBRANE_TETHERED = "MEMBRANE_TETHERED";
+    public static final String UNATTACHED = "UNATTACHED";
+    public static final String IN_STORAGE = "IN_STORAGE";
 
-    private Set<VesicleState> states;
+    private Set<String> states;
 
     private static VesicleStateRegistry getInstance() {
         if (instance == null) {
@@ -77,6 +33,7 @@ public class VesicleStateRegistry {
         states.add(MICROTUBULE_ATTACHED);
         states.add(MEMBRANE_TETHERED);
         states.add(UNATTACHED);
+        states.add(IN_STORAGE);
     }
 
     public static void reinitialize() {
@@ -85,18 +42,12 @@ public class VesicleStateRegistry {
         }
     }
 
-    public static Set<VesicleState> getStates() {
+    public static Set<String> getStates() {
         return getInstance().states;
     }
 
-    public static void addState(VesicleState vesicleState) {
+    public static void addState(String vesicleState) {
         getInstance().states.add(vesicleState);
-    }
-
-    public static Optional<VesicleState> getState(String stateIdentifier) {
-        return getInstance().states.stream()
-                .filter(state -> state.identifier.equals(stateIdentifier))
-                .findAny();
     }
 
 }

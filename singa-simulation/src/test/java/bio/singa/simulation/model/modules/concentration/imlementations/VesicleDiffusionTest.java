@@ -14,12 +14,13 @@ import bio.singa.simulation.model.agents.pointlike.VesicleLayer;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.graphs.AutomatonNode;
+import bio.singa.simulation.model.modules.concentration.imlementations.transport.MembraneDiffusion;
 import bio.singa.simulation.model.modules.displacement.implementations.VesicleCytoplasmDiffusion;
 import bio.singa.simulation.model.sections.CellRegion;
 import bio.singa.simulation.model.simulation.Simulation;
 import org.junit.jupiter.api.Test;
-import tec.uom.se.ComparableQuantity;
-import tec.uom.se.quantity.Quantities;
+import tec.units.indriya.ComparableQuantity;
+import tec.units.indriya.quantity.Quantities;
 
 import javax.measure.quantity.Length;
 import java.util.concurrent.ThreadLocalRandom;
@@ -30,10 +31,10 @@ import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static bio.singa.simulation.model.sections.CellTopology.INNER;
 import static bio.singa.simulation.model.sections.CellTopology.OUTER;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static tec.uom.se.unit.MetricPrefix.MICRO;
-import static tec.uom.se.unit.MetricPrefix.NANO;
-import static tec.uom.se.unit.Units.METRE;
-import static tec.uom.se.unit.Units.SECOND;
+import static tec.units.indriya.unit.MetricPrefix.MICRO;
+import static tec.units.indriya.unit.MetricPrefix.NANO;
+import static tec.units.indriya.unit.Units.METRE;
+import static tec.units.indriya.unit.Units.SECOND;
 
 /**
  * @author cl
@@ -48,7 +49,7 @@ class VesicleDiffusionTest {
         Environment.setSimulationExtend(500);
         UnitRegistry.setTime(Quantities.getQuantity(1, MICRO(SECOND)));
 
-        Vesicle vesicle = new Vesicle("0",
+        Vesicle vesicle = new Vesicle(
                 new Vector2D(50, 50),
                 Quantities.getQuantity(ThreadLocalRandom.current().nextDouble(100, 200), NANO(METRE)));
 
@@ -65,9 +66,7 @@ class VesicleDiffusionTest {
         Environment.setSimulationExtend(500);
         UnitRegistry.setTime(Quantities.getQuantity(1, MICRO(SECOND)));
 
-        Vesicle vesicle = new Vesicle("0",
-                new Vector2D(50, 50),
-                Quantities.getQuantity(100, NANO(METRE)));
+        Vesicle vesicle = new Vesicle(new Vector2D(50, 50), Quantities.getQuantity(100, NANO(METRE)));
 
         assertEquals(2.1460983910913096E-9, vesicle.getFeature(Diffusivity.class).getValue().doubleValue(), 1e-8);
         UnitRegistry.setTime(Quantities.getQuantity(2, MICRO(SECOND)));
@@ -85,10 +84,7 @@ class VesicleDiffusionTest {
 
         Simulation simulation = new Simulation();
 
-        Vesicle vesicle = new Vesicle("0",
-                new Vector2D(220, 220),
-                Quantities.getQuantity(150, NANO(METRE))
-                        .to(UnitRegistry.getSpaceUnit()));
+        Vesicle vesicle = new Vesicle(new Vector2D(220, 220), Quantities.getQuantity(150, NANO(METRE)));
 
         vesicle.getConcentrationContainer().set(OUTER, water, 50.0);
 
@@ -107,8 +103,7 @@ class VesicleDiffusionTest {
         }
 
         // setup species
-        SmallMolecule water = new SmallMolecule.Builder("water")
-                .name("water")
+        SmallMolecule water = SmallMolecule.create("water")
                 .assignFeature(new MembranePermeability(Quantities.getQuantity(1.75e-3, CENTIMETRE_PER_SECOND), Evidence.NO_EVIDENCE))
                 .assignFeature(new Diffusivity(Quantities.getQuantity(2.6e-6, SQUARE_CENTIMETRE_PER_SECOND), Evidence.NO_EVIDENCE))
                 .build();

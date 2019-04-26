@@ -34,10 +34,9 @@ public interface UpdateScope {
     void processUpdatable(Updatable updatable);
 
     /**
-     * Clears all concentration deltas that may be assigned to the given updatable.
-     * @param updatable The updatable.
+     * Clears all concentration deltas that may be assigned by this module
      */
-    void clearPotentialDeltas(Updatable updatable);
+    void clearPotentialDeltas();
 
     /**
      * Return the half step concentration of a node after the full update has been calculated for the full step and the

@@ -1,37 +1,38 @@
 package bio.singa.simulation.model.simulation;
 
 import bio.singa.core.events.UpdateEventListener;
-import bio.singa.features.model.QuantityFormatter;
+import bio.singa.features.formatter.TimeFormatter;
 import bio.singa.features.units.UnitRegistry;
-import bio.singa.simulation.events.*;
+import bio.singa.simulation.events.GraphEventEmitter;
+import bio.singa.simulation.events.GraphUpdatedEvent;
+import bio.singa.simulation.events.NodeEventEmitter;
+import bio.singa.simulation.events.UpdatableUpdatedEvent;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonNode;
-import javafx.application.Platform;
-import javafx.concurrent.Task;
+import bio.singa.simulation.trajectories.flat.FlatUpdateRecorder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tec.uom.se.ComparableQuantity;
-import tec.uom.se.quantity.Quantities;
+import tec.units.indriya.ComparableQuantity;
+import tec.units.indriya.quantity.Quantities;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Time;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutionException;
 import java.util.function.Predicate;
 
-import static tec.uom.se.unit.MetricPrefix.MICRO;
-import static tec.uom.se.unit.MetricPrefix.MILLI;
-import static tec.uom.se.unit.Units.SECOND;
+import static tec.units.indriya.unit.MetricPrefix.MICRO;
+import static tec.units.indriya.unit.MetricPrefix.MILLI;
+import static tec.units.indriya.unit.Units.SECOND;
 
 /**
  * Changes in simulations can be observed by tagging {@link AutomatonNode}s of the {@link AutomatonGraph}. As a standard
- * implementation there is the {@link EpochUpdateWriter} that can be added to the Simulation that will write log files
+ * implementation there is the {@link FlatUpdateRecorder} that can be added to the Simulation that will write log files
  * to the specified file locations.
  *
  * @author cl
  */
-public class SimulationManager extends Task<Simulation> {
+public class SimulationManager implements Runnable {
 
     /**
      * The logger.
@@ -72,11 +73,7 @@ public class SimulationManager extends Task<Simulation> {
      */
     private long nextTick = System.currentTimeMillis();
 
-    private long startingTime = System.currentTimeMillis();
-
     private long previousTimeMillis = 0;
-
-    private Quantity<Time> previousTimeSimulation = Quantities.getQuantity(0.0, UnitRegistry.getTimeUnit());
 
     /**
      * The time for the next update to be issued (in simulation time).
@@ -88,6 +85,7 @@ public class SimulationManager extends Task<Simulation> {
     private boolean keepPlatformOpen = DEFAULT_KEEP_PLATFORM_OPEN;
 
     private CountDownLatch terminationLatch;
+    private final SimulationStatus simulationStatus;
 
     /**
      * Creates a new simulation manager for the given simulation.
@@ -99,6 +97,8 @@ public class SimulationManager extends Task<Simulation> {
         this.simulation = simulation;
         nodeEventEmitter = new NodeEventEmitter();
         graphEventEmitter = new GraphEventEmitter();
+        simulationStatus = new SimulationStatus(simulation);
+        graphEventEmitter.addEventListener(simulationStatus);
         // emit every event if not specified otherwise
         emitCondition = s -> true;
     }
@@ -152,6 +152,7 @@ public class SimulationManager extends Task<Simulation> {
      */
     public void setSimulationTerminationToTime(Quantity<Time> time) {
         terminationTime = time.to(MICRO(SECOND));
+        simulationStatus.setTerminationTime(terminationTime);
         setTerminationCondition(s -> s.getElapsedTime().isLessThan(time));
     }
 
@@ -207,6 +208,10 @@ public class SimulationManager extends Task<Simulation> {
         };
     }
 
+    public SimulationStatus getSimulationStatus() {
+        return simulationStatus;
+    }
+
     public void setTerminationLatch(CountDownLatch terminationLatch) {
         this.terminationLatch = terminationLatch;
     }
@@ -237,23 +242,37 @@ public class SimulationManager extends Task<Simulation> {
     }
 
     @Override
-    protected Simulation call() {
-        while (!isCancelled() && terminationCondition.test(simulation)) {
-            if (emitCondition.test(simulation)) {
-                logger.debug("Emitting event after {} (epoch {}).", QuantityFormatter.formatTime(simulation.getElapsedTime()), simulation.getEpoch());
-                emitGraphEvent(simulation);
-                for (Updatable updatable : simulation.getObservedUpdatables()) {
-                    emitNodeEvent(simulation, updatable);
-                    logger.debug("Emitted next epoch event for node {}.", updatable.getStringIdentifier());
+    public void run() {
+        try {
+            while (terminationCondition.test(simulation)) {
+                if (emitCondition.test(simulation)) {
+                    logger.debug("Emitting event after {} (epoch {}).", TimeFormatter.formatTime(simulation.getElapsedTime()), simulation.getEpoch());
+                    emitGraphEvent(simulation);
+                    for (Updatable updatable : simulation.getObservedUpdatables()) {
+                        emitNodeEvent(simulation, updatable);
+                        logger.debug("Emitted next epoch event for node {}.", updatable.getStringIdentifier());
+                    }
+                    simulation.clearPreviouslyObservedDeltas();
+                    if (terminationTime != null) {
+                        estimateRuntime();
+                    }
                 }
-                simulation.clearPreviouslyObservedDeltas();
-                if (terminationTime != null) {
-                    estimateRuntime();
-                }
+                simulation.nextEpoch();
             }
-            simulation.nextEpoch();
+        } catch (Exception e) {
+            logger.error("Encountered an exception during simulation: ", e);
+            System.exit(1);
         }
-        return simulation;
+        logger.info("Simulation finished.");
+        // close writers
+        for (UpdateEventListener<UpdatableUpdatedEvent> nodeEventListener : getNodeListeners()) {
+            if (nodeEventListener instanceof FlatUpdateRecorder) {
+                ((FlatUpdateRecorder) nodeEventListener).closeWriters();
+            }
+        }
+        if (terminationLatch != null) {
+            terminationLatch.countDown();
+        }
     }
 
     private void estimateRuntime() {
@@ -263,95 +282,18 @@ public class SimulationManager extends Task<Simulation> {
         ComparableQuantity<Time> timeSinceLastReport = Quantities.getQuantity(millisSinceLastReport, MILLI(SECOND));
         // if it has been 1 second since last report
         if (timeSinceLastReport.isGreaterThanOrEqualTo(REPORT_THRESHOLD)) {
-            // calculate time remaining
-            ComparableQuantity<Time> currentTimeSimulation = simulation.getElapsedTime().to(MICRO(SECOND));
-            double fractionDone = currentTimeSimulation.getValue().doubleValue() / terminationTime.getValue().doubleValue();
-            long timeRequired = System.currentTimeMillis() - startingTime;
-            long estimatedMillisRemaining = (long) (timeRequired / fractionDone) - timeRequired;
-            ComparableQuantity<Time> subtract = currentTimeSimulation.subtract(previousTimeSimulation);
+            // only report if there is actually anything to report
             if (previousTimeMillis > 0) {
-                ComparableQuantity<Time> estimatesTimeRemaining = Quantities.getQuantity(estimatedMillisRemaining, MILLI(SECOND));
-                double speed = subtract.getValue().doubleValue() / Quantities.getQuantity(currentTimeMillis - previousTimeMillis, MILLI(SECOND)).to(SECOND).getValue().doubleValue();
-                if (Double.isInfinite(speed)) {
-                    logger.info("estimated time remaining: " + QuantityFormatter.formatTime(estimatesTimeRemaining) + ", current simulation speed: [very high] (Simulation Time) per s(Real Time)");
-                } else {
-                    logger.info("estimated time remaining: " + QuantityFormatter.formatTime(estimatesTimeRemaining) + ", current simulation speed: " + QuantityFormatter.formatTime(Quantities.getQuantity(speed, MICRO(SECOND))) + "(Simulation Time) per s(Real Time)");
-                }
+                // calculate time remaining
+                logger.info("PROGRESS: {} time remaining - {} passed time in simulation",
+                        simulationStatus.getEstimatedTimeRemaining(), simulationStatus.getElapsedTime());
+                logger.info("SPEED   : {} ({},{}) epochs (increases, decreases) - {} (simulation time) per s(real time)",
+                        simulationStatus.getNumberOfEpochsSinceLastUpdate(), simulationStatus.getNumberOfTimeStepIncreasesSinceLastUpdate(), simulationStatus.getNumberOfTimeStepDecreasesSinceLastUpdate(), simulationStatus.getEstimatedSpeed());
+                logger.info("ERROR   : {} ({}) delta error (critical delta) - {} global error",
+                        simulationStatus.getLargestLocalError(), simulationStatus.getLargestLocalErrorUpdate(), simulationStatus.getLargestGlobalError());
             }
             previousTimeMillis = currentTimeMillis;
-            previousTimeSimulation = currentTimeSimulation;
         }
-    }
-
-    @Override
-    protected void done() {
-        try {
-            logger.info("Simulation finished.");
-            for (UpdateEventListener<UpdatableUpdatedEvent> nodeEventListener : getNodeListeners()) {
-                if (nodeEventListener instanceof EpochUpdateWriter) {
-                    ((EpochUpdateWriter) nodeEventListener).closeWriters();
-                }
-            }
-            for (UpdateEventListener<GraphUpdatedEvent> graphEventListener : getGraphListeners()) {
-                if (graphEventListener instanceof GraphImageWriter) {
-                    GraphImageWriter graphImageWriter = (GraphImageWriter) graphEventListener;
-                    graphImageWriter.shutDown();
-                    graphImageWriter.combineToGif();
-                }
-            }
-            if (terminationLatch != null) {
-                terminationLatch.countDown();
-            }
-            // will exit jfx when simulation finishes
-            if (!keepPlatformOpen) {
-                Platform.exit();
-            }
-            if (!isCancelled()) {
-                get();
-            }
-        } catch (ExecutionException e) {
-            // Exception occurred, deal with it
-            logger.error("Encountered an exception during simulation: " + e.getCause());
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            // Shouldn't happen, we're invoked when computation is finished
-            throw new AssertionError(e);
-        }
-    }
-
-
-    private static String formatMillis(long millis) {
-        StringBuilder builder = new StringBuilder(20);
-        String sgn = "";
-
-        if (millis < 0) {
-            sgn = "-";
-            millis = Math.abs(millis);
-        }
-
-        append(builder, sgn, 0, (millis / 3600000));
-        millis %= 3600000;
-        builder.append(" h ");
-        append(builder, "", 2, (millis / 60000));
-        builder.append(" min");
-        return builder.toString();
-    }
-
-    /**
-     * Append a right-aligned and zero-padded numeric value to a `StringBuilder`.
-     */
-    private static void append(StringBuilder tgt, String pfx, int dgt, long val) {
-        tgt.append(pfx);
-        if (dgt > 1) {
-            int pad = (dgt - 1);
-            for (long xa = val; xa > 9 && pad > 0; xa /= 10) {
-                pad--;
-            }
-            for (int xa = 0; xa < pad; xa++) {
-                tgt.append('0');
-            }
-        }
-        tgt.append(val);
     }
 
 }

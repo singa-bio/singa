@@ -9,15 +9,8 @@ import bio.singa.structure.model.interfaces.AtomContainer;
  */
 public class Structure3D extends AbstractFeature<AtomContainer> {
 
-public static final String SYMBOL = "Structure3D";
-
     public Structure3D(AtomContainer structure, Evidence evidence) {
         super(structure, evidence);
     }
 
-    @Override
-    public String getDescriptor() {
-        return SYMBOL;
-    }
-    
 }

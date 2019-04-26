@@ -3,7 +3,6 @@ package bio.singa.simulation.model.modules.concentration.functions;
 import bio.singa.simulation.model.modules.concentration.ConcentrationBasedModule;
 import bio.singa.simulation.model.modules.concentration.ConcentrationDelta;
 import bio.singa.simulation.model.modules.concentration.ConcentrationDeltaIdentifier;
-import bio.singa.simulation.model.modules.concentration.imlementations.ComplexBuildingReaction;
 import bio.singa.simulation.model.modules.concentration.specifity.UpdatableSpecific;
 import bio.singa.simulation.model.sections.ConcentrationContainer;
 import bio.singa.simulation.model.simulation.Updatable;

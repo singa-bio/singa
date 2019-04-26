@@ -2,14 +2,14 @@ package bio.singa.chemistry.features.permeability;
 
 import bio.singa.features.model.Evidence;
 import bio.singa.features.model.ScalableQuantitativeFeature;
-import tec.uom.se.quantity.Quantities;
-import tec.uom.se.unit.ProductUnit;
+import tec.units.indriya.quantity.Quantities;
+import tec.units.indriya.unit.ProductUnit;
 
 import javax.measure.Quantity;
 import javax.measure.Unit;
 
-import static tec.uom.se.unit.Units.METRE;
-import static tec.uom.se.unit.Units.SECOND;
+import static tec.units.indriya.unit.Units.METRE;
+import static tec.units.indriya.unit.Units.SECOND;
 
 /**
  * Represents the rate at which a substrate of a Transporter may be transported through the membrane.
@@ -23,8 +23,6 @@ public class OsmoticPermeability extends ScalableQuantitativeFeature<OsmoticPerm
      */
     public static final Unit<OsmoticPermeability> CUBIC_CENTIMETRE_PER_SECOND = new ProductUnit<>(METRE.divide(100).pow(3).divide(SECOND));
 
-    public static final String SYMBOL = "p_f";
-
     /**
      * Creates a new Instance of the {@link OsmoticPermeability} Feature.
      *
@@ -33,6 +31,10 @@ public class OsmoticPermeability extends ScalableQuantitativeFeature<OsmoticPerm
      */
     public OsmoticPermeability(Quantity<OsmoticPermeability> osmoticPermeabilityQuantity, Evidence evidence) {
         super(osmoticPermeabilityQuantity, evidence);
+    }
+
+    public OsmoticPermeability(Quantity<OsmoticPermeability> quantity) {
+        super(quantity);
     }
 
     /**
@@ -101,8 +103,4 @@ public class OsmoticPermeability extends ScalableQuantitativeFeature<OsmoticPerm
         return getContent().getUnit();
     }
 
-    @Override
-    public String getDescriptor() {
-        return SYMBOL;
-    }
 }

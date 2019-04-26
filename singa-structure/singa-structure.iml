@@ -20,7 +20,7 @@
     <orderEntry type="module" module-name="singa-mathematics" />
     <orderEntry type="module" module-name="singa-core" />
     <orderEntry type="module" module-name="singa-features" />
-    <orderEntry type="library" name="Maven: tec.uom:uom-se:1.0.8" level="project" />
+    <orderEntry type="library" name="Maven: tec.units:indriya:1.0" level="project" />
     <orderEntry type="library" name="Maven: javax.measure:unit-api:1.0" level="project" />
     <orderEntry type="library" name="Maven: tec.uom.lib:uom-lib-common:1.0.2" level="project" />
     <orderEntry type="library" name="Maven: org.rcsb:mmtf-codec:1.0.8" level="project" />

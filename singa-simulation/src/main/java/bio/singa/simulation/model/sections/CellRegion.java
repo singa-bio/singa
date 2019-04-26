@@ -6,37 +6,30 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
- *
- *
  * @author cl
  */
 public class CellRegion {
 
     public static CellRegion CYTOSOL_A = new CellRegion("Cytoplasm");
+
     static {
-        CYTOSOL_A.addSubSection(CellTopology.INNER, CellSubsection.SECTION_A);
+        CYTOSOL_A.addSubsection(CellTopology.INNER, CellSubsection.SECTION_A);
     }
 
     public static CellRegion CYTOSOL_B = new CellRegion("Cytoplasm");
+
     static {
-        CYTOSOL_B.addSubSection(CellTopology.INNER, CellSubsection.SECTION_B);
+        CYTOSOL_B.addSubsection(CellTopology.INNER, CellSubsection.SECTION_B);
     }
 
     public static CellRegion MEMBRANE = new CellRegion("Membrane");
-    static {
-        MEMBRANE.addSubSection(CellTopology.INNER, CellSubsection.SECTION_A);
-        MEMBRANE.addSubSection(CellTopology.MEMBRANE, CellSubsection.MEMBRANE);
-        MEMBRANE.addSubSection(CellTopology.OUTER, CellSubsection.SECTION_B);
-    }
 
-    public static CellRegion forVesicle(String identifier) {
-        CellRegion region = new CellRegion(identifier+"-region");
-        region.addSubSection(CellTopology.OUTER, new CellSubsection(identifier+"-cargo"));
-        region.addSubSection(CellTopology.MEMBRANE, new CellSubsection(identifier+"-coat"));
-        return region;
+    static {
+        MEMBRANE.addSubsection(CellTopology.INNER, CellSubsection.SECTION_A);
+        MEMBRANE.addSubsection(CellTopology.MEMBRANE, CellSubsection.MEMBRANE);
+        MEMBRANE.addSubsection(CellTopology.OUTER, CellSubsection.SECTION_B);
     }
 
     private String identifier;
@@ -61,7 +54,7 @@ public class CellRegion {
         return goTerm;
     }
 
-    public void addSubSection(CellTopology topology, CellSubsection subsection) {
+    public void addSubsection(CellTopology topology, CellSubsection subsection) {
         cellSubSections.put(topology, subsection);
     }
 
@@ -95,7 +88,7 @@ public class CellRegion {
 
     @Override
     public String toString() {
-        return "Region "+identifier+" ("+getSubsections().stream().map(CellSubsection::getIdentifier).collect(Collectors.joining(","))+")";
+        return identifier + (goTerm != null ? " (" + goTerm.getContent() + ")" : "");
     }
 
     @Override

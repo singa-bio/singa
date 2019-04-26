@@ -32,8 +32,13 @@ public enum ModuleState {
     REQUIRING_RECALCULATION,
 
     /**
+     * Interrupted by another calculation
+     */
+    INTERRUPTED,
+
+    /**
      * Some error has occurred during calculation.
      */
-    ERRORED
+    ERRORED;
 
 }

@@ -6,10 +6,7 @@ import bio.singa.mathematics.algorithms.voronoi.VoronoiRelaxation;
 import bio.singa.mathematics.algorithms.voronoi.model.VoronoiDiagram;
 import bio.singa.mathematics.geometry.edges.SimpleLineSegment;
 import bio.singa.mathematics.geometry.faces.Rectangle;
-import bio.singa.mathematics.graphs.model.DirectedEdge;
-import bio.singa.mathematics.graphs.model.Edge;
-import bio.singa.mathematics.graphs.model.Graph;
-import bio.singa.mathematics.graphs.model.Node;
+import bio.singa.mathematics.graphs.model.*;
 import bio.singa.mathematics.vectors.Vector2D;
 import javafx.animation.AnimationTimer;
 import javafx.beans.property.DoubleProperty;
@@ -141,7 +138,7 @@ public class GraphRenderer<NodeType extends Node<NodeType, Vector2D, IdentifierT
         // draw
         strokeLineSegment(new SimpleLineSegment(edge.getSource().getPosition(), edge.getTarget().getPosition()));
         // render arrow for directed graphs
-        if (edge instanceof DirectedEdge) {
+        if (DirectedEdge.class.isAssignableFrom(edge.getClass()) || DirectedWeightedEdge.class.isAssignableFrom(edge.getClass())) {
             Vector2D source = edge.getSource().getPosition();
             Vector2D target = edge.getTarget().getPosition();
 

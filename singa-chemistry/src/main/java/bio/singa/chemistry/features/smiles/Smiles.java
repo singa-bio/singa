@@ -9,8 +9,6 @@ import bio.singa.features.model.Evidence;
  */
 public class Smiles extends AbstractFeature<String> {
 
-    public static final String SYMBOL = "SMILES";
-
     public Smiles(String smilesString, Evidence evidence) {
         super(smilesString, evidence);
     }
@@ -19,8 +17,4 @@ public class Smiles extends AbstractFeature<String> {
         FeatureProviderRegistry.addProviderForFeature(Smiles.class, SmilesProvider.class);
     }
 
-    @Override
-    public String getDescriptor() {
-        return SYMBOL;
-    }
 }

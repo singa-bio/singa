@@ -8,7 +8,7 @@ import bio.singa.features.quantities.MolarVolume;
 import bio.singa.mathematics.algorithms.geometry.SphereVolumeEstimaton;
 import bio.singa.mathematics.geometry.bodies.Sphere;
 import bio.singa.structure.model.oak.Structures;
-import tec.uom.se.quantity.Quantities;
+import tec.units.indriya.quantity.Quantities;
 
 import java.util.List;
 
@@ -19,7 +19,7 @@ import static bio.singa.features.quantities.MolarVolume.CUBIC_ANGSTROEM_PER_MOLE
  */
 public class MolarVolumePredictor extends FeatureProvider<MolarVolume> {
 
-    private static Evidence OTT1992 = new Evidence(Evidence.SourceType.PREDICTION, "Ott1992", "Ott, Rolf, et al. \"A computer method for estimating volumes and surface areas of complex structures consisting of overlapping spheres.\" Mathematical and computer modelling 16.12 (1992): 83-98.");
+    public static Evidence OTT1992 = new Evidence(Evidence.SourceType.PREDICTION, "Ott 1992", "Ott, Rolf, et al. \"A computer method for estimating volumes and surface areas of complex structures consisting of overlapping spheres.\" Mathematical and computer modelling 16.12 (1992): 83-98.");
 
     public MolarVolumePredictor() {
         setProvidedFeature(MolarVolume.class);

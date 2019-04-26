@@ -17,7 +17,7 @@ import java.util.*;
  * @see <a href="https://en.wikipedia.org/wiki/Connectivity_(graph_theory)">Wikipedia: Connectivity of Graphs</a>
  */
 public class DisconnectedSubgraphFinder<NodeType extends Node<NodeType, VectorType, IdentifierType>, EdgeType extends Edge<NodeType>,
-        VectorType extends bio.singa.mathematics.vectors.Vector, IdentifierType, GraphType extends Graph<NodeType, EdgeType, IdentifierType>> {
+        VectorType extends Vector, IdentifierType, GraphType extends Graph<NodeType, EdgeType, IdentifierType>> {
 
     private final Queue<NodeType> queue;
     private final GraphType graph;

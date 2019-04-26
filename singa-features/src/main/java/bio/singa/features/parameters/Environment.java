@@ -5,7 +5,7 @@ import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.features.units.UnitRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tec.uom.se.quantity.Quantities;
+import tec.units.indriya.quantity.Quantities;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Length;
@@ -14,10 +14,9 @@ import java.util.Observable;
 import java.util.Observer;
 
 import static bio.singa.features.units.UnitProvider.PASCAL_SECOND;
-import static tec.uom.se.unit.MetricPrefix.MICRO;
-import static tec.uom.se.unit.MetricPrefix.MILLI;
-import static tec.uom.se.unit.Units.KELVIN;
-import static tec.uom.se.unit.Units.METRE;
+import static tec.units.indriya.unit.MetricPrefix.MICRO;
+import static tec.units.indriya.unit.MetricPrefix.MILLI;
+import static tec.units.indriya.unit.Units.*;
 
 public class Environment extends Observable {
 
@@ -34,14 +33,14 @@ public class Environment extends Observable {
      * of mammalian cells at the nanoscale." Nano letters 11.5 (2011): 2157-2163.
      * Average of both cell types.
      */
-    public static final Quantity<DynamicViscosity> DEFAULT_MACRO_VISCOSITY = Quantities.getQuantity(34.0, MILLI(PASCAL_SECOND));
+    public static final Quantity<DynamicViscosity> DEFAULT_MACRO_VISCOSITY = Quantities.getQuantity(34.0, MILLI(PASCAL).multiply(SECOND).asType(DynamicViscosity.class));
 
     /**
      * Standard system matrix viscosity [pressure per time] (1 mPa*s = 1cP = Viscosity of Water at 20 C)
      * as determined by Kalwarczyk, Tomasz, et al. "Comparative analysis of viscosity of complex liquids and cytoplasm
      * of mammalian cells at the nanoscale." Nano letters 11.5 (2011): 2157-2163.
      */
-    public static final Quantity<DynamicViscosity> DEFAULT_MATRIX_VISCOSITY = Quantities.getQuantity(1.0, MILLI(PASCAL_SECOND));
+    public static final Quantity<DynamicViscosity> DEFAULT_MATRIX_VISCOSITY = Quantities.getQuantity(1.0,  MILLI(PASCAL).multiply(SECOND).asType(DynamicViscosity.class));
 
     /**
      * Standard system extend [length] (5 um)

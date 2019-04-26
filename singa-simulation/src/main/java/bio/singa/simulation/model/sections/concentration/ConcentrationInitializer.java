@@ -5,6 +5,8 @@ import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.simulation.model.sections.CellRegion;
 import bio.singa.simulation.model.sections.CellSubsection;
 import bio.singa.simulation.model.simulation.Simulation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.measure.Quantity;
 import java.util.HashSet;
@@ -14,6 +16,8 @@ import java.util.Set;
  * @author cl
  */
 public class ConcentrationInitializer {
+
+    private static final Logger logger = LoggerFactory.getLogger(ConcentrationInitializer.class);
 
     private Set<InitialConcentration> initialConcentrations;
 
@@ -54,6 +58,7 @@ public class ConcentrationInitializer {
     public void initialize(Simulation simulation) {
         simulation.collectUpdatables();
         for (InitialConcentration initialConcentration : initialConcentrations) {
+            logger.info("  {}",initialConcentration);
             initialConcentration.initialize(simulation);
         }
     }

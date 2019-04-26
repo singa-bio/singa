@@ -6,22 +6,23 @@ import bio.singa.features.units.UnitRegistry;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.graphs.AutomatonNode;
+import bio.singa.simulation.model.modules.concentration.imlementations.reactions.ReactionBuilder;
 import bio.singa.simulation.model.sections.CellSubsection;
 import bio.singa.simulation.model.simulation.Simulation;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import tec.uom.se.quantity.Quantities;
+import tec.units.indriya.quantity.Quantities;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Time;
 
 import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static bio.singa.simulation.model.sections.CellRegions.EXTRACELLULAR_REGION;
-import static org.junit.jupiter.api.Assertions.*;
-import static tec.uom.se.unit.MetricPrefix.MILLI;
-import static tec.uom.se.unit.Units.SECOND;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static tec.units.indriya.unit.MetricPrefix.MILLI;
+import static tec.units.indriya.unit.Units.SECOND;
 
 /**
  * @author cl
@@ -48,10 +49,8 @@ class ReversibleReactionTest {
         AutomatonGraph graph = AutomatonGraphs.singularGraph();
 
         // prepare species
-        SmallMolecule speciesA = new SmallMolecule.Builder("Species A")
-                .build();
-        SmallMolecule speciesB = new SmallMolecule.Builder("Species B")
-                .build();
+        SmallMolecule speciesA = SmallMolecule.create("A").build();
+        SmallMolecule speciesB = SmallMolecule.create("B").build();
 
         // set concentrations
         CellSubsection subsection = EXTRACELLULAR_REGION.getInnerSubsection();
@@ -70,11 +69,12 @@ class ReversibleReactionTest {
                 .build();
 
         // setup reaction
-        ReversibleReaction.inSimulation(simulation)
+        ReactionBuilder.staticReactants(simulation)
                 .addSubstrate(speciesA)
                 .addProduct(speciesB)
-                .forwardsRateConstant(forwardsRate)
-                .backwardsRateConstant(backwardsRate)
+                .reversible()
+                .forwardReactionRate(forwardsRate)
+                .backwardReactionRate(backwardsRate)
                 .build();
 
         // add graph
@@ -89,8 +89,8 @@ class ReversibleReactionTest {
         while ((currentTime = simulation.getElapsedTime().to(MILLI(SECOND))).getValue().doubleValue() < secondCheckpoint.getValue().doubleValue()) {
             simulation.nextEpoch();
             if (!firstCheckpointPassed && currentTime.getValue().doubleValue() > firstCheckpoint.getValue().doubleValue()) {
-                assertEquals(0.8901, UnitRegistry.concentration(node.getConcentrationContainer().get(subsection, speciesA)).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
-                assertEquals(0.1108, UnitRegistry.concentration(node.getConcentrationContainer().get(subsection, speciesB)).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
+                assertEquals(0.8906, UnitRegistry.concentration(node.getConcentrationContainer().get(subsection, speciesA)).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
+                assertEquals(0.1093, UnitRegistry.concentration(node.getConcentrationContainer().get(subsection, speciesB)).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
                 firstCheckpointPassed = true;
             }
         }

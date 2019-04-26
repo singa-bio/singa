@@ -5,12 +5,12 @@ import bio.singa.features.model.Evidence;
 import bio.singa.features.model.Featureable;
 import bio.singa.features.parameters.Environment;
 import bio.singa.structure.features.molarmass.MolarMass;
-import tec.uom.se.quantity.Quantities;
+import tec.units.indriya.quantity.Quantities;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Dimensionless;
 
-import static tec.uom.se.AbstractUnit.ONE;
+import static tec.units.indriya.AbstractUnit.ONE;
 
 /**
  * @author cl

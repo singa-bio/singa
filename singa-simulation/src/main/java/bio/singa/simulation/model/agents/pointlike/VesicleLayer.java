@@ -15,6 +15,7 @@ import bio.singa.mathematics.topology.grids.rectangular.RectangularCoordinate;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.simulation.model.agents.surfacelike.Membrane;
 import bio.singa.simulation.model.agents.surfacelike.MembraneSegment;
+import bio.singa.simulation.model.agents.volumelike.VolumeLikeAgent;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.modules.displacement.DisplacementBasedModule;
@@ -26,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import javax.measure.Quantity;
 import javax.measure.quantity.Length;
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static bio.singa.mathematics.metrics.model.VectorMetricProvider.SQUARED_EUCLIDEAN_METRIC;
 
@@ -71,6 +73,10 @@ public class VesicleLayer {
         vesicles.add(vesicle);
     }
 
+    public void addVesicles(Collection<Vesicle> vesicles) {
+        this.vesicles.addAll(vesicles);
+    }
+
     public void removeVesicle(Vesicle vesicle) {
         vesicles.remove(vesicle);
     }
@@ -92,8 +98,10 @@ public class VesicleLayer {
                     double distance = distances.getValueForLabel(vesicle1, vesicle2);
                     double combinedRadii = firstRadius + Environment.convertSystemToSimulationScale(vesicle2.getRadius());
                     if (distance < combinedRadii) {
-                        vesicle1.resetNextPosition();
-                        continue vesicleLoop;
+                        if (ThreadLocalRandom.current().nextDouble() < 0.5) {
+                            vesicle1.resetNextPosition();
+                            continue vesicleLoop;
+                        }
                     }
                 }
             }
@@ -101,8 +109,8 @@ public class VesicleLayer {
             if (simulation.getMembraneLayer() != null) {
                 for (Membrane macroscopicMembrane : simulation.getMembraneLayer().getMembranes()) {
                     for (MembraneSegment membraneSegment : macroscopicMembrane.getSegments()) {
-                        if (!vesicle1.getCurrentPosition().equals(vesicle1.getNextPosition())) {
-                            SimpleLineSegment displacementVector = new SimpleLineSegment(vesicle1.getCurrentPosition(), vesicle1.getNextPosition());
+                        if (!vesicle1.getPosition().equals(vesicle1.getNextPosition())) {
+                            SimpleLineSegment displacementVector = new SimpleLineSegment(vesicle1.getPosition(), vesicle1.getNextPosition());
                             if (displacementVector.getIntersectionWith(membraneSegment).isPresent()) {
                                 vesicle1.resetNextPosition();
                                 continue vesicleLoop;
@@ -112,13 +120,18 @@ public class VesicleLayer {
                 }
             }
             // check for collisions with confined volumes
-            boolean exceedsConfinement = simulation.getModules().stream().filter(VesicleConfinedDiffusion.class::isInstance)
+            boolean exceedsConfinement = simulation.getModules().stream()
+                    .filter(VesicleConfinedDiffusion.class::isInstance)
                     .map(VesicleConfinedDiffusion.class::cast)
                     .anyMatch(vesicleConfinedDiffusion -> {
                         // has the confining state
-                        if (vesicle1.getVesicleState().equals(vesicleConfinedDiffusion.getConfiningState())) {
-                            // and is inside the volume
-                            return !vesicleConfinedDiffusion.getConfinedVolume().getArea().isInside(vesicle1.getNextPosition());
+                        if (vesicle1.getState().equals(vesicleConfinedDiffusion.getConfiningState())) {
+                            for (VolumeLikeAgent agent : simulation.getVolumeLayer().getAgents()) {
+                                if (agent.getCellRegion().equals(vesicleConfinedDiffusion.getConfinedVolume())) {
+                                    // and is not inside the volume
+                                    return !agent.getArea().isInside(vesicle1.getNextPosition());
+                                }
+                            }
                         }
                         return false;
                     });
@@ -168,7 +181,7 @@ public class VesicleLayer {
             // get representative region of the node
             Polygon polygon = node.getSpatialRepresentation();
             // associate vesicle to the node with the largest part of the vesicle (midpoint is inside)
-            if (polygon.isInside(vesicle.getCurrentPosition())) {
+            if (polygon.isInside(vesicle.getPosition())) {
                 // check if vesicle intersects with more than two regions at once
                 for (Vector2D polygonVertex : polygon.getVertices()) {
                     // this is the case if the distance to the edge is smaller than the radius
@@ -203,8 +216,8 @@ public class VesicleLayer {
                     if (intersection.size() > 1) {
                         Iterator<Vector2D> iterator = intersection.iterator();
                         LineSegment sliceSegment = new SimpleLineSegment(iterator.next(), iterator.next());
-                        double sliceSurface = Spheres.calculateSphereSlice(vesicleCentre, vesicleRadius, sliceSegment)/totalSurface;
-                        double remainingSurface = 1-sliceSurface;
+                        double sliceSurface = Spheres.calculateSphereSlice(vesicleCentre, vesicleRadius, sliceSegment) / totalSurface;
+                        double remainingSurface = 1 - sliceSurface;
                         if (sliceSegment.isVertical()) {
                             if (sliceSegment.getStartingPoint().isLeftOf(node.getPosition())) {
                                 vesicle.addAssociatedNode(node, remainingSurface);
@@ -235,7 +248,7 @@ public class VesicleLayer {
 
     public void clearUpdates() {
         for (Vesicle vesicle : vesicles) {
-            vesicle.clearPotentialConcentrationDeltas();
+            // vesicle.clearPotentialConcentrationDeltas();
             vesicle.clearPotentialDisplacementDeltas();
             vesicle.resetNextPosition();
         }

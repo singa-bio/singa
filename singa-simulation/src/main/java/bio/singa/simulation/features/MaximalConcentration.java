@@ -1,25 +1,27 @@
 package bio.singa.simulation.features;
 
-import bio.singa.features.model.AbstractFeature;
 import bio.singa.features.model.Evidence;
+import bio.singa.features.model.QuantitativeFeature;
 import bio.singa.features.quantities.MolarConcentration;
 
 import javax.measure.Quantity;
+import java.util.List;
 
 /**
  * @author cl
  */
-public class MaximalConcentration extends AbstractFeature<Quantity<MolarConcentration>> {
+public class MaximalConcentration extends QuantitativeFeature<MolarConcentration> {
 
-    private static final String SYMBOL = "cMax";
-
-    public MaximalConcentration(Quantity<MolarConcentration> concentration, Evidence evidence) {
-        super(concentration, evidence);
+    public MaximalConcentration(Quantity<MolarConcentration> quantity, List<Evidence> evidence) {
+        super(quantity, evidence);
     }
 
-    @Override
-    public String getDescriptor() {
-        return SYMBOL;
+    public MaximalConcentration(Quantity<MolarConcentration> quantity, Evidence evidence) {
+        super(quantity, evidence);
+    }
+
+    public MaximalConcentration(Quantity<MolarConcentration> quantity) {
+        super(quantity);
     }
 
 }

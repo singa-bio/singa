@@ -104,7 +104,7 @@ public class Vectors {
         copy.remove(first);
         Vector2D previous = first;
         // for each vector (and omit last connection)
-        while (copy.size() > 1) {
+        while (copy.size() > 0) {
             // determine closest neighbour
             Map.Entry<Vector2D, Double> entry = EUCLIDEAN_METRIC.calculateClosestDistance(copy, previous);
             // add line segment

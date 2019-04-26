@@ -5,7 +5,6 @@ import bio.singa.features.model.Evidence;
 import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.simulation.model.sections.CellRegion;
 import bio.singa.simulation.model.sections.CellSubsection;
-import bio.singa.simulation.model.simulation.Simulation;
 import bio.singa.simulation.model.simulation.Updatable;
 
 import javax.measure.Quantity;
@@ -81,19 +80,17 @@ public class SectionConcentration implements InitialConcentration {
     }
 
     @Override
-    public void initialize(Simulation simulation) {
-        for (Updatable updatable : simulation.getUpdatables()) {
-            if (region == null || updatable.getCellRegion().equals(region)) {
-                if (updatable.getCellRegion().getSubsections().contains(subsection)) {
-                    updatable.getConcentrationContainer().initialize(subsection, entity, concentration);
-                }
+    public void initialize(Updatable updatable) {
+        if (region == null || updatable.getCellRegion().equals(region)) {
+            if (updatable.getCellRegion().getSubsections().contains(subsection)) {
+                updatable.getConcentrationContainer().initialize(subsection, entity, concentration);
             }
         }
     }
 
     @Override
     public String toString() {
-        return "Concentration:" + (region == null ? " " : " R = "+region.getIdentifier()) +
+        return "Concentration:" + (region == null ? " " : " R = " + region.getIdentifier()) +
                 " S = " + subsection.getIdentifier() +
                 " E = " + entity.getIdentifier() +
                 " C = " + concentration;

@@ -10,8 +10,6 @@ import javax.measure.Unit;
  */
 public class ZeroOrderBackwardsRateConstant extends ZeroOrderRateConstant implements BackwardsRateConstant<ZeroOrderRate> {
 
-    public static final String symbol = "k_bwd_0";
-
     public ZeroOrderBackwardsRateConstant(Quantity<ZeroOrderRate> zeroOrderRateQuantity, Evidence evidence) {
         super(zeroOrderRateQuantity, evidence);
     }
@@ -20,8 +18,8 @@ public class ZeroOrderBackwardsRateConstant extends ZeroOrderRateConstant implem
         super(value, unit, evidence);
     }
 
-    @Override
-    public String getDescriptor() {
-        return symbol;
+    public ZeroOrderBackwardsRateConstant(Quantity<ZeroOrderRate> quantity) {
+        super(quantity);
     }
+
 }

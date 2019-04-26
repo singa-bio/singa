@@ -1,9 +1,11 @@
 package bio.singa.simulation.model.sections;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
-import bio.singa.chemistry.entities.ComplexedChemicalEntity;
+import bio.singa.chemistry.entities.ComplexEntity;
 import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.features.units.UnitRegistry;
+import bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.reactants.DynamicChemicalEntity;
+import bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.reactants.EntityReducer;
 
 import javax.measure.Quantity;
 import java.util.*;
@@ -105,7 +107,7 @@ public class ConcentrationContainer {
      *
      * @return All subsections, referenced in this container.
      */
-    public Set<CellSubsection> getReferencedSubSections() {
+    public Set<CellSubsection> getReferencedSubsections() {
         return concentrations.keySet();
     }
 
@@ -131,13 +133,13 @@ public class ConcentrationContainer {
         return chemicalEntities;
     }
 
-    public Optional<ChemicalEntity> containsEntity(CellTopology topology, ChemicalEntity entity) {
+    public Optional<ChemicalEntity> containsHiddenEntity(CellTopology topology, ChemicalEntity entity) {
         for (ChemicalEntity chemicalEntity : getPool(topology).getValue().getReferencedEntities()) {
             if (entity.equals(chemicalEntity)) {
                 return Optional.of(chemicalEntity);
             }
-            if (chemicalEntity instanceof ComplexedChemicalEntity) {
-                for (ChemicalEntity associatedChemicalEntity : ((ComplexedChemicalEntity) chemicalEntity).getAssociatedChemicalEntities()) {
+            if (chemicalEntity instanceof ComplexEntity) {
+                for (ChemicalEntity associatedChemicalEntity : ((ComplexEntity) chemicalEntity).getAllData()) {
                     if (entity.equals(associatedChemicalEntity)) {
                         return Optional.of(chemicalEntity);
                     }
@@ -147,6 +149,23 @@ public class ConcentrationContainer {
         return Optional.empty();
     }
 
+    public boolean containsEntity(CellTopology topology, ChemicalEntity entity) {
+        for (ChemicalEntity chemicalEntity : getPool(topology).getValue().getReferencedEntities()) {
+            if (entity.equals(chemicalEntity)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean containsEntity(CellSubsection subsection, ChemicalEntity entity) {
+        for (ChemicalEntity chemicalEntity : getPool(subsection).getValue().getReferencedEntities()) {
+            if (entity.equals(chemicalEntity)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     /**
      * Returns the topology and concentration pool for the subsection.
@@ -205,6 +224,21 @@ public class ConcentrationContainer {
         }
         return get(subsection, entity);
     }
+
+    public double sumOf(DynamicChemicalEntity dynamicEntity) {
+        double sum = 0.0;
+        for (CellTopology topology : dynamicEntity.getPossibleTopologies()) {
+            if (getPool(topology) != null) {
+                Set<ChemicalEntity> originalEntities = getPool(topology).getValue().getReferencedEntities();
+                List<ChemicalEntity> reducedEntities = EntityReducer.apply(originalEntities, dynamicEntity.getComposition());
+                for (ChemicalEntity entity : reducedEntities) {
+                    sum += get(topology, entity);
+                }
+            }
+        }
+        return sum;
+    }
+
 
     /**
      * Sets the concentration of the given entity in the given subsection.

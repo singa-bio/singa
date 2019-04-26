@@ -2,9 +2,9 @@ package bio.singa.features.units;
 
 import bio.singa.features.model.FeatureRegistry;
 import bio.singa.features.quantities.MolarConcentration;
-import tec.uom.se.quantity.Quantities;
-import tec.uom.se.unit.TransformedUnit;
-import tec.uom.se.unit.Units;
+import tec.units.indriya.quantity.Quantities;
+import tec.units.indriya.unit.TransformedUnit;
+import tec.units.indriya.unit.Units;
 
 import javax.measure.Dimension;
 import javax.measure.Quantity;
@@ -14,11 +14,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
-import static tec.uom.se.AbstractUnit.ONE;
-import static tec.uom.se.quantity.QuantityDimension.*;
-import static tec.uom.se.unit.MetricPrefix.MICRO;
-import static tec.uom.se.unit.MetricPrefix.NANO;
-import static tec.uom.se.unit.Units.*;
+import static tec.units.indriya.AbstractUnit.ONE;
+import static tec.units.indriya.quantity.QuantityDimension.*;
+import static tec.units.indriya.unit.MetricPrefix.MICRO;
+import static tec.units.indriya.unit.MetricPrefix.NANO;
+import static tec.units.indriya.unit.Units.*;
 
 /**
  * @author cl
@@ -152,11 +152,11 @@ public class UnitRegistry {
     }
 
     public static Unit<MolarConcentration> getConcentrationUnit() {
-        return getDefaultUnit(MOLE_PER_LITRE).asType(MolarConcentration.class);
+        return getDefaultUnit(MOLE_PER_LITRE);
     }
 
     public static Unit<Area> getAreaUnit() {
-        return getDefaultUnit(SQUARE_METRE).asType(Area.class);
+        return getDefaultUnit(SQUARE_METRE);
     }
 
     public static Quantity<Area> getArea() {
@@ -164,7 +164,7 @@ public class UnitRegistry {
     }
 
     public static Unit<Volume> getVolumeUnit() {
-        return getDefaultUnit(CUBIC_METRE).asType(Volume.class);
+        return getDefaultUnit(CUBIC_METRE);
     }
 
     public static Quantity<Volume> getVolume() {
@@ -233,7 +233,7 @@ public class UnitRegistry {
         }
     }
 
-    public static Unit<?> getDefaultUnit(Unit<?> unit) {
+    public static <UnitType extends Quantity<UnitType>> Unit<UnitType> getDefaultUnit(Unit<UnitType> unit) {
         Dimension dimension = unit.getDimension();
         if (!getInstance().defaultUnits.containsKey(dimension)) {
             // not base unit and not registered

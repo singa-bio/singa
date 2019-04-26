@@ -36,12 +36,12 @@ public enum OrganelleTypes {
     OrganelleTypes(String name, GoTerm goTerm, CellSubsection innerSubsection, CellSubsection membraneSubsection, CellSubsection outerSubsection, String templateName) {
         // region for inner nodes
         innerRegion = new CellRegion(name, goTerm);
-        innerRegion.addSubSection(CellTopology.INNER, innerSubsection);
+        innerRegion.addSubsection(CellTopology.INNER, innerSubsection);
         // region for membrane associated nodes
         membraneRegion = new CellRegion(membraneSubsection.getIdentifier(), membraneSubsection.getGoTerm());
-        membraneRegion.addSubSection(CellTopology.INNER, innerSubsection);
-        membraneRegion.addSubSection(CellTopology.MEMBRANE, membraneSubsection);
-        membraneRegion.addSubSection(CellTopology.OUTER, outerSubsection);
+        membraneRegion.addSubsection(CellTopology.INNER, innerSubsection);
+        membraneRegion.addSubsection(CellTopology.MEMBRANE, membraneSubsection);
+        membraneRegion.addSubsection(CellTopology.OUTER, outerSubsection);
         // location for organelle images
         templateLocation = "organelle_templates/" + templateName + ".png";
     }

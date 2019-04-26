@@ -13,4 +13,8 @@ public class ThirdOrderRateConstant extends RateConstant<ThirdOrderRate> {
         super(thirdOrderRateQuantity, evidence);
     }
 
+    public ThirdOrderRateConstant(Quantity<ThirdOrderRate> quantity) {
+        super(quantity);
+    }
+
 }

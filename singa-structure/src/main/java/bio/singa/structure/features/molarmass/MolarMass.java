@@ -2,14 +2,14 @@ package bio.singa.structure.features.molarmass;
 
 import bio.singa.features.model.AbstractFeature;
 import bio.singa.features.model.Evidence;
-import tec.uom.se.quantity.Quantities;
-import tec.uom.se.unit.ProductUnit;
+import tec.units.indriya.quantity.Quantities;
+import tec.units.indriya.unit.ProductUnit;
 
 import javax.measure.Quantity;
 import javax.measure.Unit;
 
-import static tec.uom.se.unit.Units.GRAM;
-import static tec.uom.se.unit.Units.MOLE;
+import static tec.units.indriya.unit.Units.GRAM;
+import static tec.units.indriya.unit.Units.MOLE;
 
 /**
  * In chemistry, the molar mass is a physical property. It is defined as the mass of a given substance (chemical element
@@ -20,7 +20,6 @@ import static tec.uom.se.unit.Units.MOLE;
 public class MolarMass extends AbstractFeature<Quantity<MolarMass>> implements Quantity<MolarMass> {
 
     public static final Unit<MolarMass> GRAM_PER_MOLE = new ProductUnit<>(GRAM.divide(MOLE));
-    public static final String SYMBOL = "M";
 
     public MolarMass(Quantity<MolarMass> quantity, Evidence evidence) {
         super(quantity, evidence);
@@ -28,6 +27,10 @@ public class MolarMass extends AbstractFeature<Quantity<MolarMass>> implements Q
 
     public MolarMass(double quantity, Evidence evidence) {
         super(Quantities.getQuantity(quantity, GRAM_PER_MOLE), evidence);
+    }
+
+    public MolarMass(Quantity<MolarMass> quantity) {
+        super(quantity);
     }
 
     public MolarMass(double quantity) {
@@ -89,8 +92,4 @@ public class MolarMass extends AbstractFeature<Quantity<MolarMass>> implements Q
         return getContent().getUnit();
     }
 
-    @Override
-    public String getDescriptor() {
-        return SYMBOL;
-    }
 }

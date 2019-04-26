@@ -14,6 +14,8 @@ public interface Feature<FeatureContent> {
 
     List<Evidence> getAllEvidence();
 
+    void addEvidence(Evidence evidence);
+
     String getDescriptor();
 
 }

@@ -17,7 +17,7 @@ public class IllegalFeatureRequestException extends RuntimeException {
     }
 
     public IllegalFeatureRequestException(Class<? extends Feature> featureClass, NoSuchMethodException cause) {
-        super("Could register the Feature " + featureClass.getSimpleName() + ". Be sure the register the Feature " +
+        super("Could not register the Feature " + featureClass.getSimpleName() + ". Be sure the register the Feature " +
                 "manually by calling the addProviderForFeature() method or provide a static register() method in the " +
                 "Features' class.", Objects.requireNonNull(cause));
     }
