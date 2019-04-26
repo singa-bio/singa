@@ -28,8 +28,9 @@ import static bio.singa.structure.algorithms.molecules.MoleculeIsomorphismFinder
  * new technique for identifying privileged molecular fragments with useful applications in combinatorial chemistry. J
  * Chem Inf Comput Sci, 38, 3:511-22.
  * </pre>
- * The implementation here uses a depth-first based fragmentation, such that a fragmentation graph is retreived that
- * contains all possible fragments.
+ * The implementation here uses a depth-first based fragmentation, such that a fragmentation graph is retrieved that
+ * contains all possible fragments. One can then easily traverse the graph to follow fragmentation steps. Each fragment
+ * contains information about the number of cut bonds encoded in the valence of the atomic elements.
  */
 public class RECAPFragmenter {
 
@@ -109,7 +110,7 @@ public class RECAPFragmenter {
             }
             visitedNodes.add(currentNode.getIdentifier());
         }
-        logger.info("fragmentation yielded {} unique fragments in total", fragmentSpace.getNodes().size());
+        logger.info("fragmentation yielded {} unique fragments in total", uniqueFragments.size());
     }
 
     public DirectedGraph<GenericNode<MoleculeGraph>> getFragmentSpace() {
@@ -190,9 +191,6 @@ public class RECAPFragmenter {
                         MoleculeAtom targetAtom = bondToRemove.getTarget();
                         int electronsGained;
                         switch (bondToRemove.getType()) {
-                            case SINGLE_BOND:
-                                electronsGained = 1;
-                                break;
                             case DOUBLE_BOND:
                                 electronsGained = 2;
                                 break;
@@ -202,6 +200,7 @@ public class RECAPFragmenter {
                             case QUADRUPLE_BOND:
                                 electronsGained = 4;
                                 break;
+                            case SINGLE_BOND:
                             default:
                                 electronsGained = 1;
                         }

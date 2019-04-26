@@ -9,14 +9,16 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 class RECAPFragmenterTest {
 
-    @Test
+    @Test()
     void fragment() {
         MoleculeGraph molecule = SmilesParser.parse("CCCCN(C(=O)N(C)C(=[OH]C1CC1)N(C)Cl)c2ccccc2");
         RECAPFragmenter recapFragmenter = new RECAPFragmenter(molecule);
         DirectedGraph<GenericNode<MoleculeGraph>> fragments = recapFragmenter.getFragmentSpace();
         List<MoleculeGraph> uniqueList = new ArrayList<>(recapFragmenter.getUniqueFragments());
-        System.out.println();
+        assertEquals(100, uniqueList.size());
     }
 }
