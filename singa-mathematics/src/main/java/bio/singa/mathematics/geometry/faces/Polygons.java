@@ -57,6 +57,16 @@ public class Polygons {
         return oddNodes;
     }
 
+    /**
+     * Returns a map of all touching line segments. The key is the pair of line segments that touch and the value is the
+     * actual line segment that both lines share. The first element of the key pair is the line segment from the first
+     * polygon and vice versa.
+     *
+     * @param first The first polygon.
+     * @param second The second polygon.
+     *
+     * @return A map of touching line segments.
+     */
     public static Map<Pair<LineSegment>, LineSegment> getTouchingLineSegments(Polygon first, Polygon second) {
 
         // groups line segments that are pairwise parallel
@@ -79,8 +89,8 @@ public class Polygons {
                     // sort them to a list where all line segments are parallel
                     boolean sorted = false;
                     for (List<Pair<LineSegment>> parallelSegmentGroup : allParallelSegments) {
-                        Vector2D reperentativeUnitVector = parallelSegmentGroup.iterator().next().getFirst().getUnitVector();
-                        if (unitVectorsAreParallel(firstUnitVector, reperentativeUnitVector)) {
+                        Vector2D representativeUnitVector = parallelSegmentGroup.iterator().next().getFirst().getUnitVector();
+                        if (unitVectorsAreParallel(firstUnitVector, representativeUnitVector)) {
                             parallelSegmentGroup.add(new Pair<>(firstLineSegment, secondLineSegement));
                             sorted = true;
                             break;
@@ -107,12 +117,13 @@ public class Polygons {
                     LineSegment secondSegment = parallelSegmentGroup.get(secondIterator).getSecond();
                     Vector2D startingPoint = firstSegment.getStartingPoint();
                     Vector2D endingPoint = secondSegment.getEndingPoint();
-                    if (!startingPoint.equals(endingPoint)) {
-                        Vector2D candidateUnitVector = new SimpleLineSegment(startingPoint, endingPoint).getUnitVector();
-                        if (unitVectorsAreParallel(referenceUnitVector, candidateUnitVector)) {
-                            Pair<LineSegment> segmentPair = new Pair<>(firstSegment, secondSegment);
-                            touchingLineSegments.add(segmentPair);
-                        }
+                    if (startingPoint.equals(endingPoint)) {
+                        endingPoint = secondSegment.getStartingPoint();
+                    }
+                    Vector2D candidateUnitVector = new SimpleLineSegment(startingPoint, endingPoint).getUnitVector();
+                    if (unitVectorsAreParallel(referenceUnitVector, candidateUnitVector)) {
+                        Pair<LineSegment> segmentPair = new Pair<>(firstSegment, secondSegment);
+                        touchingLineSegments.add(segmentPair);
                     }
                 }
             }

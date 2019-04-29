@@ -133,6 +133,7 @@ public class Simulation {
             initializeModules();
             initializeConcentrations();
             initializeVesicleLayer();
+            initializeSubsectionAdjacency();
             initializationDone = true;
         }
         // clear observed nodes if necessary
@@ -264,6 +265,14 @@ public class Simulation {
         }
         vesicleLayer.setSimulation(this);
         vesicleLayer.associateVesicles();
+    }
+
+    private void initializeSubsectionAdjacency() {
+        if (membraneLayer != null && !membraneLayer.getMembranes().isEmpty()) {
+            for (AutomatonNode node : graph.getNodes()) {
+                node.initializeAdjacency();
+            }
+        }
     }
 
     public VesicleLayer getVesicleLayer() {
