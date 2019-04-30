@@ -1,7 +1,6 @@
 package bio.singa.simulation.model.agents.surfacelike;
 
 import bio.singa.mathematics.geometry.edges.LineSegment;
-import bio.singa.mathematics.topology.grids.rectangular.NeumannRectangularDirection;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.sections.CellRegion;
@@ -18,8 +17,7 @@ public class Membrane {
     private CellRegion innerRegion;
     private CellRegion membraneRegion;
     private Map<CellRegion, Set<Vector2D>> regionMap;
-
-    private NeumannRectangularDirection innerDirection;
+    private Vector2D innerPoint;
 
     public Membrane(String identifier) {
         this.identifier = identifier;
@@ -63,12 +61,12 @@ public class Membrane {
         this.regionMap = regionMap;
     }
 
-    public NeumannRectangularDirection getInnerDirection() {
-        return innerDirection;
+    public Vector2D getInnerPoint() {
+        return innerPoint;
     }
 
-    public void setInnerDirection(NeumannRectangularDirection innerDirection) {
-        this.innerDirection = innerDirection;
+    public void setInnerPoint(Vector2D innerPoint) {
+        this.innerPoint = innerPoint;
     }
 
     @Override

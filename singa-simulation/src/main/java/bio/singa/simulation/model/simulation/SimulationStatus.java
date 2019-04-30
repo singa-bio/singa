@@ -95,7 +95,7 @@ public class SimulationStatus implements UpdateEventListener<GraphUpdatedEvent> 
     }
 
     public String getLargestGlobalError() {
-        return String.valueOf(simulation.getScheduler().getLargestGlobalError());
+        return String.valueOf(simulation.getScheduler().getLargestGlobalError().getValue());
     }
 
     public String getNumberOfEpochsSinceLastUpdate() {

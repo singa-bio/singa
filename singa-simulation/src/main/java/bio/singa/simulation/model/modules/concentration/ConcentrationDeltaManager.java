@@ -184,6 +184,13 @@ public class ConcentrationDeltaManager {
         } while (repeat);
     }
 
+    /**
+     * If deltas would result in negative concentrations (negative delta value is higher than concentration in updatable)
+     * the affected deltas are scaled accordingly to the remaining concentration.
+     *
+     * @param module The module that generated the delta.
+     * @param delta The delta that was too large.
+     */
     private void capDeltas(UpdateModule module, ConcentrationDelta delta) {
         double remainingConcentration = currentConcentrations.get(delta.getCellSubsection(), delta.getChemicalEntity());
         List<ConcentrationDelta> affectedDeltas = potentialDeltas.stream()
@@ -191,7 +198,7 @@ public class ConcentrationDeltaManager {
                 .collect(Collectors.toList());
         double deltaValue = delta.getValue();
         for (ConcentrationDelta affectedDelta : affectedDeltas) {
-            if (affectedDelta.equals(delta)) {
+            if (affectedDelta.getValue() == deltaValue) {
                 delta.setValue(-remainingConcentration);
             } else {
                 // determine relationship

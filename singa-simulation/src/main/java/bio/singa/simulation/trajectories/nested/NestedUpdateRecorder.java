@@ -25,6 +25,8 @@ public class NestedUpdateRecorder implements UpdateEventListener<GraphUpdatedEve
     public NestedUpdateRecorder(Simulation simulation, Unit<Time> timeUnit, Unit<MolarConcentration> concentrationUnit) {
         this.simulation = simulation;
         trajectories = new Trajectories(timeUnit, concentrationUnit);
+        trajectories.setSimulationWidth(simulation.getSimulationRegion().getWidth());
+        trajectories.setSimulationHeight(simulation.getSimulationRegion().getHeight());
     }
 
     public Trajectories getTrajectories() {

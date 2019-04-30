@@ -75,6 +75,7 @@ public class MembraneFactory {
         membrane = new Membrane(membraneRegion.getIdentifier());
         membrane.setInnerRegion(innerRegion);
         membrane.setMembraneRegion(membraneRegion);
+        membrane.setInnerPoint(innerPoint);
     }
 
     private Map<CellRegion, Set<Vector2D>> reconstructRegionMap() {
