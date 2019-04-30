@@ -66,9 +66,6 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
         for (Map.Entry<CellSubsection, Polygon> currentSubsectionEntry : subsectionRepresentations.entrySet()) {
             CellSubsection currentSubsection = currentSubsectionEntry.getKey();
             Polygon currentPolygon = currentSubsectionEntry.getValue();
-            if (getStringIdentifier().equals("n(5,5)")) {
-                System.out.println();
-            }
             for (AutomatonNode neighbour : getNeighbours()) {
                 Map<CellSubsection, Polygon> neighborSubsections = neighbour.getSubsectionRepresentations();
                 for (Map.Entry<CellSubsection, Polygon> neighborSubsectionEntry : neighborSubsections.entrySet()) {
@@ -102,6 +99,10 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
                 }
             }
         }
+    }
+
+    public Map<CellSubsection, List<AreaMapping>> getSubsectionAdjacency() {
+        return subsectionAdjacency;
     }
 
     public Map<CellSubsection, Polygon> getSubsectionRepresentations() {
@@ -239,7 +240,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
     }
 
 
-    private static class AreaMapping {
+    public static class AreaMapping {
 
         private final AutomatonNode node;
         private final CellSubsection subsection;

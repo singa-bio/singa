@@ -268,10 +268,8 @@ public class Simulation {
     }
 
     private void initializeSubsectionAdjacency() {
-        if (membraneLayer != null && !membraneLayer.getMembranes().isEmpty()) {
-            for (AutomatonNode node : graph.getNodes()) {
-                node.initializeAdjacency();
-            }
+        for (AutomatonNode node : graph.getNodes()) {
+            node.initializeAdjacency();
         }
     }
 

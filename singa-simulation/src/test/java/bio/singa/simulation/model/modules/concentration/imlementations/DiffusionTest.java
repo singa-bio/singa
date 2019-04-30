@@ -5,12 +5,18 @@ import bio.singa.chemistry.features.diffusivity.Diffusivity;
 import bio.singa.features.model.Evidence;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.units.UnitRegistry;
+import bio.singa.mathematics.algorithms.topology.FloodFill;
+import bio.singa.mathematics.geometry.faces.Rectangle;
 import bio.singa.mathematics.graphs.model.Graphs;
 import bio.singa.mathematics.topology.grids.rectangular.RectangularCoordinate;
+import bio.singa.mathematics.vectors.Vector2D;
+import bio.singa.simulation.model.agents.surfacelike.MembraneBuilder;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.modules.concentration.imlementations.transport.Diffusion;
+import bio.singa.simulation.model.sections.CellSubsections;
+import bio.singa.simulation.model.sections.concentration.ConcentrationInitializer;
 import bio.singa.simulation.model.simulation.Simulation;
 import org.junit.jupiter.api.*;
 import org.slf4j.Logger;
@@ -23,8 +29,11 @@ import javax.measure.quantity.Time;
 
 import static bio.singa.chemistry.features.diffusivity.Diffusivity.SQUARE_CENTIMETRE_PER_SECOND;
 import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
+import static bio.singa.simulation.model.sections.CellRegions.CELL_OUTER_MEMBRANE_REGION;
+import static bio.singa.simulation.model.sections.CellRegions.CYTOPLASM_REGION;
 import static bio.singa.simulation.model.sections.CellSubsections.EXTRACELLULAR_REGION;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static tec.units.indriya.unit.MetricPrefix.MICRO;
 import static tec.units.indriya.unit.MetricPrefix.NANO;
 import static tec.units.indriya.unit.Units.METRE;
@@ -33,9 +42,9 @@ import static tec.units.indriya.unit.Units.SECOND;
 /**
  * @author cl
  */
-class DiffusionUnhinderedTest {
+class DiffusionTest {
 
-    private static final Logger logger = LoggerFactory.getLogger(DiffusionUnhinderedTest.class);
+    private static final Logger logger = LoggerFactory.getLogger(DiffusionTest.class);
 
     private static final Quantity<Length> systemDiameter = Quantities.getQuantity(2500.0, NANO(METRE));
 
@@ -55,11 +64,14 @@ class DiffusionUnhinderedTest {
     @BeforeAll
     static void initialize() {
         UnitRegistry.reinitialize();
+        Environment.setSimulationExtend(2500);
+        Environment.setSystemExtend(systemDiameter);
     }
 
     @AfterEach
     void cleanUp() {
         UnitRegistry.reinitialize();
+        Environment.reset();
     }
 
     @Test
@@ -109,11 +121,66 @@ class DiffusionUnhinderedTest {
         Environment.reset();
     }
 
+    @Test
+    @DisplayName("diffusion of ammonia blocked by membrane")
+    void shouldBlockDiffusionWithMembrane() {
+        // create simulation
+        Simulation simulation = new Simulation();
+        // set node distance to diameter
+        Environment.setNodeSpacingToDiameter(systemDiameter, 25);
+        // create grid graph 11x11
+        AutomatonGraph graph = AutomatonGraphs.createRectangularAutomatonGraph(25, 25);
+        // set graph
+        simulation.setGraph(graph);
+
+        // split with membrane
+        MembraneBuilder.linear()
+                .vectors(new Vector2D(1250, 0), new Vector2D(1250, 2500))
+                .innerPoint(new Vector2D(2000, 1250))
+                .graph(graph)
+                .membraneRegion(CYTOPLASM_REGION, CELL_OUTER_MEMBRANE_REGION)
+                .build();
+
+        FloodFill.fill(graph.getGrid(), new RectangularCoordinate(13, 0),
+                currentNode -> currentNode.getCellRegion().equals(CELL_OUTER_MEMBRANE_REGION),
+                rectangularCoordinate -> {
+                    AutomatonNode node = graph.getNode(rectangularCoordinate);
+                    node.setCellRegion(CYTOPLASM_REGION);
+                    node.getSubsectionRepresentations().clear();
+                    node.getSubsectionRepresentations().put(CYTOPLASM_REGION.getInnerSubsection(), node.getSpatialRepresentation());
+                },
+                recurrentNode -> recurrentNode.getCellRegion().equals(CYTOPLASM_REGION));
+
+        // set concentrations
+        ConcentrationInitializer ci = new ConcentrationInitializer();
+        ci.addInitialConcentration(CellSubsections.CYTOPLASM, ammonia, Quantities.getQuantity(1.0, MOLE_PER_LITRE));
+        simulation.setConcentrationInitializer(ci);
+
+        Diffusion.inSimulation(simulation)
+                .onlyFor(ammonia)
+                .build();
+
+        for (int i = 0; i < 10; i++) {
+            simulation.nextEpoch();
+        }
+
+        for (AutomatonNode node : graph.getNodes()) {
+            if (node.getIdentifier().getColumn() < (graph.getNumberOfColumns() / 2)) {
+                // nothing should permeate to the outer part
+                assertEquals(0.0, node.getConcentrationContainer().get(CellSubsections.EXTRACELLULAR_REGION, ammonia));
+            } else {
+                assertTrue(node.getConcentrationContainer().get(CellSubsections.CYTOPLASM, ammonia) > 0.0);
+            }
+        }
+
+    }
+
     private Simulation setUpSimulation(int numberOfNodes, SmallMolecule species) {
         // setup node distance to diameter
         Environment.setNodeSpacingToDiameter(systemDiameter, numberOfNodes);
         // setup rectangular graph with number of nodes
-        AutomatonGraph graph = AutomatonGraphs.useStructureFrom(Graphs.buildGridGraph(numberOfNodes, numberOfNodes));
+        Rectangle boundingBox = new Rectangle(Environment.getSimulationExtend(), Environment.getSimulationExtend());
+        AutomatonGraph graph = AutomatonGraphs.useStructureFrom(Graphs.buildGridGraph(numberOfNodes, numberOfNodes, boundingBox));
         // initialize species in graph with desired concentration leaving the right "half" empty
         for (AutomatonNode node : graph.getNodes()) {
             if (node.getIdentifier().getColumn() < (graph.getNumberOfColumns() / 2)) {

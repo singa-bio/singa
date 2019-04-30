@@ -76,22 +76,22 @@ public class Polygons {
 
         // determine which lines are parallel
         for (LineSegment firstLineSegment : first.getEdges()) {
-            for (LineSegment secondLineSegement : second.getEdges()) {
+            for (LineSegment secondLineSegment : second.getEdges()) {
                 // trivial case: if both lines are identical definitely touch
-                if (firstLineSegment.isCongruentTo(secondLineSegement)) {
-                    resultMap.put(new Pair<>(firstLineSegment, secondLineSegement), firstLineSegment);
+                if (firstLineSegment.isCongruentTo(secondLineSegment)) {
+                    resultMap.put(new Pair<>(firstLineSegment, secondLineSegment), firstLineSegment);
                     break;
                 }
                 // two line segments are parallel if their unit vectors are equal or opposite
                 Vector2D firstUnitVector = firstLineSegment.getUnitVector();
-                Vector2D secondUnitVector = secondLineSegement.getUnitVector();
+                Vector2D secondUnitVector = secondLineSegment.getUnitVector();
                 if (unitVectorsAreParallel(firstUnitVector, secondUnitVector)) {
                     // sort them to a list where all line segments are parallel
                     boolean sorted = false;
                     for (List<Pair<LineSegment>> parallelSegmentGroup : allParallelSegments) {
                         Vector2D representativeUnitVector = parallelSegmentGroup.iterator().next().getFirst().getUnitVector();
                         if (unitVectorsAreParallel(firstUnitVector, representativeUnitVector)) {
-                            parallelSegmentGroup.add(new Pair<>(firstLineSegment, secondLineSegement));
+                            parallelSegmentGroup.add(new Pair<>(firstLineSegment, secondLineSegment));
                             sorted = true;
                             break;
                         }
@@ -99,7 +99,7 @@ public class Polygons {
                     // create new group if it could not be sorted into existing ones
                     if (!sorted) {
                         List<Pair<LineSegment>> parallelSegmentGroup = new ArrayList<>();
-                        parallelSegmentGroup.add(new Pair<>(firstLineSegment, secondLineSegement));
+                        parallelSegmentGroup.add(new Pair<>(firstLineSegment, secondLineSegment));
                         allParallelSegments.add(parallelSegmentGroup);
                     }
                 }

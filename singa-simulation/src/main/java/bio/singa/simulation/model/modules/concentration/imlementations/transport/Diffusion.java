@@ -65,7 +65,7 @@ public class Diffusion extends ConcentrationBasedModule<EntityDeltaFunction> {
         // apply
         setApplicationCondition(updatable -> updatable instanceof AutomatonNode);
         // function
-        EntityDeltaFunction function = new EntityDeltaFunction(this::calculateDelta, this::onlyForReferencedEntities);
+        EntityDeltaFunction function = new EntityDeltaFunction(this::calculateDelta, this::applicationCondition);
         addDeltaFunction(function);
         // feature
         getRequiredFeatures().add(Diffusivity.class);
@@ -82,15 +82,14 @@ public class Diffusion extends ConcentrationBasedModule<EntityDeltaFunction> {
         // calculate entering term
         int numberOfNeighbors = 0;
         double concentration = 0;
-        // traverse each neighbouring cells
-        for (AutomatonNode neighbour : node.getNeighbours()) {
-            if (neighbour.getConcentrationContainer().getReferencedSubsections().contains(subsection)) {
-                // if the neighbour actually contains the same subsection
-                double availableConcentration = neighbour.getConcentrationContainer().get(subsection, entity);
-                concentration += availableConcentration;
-                numberOfNeighbors++;
-            }
+        // traverse each neighbouring subsection
+        List<AutomatonNode.AreaMapping> areaMappings = node.getSubsectionAdjacency().get(subsection);
+        for (AutomatonNode.AreaMapping mapping : areaMappings) {
+            double availableConcentration = mapping.getNode().getConcentrationContainer().get(subsection, entity);
+            concentration += availableConcentration;
+            numberOfNeighbors++;
         }
+
         // entering amount
         final double enteringConcentration = concentration * diffusivity;
         // calculate leaving amount
@@ -101,8 +100,8 @@ public class Diffusion extends ConcentrationBasedModule<EntityDeltaFunction> {
         return new ConcentrationDelta(this, subsection, entity, delta);
     }
 
-    private boolean onlyForReferencedEntities(ConcentrationContainer container) {
-        return getReferencedEntities().contains(supplier.getCurrentEntity());
+    private boolean applicationCondition(ConcentrationContainer container) {
+        return getReferencedEntities().contains(supplier.getCurrentEntity()) && !supplier.getCurrentSubsection().isMembrane();
     }
 
     @Override

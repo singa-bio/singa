@@ -1,6 +1,13 @@
 package bio.singa.javafx.renderer;
 
+import bio.singa.core.utility.Pair;
 import bio.singa.mathematics.geometry.edges.Line;
+import bio.singa.mathematics.geometry.edges.LineSegment;
+import bio.singa.mathematics.geometry.faces.ComplexPolygon;
+import bio.singa.mathematics.geometry.faces.Polygons;
+import bio.singa.mathematics.geometry.faces.Rectangle;
+import bio.singa.mathematics.geometry.model.Polygon;
+import bio.singa.mathematics.vectors.Vector2D;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -8,6 +15,8 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+
+import java.util.Map;
 
 /**
  * @author cl
@@ -23,7 +32,7 @@ public class RendererExamples extends Application implements Renderer {
     @Override
     public void start(Stage primaryStage) {
 
-        canvas = new Canvas(600, 600);
+        canvas = new Canvas(700, 700);
 
         BorderPane root = new BorderPane();
         root.setCenter(canvas);
@@ -34,6 +43,16 @@ public class RendererExamples extends Application implements Renderer {
 
         Line xAxis = new Line(0, 0);
         Line yAxis = new Line(0, Double.POSITIVE_INFINITY);
+
+        Rectangle r1 = new Rectangle(new Vector2D(500, 500), new Vector2D(600, 600));
+        Polygon r2 = new ComplexPolygon(new Vector2D(550.0, 400.0), new Vector2D(550.0, 500.0), new Vector2D(500.0, 500.0), new Vector2D(500.0, 400.0));
+
+        strokePolygon(r1);
+        strokePolygon(r2);
+        getGraphicsContext().setStroke(Color.RED);
+        Map<Pair<LineSegment>, LineSegment> touchingLineSegments = Polygons.getTouchingLineSegments(r1, r2);
+        LineSegment segment = touchingLineSegments.values().iterator().next();
+        strokeLineSegment(segment);
 
         // strokeLine(xAxis);
         // strokeLine(yAxis);
@@ -62,7 +81,6 @@ public class RendererExamples extends Application implements Renderer {
 
 //        strokeLineSegment(edge);
 //        strokeLineSegment(points);
-
 
 
         // show
