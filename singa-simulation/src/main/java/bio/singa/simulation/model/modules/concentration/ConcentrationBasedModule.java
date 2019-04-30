@@ -399,15 +399,15 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
      * @throws NumericalInstabilityException if any of the encountered errors is the result of an numerical
      * instability.
      */
-    public LocalError determineLargestLocalError() {
+    public NumericalError determineLargestLocalError() {
         // no deltas mean this module did not change anything in the course of this simulation step
         if (supplier.getCurrentFullDeltas().isEmpty()) {
-            return LocalError.MINIMAL_EMPTY_ERROR;
+            return NumericalError.MINIMAL_EMPTY_ERROR;
         }
         if (supplier.getCurrentFullDeltas().size() != supplier.getCurrentHalfDeltas().size()) {
             logger.trace("The deltas that should be applied have fallen below " +
                     "the threshold of " + deltaCutoff + ". (Module: " + getIdentifier() + ")");
-            return LocalError.MINIMAL_EMPTY_ERROR;
+            return NumericalError.MINIMAL_EMPTY_ERROR;
         }
 
         // compare full and half deltas
@@ -430,7 +430,7 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
         }
         // safety check
         Objects.requireNonNull(largestIdentifier);
-        LocalError localError = new LocalError(largestIdentifier.getUpdatable(), largestIdentifier.getEntity(), largestLocalError);
+        NumericalError localError = new NumericalError(largestIdentifier.getUpdatable(), largestIdentifier.getEntity(), largestLocalError);
         // set local error and return local error
         simulation.getScheduler().setLargestLocalError(localError, this, associatedDelta);
         return localError;
@@ -492,9 +492,9 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
 
     private boolean localErrorIsAcceptable() {
         boolean errorRatioIsValid = false;
-        if (simulation.getScheduler().getLargestGlobalError() != 0.0) {
+        if (simulation.getScheduler().getLargestGlobalError().getValue() != 0.0) {
             // calculate ratio of local and global error
-            double errorRatio = supplier.getLargestLocalError().getValue() / simulation.getScheduler().getLargestGlobalError();
+            double errorRatio = supplier.getLargestLocalError().getValue() / simulation.getScheduler().getLargestGlobalError().getValue();
             errorRatioIsValid = errorRatio > 100000;
         }
         // use threshold

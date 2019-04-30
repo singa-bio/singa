@@ -17,6 +17,7 @@ import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.modules.UpdateModule;
 import bio.singa.simulation.model.modules.concentration.ConcentrationDelta;
+import bio.singa.simulation.model.modules.concentration.NumericalError;
 import bio.singa.simulation.model.modules.displacement.DisplacementBasedModule;
 import bio.singa.simulation.model.rules.AssignmentRule;
 import bio.singa.simulation.model.rules.AssignmentRules;
@@ -204,8 +205,8 @@ public class Simulation {
 
         // if the the error that was computed previously is very small
         final double recalculationCutoff = scheduler.getRecalculationCutoff();
-        final double latestGlobalError = scheduler.getLargestGlobalError();
-        if (recalculationCutoff - latestGlobalError > 0.1 * recalculationCutoff) {
+        final NumericalError latestGlobalError = scheduler.getLargestGlobalError();
+        if (recalculationCutoff - latestGlobalError.getValue() > 0.1 * recalculationCutoff) {
             // System.out.println("global error "+ latestGlobalError);
             final double latestLocalError = scheduler.getLargestLocalError().getValue();
             // System.out.println("local error "+ latestLocalError);

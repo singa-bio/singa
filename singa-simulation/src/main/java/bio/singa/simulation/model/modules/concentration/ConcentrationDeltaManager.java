@@ -202,8 +202,9 @@ public class ConcentrationDeltaManager {
 
     }
 
-    public double determineGlobalNumericalError() {
+    public NumericalError determineGlobalNumericalError() {
         double largestError = 0.0;
+        ChemicalEntity errorEntity = null;
         for (ChemicalEntity entity : currentConcentrations.getReferencedEntities()) {
             for (CellSubsection subsection : currentConcentrations.getReferencedSubsections()) {
                 double interimConcentration = interimConcentrations.get(subsection, entity);
@@ -212,11 +213,12 @@ public class ConcentrationDeltaManager {
                     double globalError = Math.abs(1 - (interimConcentration / currentConcentration));
                     if (globalError > largestError) {
                         largestError = globalError;
+                        errorEntity = entity;
                     }
                 }
             }
         }
-        return largestError;
+        return new NumericalError(null, errorEntity, largestError);
     }
 
 

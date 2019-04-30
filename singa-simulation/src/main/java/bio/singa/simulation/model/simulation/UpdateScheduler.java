@@ -4,7 +4,7 @@ import bio.singa.features.formatter.TimeFormatter;
 import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.simulation.model.modules.UpdateModule;
-import bio.singa.simulation.model.modules.concentration.LocalError;
+import bio.singa.simulation.model.modules.concentration.NumericalError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tec.units.indriya.AbstractUnit;
@@ -40,11 +40,11 @@ public class UpdateScheduler {
     private boolean timeStepAlteredInThisEpoch;
     private long timestepsDecreased = 0;
     private long timestepsIncreased = 0;
-    private LocalError largestLocalError;
+    private NumericalError largestLocalError;
     private UpdateModule localErrorModule;
     private double localErrorUpdate;
 
-    private double largestGlobalError;
+    private NumericalError largestGlobalError;
 
     private CountDownLatch countDownLatch;
 
@@ -63,7 +63,8 @@ public class UpdateScheduler {
         this.simulation = simulation;
         modules = new ArrayDeque<>(simulation.getModules());
         threads = Collections.synchronizedList(new ArrayList<>());
-        largestLocalError = LocalError.MINIMAL_EMPTY_ERROR;
+        largestLocalError = NumericalError.MINIMAL_EMPTY_ERROR;
+        largestGlobalError = NumericalError.MINIMAL_EMPTY_ERROR;
     }
 
     public double getRecalculationCutoff() {
@@ -86,7 +87,7 @@ public class UpdateScheduler {
         // initialize fields
         timeStepAlteredInThisEpoch = false;
         previousError = 0;
-        largestLocalError = LocalError.MINIMAL_EMPTY_ERROR;
+        largestLocalError = NumericalError.MINIMAL_EMPTY_ERROR;
         previousTimeStep = UnitRegistry.getTime();
         simulation.collectUpdatables();
         updatables = simulation.getUpdatables();
@@ -101,7 +102,7 @@ public class UpdateScheduler {
         // until all models passed
         do {
             if (timeStepRescaled || interrupted || !globalErrorAcceptable) {
-                largestLocalError = LocalError.MINIMAL_EMPTY_ERROR;
+                largestLocalError = NumericalError.MINIMAL_EMPTY_ERROR;
                 resetCalculation();
             }
             timeStepRescaled = false;
@@ -174,18 +175,19 @@ public class UpdateScheduler {
         } else {
             // evaluate global numerical accuracy
             // for each node
-            double largestGlobalError = 0.0;
+            NumericalError largestGlobalError = NumericalError.MINIMAL_EMPTY_ERROR;
             for (Updatable updatable : updatables) {
                 // determine full concentrations with full update and 2 * half update
                 updatable.getConcentrationManager().determineComparisionConcentrations();
                 // determine error between both
-                double globalError = updatable.getConcentrationManager().determineGlobalNumericalError();
-                if (largestGlobalError < globalError) {
+                NumericalError globalError = updatable.getConcentrationManager().determineGlobalNumericalError();
+                if (largestGlobalError.isSmallerThan(globalError)) {
+                    globalError.setUpdatable(updatable);
                     largestGlobalError = globalError;
                 }
             }
             // set interim check false if global error is to large and true if you can continue
-            if (largestGlobalError > recalculationCutoff) {
+            if (largestGlobalError.getValue() > recalculationCutoff) {
                 // System.out.println("rejected global error: "+largestGlobalError+" @ "+TimeFormatter.formatTime(UnitRegistry.getTime()));
                 simulation.getScheduler().decreaseTimeStep();
                 globalErrorAcceptable = false;
@@ -194,12 +196,12 @@ public class UpdateScheduler {
                 // System.out.println("accepted global error: "+largestGlobalError+ " @ "+TimeFormatter.formatTime(UnitRegistry.getTime()));
                 globalErrorAcceptable = true;
             }
-            if (getLargestLocalError().getValue() != LocalError.MINIMAL_EMPTY_ERROR.getValue()) {
+            if (getLargestLocalError().getValue() != NumericalError.MINIMAL_EMPTY_ERROR.getValue()) {
                 logger.debug("Largest local error : {} ({}, {}, {})", getLargestLocalError().getValue(), getLargestLocalError().getChemicalEntity(), getLargestLocalError().getUpdatable().getStringIdentifier(), getLocalErrorModule());
             } else {
                 logger.debug("Largest local error : minimal");
             }
-            logger.debug("Largest global error: {} ", largestGlobalError);
+            logger.debug("Largest global error: {} ({}, {})", largestGlobalError.getValue(), largestGlobalError.getChemicalEntity(), largestGlobalError.getUpdatable().getStringIdentifier());
             this.largestGlobalError = largestGlobalError;
         }
 
@@ -219,11 +221,11 @@ public class UpdateScheduler {
         return timeStepRescaled || interrupted || !globalErrorAcceptable;
     }
 
-    public LocalError getLargestLocalError() {
+    public NumericalError getLargestLocalError() {
         return largestLocalError;
     }
 
-    public void setLargestLocalError(LocalError localError, UpdateModule associatedModule, double associatedConcentration) {
+    public void setLargestLocalError(NumericalError localError, UpdateModule associatedModule, double associatedConcentration) {
         if (localError.getValue() > largestLocalError.getValue()) {
             largestLocalError = localError;
             localErrorModule = associatedModule;
@@ -239,7 +241,7 @@ public class UpdateScheduler {
         return MolarConcentration.concentrationToMolecules(localErrorUpdate).getValue().doubleValue();
     }
 
-    public double getLargestGlobalError() {
+    public NumericalError getLargestGlobalError() {
         return largestGlobalError;
     }
 

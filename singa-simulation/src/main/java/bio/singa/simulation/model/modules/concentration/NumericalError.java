@@ -6,22 +6,20 @@ import bio.singa.simulation.model.simulation.Updatable;
 /**
  * The LocalError object stores the error as an result of the currently applied time step. Additionally it stores in
  * which node and for which chemical entity it occurred.
- * The local error is calculated according to the midpoint method:
- * E = abs(1 - (fullDelta / 2.0 * halfDelta))
  *
  * @author cl
  */
-public class LocalError {
+public class NumericalError {
 
     /**
      * The minimal possible error not assigned to any node or chemical entity.
      */
-    public static final LocalError MINIMAL_EMPTY_ERROR = new LocalError(null, null, -Double.MAX_VALUE);
+    public static final NumericalError MINIMAL_EMPTY_ERROR = new NumericalError(null, null, -Double.MAX_VALUE);
 
     /**
      * The node where the error occurred.
      */
-    private final Updatable updatable;
+    private Updatable updatable;
 
     /**
      * The chemical entity where the error occurred.
@@ -40,10 +38,14 @@ public class LocalError {
      * @param entity The chemical entity where the error occurred.
      * @param value The actual value of the error.
      */
-    public LocalError(Updatable updatable, ChemicalEntity entity, double value) {
+    public NumericalError(Updatable updatable, ChemicalEntity entity, double value) {
         this.updatable = updatable;
         this.entity = entity;
         this.value = value;
+    }
+
+    public void setUpdatable(Updatable updatable) {
+        this.updatable = updatable;
     }
 
     /**
@@ -71,6 +73,14 @@ public class LocalError {
      */
     public double getValue() {
         return value;
+    }
+
+    public boolean isLargerThan(NumericalError error) {
+        return value > error.getValue();
+    }
+
+    public boolean isSmallerThan(NumericalError error) {
+        return !isLargerThan(error);
     }
 
     @Override

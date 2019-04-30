@@ -85,7 +85,7 @@ public class Diffusion extends ConcentrationBasedModule<EntityDeltaFunction> {
         // traverse each neighbouring subsection
         List<AutomatonNode.AreaMapping> areaMappings = node.getSubsectionAdjacency().get(subsection);
         for (AutomatonNode.AreaMapping mapping : areaMappings) {
-            double availableConcentration = mapping.getNode().getConcentrationContainer().get(subsection, entity);
+            double availableConcentration = mapping.getNode().getConcentrationContainer().get(mapping.getSubsection(), entity);
             concentration += availableConcentration;
             numberOfNeighbors++;
         }
@@ -101,7 +101,7 @@ public class Diffusion extends ConcentrationBasedModule<EntityDeltaFunction> {
     }
 
     private boolean applicationCondition(ConcentrationContainer container) {
-        return getReferencedEntities().contains(supplier.getCurrentEntity()) && !supplier.getCurrentSubsection().isMembrane();
+        return !supplier.getCurrentSubsection().isMembrane();
     }
 
     @Override
