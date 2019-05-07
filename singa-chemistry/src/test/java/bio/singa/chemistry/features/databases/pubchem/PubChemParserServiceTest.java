@@ -7,7 +7,6 @@ import bio.singa.features.identifiers.ChEBIIdentifier;
 import bio.singa.features.identifiers.InChIKey;
 import bio.singa.features.identifiers.PubChemIdentifier;
 import bio.singa.structure.features.molarmass.MolarMass;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -35,7 +34,6 @@ class PubChemParserServiceTest {
     }
 
     @Test
-    @Disabled
     void shouldResolveInChIKey() {
         SmallMolecule species = SmallMolecule.create("CID:5957")
                 .additionalIdentifier(new PubChemIdentifier("CID:5957"))
