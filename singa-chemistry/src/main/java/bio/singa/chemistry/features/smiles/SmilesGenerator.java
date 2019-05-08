@@ -52,6 +52,7 @@ public class SmilesGenerator {
         invariantToRanks();
         // check if number of ranks changed
         if (new HashSet<>(currentRanks.values()).size() == new HashSet<>(oldRanks.values()).size()) {
+            // TODO check for ties
             logger.info("canonical ranks determined: {}", currentRanks);
             rankedAtoms = currentRanks.entrySet().stream()
                     .sorted(Map.Entry.comparingByValue())
