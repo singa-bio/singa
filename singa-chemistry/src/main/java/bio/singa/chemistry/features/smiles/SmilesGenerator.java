@@ -7,6 +7,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.stream.Collectors;
+
+import static bio.singa.mathematics.algorithms.primes.Primes.getPrimeList;
 
 /**
  * Implementation of SMILES string generation of {@link MoleculeGraph}s with the CANON algorithm as described in
@@ -22,6 +25,7 @@ public class SmilesGenerator {
     private MoleculeGraph moleculeGraph;
     private Map<MoleculeAtom, Integer> atomInvariants;
     private Map<MoleculeAtom, Integer> currentRanks;
+    private List<MoleculeAtom> rankedAtoms;
 
     public SmilesGenerator(MoleculeGraph moleculeGraph) {
         this.moleculeGraph = moleculeGraph;
@@ -36,29 +40,6 @@ public class SmilesGenerator {
         return "";
     }
 
-    private static boolean checkPrime(int number) {
-        int limit = ((int) Math.sqrt(number)) + 1;
-        for (int i = 3; i < limit; i = i + 2) {
-            if (number % i == 0) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private static List<Integer> getPrimeList(int length) {
-        ArrayList<Integer> primeList = new ArrayList<>();
-        primeList.add(2);
-        int n = 3;
-        while (primeList.size() < length) {
-            if (checkPrime(n)) {
-                primeList.add(n);
-            }
-            n += 2;
-        }
-        return primeList;
-    }
-
     private void canon() {
         Map<MoleculeAtom, Integer> oldRanks = new HashMap<>(currentRanks);
         for (MoleculeAtom moleculeAtom : atomInvariants.keySet()) {
@@ -70,11 +51,14 @@ public class SmilesGenerator {
         }
         invariantToRanks();
         // check if number of ranks changed
-        if (new HashSet<>(currentRanks.values()).size() == oldRanks.size()) {
-            System.out.println("ranks determined");
-            return;
+        if (new HashSet<>(currentRanks.values()).size() == new HashSet<>(oldRanks.values()).size()) {
+            logger.info("canonical ranks determined: {}", currentRanks);
+            rankedAtoms = currentRanks.entrySet().stream()
+                    .sorted(Map.Entry.comparingByValue())
+                    .map(Map.Entry::getKey)
+                    .collect(Collectors.toList());
         } else {
-            System.out.println("recalculation of ranks needed");
+            logger.info("recalculation of ranks needed");
             canon();
         }
     }
@@ -101,10 +85,8 @@ public class SmilesGenerator {
     private void invariantToRanks() {
         List<MoleculeAtom> sortedAtoms = new ArrayList<>(atomInvariants.keySet());
         // first iteration, sort by initial invariant
-        if (currentRanks == null) {
-            currentRanks = new HashMap<>();
-            sortedAtoms.sort(Comparator.comparing(atom -> atomInvariants.get(atom)));
-        }
+        currentRanks = new HashMap<>();
+        sortedAtoms.sort(Comparator.comparing(atom -> atomInvariants.get(atom)));
         int uniqueRanks = 0;
         int previousInvariant = -1;
         for (MoleculeAtom sortedAtom : sortedAtoms) {
