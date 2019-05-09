@@ -9,7 +9,6 @@ import bio.singa.mathematics.geometry.edges.LineSegment;
 import bio.singa.mathematics.geometry.edges.SimpleLineSegment;
 import bio.singa.mathematics.geometry.faces.ComplexPolygon;
 import bio.singa.mathematics.geometry.faces.Polygons;
-import bio.singa.mathematics.geometry.faces.VertexPolygon;
 import bio.singa.mathematics.geometry.model.Polygon;
 import bio.singa.mathematics.geometry.model.Polygon.IntersectionFragment;
 import bio.singa.mathematics.graphs.model.*;
@@ -50,21 +49,17 @@ public class MembraneFactory {
         factory.initializeMembrane(innerRegion, membraneRegion);
         List<LineSegment> segments = Vectors.connectToSegments(vectors);
         factory.associateToGraph(segments);
-        if (graph.getNodes().size() > 1) {
-            factory.fillInternalNodes();
-        }
-        // factory.createPolygonForLinearMembrane(vectors);
         factory.setupSubsectionRepresentations();
         factory.membrane.setRegionMap(factory.reconstructRegionMap());
         return factory.membrane;
     }
 
-    public static Membrane createClosedMembrane(Collection<Vector2D> vectors, CellRegion innerRegion, CellRegion membraneRegion, AutomatonGraph graph, Map<Vector2D, CellRegion> regions) {
+    public static Membrane createClosedMembrane(List<Vector2D> vectors, CellRegion innerRegion, CellRegion membraneRegion, AutomatonGraph graph, Map<Vector2D, CellRegion> regions) {
         logger.info("Initializing closed membrane from {} vectors", vectors.size());
         MembraneFactory factory = new MembraneFactory(graph, regions);
-        factory.initializeMembrane(innerRegion, membraneRegion);
-        factory.polygon = factory.connectPolygonVectors(vectors);
+        factory.polygon = new ComplexPolygon(vectors);
         factory.innerPoint = factory.polygon.getCentroid();
+        factory.initializeMembrane(innerRegion, membraneRegion);
         factory.associateToGraph(factory.polygon.getEdges());
         factory.fillInternalNodes();
         factory.setupSubsectionRepresentations();
@@ -94,10 +89,6 @@ public class MembraneFactory {
             regionMap.get(entry.getValue()).add(entry.getKey());
         }
         return regionMap;
-    }
-
-    private Polygon connectPolygonVectors(Collection<Vector2D> vectors) {
-        return new VertexPolygon(vectors);
     }
 
     /**
@@ -139,6 +130,8 @@ public class MembraneFactory {
 
                         Vector2D firstIntersection = firstFragment.getIntersection();
                         Vector2D secondIntersection = secondFragment.getIntersection();
+
+                        // TODO handle if first and second intersection are equal, the segment passes through a vertex
 
                         membrane.addSegment(node, new SimpleLineSegment(firstIntersection, secondIntersection));
                         RegularNode firstIntersectionNode = createIntersectionNode(subsectionGraph, firstFragment);
@@ -190,6 +183,7 @@ public class MembraneFactory {
         if (!subsectionMapping.containsKey(node)) {
             subsectionMapping.put(node, node.getSpatialRepresentation().toGraph());
             node.setCellRegion(region);
+            node.getSubsectionRepresentations().clear();
         }
     }
 
@@ -213,6 +207,7 @@ public class MembraneFactory {
                 }
                 if (allPointsAreInside) {
                     startingNode = node;
+                    break;
                 }
             }
         } else {
@@ -228,8 +223,13 @@ public class MembraneFactory {
         if (startingNode != null) {
             // use flood fill algorithm
             FloodFill.fill(graph.getGrid(), startingNode.getIdentifier(),
-                    currentNode -> currentNode.getCellRegion().equals(membrane.getMembraneRegion()) || region.contains(currentNode.getCellRegion()),
-                    rectangularCoordinate -> graph.getNode(rectangularCoordinate).setCellRegion(membrane.getInnerRegion()),
+                    currentNode -> currentNode.getCellRegion().equals(membrane.getMembraneRegion()),
+                    rectangularCoordinate -> {
+                        AutomatonNode currentNode = graph.getNode(rectangularCoordinate);
+                        currentNode.setCellRegion(membrane.getInnerRegion());
+                        currentNode.getSubsectionRepresentations().clear();
+                        currentNode.addSubsectionRepresentation(membrane.getMembraneRegion().getInnerSubsection(), currentNode.getSpatialRepresentation());
+                    },
                     recurrentNode -> recurrentNode.getCellRegion().equals(membrane.getInnerRegion()));
         }
 

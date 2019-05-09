@@ -79,23 +79,12 @@ public class Diffusion extends ConcentrationBasedModule<EntityDeltaFunction> {
         CellSubsection subsection = supplier.getCurrentSubsection();
         final double currentConcentration = concentrationContainer.get(subsection, entity);
         final double diffusivity = getScaledFeature(entity, Diffusivity.class);
-        // calculate entering term
-        int numberOfNeighbors = 0;
-        double concentration = 0;
         // traverse each neighbouring subsection
         List<AutomatonNode.AreaMapping> areaMappings = node.getSubsectionAdjacency().get(subsection);
+        double delta = 0.0;
         for (AutomatonNode.AreaMapping mapping : areaMappings) {
-            double availableConcentration = mapping.getNode().getConcentrationContainer().get(mapping.getSubsection(), entity);
-            concentration += availableConcentration;
-            numberOfNeighbors++;
+            delta += diffusivity * mapping.getRelativeArea() * (mapping.getNode().getConcentrationContainer().get(mapping.getSubsection(), entity) - currentConcentration);
         }
-
-        // entering amount
-        final double enteringConcentration = concentration * diffusivity;
-        // calculate leaving amount
-        final double leavingConcentration = numberOfNeighbors * diffusivity * currentConcentration;
-        // calculate next concentration
-        final double delta = enteringConcentration - leavingConcentration;
         // return delta
         return new ConcentrationDelta(this, subsection, entity, delta);
     }

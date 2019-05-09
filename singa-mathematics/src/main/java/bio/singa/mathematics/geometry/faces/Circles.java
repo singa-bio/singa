@@ -2,6 +2,9 @@ package bio.singa.mathematics.geometry.faces;
 
 import bio.singa.mathematics.vectors.Vector2D;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static bio.singa.mathematics.metrics.model.VectorMetricProvider.EUCLIDEAN_METRIC;
 
 /**
@@ -25,6 +28,7 @@ public class Circles {
 
     /**
      * Returns the area of a circle with the given radius.
+     *
      * @param radius The radius.
      * @return The area.
      */
@@ -72,6 +76,26 @@ public class Circles {
      */
     public static double arcLength(Circle circle, Vector2D first, Vector2D second) {
         return Math.abs(Circles.centralAngle(circle, first, second) * circle.getRadius());
+    }
+
+    /**
+     * Returns a list of evenly spaced points on the circumference of the given circle,
+     *
+     * @param circle The circle.
+     * @param numberOfPoints The number of points.
+     * @return A list of evenly spaced points on the circumference of the given circle,
+     */
+    public static List<Vector2D> samplePoints(Circle circle, int numberOfPoints) {
+        double angle = (2.0 * Math.PI) / (double) numberOfPoints;
+        double commulativeAngle = 0.0;
+        List<Vector2D> points = new ArrayList<>();
+        while (commulativeAngle < 2 * Math.PI) {
+            double x = Math.cos(commulativeAngle) * circle.getRadius();
+            double y = Math.sin(commulativeAngle) * circle.getRadius();
+            points.add(new Vector2D(x + circle.getMidpoint().getX(), y + circle.getMidpoint().getY()));
+            commulativeAngle += angle;
+        }
+        return points;
     }
 
 }
