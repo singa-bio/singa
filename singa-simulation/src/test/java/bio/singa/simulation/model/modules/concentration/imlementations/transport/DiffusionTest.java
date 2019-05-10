@@ -1,4 +1,4 @@
-package bio.singa.simulation.model.modules.concentration.imlementations;
+package bio.singa.simulation.model.modules.concentration.imlementations.transport;
 
 import bio.singa.chemistry.entities.SmallMolecule;
 import bio.singa.chemistry.features.diffusivity.Diffusivity;
@@ -14,7 +14,6 @@ import bio.singa.simulation.model.agents.surfacelike.MembraneBuilder;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.graphs.AutomatonNode;
-import bio.singa.simulation.model.modules.concentration.imlementations.transport.Diffusion;
 import bio.singa.simulation.model.sections.CellSubsections;
 import bio.singa.simulation.model.sections.concentration.ConcentrationInitializer;
 import bio.singa.simulation.model.simulation.Simulation;

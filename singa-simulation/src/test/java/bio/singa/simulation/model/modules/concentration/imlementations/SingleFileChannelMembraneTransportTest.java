@@ -39,6 +39,7 @@ class SingleFileChannelMembraneTransportTest {
     @AfterEach
     void cleanUp() {
         UnitRegistry.reinitialize();
+        Environment.reset();
     }
 
     @Test
@@ -86,7 +87,6 @@ class SingleFileChannelMembraneTransportTest {
             assertTrue(currentOuterConcentration > previousOuterConcentration);
             previousOuterConcentration = currentOuterConcentration;
         }
-        Environment.reset();
     }
 
 }
