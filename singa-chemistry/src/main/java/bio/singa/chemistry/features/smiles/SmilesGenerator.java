@@ -52,7 +52,10 @@ public class SmilesGenerator {
         invariantToRanks();
         // check if number of ranks changed
         if (new HashSet<>(currentRanks.values()).size() == new HashSet<>(oldRanks.values()).size()) {
-            // TODO check for ties
+            // break ties until there are no more
+            while (new HashSet<>(currentRanks.values()).size() != currentRanks.size()) {
+                breakTies();
+            }
             logger.info("canonical ranks determined: {}", currentRanks);
             rankedAtoms = currentRanks.entrySet().stream()
                     .sorted(Map.Entry.comparingByValue())
@@ -61,6 +64,38 @@ public class SmilesGenerator {
         } else {
             logger.info("recalculation of ranks needed");
             canon();
+        }
+    }
+
+    private void breakTies() {
+        logger.debug("breaking ties");
+        // count occurrence of ranks
+        Map<Integer, Integer> rankCount = new TreeMap<>();
+        currentRanks.forEach((key, value) -> rankCount.merge(value, 1, Integer::sum));
+        // identify smallest duplicate rank
+        Optional<Integer> smallestDuplicateRank = rankCount.entrySet().stream()
+                .filter(rankOccurrence -> rankOccurrence.getValue() > 1)
+                .map(Map.Entry::getKey)
+                .findFirst();
+        if (smallestDuplicateRank.isPresent()) {
+            int duplicateRank = smallestDuplicateRank.get();
+            logger.debug("smallest duplicate rank is {}", duplicateRank);
+            // double invariants of the atoms with duplicate ranks
+            for (Map.Entry<MoleculeAtom, Integer> atomRank : currentRanks.entrySet()) {
+                if (atomRank.getValue() == duplicateRank) {
+                    int newInvariant = atomInvariants.get(atomRank.getKey()) * 2;
+                    atomInvariants.put(atomRank.getKey(), newInvariant);
+                }
+            }
+            // change invariant of arbitrary atom with the duplicate rank
+            for (Map.Entry<MoleculeAtom, Integer> atomRank : currentRanks.entrySet()) {
+                if (atomRank.getValue() == duplicateRank) {
+                    int newInvariant = atomInvariants.get(atomRank.getKey()) - 1;
+                    atomInvariants.put(atomRank.getKey(), newInvariant);
+                    invariantToRanks();
+                    break;
+                }
+            }
         }
     }
 
