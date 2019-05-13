@@ -3,6 +3,7 @@ package bio.singa.chemistry.features.smiles;
 import bio.singa.structure.elements.ElementProvider;
 import bio.singa.structure.model.molecules.MoleculeAtom;
 import bio.singa.structure.model.molecules.MoleculeBond;
+import bio.singa.structure.model.molecules.MoleculeBondType;
 import bio.singa.structure.model.molecules.MoleculeGraph;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,12 +37,13 @@ public class SmilesGenerator {
         invariantToRanks();
         primeList = getPrimeList(moleculeGraph.getNodes().size());
         canon();
+        System.out.println(rankedAtoms);
         buildSmiles();
     }
 
     public static String generate(MoleculeGraph moleculeGraph) {
         SmilesGenerator smilesGenerator = new SmilesGenerator(moleculeGraph);
-        return "";
+        return smilesGenerator.smilesJoiner.toString();
     }
 
     private void buildSmiles() {
@@ -69,36 +71,38 @@ public class SmilesGenerator {
         System.out.println(smilesJoiner.toString());
     }
 
-    private String constructSmiles(MoleculeAtom moleculeAtom, MoleculeAtom parent, Set<MoleculeAtom> visited, Set<MoleculeAtom> ancestors) {
-        // TODO tricky part here
+    private void constructSmiles(MoleculeAtom moleculeAtom, MoleculeAtom parent, Set<MoleculeAtom> visited, Set<MoleculeAtom> ancestors) {
         visited.add(moleculeAtom);
+        ancestors.add(moleculeAtom);
         if (parent != null) {
-            MoleculeBond bond = moleculeGraph.getEdgeBetween(moleculeAtom, parent).orElseThrow(IllegalArgumentException::new);
-            smilesJoiner.append(bond.getType().getSmilesRepresentation());
+            MoleculeBond bond = moleculeGraph.getEdgeBetween(moleculeAtom, parent).orElseThrow(UnsupportedOperationException::new);
+            if (bond.getType() != MoleculeBondType.SINGLE_BOND) {
+                smilesJoiner.append(bond.getType().getSmilesRepresentation());
+            }
         }
         smilesJoiner.append(moleculeAtom.getElement().getSymbol());
-        Optional<Integer> ringNumber = ringClosures.entrySet().stream()
-                .filter(ring -> ring.getValue().checkForAtom(moleculeAtom))
-                .map(Map.Entry::getKey)
-                .findFirst();
-        if (ringNumber.isPresent()) {
-            smilesJoiner.append(ringNumber.get());
+        // check if atom is part of ring closure
+        Optional<Map.Entry<Integer, RingClosure>> optionalRingClosure = ringClosures.entrySet().stream()
+                .filter(ringClosure -> ringClosure.getValue().atom1.equals(moleculeAtom) || ringClosure.getValue().atom2.equals(moleculeAtom)).findFirst();
+        if (optionalRingClosure.isPresent()) {
+            smilesJoiner.append(optionalRingClosure.get().getKey());
+        } else {
+            if (moleculeAtom.getNeighbours().size() > 2) {
+                smilesJoiner.append("(");
+            } else if (parent != null && moleculeAtom.getNeighbours().size() == 1 && visited.size() != moleculeGraph.getNodes().size()) {
+                smilesJoiner.append(")");
+            }
         }
+        logger.info("visiting dfs {}", moleculeAtom);
         for (MoleculeAtom rankedAtom : rankedAtoms) {
             if (moleculeAtom.getNeighbours().contains(rankedAtom)) {
                 if (parent == null || !parent.equals(rankedAtom)) {
-
                     if (!visited.contains(rankedAtom)) {
-                        if (moleculeAtom.getNeighbours().indexOf(rankedAtom) == moleculeAtom.getNeighbours().size() - 1) {
-                            smilesJoiner.append(constructSmiles(rankedAtom, moleculeAtom, visited, ancestors));
-                        }
-                    } else {
-                        smilesJoiner.append("(" + constructSmiles(rankedAtom, moleculeAtom, visited, ancestors) + ")");
+                        constructSmiles(rankedAtom, moleculeAtom, visited, ancestors);
                     }
                 }
             }
         }
-        return smilesJoiner.toString();
     }
 
     private void detectRingClosures() {
@@ -218,11 +222,17 @@ public class SmilesGenerator {
             int numberOfHydrogens = (int) atom.getNeighbours().stream()
                     .filter(neighborAtom -> neighborAtom.getElement().equals(ElementProvider.HYDROGEN))
                     .count();
+            // the bonds formed
+            int numberOfBonds = 0;
+            for (MoleculeAtom neighbour : atom.getNeighbours()) {
+                MoleculeBond bond = moleculeGraph.getEdgeBetween(atom, neighbour).orElseThrow(IllegalStateException::new);
+                numberOfBonds += bond.getType().getBondOrder();
+            }
             int i1 = atom.getDegree();
             int i2 = atom.getElement().getNumberOfPotentialBonds() - numberOfHydrogens;
             int i3 = atom.getElement().getProtonNumber();
             int i4 = atom.getElement().getCharge() < 0 ? 1 : 0;
-            int i5 = atom.getElement().getCharge();
+            int i5 = Math.abs(atom.getElement().getCharge());
             int i6 = numberOfHydrogens;
 
             int invariantNumber = Integer.valueOf(String.format("%d%d%d%d%d%d", i1, i2, i3, i4, i5, i6));
