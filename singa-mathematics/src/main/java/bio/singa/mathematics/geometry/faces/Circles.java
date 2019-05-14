@@ -92,7 +92,10 @@ public class Circles {
         while (commulativeAngle < 2 * Math.PI) {
             double x = Math.cos(commulativeAngle) * circle.getRadius();
             double y = Math.sin(commulativeAngle) * circle.getRadius();
-            points.add(new Vector2D(x + circle.getMidpoint().getX(), y + circle.getMidpoint().getY()));
+            Vector2D point = new Vector2D(x + circle.getMidpoint().getX(), y + circle.getMidpoint().getY());
+            if (!points.contains(point)) {
+                points.add(point);
+            }
             commulativeAngle += angle;
         }
         return points;

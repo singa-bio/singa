@@ -113,10 +113,13 @@ public class MembraneFactory {
                     boolean startIsInside = spatialRepresentation.isInside(startingPoint);
                     boolean endIsInside = spatialRepresentation.isInside(endingPoint);
                     List<IntersectionFragment> intersections = spatialRepresentation.getIntersectionFragments(lineSegment);
-                    if (startIsInside && intersections.size() != 2) {
+                    if (startIsInside && endIsInside) {
+                        // completely internal
+                        handleNoIntersection(node, startingPoint, endingPoint);
+                    } else if (startIsInside && intersections.size() == 1) {
                         // start inside or on line
                         handleSingleIntersection(startingPoint, node, intersections.iterator().next());
-                    } else if (endIsInside && intersections.size() != 2) {
+                    } else if (endIsInside && intersections.size() == 1) {
                         // end inside or on line
                         handleSingleIntersection(endingPoint, node, intersections.iterator().next());
                     } else if (intersections.size() == 2) {
@@ -144,6 +147,17 @@ public class MembraneFactory {
         }
     }
 
+    private void handleNoIntersection(AutomatonNode node, Vector2D startingPoint, Vector2D endingPoint) {
+        initializeNodeSubsectionMapping(node, regions.get(startingPoint));
+        UndirectedGraph subsectionGraph = subsectionMapping.get(node);
+        membrane.addSegment(node, new SimpleLineSegment(startingPoint, endingPoint));
+        RegularNode startingNode = subsectionGraph.addNodeIf(graphNode -> graphNode.getPosition().equals(startingPoint),
+                new RegularNode(subsectionGraph.nextNodeIdentifier(), startingPoint));
+        RegularNode endingNode = subsectionGraph.addNodeIf(graphNode -> graphNode.getPosition().equals(endingPoint),
+                new RegularNode(subsectionGraph.nextNodeIdentifier(), endingPoint));
+        subsectionGraph.addEdgeBetween(startingNode, endingNode);
+    }
+
     private void handleSingleIntersection(Vector2D internalPoint, AutomatonNode node, IntersectionFragment intersectionFragment) {
         Vector2D intersection = intersectionFragment.getIntersection();
         if (!intersection.equals(internalPoint)) {
@@ -156,6 +170,11 @@ public class MembraneFactory {
             RegularNode internalNode = subsectionGraph.addNodeIf(graphNode -> graphNode.getPosition().equals(internalPoint),
                     new RegularNode(subsectionGraph.nextNodeIdentifier(), internalPoint));
             subsectionGraph.addEdgeBetween(internalNode, intersectionNode);
+        } else {
+            initializeNodeSubsectionMapping(node, regions.get(internalPoint));
+            UndirectedGraph subsectionGraph = subsectionMapping.get(node);
+            // add the node created by the intersection
+            createIntersectionNode(subsectionGraph, intersectionFragment);
         }
     }
 
@@ -243,18 +262,31 @@ public class MembraneFactory {
                     .filter(subsectionNode -> !representationGraph.containsNode(representationNode -> representationNode.getPosition().equals(subsectionNode.getPosition())))
                     .collect(Collectors.toList());
 
-            ArrayList<RegularNode> outerNodeList = new ArrayList<>(innerNodeList);
-            // get last node (probably be last added intersection)
-            RegularNode lastNode = innerNodeList.get(innerNodeList.size() - 1);
-            RegularNode firstNode = innerNodeList.get(0);
-            RegularNode closestNeighbour;
+            Iterator<RegularNode> iterator = innerNodeList.iterator();
+            // get starting point
+            RegularNode firstNode = iterator.next();
+            RegularNode currentNode = firstNode;
+            RegularNode targetNode = null;
+            // get other node that is also in the inner section
+            for (RegularNode neighbour : currentNode.getNeighbours()) {
+                if (innerNodeList.contains(neighbour)) {
+                    targetNode = neighbour;
+                    break;
+                }
+            }
+            List<RegularNode> circleNodes = new ArrayList<>();
+            circleNodes.add(currentNode);
+            entry.getValue().removeEdge(currentNode, targetNode);
+            if (targetNode == null) {
+                throw new IllegalStateException("Unable to crate subsection, no neighbouring internal nodes");
+            }
             do {
                 // determine next on path
-                List<RegularNode> neighbours = lastNode.getNeighbours();
-                closestNeighbour = null;
+                List<RegularNode> neighbours = currentNode.getNeighbours();
+                RegularNode closestNeighbour = null;
                 double closestNeighbourDistance = Double.MAX_VALUE;
                 for (RegularNode neighbour : neighbours) {
-                    if (!innerNodeList.contains(neighbour)) {
+                    if (!circleNodes.contains(neighbour)) {
                         double currentDistance = neighbour.getPosition().distanceTo(innerPoint);
                         if (currentDistance < closestNeighbourDistance) {
                             closestNeighbourDistance = currentDistance;
@@ -262,31 +294,25 @@ public class MembraneFactory {
                         }
                     }
                 }
-                if (closestNeighbour == null) {
-                    if (neighbours.contains(firstNode)) {
-                        closestNeighbour = firstNode;
-                    }
-                } else {
-                    innerNodeList.add(closestNeighbour);
-                    lastNode = closestNeighbour;
-                }
-            } while (!firstNode.equals(closestNeighbour));
-            List<Vector2D> innerVectors = innerNodeList.stream()
+                circleNodes.add(closestNeighbour);
+                currentNode = closestNeighbour;
+            } while (!currentNode.equals(targetNode));
+            List<Vector2D> innerVectors = circleNodes.stream()
                     .map(Node::getPosition)
                     .collect(Collectors.toList());
             node.addSubsectionRepresentation(membrane.getMembraneRegion().getInnerSubsection(), new ComplexPolygon(innerVectors));
 
             // get last node (probably be last added intersection)
-            lastNode = outerNodeList.get(outerNodeList.size() - 1);
-            firstNode = outerNodeList.get(0);
-            RegularNode farthestNeighbour;
+            circleNodes.clear();
+            currentNode = firstNode;
+            circleNodes.add(currentNode);
             do {
                 // determine next on path
-                List<RegularNode> neighbours = lastNode.getNeighbours();
-                farthestNeighbour = null;
+                List<RegularNode> neighbours = currentNode.getNeighbours();
+                RegularNode farthestNeighbour = null;
                 double farthestNeighbourDistance = -Double.MAX_VALUE;
                 for (RegularNode neighbour : neighbours) {
-                    if (!outerNodeList.contains(neighbour)) {
+                    if (!circleNodes.contains(neighbour)) {
                         double currentDistance = neighbour.getPosition().distanceTo(innerPoint);
                         if (currentDistance > farthestNeighbourDistance) {
                             farthestNeighbourDistance = currentDistance;
@@ -294,16 +320,10 @@ public class MembraneFactory {
                         }
                     }
                 }
-                if (farthestNeighbour == null) {
-                    if (neighbours.contains(firstNode)) {
-                        farthestNeighbour = firstNode;
-                    }
-                } else {
-                    outerNodeList.add(farthestNeighbour);
-                    lastNode = farthestNeighbour;
-                }
-            } while (!firstNode.equals(farthestNeighbour));
-            List<Vector2D> outerVectors = outerNodeList.stream()
+                circleNodes.add(farthestNeighbour);
+                currentNode = farthestNeighbour;
+            } while (!currentNode.equals(targetNode));
+            List<Vector2D> outerVectors = circleNodes.stream()
                     .map(Node::getPosition)
                     .collect(Collectors.toList());
             node.addSubsectionRepresentation(membrane.getMembraneRegion().getOuterSubsection(), new ComplexPolygon(outerVectors));

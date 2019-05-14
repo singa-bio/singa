@@ -6,7 +6,6 @@ import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.simulation.model.agents.pointlike.Vesicle;
-import bio.singa.simulation.model.agents.surfacelike.MembraneSegment;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.sections.CellSubsection;
 import bio.singa.simulation.model.sections.ConcentrationPool;
@@ -25,7 +24,7 @@ public class TrajactoryDataPoint {
 
     private Map<CellSubsection, SubsectionDatapoint> subsectionData;
 
-    private TrajactoryDataPoint() {
+    public TrajactoryDataPoint() {
         subsectionData = new HashMap<>();
     }
 
@@ -43,19 +42,9 @@ public class TrajactoryDataPoint {
             if (updatable instanceof AutomatonNode) {
                 AutomatonNode node = (AutomatonNode) updatable;
                 if (currentSubsection.isMembrane()) {
-                    // current subsection is membrane subsection - add points of membrane
-                    for (MembraneSegment membraneSegment : node.getMembraneSegments()) {
-                        Vector2D startingPoint = membraneSegment.getStartingPoint();
-                        if (!positions.contains(startingPoint)) {
-                            positions.add(startingPoint);
-                        }
-                        Vector2D endingPoint = membraneSegment.getEndingPoint();
-                        if (!positions.contains(endingPoint)) {
-                            positions.add(endingPoint);
-                        }
-                    }
+                    positions.addAll(node.getMembraneVectors());
                 } else {
-                    positions.add(node.getSubsectionRepresentations().get(currentSubsection).getCentroid());
+                    positions.addAll(node.getSubsectionRepresentations().get(currentSubsection).getVertices());
                 }
             } else if (updatable instanceof Vesicle) {
                 Vesicle vesicle = (Vesicle) updatable;
@@ -73,22 +62,39 @@ public class TrajactoryDataPoint {
         return data;
     }
 
+    public void put(CellSubsection cellSection, SubsectionDatapoint datapoint) {
+        subsectionData.put(cellSection, datapoint);
+    }
+
     public Map<CellSubsection, SubsectionDatapoint> getSubsectionData() {
         return subsectionData;
     }
 
     public static class SubsectionDatapoint {
 
-        final Map<ChemicalEntity, Double> concentration;
-        final List<Vector2D> positions;
+        private Map<ChemicalEntity, Double> concentrations;
+        private List<Vector2D> positions;
 
-        public SubsectionDatapoint(Map<ChemicalEntity, Double> concentration, List<Vector2D> positions) {
-            this.concentration = concentration;
+        public SubsectionDatapoint(Map<ChemicalEntity, Double> concentrations, List<Vector2D> positions) {
+            this.concentrations = concentrations;
             this.positions = positions;
         }
 
-        public Map<ChemicalEntity, Double> getConcentration() {
-            return concentration;
+        public SubsectionDatapoint() {
+            concentrations = new HashMap<>();
+            positions = new ArrayList<>();
+        }
+
+        public void addConcentration(ChemicalEntity entity, double concentration) {
+            concentrations.put(entity, concentration);
+        }
+
+        public void addPosition(Vector2D postion) {
+            positions.add(postion);
+        }
+
+        public Map<ChemicalEntity, Double> getConcentrations() {
+            return concentrations;
         }
 
         public List<Vector2D> getPositions() {

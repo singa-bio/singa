@@ -13,7 +13,7 @@ public class TrajectoryData {
 
     private Map<Updatable, TrajactoryDataPoint> concentrationData;
 
-    private TrajectoryData() {
+    public TrajectoryData() {
         concentrationData = new HashMap<>();
     }
 
@@ -24,9 +24,13 @@ public class TrajectoryData {
     public static TrajectoryData of(Collection<Updatable> updatables, Unit<MolarConcentration> concentrationUnit) {
         TrajectoryData data = new TrajectoryData();
         for (Updatable updatable : updatables) {
-            data.concentrationData.put(updatable, TrajactoryDataPoint.of(updatable, concentrationUnit));
+            data.put(updatable, TrajactoryDataPoint.of(updatable, concentrationUnit));
         }
         return data;
+    }
+
+    public void put(Updatable updatable, TrajactoryDataPoint dataPoint) {
+        concentrationData.put(updatable, dataPoint);
     }
 
 }

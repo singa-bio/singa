@@ -2,11 +2,13 @@ package bio.singa.simulation.model.graphs;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.core.utility.Pair;
+import bio.singa.features.parameters.Environment;
 import bio.singa.features.units.UnitRegistry;
+import bio.singa.mathematics.algorithms.graphs.ShortestPathFinder;
 import bio.singa.mathematics.geometry.edges.LineSegment;
 import bio.singa.mathematics.geometry.faces.Polygons;
 import bio.singa.mathematics.geometry.model.Polygon;
-import bio.singa.mathematics.graphs.model.AbstractNode;
+import bio.singa.mathematics.graphs.model.*;
 import bio.singa.mathematics.topology.grids.rectangular.RectangularCoordinate;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.simulation.model.agents.linelike.LineLikeAgent;
@@ -41,6 +43,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
     private Polygon spatialRepresentation;
     private Map<LineLikeAgent, Set<Vector2D>> microtubuleSegments;
     private List<MembraneSegment> membraneSegments;
+    private List<Vector2D> membraneVectors;
 
     private Map<CellSubsection, Polygon> subsectionRepresentations;
     private Map<CellSubsection, List<AreaMapping>> subsectionAdjacency;
@@ -54,6 +57,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
         subsectionRepresentations = new HashMap<>();
         subsectionAdjacency = new HashMap<>();
         membraneSegments = new ArrayList<>();
+        membraneVectors = new ArrayList<>();
         cellRegion = CellRegions.EXTRACELLULAR_REGION;
         concentrationManager = new ConcentrationDeltaManager(cellRegion.setUpConcentrationContainer());
     }
@@ -63,6 +67,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
     }
 
     public void initializeAdjacency() {
+        double defaultLength = Environment.convertSystemToSimulationScale(UnitRegistry.getSpace());
         for (Map.Entry<CellSubsection, Polygon> currentSubsectionEntry : subsectionRepresentations.entrySet()) {
             CellSubsection currentSubsection = currentSubsectionEntry.getKey();
             Polygon currentPolygon = currentSubsectionEntry.getValue();
@@ -81,21 +86,42 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
                         logger.warn("More than one line segment touch between node {} and {}. By contract neighbouring nodes should only touch once.", getStringIdentifier(), neighbour.getStringIdentifier());
                     }
                     Map.Entry<Pair<LineSegment>, LineSegment> entry = touchingLineSegments.entrySet().iterator().next();
-                    double currentSegmentLength = entry.getKey().getFirst().getLength();
-                    double overlapSegmentLength = entry.getKey().getSecond().getLength();
-                    double relativeArea;
-                    if (currentSegmentLength < overlapSegmentLength) {
-                        relativeArea = currentSegmentLength / overlapSegmentLength;
-                    } else {
-                        relativeArea = overlapSegmentLength / currentSegmentLength;
-                    }
+                    double relativeAdjacentArea = entry.getValue().getLength() / defaultLength;
+                    double relativeCentroidDistance = currentPolygon.getCentroid().distanceTo(neighborPolygon.getCentroid()) / defaultLength;
+                    double relativeEffectiveArea = relativeAdjacentArea / Math.sqrt(relativeCentroidDistance);
                     // TODO maybe add to neighbor map as well
-                    if (relativeArea > 0) {
+                    if (relativeEffectiveArea > 0) {
                         if (!subsectionAdjacency.containsKey(currentSubsection)) {
                             subsectionAdjacency.put(currentSubsection, new ArrayList<>());
                         }
-                        subsectionAdjacency.get(currentSubsection).add(new AreaMapping(neighbour, neighborSubsection, relativeArea));
+                        subsectionAdjacency.get(currentSubsection).add(new AreaMapping(neighbour, neighborSubsection, relativeEffectiveArea));
                     }
+                }
+            }
+        }
+        initializeConnectedMembrane();
+    }
+
+    private void initializeConnectedMembrane() {
+
+        UndirectedGraph nodeGraph = new UndirectedGraph();
+        for (MembraneSegment membraneSegment : membraneSegments) {
+            Vector2D startingPoint = membraneSegment.getStartingPoint();
+            RegularNode start = nodeGraph.addNodeIf(node -> node.getPosition().equals(startingPoint), new RegularNode(nodeGraph.nextNodeIdentifier(), startingPoint));
+            Vector2D endingPoint = membraneSegment.getEndingPoint();
+            RegularNode end = nodeGraph.addNodeIf(node -> node.getPosition().equals(endingPoint), new RegularNode(nodeGraph.nextNodeIdentifier(), endingPoint));
+            nodeGraph.addEdgeBetween(start, end);
+        }
+
+        Optional<RegularNode> pathStartOptional = nodeGraph.getNode(node -> node.getDegree() == 1);
+        if (pathStartOptional.isPresent()) {
+            RegularNode pathStart = pathStartOptional.get();
+            Optional<RegularNode> pathEndOptional = nodeGraph.getNode(node -> node.getDegree() == 1 && !node.getIdentifier().equals(pathStart.getIdentifier()));
+            if (pathEndOptional.isPresent()) {
+                RegularNode pathEnd = pathEndOptional.get();
+                GraphPath<RegularNode, UndirectedEdge> path = ShortestPathFinder.findBasedOnPredicate(nodeGraph, pathStart, node -> node.getIdentifier().equals(pathEnd.getIdentifier()));
+                for (RegularNode node : path.getNodes()) {
+                    membraneVectors.add(node.getPosition());
                 }
             }
         }
@@ -103,6 +129,10 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
 
     public Map<CellSubsection, List<AreaMapping>> getSubsectionAdjacency() {
         return subsectionAdjacency;
+    }
+
+    public List<Vector2D> getMembraneVectors() {
+        return membraneVectors;
     }
 
     public Map<CellSubsection, Polygon> getSubsectionRepresentations() {
