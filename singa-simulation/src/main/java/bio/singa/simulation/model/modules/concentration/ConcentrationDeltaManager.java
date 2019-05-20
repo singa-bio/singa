@@ -63,7 +63,7 @@ public class ConcentrationDeltaManager {
     /**
      * A flag signifying if this node has a fixed concentration.
      */
-    private boolean concentrationFixed;
+    private List<ChemicalEntity> fixedEntities;
 
     /**
      * Creates a new Concentration Delta Manager.
@@ -74,7 +74,7 @@ public class ConcentrationDeltaManager {
         finalDeltas = new ArrayList<>();
         potentialDeltas = Collections.synchronizedList(new ArrayList<>());
         observed = false;
-        concentrationFixed = false;
+        fixedEntities = new ArrayList<>();
         currentConcentrations = initialConcentrations;
     }
 
@@ -118,22 +118,8 @@ public class ConcentrationDeltaManager {
         this.observed = observed;
     }
 
-    /**
-     * Returns true if the concentration is fixed - no deltas are applied.
-     *
-     * @return true if the concentration is fixed - no deltas are applied.
-     */
-    public boolean isConcentrationFixed() {
-        return concentrationFixed;
-    }
-
-    /**
-     * Sets the concentration to be fixed - no deltas will be applied.
-     *
-     * @param concentrationFixed True if the concentration should be fixed.
-     */
-    public void setConcentrationFixed(boolean concentrationFixed) {
-        this.concentrationFixed = concentrationFixed;
+    public void fix(ChemicalEntity chemicalEntity) {
+        fixedEntities.add(chemicalEntity);
     }
 
     public boolean hasDeltas() {
@@ -303,6 +289,9 @@ public class ConcentrationDeltaManager {
         currentConcentrations = originalConcentrations;
         interimConcentrations = originalConcentrations;
         for (ConcentrationDelta delta : finalDeltas) {
+            if (fixedEntities.contains(delta.getChemicalEntity())) {
+                continue;
+            }
             // it may happen that concentrations are calculated as strut points that have no representations in the
             // original concentrations and therefore non existent entities would be removed
             double previousConcentration = currentConcentrations.get(delta.getCellSubsection(), delta.getChemicalEntity());

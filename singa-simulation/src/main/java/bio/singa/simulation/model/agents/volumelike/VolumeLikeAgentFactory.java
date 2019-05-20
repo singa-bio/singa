@@ -5,7 +5,6 @@ import bio.singa.mathematics.geometry.faces.ComplexPolygon;
 import bio.singa.mathematics.geometry.faces.VertexPolygon;
 import bio.singa.mathematics.topology.grids.rectangular.MooreRectangularDirection;
 import bio.singa.mathematics.vectors.Vector2D;
-import bio.singa.mathematics.vectors.Vectors;
 import bio.singa.simulation.model.agents.surfacelike.Membrane;
 import bio.singa.simulation.model.agents.surfacelike.MembraneSegment;
 import bio.singa.simulation.model.sections.CellRegions;
@@ -17,8 +16,6 @@ import javax.measure.quantity.Length;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @author cl
@@ -54,16 +51,12 @@ public class VolumeLikeAgentFactory {
         return new VolumeLikeAgent(volumePolygon, CellRegions.CELL_CORTEX);
     }
 
-    public static VolumeLikeAgent createCellCortex(Membrane cellMembrane, Quantity<Length> width, Quantity<Length> distance) {
+    public static VolumeLikeAgent createCellCortex(Membrane cellMembrane, Vector2D centroid, Quantity<Length> width, Quantity<Length> distance) {
         logger.info("Initializing cell cortex.");
         ArrayDeque<Vector2D> vertices = new ArrayDeque<>();
         Iterator<MembraneSegment> segmentIterator = cellMembrane.getSegments().iterator();
         double distanceSimulation = Environment.convertSystemToSimulationScale(distance);
         double widthSimulation = Environment.convertSystemToSimulationScale(width);
-        List<Vector2D> membranePoints = cellMembrane.getSegments().stream()
-                .map(MembraneSegment::getStartingPoint)
-                .collect(Collectors.toList());
-        Vector2D centroid = Vectors.getCentroid(membranePoints).as(Vector2D.class);
 
         while (segmentIterator.hasNext()) {
             MembraneSegment segment = segmentIterator.next();

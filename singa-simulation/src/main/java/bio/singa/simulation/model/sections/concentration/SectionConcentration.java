@@ -5,6 +5,7 @@ import bio.singa.features.model.Evidence;
 import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.simulation.model.sections.CellRegion;
 import bio.singa.simulation.model.sections.CellSubsection;
+import bio.singa.simulation.model.sections.CellTopology;
 import bio.singa.simulation.model.simulation.Updatable;
 
 import javax.measure.Quantity;
@@ -87,6 +88,17 @@ public class SectionConcentration implements InitialConcentration {
             }
         }
     }
+
+    @Override
+    public void initializeUnchecked(Updatable updatable, CellTopology topology) {
+        updatable.getConcentrationContainer().initialize(topology, entity, concentration);
+    }
+
+    @Override
+    public CellRegion getCellRegion() {
+        return region;
+    }
+
 
     @Override
     public String toString() {

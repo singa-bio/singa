@@ -3,13 +3,13 @@ package bio.singa.chemistry.features.diffusivity;
 import bio.singa.features.model.FeatureProvider;
 import bio.singa.features.model.Featureable;
 import bio.singa.structure.features.molarmass.MolarMass;
-import tec.units.indriya.quantity.Quantities;
+import tech.units.indriya.quantity.Quantities;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Dimensionless;
 
 import static bio.singa.structure.features.molarmass.MolarMass.GRAM_PER_MOLE;
-import static tec.units.indriya.AbstractUnit.ONE;
+import static tech.units.indriya.AbstractUnit.ONE;
 
 /**
  * @author cl

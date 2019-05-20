@@ -44,7 +44,7 @@ public class MicrotubuleOrganizingCentre {
         while (layer.hasGrowingFilaments()) {
             layer.nextEpoch();
         }
-
+        layer.purgeMisguidedFilaments();
     }
 
     public void initializeActin(LineLikeAgentLayer layer) {
@@ -68,7 +68,7 @@ public class MicrotubuleOrganizingCentre {
         while (layer.hasGrowingFilaments()) {
             layer.nextEpoch();
         }
-
+        layer.purgeMisguidedFilaments();
     }
 
     public Circle getCircleRepresentation() {

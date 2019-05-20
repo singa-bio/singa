@@ -1,11 +1,10 @@
 package bio.singa.features.quantities;
 
 import bio.singa.features.units.UnitRegistry;
-import tec.units.indriya.AbstractQuantity;
-import tec.units.indriya.AbstractConverter;
-import tec.units.indriya.ComparableQuantity;
-import tec.units.indriya.quantity.Quantities;
-import tec.units.indriya.unit.ProductUnit;
+import tech.units.indriya.AbstractQuantity;
+import tech.units.indriya.ComparableQuantity;
+import tech.units.indriya.quantity.Quantities;
+import tech.units.indriya.unit.ProductUnit;
 
 import javax.measure.Quantity;
 import javax.measure.Unit;
@@ -13,10 +12,10 @@ import javax.measure.quantity.AmountOfSubstance;
 import javax.measure.quantity.Dimensionless;
 import javax.measure.quantity.Volume;
 import java.math.BigDecimal;
-import java.math.MathContext;
 import java.util.Objects;
 
-import static tec.units.indriya.unit.Units.*;
+import static tech.units.indriya.unit.Units.CUBIC_METRE;
+import static tech.units.indriya.unit.Units.MOLE;
 
 /**
  * Molar concentration, also called molarity, amount concentration or substance
@@ -44,11 +43,7 @@ public class MolarConcentration extends AbstractQuantity<MolarConcentration> {
         return (super.getUnit().equals(unit)) ? value : super.getUnit().getConverterTo(unit).convert(value);
     }
 
-    @Override
-    public BigDecimal decimalValue(Unit<MolarConcentration> unit, MathContext ctx) throws ArithmeticException {
-        BigDecimal decimal = BigDecimal.valueOf(value);
-        return (super.getUnit().equals(unit)) ? decimal : ((AbstractConverter) super.getUnit().getConverterTo(unit)).convert(decimal, ctx);
-    }
+
 
     @Override
     public long longValue(Unit<MolarConcentration> unit) {
@@ -105,6 +100,11 @@ public class MolarConcentration extends AbstractQuantity<MolarConcentration> {
     @Override
     public boolean isBig() {
         return false;
+    }
+
+    @Override
+    public BigDecimal decimalValue(Unit<MolarConcentration> unit) throws ArithmeticException {
+        throw new IllegalArgumentException("Not implemented. We should not extend the abstract implementation of Quantity.");
     }
 
     @Override

@@ -15,7 +15,7 @@ import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.modules.concentration.ModuleState;
 import bio.singa.simulation.model.modules.qualitative.QualitativeModule;
 import bio.singa.simulation.model.sections.CellTopology;
-import tec.units.indriya.ComparableQuantity;
+import tech.units.indriya.ComparableQuantity;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Length;

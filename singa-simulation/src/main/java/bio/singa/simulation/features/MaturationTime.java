@@ -2,14 +2,14 @@ package bio.singa.simulation.features;
 
 import bio.singa.features.model.Evidence;
 import bio.singa.features.model.QuantitativeFeature;
-import tec.units.indriya.quantity.Quantities;
+import tech.units.indriya.quantity.Quantities;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Time;
 
 import java.util.List;
 
-import static tec.units.indriya.unit.Units.SECOND;
+import static tech.units.indriya.unit.Units.SECOND;
 
 /**
  * @author cl

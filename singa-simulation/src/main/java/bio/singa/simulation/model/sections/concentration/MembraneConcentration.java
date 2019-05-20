@@ -8,6 +8,7 @@ import bio.singa.simulation.model.agents.pointlike.Vesicle;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.sections.CellRegion;
 import bio.singa.simulation.model.sections.CellSubsection;
+import bio.singa.simulation.model.sections.CellTopology;
 import bio.singa.simulation.model.simulation.Updatable;
 
 import javax.measure.Quantity;
@@ -90,6 +91,11 @@ public class MembraneConcentration implements InitialConcentration {
         if (membraneSubsection == null) {
             return;
         }
+        initializeUnchecked(updatable, CellTopology.MEMBRANE);
+    }
+
+    @Override
+    public void initializeUnchecked(Updatable updatable, CellTopology topology) {
         // get representative area
         Quantity<Area> updatableArea;
         if (updatable instanceof Vesicle) {
@@ -105,7 +111,13 @@ public class MembraneConcentration implements InitialConcentration {
         } else {
             concentration = MolarConcentration.moleculesToConcentration(numberOfMolecules);
         }
-        updatable.getConcentrationContainer().initialize(membraneSubsection, entity, UnitRegistry.concentration(concentration));
+        // initialize
+        updatable.getConcentrationContainer().initialize(topology, entity, UnitRegistry.concentration(concentration));
+    }
+
+    @Override
+    public CellRegion getCellRegion() {
+        return region;
     }
 
     @Override

@@ -10,10 +10,10 @@ import bio.singa.simulation.model.sections.CellRegions;
 import bio.singa.simulation.model.sections.CellSubsections;
 import bio.singa.simulation.model.sections.concentration.ConcentrationInitializer;
 import org.junit.jupiter.api.Test;
-import tec.units.indriya.quantity.Quantities;
+import tech.units.indriya.quantity.Quantities;
 
 import static bio.singa.features.units.UnitProvider.MICRO_MOLE_PER_LITRE;
-import static tec.units.indriya.unit.Units.SECOND;
+import static tech.units.indriya.unit.Units.SECOND;
 
 /**
  * @author cl

@@ -20,16 +20,16 @@ import java.util.Map;
 /**
  * @author cl
  */
-public class TrajactoryDataPoint {
+public class TrajectoryDataPoint {
 
-    private Map<CellSubsection, SubsectionDatapoint> subsectionData;
+    private Map<CellSubsection, SubsectionDataPoint> subsectionData;
 
-    public TrajactoryDataPoint() {
+    public TrajectoryDataPoint() {
         subsectionData = new HashMap<>();
     }
 
-    public static TrajactoryDataPoint of(Updatable updatable, Unit<MolarConcentration> concentrationUnit) {
-        TrajactoryDataPoint data = new TrajactoryDataPoint();
+    public static TrajectoryDataPoint of(Updatable updatable, Unit<MolarConcentration> concentrationUnit) {
+        TrajectoryDataPoint data = new TrajectoryDataPoint();
         for (Map.Entry<CellSubsection, ConcentrationPool> subsectionEntry : updatable.getConcentrationContainer().getConcentrations().entrySet()) {
             // prepare inner map
             Map<ChemicalEntity, Double> concentrations = new HashMap<>();
@@ -57,30 +57,30 @@ public class TrajactoryDataPoint {
             }
 
             // add to outer map
-            data.subsectionData.put(currentSubsection, new SubsectionDatapoint(concentrations, positions));
+            data.subsectionData.put(currentSubsection, new SubsectionDataPoint(concentrations, positions));
         }
         return data;
     }
 
-    public void put(CellSubsection cellSection, SubsectionDatapoint datapoint) {
+    public void put(CellSubsection cellSection, SubsectionDataPoint datapoint) {
         subsectionData.put(cellSection, datapoint);
     }
 
-    public Map<CellSubsection, SubsectionDatapoint> getSubsectionData() {
+    public Map<CellSubsection, SubsectionDataPoint> getSubsectionData() {
         return subsectionData;
     }
 
-    public static class SubsectionDatapoint {
+    public static class SubsectionDataPoint {
 
         private Map<ChemicalEntity, Double> concentrations;
         private List<Vector2D> positions;
 
-        public SubsectionDatapoint(Map<ChemicalEntity, Double> concentrations, List<Vector2D> positions) {
+        public SubsectionDataPoint(Map<ChemicalEntity, Double> concentrations, List<Vector2D> positions) {
             this.concentrations = concentrations;
             this.positions = positions;
         }
 
-        public SubsectionDatapoint() {
+        public SubsectionDataPoint() {
             concentrations = new HashMap<>();
             positions = new ArrayList<>();
         }

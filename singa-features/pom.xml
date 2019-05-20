@@ -22,9 +22,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>tec.units</groupId>
+            <groupId>tech.units</groupId>
             <artifactId>indriya</artifactId>
-            <version>1.0</version>
+            <version>1.2</version>
         </dependency>
     </dependencies>
 

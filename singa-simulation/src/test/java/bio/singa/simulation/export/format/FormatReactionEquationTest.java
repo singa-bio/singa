@@ -12,8 +12,8 @@ import bio.singa.simulation.model.modules.concentration.imlementations.reactions
 import bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.reactants.Reactant;
 import bio.singa.simulation.model.simulation.Simulation;
 import org.junit.jupiter.api.Test;
-import tec.units.indriya.quantity.Quantities;
-import tec.units.indriya.unit.ProductUnit;
+import tech.units.indriya.quantity.Quantities;
+import tech.units.indriya.unit.ProductUnit;
 
 import static bio.singa.features.model.Evidence.SourceType.PREDICTION;
 import static bio.singa.features.units.UnitProvider.MICRO_MOLE_PER_LITRE;
@@ -22,9 +22,9 @@ import static bio.singa.simulation.model.modules.concentration.imlementations.re
 import static bio.singa.simulation.model.sections.CellTopology.MEMBRANE;
 import static bio.singa.simulation.model.sections.CellTopology.OUTER;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static tec.units.indriya.AbstractUnit.ONE;
-import static tec.units.indriya.unit.Units.MINUTE;
-import static tec.units.indriya.unit.Units.SECOND;
+import static tech.units.indriya.AbstractUnit.ONE;
+import static tech.units.indriya.unit.Units.MINUTE;
+import static tech.units.indriya.unit.Units.SECOND;
 
 /**
  * @author cl

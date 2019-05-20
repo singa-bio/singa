@@ -2,9 +2,9 @@ package bio.singa.features.units;
 
 import bio.singa.features.model.FeatureRegistry;
 import bio.singa.features.quantities.MolarConcentration;
-import tec.units.indriya.quantity.Quantities;
-import tec.units.indriya.unit.TransformedUnit;
-import tec.units.indriya.unit.Units;
+import tech.units.indriya.quantity.Quantities;
+import tech.units.indriya.unit.TransformedUnit;
+import tech.units.indriya.unit.Units;
 
 import javax.measure.Dimension;
 import javax.measure.Quantity;
@@ -14,11 +14,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
-import static tec.units.indriya.AbstractUnit.ONE;
-import static tec.units.indriya.quantity.QuantityDimension.*;
-import static tec.units.indriya.unit.MetricPrefix.MICRO;
-import static tec.units.indriya.unit.MetricPrefix.NANO;
-import static tec.units.indriya.unit.Units.*;
+import static tech.units.indriya.AbstractUnit.ONE;
+import static tech.units.indriya.quantity.QuantityDimension.*;
+import static tech.units.indriya.unit.MetricPrefix.MICRO;
+import static tech.units.indriya.unit.MetricPrefix.NANO;
+import static tech.units.indriya.unit.Units.*;
 
 /**
  * @author cl

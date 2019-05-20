@@ -232,7 +232,9 @@ public class ClathrinMediatedEndocytosis extends QualitativeModule {
      */
     private void initializeCargo(Vesicle vesicle, Pit maturedPit) {
         for (InitialConcentration initialConcentration : simulation.getConcentrationInitializer().getInitialConcentrations()) {
-            initialConcentration.initialize(vesicle);
+            if (initialConcentration.getCellRegion() != null && initialConcentration.getCellRegion().getIdentifier().equals("Vesicle (endocytosis)")) {
+                initialConcentration.initializeUnchecked(vesicle, MEMBRANE);
+            }
         }
         ChemicalEntity cargo = getFeature(Cargo.class).getContent();
         vesicle.getConcentrationContainer().initialize(MEMBRANE, cargo, UnitRegistry.concentration(maturedPit.getCargoConcentration()));
