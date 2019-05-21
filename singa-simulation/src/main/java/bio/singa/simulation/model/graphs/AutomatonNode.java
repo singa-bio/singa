@@ -86,6 +86,10 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
                         logger.warn("More than one line segment touch between node {} and {}. By contract neighbouring nodes should only touch once.", getStringIdentifier(), neighbour.getStringIdentifier());
                     }
                     Map.Entry<Pair<LineSegment>, LineSegment> entry = touchingLineSegments.entrySet().iterator().next();
+                    // skip point like segments
+                    if (entry.getValue().getLength() < 1e-8) {
+                        continue;
+                    }
                     double relativeAdjacentArea = entry.getValue().getLength() / defaultLength;
                     double relativeCentroidDistance = currentPolygon.getCentroid().distanceTo(neighborPolygon.getCentroid()) / defaultLength;
                     double relativeEffectiveArea = relativeAdjacentArea / Math.sqrt(relativeCentroidDistance);
