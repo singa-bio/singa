@@ -16,7 +16,7 @@ public class Membrane {
     private List<MembraneSegment> segments;
     private CellRegion innerRegion;
     private CellRegion membraneRegion;
-    private Map<CellRegion, Set<Vector2D>> regionMap;
+    private Map<CellRegion, List<Vector2D>> regionMap;
     private Vector2D innerPoint;
 
     public Membrane(String identifier) {
@@ -53,11 +53,11 @@ public class Membrane {
         this.membraneRegion = membraneRegion;
     }
 
-    public Map<CellRegion, Set<Vector2D>> getRegionMap() {
+    public Map<CellRegion, List<Vector2D>> getRegionMap() {
         return regionMap;
     }
 
-    public void setRegionMap(Map<CellRegion, Set<Vector2D>> regionMap) {
+    public void setRegionMap(Map<CellRegion, List<Vector2D>> regionMap) {
         this.regionMap = regionMap;
     }
 

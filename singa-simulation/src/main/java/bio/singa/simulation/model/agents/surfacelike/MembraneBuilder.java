@@ -7,10 +7,7 @@ import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.sections.CellRegion;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author cl
@@ -129,7 +126,7 @@ public class MembraneBuilder {
         public Membrane build() {
             // create uniform mapping if none was specified
             if (regionMap == null) {
-                regionMap = new HashMap<>();
+                regionMap = new LinkedHashMap<>();
                 for (Vector2D vector : vectors) {
                     regionMap.put(vector, membraneRegion);
                 }
@@ -167,7 +164,7 @@ public class MembraneBuilder {
         public Membrane build() {
             // create uniform mapping if none was specified
             if (regionMap == null) {
-                regionMap = new HashMap<>();
+                regionMap = new LinkedHashMap<>();
                 for (Vector2D vector : vectors) {
                     regionMap.put(vector, membraneRegion);
                 }

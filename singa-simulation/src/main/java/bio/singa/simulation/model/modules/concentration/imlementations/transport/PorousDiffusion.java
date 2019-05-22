@@ -113,7 +113,7 @@ public class PorousDiffusion extends ConcentrationBasedModule<UpdatableDeltaFunc
     }
 
     public static ModuleBuilder getBuilder(Simulation simulation) {
-        return new Diffusion.DiffusionBuilder(simulation);
+        return new PorousDiffusionBuilder(simulation);
     }
 
     public interface FeatureStep {

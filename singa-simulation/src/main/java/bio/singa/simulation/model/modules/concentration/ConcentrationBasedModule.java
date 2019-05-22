@@ -3,6 +3,7 @@ package bio.singa.simulation.model.modules.concentration;
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.features.model.Feature;
 import bio.singa.features.model.ScalableQuantitativeFeature;
+import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.simulation.exceptions.NumericalInstabilityException;
 import bio.singa.simulation.model.modules.UpdateModule;
@@ -419,10 +420,10 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
             double halfDelta = supplier.getCurrentHalfDeltas().get(identifier).getValue();
             // calculate error
             double localError = Math.abs(1 - (fullDelta / halfDelta));
-            // check for numerical instabilities
-            checkErrorStability(fullDelta, halfDelta, localError);
             // determine the largest error in the current deltas
             if (largestLocalError < localError) {
+                // check for numerical instabilities
+                checkErrorStability(fullDelta, halfDelta, localError);
                 largestIdentifier = identifier;
                 largestLocalError = localError;
                 associatedDelta = fullDelta;
@@ -444,7 +445,7 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
      * @param error The error.
      */
     private void checkErrorStability(double fullDelta, double halfDelta, double error) {
-        if (error > errorCutoff) {
+        if (error > errorCutoff && MolarConcentration.concentrationToMolecules(fullDelta).getValue().doubleValue() > simulation.getScheduler().getRecalculationCutoff()) {
             throw new NumericalInstabilityException("The module " + toString() + " experiences numerical instabilities. " +
                     "The local error between the full step delta (" + fullDelta + ") and half step delta (" + halfDelta +
                     ") is " + error + ". This can be an result of time steps that have been initially chosen too large" +

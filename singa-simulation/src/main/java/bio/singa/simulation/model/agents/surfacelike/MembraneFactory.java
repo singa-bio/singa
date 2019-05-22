@@ -80,11 +80,11 @@ public class MembraneFactory {
         membrane.setInnerPoint(innerPoint);
     }
 
-    private Map<CellRegion, Set<Vector2D>> reconstructRegionMap() {
-        Map<CellRegion, Set<Vector2D>> regionMap = new HashMap<>();
+    private Map<CellRegion, List<Vector2D>> reconstructRegionMap() {
+        Map<CellRegion, List<Vector2D>> regionMap = new HashMap<>();
         for (Map.Entry<Vector2D, CellRegion> entry : regions.entrySet()) {
             if (!regionMap.containsKey(entry.getValue())) {
-                regionMap.put(entry.getValue(), new HashSet<>());
+                regionMap.put(entry.getValue(), new ArrayList<>());
             }
             regionMap.get(entry.getValue()).add(entry.getKey());
         }
