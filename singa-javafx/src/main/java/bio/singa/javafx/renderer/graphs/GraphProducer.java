@@ -5,6 +5,8 @@ import bio.singa.mathematics.graphs.model.Graph;
 import bio.singa.mathematics.graphs.model.Node;
 import bio.singa.mathematics.vectors.Vector2D;
 
+import java.util.Collection;
+
 /**
  * @author cl
  */
@@ -14,6 +16,7 @@ public class GraphProducer<NodeType extends Node<NodeType, Vector2D, IdentifierT
     private final GraphRenderer<NodeType, EdgeType, IdentifierType, GraphType> renderer;
     private final GraphType graph;
     private final int totalIterations;
+    private Collection<IdentifierType> fixedIdentifiers;
 
     public GraphProducer(GraphRenderer<NodeType, EdgeType, IdentifierType, GraphType> renderer, GraphType graph, int totalIterations) {
         this.renderer = renderer;
@@ -21,10 +24,19 @@ public class GraphProducer<NodeType extends Node<NodeType, Vector2D, IdentifierT
         this.totalIterations = totalIterations;
     }
 
+    public Collection<IdentifierType> getFixedIdentifiers() {
+        return fixedIdentifiers;
+    }
+
+    public void setFixedIdentifiers(Collection<IdentifierType> fixedIdentifiers) {
+        this.fixedIdentifiers = fixedIdentifiers;
+    }
+
     @Override
     public void run() {
         ForceDirectedGraphLayout<NodeType, EdgeType, IdentifierType, GraphType> gdt = new ForceDirectedGraphLayout<>(graph,
                 renderer.drawingWidthProperty(), renderer.drawingHeightProperty(), 100);
+        gdt.fixNodes(fixedIdentifiers);
         for (int i = 0; i < totalIterations; i++) {
             renderer.getGraphQueue().add(gdt.arrangeGraph(i));
             try {

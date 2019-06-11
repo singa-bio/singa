@@ -7,6 +7,7 @@ import bio.singa.mathematics.graphs.model.Node;
 import bio.singa.mathematics.vectors.Vector2D;
 import javafx.beans.property.DoubleProperty;
 
+import java.util.Collection;
 import java.util.HashMap;
 
 /**
@@ -19,8 +20,21 @@ import java.util.HashMap;
  * @author cl
  */
 public class ForceDirectedGraphLayout<NodeType extends Node<NodeType, Vector2D, IdentifierType>, EdgeType extends Edge<NodeType>,
-        IdentifierType, GraphType extends Graph<NodeType, EdgeType, IdentifierType>> {
+        IdentifierType, GraphType extends Graph<NodeType, EdgeType, IdentifierType>> implements LayoutRenderer<NodeType, EdgeType, IdentifierType, GraphType> {
 
+
+    private int iteration;
+
+    private final int totalIterations;
+    private final DoubleProperty drawingWidth;
+    private final DoubleProperty drawingHeight;
+    private final Force<NodeType> repulsiveForce;
+    private final Force<NodeType> attractiveForce;
+    private final Force<NodeType> boundaryForce;
+
+    private final GraphType graph;
+    private Collection<IdentifierType> fixedNodes;
+    private final HashMap<NodeType, Vector2D> velocities;
 
     public Force<NodeType> attractiveForce(double forceConstant) {
         return (v1, v2) -> {
@@ -43,16 +57,6 @@ public class ForceDirectedGraphLayout<NodeType extends Node<NodeType, Vector2D, 
             return distance.normalize().multiply((forceConstant * forceConstant) / magnitude);
         };
     }
-
-    private final int totalIterations;
-    private final DoubleProperty drawingWidth;
-    private final DoubleProperty drawingHeight;
-    private final Force<NodeType> repulsiveForce;
-    private final Force<NodeType> attractiveForce;
-    private final Force<NodeType> boundaryForce;
-
-    private final GraphType graph;
-    private final HashMap<NodeType, Vector2D> velocities;
 
     /**
      * Creates a new GraphDrawingTool.
@@ -80,6 +84,16 @@ public class ForceDirectedGraphLayout<NodeType extends Node<NodeType, Vector2D, 
         for (NodeType n : graph.getNodes()) {
             velocities.put(n, new Vector2D(0.0, 0.0));
         }
+    }
+
+    public void fixNodes(Collection<IdentifierType> identifiers) {
+        fixedNodes = identifiers;
+    }
+
+    @Override
+    public GraphType optimizeLayout() {
+        iteration++;
+        return arrangeGraph(iteration);
     }
 
     /**
@@ -174,6 +188,10 @@ public class ForceDirectedGraphLayout<NodeType extends Node<NodeType, Vector2D, 
 
         // placement depending on current velocity
         for (NodeType node : graph.getNodes()) {
+
+            if (fixedNodes.contains(node.getIdentifier())) {
+                continue;
+            }
 
             Vector2D currentLocation = node.getPosition();
             Vector2D currentVelocity = velocities.get(node);

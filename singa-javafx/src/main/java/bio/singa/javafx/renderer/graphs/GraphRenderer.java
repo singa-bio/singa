@@ -39,10 +39,15 @@ public class GraphRenderer<NodeType extends Node<NodeType, Vector2D, IdentifierT
     private final DoubleProperty drawingHeight;
     private StringProperty renderingMode;
 
+
     public GraphRenderer() {
         drawingWidth = new SimpleDoubleProperty();
         drawingHeight = new SimpleDoubleProperty();
         renderingMode = new SimpleStringProperty(FORCE_DIRECTED.name());
+    }
+
+    public void optimizeLayout(LayoutRenderer<NodeType, EdgeType, IdentifierType, GraphType> renderer) {
+        render(renderer.optimizeLayout());
     }
 
     public void arrangeGraph(GraphType graph) {
