@@ -19,7 +19,7 @@ import java.util.HashMap;
  * @author cl
  */
 public class ForceDirectedGraphLayout<NodeType extends Node<NodeType, Vector2D, IdentifierType>, EdgeType extends Edge<NodeType>,
-        IdentifierType, GraphType extends Graph<NodeType, EdgeType, IdentifierType>> {
+        IdentifierType, GraphType extends Graph<NodeType, EdgeType, IdentifierType>> implements LayoutRenderer<NodeType, EdgeType, IdentifierType, GraphType> {
 
 
     public Force<NodeType> attractiveForce(double forceConstant) {
@@ -43,6 +43,8 @@ public class ForceDirectedGraphLayout<NodeType extends Node<NodeType, Vector2D, 
             return distance.normalize().multiply((forceConstant * forceConstant) / magnitude);
         };
     }
+
+    private int iteration;
 
     private final int totalIterations;
     private final DoubleProperty drawingWidth;
@@ -80,6 +82,12 @@ public class ForceDirectedGraphLayout<NodeType extends Node<NodeType, Vector2D, 
         for (NodeType n : graph.getNodes()) {
             velocities.put(n, new Vector2D(0.0, 0.0));
         }
+    }
+
+    @Override
+    public GraphType optimizeLayout() {
+        iteration++;
+        return arrangeGraph(iteration);
     }
 
     /**
