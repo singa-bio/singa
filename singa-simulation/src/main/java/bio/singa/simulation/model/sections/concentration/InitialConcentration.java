@@ -23,8 +23,6 @@ public interface InitialConcentration  {
 
     CellRegion getCellRegion();
 
-
-
     Evidence getEvidence();
 
 }

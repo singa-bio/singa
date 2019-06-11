@@ -9,8 +9,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.measure.Quantity;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author cl
@@ -19,21 +19,21 @@ public class ConcentrationInitializer {
 
     private static final Logger logger = LoggerFactory.getLogger(ConcentrationInitializer.class);
 
-    private Set<InitialConcentration> initialConcentrations;
+    private List<InitialConcentration> initialConcentrations;
 
     public ConcentrationInitializer() {
-        initialConcentrations = new HashSet<>();
+        initialConcentrations = new ArrayList<>();
     }
 
-    public ConcentrationInitializer(Set<InitialConcentration> initialConcentrations) {
+    public ConcentrationInitializer(List<InitialConcentration> initialConcentrations) {
         this.initialConcentrations = initialConcentrations;
     }
 
-    public Set<InitialConcentration> getInitialConcentrations() {
+    public List<InitialConcentration> getInitialConcentrations() {
         return initialConcentrations;
     }
 
-    public void setInitialConcentrations(Set<InitialConcentration> initialConcentrations) {
+    public void setInitialConcentrations(List<InitialConcentration> initialConcentrations) {
         this.initialConcentrations = initialConcentrations;
     }
 

@@ -1,6 +1,7 @@
 package bio.singa.simulation.model.sections;
 
 import bio.singa.features.identifiers.GoTerm;
+import bio.singa.mathematics.geometry.model.Polygon;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -35,6 +36,7 @@ public class CellRegion {
     private String identifier;
     private GoTerm goTerm;
     private Map<CellTopology, CellSubsection> cellSubSections;
+    private Polygon areaRepresentation;
 
     public CellRegion(String identifier) {
         this.identifier = identifier;
@@ -56,6 +58,14 @@ public class CellRegion {
 
     public void addSubsection(CellTopology topology, CellSubsection subsection) {
         cellSubSections.put(topology, subsection);
+    }
+
+    public Polygon getAreaRepresentation() {
+        return areaRepresentation;
+    }
+
+    public void setAreaRepresentation(Polygon areaRepresentation) {
+        this.areaRepresentation = areaRepresentation;
     }
 
     public Collection<CellSubsection> getSubsections() {

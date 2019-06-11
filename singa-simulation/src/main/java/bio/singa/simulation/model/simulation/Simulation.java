@@ -8,11 +8,13 @@ import bio.singa.features.model.Feature;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.geometry.faces.Rectangle;
+import bio.singa.mathematics.geometry.model.Polygon;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.simulation.model.agents.linelike.LineLikeAgentLayer;
 import bio.singa.simulation.model.agents.pointlike.VesicleLayer;
 import bio.singa.simulation.model.agents.surfacelike.MembraneLayer;
 import bio.singa.simulation.model.agents.volumelike.VolumeLayer;
+import bio.singa.simulation.model.agents.volumelike.VolumeLikeAgent;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.modules.UpdateModule;
@@ -21,6 +23,7 @@ import bio.singa.simulation.model.modules.concentration.NumericalError;
 import bio.singa.simulation.model.modules.displacement.DisplacementBasedModule;
 import bio.singa.simulation.model.rules.AssignmentRule;
 import bio.singa.simulation.model.rules.AssignmentRules;
+import bio.singa.simulation.model.sections.CellRegions;
 import bio.singa.simulation.model.sections.concentration.ConcentrationInitializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -269,10 +272,23 @@ public class Simulation {
     }
 
     private void initializeSubsectionAdjacency() {
+        Polygon cortexArea = null;
+        if (getVolumeLayer() != null) {
+            for (VolumeLikeAgent agent : getVolumeLayer().getAgents()) {
+                if (agent.getCellRegion().equals(CellRegions.CELL_CORTEX)) {
+                    cortexArea = agent.getArea();
+                    break;
+                }
+            }
+        }
         for (AutomatonNode node : graph.getNodes()) {
             node.initializeAdjacency();
+            if (cortexArea != null) {
+                node.initializeDiffusiveReduction(cortexArea);
+            }
         }
     }
+
 
     public VesicleLayer getVesicleLayer() {
         return vesicleLayer;

@@ -3,12 +3,16 @@ package bio.singa.simulation.model.sections.concentration;
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.features.model.Evidence;
 import bio.singa.features.quantities.MolarConcentration;
+import bio.singa.mathematics.geometry.model.Polygon;
+import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.sections.CellRegion;
+import bio.singa.simulation.model.sections.CellRegions;
 import bio.singa.simulation.model.sections.CellSubsection;
 import bio.singa.simulation.model.sections.CellTopology;
 import bio.singa.simulation.model.simulation.Updatable;
 
 import javax.measure.Quantity;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -82,6 +86,19 @@ public class SectionConcentration implements InitialConcentration {
 
     @Override
     public void initialize(Updatable updatable) {
+        // special treatment for cell cortex areas
+        if (region != null && region.equals(CellRegions.CELL_CORTEX)) {
+            if (updatable instanceof AutomatonNode) {
+                AutomatonNode node = (AutomatonNode) updatable;
+                for (Map.Entry<CellSubsection, Polygon> entry : node.getSubsectionRepresentations().entrySet()) {
+                    if (entry.getKey().equals(subsection)) {
+                        if (entry.getValue().getCentroid().isInside(region.getAreaRepresentation())) {
+                            updatable.getConcentrationContainer().initialize(subsection, entity, concentration);
+                        }
+                    }
+                }
+            }
+        }
         if (region == null || updatable.getCellRegion().equals(region)) {
             if (updatable.getCellRegion().getSubsections().contains(subsection)) {
                 updatable.getConcentrationContainer().initialize(subsection, entity, concentration);

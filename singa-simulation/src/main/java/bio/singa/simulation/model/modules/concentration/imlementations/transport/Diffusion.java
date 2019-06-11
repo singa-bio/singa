@@ -83,7 +83,7 @@ public class Diffusion extends ConcentrationBasedModule<EntityDeltaFunction> {
         List<AutomatonNode.AreaMapping> areaMappings = node.getSubsectionAdjacency().get(subsection);
         double delta = 0.0;
         for (AutomatonNode.AreaMapping mapping : areaMappings) {
-            delta += diffusivity * mapping.getRelativeArea() * (mapping.getNode().getConcentrationContainer().get(mapping.getSubsection(), entity) - currentConcentration);
+            delta += diffusivity * mapping.getRelativeArea() * mapping.getDiffusiveRatio() * (mapping.getNode().getConcentrationContainer().get(mapping.getSubsection(), entity) - currentConcentration);
         }
         // return delta
         return new ConcentrationDelta(this, subsection, entity, delta);

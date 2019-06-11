@@ -6,6 +6,7 @@ import bio.singa.features.parameters.Environment;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.algorithms.graphs.ShortestPathFinder;
 import bio.singa.mathematics.geometry.edges.LineSegment;
+import bio.singa.mathematics.geometry.edges.SimpleLineSegment;
 import bio.singa.mathematics.geometry.faces.Polygons;
 import bio.singa.mathematics.geometry.model.Polygon;
 import bio.singa.mathematics.graphs.model.*;
@@ -93,6 +94,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
                     double relativeAdjacentArea = entry.getValue().getLength() / defaultLength;
                     double relativeCentroidDistance = currentPolygon.getCentroid().distanceTo(neighborPolygon.getCentroid()) / defaultLength;
                     double relativeEffectiveArea = relativeAdjacentArea / Math.sqrt(relativeCentroidDistance);
+
                     // TODO maybe add to neighbor map as well
                     if (relativeEffectiveArea > 0) {
                         if (!subsectionAdjacency.containsKey(currentSubsection)) {
@@ -100,10 +102,63 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
                         }
                         subsectionAdjacency.get(currentSubsection).add(new AreaMapping(neighbour, neighborSubsection, relativeEffectiveArea));
                     }
+
                 }
             }
         }
         initializeConnectedMembrane();
+    }
+
+    public void initializeDiffusiveReduction(Polygon area) {
+        for (Map.Entry<CellSubsection, Polygon> currentSubsectionEntry : subsectionRepresentations.entrySet()) {
+            CellSubsection currentSubsection = currentSubsectionEntry.getKey();
+            Polygon currentPolygon = currentSubsectionEntry.getValue();
+            Vector2D currentCentroid = currentPolygon.getCentroid();
+            boolean currentIsInArea = currentCentroid.isInside(area);
+            for (AutomatonNode neighbour : getNeighbours()) {
+                Map<CellSubsection, Polygon> neighborSubsections = neighbour.getSubsectionRepresentations();
+                for (Map.Entry<CellSubsection, Polygon> neighborSubsectionEntry : neighborSubsections.entrySet()) {
+                    CellSubsection neighborSubsection = neighborSubsectionEntry.getKey();
+                    Polygon neighborPolygon = neighborSubsectionEntry.getValue();
+                    Vector2D neighborCentroid = neighborPolygon.getCentroid();
+                    boolean neighborIsInArea = neighborCentroid.isInside(area);
+                    AreaMapping mapping = getCorrectMapping(subsectionAdjacency.get(currentSubsection), neighbour, neighborSubsection);
+                    // skip non adjacent subsections
+                    if (mapping == null) {
+                        continue;
+                    }
+                    double cortexRatio = 0.1;
+                    if (currentIsInArea && neighborIsInArea) {
+                        mapping.setDiffusiveRatio(cortexRatio);
+                    } else if (currentIsInArea || neighborIsInArea) {
+                        // determine area that is affected
+                        Set<Vector2D> intersections = area.getIntersections(new SimpleLineSegment(currentCentroid, neighborCentroid));
+                        if (intersections.size() == 1) {
+                            Vector2D intersection = intersections.iterator().next();
+                            double totalDistance = currentCentroid.distanceTo(neighborCentroid);
+                            double distanceToCurrent = intersection.distanceTo(currentCentroid) / totalDistance;
+                            double distanceToNeighbor = intersection.distanceTo(neighborCentroid) / totalDistance;
+                            double diffusiveRatio;
+                            if (currentIsInArea) {
+                                diffusiveRatio = distanceToCurrent * cortexRatio + distanceToNeighbor;
+                            } else {
+                                diffusiveRatio = distanceToNeighbor * cortexRatio + distanceToCurrent;
+                            }
+                            mapping.setDiffusiveRatio(diffusiveRatio);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private AreaMapping getCorrectMapping(List<AreaMapping> mappings, AutomatonNode node, CellSubsection subsection) {
+        for (AutomatonNode.AreaMapping mapping : mappings) {
+            if (mapping.getNode().equals(node) && mapping.getSubsection().equals(subsection)) {
+                return mapping;
+            }
+        }
+        return null;
     }
 
     private void initializeConnectedMembrane() {
@@ -279,11 +334,13 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
         private final AutomatonNode node;
         private final CellSubsection subsection;
         private final double relativeArea;
+        private double diffusiveRatio;
 
         public AreaMapping(AutomatonNode node, CellSubsection subsection, double relativeArea) {
             this.node = node;
             this.subsection = subsection;
             this.relativeArea = relativeArea;
+            diffusiveRatio = 1.0;
         }
 
         public AutomatonNode getNode() {
@@ -296,6 +353,14 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
 
         public double getRelativeArea() {
             return relativeArea;
+        }
+
+        public double getDiffusiveRatio() {
+            return diffusiveRatio;
+        }
+
+        public void setDiffusiveRatio(double diffusiveRatio) {
+            this.diffusiveRatio = diffusiveRatio;
         }
 
         @Override

@@ -63,6 +63,7 @@ class DiffusionTest {
     @BeforeAll
     static void initialize() {
         UnitRegistry.reinitialize();
+        Environment.reset();
         Environment.setSimulationExtend(2500);
         Environment.setSystemExtend(systemDiameter);
     }
@@ -76,11 +77,14 @@ class DiffusionTest {
     @Test
     @DisplayName("diffusion of hydrogen with 10 nodes")
     void shouldReachCorrectHalfLife1() {
+        UnitRegistry.reinitialize();
+        Environment.reset();
         // setup and run simulation
         Simulation simulation = setUpSimulation(10, hydrogen);
         Quantity<Time> actualHalfLifeTime = runSimulation(simulation, 10, hydrogen);
         // test results
         assertEquals(Quantities.getQuantity(135, MICRO(SECOND)).getValue().doubleValue(), actualHalfLifeTime.getValue().doubleValue(), 1);
+        UnitRegistry.reinitialize();
         Environment.reset();
     }
 
