@@ -12,11 +12,12 @@ import java.util.Collection;
 
 public class LayoutBuilder {
 
-    public static GraphStep forceDirected() {
-        return new ForceDirectedLayoutBuilder();
+    public static <NodeType extends Node<NodeType, Vector2D, IdentifierType>, EdgeType extends Edge<NodeType>,
+            IdentifierType, GraphType extends Graph<NodeType, EdgeType, IdentifierType>> ForceStep<NodeType, EdgeType, IdentifierType, GraphType> forceDirected(GraphType graph) {
+        return new ForceDirectedLayoutBuilder<>(graph);
     }
 
-    public interface GraphStep <NodeType extends Node<NodeType, Vector2D, IdentifierType>, EdgeType extends Edge<NodeType>,
+    public interface GraphStep<NodeType extends Node<NodeType, Vector2D, IdentifierType>, EdgeType extends Edge<NodeType>,
             IdentifierType, GraphType extends Graph<NodeType, EdgeType, IdentifierType>> {
 
         ForceStep<NodeType, EdgeType, IdentifierType, GraphType> graph(GraphType graph);
@@ -49,7 +50,7 @@ public class LayoutBuilder {
 
 
     public static class ForceDirectedLayoutBuilder<NodeType extends Node<NodeType, Vector2D, IdentifierType>, EdgeType extends Edge<NodeType>,
-            IdentifierType, GraphType extends Graph<NodeType, EdgeType, IdentifierType>> implements GraphStep<NodeType, EdgeType, IdentifierType, GraphType>, ForceStep<NodeType, EdgeType, IdentifierType, GraphType>, OptionsStep<NodeType, EdgeType, IdentifierType, GraphType> {
+            IdentifierType, GraphType extends Graph<NodeType, EdgeType, IdentifierType>> implements ForceStep<NodeType, EdgeType, IdentifierType, GraphType>, OptionsStep<NodeType, EdgeType, IdentifierType, GraphType> {
 
         private GraphType graph;
         private boolean defaultForces;
@@ -61,10 +62,8 @@ public class LayoutBuilder {
         private DoubleProperty canvasWidth;
         private DoubleProperty canvasHeight;
 
-        @Override
-        public ForceStep<NodeType, EdgeType, IdentifierType, GraphType> graph(GraphType graph) {
+        public ForceDirectedLayoutBuilder(GraphType graph) {
             this.graph = graph;
-            return this;
         }
 
         @Override
@@ -109,10 +108,9 @@ public class LayoutBuilder {
                 canvasHeight = new SimpleDoubleProperty(500);
             }
             if (canvasWidth == null) {
-                canvasHeight = new SimpleDoubleProperty(500);
+                canvasWidth = new SimpleDoubleProperty(500);
             }
-            ForceDirectedGraphLayout<NodeType, EdgeType, IdentifierType, GraphType> layout = new ForceDirectedGraphLayout<>(graph, canvasHeight, canvasWidth, 100);
-            return layout;
+            return new ForceDirectedGraphLayout<>(graph, canvasWidth, canvasHeight, 100);
         }
     }
 
