@@ -10,6 +10,7 @@ import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.geometry.faces.Rectangle;
 import bio.singa.mathematics.geometry.model.Polygon;
 import bio.singa.mathematics.vectors.Vector2D;
+import bio.singa.simulation.features.Ratio;
 import bio.singa.simulation.model.agents.linelike.LineLikeAgentLayer;
 import bio.singa.simulation.model.agents.pointlike.VesicleLayer;
 import bio.singa.simulation.model.agents.surfacelike.MembraneLayer;
@@ -20,6 +21,7 @@ import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.modules.UpdateModule;
 import bio.singa.simulation.model.modules.concentration.ConcentrationDelta;
 import bio.singa.simulation.model.modules.concentration.NumericalError;
+import bio.singa.simulation.model.modules.concentration.imlementations.transport.Diffusion;
 import bio.singa.simulation.model.modules.displacement.DisplacementBasedModule;
 import bio.singa.simulation.model.rules.AssignmentRule;
 import bio.singa.simulation.model.rules.AssignmentRules;
@@ -284,7 +286,14 @@ public class Simulation {
         for (AutomatonNode node : graph.getNodes()) {
             node.initializeAdjacency();
             if (cortexArea != null) {
-                node.initializeDiffusiveReduction(cortexArea);
+                Optional<Diffusion> optionalModule = getModules().stream()
+                        .filter(Diffusion.class::isInstance)
+                        .map(Diffusion.class::cast)
+                        .findAny();
+                if (optionalModule.isPresent()) {
+                    Ratio ratio = optionalModule.get().getFeature(Ratio.class);
+                    node.initializeDiffusiveReduction(cortexArea, ratio);
+                }
             }
         }
     }

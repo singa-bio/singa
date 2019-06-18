@@ -64,7 +64,6 @@ class ConcentrationStateChangeTest {
         // setup snares for fusion
         Protein aqp2 = Protein.create("AQP2").build();
         ChemicalEntity p = SmallMolecule.create("P").build();
-
         ComplexEntity aqp2p = ComplexEntity.from(aqp2, p);
 
         DynamicChemicalEntity allAqp2 = DynamicChemicalEntity.create("AQP2*")

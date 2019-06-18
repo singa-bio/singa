@@ -283,6 +283,10 @@ public class MembraneFactory {
             do {
                 // determine next on path
                 List<RegularNode> neighbours = currentNode.getNeighbours();
+                if (neighbours.contains(targetNode)) {
+                    circleNodes.add(targetNode);
+                    break;
+                }
                 RegularNode closestNeighbour = null;
                 double closestNeighbourDistance = Double.MAX_VALUE;
                 for (RegularNode neighbour : neighbours) {
@@ -309,6 +313,10 @@ public class MembraneFactory {
             do {
                 // determine next on path
                 List<RegularNode> neighbours = currentNode.getNeighbours();
+                if (neighbours.contains(targetNode)) {
+                    circleNodes.add(targetNode);
+                    break;
+                }
                 RegularNode farthestNeighbour = null;
                 double farthestNeighbourDistance = -Double.MAX_VALUE;
                 for (RegularNode neighbour : neighbours) {

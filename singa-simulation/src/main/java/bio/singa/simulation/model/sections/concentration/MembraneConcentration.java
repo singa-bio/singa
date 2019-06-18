@@ -115,7 +115,6 @@ public class MembraneConcentration implements InitialConcentration {
         updatable.getConcentrationContainer().initialize(topology, entity, UnitRegistry.concentration(concentration));
     }
 
-    @Override
     public CellRegion getCellRegion() {
         return region;
     }

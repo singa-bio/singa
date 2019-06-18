@@ -12,6 +12,7 @@ import bio.singa.mathematics.geometry.model.Polygon;
 import bio.singa.mathematics.graphs.model.*;
 import bio.singa.mathematics.topology.grids.rectangular.RectangularCoordinate;
 import bio.singa.mathematics.vectors.Vector2D;
+import bio.singa.simulation.features.Ratio;
 import bio.singa.simulation.model.agents.linelike.LineLikeAgent;
 import bio.singa.simulation.model.agents.surfacelike.MembraneSegment;
 import bio.singa.simulation.model.modules.concentration.ConcentrationDelta;
@@ -109,7 +110,8 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
         initializeConnectedMembrane();
     }
 
-    public void initializeDiffusiveReduction(Polygon area) {
+    public void initializeDiffusiveReduction(Polygon area, Ratio reductionRatio) {
+        double cortexRatio = reductionRatio.getContent().getValue().doubleValue();
         for (Map.Entry<CellSubsection, Polygon> currentSubsectionEntry : subsectionRepresentations.entrySet()) {
             CellSubsection currentSubsection = currentSubsectionEntry.getKey();
             Polygon currentPolygon = currentSubsectionEntry.getValue();
@@ -127,7 +129,6 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
                     if (mapping == null) {
                         continue;
                     }
-                    double cortexRatio = 0.1;
                     if (currentIsInArea && neighborIsInArea) {
                         mapping.setDiffusiveRatio(cortexRatio);
                     } else if (currentIsInArea || neighborIsInArea) {

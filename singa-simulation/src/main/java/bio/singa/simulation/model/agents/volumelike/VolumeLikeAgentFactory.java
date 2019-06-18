@@ -1,6 +1,7 @@
 package bio.singa.simulation.model.agents.volumelike;
 
 import bio.singa.features.parameters.Environment;
+import bio.singa.mathematics.geometry.edges.LineSegment;
 import bio.singa.mathematics.geometry.faces.ComplexPolygon;
 import bio.singa.mathematics.geometry.faces.VertexPolygon;
 import bio.singa.mathematics.topology.grids.rectangular.MooreRectangularDirection;
@@ -16,6 +17,8 @@ import javax.measure.quantity.Length;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author cl
@@ -47,6 +50,18 @@ public class VolumeLikeAgentFactory {
                 vertices.addLast(farEndPoint);
             }
         }
+        VertexPolygon volumePolygon = new VertexPolygon(vertices, false);
+        return new VolumeLikeAgent(volumePolygon, CellRegions.CELL_CORTEX);
+    }
+
+    public static VolumeLikeAgent createCellCortex(Membrane cellMembrane, MooreRectangularDirection innerDirection, LineSegment borderSegment) {
+        logger.info("Initializing cell cortex.");
+        List<Vector2D> vertices = new ArrayList<>(cellMembrane.getRegionMap().values().stream()
+                .flatMap(List::stream)
+                .collect(Collectors.toList()));
+        vertices.add(borderSegment.getStartingPoint());
+        vertices.add(borderSegment.getEndingPoint());
+
         VertexPolygon volumePolygon = new VertexPolygon(vertices, false);
         return new VolumeLikeAgent(volumePolygon, CellRegions.CELL_CORTEX);
     }

@@ -14,6 +14,7 @@ import bio.singa.simulation.model.modules.concentration.ModuleState;
 import bio.singa.simulation.model.modules.qualitative.QualitativeModule;
 import bio.singa.simulation.model.sections.CellRegion;
 import bio.singa.simulation.model.sections.concentration.InitialConcentration;
+import bio.singa.simulation.model.sections.concentration.SectionConcentration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -232,8 +233,11 @@ public class ClathrinMediatedEndocytosis extends QualitativeModule {
      */
     private void initializeCargo(Vesicle vesicle, Pit maturedPit) {
         for (InitialConcentration initialConcentration : simulation.getConcentrationInitializer().getInitialConcentrations()) {
-            if (initialConcentration.getCellRegion() != null && initialConcentration.getCellRegion().getIdentifier().equals("Vesicle (endocytosis)")) {
-                initialConcentration.initializeUnchecked(vesicle, MEMBRANE);
+            if (initialConcentration instanceof SectionConcentration) {
+                SectionConcentration sectionConcentration = (SectionConcentration) initialConcentration;
+                if (sectionConcentration.getCellRegion() != null && sectionConcentration.getCellRegion().getIdentifier().equals("Vesicle (endocytosis)")) {
+                    initialConcentration.initializeUnchecked(vesicle, MEMBRANE);
+                }
             }
         }
         ChemicalEntity cargo = getFeature(Cargo.class).getContent();

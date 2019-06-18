@@ -6,6 +6,7 @@ import bio.singa.features.model.Evidence;
 import bio.singa.features.model.Feature;
 import bio.singa.features.model.FeatureProvider;
 import bio.singa.simulation.features.Cargoes;
+import bio.singa.simulation.features.Ratio;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.modules.concentration.ConcentrationBasedModule;
 import bio.singa.simulation.model.modules.concentration.ConcentrationDelta;
@@ -69,6 +70,7 @@ public class Diffusion extends ConcentrationBasedModule<EntityDeltaFunction> {
         addDeltaFunction(function);
         // feature
         getRequiredFeatures().add(Diffusivity.class);
+        getRequiredFeatures().add(Ratio.class);
         List<ChemicalEntity> cargoes = getFeature(Cargoes.class).getContent();
         addReferencedEntities(cargoes);
     }

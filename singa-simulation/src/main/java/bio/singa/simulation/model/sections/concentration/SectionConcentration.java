@@ -111,15 +111,13 @@ public class SectionConcentration implements InitialConcentration {
         updatable.getConcentrationContainer().initialize(topology, entity, concentration);
     }
 
-    @Override
     public CellRegion getCellRegion() {
         return region;
     }
 
-
     @Override
     public String toString() {
-        return "Concentration:" + (region == null ? " " : " R = " + region.getIdentifier()) +
+        return "Concentration:" + (region == null ? "" : " R = " + region.getIdentifier()) +
                 " S = " + subsection.getIdentifier() +
                 " E = " + entity.getIdentifier() +
                 " C = " + concentration;
