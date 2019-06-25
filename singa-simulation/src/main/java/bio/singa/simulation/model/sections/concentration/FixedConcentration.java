@@ -6,9 +6,13 @@ import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.simulation.model.sections.CellSubsection;
 import bio.singa.simulation.model.sections.CellTopology;
 import bio.singa.simulation.model.simulation.Updatable;
+import tech.units.indriya.ComparableQuantity;
 
 import javax.measure.Quantity;
+import javax.measure.quantity.Time;
 import java.util.List;
+
+import static bio.singa.simulation.model.sections.concentration.InitialConcentration.updatableContainsSubsection;
 
 /**
  * @author cl
@@ -19,6 +23,8 @@ public class FixedConcentration implements InitialConcentration {
     private CellSubsection subsection;
     private ChemicalEntity entity;
     private Quantity<MolarConcentration> concentration;
+
+    private ComparableQuantity<Time> time;
 
     private Evidence evidence;
 
@@ -73,11 +79,24 @@ public class FixedConcentration implements InitialConcentration {
         this.evidence = evidence;
     }
 
+    public ComparableQuantity<Time> getTime() {
+        return time;
+    }
+
+    public void setTime(ComparableQuantity<Time> time) {
+        this.time = time;
+    }
+
     @Override
     public void initialize(Updatable updatable) {
-        if (identifiers.contains(updatable.getStringIdentifier())) {
-            // FIXME careful fixing this does not consider the subsection
-            initializeUnchecked(updatable, null);
+        if (identifiers.isEmpty()) {
+            if (updatableContainsSubsection(updatable, subsection)) {
+                initializeUnchecked(updatable, null);
+            }
+        } else if (identifiers.contains(updatable.getStringIdentifier())) {
+            if (updatableContainsSubsection(updatable, subsection)) {
+                initializeUnchecked(updatable, null);
+            }
         }
     }
 

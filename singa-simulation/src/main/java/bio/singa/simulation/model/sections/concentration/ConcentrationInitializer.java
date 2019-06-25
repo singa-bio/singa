@@ -9,8 +9,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.measure.Quantity;
+import javax.measure.quantity.Time;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 
 /**
  * @author cl
@@ -20,9 +22,11 @@ public class ConcentrationInitializer {
     private static final Logger logger = LoggerFactory.getLogger(ConcentrationInitializer.class);
 
     private List<InitialConcentration> initialConcentrations;
+    private List<FixedConcentration> timedConcentrations;
 
     public ConcentrationInitializer() {
         initialConcentrations = new ArrayList<>();
+        timedConcentrations = new ArrayList<>();
     }
 
     public ConcentrationInitializer(List<InitialConcentration> initialConcentrations) {
@@ -33,11 +37,19 @@ public class ConcentrationInitializer {
         return initialConcentrations;
     }
 
-    public void setInitialConcentrations(List<InitialConcentration> initialConcentrations) {
-        this.initialConcentrations = initialConcentrations;
+    public List<FixedConcentration> getTimedConcentrations() {
+        return timedConcentrations;
     }
 
     public void addInitialConcentration(InitialConcentration initialConcentration) {
+        if (initialConcentration instanceof FixedConcentration) {
+            FixedConcentration fixedConcentration = (FixedConcentration) initialConcentration;
+            Quantity<Time> time = fixedConcentration.getTime();
+            if (time != null) {
+                timedConcentrations.add(fixedConcentration);
+                return;
+            }
+        }
         int index = initialConcentrations.indexOf(initialConcentration);
         if (index != -1) {
             initialConcentrations.remove(initialConcentration);
@@ -46,7 +58,6 @@ public class ConcentrationInitializer {
             initialConcentrations.add(initialConcentration);
         }
     }
-
 
     public void addInitialConcentration(CellRegion region, CellSubsection subsection, ChemicalEntity entity, Quantity<MolarConcentration> concentration) {
         SectionConcentration initialConcentration = new SectionConcentration(region, subsection, entity, concentration);
@@ -63,6 +74,18 @@ public class ConcentrationInitializer {
         for (InitialConcentration initialConcentration : initialConcentrations) {
             logger.info("  {}", initialConcentration);
             initialConcentration.initialize(simulation);
+        }
+    }
+
+    public void initializeTimed(Simulation simulation) {
+        ListIterator<FixedConcentration> iterator = timedConcentrations.listIterator();
+        while (iterator.hasNext()) {
+            FixedConcentration timedConcentration = iterator.next();
+            if (timedConcentration.getTime().isLessThanOrEqualTo(simulation.getElapsedTime())) {
+                logger.info("Initialized timed concentration {}.", timedConcentration);
+                timedConcentration.initialize(simulation);
+                iterator.remove();
+            }
         }
     }
 

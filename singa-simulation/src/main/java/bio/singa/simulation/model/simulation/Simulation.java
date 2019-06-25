@@ -176,6 +176,9 @@ public class Simulation {
 
         }
 
+        // apply timed concentrations
+        applyTimedConcentrations();
+
         // update epoch and elapsed time
         updateEpoch();
         // if time step did not change it can possibly be increased
@@ -246,6 +249,12 @@ public class Simulation {
         if (concentrationInitializer != null) {
             logger.info("Initializing starting concentrations:");
             concentrationInitializer.initialize(this);
+        }
+    }
+
+    private void applyTimedConcentrations() {
+        if (concentrationInitializer != null && !concentrationInitializer.getTimedConcentrations().isEmpty()) {
+            concentrationInitializer.initializeTimed(this);
         }
     }
 

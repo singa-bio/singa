@@ -15,6 +15,8 @@ import javax.measure.Quantity;
 import java.util.Map;
 import java.util.Objects;
 
+import static bio.singa.simulation.model.sections.concentration.InitialConcentration.*;
+
 /**
  * @author cl
  */
@@ -104,7 +106,7 @@ public class SectionConcentration implements InitialConcentration {
             }
         }
         if (region == null || updatable.getCellRegion().equals(region)) {
-            if (updatable.getCellRegion().getSubsections().contains(subsection)) {
+            if (updatableContainsSubsection(updatable, subsection)) {
                 updatable.getConcentrationContainer().initialize(subsection, entity, concentration);
             }
         }

@@ -8,19 +8,23 @@ import bio.singa.features.units.UnitRegistry;
 import bio.singa.simulation.model.sections.CellRegion;
 import bio.singa.simulation.model.sections.CellRegions;
 import bio.singa.simulation.model.sections.CellSubsection;
+import tech.units.indriya.ComparableQuantity;
 import tech.units.indriya.quantity.Quantities;
 
 import javax.measure.Quantity;
 import javax.measure.Unit;
 import javax.measure.quantity.Area;
+import javax.measure.quantity.Time;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static bio.singa.features.units.UnitProvider.*;
 import static bio.singa.simulation.model.sections.CellSubsections.CYTOPLASM;
 import static bio.singa.simulation.model.sections.CellSubsections.VESICLE_LUMEN;
 import static tech.units.indriya.unit.MetricPrefix.MICRO;
-import static tech.units.indriya.unit.Units.METRE;
+import static tech.units.indriya.unit.MetricPrefix.MILLI;
+import static tech.units.indriya.unit.Units.*;
 
 /**
  * @author cl
@@ -57,11 +61,11 @@ public class ConcentrationBuilder {
 
         BuildStep molecules(double numberOfMolecules);
 
-        UnitStep concentrationValue(double value);
+        ConcentrationUnitStep concentrationValue(double value);
 
     }
 
-    public interface UnitStep {
+    public interface ConcentrationUnitStep {
 
         BuildStep unit(Unit<MolarConcentration> concentrationUnit);
 
@@ -88,7 +92,7 @@ public class ConcentrationBuilder {
 
     }
 
-    public static class SectionConcentrationBuilder implements EntityStep, RegionStep, SubsectionStep, ConcentrationStep, UnitStep, BuildStep {
+    public static class SectionConcentrationBuilder implements EntityStep, RegionStep, SubsectionStep, ConcentrationStep, ConcentrationUnitStep, BuildStep {
 
         private double concentrationValue;
 
@@ -129,7 +133,7 @@ public class ConcentrationBuilder {
         }
 
         @Override
-        public UnitStep concentrationValue(double value) {
+        public ConcentrationUnitStep concentrationValue(double value) {
             concentrationValue = value;
             return this;
         }
@@ -158,7 +162,7 @@ public class ConcentrationBuilder {
 
     public interface FixedEntityStep {
 
-        SubsectionStep entity(ChemicalEntity entity);
+        TimedStep entity(ChemicalEntity entity);
 
     }
 
@@ -168,11 +172,42 @@ public class ConcentrationBuilder {
 
         FixedEntityStep nodeIdentifiers(String... identifiers);
 
+        FixedEntityStep everywhere();
+
     }
 
-    public static class FixedConcentrationBuilder implements NodeIdentifierStep, FixedEntityStep, SubsectionStep, ConcentrationStep, UnitStep, BuildStep {
+    public interface TimedStep {
+
+        SubsectionStep atTime(ComparableQuantity<Time> time);
+
+        TimedUnitStep atTimeValue(double time);
+
+        SubsectionStep untimed();
+
+    }
+
+    public interface TimedUnitStep {
+
+        SubsectionStep timeUnit(Unit<Time> timeUnit);
+
+        default SubsectionStep milliSeconds() {
+            return timeUnit(MILLI(SECOND));
+        }
+
+        default SubsectionStep seconds() {
+            return timeUnit(SECOND);
+        }
+
+        default SubsectionStep minutes() {
+            return timeUnit(MINUTE);
+        }
+
+    }
+
+    public static class FixedConcentrationBuilder implements NodeIdentifierStep, FixedEntityStep, TimedStep, TimedUnitStep, SubsectionStep, ConcentrationStep, ConcentrationUnitStep, BuildStep {
 
         private double concentrationValue;
+        private double timeValue;
 
         private final FixedConcentration fixedConcentration;
 
@@ -181,7 +216,7 @@ public class ConcentrationBuilder {
         }
 
         @Override
-        public SubsectionStep entity(ChemicalEntity entity) {
+        public TimedStep entity(ChemicalEntity entity) {
             fixedConcentration.setEntity(entity);
             return this;
         }
@@ -205,7 +240,7 @@ public class ConcentrationBuilder {
         }
 
         @Override
-        public UnitStep concentrationValue(double value) {
+        public ConcentrationUnitStep concentrationValue(double value) {
             concentrationValue = value;
             return this;
         }
@@ -230,6 +265,34 @@ public class ConcentrationBuilder {
         @Override
         public FixedEntityStep nodeIdentifiers(String... identifiers) {
             return nodeIdentifiers(Arrays.asList(identifiers));
+        }
+
+        @Override
+        public FixedEntityStep everywhere() {
+            fixedConcentration.setIdentifiers(Collections.emptyList());
+            return this;
+        }
+
+        @Override
+        public SubsectionStep atTime(ComparableQuantity<Time> time) {
+            fixedConcentration.setTime(time);
+            return this;
+        }
+
+        @Override
+        public TimedUnitStep atTimeValue(double time) {
+            timeValue = time;
+            return this;
+        }
+
+        @Override
+        public SubsectionStep untimed() {
+            return this;
+        }
+
+        @Override
+        public SubsectionStep timeUnit(Unit<Time> timeUnit) {
+            return atTime(Quantities.getQuantity(timeValue, timeUnit));
         }
 
         @Override
@@ -341,6 +404,7 @@ public class ConcentrationBuilder {
         InitialConcentration concentration04 = ConcentrationBuilder.fixed()
                 .nodeIdentifiers("n(9,1)")
                 .entity(entity)
+                .untimed()
                 .subsection(CYTOPLASM)
                 .concentrationValue(100)
                 .milliMolar()
