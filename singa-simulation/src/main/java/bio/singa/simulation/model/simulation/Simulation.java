@@ -274,6 +274,9 @@ public class Simulation {
     }
 
     private void initializeSubsectionAdjacency() {
+        if (graph.getNodes().size() < 1) {
+            return;
+        }
         Polygon cortexArea = null;
         if (getVolumeLayer() != null) {
             for (VolumeLikeAgent agent : getVolumeLayer().getAgents()) {

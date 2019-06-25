@@ -38,27 +38,30 @@ public class ConcentrationInitializer {
     }
 
     public void addInitialConcentration(InitialConcentration initialConcentration) {
-        initialConcentrations.remove(initialConcentration);
-        initialConcentrations.add(initialConcentration);
+        int index = initialConcentrations.indexOf(initialConcentration);
+        if (index != -1) {
+            initialConcentrations.remove(initialConcentration);
+            initialConcentrations.add(index,initialConcentration);
+        } else {
+            initialConcentrations.add(initialConcentration);
+        }
     }
 
 
     public void addInitialConcentration(CellRegion region, CellSubsection subsection, ChemicalEntity entity, Quantity<MolarConcentration> concentration) {
         SectionConcentration initialConcentration = new SectionConcentration(region, subsection, entity, concentration);
-        initialConcentrations.remove(initialConcentration);
-        initialConcentrations.add(initialConcentration);
+        addInitialConcentration(initialConcentration);
     }
 
     public void addInitialConcentration(CellSubsection subsection, ChemicalEntity entity, Quantity<MolarConcentration> concentration) {
         SectionConcentration initialConcentration = new SectionConcentration(subsection, entity, concentration);
-        initialConcentrations.remove(initialConcentration);
-        initialConcentrations.add(initialConcentration);
+        addInitialConcentration(initialConcentration);
     }
 
     public void initialize(Simulation simulation) {
         simulation.collectUpdatables();
         for (InitialConcentration initialConcentration : initialConcentrations) {
-            logger.info("  {}",initialConcentration);
+            logger.info("  {}", initialConcentration);
             initialConcentration.initialize(simulation);
         }
     }

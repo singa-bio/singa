@@ -30,6 +30,10 @@ public class SectionConcentration implements InitialConcentration {
 
     private Evidence evidence;
 
+    SectionConcentration() {
+
+    }
+
     public SectionConcentration(CellRegion region, CellSubsection subsection, ChemicalEntity entity, Quantity<MolarConcentration> concentration) {
         this.region = region;
         this.subsection = subsection;

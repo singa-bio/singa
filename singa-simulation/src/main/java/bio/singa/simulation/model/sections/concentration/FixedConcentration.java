@@ -22,6 +22,10 @@ public class FixedConcentration implements InitialConcentration {
 
     private Evidence evidence;
 
+    FixedConcentration() {
+
+    }
+
     public FixedConcentration(List<String> identifiers, CellSubsection subsection, ChemicalEntity entity, Quantity<MolarConcentration> concentration) {
         this.identifiers = identifiers;
         this.subsection = subsection;

@@ -30,6 +30,10 @@ public class MembraneConcentration implements InitialConcentration {
 
     private Evidence evidence;
 
+    MembraneConcentration() {
+
+    }
+
     public MembraneConcentration(CellRegion region, ChemicalEntity entity, Quantity<Area> area, double numberOfMolecules, Evidence evidence) {
         this.region = region;
         this.entity = entity;
@@ -131,5 +135,12 @@ public class MembraneConcentration implements InitialConcentration {
     @Override
     public int hashCode() {
         return Objects.hash(region, entity);
+    }
+
+    public String toString() {
+        return "Concentration: R = " + region.getIdentifier() +
+                " E = " + entity.getIdentifier() +
+                " C = " + numberOfMolecules +
+                " molecules / " + area;
     }
 }
