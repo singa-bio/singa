@@ -53,7 +53,7 @@ public class Sampler {
      * @param smallestExponent The smallest exponent.
      * @param largestExponent The largest exponent.
      * @param baseMultiplier The value the exponent is multiplied with.
-     * @return
+     * @return The samples
      */
     public static List<Double> sampleExponentially(int smallestExponent, int largestExponent, double baseMultiplier) {
         List<Double> samples = new ArrayList<>();

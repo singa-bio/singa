@@ -66,7 +66,7 @@ public enum MatcherFamily implements StructuralFamily<MatcherFamily> {
             FUNCTIONAL_POSITIVE, FUNCTIONAL_POLAR, FUNCTIONAL_UNPOLAR);
 
     /**
-     * The following types are grouped according to the definition of Livingstone & Barton 1993.
+     * The following types are grouped according to the definition of Livingstone and Barton 1993.
      * <pre>
      *      aromatic (a)             Y,W,F
      *      negatively charged (n)   D,E

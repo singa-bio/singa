@@ -7,6 +7,7 @@ public interface Translatable<TranstatableType, TranslatorType>  {
      * direction.
      *
      * @param translator The vector specifies distance and direction of the translation.
+     * @return The translated object.
      */
     TranstatableType translate(TranslatorType translator);
 

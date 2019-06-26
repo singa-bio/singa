@@ -10,7 +10,7 @@ import bio.singa.mathematics.vectors.BitVector;
  *
  * @param <BitVectorType>
  * @author fk
- * @see <a href="https://www.surechembl.org/knowledgebase/84207-tanimoto-coefficient-and-fingerprint-generation>Definition</a>
+ * @see <a href="https://www.surechembl.org/knowledgebase/84207-tanimoto-coefficient-and-fingerprint-generation">Definition</a>
  */
 public class TanimotoCoefficient<BitVectorType extends BitVector> implements Metric<BitVectorType> {
 

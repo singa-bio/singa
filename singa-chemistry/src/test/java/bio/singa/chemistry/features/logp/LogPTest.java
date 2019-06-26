@@ -2,6 +2,7 @@ package bio.singa.chemistry.features.logp;
 
 import bio.singa.chemistry.entities.SmallMolecule;
 import bio.singa.chemistry.features.databases.chebi.ChEBIParserService;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -12,6 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class LogPTest {
 
     @Test
+    @Disabled
     void shouldUsePubChemToFetchLogP() {
         SmallMolecule testSpecies = new SmallMolecule.Builder("CID:5957").build();
         // get feature
@@ -22,6 +24,7 @@ class LogPTest {
     }
 
     @Test
+    @Disabled
     void shouldBeAbleToFetchLogPWithChEBISpecies() {
         SmallMolecule testSpecies = ChEBIParserService.parse("CHEBI:8772");
         // get feature

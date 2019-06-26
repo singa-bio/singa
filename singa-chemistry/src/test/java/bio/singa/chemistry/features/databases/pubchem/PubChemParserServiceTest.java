@@ -6,6 +6,7 @@ import bio.singa.chemistry.features.smiles.Smiles;
 import bio.singa.features.identifiers.ChEBIIdentifier;
 import bio.singa.features.identifiers.InChIKey;
 import bio.singa.structure.features.molarmass.MolarMass;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -16,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class PubChemParserServiceTest {
 
     @Test
+    @Disabled
     void shouldParseSpecies() {
         SmallMolecule species = PubChemParserService.parse("CID:962");
         // name
@@ -33,6 +35,7 @@ class PubChemParserServiceTest {
     }
 
     @Test
+    @Disabled
     void shouldResolveInChIKey() {
         SmallMolecule species = new SmallMolecule.Builder("CID:5957").name("ATP").build();
         InChIKey feature = species.getFeature(InChIKey.class);
