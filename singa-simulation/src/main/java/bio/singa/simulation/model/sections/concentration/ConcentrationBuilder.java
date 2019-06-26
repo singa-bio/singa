@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static bio.singa.features.units.UnitProvider.*;
+import static bio.singa.features.units.UnitRegistry.*;
 import static bio.singa.simulation.model.sections.CellSubsections.CYTOPLASM;
 import static bio.singa.simulation.model.sections.CellSubsections.VESICLE_LUMEN;
 import static tech.units.indriya.unit.MetricPrefix.MICRO;
@@ -129,7 +130,7 @@ public class ConcentrationBuilder {
         @Override
         public BuildStep molecules(double numberOfMolecules) {
             double concentration = MolarConcentration.moleculesToConcentration(numberOfMolecules);
-            return concentration(UnitRegistry.concentration(concentration));
+            return concentration(humanReadable(UnitRegistry.concentration(concentration)));
         }
 
         @Override
@@ -140,7 +141,7 @@ public class ConcentrationBuilder {
 
         @Override
         public BuildStep unit(Unit<MolarConcentration> concentrationUnit) {
-            return concentration(UnitRegistry.concentration(concentrationValue, concentrationUnit));
+            return concentration(humanReadable(UnitRegistry.concentration(concentrationValue, concentrationUnit)));
         }
 
         @Override
@@ -236,7 +237,7 @@ public class ConcentrationBuilder {
         @Override
         public BuildStep molecules(double numberOfMolecules) {
             double concentration = MolarConcentration.moleculesToConcentration(numberOfMolecules);
-            return concentration(UnitRegistry.concentration(concentration));
+            return concentration(humanReadable(UnitRegistry.concentration(concentration)));
         }
 
         @Override
@@ -247,7 +248,7 @@ public class ConcentrationBuilder {
 
         @Override
         public BuildStep unit(Unit<MolarConcentration> concentrationUnit) {
-            return concentration(UnitRegistry.concentration(concentrationValue, concentrationUnit));
+            return concentration(humanReadable(UnitRegistry.concentration(concentrationValue, concentrationUnit)));
         }
 
         @Override

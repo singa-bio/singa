@@ -31,6 +31,7 @@ public class ConcentrationInitializer {
 
     public ConcentrationInitializer(List<InitialConcentration> initialConcentrations) {
         this.initialConcentrations = initialConcentrations;
+        timedConcentrations = new ArrayList<>();
     }
 
     public List<InitialConcentration> getInitialConcentrations() {

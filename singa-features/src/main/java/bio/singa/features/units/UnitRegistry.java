@@ -13,6 +13,7 @@ import javax.measure.quantity.*;
 import java.util.HashMap;
 import java.util.Map;
 
+import static bio.singa.features.units.UnitProvider.MICRO_MOLE_PER_LITRE;
 import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static tech.units.indriya.AbstractUnit.ONE;
 import static tech.units.indriya.quantity.QuantityDimension.*;
@@ -42,17 +43,20 @@ public class UnitRegistry {
 
     public static final Unit<Temperature> DEFAULT_TEMPERATURE_UNIT = KELVIN;
     public static final Unit<Mass> DEFAULT_MASS_UNIT = GRAM;
+    public static final Unit<MolarConcentration> DEFAULT_DISPLAY_CONCENTRATION_UNIT = MICRO_MOLE_PER_LITRE;
 
     private Quantity<Length> space;
     private Quantity<Time> time;
 
     private Map<Dimension, Unit> defaultUnits;
+    private Unit<MolarConcentration> concentrationDisplayUnit;
 
     private static UnitRegistry instance = getInstance();
 
     private UnitRegistry() {
         space = DEFAULT_SPACE;
         time = DEFAULT_TIME;
+        concentrationDisplayUnit = DEFAULT_DISPLAY_CONCENTRATION_UNIT;
 
         defaultUnits = new HashMap<>();
         defaultUnits.put(LENGTH, space.getUnit());
@@ -177,6 +181,14 @@ public class UnitRegistry {
 
     public static Quantity<MolarConcentration> concentration(double value, Unit<MolarConcentration> unit) {
         return Quantities.getQuantity(value, unit).to(getConcentrationUnit());
+    }
+
+    public static void setDisplayConcentrationUnit(Unit<MolarConcentration> concentrationUnit) {
+        getInstance().concentrationDisplayUnit = concentrationUnit;
+    }
+
+    public static Quantity<MolarConcentration> humanReadable(Quantity<MolarConcentration> concentration) {
+        return concentration.to(getInstance().concentrationDisplayUnit);
     }
 
     public static <QuantityType extends Quantity<QuantityType>> Quantity<QuantityType> scale(Quantity<QuantityType> quantity) {
