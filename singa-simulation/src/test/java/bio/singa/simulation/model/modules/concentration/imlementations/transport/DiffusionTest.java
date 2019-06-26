@@ -64,6 +64,10 @@ class DiffusionTest {
     static void initialize() {
         UnitRegistry.reinitialize();
         Environment.reset();
+    }
+
+    @BeforeEach
+    void initializeEach() {
         Environment.setSimulationExtend(2500);
         Environment.setSystemExtend(systemDiameter);
     }
@@ -77,8 +81,6 @@ class DiffusionTest {
     @Test
     @DisplayName("diffusion of hydrogen with 10 nodes")
     void shouldReachCorrectHalfLife1() {
-        UnitRegistry.reinitialize();
-        Environment.reset();
         // setup and run simulation
         Simulation simulation = setUpSimulation(10, hydrogen);
         Quantity<Time> actualHalfLifeTime = runSimulation(simulation, 10, hydrogen);
