@@ -1,5 +1,6 @@
 package bio.singa.chemistry.algorithms;
 
+import bio.singa.chemistry.features.smiles.SmilesGenerator;
 import bio.singa.chemistry.features.smiles.SmilesParser;
 import bio.singa.core.utility.Pair;
 import bio.singa.mathematics.algorithms.graphs.DisconnectedSubgraphFinder;
@@ -14,6 +15,7 @@ import bio.singa.structure.model.molecules.MoleculeGraph;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
@@ -239,5 +241,17 @@ public class RECAPFragmenter {
                     "name='" + name + '\'' +
                     '}';
         }
+    }
+
+    public Map<String, MoleculeGraph> getFragmentSmiles() {
+        Map<String, MoleculeGraph> fragmentSmiles = new HashMap<>();
+        for (MoleculeGraph uniqueFragment : uniqueFragments) {
+            try {
+                fragmentSmiles.put(SmilesGenerator.generate(uniqueFragment), uniqueFragment);
+            } catch (IOException e) {
+                logger.warn("SMILES generation failed for fragment {}", uniqueFragment, e);
+            }
+        }
+        return fragmentSmiles;
     }
 }

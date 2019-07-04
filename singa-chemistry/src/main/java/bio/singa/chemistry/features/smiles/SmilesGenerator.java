@@ -53,7 +53,7 @@ public class SmilesGenerator {
     }
 
     private void toBeamGraph(MoleculeGraph moleculeGraph) {
-        logger.info("converting molecule graph {} to beam graph", moleculeGraph);
+        logger.info("converting molecule graph {} to Beam graph", moleculeGraph);
         GraphBuilder beamGraphBuilder = GraphBuilder.create(moleculeGraph.getNodes().size());
         Map<Integer, Integer> atomIdentifierMap = new HashMap<>();
         int i = 0;
