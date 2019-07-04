@@ -154,20 +154,20 @@ public class RECAPFragmenter {
 
         public void applyTo(GenericNode<MoleculeGraph> currentNode) {
 
-            logger.info("applying fragmentation rule {}", this);
+            logger.debug("applying fragmentation rule {}", this);
             MoleculeGraph moleculeGraph = (MoleculeGraph) currentNode.getContent().getCopy();
             MoleculeIsomorphism moleculeIsomorphism = MoleculeIsomorphismFinder.of(fragmentGraph, moleculeGraph, atomCondition, isSameType());
             moleculeIsomorphism.reduceMatches();
-            logger.info("non-isomeric matches are {}", moleculeIsomorphism.getFullMatches().size());
+            logger.debug("non-isomeric matches are {}", moleculeIsomorphism.getFullMatches().size());
 
             if (moleculeIsomorphism.getFullMatches().isEmpty()) {
-                logger.info("fragmentation rule {} does not apply to molecule {}", this, moleculeGraph);
+                logger.debug("fragmentation rule {} does not apply to molecule {}", this, moleculeGraph);
                 return;
             }
 
             for (MoleculeGraph fullMatch : moleculeIsomorphism.getFullMatches()) {
                 for (int bondToCleave : bondsToCleave) {
-                    logger.debug("cleaving bond {}", bondToCleave);
+                    logger.trace("cleaving bond {}", bondToCleave);
                     int sourceIdentifier = fragmentGraph.getEdge(bondToCleave).getSource().getIdentifier();
                     int targetIdentifier = fragmentGraph.getEdge(bondToCleave).getTarget().getIdentifier();
                     List<Pair<MoleculeAtom>> atomPairs = moleculeIsomorphism.getAtomPairs(fullMatch);
@@ -228,7 +228,7 @@ public class RECAPFragmenter {
                                     uniqueFragments.add(disconnectedSubgraph);
                                 }
                             }
-                            logger.info("new fragments produced: {}", disconnectedSubgraphs);
+                            logger.debug("new fragments produced: {}", disconnectedSubgraphs);
                         }
                     }
                 }

@@ -1,5 +1,6 @@
 package bio.singa.chemistry.features.smiles;
 
+import bio.singa.structure.elements.ElementProvider;
 import bio.singa.structure.model.molecules.MoleculeAtom;
 import bio.singa.structure.model.molecules.MoleculeBond;
 import bio.singa.structure.model.molecules.MoleculeBondType;
@@ -59,6 +60,10 @@ public class SmilesGenerator {
         int i = 0;
         // add atoms to beam graph
         for (MoleculeAtom atom : moleculeGraph.getNodes()) {
+            if (atom.getElement() == ElementProvider.HYDROGEN) {
+                logger.info("skipping hydrogen {}", atom);
+                continue;
+            }
             // TODO check for aromatic involved atoms and add support for charge and isotopes
             Atom beamAtom = AtomBuilder.create(atom.getElement().getSymbol())
 //                    .charge(atom.getElement().getCharge())
@@ -71,6 +76,11 @@ public class SmilesGenerator {
         }
         // create bonds
         for (MoleculeBond bond : moleculeGraph.getEdges()) {
+            if (!atomIdentifierMap.containsKey(bond.getSource().getIdentifier()) ||
+                    !atomIdentifierMap.containsKey(bond.getTarget().getIdentifier())) {
+                logger.debug("skipping hydrogen bond {}", bond);
+                continue;
+            }
             beamGraphBuilder.add(atomIdentifierMap.get(bond.getSource().getIdentifier()),
                     atomIdentifierMap.get(bond.getTarget().getIdentifier()), BEAM_BOND_TYPE_MAP.get(bond.getType()));
         }
