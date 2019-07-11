@@ -45,6 +45,7 @@ public class RECAPFragmenter {
 
     public RECAPFragmenter(MoleculeGraph molecule) {
         this.molecule = molecule;
+        logger.info("RECAP fragmentation started for molecule {}", molecule);
         initRules();
         fragment();
     }
@@ -121,6 +122,18 @@ public class RECAPFragmenter {
 
     public Set<MoleculeGraph> getUniqueFragments() {
         return uniqueFragments;
+    }
+
+    public Map<String, MoleculeGraph> getFragmentSmiles() {
+        Map<String, MoleculeGraph> fragmentSmiles = new HashMap<>();
+        for (MoleculeGraph uniqueFragment : uniqueFragments) {
+            try {
+                fragmentSmiles.put(SmilesGenerator.generate(uniqueFragment), uniqueFragment);
+            } catch (IOException e) {
+                logger.warn("SMILES generation failed for fragment {}", uniqueFragment, e);
+            }
+        }
+        return fragmentSmiles;
     }
 
     /**
@@ -241,17 +254,5 @@ public class RECAPFragmenter {
                     "name='" + name + '\'' +
                     '}';
         }
-    }
-
-    public Map<String, MoleculeGraph> getFragmentSmiles() {
-        Map<String, MoleculeGraph> fragmentSmiles = new HashMap<>();
-        for (MoleculeGraph uniqueFragment : uniqueFragments) {
-            try {
-                fragmentSmiles.put(SmilesGenerator.generate(uniqueFragment), uniqueFragment);
-            } catch (IOException e) {
-                logger.warn("SMILES generation failed for fragment {}", uniqueFragment, e);
-            }
-        }
-        return fragmentSmiles;
     }
 }
