@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Implementation of SMILES string generation of {@link MoleculeGraph}s with the help of beam (@link
+ * Implementation of SMILES string generation of {@link MoleculeGraph}s with the help of Beam (@link
  * https://github.com/johnmay/beam).
  */
 public class SmilesGenerator {
@@ -64,13 +64,15 @@ public class SmilesGenerator {
                 logger.info("skipping hydrogen {}", atom);
                 continue;
             }
-            // TODO check for aromatic involved atoms and add support for charge and isotopes
-            Atom beamAtom = AtomBuilder.create(atom.getElement().getSymbol())
-//                    .charge(atom.getElement().getCharge())
-//                    .isotope(atom.getElement().getProtonNumber() - atom.getElement().getNeutronNumber())
-//                    .hydrogens(0)
-                    .build();
-            beamGraphBuilder.add(beamAtom);
+            // TODO check for aromatic involved atoms and add support for isotopes
+            AtomBuilder beamAtomBuilder = AtomBuilder.create(atom.getElement().getSymbol());
+            if (atom.getElement().getCharge() != 0) {
+                beamAtomBuilder.charge(atom.getElement().getCharge());
+            }
+            if (atom.getElement().getNeutronNumber() - atom.getElement().getProtonNumber() != 0) {
+                beamAtomBuilder.isotope(atom.getElement().getNeutronNumber() - atom.getElement().getProtonNumber());
+            }
+            beamGraphBuilder.add(beamAtomBuilder.build());
             atomIdentifierMap.put(atom.getIdentifier(), i);
             i++;
         }
