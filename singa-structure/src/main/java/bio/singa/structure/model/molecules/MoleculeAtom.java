@@ -5,6 +5,8 @@ import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.structure.elements.Element;
 import bio.singa.structure.elements.ElementProvider;
 
+import java.util.Objects;
+
 /**
  * @author cl
  */
@@ -42,6 +44,20 @@ public class MoleculeAtom extends AbstractNode<MoleculeAtom, Vector2D, Integer> 
     @Override
     public String toString() {
         return element.toString() + ":" + getIdentifier();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof MoleculeAtom)) return false;
+        if (!super.equals(o)) return false;
+        MoleculeAtom that = (MoleculeAtom) o;
+        return Objects.equals(element, that.element);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), element);
     }
 
     @Override

@@ -3,8 +3,8 @@ package bio.singa.features.units;
 
 import bio.singa.features.quantities.DynamicViscosity;
 import bio.singa.features.quantities.MolarConcentration;
-import tec.uom.se.format.SimpleUnitFormat;
-import tec.uom.se.unit.ProductUnit;
+import tec.units.indriya.format.SimpleUnitFormat;
+import tec.units.indriya.unit.ProductUnit;
 
 import javax.measure.Unit;
 import javax.measure.quantity.Length;
@@ -12,8 +12,8 @@ import javax.measure.quantity.Time;
 import java.util.ArrayList;
 import java.util.List;
 
-import static tec.uom.se.unit.MetricPrefix.*;
-import static tec.uom.se.unit.Units.*;
+import static tec.units.indriya.unit.MetricPrefix.*;
+import static tec.units.indriya.unit.Units.*;
 
 /**
  * This class defines some units commonly used in systems biology, that are not explicitly attributed to any feature.
@@ -44,7 +44,7 @@ public final class UnitProvider {
      * volume.
      */
     public static final Unit<MolarConcentration> MOLE_PER_LITRE = MOLE.divide(LITRE).asType(MolarConcentration.class);
-    public static final Unit<MolarConcentration> PICO_MOLE_PER_LITRE = NANO(MOLE).divide(LITRE).asType(MolarConcentration.class);
+    public static final Unit<MolarConcentration> PICO_MOLE_PER_LITRE = PICO(MOLE).divide(LITRE).asType(MolarConcentration.class);
     public static final Unit<MolarConcentration> NANO_MOLE_PER_LITRE = NANO(MOLE).divide(LITRE).asType(MolarConcentration.class);
     public static final Unit<MolarConcentration> MICRO_MOLE_PER_LITRE = MICRO(MOLE).divide(LITRE).asType(MolarConcentration.class);
     public static final Unit<MolarConcentration> MILLI_MOLE_PER_LITRE = MILLI(MOLE).divide(LITRE).asType(MolarConcentration.class);

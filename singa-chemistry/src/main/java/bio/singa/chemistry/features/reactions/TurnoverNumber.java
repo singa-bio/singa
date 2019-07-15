@@ -1,7 +1,7 @@
 package bio.singa.chemistry.features.reactions;
 
 import bio.singa.features.model.Evidence;
-import tec.uom.se.quantity.Quantities;
+import tec.units.indriya.quantity.Quantities;
 
 import javax.measure.Quantity;
 import javax.measure.Unit;
@@ -13,8 +13,6 @@ import javax.measure.Unit;
  */
 public class TurnoverNumber extends FirstOrderRateConstant implements ForwardsRateConstant<FirstOrderRate> {
 
-    public static final String SYMBOL = "k_cat";
-
     public TurnoverNumber(Quantity<FirstOrderRate> firstOrderRateQuantity, Evidence evidence) {
         super(firstOrderRateQuantity, evidence);
     }
@@ -23,9 +21,8 @@ public class TurnoverNumber extends FirstOrderRateConstant implements ForwardsRa
         super(Quantities.getQuantity(value, unit), evidence);
     }
 
-    @Override
-    public String getSymbol() {
-        return SYMBOL;
+    public TurnoverNumber(Quantity<FirstOrderRate> firstOrderRateQuantity) {
+        super(firstOrderRateQuantity);
     }
 
 }

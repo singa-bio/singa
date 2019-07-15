@@ -6,6 +6,8 @@ import bio.singa.simulation.model.sections.CellRegion;
 import bio.singa.simulation.model.sections.CellSubsection;
 import bio.singa.simulation.model.sections.concentration.SectionConcentration;
 
+import javax.measure.Quantity;
+
 /**
  * @author cl
  */
@@ -43,7 +45,7 @@ public class ConcentrationVariation extends Variation<MolarConcentration> {
 
     @Override
     public SectionConcentration create(Object concentration) {
-        return new SectionConcentration(cellRegion, subsection, entity, (MolarConcentration) concentration);
+        return new SectionConcentration(cellRegion, subsection, entity, ((Quantity) concentration).asType(MolarConcentration.class));
     }
 
     @Override

@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
  *
  * @author cl
  */
-public class SimpleStringIdentifier extends AbstractIdentifier<SimpleStringIdentifier> {
+public class SimpleStringIdentifier extends AbstractIdentifier {
 
     /**
      * The pattern to verify the identifier.
@@ -27,8 +27,4 @@ public class SimpleStringIdentifier extends AbstractIdentifier<SimpleStringIdent
         super(identifier, PATTERN);
     }
 
-    @Override
-    public SimpleStringIdentifier getFeatureContent() {
-        return this;
-    }
 }

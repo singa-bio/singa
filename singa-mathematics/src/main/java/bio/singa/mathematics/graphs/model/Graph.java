@@ -2,9 +2,7 @@ package bio.singa.mathematics.graphs.model;
 
 import bio.singa.mathematics.vectors.Vector;
 
-import java.util.Collection;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * The graph contains nodes connected by edges of a certain type.
@@ -104,6 +102,27 @@ public interface Graph<NodeType extends Node<NodeType, ? extends Vector, Identif
         return getEdges().stream()
                 .filter(edge -> edge.containsNode(source) && edge.containsNode(target))
                 .findAny();
+    }
+
+    /**
+     * Returns all nodes touching the given node (i.e. neighbours regardless of the eventual directionality of the
+     * connecting edge). Prefer {@link Node#getNeighbours()} to this method if possible, since this has higher
+     * complexity.
+     *
+     * @return The neighbours.
+     */
+    default List<NodeType> getTouchingNodes(NodeType node) {
+        List<NodeType> touchingNodes = new ArrayList<>();
+        for (EdgeType edge : getEdges()) {
+            if (edge.containsNode(node)) {
+                if (edge.getSource() != node) {
+                    touchingNodes.add(edge.getSource());
+                    continue;
+                }
+                touchingNodes.add(edge.getTarget());
+            }
+        }
+        return touchingNodes;
     }
 
     /**

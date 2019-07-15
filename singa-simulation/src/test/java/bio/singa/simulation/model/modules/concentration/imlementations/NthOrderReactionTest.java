@@ -1,8 +1,8 @@
 package bio.singa.simulation.model.modules.concentration.imlementations;
 
 import bio.singa.chemistry.entities.SmallMolecule;
-import bio.singa.chemistry.features.databases.chebi.ChEBIParserService;
 import bio.singa.chemistry.features.reactions.RateConstant;
+import bio.singa.features.identifiers.ChEBIIdentifier;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.features.units.UnitRegistry;
@@ -14,15 +14,15 @@ import bio.singa.simulation.model.agents.pointlike.VesicleLayer;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.graphs.AutomatonNode;
+import bio.singa.simulation.model.modules.concentration.imlementations.reactions.ReactionBuilder;
 import bio.singa.simulation.model.sections.CellSubsection;
-import bio.singa.simulation.model.sections.CellTopology;
 import bio.singa.simulation.model.simulation.Simulation;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import tec.uom.se.ComparableQuantity;
-import tec.uom.se.quantity.Quantities;
+import tec.units.indriya.ComparableQuantity;
+import tec.units.indriya.quantity.Quantities;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Dimensionless;
@@ -31,10 +31,11 @@ import javax.measure.quantity.Time;
 
 import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static bio.singa.simulation.model.sections.CellRegions.EXTRACELLULAR_REGION;
+import static bio.singa.simulation.model.sections.CellTopology.MEMBRANE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static tec.uom.se.unit.MetricPrefix.*;
-import static tec.uom.se.unit.Units.METRE;
-import static tec.uom.se.unit.Units.SECOND;
+import static tec.units.indriya.unit.MetricPrefix.*;
+import static tec.units.indriya.unit.Units.METRE;
+import static tec.units.indriya.unit.Units.SECOND;
 
 /**
  * @author cl
@@ -61,15 +62,21 @@ class NthOrderReactionTest {
         AutomatonGraph graph = AutomatonGraphs.singularGraph();
 
         // prepare species
-        SmallMolecule dpo = ChEBIParserService.parse("CHEBI:29802");
-        SmallMolecule ndo = ChEBIParserService.parse("CHEBI:33101");
-        SmallMolecule oxygen = ChEBIParserService.parse("CHEBI:15379");
+        SmallMolecule dpo = SmallMolecule.create("DPO")
+                .additionalIdentifier(new ChEBIIdentifier("CHEBI:29802"))
+                .build();
+
+        SmallMolecule ndo = SmallMolecule.create("NDO")
+                .additionalIdentifier(new ChEBIIdentifier("CHEBI:33101"))
+                .build();
+
+        SmallMolecule oxygen = SmallMolecule.create("O")
+                .additionalIdentifier(new ChEBIIdentifier("CHEBI:15379"))
+                .build();
 
         CellSubsection subsection = EXTRACELLULAR_REGION.getInnerSubsection();
         for (AutomatonNode node : graph.getNodes()) {
-            node.getConcentrationContainer().set(subsection, dpo, 0.02);
-            node.getConcentrationContainer().set(subsection, ndo, 0.0);
-            node.getConcentrationContainer().set(subsection, oxygen, 0.0);
+            node.getConcentrationContainer().initialize(subsection, dpo, Quantities.getQuantity(0.02, MOLE_PER_LITRE));
         }
 
         RateConstant rateConstant = RateConstant.create(0.07)
@@ -78,11 +85,12 @@ class NthOrderReactionTest {
                 .build();
 
         // create reaction
-        NthOrderReaction.inSimulation(simulation)
+        ReactionBuilder.staticReactants(simulation)
                 .addSubstrate(dpo, 2)
                 .addProduct(ndo, 4)
                 .addProduct(oxygen)
-                .rateConstant(rateConstant)
+                .irreversible()
+                .rate(rateConstant)
                 .build();
 
         // add graph
@@ -97,21 +105,21 @@ class NthOrderReactionTest {
         while ((currentTime = simulation.getElapsedTime().to(MILLI(SECOND))).getValue().doubleValue() < secondCheckpoint.getValue().doubleValue()) {
             simulation.nextEpoch();
             if (!firstCheckpointPassed && currentTime.getValue().doubleValue() > firstCheckpoint.getValue().doubleValue()) {
-                assertEquals(9E-4, node.getConcentrationContainer().get(subsection, oxygen).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
-                assertEquals(0.003, node.getConcentrationContainer().get(subsection, ndo).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
-                assertEquals(0.018, node.getConcentrationContainer().get(subsection, dpo).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
+                assertEquals(9E-4, UnitRegistry.concentration(node.getConcentrationContainer().get(subsection, oxygen)).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
+                assertEquals(0.003, UnitRegistry.concentration(node.getConcentrationContainer().get(subsection, ndo)).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
+                assertEquals(0.018, UnitRegistry.concentration(node.getConcentrationContainer().get(subsection, dpo)).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
                 firstCheckpointPassed = true;
             }
         }
 
         // check final values
-        assertEquals(0.006, node.getConcentrationContainer().get(subsection, oxygen).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
-        assertEquals(0.025, node.getConcentrationContainer().get(subsection, ndo).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
-        assertEquals(0.007, node.getConcentrationContainer().get(subsection, dpo).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
+        assertEquals(0.006, UnitRegistry.concentration(node.getConcentrationContainer().get(subsection, oxygen)).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
+        assertEquals(0.025, UnitRegistry.concentration(node.getConcentrationContainer().get(subsection, ndo)).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
+        assertEquals(0.007, UnitRegistry.concentration(node.getConcentrationContainer().get(subsection, dpo)).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
     }
 
     @Test
-    @DisplayName("rate independence from space scale")
+    @DisplayName("rate independence from space scale and approaching 0")
     void testReactionSpeedScaling() {
         Environment.reset();
         // create simulation
@@ -120,47 +128,48 @@ class NthOrderReactionTest {
         int nodesVertical = 1;
         int numberOfMolecules = 60;
 
+        Simulation simulation = new Simulation();
+        simulation.setMaximalTimeStep(Quantities.getQuantity(0.5, SECOND));
+
         ComparableQuantity<Length> systemExtend = Quantities.getQuantity(2, MICRO(METRE));
         Environment.setSystemExtend(systemExtend);
         Environment.setSimulationExtend(simulationExtend);
         Environment.setNodeSpacingToDiameter(systemExtend, nodesHorizontal);
         Rectangle rectangle = new Rectangle(simulationExtend, simulationExtend);
 
-        Simulation simulation = new Simulation();
+        simulation.setSimulationRegion(rectangle);
         AutomatonGraph graph = AutomatonGraphs.createRectangularAutomatonGraph(nodesHorizontal, nodesVertical);
         simulation.setGraph(graph);
-        simulation.setSimulationRegion(rectangle);
-        simulation.initializeGraph();
-        simulation.initializeSpatialRepresentations();
 
         // prepare species
         SmallMolecule sm = SmallMolecule.create("A").build();
 
         VesicleLayer layer = new VesicleLayer(simulation);
         Vesicle vesicle = new Vesicle(new Vector2D(400, 400.0), Quantities.getQuantity(50, NANO(METRE)));
-        vesicle.getConcentrationContainer().set(CellTopology.MEMBRANE, sm, MolarConcentration.moleculesToConcentration(numberOfMolecules));
+        vesicle.getConcentrationContainer().set(MEMBRANE, sm, MolarConcentration.moleculesToConcentration(numberOfMolecules));
         layer.addVesicle(vesicle);
         simulation.setVesicleLayer(layer);
 
-        RateConstant rateConstant = RateConstant.create(MolarConcentration.moleculesToConcentration(60).to(UnitRegistry.getConcentrationUnit()).getValue().doubleValue() / 11.0)
+        RateConstant rateConstant = RateConstant.create(MolarConcentration.moleculesToConcentration(numberOfMolecules) / 11.0)
                 .forward().zeroOrder()
                 .concentrationUnit(UnitRegistry.getConcentrationUnit())
                 .timeUnit(SECOND)
                 .evidence(DefaultFeatureSources.EHRLICH2004)
                 .build();
 
-        NthOrderReaction.inSimulation(simulation)
-                .rateConstant(rateConstant)
-                .addSubstrate(sm)
+        ReactionBuilder.staticReactants(simulation)
+                .addSubstrate(sm, MEMBRANE)
+                .irreversible()
+                .rate(rateConstant)
                 .build();
 
-        Quantity<Dimensionless> molecules = MolarConcentration.concentrationToMolecules(vesicle.getConcentrationContainer().get(CellTopology.MEMBRANE, sm));
+        Quantity<Dimensionless> molecules = MolarConcentration.concentrationToMolecules(vesicle.getConcentrationContainer().get(MEMBRANE, sm));
         assertEquals(60, molecules.getValue().intValue());
         while (simulation.getElapsedTime().isLessThanOrEqualTo(Quantities.getQuantity(11, SECOND))) {
             simulation.nextEpoch();
-            molecules = MolarConcentration.concentrationToMolecules(vesicle.getConcentrationContainer().get(CellTopology.MEMBRANE, sm));
+            molecules = MolarConcentration.concentrationToMolecules(vesicle.getConcentrationContainer().get(MEMBRANE, sm));
         }
-        assertEquals(0, molecules.getValue().intValue());
+        assertEquals(0.0, molecules.getValue().doubleValue());
     }
 
 }

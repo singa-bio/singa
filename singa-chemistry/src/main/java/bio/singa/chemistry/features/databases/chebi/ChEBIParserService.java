@@ -18,12 +18,12 @@ public class ChEBIParserService extends AbstractXMLParser<SmallMolecule> {
 
     public ChEBIParserService(ChEBIIdentifier identifier) {
         getXmlReader().setContentHandler(new ChEBIContentHandler());
-        setResource(String.format(CHEBI_FETCH_URL, identifier.getIdentifier()));
+        setResource(String.format(CHEBI_FETCH_URL, identifier.getContent()));
     }
 
     public ChEBIParserService(ChEBIIdentifier identifier, String primaryIdentifier) {
         getXmlReader().setContentHandler(new ChEBIContentHandler(primaryIdentifier));
-        setResource(String.format(CHEBI_FETCH_URL, identifier.getIdentifier()));
+        setResource(String.format(CHEBI_FETCH_URL, identifier.getContent()));
     }
 
     public static SmallMolecule parse(String chEBIIdentifier) {
@@ -31,21 +31,15 @@ public class ChEBIParserService extends AbstractXMLParser<SmallMolecule> {
     }
 
     public static SmallMolecule parse(String chEBIIdentifier, String primaryIdentifier) {
-        logger.info("Parsing chemical entity with identifier " + chEBIIdentifier + " from " + ChEBIDatabase.evidence.getName());
+        logger.info("Parsing chemical entity with identifier " + chEBIIdentifier + " from " + ChEBIDatabase.DEGTYARENKO2008.getIdentifier());
         ChEBIParserService parser = new ChEBIParserService(new ChEBIIdentifier(chEBIIdentifier), primaryIdentifier);
         return parser.parse();
     }
 
-
     public static SmallMolecule parse(ChEBIIdentifier identifier) {
-        logger.info("Parsing chemical entity with identifier " + identifier.getIdentifier() + " from " + ChEBIDatabase.evidence.getName());
+        logger.info("Parsing chemical entity with identifier " + identifier.getContent() + " from " + ChEBIDatabase.DEGTYARENKO2008.getIdentifier());
         ChEBIParserService parser = new ChEBIParserService(identifier);
         return parser.parse();
-    }
-
-    public static void main(String[] args) {
-        final SmallMolecule species = ChEBIParserService.parse("CHEBI:17790");
-        System.out.println(species);
     }
 
     private void parseXML() {

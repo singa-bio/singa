@@ -1,11 +1,13 @@
 package bio.singa.chemistry.features.databases.uniprot;
 
+import bio.singa.chemistry.annotations.Annotation;
 import bio.singa.chemistry.annotations.AnnotationType;
 import bio.singa.chemistry.annotations.taxonomy.Organism;
 import bio.singa.chemistry.entities.Protein;
 import bio.singa.chemistry.features.variants.SequenceVariant;
 import bio.singa.chemistry.features.variants.SequenceVariants;
 import bio.singa.features.identifiers.ENAAccessionNumber;
+import bio.singa.features.identifiers.GoTerm;
 import bio.singa.features.identifiers.UniProtIdentifier;
 import bio.singa.features.identifiers.model.Identifier;
 import bio.singa.features.identifiers.model.IdentifierPatternRegistry;
@@ -42,14 +44,14 @@ class UniProtParserTest {
     @Test
     @DisplayName("parse uniprot - primary name")
     void parseName() {
-        assertEquals("Aspartate aminotransferase, mitochondrial", aminotransferase.getName());
+        assertEquals("Aspartate aminotransferase, mitochondrial", aminotransferase.getNames().iterator().next());
     }
 
     @Test
     @DisplayName("parse uniprot - additional names")
     void parseAdditionalNames() {
-        assertTrue(aminotransferase.getAdditionalNames().contains("Glutamate oxaloacetate transaminase 2"));
-        assertTrue(aminotransferase.getAdditionalNames().contains("Plasma membrane-associated fatty acid-binding protein"));
+        assertTrue(aminotransferase.getNames().contains("Glutamate oxaloacetate transaminase 2"));
+        assertTrue(aminotransferase.getNames().contains("Plasma membrane-associated fatty acid-binding protein"));
     }
 
     @Test
@@ -89,7 +91,7 @@ class UniProtParserTest {
     @DisplayName("parse uniprot - ena accession")
     void parseENAAccessionNumber() {
         // annotation
-        final List<Identifier> additionalIdentifiers = aars.getAdditionalIdentifiers();
+        final List<Identifier> additionalIdentifiers = aars.getAllIdentifiers();
         final Optional<ENAAccessionNumber> firstIdentifier = IdentifierPatternRegistry.find(ENAAccessionNumber.class, additionalIdentifiers);
         assertEquals("CAA37932.1", firstIdentifier.get().toString());
     }
@@ -98,12 +100,12 @@ class UniProtParserTest {
     @DisplayName("parse uniprot - variants")
     void shouldParseVariants() {
         SequenceVariants sequenceVariants = transthyretin.getFeature(SequenceVariants.class);
-        SequenceVariant sequenceVariant = sequenceVariants.getFeatureContent().iterator().next();
+        SequenceVariant sequenceVariant = sequenceVariants.getContent().iterator().next();
         assertEquals("VAR_007546", sequenceVariant.getIdentifier());
         assertEquals("Common polymorphism; dbSNP:rs1800458.", sequenceVariant.getDescription());
-        Evidence expected = new Evidence(Evidence.OriginType.LITERATURE);
-        expected.setName("Ota2004");
-        expected.setPublication("DOI: 10.1038/ng1285");
+        Evidence expected = new Evidence(Evidence.SourceType.LITERATURE);
+        expected.setIdentifier("Ota2004");
+        expected.setDescription("DOI: 10.1038/ng1285");
         assertEquals(expected, sequenceVariant.getEvidences().iterator().next());
         assertEquals(26, sequenceVariant.getLocation());
         assertEquals(AminoAcidFamily.GLYCINE, sequenceVariant.getOriginal());
@@ -114,7 +116,23 @@ class UniProtParserTest {
     @DisplayName("parse uniprot - by entry name")
     void shouldParseByEntryName89() {
         UniProtIdentifier uniProtIdentifier = aarsByName.getFeature(UniProtIdentifier.class);
-        assertEquals("P21889", uniProtIdentifier.getIdentifier());
+        assertEquals("P21889", uniProtIdentifier.getContent());
     }
 
+    @Test
+    void parsePrimaryGeneName() {
+        assertEquals("GOT2", aminotransferase.getPrimaryGeneName());
+        assertEquals("aspS", aars.getPrimaryGeneName());
+        assertEquals("TTR", transthyretin.getPrimaryGeneName());
+    }
+
+    @Test
+    void parseSubCellularLocation() {
+        List<Annotation> annotations = aars.getAnnotationsOfType(AnnotationType.GO_TERM);
+        assertEquals("GO:0005829", ((GoTerm) annotations.get(0).getContent()).getContent());
+        assertEquals("GO:0004815", ((GoTerm) annotations.get(1).getContent()).getContent());
+        assertEquals("GO:0005524", ((GoTerm) annotations.get(2).getContent()).getContent());
+        assertEquals("GO:0003676", ((GoTerm) annotations.get(3).getContent()).getContent());
+        assertEquals("GO:0006422", ((GoTerm) annotations.get(4).getContent()).getContent());
+    }
 }

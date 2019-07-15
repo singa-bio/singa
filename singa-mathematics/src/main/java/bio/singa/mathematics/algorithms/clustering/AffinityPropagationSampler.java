@@ -74,7 +74,7 @@ public class AffinityPropagationSampler<DataType> {
         }
         // out
         for (Map.Entry<Double, Integer> doubleIntegerEntry : samplingResults.entrySet()) {
-            System.out.println(doubleIntegerEntry.getKey() + ", " + doubleIntegerEntry.getValue());
+            // System.out.println(doubleIntegerEntry.getKey() + ", " + doubleIntegerEntry.getValue());
         }
     }
 

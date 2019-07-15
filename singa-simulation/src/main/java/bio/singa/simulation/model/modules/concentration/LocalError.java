@@ -6,7 +6,6 @@ import bio.singa.simulation.model.simulation.Updatable;
 /**
  * The LocalError object stores the error as an result of the currently applied time step. Additionally it stores in
  * which node and for which chemical entity it occurred.
- *
  * The local error is calculated according to the midpoint method:
  * E = abs(1 - (fullDelta / 2.0 * halfDelta))
  *
@@ -76,6 +75,6 @@ public class LocalError {
 
     @Override
     public String toString() {
-        return equals(MINIMAL_EMPTY_ERROR)?"Minimal":"E("+updatable.getStringIdentifier()+","+entity.getIdentifier()+") = "+value;
+        return equals(MINIMAL_EMPTY_ERROR) ? "Minimal" : "E(" + updatable.getStringIdentifier() + "," + entity.getIdentifier() + ") = " + value;
     }
 }

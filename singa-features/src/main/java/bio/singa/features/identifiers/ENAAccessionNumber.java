@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 /**
  * @author cl
  */
-public class ENAAccessionNumber extends AbstractIdentifier<ENAAccessionNumber> {
+public class ENAAccessionNumber extends AbstractIdentifier {
 
     /**
      * The pattern to verify the identifier.
@@ -23,11 +23,5 @@ public class ENAAccessionNumber extends AbstractIdentifier<ENAAccessionNumber> {
     public ENAAccessionNumber(String identifier) throws IllegalArgumentException {
         super(identifier, PATTERN);
     }
-
-    @Override
-    public ENAAccessionNumber getFeatureContent() {
-        return this;
-    }
-
 
 }

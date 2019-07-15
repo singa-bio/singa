@@ -50,7 +50,7 @@ public class PDBSequenceCluster extends PDBRestEndpoint {
         setResource(getEndpoint());
         Map<String, String> parameterMap = new HashMap<>();
         parameterMap.put("cluster", String.valueOf(identity.getIdentity()));
-        parameterMap.put("structureId", pdbIdentifier.getIdentifier() + "." + chainIdentifier);
+        parameterMap.put("structureId", pdbIdentifier.getContent() + "." + chainIdentifier);
         fetchWithQuery(parameterMap);
 
         try {
@@ -96,7 +96,7 @@ public class PDBSequenceCluster extends PDBRestEndpoint {
     public String[] getRepresentative() {
         if (!clusterMembers.isEmpty()) {
             PDBSequenceClusterMember representativeMember = clusterMembers.get(0);
-            return new String[]{representativeMember.getPdbIdentifier().getIdentifier(), representativeMember.getChainIdentifier()};
+            return new String[]{representativeMember.getPdbIdentifier().getContent(), representativeMember.getChainIdentifier()};
         }
         throw new UnsupportedOperationException("Cannot retrieve representative member if no members are defined.");
     }

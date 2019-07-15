@@ -1,7 +1,7 @@
 package bio.singa.chemistry.features.reactions;
 
 import bio.singa.features.model.Evidence;
-import tec.uom.se.quantity.Quantities;
+import tec.units.indriya.quantity.Quantities;
 
 import javax.measure.Quantity;
 import javax.measure.Unit;
@@ -11,8 +11,6 @@ import javax.measure.Unit;
  */
 public class ThirdOrderForwardsRateConstant extends ThirdOrderRateConstant implements ForwardsRateConstant<ThirdOrderRate> {
 
-    public static final String symbol = "k_fwd_3";
-
     public ThirdOrderForwardsRateConstant(Quantity<ThirdOrderRate> thirdOrderRateQuantity, Evidence evidence) {
         super(thirdOrderRateQuantity, evidence);
     }
@@ -21,10 +19,7 @@ public class ThirdOrderForwardsRateConstant extends ThirdOrderRateConstant imple
         super(Quantities.getQuantity(value, unit), evidence);
     }
 
-    @Override
-    public String getSymbol() {
-        return symbol;
+    public ThirdOrderForwardsRateConstant(Quantity<ThirdOrderRate> thirdOrderRateQuantity) {
+        super(thirdOrderRateQuantity);
     }
-
-
 }

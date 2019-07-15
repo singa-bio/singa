@@ -5,6 +5,7 @@ import bio.singa.mathematics.matrices.LabeledSymmetricMatrix;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class BinaryTree<T> implements Serializable {
 
@@ -80,7 +81,7 @@ public class BinaryTree<T> implements Serializable {
     }
 
     public BinaryTreeNode<T> findNode(T data) {
-        return root.findNode(data);
+        return root.find(data);
     }
 
     public int size() {
@@ -93,7 +94,7 @@ public class BinaryTree<T> implements Serializable {
      * @return a formatted String formatted in Newick that contains the leaves.
      */
     public String toNewickString() {
-        return root.toNewickString() + ";";
+        return root.toNewickString(Objects::toString, ",") + ";";
     }
 
     public boolean containsNode(T nodeData) {

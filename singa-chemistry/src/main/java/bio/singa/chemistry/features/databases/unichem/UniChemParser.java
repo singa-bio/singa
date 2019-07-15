@@ -28,7 +28,7 @@ public class UniChemParser extends AbstractHTMLParser<List<Identifier>> {
     private static final String UNICHEM_FETCH_URL = "https://www.ebi.ac.uk/unichem/rest/verbose_inchikey/%s";
 
     public UniChemParser(InChIKey inChIKey) {
-        setResource(String.format(UNICHEM_FETCH_URL, inChIKey.getIdentifier()));
+        setResource(String.format(UNICHEM_FETCH_URL, inChIKey.getContent()));
     }
 
     public static List<Identifier> parse(InChIKey inChIKey) {

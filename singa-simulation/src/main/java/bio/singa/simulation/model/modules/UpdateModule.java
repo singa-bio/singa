@@ -2,41 +2,36 @@ package bio.singa.simulation.model.modules;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.features.model.Feature;
-import bio.singa.features.model.ScalableFeature;
+import bio.singa.features.model.ScalableQuantitativeFeature;
 import bio.singa.simulation.model.modules.concentration.ModuleState;
+import bio.singa.simulation.model.simulation.Simulation;
 
-import javax.measure.Quantity;
 import java.util.Collection;
 import java.util.Set;
 
 /**
  * @author cl
  */
-public interface UpdateModule {
+public interface UpdateModule extends Runnable {
+
+    String getIdentifier();
+    Set<ChemicalEntity> getReferencedEntities();
+    void setSimulation(Simulation simulation);
+
+    ModuleState getState();
+    void resetState();
+
+    Set<Class<? extends Feature>> getRequiredFeatures();
+    Collection<Feature<?>> getFeatures();
+    double getScaledFeature(Class<? extends ScalableQuantitativeFeature<?>> featureClass);
+    void setFeature(Feature<?> feature);
+    void checkFeatures();
+
+    void initialize();
 
     void calculateUpdates();
 
-    ModuleState getState();
-
-    void resetState();
-
-    void scaleScalableFeatures();
-
-    Set<Class<? extends Feature>> getRequiredFeatures();
-
-    <FeatureContentType extends Quantity<FeatureContentType>> Quantity<FeatureContentType> getScaledFeature(Class<? extends ScalableFeature<FeatureContentType>> featureClass);
-
-    Collection<Feature<?>> getFeatures();
-
-    void setFeature(Feature<?> feature);
-
     void optimizeTimeStep();
-
-    Set<ChemicalEntity> getReferencedEntities();
-
-    void checkFeatures();
-
-    String getIdentifier();
 
     void onReset();
 

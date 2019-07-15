@@ -6,8 +6,6 @@ import bio.singa.chemistry.features.smiles.Smiles;
 import bio.singa.features.identifiers.ChEBIIdentifier;
 import bio.singa.features.identifiers.SimpleStringIdentifier;
 import bio.singa.features.model.Feature;
-import bio.singa.features.model.Evidence;
-import bio.singa.structure.features.molarmass.MolarMass;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -21,7 +19,7 @@ import java.util.Set;
  * @see ChemicalEntity
  * @see <a href="https://de.wikipedia.org/wiki/Simplified_Molecular_Input_Line_Entry_Specification">Wikipedia: SMILES</a>
  */
-public class SmallMolecule extends ChemicalEntity {
+public class SmallMolecule extends AbstractChemicalEntity {
 
     public static Builder create(String identifier) {
         return new Builder(identifier);
@@ -31,15 +29,10 @@ public class SmallMolecule extends ChemicalEntity {
         return new Builder(identifier);
     }
 
-    public static final SmallMolecule UNKNOWN_SPECIES = new SmallMolecule.Builder("UNK")
-            .name("Unknown chemical species")
-            .assignFeature(new MolarMass(10, Evidence.MANUALLY_ANNOTATED))
-            .build();
-
     public static final Set<Class<? extends Feature>> availableFeatures = new HashSet<>();
 
     static {
-        SmallMolecule.availableFeatures.addAll(ChemicalEntity.availableFeatures);
+        SmallMolecule.availableFeatures.addAll(AbstractChemicalEntity.availableFeatures);
         availableFeatures.add(Smiles.class);
         availableFeatures.add(LogP.class);
     }
@@ -67,19 +60,19 @@ public class SmallMolecule extends ChemicalEntity {
         return availableFeatures;
     }
 
-    public static class Builder extends ChemicalEntity.Builder<SmallMolecule, Builder> {
+    public static class Builder extends AbstractChemicalEntity.Builder<SmallMolecule, Builder> {
 
         public Builder(SimpleStringIdentifier identifier) {
             super(identifier);
         }
 
-        public Builder(String identifier) {
+        private Builder(String identifier) {
             this(new SimpleStringIdentifier(identifier));
         }
 
         @Override
         protected SmallMolecule createObject(SimpleStringIdentifier primaryIdentifer) {
-            return new SmallMolecule(primaryIdentifer.getIdentifier());
+            return new SmallMolecule(primaryIdentifer);
         }
 
         @Override

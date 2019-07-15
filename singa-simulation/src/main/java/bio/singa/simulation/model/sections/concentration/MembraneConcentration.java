@@ -3,11 +3,11 @@ package bio.singa.simulation.model.sections.concentration;
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.features.model.Evidence;
 import bio.singa.features.quantities.MolarConcentration;
+import bio.singa.features.units.UnitRegistry;
 import bio.singa.simulation.model.agents.pointlike.Vesicle;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.sections.CellRegion;
 import bio.singa.simulation.model.sections.CellSubsection;
-import bio.singa.simulation.model.simulation.Simulation;
 import bio.singa.simulation.model.simulation.Updatable;
 
 import javax.measure.Quantity;
@@ -69,6 +69,7 @@ public class MembraneConcentration implements InitialConcentration {
         this.numberOfMolecules = numberOfMolecules;
     }
 
+    @Override
     public Evidence getEvidence() {
         return evidence;
     }
@@ -78,30 +79,33 @@ public class MembraneConcentration implements InitialConcentration {
     }
 
     @Override
-    public void initialize(Simulation simulation) {
-        for (Updatable updatable : simulation.getUpdatables()) {
+    public void initialize(Updatable updatable) {
+        // if this is vesicle
+        if (!updatable.getCellRegion().equals(region)) {
             // skip wrong regions
-            if (!updatable.getCellRegion().equals(region)) {
-                continue;
-            }
-            CellSubsection membraneSubsection = updatable.getConcentrationContainer().getMembraneSubsection();
-            // skip non membrane regions
-            if (membraneSubsection == null) {
-                continue;
-            }
-
-            // get representative area
-            Quantity<Area> updatableArea;
-            if (updatable instanceof Vesicle) {
-                updatableArea = ((Vesicle) updatable).getArea();
-            } else {
-                updatableArea = ((AutomatonNode) updatable).getMembraneArea();
-            }
-            // correlate
-            Quantity<?> adjustedMolecules = updatableArea.to(area.getUnit()).multiply(numberOfMolecules).divide(area);
-            Quantity < MolarConcentration > concentration = MolarConcentration.moleculesToConcentration(adjustedMolecules.getValue().doubleValue());
-            updatable.getConcentrationContainer().initialize(membraneSubsection, entity, concentration);
+            return;
         }
+        CellSubsection membraneSubsection = updatable.getConcentrationContainer().getMembraneSubsection();
+        // skip non membrane regions
+        if (membraneSubsection == null) {
+            return;
+        }
+        // get representative area
+        Quantity<Area> updatableArea;
+        if (updatable instanceof Vesicle) {
+            updatableArea = ((Vesicle) updatable).getArea();
+        } else {
+            updatableArea = ((AutomatonNode) updatable).getMembraneArea();
+        }
+        // correlate
+        double concentration;
+        if (area != null) {
+            Quantity<?> adjustedMolecules = updatableArea.to(area.getUnit()).multiply(numberOfMolecules).divide(area);
+            concentration = MolarConcentration.moleculesToConcentration(adjustedMolecules.getValue().doubleValue());
+        } else {
+            concentration = MolarConcentration.moleculesToConcentration(numberOfMolecules);
+        }
+        updatable.getConcentrationContainer().initialize(membraneSubsection, entity, UnitRegistry.concentration(concentration));
     }
 
     @Override

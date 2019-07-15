@@ -1,17 +1,17 @@
 package bio.singa.chemistry.features.reactions;
 
+import bio.singa.features.units.UnitRegistry;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import bio.singa.features.units.UnitRegistry;
-import tec.uom.se.quantity.Quantities;
-import tec.uom.se.unit.ProductUnit;
+import tec.units.indriya.quantity.Quantities;
 
 import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static tec.uom.se.AbstractUnit.ONE;
-import static tec.uom.se.unit.MetricPrefix.*;
-import static tec.uom.se.unit.Units.*;
+import static tec.units.indriya.unit.MetricPrefix.MILLI;
+import static tec.units.indriya.unit.MetricPrefix.NANO;
+import static tec.units.indriya.unit.Units.MINUTE;
+import static tec.units.indriya.unit.Units.SECOND;
 
 /**
  * @author cl
@@ -58,8 +58,7 @@ class RateConstantTest {
         // * 10 from 10 seconds
         // / 10E-12 from litre to um3
         // = 1.0e-8 mol/l*s
-        assertEquals(new ProductUnit<>(NANO(MOLE).divide(MICRO(METRE).pow(3).multiply(SECOND))), zeroOrder.getScaledQuantity().getUnit());
-        assertEquals(1.0e-14, zeroOrder.getScaledQuantity().getValue().doubleValue(), 1.0E-16);
+        assertEquals(1.0e-14, zeroOrder.getScaledQuantity(), 1.0E-16);
     }
 
     @Test
@@ -70,8 +69,7 @@ class RateConstantTest {
         firstOrder.scale();
         // * 60 from 1 minute (60) seconds
         // = 120 1/min
-        assertEquals(new ProductUnit<>(ONE.divide(MINUTE)), firstOrder.getScaledQuantity().getUnit());
-        assertEquals(120.0, firstOrder.getScaledQuantity().getValue().doubleValue());
+        assertEquals(120.0, firstOrder.getScaledQuantity());
     }
 
     @Test
@@ -84,8 +82,7 @@ class RateConstantTest {
         // / 0.001 from seconds to milli seconds
         // * 10E-12 from litre to um3
         // = 0.05 l/mol*ms
-        assertEquals(new ProductUnit<>(MICRO(METRE).pow(3).divide(NANO(MOLE).multiply(MILLI(SECOND)))), secondOder.getScaledQuantity().getUnit());
-        assertEquals(5.0E4, secondOder.getScaledQuantity().getValue().doubleValue());
+        assertEquals(5.0E4, secondOder.getScaledQuantity());
     }
 
 }

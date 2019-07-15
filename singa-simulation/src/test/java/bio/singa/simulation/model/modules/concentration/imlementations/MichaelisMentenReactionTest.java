@@ -1,33 +1,34 @@
 package bio.singa.simulation.model.modules.concentration.imlementations;
 
-import bio.singa.chemistry.entities.Enzyme;
+import bio.singa.chemistry.entities.Protein;
 import bio.singa.chemistry.entities.SmallMolecule;
 import bio.singa.chemistry.features.databases.chebi.ChEBIParserService;
 import bio.singa.chemistry.features.reactions.MichaelisConstant;
 import bio.singa.chemistry.features.reactions.TurnoverNumber;
+import bio.singa.features.model.Evidence;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.graphs.AutomatonNode;
+import bio.singa.simulation.model.modules.concentration.imlementations.reactions.ReactionBuilder;
 import bio.singa.simulation.model.sections.CellSubsection;
 import bio.singa.simulation.model.simulation.Simulation;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import tec.uom.se.quantity.Quantities;
-import tec.uom.se.unit.ProductUnit;
+import tec.units.indriya.quantity.Quantities;
+import tec.units.indriya.unit.ProductUnit;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Time;
 
-import static bio.singa.features.model.Evidence.MANUALLY_ANNOTATED;
 import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static bio.singa.simulation.model.sections.CellRegions.EXTRACELLULAR_REGION;
-import static org.junit.jupiter.api.Assertions.*;
-import static tec.uom.se.AbstractUnit.ONE;
-import static tec.uom.se.unit.Units.MINUTE;
-import static tec.uom.se.unit.Units.SECOND;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static tec.units.indriya.AbstractUnit.ONE;
+import static tec.units.indriya.unit.Units.MINUTE;
+import static tec.units.indriya.unit.Units.SECOND;
 
 /**
  * @author cl
@@ -56,33 +57,33 @@ class MichaelisMentenReactionTest {
         // setup graph
         AutomatonGraph graph = AutomatonGraphs.singularGraph();
 
-        // prepare species
-        SmallMolecule fp = ChEBIParserService.parse("CHEBI:18105");
-        SmallMolecule gp = ChEBIParserService.parse("CHEBI:16108");
-        SmallMolecule ga = ChEBIParserService.parse("CHEBI:17378");
+        // get required species
+        SmallMolecule fructosePhosphate = ChEBIParserService.parse("CHEBI:18105");
+        SmallMolecule glyceronePhosphate = ChEBIParserService.parse("CHEBI:16108");
+        SmallMolecule glyceraldehyde = ChEBIParserService.parse("CHEBI:17378");
+        Protein aldolase = Protein.create("P07752").build();
 
-        // prepare enzyme
-        Enzyme aldolase = new Enzyme.Builder("P07752")
-                .name("Fructose-bisphosphate aldolase")
-                .assignFeature(new MichaelisConstant(Quantities.getQuantity(9.0e-3, MOLE_PER_LITRE), MANUALLY_ANNOTATED))
-                .assignFeature(new TurnoverNumber(76, new ProductUnit<>(ONE.divide(MINUTE)), MANUALLY_ANNOTATED))
-                .build();
+        // rates
+        MichaelisConstant michaelisConstant = new MichaelisConstant(Quantities.getQuantity(9.0e-3, MOLE_PER_LITRE), Evidence.NO_EVIDENCE);
+        TurnoverNumber turnoverNumber = new TurnoverNumber(76, new ProductUnit<>(ONE.divide(MINUTE)), Evidence.NO_EVIDENCE);
 
         // set concentrations
         CellSubsection subsection = EXTRACELLULAR_REGION.getInnerSubsection();
         for (AutomatonNode node : graph.getNodes()) {
-            node.getConcentrationContainer().set(subsection, fp, 1.0);
-            node.getConcentrationContainer().set(subsection, aldolase, 0.01);
-            node.getConcentrationContainer().set(subsection, ga, 0);
-            node.getConcentrationContainer().set(subsection, gp, 0);
+            node.getConcentrationContainer().initialize(subsection, fructosePhosphate, Quantities.getQuantity(1.0, MOLE_PER_LITRE));
+            node.getConcentrationContainer().initialize(subsection, aldolase, Quantities.getQuantity(0.01, MOLE_PER_LITRE));
         }
 
         // setup reaction
-        MichaelisMentenReaction.inSimulation(simulation)
-                .enzyme(aldolase)
-                .addSubstrate(fp)
-                .addProduct(ga)
-                .addProduct(gp)
+        // create reaction using the properties of the enzyme
+        ReactionBuilder.staticReactants(simulation)
+                .addSubstrate(fructosePhosphate)
+                .addCatalyst(aldolase)
+                .addProduct(glyceraldehyde)
+                .addProduct(glyceronePhosphate)
+                .michaelisMenten()
+                .michaelisConstant(michaelisConstant)
+                .turnover(turnoverNumber)
                 .build();
 
         // add graph
@@ -97,18 +98,18 @@ class MichaelisMentenReactionTest {
         while ((currentTime = simulation.getElapsedTime().to(SECOND)).getValue().doubleValue() < secondCheckpoint.getValue().doubleValue()) {
             simulation.nextEpoch();
             if (!firstCheckpointPassed && currentTime.getValue().doubleValue() > firstCheckpoint.getValue().doubleValue()) {
-                assertEquals(0.50, node.getConcentrationContainer().get(subsection, fp).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-2);
-                assertEquals(0.49, node.getConcentrationContainer().get(subsection, gp).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-2);
-                assertEquals(0.49, node.getConcentrationContainer().get(subsection, ga).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-2);
-                assertEquals(0.01, node.getConcentrationContainer().get(subsection, aldolase).to(MOLE_PER_LITRE).getValue().doubleValue());
+                assertEquals(0.50, UnitRegistry.concentration(node.getConcentrationContainer().get(subsection, fructosePhosphate)).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-2);
+                assertEquals(0.49, UnitRegistry.concentration(node.getConcentrationContainer().get(subsection, glyceronePhosphate)).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-2);
+                assertEquals(0.49, UnitRegistry.concentration(node.getConcentrationContainer().get(subsection, glyceraldehyde)).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-2);
+                assertEquals(0.01, UnitRegistry.concentration(node.getConcentrationContainer().get(subsection, aldolase)).to(MOLE_PER_LITRE).getValue().doubleValue());
                 firstCheckpointPassed = true;
             }
         }
         // check final values
-        assertEquals(0.0, node.getConcentrationContainer().get(subsection, fp).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
-        assertEquals(1.0, node.getConcentrationContainer().get(subsection, gp).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
-        assertEquals(1.0, node.getConcentrationContainer().get(subsection, ga).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
-        assertEquals(0.01, node.getConcentrationContainer().get(subsection, aldolase).to(MOLE_PER_LITRE).getValue().doubleValue());
+        assertEquals(0.0, UnitRegistry.concentration(node.getConcentrationContainer().get(subsection, fructosePhosphate)).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
+        assertEquals(1.0, UnitRegistry.concentration(node.getConcentrationContainer().get(subsection, glyceronePhosphate)).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
+        assertEquals(1.0, UnitRegistry.concentration(node.getConcentrationContainer().get(subsection, glyceraldehyde)).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
+        assertEquals(0.01, UnitRegistry.concentration(node.getConcentrationContainer().get(subsection, aldolase)).to(MOLE_PER_LITRE).getValue().doubleValue());
     }
 
 }

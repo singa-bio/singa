@@ -1,18 +1,16 @@
 package bio.singa.simulation.model.modules.concentration.scope;
 
-import bio.singa.features.quantities.MolarConcentration;
+import bio.singa.simulation.model.agents.pointlike.Vesicle;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.modules.concentration.ConcentrationBasedModule;
 import bio.singa.simulation.model.modules.concentration.ConcentrationDelta;
 import bio.singa.simulation.model.modules.concentration.ConcentrationDeltaIdentifier;
 import bio.singa.simulation.model.modules.concentration.FieldSupplier;
-import bio.singa.simulation.model.modules.concentration.imlementations.MembraneDiffusion;
+import bio.singa.simulation.model.modules.concentration.imlementations.transport.MembraneDiffusion;
 import bio.singa.simulation.model.modules.concentration.specifity.UpdateSpecificity;
-import bio.singa.simulation.model.agents.pointlike.Vesicle;
 import bio.singa.simulation.model.sections.ConcentrationContainer;
 import bio.singa.simulation.model.simulation.Updatable;
 
-import javax.measure.Quantity;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -96,8 +94,10 @@ public class SemiDependentUpdate implements UpdateScope {
     }
 
     @Override
-    public void clearPotentialDeltas(Updatable updatable) {
-        module.getSimulation().getUpdatables().forEach(Updatable::clearPotentialConcentrationDeltas);
+    public void clearPotentialDeltas() {
+        for (Updatable current : module.getSimulation().getUpdatables()) {
+            current.getConcentrationManager().clearPotentialDeltas();
+        }
     }
 
     /**
@@ -121,9 +121,9 @@ public class SemiDependentUpdate implements UpdateScope {
                 halfConcentrations.put(updatable, container);
             }
             // get full concentration
-            Quantity<MolarConcentration> fullConcentration = container.get(identifier.getSubsection(), identifier.getEntity());
+            double fullConcentration = container.get(identifier.getSubsection(), identifier.getEntity());
             // add half of the full delta
-            Quantity<MolarConcentration> halfStepConcentration = fullConcentration.add(fullDelta.getQuantity().multiply(0.5));
+            double halfStepConcentration = fullConcentration + (fullDelta.getValue() * 0.5);
             // update concentration
             container.set(identifier.getSubsection(), identifier.getEntity(), halfStepConcentration);
         }

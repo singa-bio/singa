@@ -35,9 +35,11 @@ public class MembraneFactory {
     private Membrane membrane;
 
     public static Membrane createLinearMembrane(Collection<Vector2D> vectors, CellRegion innerRegion, CellRegion membraneRegion, NeumannRectangularDirection innerDirection, AutomatonGraph graph, Map<Vector2D, CellRegion> regions, Rectangle globalClipper) {
+        logger.info("Initializing linear membrane from {} vectors", vectors.size());
         MembraneFactory factory = new MembraneFactory(vectors, graph, regions);
         factory.direction = innerDirection;
         factory.initializeMembrane(innerRegion, membraneRegion);
+        factory.membrane.setInnerDirection(innerDirection);
         NeumannRectangularDirection vectorDirection;
         if (innerDirection == NORTH || innerDirection == SOUTH) {
             vectorDirection = WEST;
@@ -47,33 +49,48 @@ public class MembraneFactory {
         List<Vector2D> sortedVectors = Vectors.sortByCloseness(factory.membraneVectors, vectorDirection);
         List<LineSegment> segments = Vectors.connectToSegments(sortedVectors);
         factory.associateToGraph(segments);
-        factory.fillInternalNodes();
+        if (graph.getNodes().size() > 1) {
+            factory.fillInternalNodes();
+        }
         factory.createPolygonForLinearMembrane(globalClipper, sortedVectors);
         factory.setupSubsectionRepresentations(factory.polygon);
+        factory.membrane.setRegionMap(factory.reconstructRegionMap());
         return factory.membrane;
     }
 
     public static Membrane createClosedMembrane(Collection<Vector2D> vectors, CellRegion innerRegion, CellRegion membraneRegion, AutomatonGraph graph, Map<Vector2D, CellRegion> regions) {
+        logger.info("Initializing closed membrane from {} vectors", vectors.size());
         MembraneFactory factory = new MembraneFactory(vectors, graph, regions);
         factory.initializeMembrane(innerRegion, membraneRegion);
         factory.polygon = factory.connectPolygonVectors(vectors);
         factory.associateToGraph(factory.polygon.getEdges());
         factory.fillInternalNodes();
         factory.setupSubsectionRepresentations(factory.polygon);
+        factory.membrane.setRegionMap(factory.reconstructRegionMap());
         return factory.membrane;
     }
 
-    public MembraneFactory(Collection<Vector2D> membraneVectors, AutomatonGraph graph, Map<Vector2D, CellRegion> regions) {
+    private MembraneFactory(Collection<Vector2D> membraneVectors, AutomatonGraph graph, Map<Vector2D, CellRegion> regions) {
         this.membraneVectors = membraneVectors;
         this.graph = graph;
         this.regions = regions;
     }
 
     private void initializeMembrane(CellRegion innerRegion, CellRegion membraneRegion) {
-        logger.info("Initializing membrane.");
         membrane = new Membrane(membraneRegion.getIdentifier());
         membrane.setInnerRegion(innerRegion);
         membrane.setMembraneRegion(membraneRegion);
+    }
+
+    private Map<CellRegion, Set<Vector2D>> reconstructRegionMap() {
+        Map<CellRegion, Set<Vector2D>> regionMap = new HashMap<>();
+        for (Map.Entry<Vector2D, CellRegion> entry : regions.entrySet()) {
+            if (!regionMap.containsKey(entry.getValue())) {
+                regionMap.put(entry.getValue(), new HashSet<>());
+            }
+            regionMap.get(entry.getValue()).add(entry.getKey());
+        }
+        return regionMap;
     }
 
     private Polygon connectPolygonVectors(Collection<Vector2D> vectors) {
@@ -108,7 +125,7 @@ public class MembraneFactory {
                         membrane.addSegment(node, lineSegment);
                         node.setCellRegion(regions.get(startingPoint));
                         break;
-                    } else if (startIsInside) {
+                    } else if (startIsInside && intersections.size() != 2) {
                         // end outside or on line
                         Vector2D intersectionPoint = intersections.iterator().next();
                         if (!intersectionPoint.equals(startingPoint)) {
@@ -116,7 +133,7 @@ public class MembraneFactory {
                             node.setCellRegion(regions.get(startingPoint));
                             isContained = false;
                         }
-                    } else if (endIsInside) {
+                    } else if (endIsInside && intersections.size() != 2) {
                         // start outside or on line
                         Vector2D intersectionPoint = intersections.iterator().next();
                         if (!intersectionPoint.equals(endingPoint)) {

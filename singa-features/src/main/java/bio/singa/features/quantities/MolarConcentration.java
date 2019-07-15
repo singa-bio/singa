@@ -1,11 +1,11 @@
 package bio.singa.features.quantities;
 
 import bio.singa.features.units.UnitRegistry;
-import tec.uom.se.AbstractConverter;
-import tec.uom.se.AbstractQuantity;
-import tec.uom.se.ComparableQuantity;
-import tec.uom.se.quantity.Quantities;
-import tec.uom.se.unit.ProductUnit;
+import tec.units.indriya.AbstractQuantity;
+import tec.units.indriya.AbstractConverter;
+import tec.units.indriya.ComparableQuantity;
+import tec.units.indriya.quantity.Quantities;
+import tec.units.indriya.unit.ProductUnit;
 
 import javax.measure.Quantity;
 import javax.measure.Unit;
@@ -16,7 +16,7 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.util.Objects;
 
-import static tec.uom.se.unit.Units.*;
+import static tec.units.indriya.unit.Units.*;
 
 /**
  * Molar concentration, also called molarity, amount concentration or substance
@@ -119,9 +119,9 @@ public class MolarConcentration extends AbstractQuantity<MolarConcentration> {
         return false;
     }
 
-    public static Quantity<MolarConcentration> moleculesToConcentration(double numberOfMolecules) {
-        Quantity<AmountOfSubstance> mole = Quantities.getQuantity(numberOfMolecules / NaturalConstants.AVOGADRO_CONSTANT.getValue().doubleValue(), MOLE);
-        return mole.divide(UnitRegistry.getVolume()).asType(MolarConcentration.class);
+    public static double moleculesToConcentration(double numberOfMolecules) {
+        ComparableQuantity<AmountOfSubstance> mole = Quantities.getQuantity(numberOfMolecules / NaturalConstants.AVOGADRO_CONSTANT.getValue().doubleValue(), MOLE);
+        return mole.to(UnitRegistry.getDefaultUnit(MOLE).asType(AmountOfSubstance.class)).divide(UnitRegistry.getVolume()).getValue().doubleValue();
     }
 
     public static Quantity<AmountOfSubstance> concentrationToMoles(Quantity<MolarConcentration> concentration, Quantity<Volume> volume) {
@@ -131,8 +131,8 @@ public class MolarConcentration extends AbstractQuantity<MolarConcentration> {
         return multiply.asType(AmountOfSubstance.class);
     }
 
-    public static Quantity<Dimensionless> concentrationToMolecules(Quantity<MolarConcentration> concentration) {
-        return concentrationToMoles(concentration, UnitRegistry.getVolume()).multiply(NaturalConstants.AVOGADRO_CONSTANT).asType(Dimensionless.class);
+    public static Quantity<Dimensionless> concentrationToMolecules(double concentration) {
+        return concentrationToMoles(UnitRegistry.concentration(concentration), UnitRegistry.getVolume()).multiply(NaturalConstants.AVOGADRO_CONSTANT).asType(Dimensionless.class);
     }
 
 }

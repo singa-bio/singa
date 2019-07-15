@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
  * @author cl
  * @see <a href="http://www.inchi-trust.org/technical-faq/#2.1">Enzyme Nomenclature</a>
  */
-public class InChIKey extends AbstractIdentifier<InChIKey> {
+public class InChIKey extends AbstractIdentifier {
 
     /**
      * The pattern to verify the identifier.
@@ -36,8 +36,4 @@ public class InChIKey extends AbstractIdentifier<InChIKey> {
         super(identifier, PATTERN, evidence);
     }
 
-    @Override
-    public InChIKey getFeatureContent() {
-        return this;
-    }
 }

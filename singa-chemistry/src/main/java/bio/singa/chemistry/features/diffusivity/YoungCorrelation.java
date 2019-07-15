@@ -5,19 +5,19 @@ import bio.singa.features.model.Evidence;
 import bio.singa.features.model.Featureable;
 import bio.singa.features.parameters.Environment;
 import bio.singa.structure.features.molarmass.MolarMass;
-import tec.uom.se.quantity.Quantities;
+import tec.units.indriya.quantity.Quantities;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Dimensionless;
 
-import static tec.uom.se.AbstractUnit.ONE;
+import static tec.units.indriya.AbstractUnit.ONE;
 
 /**
  * @author cl
  */
 public class YoungCorrelation implements Correlation<Diffusivity> {
 
-    private static final Evidence evidence = new Evidence(Evidence.OriginType.PREDICTION,
+    private static final Evidence evidence = new Evidence(Evidence.SourceType.PREDICTION,
             "Young Correlation",
             "Young, M. E., P. A. Carroad, and R. L. Bell. \"Estimation of diffusion coefficients " +
                     "of proteins.\" Biotechnology and Bioengineering 22.5 (1980): 947-955.");

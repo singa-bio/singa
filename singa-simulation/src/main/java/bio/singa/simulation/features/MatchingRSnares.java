@@ -1,25 +1,34 @@
 package bio.singa.simulation.features;
 
-import bio.singa.chemistry.features.MultiEntityFeature;
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.features.model.Evidence;
 
-import java.util.Set;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author cl
  */
 public class MatchingRSnares extends MultiEntityFeature {
 
-    private static final String SYMBOL = "es_RSnares";
-
-    public MatchingRSnares(Set<ChemicalEntity> chemicalEntities, Evidence evidence) {
+    public MatchingRSnares(List<ChemicalEntity> chemicalEntities, List<Evidence> evidence) {
         super(chemicalEntities, evidence);
     }
 
-    @Override
-    public String getSymbol() {
-        return SYMBOL;
+    public MatchingRSnares(List<ChemicalEntity> chemicalEntities, Evidence evidence) {
+        super(chemicalEntities, evidence);
+    }
+
+    public MatchingRSnares(List<ChemicalEntity> chemicalEntities) {
+        super(chemicalEntities);
+    }
+
+    public MatchingRSnares(ChemicalEntity chemicalEntity, Evidence evidence) {
+        super(Collections.singletonList(chemicalEntity), evidence);
+    }
+
+    public MatchingRSnares(ChemicalEntity chemicalEntity) {
+        super(Collections.singletonList(chemicalEntity));
     }
 
 }

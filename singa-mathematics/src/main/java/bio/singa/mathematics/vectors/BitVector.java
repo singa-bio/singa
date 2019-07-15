@@ -109,6 +109,20 @@ public interface BitVector extends MultiDimensional<BitVector>, Metrizable<BitVe
         return new RegularBitVector(elements);
     }
 
+    /**
+     * Concatenates the elements of this {@link BitVector} of length m with another of length n.
+     *
+     * @param bitVector {@link BitVector} to be concatenated.
+     * @return Concatenated {@link BitVector} of length m+n.
+     */
+    default BitVector concat(BitVector bitVector) {
+        int newLength = getDimension() + bitVector.getDimension();
+        boolean[] elements = new boolean[newLength];
+        System.arraycopy(getElements(), 0, elements, 0, getDimension());
+        System.arraycopy(bitVector.getElements(), 0, elements, getDimension(), bitVector.getDimension());
+        return new RegularBitVector(elements);
+    }
+
     default String toBitString() {
         StringJoiner stringJoiner = new StringJoiner("");
         for (boolean element : getElements()) {

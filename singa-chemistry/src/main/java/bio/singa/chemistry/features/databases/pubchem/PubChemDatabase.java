@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
  */
 public class PubChemDatabase {
 
-    public static final Evidence evidence = new Evidence(Evidence.OriginType.DATABASE,
+    public static final Evidence evidence = new Evidence(Evidence.SourceType.DATABASE,
             "PubChem Database",
             "Kim, Sunghwan, et al. \"PubChem substance and compound databases.\" Nucleic acids research " +
                     "44.D1 (2016): D1202-D1213.");

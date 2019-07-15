@@ -33,10 +33,10 @@ class MooreRectangularDirectionTest {
         RectangularCoordinate c2 = getNeighborOf(new RectangularCoordinate(1, 1), NORTH_WEST, NORTH_WEST);
         RectangularCoordinate c3 = getNeighborOf(new RectangularCoordinate(1, 1), NORTH_WEST, NORTH_EAST);
         RectangularCoordinate c4 = getNeighborOf(new RectangularCoordinate(1, 1), NORTH_WEST, SOUTH_WEST);
-        System.out.println(rectangularGrid.getValue(c1));
-        System.out.println(rectangularGrid.getValue(c2));
-        System.out.println(rectangularGrid.getValue(c3));
-        System.out.println(rectangularGrid.getValue(c4));
+        assertEquals(rectangularGrid.getValue(c1), "SE");
+        assertEquals(rectangularGrid.getValue(c2), "C");
+        assertEquals(rectangularGrid.getValue(c3), "E");
+        assertEquals(rectangularGrid.getValue(c4), "S");
     }
 
 }

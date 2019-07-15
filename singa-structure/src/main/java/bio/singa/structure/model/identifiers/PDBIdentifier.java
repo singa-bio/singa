@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
  * @author cl
  * @see <a href="http://www.rcsb.org/pdb/staticHelp.do?p=help/advancedsearch/pdbIDs.html">PDB identifier</a>
  */
-public class PDBIdentifier extends AbstractIdentifier<PDBIdentifier> {
+public class PDBIdentifier extends AbstractIdentifier {
 
     /**
      * The pattern to verify the identifier.
@@ -44,8 +44,4 @@ public class PDBIdentifier extends AbstractIdentifier<PDBIdentifier> {
         return null;
     }
 
-    @Override
-    public PDBIdentifier getFeatureContent() {
-        return this;
-    }
 }

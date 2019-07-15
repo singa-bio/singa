@@ -1,17 +1,15 @@
 package bio.singa.simulation.model.sections;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
-import bio.singa.chemistry.entities.ComplexedChemicalEntity;
-import bio.singa.features.parameters.Environment;
+import bio.singa.chemistry.entities.ComplexEntity;
 import bio.singa.features.quantities.MolarConcentration;
-import bio.singa.features.units.UnitProvider;
 import bio.singa.features.units.UnitRegistry;
-import tec.uom.se.quantity.Quantities;
+import bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.reactants.DynamicChemicalEntity;
+import bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.reactants.EntityReducer;
 
 import javax.measure.Quantity;
 import java.util.*;
 
-import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static bio.singa.simulation.model.sections.CellTopology.INNER;
 import static bio.singa.simulation.model.sections.CellTopology.OUTER;
 
@@ -109,7 +107,7 @@ public class ConcentrationContainer {
      *
      * @return All subsections, referenced in this container.
      */
-    public Set<CellSubsection> getReferencedSubSections() {
+    public Set<CellSubsection> getReferencedSubsections() {
         return concentrations.keySet();
     }
 
@@ -135,13 +133,13 @@ public class ConcentrationContainer {
         return chemicalEntities;
     }
 
-    public Optional<ChemicalEntity> containsEntity(CellTopology topology, ChemicalEntity entity) {
+    public Optional<ChemicalEntity> containsHiddenEntity(CellTopology topology, ChemicalEntity entity) {
         for (ChemicalEntity chemicalEntity : getPool(topology).getValue().getReferencedEntities()) {
             if (entity.equals(chemicalEntity)) {
                 return Optional.of(chemicalEntity);
             }
-            if (chemicalEntity instanceof ComplexedChemicalEntity) {
-                for (ChemicalEntity associatedChemicalEntity : ((ComplexedChemicalEntity) chemicalEntity).getAssociatedChemicalEntities()) {
+            if (chemicalEntity instanceof ComplexEntity) {
+                for (ChemicalEntity associatedChemicalEntity : ((ComplexEntity) chemicalEntity).getAllData()) {
                     if (entity.equals(associatedChemicalEntity)) {
                         return Optional.of(chemicalEntity);
                     }
@@ -151,6 +149,23 @@ public class ConcentrationContainer {
         return Optional.empty();
     }
 
+    public boolean containsEntity(CellTopology topology, ChemicalEntity entity) {
+        for (ChemicalEntity chemicalEntity : getPool(topology).getValue().getReferencedEntities()) {
+            if (entity.equals(chemicalEntity)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean containsEntity(CellSubsection subsection, ChemicalEntity entity) {
+        for (ChemicalEntity chemicalEntity : getPool(subsection).getValue().getReferencedEntities()) {
+            if (entity.equals(chemicalEntity)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     /**
      * Returns the topology and concentration pool for the subsection.
@@ -187,10 +202,10 @@ public class ConcentrationContainer {
      * @param entity The entity.
      * @return The concentration of the entity in the corresponding subsection.
      */
-    public Quantity<MolarConcentration> get(CellSubsection subsection, ChemicalEntity entity) {
+    public double get(CellSubsection subsection, ChemicalEntity entity) {
         ConcentrationPool concentrationPool = concentrations.get(subsection);
         if (concentrationPool == null) {
-            return Environment.emptyConcentration();
+            return 0.0;
         }
         return concentrationPool.get(entity);
     }
@@ -202,13 +217,28 @@ public class ConcentrationContainer {
      * @param entity The entity.
      * @return The concentration of the entity in the corresponding topology.
      */
-    public Quantity<MolarConcentration> get(CellTopology topology, ChemicalEntity entity) {
+    public double get(CellTopology topology, ChemicalEntity entity) {
         CellSubsection subsection = subsectionTopology.get(topology);
         if (subsection == null) {
-            return Environment.emptyConcentration();
+            return 0.0;
         }
         return get(subsection, entity);
     }
+
+    public double sumOf(DynamicChemicalEntity dynamicEntity) {
+        double sum = 0.0;
+        for (CellTopology topology : dynamicEntity.getPossibleTopologies()) {
+            if (getPool(topology) != null) {
+                Set<ChemicalEntity> originalEntities = getPool(topology).getValue().getReferencedEntities();
+                List<ChemicalEntity> reducedEntities = EntityReducer.apply(originalEntities, dynamicEntity.getComposition());
+                for (ChemicalEntity entity : reducedEntities) {
+                    sum += get(topology, entity);
+                }
+            }
+        }
+        return sum;
+    }
+
 
     /**
      * Sets the concentration of the given entity in the given subsection.
@@ -217,12 +247,12 @@ public class ConcentrationContainer {
      * @param entity The entity.
      * @param concentration The concentration.
      */
-    public void set(CellSubsection subsection, ChemicalEntity entity, Quantity<MolarConcentration> concentration) {
+    public void set(CellSubsection subsection, ChemicalEntity entity, double concentration) {
         concentrations.get(subsection).set(entity, concentration);
     }
 
     public void initialize(CellSubsection subsection, ChemicalEntity entity, Quantity<MolarConcentration> concentration) {
-        concentrations.get(subsection).set(entity, concentration.to(UnitRegistry.getConcentrationUnit()));
+        concentrations.get(subsection).set(entity, concentration.to(UnitRegistry.getConcentrationUnit()).getValue().doubleValue());
     }
 
     /**
@@ -232,39 +262,12 @@ public class ConcentrationContainer {
      * @param entity The entity.
      * @param concentration The concentration.
      */
-    public void set(CellTopology topology, ChemicalEntity entity, Quantity<MolarConcentration> concentration) {
+    public void set(CellTopology topology, ChemicalEntity entity, double concentration) {
         set(subsectionTopology.get(topology), entity, concentration);
     }
 
     public void initialize(CellTopology topology, ChemicalEntity entity, Quantity<MolarConcentration> concentration) {
         initialize(subsectionTopology.get(topology), entity, concentration);
-    }
-
-
-    /**
-     * Sets the concentration of the given entity in the given subsection. The concentration is assumed to be
-     * {@link UnitProvider#MOLE_PER_LITRE} but is transformed to the preferred concentration.
-     *
-     * @param subsection The subsection.
-     * @param entity The entity.
-     * @param concentration The concentration in mol/l
-     */
-    public void set(CellSubsection subsection, ChemicalEntity entity, double concentration) {
-        set(subsection, entity, Quantities.getQuantity(concentration, MOLE_PER_LITRE).to(UnitRegistry.getConcentrationUnit()));
-    }
-
-    /**
-     * Sets the concentration of the given entity in the subsection corresponding to the topological descriptor. The
-     * concentration is assumed to be {@link UnitProvider#MOLE_PER_LITRE} but is transformed to the preferred
-     * concentration.
-     *
-     * @param topology The topological descriptor.
-     * @param entity The entity.
-     * @param concentration The concentration in mol/l
-     */
-    public void set(CellTopology topology, ChemicalEntity entity, double concentration) {
-        CellSubsection subsection = subsectionTopology.get(topology);
-        set(subsection, entity, concentration);
     }
 
     /**

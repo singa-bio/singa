@@ -3,6 +3,7 @@ package bio.singa.chemistry.entities;
 import bio.singa.chemistry.annotations.Annotation;
 import bio.singa.chemistry.annotations.AnnotationType;
 import bio.singa.chemistry.annotations.taxonomy.Organism;
+import bio.singa.features.identifiers.GoTerm;
 import bio.singa.features.identifiers.SimpleStringIdentifier;
 import bio.singa.features.model.Feature;
 
@@ -13,13 +14,23 @@ import java.util.Set;
 /**
  * @author cl
  */
-public class Protein extends ChemicalEntity {
+public class Protein extends AbstractChemicalEntity {
 
     private static final Set<Class<? extends Feature>> availableFeatures = new HashSet<>();
 
-    static {
-        Protein.availableFeatures.addAll(ChemicalEntity.availableFeatures);
+    public static Builder create(String identifier) {
+        return new Builder(identifier);
     }
+
+    public static Builder create(SimpleStringIdentifier identifier) {
+        return new Builder(identifier);
+    }
+
+    static {
+        Protein.availableFeatures.addAll(AbstractChemicalEntity.availableFeatures);
+    }
+
+    private String primaryGeneName;
 
     /**
      * Creates a new Protein with the given identifier.
@@ -101,7 +112,32 @@ public class Protein extends ChemicalEntity {
         return availableFeatures;
     }
 
-    public static class Builder extends ChemicalEntity.Builder<Protein, Builder> {
+    /**
+     * Gets the primary gene name of this {@link Protein} according to UniProt.
+     *
+     * @return The primary gene name.
+     */
+    public String getPrimaryGeneName() {
+        return primaryGeneName;
+    }
+
+    /**
+     * Sets the primary gene name of this {@link Protein} according to UniProt.
+     */
+    public void setPrimaryGeneName(String primaryGeneName) {
+        this.primaryGeneName = primaryGeneName;
+    }
+
+    /**
+     * Adds a new {@link GoTerm} to the protein.
+     *
+     * @param goTerm The {@link GoTerm} to be added.
+     */
+    public void addGoTerm(GoTerm goTerm) {
+        addAnnotation(new Annotation<>(AnnotationType.GO_TERM, goTerm));
+    }
+
+    public static class Builder extends AbstractChemicalEntity.Builder<Protein, Builder> {
 
         public Builder(SimpleStringIdentifier identifier) {
             super(identifier);

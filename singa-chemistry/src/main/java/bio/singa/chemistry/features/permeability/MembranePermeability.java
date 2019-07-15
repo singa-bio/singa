@@ -1,95 +1,92 @@
 package bio.singa.chemistry.features.permeability;
 
 import bio.singa.features.model.Evidence;
-import bio.singa.features.model.ScalableQuantityFeature;
+import bio.singa.features.model.ScalableQuantitativeFeature;
 import bio.singa.features.units.UnitRegistry;
-import tec.uom.se.unit.ProductUnit;
+import tec.units.indriya.unit.ProductUnit;
 
 import javax.measure.Quantity;
 import javax.measure.Unit;
 import javax.measure.quantity.Length;
 
-import static tec.uom.se.unit.MetricPrefix.CENTI;
-import static tec.uom.se.unit.Units.METRE;
-import static tec.uom.se.unit.Units.SECOND;
+import static tec.units.indriya.unit.MetricPrefix.CENTI;
+import static tec.units.indriya.unit.Units.METRE;
+import static tec.units.indriya.unit.Units.SECOND;
 
 
-public class MembranePermeability extends ScalableQuantityFeature<MembranePermeability> implements Quantity<MembranePermeability> {
+public class MembranePermeability extends ScalableQuantitativeFeature<MembranePermeability> implements Quantity<MembranePermeability> {
 
     // theoretically it is volume / time * area - volume and area cancel out
     private static Unit<Length> CENTIMETRE = CENTI(METRE);
     public static final Unit<MembranePermeability> CENTIMETRE_PER_SECOND = new ProductUnit<>(CENTIMETRE.divide(SECOND));
 
-    public static final String SYMBOL = "P_d";
-
     public MembranePermeability(Quantity<MembranePermeability> membranePermeabilityQuantity, Evidence evidence) {
         super(membranePermeabilityQuantity, evidence);
     }
 
-    @Override
-    public void scale() {
-        scaledQuantity = UnitRegistry.scale(getFeatureContent());
-        halfScaledQuantity = scaledQuantity.multiply(0.5);
+    public MembranePermeability(Quantity<MembranePermeability> membranePermeabilityQuantity) {
+        super(membranePermeabilityQuantity);
     }
 
     @Override
-    public String getSymbol() {
-        return SYMBOL;
+    public void scale() {
+        scaledQuantity = UnitRegistry.scale(getContent()).getValue().doubleValue();
+        halfScaledQuantity = scaledQuantity * 0.5;
     }
 
     @Override
     public Quantity<MembranePermeability> add(Quantity<MembranePermeability> augend) {
-        return getFeatureContent().add(augend);
+        return getContent().add(augend);
     }
 
     @Override
     public Quantity<MembranePermeability> subtract(Quantity<MembranePermeability> subtrahend) {
-        return getFeatureContent().subtract(subtrahend);
+        return getContent().subtract(subtrahend);
     }
 
     @Override
     public Quantity<?> divide(Quantity<?> divisor) {
-        return getFeatureContent().divide(divisor);
+        return getContent().divide(divisor);
     }
 
     @Override
     public Quantity<MembranePermeability> divide(Number divisor) {
-        return getFeatureContent().divide(divisor);
+        return getContent().divide(divisor);
     }
 
     @Override
     public Quantity<?> multiply(Quantity<?> multiplier) {
-        return getFeatureContent().multiply(multiplier);
+        return getContent().multiply(multiplier);
     }
 
     @Override
     public Quantity<MembranePermeability> multiply(Number multiplier) {
-        return getFeatureContent().multiply(multiplier);
+        return getContent().multiply(multiplier);
     }
 
     @Override
     public Quantity<?> inverse() {
-        return getFeatureContent().inverse();
+        return getContent().inverse();
     }
 
     @Override
     public Quantity<MembranePermeability> to(Unit<MembranePermeability> unit) {
-        return getFeatureContent().to(unit);
+        return getContent().to(unit);
     }
 
     @Override
     public <T extends Quantity<T>> Quantity<T> asType(Class<T> type) throws ClassCastException {
-        return getFeatureContent().asType(type);
+        return getContent().asType(type);
     }
 
     @Override
     public Number getValue() {
-        return getFeatureContent().getValue();
+        return getContent().getValue();
     }
 
     @Override
     public Unit<MembranePermeability> getUnit() {
-        return getFeatureContent().getUnit();
+        return getContent().getUnit();
     }
 
 }

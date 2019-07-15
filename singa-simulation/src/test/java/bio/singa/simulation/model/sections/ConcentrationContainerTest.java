@@ -2,10 +2,9 @@ package bio.singa.simulation.model.sections;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.chemistry.entities.SmallMolecule;
-import bio.singa.features.parameters.Environment;
 import bio.singa.features.units.UnitRegistry;
 import org.junit.jupiter.api.Test;
-import tec.uom.se.quantity.Quantities;
+import tec.units.indriya.quantity.Quantities;
 
 import java.util.Map;
 import java.util.Set;
@@ -14,8 +13,8 @@ import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static bio.singa.simulation.model.sections.CellTopology.INNER;
 import static bio.singa.simulation.model.sections.CellTopology.OUTER;
 import static org.junit.jupiter.api.Assertions.*;
-import static tec.uom.se.unit.MetricPrefix.MICRO;
-import static tec.uom.se.unit.Units.METRE;
+import static tec.units.indriya.unit.MetricPrefix.MICRO;
+import static tec.units.indriya.unit.Units.METRE;
 
 /**
  * @author cl
@@ -76,7 +75,7 @@ class ConcentrationContainerTest {
         containerA.initializeSubsection(subsectionA, INNER);
         containerA.initializeSubsection(subsectionB, OUTER);
 
-        assertEquals(containerA.getReferencedSubSections().size(), 2);
+        assertEquals(containerA.getReferencedSubsections().size(), 2);
     }
 
     @Test
@@ -117,8 +116,8 @@ class ConcentrationContainerTest {
         assertSame(copy.getInnerSubsection(), containerA.getInnerSubsection());
         assertSame(copy.getOuterSubsection(), containerA.getOuterSubsection());
 
-        assertEquals(Environment.emptyConcentration(), copy.get(INNER, entityA));
-        assertEquals(Environment.emptyConcentration(), copy.get(INNER, entityA));
+        assertEquals(0.0, copy.get(INNER, entityA));
+        assertEquals(0.0, copy.get(INNER, entityA));
     }
 
     @Test
@@ -128,14 +127,13 @@ class ConcentrationContainerTest {
         containerA.initializeSubsection(subsectionA, INNER);
         containerA.initializeSubsection(subsectionB, OUTER);
 
-        containerA.set(INNER, entityA, 1.0);
-        containerA.set(subsectionB, entityB, 0.5);
+        containerA.initialize(INNER, entityA, Quantities.getQuantity(1.0, MOLE_PER_LITRE));
+        containerA.initialize(subsectionB, entityB, Quantities.getQuantity(0.5, MOLE_PER_LITRE));
 
-        assertEquals(1.0, containerA.get(INNER, entityA).to(MOLE_PER_LITRE).getValue().doubleValue());
-        assertEquals(1.0, containerA.get(subsectionA, entityA).to(MOLE_PER_LITRE).getValue().doubleValue());
-        assertEquals(0.5, containerA.get(OUTER, entityB).to(MOLE_PER_LITRE).getValue().doubleValue());
-        assertEquals(0.5, containerA.get(subsectionB, entityB).to(MOLE_PER_LITRE).getValue().doubleValue());
-        Environment.reset();
+        assertEquals(1.0, UnitRegistry.concentration(containerA.get(INNER, entityA)).to(MOLE_PER_LITRE).getValue().doubleValue());
+        assertEquals(1.0, UnitRegistry.concentration(containerA.get(subsectionA, entityA)).to(MOLE_PER_LITRE).getValue().doubleValue());
+        assertEquals(0.5, UnitRegistry.concentration(containerA.get(OUTER, entityB)).to(MOLE_PER_LITRE).getValue().doubleValue());
+        assertEquals(0.5, UnitRegistry.concentration(containerA.get(subsectionB, entityB)).to(MOLE_PER_LITRE).getValue().doubleValue());
     }
 
 

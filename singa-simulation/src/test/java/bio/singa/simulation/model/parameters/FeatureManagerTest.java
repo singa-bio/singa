@@ -6,15 +6,16 @@ import bio.singa.features.units.UnitRegistry;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import tec.uom.se.quantity.Quantities;
+import tec.units.indriya.quantity.Quantities;
 
 import javax.measure.Quantity;
 import javax.measure.Unit;
 
+import static bio.singa.chemistry.features.diffusivity.Diffusivity.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static tec.uom.se.AbstractUnit.ONE;
-import static tec.uom.se.unit.MetricPrefix.*;
-import static tec.uom.se.unit.Units.*;
+import static tec.units.indriya.AbstractUnit.ONE;
+import static tec.units.indriya.unit.MetricPrefix.*;
+import static tec.units.indriya.unit.Units.*;
 
 /**
  * @author cl
@@ -82,7 +83,7 @@ public class FeatureManagerTest {
 
     @Test
     public void shouldScaleToEnvironment() {
-        Diffusivity diffusivity = new Diffusivity(1, Evidence.MANUALLY_ANNOTATED);
+        Diffusivity diffusivity = new Diffusivity(Quantities.getQuantity(1, SQUARE_CENTIMETRE_PER_SECOND), Evidence.NO_EVIDENCE);
         Quantity<?> first = UnitRegistry.scale(diffusivity);
         assertEquals(100.0, first.getValue().doubleValue());
 

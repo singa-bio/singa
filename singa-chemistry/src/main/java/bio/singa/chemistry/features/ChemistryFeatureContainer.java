@@ -11,7 +11,7 @@ public class ChemistryFeatureContainer extends FeatureContainer {
 
     @Override
     public <FeatureableType extends Featureable, FeatureType extends Feature<?>> void setFeature(Class<FeatureType> featureTypeClass, FeatureableType featureable) {
-        FeatureRegistry.getProvider(featureTypeClass).assign(featureable);
+        FeatureProviderRegistry.getProvider(featureTypeClass).assign(featureable);
     }
 
 }

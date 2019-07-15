@@ -2,7 +2,7 @@ package bio.singa.simulation.model.modules.displacement;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.features.model.Feature;
-import bio.singa.features.model.ScalableFeature;
+import bio.singa.features.model.ScalableQuantitativeFeature;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.vectors.Vector2D;
@@ -15,10 +15,11 @@ import bio.singa.simulation.model.simulation.UpdateScheduler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.measure.Quantity;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
+
+import static bio.singa.simulation.model.modules.concentration.ModuleState.*;
 
 /**
  * @author cl
@@ -59,12 +60,43 @@ public class DisplacementBasedModule implements UpdateModule {
         state = ModuleState.PENDING;
     }
 
+    @Override
+    public void run() {
+        UpdateScheduler scheduler = getSimulation().getScheduler();
+        while (state == PENDING || state == REQUIRING_RECALCULATION) {
+            switch (state) {
+                case PENDING:
+                    // calculate update
+                    logger.debug("calculating updates for {}.", Thread.currentThread().getName());
+                    calculateUpdates();
+                    break;
+                case REQUIRING_RECALCULATION:
+                    // optimize time step
+                    logger.debug("{} requires recalculation.", Thread.currentThread().getName());
+                    boolean prioritizedModule = scheduler.interruptAllBut(Thread.currentThread(), this);
+                    if (prioritizedModule) {
+                        optimizeTimeStep();
+                    } else {
+                        state = INTERRUPTED;
+                    }
+                    break;
+            }
+        }
+        scheduler.getCountDownLatch().countDown();
+        logger.debug("Module finished {}, latch at {}.", Thread.currentThread().getName(), scheduler.getCountDownLatch().getCount());
+    }
+
     public void setIdentifier(String identifier) {
         this.identifier = identifier;
     }
 
     public void addDeltaFunction(Function<Vesicle, DisplacementDelta> deltaFunction, Predicate<Vesicle> predicate) {
         deltaFunctions.put(deltaFunction, predicate);
+    }
+
+    @Override
+    public void initialize() {
+
     }
 
     @Override
@@ -95,13 +127,17 @@ public class DisplacementBasedModule implements UpdateModule {
     private void logDelta(Vesicle vesicle, DisplacementDelta delta) {
         logger.trace("Displacement delta for {} at {} is {}",
                 vesicle.getStringIdentifier(),
-                vesicle.getCurrentPosition(),
+                vesicle.getPosition(),
                 delta.getDeltaVector());
     }
 
     public void setSimulation(Simulation simulation) {
         this.simulation = simulation;
         updateScheduler = simulation.getScheduler();
+    }
+
+    public Simulation getSimulation() {
+        return simulation;
     }
 
     @Override
@@ -115,17 +151,12 @@ public class DisplacementBasedModule implements UpdateModule {
     }
 
     @Override
-    public void scaleScalableFeatures() {
-        featureManager.scaleScalableFeatures();
-    }
-
-    @Override
     public Set<Class<? extends Feature>> getRequiredFeatures() {
         return featureManager.getRequiredFeatures();
     }
 
     @Override
-    public <FeatureContentType extends Quantity<FeatureContentType>> Quantity<FeatureContentType> getScaledFeature(Class<? extends ScalableFeature<FeatureContentType>> featureClass) {
+    public double getScaledFeature(Class<? extends ScalableQuantitativeFeature<?>> featureClass) {
         return featureManager.getFeature(featureClass).getScaledQuantity();
     }
 
@@ -145,8 +176,8 @@ public class DisplacementBasedModule implements UpdateModule {
         return featureManager.getAllFeatures();
     }
 
-    protected <FeatureContentType extends Quantity<FeatureContentType>> Quantity<FeatureContentType> getScaledFeature(ChemicalEntity entity, Class<? extends ScalableFeature<FeatureContentType>> featureClass) {
-        ScalableFeature<FeatureContentType> feature = entity.getFeature(featureClass);
+    protected double getScaledFeature(ChemicalEntity entity, Class<? extends ScalableQuantitativeFeature<?>> featureClass) {
+        ScalableQuantitativeFeature<?> feature = entity.getFeature(featureClass);
         return feature.getScaledQuantity();
     }
 
@@ -177,10 +208,11 @@ public class DisplacementBasedModule implements UpdateModule {
     @Override
     public void checkFeatures() {
         for (Class<? extends Feature> featureClass : getRequiredFeatures()) {
-            for (Vesicle vesicle : simulation.getVesicleLayer().getVesicles()) {
-                if (!vesicle.hasFeature(featureClass)) {
-                    vesicle.setFeature(featureClass);
-                }
+            if (featureManager.hasFeature(featureClass)) {
+                Feature feature = getFeature(featureClass);
+                logger.debug("Required feature {} has been set to {}.", feature.getDescriptor(), feature.getContent());
+            } else {
+                logger.warn("Required feature {} has not been set.", featureClass.getSimpleName());
             }
         }
     }
@@ -204,4 +236,10 @@ public class DisplacementBasedModule implements UpdateModule {
     public Set<ChemicalEntity> getReferencedEntities() {
         return referencedChemicalEntities;
     }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + (getIdentifier() != null ? " " + getIdentifier() : "");
+    }
+
 }

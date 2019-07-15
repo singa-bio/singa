@@ -4,27 +4,23 @@ import bio.singa.chemistry.annotations.Annotation;
 import bio.singa.chemistry.annotations.AnnotationType;
 import bio.singa.chemistry.annotations.taxonomy.Organism;
 import bio.singa.chemistry.annotations.taxonomy.Taxon;
-import bio.singa.chemistry.entities.Enzyme;
 import bio.singa.chemistry.entities.Protein;
 import bio.singa.chemistry.features.variants.SequenceVariant;
 import bio.singa.chemistry.features.variants.SequenceVariants;
-import bio.singa.features.identifiers.ECNumber;
-import bio.singa.features.identifiers.ENAAccessionNumber;
-import bio.singa.features.identifiers.NCBITaxonomyIdentifier;
-import bio.singa.features.identifiers.UniProtIdentifier;
+import bio.singa.features.identifiers.*;
 import bio.singa.features.model.Evidence;
 import bio.singa.structure.features.molarmass.MolarMass;
 import bio.singa.structure.model.families.AminoAcidFamily;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.Locator;
-import tec.uom.se.quantity.Quantities;
+import tec.units.indriya.quantity.Quantities;
 
 import javax.measure.Quantity;
 import java.util.*;
 import java.util.regex.Pattern;
 
-import static bio.singa.features.model.Evidence.OriginType.*;
+import static bio.singa.features.model.Evidence.SourceType.*;
 
 /**
  * @author cl
@@ -46,14 +42,16 @@ public class UniProtContentHandler implements ContentHandler {
     private UniProtIdentifier identifier;
     private String recommendedName;
     private double molarMass;
-    private List<String> additionalNames;
+    private List<String> names;
     private String aminoAcidSequence;
     private Organism sourceOrganism;
     private List<Annotation<String>> textComments;
     private List<ECNumber> ecNumbers;
     private List<ENAAccessionNumber> genomicSequenceIdentifiers;
     private List<SequenceVariant> sequenceVariants;
+    private List<GoTerm> goTerms;
     private SequenceVariant currentSequenceVariant;
+    private String primaryGeneName;
 
     private Map<Integer, Evidence> evidenceMap;
     private int currentEvidenceId;
@@ -66,26 +64,35 @@ public class UniProtContentHandler implements ContentHandler {
     // reading name
     private boolean inRecommendedName = false;
     private boolean inAlternativeName = false;
+    private boolean inGene = false;
+    private boolean inPrimaryGene;
     private boolean inOrganism = false;
     private boolean inSubcellularLocation = false;
     private boolean inRelevantComment = false;
     private boolean isScientificName = false;
     private boolean isCommonName = false;
     private boolean inEMBLReference = false;
+    private boolean inGoReference = false;
     private boolean inCitation;
     private boolean inSequenceVariant;
 
     private String proteinSequenceID;
     private String moleculeType;
     private int currentReferenceYear;
+    private String currentGoIdentifier;
+    private GoTerm currentGoReference;
+    private String currentGoTerm;
+    private String currentGoEvidence;
+    private String currentGoProject;
 
     public UniProtContentHandler() {
-        additionalNames = new ArrayList<>();
+        names = new ArrayList<>();
         textComments = new ArrayList<>();
         ecNumbers = new ArrayList<>();
         genomicSequenceIdentifiers = new ArrayList<>();
         sequenceVariants = new ArrayList<>();
         evidenceMap = new HashMap<>();
+        goTerms = new ArrayList<>();
     }
 
     public UniProtContentHandler(String primaryIdentifier) {
@@ -95,17 +102,15 @@ public class UniProtContentHandler implements ContentHandler {
 
     Protein getProtein() {
         // create base enzyme
-        // evidenceMap.forEach((key, value) -> System.out.println(key + ": " + value.full()));
         Protein protein;
         if (primaryIdentifier == null) {
-            protein = new Protein.Builder(identifier.toString())
-                    .name(recommendedName)
+            protein = Protein.create(identifier.toString())
+                    .additionalIdentifier(identifier)
                     .assignFeature(new MolarMass(molarMass, UniProtDatabase.evidence))
                     .build();
         } else {
-            protein = new Enzyme.Builder(primaryIdentifier)
+            protein = Protein.create(primaryIdentifier)
                     .additionalIdentifier(identifier)
-                    .name(recommendedName)
                     .assignFeature(new MolarMass(molarMass, UniProtDatabase.evidence))
                     .build();
         }
@@ -115,13 +120,17 @@ public class UniProtContentHandler implements ContentHandler {
         protein.addAminoAcidSequence(aminoAcidSequence.replaceAll("\\s", ""));
         genomicSequenceIdentifiers.forEach(protein::addAdditionalIdentifier);
         // add additional names
-        additionalNames.forEach(protein::addAdditionalName);
+        names.forEach(protein::addName);
         // add text comments
         textComments.forEach(protein::addAnnotation);
         // add ecNumbers
         ecNumbers.forEach(protein::addAdditionalIdentifier);
+        // add GO terms
+        goTerms.forEach(protein::addGoTerm);
         // add variants
         protein.setFeature(new SequenceVariants(sequenceVariants, UniProtDatabase.evidence));
+        // add gene name
+        protein.setPrimaryGeneName(primaryGeneName);
 
         return protein;
     }
@@ -222,28 +231,28 @@ public class UniProtContentHandler implements ContentHandler {
                     }
                     case "submission": {
                         currentEvidence = new Evidence(DATABASE);
-                        currentEvidence.setName(atts.getValue("db"));
+                        currentEvidence.setIdentifier(atts.getValue("db"));
                         break;
                     }
                     default: {
-                        currentEvidence = new Evidence(MANUAL_ANNOTATION);
+                        currentEvidence = new Evidence(GUESS);
                     }
                 }
                 break;
             }
             case "person": {
                 if (inCitation) {
-                    if (currentEvidence.getName() == null || currentEvidence.getName().isEmpty()) {
+                    if (currentEvidence.getIdentifier() == null || currentEvidence.getIdentifier().isEmpty()) {
                         String person = atts.getValue("name");
-                        currentEvidence.setName(person.substring(0, person.indexOf(" ")) + currentReferenceYear);
+                        currentEvidence.setIdentifier(person.substring(0, person.indexOf(" ")) + currentReferenceYear);
                     }
                 }
                 break;
             }
             case "consortium": {
                 if (inCitation) {
-                    if (currentEvidence.getName() == null || currentEvidence.getName().isEmpty()) {
-                        currentEvidence.setName(atts.getValue("name"));
+                    if (currentEvidence.getIdentifier() == null || currentEvidence.getIdentifier().isEmpty()) {
+                        currentEvidence.setIdentifier(atts.getValue("name"));
                     }
                 }
                 break;
@@ -271,6 +280,14 @@ public class UniProtContentHandler implements ContentHandler {
                         isCommonName = true;
                     }
                 }
+                if (inGene) {
+                    String type = atts.getValue("type");
+                    if (type != null && type.equals("primary")) {
+                        inPrimaryGene = true;
+                    } else {
+                        inPrimaryGene = false;
+                    }
+                }
                 break;
             }
             case "dbReference": {
@@ -278,12 +295,16 @@ public class UniProtContentHandler implements ContentHandler {
                     // set tax id for organism
                     sourceOrganism.setIdentifier(new NCBITaxonomyIdentifier(atts.getValue("id")));
                 } else if (inCitation && atts.getValue("type").equals("DOI")) {
-                    currentEvidence.setPublication("DOI: " + atts.getValue("id"));
-                } else if (inCitation && currentEvidence.getPublication() == null && atts.getValue("type").equals("PubMed")) {
-                    currentEvidence.setPublication("PubMed: " + atts.getValue("id"));
+                    currentEvidence.setDescription("DOI: " + atts.getValue("id"));
+                } else if (inCitation && currentEvidence.getDescription() == null && atts.getValue("type").equals("PubMed")) {
+                    currentEvidence.setDescription("PubMed: " + atts.getValue("id"));
                 } else {
                     if (atts.getValue("type").equals("EMBL")) {
                         inEMBLReference = true;
+                    }
+                    if (atts.getValue("type").equals("GO")) {
+                        currentGoIdentifier = atts.getValue("id");
+                        inGoReference = true;
                     }
                 }
                 break;
@@ -297,6 +318,17 @@ public class UniProtContentHandler implements ContentHandler {
                         moleculeType = atts.getValue("value");
                     }
                 }
+                if (inGoReference) {
+                    if (atts.getValue("type").equals("term")) {
+                        currentGoTerm = atts.getValue("value");
+                    }
+                    if (atts.getValue("type").equals("evidence")) {
+                        currentGoEvidence = atts.getValue("value");
+                    }
+                    if (atts.getValue("type").equals("project")) {
+                        currentGoProject = atts.getValue("value");
+                    }
+                }
                 break;
             }
             case "sequence": {
@@ -306,6 +338,11 @@ public class UniProtContentHandler implements ContentHandler {
                     molarMass = Double.valueOf(atts.getValue("mass"));
                     break;
                 }
+            }
+            case "gene": {
+                currentTag = qName;
+                inGene = true;
+                break;
             }
         }
 
@@ -361,6 +398,11 @@ public class UniProtContentHandler implements ContentHandler {
                     moleculeType = null;
                     proteinSequenceID = null;
                 }
+                if (inGoReference) {
+                    // add GO term
+                    goTerms.add(new GoTerm(currentGoIdentifier, currentGoTerm, new Evidence(DATABASE, currentGoEvidence, currentGoProject)));
+                    inGoReference = false;
+                }
                 inEMBLReference = false;
                 break;
             }
@@ -372,6 +414,11 @@ public class UniProtContentHandler implements ContentHandler {
                     }
                     inRelevantComment = false;
                 }
+            }
+            case "gene": {
+                inGene = false;
+                inPrimaryGene = false;
+                break;
             }
         }
 
@@ -393,10 +440,10 @@ public class UniProtContentHandler implements ContentHandler {
             case "fullName": {
                 if (inRecommendedName) {
                     // set recommended name
-                    recommendedName = new String(ch, start, length);
+                    names.add(new String(ch, start, length));
                 } else if (inAlternativeName) {
                     // add alternative name
-                    additionalNames.add(new String(ch, start, length));
+                    names.add(new String(ch, start, length));
                 }
                 break;
             }
@@ -408,6 +455,11 @@ public class UniProtContentHandler implements ContentHandler {
                     } else if (isCommonName) {
                         // set common name
                         sourceOrganism.setCommonName(new String(ch, start, length));
+                    }
+                }
+                if (inGene) {
+                    if (inPrimaryGene) {
+                        primaryGeneName = new String(ch, start, length);
                     }
                 }
                 break;
@@ -431,14 +483,14 @@ public class UniProtContentHandler implements ContentHandler {
             case "original": {
                 if (inSequenceVariant) {
                     currentSequenceVariant.setOriginal(AminoAcidFamily.getAminoAcidTypeByOneLetterCode(new String(ch, start, length))
-                            .orElseThrow(() -> new IllegalArgumentException(new String(ch, start, length) + " is no valid amino acid one letter code.")));
+                            .orElse(AminoAcidFamily.UNKNOWN));
                 }
                 break;
             }
             case "variation": {
                 if (inSequenceVariant) {
                     currentSequenceVariant.setVariation(AminoAcidFamily.getAminoAcidTypeByOneLetterCode(new String(ch, start, length))
-                            .orElseThrow(() -> new IllegalArgumentException(new String(ch, start, length) + " is no valid amino acid one letter code.")));
+                            .orElse(AminoAcidFamily.UNKNOWN));
                 }
                 break;
             }

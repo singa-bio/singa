@@ -10,14 +10,8 @@ import java.util.List;
  */
 public class SequenceVariants extends AbstractFeature<List<SequenceVariant>> {
 
-    private static final String SYMBOL = "variants";
-
     public SequenceVariants(List<SequenceVariant> sequenceVariants, Evidence evidence) {
         super(sequenceVariants, evidence);
     }
 
-    @Override
-    public String getSymbol() {
-        return SYMBOL;
-    }
 }

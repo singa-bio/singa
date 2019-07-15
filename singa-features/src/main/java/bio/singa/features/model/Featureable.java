@@ -33,11 +33,4 @@ public interface Featureable {
         return getAvailableFeatures().contains(featureTypeClass);
     }
 
-    default void scaleScalableFeatures() {
-        getFeatures().stream()
-                .filter(feature -> feature instanceof ScalableFeature)
-                .map(feature -> (ScalableFeature) feature)
-                .forEach(ScalableFeature::scale);
-    }
-
 }

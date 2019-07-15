@@ -14,6 +14,18 @@ import java.util.stream.Stream;
  */
 public class StreamCombinations {
 
+    private StreamCombinations() {
+
+    }
+
+    /**
+     * Generates all combinations of the requested size from the given list of objects.
+     *
+     * @param size The number of elements that should be combined.
+     * @param list The original elements.
+     * @param <T> The list type.
+     * @return All combinations of the requested size from the given list of objects.
+     */
     public static <T> Stream<List<T>> combinations(int size, List<T> list) {
         if (size == 0) {
             return Stream.of(Collections.emptyList());
@@ -30,4 +42,5 @@ public class StreamCombinations {
         newList.add(0, head);
         return newList;
     }
+
 }

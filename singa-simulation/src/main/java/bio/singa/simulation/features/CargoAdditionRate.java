@@ -4,29 +4,25 @@ import bio.singa.chemistry.features.reactions.FirstOrderRate;
 import bio.singa.chemistry.features.reactions.FirstOrderRateConstant;
 import bio.singa.chemistry.features.reactions.ForwardsRateConstant;
 import bio.singa.features.model.Evidence;
-import tec.uom.se.quantity.Quantities;
 
 import javax.measure.Quantity;
-import javax.measure.Unit;
+import java.util.List;
 
 /**
  * @author cl
  */
 public class CargoAdditionRate extends FirstOrderRateConstant implements ForwardsRateConstant<FirstOrderRate> {
 
-    public static final String SYMBOL = "k_add";
-
-    public CargoAdditionRate(Quantity<FirstOrderRate> firstOrderRateQuantity, Evidence evidence) {
-        super(firstOrderRateQuantity, evidence);
+    public CargoAdditionRate(Quantity<FirstOrderRate> quantity, List<Evidence> evidence) {
+        super(quantity, evidence);
     }
 
-    public CargoAdditionRate(double value, Unit<FirstOrderRate> unit, Evidence evidence) {
-        super(Quantities.getQuantity(value, unit), evidence);
+    public CargoAdditionRate(Quantity<FirstOrderRate> quantity, Evidence evidence) {
+        super(quantity, evidence);
     }
 
-    @Override
-    public String getSymbol() {
-        return SYMBOL;
+    public CargoAdditionRate(Quantity<FirstOrderRate> quantity) {
+        super(quantity);
     }
 
 }

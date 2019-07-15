@@ -10,7 +10,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -19,7 +21,7 @@ import java.util.Map;
  *
  * @see <a href="https://www.uniprot.org/help/api_idmapping"></a>
  */
-public class RefSeqUniProtMapper extends AbstractUniProtIdentifierMappingParser<Map<UniProtIdentifier, String>> {
+public class RefSeqUniProtMapper extends AbstractUniProtIdentifierMappingParser<List<UniProtIdentifier>> {
 
     private static final Logger logger = LoggerFactory.getLogger(RefSeqUniProtMapper.class);
 
@@ -39,28 +41,17 @@ public class RefSeqUniProtMapper extends AbstractUniProtIdentifierMappingParser<
     }
 
     @Override
-    public Map<UniProtIdentifier, String> parse() {
-        Map<UniProtIdentifier, String> uniProtIdentifiers = new HashMap<>();
+    public List<UniProtIdentifier> parse() {
+        List<UniProtIdentifier> uniProtIdentifiers = new ArrayList<>();
         try {
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(getFetchResult()));
-            String headerline = bufferedReader.readLine();
-            String[] header = headerline.split("\t");
-            int entryIndex = 0;
-            int statusIndex = 0;
-            for (int i = 0; i < header.length; i++) {
-                if (header[i].equals("Entry")) {
-                    entryIndex = i;
-                }
-                if (header[i].equals("Status")) {
-                    statusIndex = i;
-                }
-            }
+            // skip header line
+            bufferedReader.readLine();
             String line;
             while ((line = bufferedReader.readLine()) != null) {
                 String[] split = line.split("\t");
-                String reviewed = split[statusIndex];
                 try {
-                    uniProtIdentifiers.put(new UniProtIdentifier(split[entryIndex]), reviewed);
+                    uniProtIdentifiers.add(new UniProtIdentifier(split[1]));
                 } catch (IllegalArgumentException e) {
                     logger.debug("skipping malformed UniProt identifier {}", line);
                 }

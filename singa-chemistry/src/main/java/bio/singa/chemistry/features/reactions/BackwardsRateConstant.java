@@ -1,10 +1,12 @@
 package bio.singa.chemistry.features.reactions;
 
-import bio.singa.features.model.ScalableFeature;
+import bio.singa.features.model.Feature;
+
+import javax.measure.Quantity;
 
 /**
  * @author cl
  */
-public interface BackwardsRateConstant<ReactionRateType extends ReactionRate<ReactionRateType>> extends ScalableFeature<ReactionRateType> {
+public interface BackwardsRateConstant<ReactionRateType extends ReactionRate<ReactionRateType>> extends Feature<Quantity<ReactionRateType>> {
 
 }

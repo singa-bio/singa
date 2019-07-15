@@ -1,38 +1,38 @@
 package bio.singa.simulation.model.simulation;
 
-import bio.singa.chemistry.entities.Enzyme;
+import bio.singa.chemistry.entities.Protein;
 import bio.singa.chemistry.entities.SmallMolecule;
 import bio.singa.chemistry.features.databases.chebi.ChEBIParserService;
 import bio.singa.chemistry.features.diffusivity.Diffusivity;
 import bio.singa.chemistry.features.reactions.MichaelisConstant;
 import bio.singa.chemistry.features.reactions.RateConstant;
 import bio.singa.chemistry.features.reactions.TurnoverNumber;
+import bio.singa.features.model.Evidence;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.graphs.model.Graphs;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.graphs.AutomatonNode;
-import bio.singa.simulation.model.modules.concentration.imlementations.Diffusion;
-import bio.singa.simulation.model.modules.concentration.imlementations.MichaelisMentenReaction;
-import bio.singa.simulation.model.modules.concentration.imlementations.NthOrderReaction;
-import bio.singa.simulation.model.modules.concentration.imlementations.ReversibleReaction;
+import bio.singa.simulation.model.modules.concentration.imlementations.reactions.ReactionBuilder;
+import bio.singa.simulation.model.modules.concentration.imlementations.transport.Diffusion;
+import bio.singa.simulation.model.sections.CellRegions;
 import bio.singa.simulation.model.sections.CellSubsection;
-import bio.singa.structure.features.molarmass.MolarMass;
+import bio.singa.simulation.model.sections.CellSubsections;
+import bio.singa.simulation.model.sections.concentration.ConcentrationInitializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tec.uom.se.quantity.Quantities;
-import tec.uom.se.unit.ProductUnit;
+import tec.units.indriya.quantity.Quantities;
+import tec.units.indriya.unit.ProductUnit;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Time;
 
-import static bio.singa.features.model.Evidence.MANUALLY_ANNOTATED;
 import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
-import static tec.uom.se.AbstractUnit.ONE;
-import static tec.uom.se.unit.MetricPrefix.MILLI;
-import static tec.uom.se.unit.MetricPrefix.NANO;
-import static tec.uom.se.unit.Units.*;
+import static tec.units.indriya.AbstractUnit.ONE;
+import static tec.units.indriya.unit.MetricPrefix.MILLI;
+import static tec.units.indriya.unit.MetricPrefix.NANO;
+import static tec.units.indriya.unit.Units.*;
 
 /**
  * A factory class that can be used to create different examples to test and explore certain aspects to the api.
@@ -63,17 +63,21 @@ public class SimulationExamples {
         AutomatonGraph graph = AutomatonGraphs.singularGraph();
 
         // initialize species in graph with desired concentration
-        graph.initializeSpeciesWithConcentration(dinitrogenPentaoxide, 0.02);
-        graph.initializeSpeciesWithConcentration(nitrogenDioxide, 0.0);
-        graph.initializeSpeciesWithConcentration(oxygen, 0.0);
+        ConcentrationInitializer ci = new ConcentrationInitializer();
+        ci.addInitialConcentration(CellRegions.EXTRACELLULAR_REGION, CellSubsections.EXTRACELLULAR_REGION, dinitrogenPentaoxide, Quantities.getQuantity(0.02, MOLE_PER_LITRE));
+        simulation.setConcentrationInitializer(ci);
 
-        RateConstant rateConstant = RateConstant.create(0.07).forward().firstOrder().timeUnit(SECOND).build();
+        RateConstant rateConstant = RateConstant.create(0.07)
+                .forward().firstOrder()
+                .timeUnit(SECOND)
+                .build();
 
-        NthOrderReaction.inSimulation(simulation)
+        ReactionBuilder.staticReactants(simulation)
                 .addSubstrate(dinitrogenPentaoxide, 2)
-                .addProduct(nitrogenDioxide, 4)
+                .addSubstrate(nitrogenDioxide, 4)
                 .addProduct(oxygen)
-                .rateConstant(rateConstant)
+                .irreversible()
+                .rate(rateConstant)
                 .build();
 
         // add graph
@@ -82,42 +86,6 @@ public class SimulationExamples {
         return simulation;
     }
 
-    /**
-     * This simulation simulates the synthesis of 1,3,5-octatriene (C8H12) from Buta-1,3-diene (C4H6).
-     *
-     * @return The ready to go simulation.
-     */
-    public static Simulation createSynthesisReactionExample() {
-        // setup time step size
-        UnitRegistry.setTime(Quantities.getQuantity(1.0, SECOND));
-        // setup simulation
-        Simulation simulation = new Simulation();
-        // get required species
-        SmallMolecule butadiene = ChEBIParserService.parse("CHEBI:39478");
-        SmallMolecule octatriene = ChEBIParserService.parse("CHEBI:77504");
-
-        // setup graph with a single node
-        AutomatonGraph graph = AutomatonGraphs.singularGraph();
-
-        // initialize species in graph with desired concentration
-        graph.initializeSpeciesWithConcentration(butadiene, 0.02);
-        graph.initializeSpeciesWithConcentration(octatriene, 0.0);
-
-        RateConstant rateConstant = RateConstant.create(0.614).forward().firstOrder().timeUnit(SECOND).build();
-
-        // create reaction
-        NthOrderReaction.inSimulation(simulation)
-                .addSubstrate(butadiene, 2, 2)
-                .addProduct(octatriene)
-                .rateConstant(rateConstant)
-                .setNonElementary()
-                .build();
-
-        // add graph
-        simulation.setGraph(graph);
-
-        return simulation;
-    }
 
     /**
      * This simulation simulates a equilibrium reaction.
@@ -131,30 +99,34 @@ public class SimulationExamples {
         Simulation simulation = new Simulation();
 
         // set up arbitrary species
-        SmallMolecule speciesA = new SmallMolecule.Builder("CHEBI:00001")
-                .name("A")
-                .build();
-
-        SmallMolecule speciesB = new SmallMolecule.Builder("CHEBI:00002")
-                .name("B")
-                .build();
+        SmallMolecule speciesA = SmallMolecule.create("A").build();
+        SmallMolecule speciesB = SmallMolecule.create("B").build();
 
         // setup graph with a single node
         AutomatonGraph graph = AutomatonGraphs.singularGraph();
 
         // initialize species in graph with desired concentration
-        graph.initializeSpeciesWithConcentration(speciesA, 1.0);
-        graph.initializeSpeciesWithConcentration(speciesB, 0.0);
+        ConcentrationInitializer ci = new ConcentrationInitializer();
+        ci.addInitialConcentration(CellRegions.EXTRACELLULAR_REGION, CellSubsections.EXTRACELLULAR_REGION, speciesA, Quantities.getQuantity(1.0, MOLE_PER_LITRE));
+        simulation.setConcentrationInitializer(ci);
 
-        RateConstant forwardsRate = RateConstant.create(10).forward().firstOrder().timeUnit(SECOND).build();
-        RateConstant backwardsRate = RateConstant.create(10).backward().firstOrder().timeUnit(SECOND).build();
+        RateConstant forwardsRate = RateConstant.create(10)
+                .forward().firstOrder()
+                .timeUnit(SECOND)
+                .build();
+
+        RateConstant backwardsRate = RateConstant.create(10)
+                .backward().firstOrder()
+                .timeUnit(SECOND)
+                .build();
 
         // create reaction
-        ReversibleReaction.inSimulation(simulation)
+        ReactionBuilder.staticReactants(simulation)
                 .addSubstrate(speciesA)
                 .addProduct(speciesB)
-                .forwardsRateConstant(forwardsRate)
-                .backwardsRateConstant(backwardsRate)
+                .reversible()
+                .forwardReactionRate(forwardsRate)
+                .backwardReactionRate(backwardsRate)
                 .build();
 
         // add graph
@@ -164,7 +136,7 @@ public class SimulationExamples {
     }
 
     /**
-     * This simulation simulates a {@link MichaelisMentenReaction}, where D-Fructose 1-phosphate is convertet to
+     * This simulation simulates a Michaelis-Menten reaction, where D-Fructose 1-phosphate is converted to
      * glycerone phosphate and D-glyceraldehyde using fructose bisphosphate aldolase. From: Callens, M. et al. (1991).
      * Kinetic properties of fructose bisphosphate aldolase from Trypanosoma brucei compared to aldolase from rabbit
      * muscle and Staphylococcus aureus. Sabio-RK pdbIdentifier: 28851
@@ -176,38 +148,36 @@ public class SimulationExamples {
         UnitRegistry.setTime(Quantities.getQuantity(1.0, MILLI(SECOND)));
         // setup simulation
         Simulation simulation = new Simulation();
+        // add graph
+        AutomatonGraph graph = AutomatonGraphs.singularGraph();
+        simulation.setGraph(graph);
+
         // get required species
         SmallMolecule fructosePhosphate = ChEBIParserService.parse("CHEBI:18105");
         SmallMolecule glyceronePhosphate = ChEBIParserService.parse("CHEBI:16108");
         SmallMolecule glyceraldehyde = ChEBIParserService.parse("CHEBI:17378");
+        Protein aldolase = Protein.create("P07752").build();
 
-        // setup enzyme
-        Enzyme aldolase = new Enzyme.Builder("P07752")
-                .name("Fructose-bisphosphate aldolase")
-                .assignFeature(new MolarMass(82142, MANUALLY_ANNOTATED))
-                .assignFeature(new MichaelisConstant(Quantities.getQuantity(9.0e-3, MOLE_PER_LITRE).to(UnitRegistry.getConcentrationUnit()), MANUALLY_ANNOTATED))
-                .assignFeature(new TurnoverNumber(76, new ProductUnit<>(ONE.divide(MINUTE)), MANUALLY_ANNOTATED))
-                .build();
-
-        // setup graph with a single node
-        AutomatonGraph graph = AutomatonGraphs.singularGraph();
+        // rates
+        MichaelisConstant michaelisConstant = new MichaelisConstant(Quantities.getQuantity(9.0e-3, MOLE_PER_LITRE), Evidence.NO_EVIDENCE);
+        TurnoverNumber turnoverNumber = new TurnoverNumber(76, new ProductUnit<>(ONE.divide(MINUTE)), Evidence.NO_EVIDENCE);
 
         // initialize species in graph with desired concentration
-        graph.initializeSpeciesWithConcentration(fructosePhosphate, 0.1);
-        graph.initializeSpeciesWithConcentration(aldolase, 0.2);
-        graph.initializeSpeciesWithConcentration(glyceronePhosphate, 0.0);
-        graph.initializeSpeciesWithConcentration(glyceraldehyde, 0.0);
+        ConcentrationInitializer ci = new ConcentrationInitializer();
+        ci.addInitialConcentration(CellRegions.EXTRACELLULAR_REGION, CellSubsections.EXTRACELLULAR_REGION, fructosePhosphate, Quantities.getQuantity(0.1, MOLE_PER_LITRE));
+        ci.addInitialConcentration(CellRegions.EXTRACELLULAR_REGION, CellSubsections.EXTRACELLULAR_REGION, aldolase, Quantities.getQuantity(0.2, MOLE_PER_LITRE));
+        simulation.setConcentrationInitializer(ci);
 
         // create reaction using the properties of the enzyme
-        MichaelisMentenReaction.inSimulation(simulation)
-                .enzyme(aldolase)
+        ReactionBuilder.staticReactants(simulation)
                 .addSubstrate(fructosePhosphate)
+                .addCatalyst(aldolase)
                 .addProduct(glyceraldehyde)
                 .addProduct(glyceronePhosphate)
+                .michaelisMenten()
+                .michaelisConstant(michaelisConstant)
+                .turnover(turnoverNumber)
                 .build();
-
-        // add graph
-        simulation.setGraph(graph);
 
         return simulation;
     }
@@ -315,38 +285,48 @@ public class SimulationExamples {
         RateConstant firstRate = RateConstant.create(1.43e3).forward().firstOrder().timeUnit(SECOND).build();
 
         // first reaction
-        NthOrderReaction.inSimulation(simulation)
+        ReactionBuilder.staticReactants(simulation)
                 .addSubstrate(hydron, 2)
                 .addSubstrate(iodide)
                 .addSubstrate(iodate)
                 .addProduct(hia)
                 .addProduct(ia)
-                .rateConstant(firstRate)
+                .irreversible()
+                .rate(firstRate)
                 .build();
 
         RateConstant secondRate = RateConstant.create(2.0e4).forward().firstOrder().timeUnit(SECOND).build();
 
         // second reaction
-        NthOrderReaction.inSimulation(simulation)
+        ReactionBuilder.staticReactants(simulation)
                 .addSubstrate(hydron)
                 .addSubstrate(ia)
                 .addSubstrate(iodide)
                 .addProduct(hia)
-                .rateConstant(secondRate)
+                .irreversible()
+                .rate(secondRate)
                 .build();
 
-        RateConstant thirdForwardRate = RateConstant.create(3.1e4).forward().firstOrder().timeUnit(SECOND).build();
-        RateConstant thirdBackwardRate = RateConstant.create(2.2).backward().firstOrder().timeUnit(SECOND).build();
+        RateConstant thirdForwardRate = RateConstant.create(3.1e4)
+                .forward().firstOrder()
+                .timeUnit(SECOND)
+                .build();
+
+        RateConstant thirdBackwardRate = RateConstant.create(2.2)
+                .backward().firstOrder()
+                .timeUnit(SECOND)
+                .build();
 
         // third reaction
-        ReversibleReaction.inSimulation(simulation)
+        ReactionBuilder.staticReactants(simulation)
                 .addSubstrate(hia)
                 .addSubstrate(iodide)
                 .addSubstrate(hydron)
                 .addProduct(diiodine)
                 .addProduct(water)
-                .forwardsRateConstant(thirdForwardRate)
-                .backwardsRateConstant(thirdBackwardRate)
+                .reversible()
+                .forwardReactionRate(thirdForwardRate)
+                .backwardReactionRate(thirdBackwardRate)
                 .build();
 
         // add graph
@@ -354,7 +334,6 @@ public class SimulationExamples {
 
         return simulation;
     }
-
 
 
     public static Simulation createCompartmentTestEnvironment() {

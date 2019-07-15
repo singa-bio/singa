@@ -1,43 +1,35 @@
 package bio.singa.simulation.features;
 
 import bio.singa.features.model.Evidence;
-import bio.singa.features.model.ScalableQuantityFeature;
-import tec.uom.se.quantity.Quantities;
-import tec.uom.se.unit.ProductUnit;
+import bio.singa.features.model.ScalableQuantitativeFeature;
+import tec.units.indriya.unit.ProductUnit;
 
 import javax.measure.Quantity;
 import javax.measure.Unit;
 import javax.measure.quantity.Speed;
+import java.util.List;
 
-import static tec.uom.se.unit.MetricPrefix.NANO;
-import static tec.uom.se.unit.Units.METRE;
-import static tec.uom.se.unit.Units.SECOND;
+import static tec.units.indriya.unit.MetricPrefix.NANO;
+import static tec.units.indriya.unit.Units.METRE;
+import static tec.units.indriya.unit.Units.SECOND;
 
 /**
  * @author cl
  */
-public class ActinBoostVelocity extends ScalableQuantityFeature<Speed> {
+public class ActinBoostVelocity extends ScalableQuantitativeFeature<Speed> {
 
     public static final Unit<Speed> NANOMETRE_PER_SECOND = new ProductUnit<>(NANO(METRE).divide(SECOND));
 
-    /**
-     * Average lateral displacement velocity after scission for 11 seconds.
-     */
-    public static final ActinBoostVelocity DEFAULT_ACTIN_VELOCITY = new ActinBoostVelocity(Quantities.getQuantity(57.0, NANOMETRE_PER_SECOND), DefaultFeatureSources.EHRLICH2004);
-
-    public static final String SYMBOL = "v_b";
-
-    public ActinBoostVelocity(Quantity<Speed> frequencyQuantity, Evidence evidence) {
-        super(frequencyQuantity, evidence);
+    public ActinBoostVelocity(Quantity<Speed> quantity, List<Evidence> evidence) {
+        super(quantity, evidence);
     }
 
-    public ActinBoostVelocity(double frequency, Evidence evidence) {
-        super(Quantities.getQuantity(frequency,NANOMETRE_PER_SECOND ), evidence);
+    public ActinBoostVelocity(Quantity<Speed> quantity, Evidence evidence) {
+        super(quantity, evidence);
     }
 
-    @Override
-    public String getSymbol() {
-        return SYMBOL;
+    public ActinBoostVelocity(Quantity<Speed> quantity) {
+        super(quantity);
     }
 
 }
