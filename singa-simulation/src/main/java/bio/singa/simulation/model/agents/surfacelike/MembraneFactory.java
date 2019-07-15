@@ -98,11 +98,6 @@ public class MembraneFactory {
      * @param segments the path
      */
     private void associateToGraph(List<LineSegment> segments) {
-        if (graph.getNodes().size() == 1) {
-            // graph has only one node
-            membrane = associateOneNodeGraph(segments);
-        } else {
-            // graph has multiple nodes
             // determine and setup membrane cells
             for (LineSegment lineSegment : segments) {
                 Vector2D startingPoint = lineSegment.getStartingPoint();
@@ -144,7 +139,6 @@ public class MembraneFactory {
                     }
                 }
             }
-        }
     }
 
     private void handleNoIntersection(AutomatonNode node, Vector2D startingPoint, Vector2D endingPoint) {
@@ -337,15 +331,6 @@ public class MembraneFactory {
             node.addSubsectionRepresentation(membrane.getMembraneRegion().getOuterSubsection(), new ComplexPolygon(outerVectors));
 
         }
-    }
-
-    private Membrane associateOneNodeGraph(List<LineSegment> segments) {
-        AutomatonNode node = graph.getNodes().iterator().next();
-        for (LineSegment lineSegment : segments) {
-            membrane.addSegment(node, lineSegment);
-        }
-        node.setCellRegion(membrane.getMembraneRegion());
-        return membrane;
     }
 
     public static void handleMembraneGaps(AutomatonGraph graph) {
