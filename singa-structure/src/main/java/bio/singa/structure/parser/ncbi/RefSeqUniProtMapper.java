@@ -53,7 +53,7 @@ public class RefSeqUniProtMapper extends AbstractUniProtIdentifierMappingParser<
             while ((line = bufferedReader.readLine()) != null) {
                 String[] split = line.split("\t");
                 try {
-                    uniProtIdentifiers.add(new UniProtIdentifier(split[1]));
+                    uniProtIdentifiers.add(new UniProtIdentifier(split[0]));
                 } catch (IllegalArgumentException e) {
                     logger.debug("skipping malformed UniProt identifier {}", line);
                 }

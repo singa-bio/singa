@@ -15,8 +15,7 @@ import java.util.function.Predicate;
  * Updatable delta functions are {@link AbstractDeltaFunction}s which return a map with
  * {@link ConcentrationDeltaIdentifier}s mapping to to concentration deltas. Mostly used for {@link UpdatableSpecific}
  * {@link ConcentrationBasedModule}s, where the function is applied once per  {@link Updatable}. Each calculation
- * returns the change of a specified set of entities that ma span across sections or even updatables
- * (e.g. for {@link ComplexBuildingReaction}s).
+ * returns the change of a specified set of entities that ma span across sections or even updatables.
  *
  * @author cl
  */

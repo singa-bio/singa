@@ -2,6 +2,7 @@ package bio.singa.simulation.model.modules.concentration.imlementations.reaction
 
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.features.quantities.MolarConcentration;
+import bio.singa.simulation.model.modules.concentration.imlementations.reactions.Reaction;
 import bio.singa.simulation.model.sections.CellTopology;
 
 import javax.measure.Unit;

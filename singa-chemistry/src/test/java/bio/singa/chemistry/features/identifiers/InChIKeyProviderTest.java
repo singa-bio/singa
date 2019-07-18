@@ -6,7 +6,6 @@ import bio.singa.features.identifiers.ChEBIIdentifier;
 import bio.singa.features.identifiers.InChIKey;
 import bio.singa.features.identifiers.PubChemIdentifier;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -41,7 +40,6 @@ class InChIKeyProviderTest {
 
     @Test
     @DisplayName("inchi key provider - using pubchem identifier")
-    @Disabled
     void fetchWithPubChem() {
         pubchemEntity.setFeature(InChIKey.class);
         assertEquals("KAQKFAOMNZTLHT-OZUDYXHBSA-N", pubchemEntity.getFeature(InChIKey.class).toString());
