@@ -90,7 +90,6 @@ class Fit3DMatchTest {
                 .run();
         assertEquals(2, fit3d.getMatches().stream()
                 .map(Fit3DMatch::getMatchType)
-                .peek(System.out::println)
                 .count());
     }
 }

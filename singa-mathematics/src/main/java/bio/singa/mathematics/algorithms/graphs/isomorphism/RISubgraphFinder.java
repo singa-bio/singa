@@ -58,9 +58,9 @@ public class RISubgraphFinder<NodeType extends Node<NodeType, VectorType, Identi
         calculateMu();
         buildParentGraph();
         matchTargetGraph();
-        logger.info("found {} full and {} partial (minimum size: {}) matches in target graph", fullMatches.size(), partialMatches.size(), minimalPartialMatchSize);
+        logger.debug("found {} full and {} partial (minimum size: {}) matches in target graph", fullMatches.size(), partialMatches.size(), minimalPartialMatchSize);
         if (!fullMatches.isEmpty()) {
-            logger.info("full matches are: {}", fullMatches);
+            logger.debug("full matches are: {}", fullMatches);
         }
     }
 
@@ -84,7 +84,7 @@ public class RISubgraphFinder<NodeType extends Node<NodeType, VectorType, Identi
         v.sort(Comparator.comparing(node -> patternGraph.getTouchingNodes(node).size()));
         NodeType u0 = v.get(v.size() - 1);
 
-        logger.info("highest degree node is {} with degree {}", u0, patternGraph.getTouchingNodes(u0).size());
+        logger.debug("highest degree node is {} with degree {}", u0, patternGraph.getTouchingNodes(u0).size());
 
         // initially remove highest degree node
         v.remove(u0);
@@ -200,7 +200,7 @@ public class RISubgraphFinder<NodeType extends Node<NodeType, VectorType, Identi
         for (NodeType x : targetGraph.getNodes()) {
             growSearchSpace(mu.size() - 1, searchSpace, root, x);
         }
-        logger.info("constructed search space graph is: {}", searchSpace);
+        logger.debug("constructed search space graph is: {}", searchSpace);
     }
 
     /**
@@ -337,7 +337,7 @@ public class RISubgraphFinder<NodeType extends Node<NodeType, VectorType, Identi
 //                                if (firstToLastMatches && lastToFirstMatches) {
                                 fullMatches.add(targetSpacePath);
 //                                }else{
-//                                    logger.info("(5) ... edge FL:{}-{} LF:{}-{}", targetFirstToLast,patternFirstToLast,targetLastToFirst,patternLastToFirst);
+//                                    logger.debug("(5) ... edge FL:{}-{} LF:{}-{}", targetFirstToLast,patternFirstToLast,targetLastToFirst,patternLastToFirst);
 //                                }
                             }
                         } else {

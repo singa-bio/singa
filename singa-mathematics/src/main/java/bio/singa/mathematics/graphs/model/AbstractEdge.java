@@ -52,6 +52,10 @@ public abstract class AbstractEdge<NodeType extends Node<NodeType, ? extends Vec
         this.target = target;
     }
 
+    public AbstractEdge(AbstractEdge<NodeType> abstractEdge) {
+        this(abstractEdge.getIdentifier());
+    }
+
     @Override
     public int getIdentifier() {
         return identifier;

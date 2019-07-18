@@ -134,9 +134,5 @@ class UniProtParserTest {
         assertEquals("GO:0005524", ((GoTerm) annotations.get(2).getContent()).getContent());
         assertEquals("GO:0003676", ((GoTerm) annotations.get(3).getContent()).getContent());
         assertEquals("GO:0006422", ((GoTerm) annotations.get(4).getContent()).getContent());
-
-        for (Annotation annotation : annotations) {
-            System.out.println(((GoTerm) annotation.getContent()).getTerm());
-        }
     }
 }

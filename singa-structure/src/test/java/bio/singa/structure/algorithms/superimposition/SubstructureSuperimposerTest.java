@@ -116,9 +116,6 @@ class SubstructureSuperimposerTest {
     void shouldCalculateMappedFullCandidates() {
         SubstructureSuperimposition superimposition = SubstructureSuperimposer
                 .calculateIdealSubstructureSuperimposition(reference, candidate, StructuralEntityFilter.AtomFilter.isBackbone());
-        superimposition.getMappedFullCandidate().stream()
-                .map(leaf -> String.join("\n", leaf.getPdbLines()))
-                .forEach(System.out::println);
         assertEquals(24, superimposition.getMappedFullCandidate().stream()
                 .map(LeafSubstructure::getAllAtoms)
                 .mapToLong(Collection::size)
