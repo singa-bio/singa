@@ -46,7 +46,7 @@ public class ConcentrationStateChange extends QualitativeModule {
             if (vesicle.getState().equals(requiredState)) {
                 double firstConcentration = vesicle.getConcentrationContainer().get(CellTopology.MEMBRANE, firstEntity);
                 double secondConcentration = vesicle.getConcentrationContainer().get(CellTopology.MEMBRANE, secondEntity);
-                if (firstConcentration/secondConcentration < ratio) {
+                if (firstConcentration/secondConcentration > ratio) {
                     changingVesicles.add(vesicle);
                 }
             }

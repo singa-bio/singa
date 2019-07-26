@@ -44,7 +44,8 @@ import static tech.units.indriya.unit.Units.SECOND;
 class VesicleFusionTest {
 
     @Test
-    void shouldSimulateFusionTethering() {
+    void testModuleInContext() {
+
         // setup simulation
         Simulation simulation = new Simulation();
         final double simulationExtend = 100;
