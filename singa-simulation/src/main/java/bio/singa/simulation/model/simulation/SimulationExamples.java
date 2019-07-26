@@ -17,7 +17,6 @@ import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.modules.concentration.imlementations.reactions.ReactionBuilder;
 import bio.singa.simulation.model.modules.concentration.imlementations.transport.Diffusion;
 import bio.singa.simulation.model.sections.CellRegions;
-import bio.singa.simulation.model.sections.CellSubsection;
 import bio.singa.simulation.model.sections.CellSubsections;
 import bio.singa.simulation.model.sections.concentration.ConcentrationInitializer;
 import org.slf4j.Logger;
@@ -212,10 +211,10 @@ public class SimulationExamples {
         // initialize species in graph with desired concentration leaving the right "half" empty
         for (AutomatonNode node : graph.getNodes()) {
             if (node.getIdentifier().getColumn() < (graph.getNumberOfColumns() / 2)) {
-                node.getConcentrationContainer().set(CellSubsection.SECTION_A, methanol, 1.0);
-                node.getConcentrationContainer().set(CellSubsection.SECTION_A, ethyleneGlycol, 1.0);
-                node.getConcentrationContainer().set(CellSubsection.SECTION_A, valine, 1.0);
-                node.getConcentrationContainer().set(CellSubsection.SECTION_A, sucrose, 1.0);
+                node.getConcentrationContainer().set(CellSubsections.CYTOPLASM, methanol, 1.0);
+                node.getConcentrationContainer().set(CellSubsections.CYTOPLASM, ethyleneGlycol, 1.0);
+                node.getConcentrationContainer().set(CellSubsections.CYTOPLASM, valine, 1.0);
+                node.getConcentrationContainer().set(CellSubsections.CYTOPLASM, sucrose, 1.0);
             }
         }
 
@@ -270,14 +269,14 @@ public class SimulationExamples {
         AutomatonGraph graph = AutomatonGraphs.singularGraph();
         // initialize species in graph with desired concentration
         logger.debug("Initializing starting concentrations of species and node states in graph ...");
-        graph.getNode(0, 0).getConcentrationContainer().set(CellSubsection.SECTION_A, hydron, 0.05);
-        graph.getNode(0, 0).getConcentrationContainer().set(CellSubsection.SECTION_A, iodide, 0.05);
-        graph.getNode(0, 0).getConcentrationContainer().set(CellSubsection.SECTION_A, diiodine, 0.05);
-        graph.getNode(0, 0).getConcentrationContainer().set(CellSubsection.SECTION_A, water, 0.05);
-        graph.getNode(0, 0).getConcentrationContainer().set(CellSubsection.SECTION_A, hia, 0.05);
-        graph.getNode(0, 0).getConcentrationContainer().set(CellSubsection.SECTION_A, ia, 0.05);
-        graph.getNode(0, 0).getConcentrationContainer().set(CellSubsection.SECTION_A, iodineDioxid, 0.05);
-        graph.getNode(0, 0).getConcentrationContainer().set(CellSubsection.SECTION_A, iodate, 0.05);
+        graph.getNode(0, 0).getConcentrationContainer().set(CellSubsections.CYTOPLASM, hydron, 0.05);
+        graph.getNode(0, 0).getConcentrationContainer().set(CellSubsections.CYTOPLASM, iodide, 0.05);
+        graph.getNode(0, 0).getConcentrationContainer().set(CellSubsections.CYTOPLASM, diiodine, 0.05);
+        graph.getNode(0, 0).getConcentrationContainer().set(CellSubsections.CYTOPLASM, water, 0.05);
+        graph.getNode(0, 0).getConcentrationContainer().set(CellSubsections.CYTOPLASM, hia, 0.05);
+        graph.getNode(0, 0).getConcentrationContainer().set(CellSubsections.CYTOPLASM, ia, 0.05);
+        graph.getNode(0, 0).getConcentrationContainer().set(CellSubsections.CYTOPLASM, iodineDioxid, 0.05);
+        graph.getNode(0, 0).getConcentrationContainer().set(CellSubsections.CYTOPLASM, iodate, 0.05);
 
 
         logger.debug("Composing simulation ... ");

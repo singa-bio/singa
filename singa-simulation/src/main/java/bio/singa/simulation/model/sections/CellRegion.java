@@ -13,26 +13,6 @@ import java.util.Objects;
  */
 public class CellRegion {
 
-    public static CellRegion CYTOSOL_A = new CellRegion("Cytoplasm");
-
-    static {
-        CYTOSOL_A.addSubsection(CellTopology.INNER, CellSubsection.SECTION_A);
-    }
-
-    public static CellRegion CYTOSOL_B = new CellRegion("Cytoplasm");
-
-    static {
-        CYTOSOL_B.addSubsection(CellTopology.INNER, CellSubsection.SECTION_B);
-    }
-
-    public static CellRegion MEMBRANE = new CellRegion("Membrane");
-
-    static {
-        MEMBRANE.addSubsection(CellTopology.INNER, CellSubsection.SECTION_A);
-        MEMBRANE.addSubsection(CellTopology.MEMBRANE, CellSubsection.MEMBRANE);
-        MEMBRANE.addSubsection(CellTopology.OUTER, CellSubsection.SECTION_B);
-    }
-
     private String identifier;
     private GoTerm goTerm;
     private Map<CellTopology, CellSubsection> cellSubSections;

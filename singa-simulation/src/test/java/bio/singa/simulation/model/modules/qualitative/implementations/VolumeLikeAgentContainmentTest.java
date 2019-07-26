@@ -14,7 +14,6 @@ import bio.singa.simulation.model.agents.volumelike.VolumeLikeAgent;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.graphs.AutomatonNode;
-import bio.singa.simulation.model.sections.CellRegion;
 import bio.singa.simulation.model.sections.CellRegions;
 import bio.singa.simulation.model.simulation.Simulation;
 import org.junit.jupiter.api.Test;
@@ -22,11 +21,9 @@ import tech.units.indriya.ComparableQuantity;
 import tech.units.indriya.quantity.Quantities;
 
 import javax.measure.quantity.Length;
-
 import java.util.Arrays;
 
 import static bio.singa.simulation.model.agents.pointlike.VesicleStateRegistry.*;
-import static bio.singa.simulation.model.agents.pointlike.VesicleStateRegistry.IN_PERINUCLEAR_STORAGE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static tech.units.indriya.unit.MetricPrefix.*;
 import static tech.units.indriya.unit.Units.METRE;
@@ -54,7 +51,7 @@ class VolumeLikeAgentContainmentTest {
         AutomatonGraph graph = AutomatonGraphs.singularGraph();
         AutomatonNode node = graph.getNode(0, 0);
         node.setPosition(new Vector2D(50.0, 50.0));
-        node.setCellRegion(CellRegion.MEMBRANE);
+        node.setCellRegion(CellRegions.CELL_OUTER_MEMBRANE_REGION);
         simulation.setGraph(graph);
 
         // setup volume for containment

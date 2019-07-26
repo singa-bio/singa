@@ -16,7 +16,7 @@ import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.modules.concentration.imlementations.transport.MembraneDiffusion;
 import bio.singa.simulation.model.modules.displacement.implementations.VesicleCytoplasmDiffusion;
-import bio.singa.simulation.model.sections.CellRegion;
+import bio.singa.simulation.model.sections.CellRegions;
 import bio.singa.simulation.model.simulation.Simulation;
 import org.junit.jupiter.api.Test;
 import tech.units.indriya.ComparableQuantity;
@@ -98,7 +98,7 @@ class VesicleDiffusionTest {
         simulation.setGraph(graph);
 
         for (AutomatonNode node : graph.getNodes()) {
-            node.setCellRegion(CellRegion.CYTOSOL_A);
+            node.setCellRegion(CellRegions.CYTOPLASM_REGION);
             node.getConcentrationContainer().set(INNER, water, 40.0);
         }
 

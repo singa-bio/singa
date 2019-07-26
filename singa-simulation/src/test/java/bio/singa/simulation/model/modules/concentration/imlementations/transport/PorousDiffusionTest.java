@@ -27,7 +27,7 @@ import tech.units.indriya.unit.ProductUnit;
 import java.util.List;
 
 import static bio.singa.features.units.UnitProvider.MICRO_MOLE_PER_LITRE;
-import static bio.singa.simulation.model.sections.CellRegion.MEMBRANE;
+import static bio.singa.simulation.model.sections.CellRegions.CELL_OUTER_MEMBRANE_REGION;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static tech.units.indriya.unit.MetricPrefix.MICRO;
 import static tech.units.indriya.unit.MetricPrefix.NANO;
@@ -60,7 +60,7 @@ class PorousDiffusionTest {
         AutomatonGraph graph = AutomatonGraphs.singularGraph();
         simulation.setGraph(graph);
         AutomatonNode node = graph.getNode(0, 0);
-        node.setCellRegion(MEMBRANE);
+        node.setCellRegion(CELL_OUTER_MEMBRANE_REGION);
 
         List<Membrane> membranes = MembraneTracer.regionsToMembrane(graph);
         MembraneLayer membraneLayer = new MembraneLayer();
@@ -75,14 +75,14 @@ class PorousDiffusionTest {
 
         PorousDiffusion.inSimulation(simulation)
                 .cargo(new Cargo(camp))
-                .region(new AffectedRegion(MEMBRANE))
+                .region(new AffectedRegion(CELL_OUTER_MEMBRANE_REGION))
                 .membraneThickness(new MembraneTickness(Quantities.getQuantity(100, NANO(METRE))))
                 .poreMembraneRatio(new Ratio(0.5))
                 .identifier("porous diffusion")
                 .build();
 
         ConcentrationInitializer ci = new ConcentrationInitializer();
-        ci.addInitialConcentration(MEMBRANE.getOuterSubsection(), camp, Quantities.getQuantity(1.0, MICRO_MOLE_PER_LITRE));
+        ci.addInitialConcentration(CELL_OUTER_MEMBRANE_REGION.getOuterSubsection(), camp, Quantities.getQuantity(1.0, MICRO_MOLE_PER_LITRE));
         simulation.setConcentrationInitializer(ci);
 
         double previousOuterConcentration = UnitRegistry.convert(Quantities.getQuantity(1.0, MICRO_MOLE_PER_LITRE)).getValue().doubleValue();

@@ -12,7 +12,7 @@ import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.modules.concentration.imlementations.transport.SingleFileChannelMembraneTransport;
-import bio.singa.simulation.model.sections.CellRegion;
+import bio.singa.simulation.model.sections.CellRegions;
 import bio.singa.simulation.model.sections.CellTopology;
 import bio.singa.simulation.model.simulation.Simulation;
 import org.junit.jupiter.api.AfterEach;
@@ -59,7 +59,7 @@ class SingleFileChannelMembraneTransportTest {
         AutomatonGraph graph = AutomatonGraphs.singularGraph();
         simulation.setGraph(graph);
         AutomatonNode node = graph.getNode(0, 0);
-        node.setCellRegion(CellRegion.MEMBRANE);
+        node.setCellRegion(CellRegions.CELL_OUTER_MEMBRANE_REGION);
         // set concentrations
         double aqp2Concentration = MolarConcentration.moleculesToConcentration(3700);
         node.getConcentrationContainer().initialize(CellTopology.OUTER, water, Quantities.getQuantity(50.0, MOLE_PER_LITRE));

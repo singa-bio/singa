@@ -32,8 +32,8 @@ import java.util.concurrent.ThreadLocalRandom;
 import static bio.singa.chemistry.features.permeability.MembranePermeability.CENTIMETRE_PER_SECOND;
 import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static bio.singa.features.units.UnitRegistry.*;
-import static bio.singa.simulation.model.sections.CellRegion.CYTOSOL_A;
-import static bio.singa.simulation.model.sections.CellRegion.MEMBRANE;
+import static bio.singa.simulation.model.sections.CellRegions.CELL_OUTER_MEMBRANE_REGION;
+import static bio.singa.simulation.model.sections.CellRegions.CYTOPLASM_REGION;
 import static bio.singa.simulation.model.sections.CellTopology.INNER;
 import static bio.singa.simulation.model.sections.CellTopology.OUTER;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -71,9 +71,9 @@ class MembraneDiffusionTest {
         simulation.setGraph(automatonGraph);
 
         AutomatonNode membraneNode = automatonGraph.getNode(0, 0);
-        membraneNode.setCellRegion(MEMBRANE);
-        membraneNode.getConcentrationContainer().initialize(MEMBRANE.getInnerSubsection(), water, Quantities.getQuantity(2.0, MOLE_PER_LITRE).to(getConcentrationUnit()));
-        membraneNode.getConcentrationContainer().initialize(MEMBRANE.getOuterSubsection(), water, Quantities.getQuantity(1.0, MOLE_PER_LITRE).to(getConcentrationUnit()));
+        membraneNode.setCellRegion(CELL_OUTER_MEMBRANE_REGION);
+        membraneNode.getConcentrationContainer().initialize(CELL_OUTER_MEMBRANE_REGION.getInnerSubsection(), water, Quantities.getQuantity(2.0, MOLE_PER_LITRE).to(getConcentrationUnit()));
+        membraneNode.getConcentrationContainer().initialize(CELL_OUTER_MEMBRANE_REGION.getOuterSubsection(), water, Quantities.getQuantity(1.0, MOLE_PER_LITRE).to(getConcentrationUnit()));
         automatonGraph.addNode(membraneNode);
         List<Membrane> membranes = MembraneTracer.regionsToMembrane(automatonGraph);
         MembraneLayer layer = new MembraneLayer();
@@ -88,8 +88,8 @@ class MembraneDiffusionTest {
         // delta should be about 3.5e-20 mol/um3
         ComparableQuantity<MolarConcentration> expectedLeft = Quantities.getQuantity(2.0, MOLE_PER_LITRE).to(getConcentrationUnit()).subtract(Quantities.getQuantity(3.5e-11, getConcentrationUnit()));
         ComparableQuantity<MolarConcentration> expectedRight = Quantities.getQuantity(1.0, MOLE_PER_LITRE).to(getConcentrationUnit()).add(Quantities.getQuantity(3.5e-11, getConcentrationUnit()));
-        assertEquals(expectedLeft.getValue().doubleValue(), membraneNode.getConcentrationContainer().get(MEMBRANE.getInnerSubsection(), water), 1e-12);
-        assertEquals(expectedRight.getValue().doubleValue(), membraneNode.getConcentrationContainer().get(MEMBRANE.getOuterSubsection(), water), 1e-12);
+        assertEquals(expectedLeft.getValue().doubleValue(), membraneNode.getConcentrationContainer().get(CELL_OUTER_MEMBRANE_REGION.getInnerSubsection(), water), 1e-12);
+        assertEquals(expectedRight.getValue().doubleValue(), membraneNode.getConcentrationContainer().get(CELL_OUTER_MEMBRANE_REGION.getOuterSubsection(), water), 1e-12);
     }
 
     @Test
@@ -133,7 +133,7 @@ class MembraneDiffusionTest {
         simulation.setGraph(graph);
 
         for (AutomatonNode node : graph.getNodes()) {
-            node.setCellRegion(CYTOSOL_A);
+            node.setCellRegion(CYTOPLASM_REGION);
             node.getConcentrationContainer().initialize(INNER, water, Quantities.getQuantity(40.0, MOLE_PER_LITRE));
         }
 

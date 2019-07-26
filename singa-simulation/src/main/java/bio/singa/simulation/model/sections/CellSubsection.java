@@ -14,21 +14,6 @@ import java.util.Objects;
 public class CellSubsection {
 
     /**
-     * A general membrane subsection.
-     */
-    public static CellSubsection MEMBRANE = new CellSubsection("MEM");
-
-    /**
-     * A cellular subsection "A".
-     */
-    public static CellSubsection SECTION_A = new CellSubsection("SA");
-
-    /**
-     * A cellular subsection "B".
-     */
-    public static CellSubsection SECTION_B = new CellSubsection("SB");
-
-    /**
      * The identifier.
      */
     private String identifier;

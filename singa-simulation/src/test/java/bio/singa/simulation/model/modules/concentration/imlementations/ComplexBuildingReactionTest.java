@@ -17,8 +17,8 @@ import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.modules.concentration.imlementations.reactions.ReactionBuilder;
-import bio.singa.simulation.model.sections.CellRegion;
-import bio.singa.simulation.model.sections.CellSubsection;
+import bio.singa.simulation.model.sections.CellRegions;
+import bio.singa.simulation.model.sections.CellSubsections;
 import bio.singa.simulation.model.sections.ConcentrationContainer;
 import bio.singa.simulation.model.simulation.Simulation;
 import org.junit.jupiter.api.AfterEach;
@@ -33,7 +33,6 @@ import javax.measure.quantity.Length;
 import javax.measure.quantity.Time;
 
 import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
-import static bio.singa.simulation.model.sections.CellSubsection.SECTION_A;
 import static bio.singa.simulation.model.sections.CellTopology.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -94,7 +93,7 @@ class ComplexBuildingReactionTest {
 
         // set concentrations
         AutomatonNode membraneNode = automatonGraph.getNode(0, 0);
-        membraneNode.setCellRegion(CellRegion.MEMBRANE);
+        membraneNode.setCellRegion(CellRegions.CELL_OUTER_MEMBRANE_REGION);
         membraneNode.getConcentrationContainer().initialize(OUTER, bindee, Quantities.getQuantity(1.0, MOLE_PER_LITRE));
         membraneNode.getConcentrationContainer().initialize(MEMBRANE, binder, Quantities.getQuantity(1.0, MOLE_PER_LITRE));
         membraneNode.getConcentrationContainer().initialize(MEMBRANE, complex, Quantities.getQuantity(1.0, MOLE_PER_LITRE));
@@ -145,9 +144,9 @@ class ComplexBuildingReactionTest {
         simulation.setGraph(automatonGraph);
         // concentrations
         AutomatonNode membraneNode = automatonGraph.getNode(0, 0);
-        membraneNode.setCellRegion(CellRegion.MEMBRANE);
-        membraneNode.getConcentrationContainer().initialize(SECTION_A, ligand, UnitRegistry.concentration(0.1, MOLE_PER_LITRE));
-        membraneNode.getConcentrationContainer().initialize(CellSubsection.MEMBRANE, receptor, UnitRegistry.concentration(0.1, MOLE_PER_LITRE));
+        membraneNode.setCellRegion(CellRegions.CELL_OUTER_MEMBRANE_REGION);
+        membraneNode.getConcentrationContainer().initialize(CellSubsections.CYTOPLASM, ligand, UnitRegistry.concentration(0.1, MOLE_PER_LITRE));
+        membraneNode.getConcentrationContainer().initialize(CellSubsections.CELL_OUTER_MEMBRANE, receptor, UnitRegistry.concentration(0.1, MOLE_PER_LITRE));
 
         // the corresponding rate constants
         RateConstant forwardsRate = RateConstant.create(2.4e8)
@@ -180,17 +179,17 @@ class ComplexBuildingReactionTest {
         while ((currentTime = simulation.getElapsedTime().to(MILLI(SECOND))).getValue().doubleValue() < secondCheckpoint.getValue().doubleValue()) {
             simulation.nextEpoch();
             if (!firstCheckpointPassed && currentTime.getValue().doubleValue() > firstCheckpoint.getValue().doubleValue()) {
-                assertEquals(0.00476, UnitRegistry.concentration(membraneNode.getConcentrationContainer().get(CellSubsection.MEMBRANE, receptor)).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
+                assertEquals(0.00476, UnitRegistry.concentration(membraneNode.getConcentrationContainer().get(CellSubsections.CELL_OUTER_MEMBRANE, receptor)).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
                 assertEquals(0.00476, UnitRegistry.concentration(membraneNode.getConcentrationContainer().get(INNER, ligand)).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
-                assertEquals(0.09523, UnitRegistry.concentration(membraneNode.getConcentrationContainer().get(CellSubsection.MEMBRANE, complex)).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
+                assertEquals(0.09523, UnitRegistry.concentration(membraneNode.getConcentrationContainer().get(CellSubsections.CELL_OUTER_MEMBRANE, complex)).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
                 firstCheckpointPassed = true;
             }
         }
 
         // check final values
-        assertEquals(0.0001, UnitRegistry.concentration(membraneNode.getConcentrationContainer().get(CellSubsection.MEMBRANE, receptor)).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
+        assertEquals(0.0001, UnitRegistry.concentration(membraneNode.getConcentrationContainer().get(CellSubsections.CELL_OUTER_MEMBRANE, receptor)).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
         assertEquals(0.0001, UnitRegistry.concentration(membraneNode.getConcentrationContainer().get(INNER, ligand)).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
-        assertEquals(0.0998, UnitRegistry.concentration(membraneNode.getConcentrationContainer().get(CellSubsection.MEMBRANE, complex)).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
+        assertEquals(0.0998, UnitRegistry.concentration(membraneNode.getConcentrationContainer().get(CellSubsections.CELL_OUTER_MEMBRANE, complex)).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
     }
 
     @Test
@@ -232,7 +231,7 @@ class ComplexBuildingReactionTest {
 
         // concentrations
         AutomatonNode membraneNode = automatonGraph.getNode(0, 0);
-        membraneNode.setCellRegion(CellRegion.MEMBRANE);
+        membraneNode.setCellRegion(CellRegions.CELL_OUTER_MEMBRANE_REGION);
         membraneNode.getConcentrationContainer().set(OUTER, bindee, 1.0);
         membraneNode.getConcentrationContainer().set(MEMBRANE, binder, 0.1);
         membraneNode.getConcentrationContainer().set(MEMBRANE, complex, 0.0);
@@ -240,7 +239,7 @@ class ComplexBuildingReactionTest {
         double previousConcentration = 0.0;
         for (int i = 0; i < 10; i++) {
             simulation.nextEpoch();
-            double currentConcentration = membraneNode.getConcentrationContainer().get(CellSubsection.MEMBRANE, complex);
+            double currentConcentration = membraneNode.getConcentrationContainer().get(CellSubsections.CELL_OUTER_MEMBRANE, complex);
             assertTrue(currentConcentration > previousConcentration);
             previousConcentration = currentConcentration;
         }
@@ -308,7 +307,7 @@ class ComplexBuildingReactionTest {
 
         // concentrations
         AutomatonNode membraneNode = automatonGraph.getNode(0, 0);
-        membraneNode.setCellRegion(CellRegion.MEMBRANE);
+        membraneNode.setCellRegion(CellRegions.CELL_OUTER_MEMBRANE_REGION);
 
         membraneNode.getConcentrationContainer().initialize(INNER, innerBindee, Quantities.getQuantity(0.1, MOLE_PER_LITRE));
         membraneNode.getConcentrationContainer().initialize(OUTER, outerBindee, Quantities.getQuantity(0.1, MOLE_PER_LITRE));
