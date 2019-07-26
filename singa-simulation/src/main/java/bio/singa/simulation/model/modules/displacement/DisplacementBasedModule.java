@@ -212,7 +212,7 @@ public class DisplacementBasedModule implements UpdateModule {
                 Feature feature = getFeature(featureClass);
                 logger.debug("Required feature {} has been set to {}.", feature.getDescriptor(), feature.getContent());
             } else {
-                logger.warn("Required feature {} has not been set.", featureClass.getSimpleName());
+                logger.warn("Required feature {} has not been set for module {}.", featureClass.getSimpleName(), getIdentifier());
             }
         }
     }

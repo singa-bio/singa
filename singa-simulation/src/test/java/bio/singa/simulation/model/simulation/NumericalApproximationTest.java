@@ -67,7 +67,7 @@ public class NumericalApproximationTest {
                 double time = simulation.getElapsedTime().to(SECOND).getValue().doubleValue();
                 double concentrationAnalytical = 1.0 * (1.0 - Math.exp(-rate * time));
                 double localError = simulation.getScheduler().getLargestLocalError().getValue();
-                System.out.println(cutoff + ", " + time + ", " + concentrationNumerical + ", " + concentrationAnalytical + ", " + localError);
+//                System.out.println(cutoff + ", " + time + ", " + concentrationNumerical + ", " + concentrationAnalytical + ", " + localError);
 
             }
         }

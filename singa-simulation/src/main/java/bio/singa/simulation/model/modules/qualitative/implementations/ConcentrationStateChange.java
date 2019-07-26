@@ -28,9 +28,9 @@ public class ConcentrationStateChange extends QualitativeModule {
         // unattached
         getRequiredFeatures().add(AppliedVesicleState.class);
 
-        // first: AQP2  second: AQP2P
+        // first: AQP2P  second: AQP2
         getRequiredFeatures().add(Cargoes.class);
-        // 3/4
+        // 1.5
         getRequiredFeatures().add(Ratio.class);
 
     }
@@ -44,7 +44,6 @@ public class ConcentrationStateChange extends QualitativeModule {
         double ratio = getFeature(Ratio.class).getContent().getValue().doubleValue();
         for (Vesicle vesicle : simulation.getVesicleLayer().getVesicles()) {
             if (vesicle.getState().equals(requiredState)) {
-                // if c(AQP2)/c(AQP2P) >= 3/4
                 double firstConcentration = vesicle.getConcentrationContainer().get(CellTopology.MEMBRANE, firstEntity);
                 double secondConcentration = vesicle.getConcentrationContainer().get(CellTopology.MEMBRANE, secondEntity);
                 if (firstConcentration/secondConcentration < ratio) {

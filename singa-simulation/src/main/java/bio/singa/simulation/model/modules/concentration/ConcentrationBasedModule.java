@@ -595,7 +595,7 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
                     continue outer;
                 }
             }
-            logger.warn("Required feature {} has not been set.", featureClass.getSimpleName());
+            logger.warn("Required feature {} has not been set for module {}.", featureClass.getSimpleName(), getIdentifier());
         }
     }
 

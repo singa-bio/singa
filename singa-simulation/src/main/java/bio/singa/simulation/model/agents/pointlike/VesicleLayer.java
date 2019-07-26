@@ -197,7 +197,9 @@ public class VesicleLayer {
                             }
                         }
                         if (coordinateDirection == null) {
-                            throw new IllegalStateException("Tried to associate vesicle " + vesicle + " with " + node + " but no areas could be determined.");
+//                            throw new IllegalStateException("Tried to associate vesicle " + vesicle + " with " + node + " but no areas could be determined.");
+                            logger.warn("Tried to associate vesicle " + vesicle + " with " + node + " but no areas could be determined.");
+                            return;
                         }
                         // assign other corresponding nodes to neighbors
                         for (Map.Entry<MooreRectangularDirection, Double> entry : slices.entrySet()) {

@@ -164,6 +164,11 @@ public class Simulation {
         for (Updatable updatable : updatables) {
             if (updatable.getConcentrationManager().hasDeltas()) {
                 logger.trace("Deltas in {}:", updatable.getStringIdentifier());
+//                if (updatable.getStringIdentifier().equals("n(19,4)")) {
+//                    for (ConcentrationDelta finalDelta : updatable.getConcentrationManager().getFinalDeltas()) {
+//                        System.out.println(finalDelta);
+//                    }
+//                }
                 updatable.getConcentrationManager().applyDeltas();
             }
         }

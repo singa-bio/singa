@@ -146,15 +146,21 @@ public class DynamicReactantBehavior implements ReactantBehavior {
     @Override
     public List<ReactantSet> generateReactantSets(Updatable updatable) {
         Set<ChemicalEntity> referencedEntities = updatable.getConcentrationContainer().getReferencedEntities();
+        if (updatable instanceof Vesicle) {
+            Vesicle vesicle = (Vesicle) updatable;
+            for (AutomatonNode node : vesicle.getAssociatedNodes().keySet()) {
+                referencedEntities.addAll(node.getConcentrationContainer().getReferencedEntities());
+            }
+        }
         if (compositionCache.containsKey(referencedEntities)) {
             return compositionCache.get(referencedEntities);
         } else {
             List<ReactantSet> sets = new ArrayList<>();
             if (dynamicComplex) {
                 // get binder and bindee
-                List<Reactant> binders = determineAvailableSubstrates(updatable, dynamicSubstrates.get(0));
+                List<Reactant> binders = determineAvailableSubstrates(updatable, dynamicSubstrates.get(0), referencedEntities);
                 clearPreviousProducts(binders);
-                List<Reactant> bindees = determineAvailableSubstrates(updatable, dynamicSubstrates.get(1));
+                List<Reactant> bindees = determineAvailableSubstrates(updatable, dynamicSubstrates.get(1), referencedEntities);
                 clearPreviousProducts(bindees);
                 // combine them using permutation
                 List<List<Reactant>> rawSubstrates = new ArrayList<>();
@@ -181,7 +187,7 @@ public class DynamicReactantBehavior implements ReactantBehavior {
                 // each dynamic substrate can result in a number of reactions
                 splitEntity = false;
                 for (DynamicChemicalEntity dynamicSubstrate : dynamicSubstrates) {
-                    List<Reactant> matchingSubstrates = determineAvailableSubstrates(updatable, dynamicSubstrate);
+                    List<Reactant> matchingSubstrates = determineAvailableSubstrates(updatable, dynamicSubstrate, referencedEntities);
                     // if any substrate cannot be found the reaction cannot happen
                     if (matchingSubstrates.isEmpty()) {
                         compositionCache.put(referencedEntities, Collections.emptyList());
@@ -255,7 +261,7 @@ public class DynamicReactantBehavior implements ReactantBehavior {
     }
 
 
-    private List<Reactant> determineAvailableSubstrates(Updatable updatable, DynamicChemicalEntity dynamicSubstrate) {
+    private List<Reactant> determineAvailableSubstrates(Updatable updatable, DynamicChemicalEntity dynamicSubstrate, Set<ChemicalEntity> referencedEntities) {
         List<Reactant> possibleSubstrates = new ArrayList<>();
         // check own compartments
         // check each allowed topology
@@ -280,6 +286,7 @@ public class DynamicReactantBehavior implements ReactantBehavior {
                         // add remaining entities as possible substrates
                         for (ChemicalEntity substrateEntity : substrateEntities) {
                             possibleSubstrates.add(new Reactant(substrateEntity, SUBSTRATE, possibleTopology));
+                            referencedEntities.addAll(node.getConcentrationContainer().getReferencedEntities());
                         }
                     }
                 }

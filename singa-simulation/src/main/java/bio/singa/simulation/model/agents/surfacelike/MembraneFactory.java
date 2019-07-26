@@ -98,47 +98,47 @@ public class MembraneFactory {
      * @param segments the path
      */
     private void associateToGraph(List<LineSegment> segments) {
-            // determine and setup membrane cells
-            for (LineSegment lineSegment : segments) {
-                Vector2D startingPoint = lineSegment.getStartingPoint();
-                Vector2D endingPoint = lineSegment.getEndingPoint();
-                for (AutomatonNode node : graph.getNodes()) {
+        // determine and setup membrane cells
+        for (LineSegment lineSegment : segments) {
+            Vector2D startingPoint = lineSegment.getStartingPoint();
+            Vector2D endingPoint = lineSegment.getEndingPoint();
+            for (AutomatonNode node : graph.getNodes()) {
 
-                    Polygon spatialRepresentation = node.getSpatialRepresentation();
-                    boolean startIsInside = spatialRepresentation.isInside(startingPoint);
-                    boolean endIsInside = spatialRepresentation.isInside(endingPoint);
-                    List<IntersectionFragment> intersections = spatialRepresentation.getIntersectionFragments(lineSegment);
-                    if (startIsInside && endIsInside) {
-                        // completely internal
-                        handleNoIntersection(node, startingPoint, endingPoint);
-                    } else if (startIsInside && intersections.size() == 1) {
-                        // start inside or on line
-                        handleSingleIntersection(startingPoint, node, intersections.iterator().next());
-                    } else if (endIsInside && intersections.size() == 1) {
-                        // end inside or on line
-                        handleSingleIntersection(endingPoint, node, intersections.iterator().next());
-                    } else if (intersections.size() == 2) {
-                        // line only crosses the membrane
-                        initializeNodeSubsectionMapping(node, regions.get(startingPoint));
-                        UndirectedGraph subsectionGraph = subsectionMapping.get(node);
+                Polygon spatialRepresentation = node.getSpatialRepresentation();
+                boolean startIsInside = spatialRepresentation.isInside(startingPoint);
+                boolean endIsInside = spatialRepresentation.isInside(endingPoint);
+                List<IntersectionFragment> intersections = spatialRepresentation.getIntersectionFragments(lineSegment);
+                if (startIsInside && endIsInside) {
+                    // completely internal
+                    handleNoIntersection(node, startingPoint, endingPoint);
+                } else if (startIsInside && intersections.size() == 1) {
+                    // start inside or on line
+                    handleSingleIntersection(startingPoint, node, intersections.iterator().next());
+                } else if (endIsInside && intersections.size() == 1) {
+                    // end inside or on line
+                    handleSingleIntersection(endingPoint, node, intersections.iterator().next());
+                } else if (intersections.size() == 2) {
+                    // line only crosses the membrane
+                    initializeNodeSubsectionMapping(node, regions.get(startingPoint));
+                    UndirectedGraph subsectionGraph = subsectionMapping.get(node);
 
-                        Iterator<IntersectionFragment> iterator = intersections.iterator();
-                        IntersectionFragment firstFragment = iterator.next();
-                        IntersectionFragment secondFragment = iterator.next();
+                    Iterator<IntersectionFragment> iterator = intersections.iterator();
+                    IntersectionFragment firstFragment = iterator.next();
+                    IntersectionFragment secondFragment = iterator.next();
 
-                        Vector2D firstIntersection = firstFragment.getIntersection();
-                        Vector2D secondIntersection = secondFragment.getIntersection();
+                    Vector2D firstIntersection = firstFragment.getIntersection();
+                    Vector2D secondIntersection = secondFragment.getIntersection();
 
-                        // TODO handle if first and second intersection are equal, the segment passes through a vertex
+                    // TODO handle if first and second intersection are equal, the segment passes through a vertex
 
-                        membrane.addSegment(node, new SimpleLineSegment(firstIntersection, secondIntersection));
-                        RegularNode firstIntersectionNode = createIntersectionNode(subsectionGraph, firstFragment);
-                        RegularNode secondIntersectionNode = createIntersectionNode(subsectionGraph, secondFragment);
+                    membrane.addSegment(node, new SimpleLineSegment(firstIntersection, secondIntersection));
+                    RegularNode firstIntersectionNode = createIntersectionNode(subsectionGraph, firstFragment);
+                    RegularNode secondIntersectionNode = createIntersectionNode(subsectionGraph, secondFragment);
 
-                        subsectionGraph.addEdgeBetween(firstIntersectionNode, secondIntersectionNode);
-                    }
+                    subsectionGraph.addEdgeBetween(firstIntersectionNode, secondIntersectionNode);
                 }
             }
+        }
     }
 
     private void handleNoIntersection(AutomatonNode node, Vector2D startingPoint, Vector2D endingPoint) {
@@ -441,6 +441,82 @@ public class MembraneFactory {
         }
         return null;
     }
+
+    public static void majorityVoteSubsectionRepresentations(AutomatonGraph graph) {
+
+        for (AutomatonNode node : graph.getNodes()) {
+            Map<CellSubsection, Polygon> subsectionRepresentations = node.getSubsectionRepresentations();
+
+            Pair<CellSubsection> originalAndReplacement = null;
+
+            for (Map.Entry<CellSubsection, Polygon> entry : subsectionRepresentations.entrySet()) {
+                CellSubsection currentSubsection = entry.getKey();
+                Polygon currentRepresentation = entry.getValue();
+                // skip membranes
+                if (currentSubsection.isMembrane()) {
+                    continue;
+                }
+                int totalSubsections = 0;
+                int sameSubsections = 0;
+                // check neighbouring subsections
+                Set<CellSubsection> otherSubsection = new HashSet<>();
+                for (AutomatonNode neighbour : node.getNeighbours()) {
+                    Map<CellSubsection, Polygon> neighborSubsections = neighbour.getSubsectionRepresentations();
+                    for (Map.Entry<CellSubsection, Polygon> neighborEntry : neighborSubsections.entrySet()) {
+                        CellSubsection neighborSubsection = neighborEntry.getKey();
+                        Polygon neighborRepresentation = neighborEntry.getValue();
+                        // the first element of the pair is the frist argument entering the getTouchingLineSegments method
+                        Map<Pair<LineSegment>, LineSegment> touchingLineSegments = Polygons.getTouchingLineSegments(currentRepresentation, neighborRepresentation);
+                        // skip subsection that dont overlap
+                        if (touchingLineSegments.isEmpty()) {
+                            continue;
+                        }
+                        if (touchingLineSegments.size() > 1) {
+                            logger.warn("More than one line segment touch between node {} and {}. By contract neighbouring nodes should only touch once.", node.getStringIdentifier(), neighbour.getStringIdentifier());
+                        }
+                        Map.Entry<Pair<LineSegment>, LineSegment> touchingSegment = touchingLineSegments.entrySet().iterator().next();
+                        // skip point like segments
+                        if (touchingSegment.getValue().getLength() < 1e-8) {
+                            continue;
+                        }
+                        totalSubsections++;
+                        if (neighborSubsection.equals(currentSubsection)) {
+                            sameSubsections++;
+                        } else {
+                            otherSubsection.add(neighborSubsection);
+                        }
+                    }
+                }
+                // skip same subsections
+                if (totalSubsections == sameSubsections) {
+                    continue;
+                }
+                logger.info("different subsections at {}, same: {} total: {}", node.getStringIdentifier(), sameSubsections, totalSubsections);
+                // fewer are in the same subsection
+                int differentSubscetions = totalSubsections - sameSubsections;
+                if (sameSubsections > differentSubscetions) {
+                    // do nothing
+                }
+                if (sameSubsections < differentSubscetions) {
+                    // change to majority subsection
+                    originalAndReplacement = new Pair<>(currentSubsection, otherSubsection.iterator().next());
+                    // only subsection change at a time therefore quit here neighbor scan here
+                    break;
+                }
+            }
+            // switch replacements
+            // only do one at a time
+            if (originalAndReplacement != null) {
+                CellSubsection originalSubsection = originalAndReplacement.getFirst();
+                Polygon originalRepresentation = subsectionRepresentations.get(originalSubsection);
+                CellSubsection replacementSubsection = originalAndReplacement.getSecond();
+                Polygon replacementRepresentation = subsectionRepresentations.get(replacementSubsection);
+                subsectionRepresentations.put(originalSubsection, replacementRepresentation);
+                subsectionRepresentations.put(replacementSubsection, originalRepresentation);
+            }
+        }
+    }
+
 
 
 }
