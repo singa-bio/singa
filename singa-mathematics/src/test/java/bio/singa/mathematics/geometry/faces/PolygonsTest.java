@@ -45,23 +45,23 @@ class PolygonsTest {
     @Test
     @DisplayName("evaluate point position - irregular (normal) polygon")
     void testPointInsidePolygon1() {
-        assertTrue(Polygons.isInside(pentagon, new Vector2D(4.0, 3.0)));
-        assertFalse(Polygons.isInside(pentagon, new Vector2D(3.0, 6.0)));
+        assertTrue(Polygons.containsVector(pentagon, new Vector2D(4.0, 3.0)));
+        assertFalse(Polygons.containsVector(pentagon, new Vector2D(3.0, 6.0)));
     }
 
     @Test
     @DisplayName("evaluate point position - concave polygon")
     void testPointInsidePolygon2() {
-        assertTrue(Polygons.isInside(concavePentagon, new Vector2D(4.0, 2.0)));
-        assertFalse(Polygons.isInside(concavePentagon, new Vector2D(4.0, 4.0)));
+        assertTrue(Polygons.containsVector(concavePentagon, new Vector2D(4.0, 2.0)));
+        assertFalse(Polygons.containsVector(concavePentagon, new Vector2D(4.0, 4.0)));
     }
 
     @Test
     @DisplayName("evaluate point position - complex polygon")
     void testPointInsidePolygon3() {
-        assertTrue(Polygons.isInside(complexPentagon, new Vector2D(6.0, 3.0)));
-        assertFalse(Polygons.isInside(complexPentagon, new Vector2D(6.0, 4.0)));
-        assertTrue(Polygons.isInside(complexPentagon, new Vector2D(6.0, 5.0)));
+        assertTrue(Polygons.containsVector(complexPentagon, new Vector2D(6.0, 3.0)));
+        assertFalse(Polygons.containsVector(complexPentagon, new Vector2D(6.0, 4.0)));
+        assertTrue(Polygons.containsVector(complexPentagon, new Vector2D(6.0, 5.0)));
     }
 
     @Test

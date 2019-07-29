@@ -250,7 +250,7 @@ public class Vector2D extends RegularVector {
      * @return {@code true} if vector can be placed in the polygon.
      */
     public boolean isInside(Polygon polygon) {
-        return Polygons.isInside(polygon, this);
+        return Polygons.containsVector(polygon, this);
     }
 
     public boolean isAbove(Vector2D vector) {

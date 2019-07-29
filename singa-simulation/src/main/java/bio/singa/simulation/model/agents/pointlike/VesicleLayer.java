@@ -129,7 +129,7 @@ public class VesicleLayer {
                             for (VolumeLikeAgent agent : simulation.getVolumeLayer().getAgents()) {
                                 if (agent.getCellRegion().equals(vesicleConfinedDiffusion.getConfinedVolume())) {
                                     // and is not inside the volume
-                                    return !agent.getArea().isInside(vesicle1.getNextPosition());
+                                    return !agent.getArea().containsVector(vesicle1.getNextPosition());
                                 }
                             }
                         }
@@ -181,7 +181,7 @@ public class VesicleLayer {
             // get representative region of the node
             Polygon polygon = node.getSpatialRepresentation();
             // associate vesicle to the node with the largest part of the vesicle (midpoint is inside)
-            if (polygon.isInside(vesicle.getPosition())) {
+            if (polygon.containsVector(vesicle.getPosition())) {
                 // check if vesicle intersects with more than two regions at once
                 for (Vector2D polygonVertex : polygon.getVertices()) {
                     // this is the case if the distance to the edge is smaller than the radius

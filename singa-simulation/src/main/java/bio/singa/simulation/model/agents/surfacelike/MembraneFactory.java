@@ -105,8 +105,8 @@ public class MembraneFactory {
             for (AutomatonNode node : graph.getNodes()) {
 
                 Polygon spatialRepresentation = node.getSpatialRepresentation();
-                boolean startIsInside = spatialRepresentation.isInside(startingPoint);
-                boolean endIsInside = spatialRepresentation.isInside(endingPoint);
+                boolean startIsInside = spatialRepresentation.containsVector(startingPoint);
+                boolean endIsInside = spatialRepresentation.containsVector(endingPoint);
                 List<IntersectionFragment> intersections = spatialRepresentation.getIntersectionFragments(lineSegment);
                 if (startIsInside && endIsInside) {
                     // completely internal
@@ -213,7 +213,7 @@ public class MembraneFactory {
                 boolean allPointsAreInside = true;
                 for (Vector2D vector : node.getSpatialRepresentation().getVertices()) {
                     // break is any point is not inside
-                    if (!polygon.isInside(vector)) {
+                    if (!polygon.containsVector(vector)) {
                         allPointsAreInside = false;
                         break;
                     }
@@ -227,7 +227,7 @@ public class MembraneFactory {
             for (AutomatonNode node : graph.getNodes()) {
                 // use given internal point to determine inner subsection
                 if (node.getSubsectionRepresentations().isEmpty() && node.getCellRegion().equals(membrane.getMembraneRegion())) {
-                    node.getSpatialRepresentation().isInside(innerPoint);
+                    node.getSpatialRepresentation().containsVector(innerPoint);
                     break;
                 }
             }

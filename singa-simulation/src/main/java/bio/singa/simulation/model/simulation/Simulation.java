@@ -25,7 +25,6 @@ import bio.singa.simulation.model.modules.concentration.imlementations.transport
 import bio.singa.simulation.model.modules.displacement.DisplacementBasedModule;
 import bio.singa.simulation.model.rules.AssignmentRule;
 import bio.singa.simulation.model.rules.AssignmentRules;
-import bio.singa.simulation.model.sections.CellRegions;
 import bio.singa.simulation.model.sections.concentration.ConcentrationInitializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -291,204 +290,203 @@ public class Simulation {
         if (graph.getNodes().size() < 1) {
             return;
         }
-        Polygon cortexArea = null;
-        if (getVolumeLayer() != null) {
-            for (VolumeLikeAgent agent : getVolumeLayer().getAgents()) {
-                if (agent.getCellRegion().equals(CellRegions.CELL_CORTEX)) {
-                    cortexArea = agent.getArea();
-                    break;
-                }
-            }
-        }
+        // if there is diffusion in the modules, adjacency needs to be defined
+        Optional<Diffusion> optionalModule = getModules().stream()
+                .filter(Diffusion.class::isInstance)
+                .map(Diffusion.class::cast)
+                .findAny();
+        // for each node
         for (AutomatonNode node : graph.getNodes()) {
             node.initializeAdjacency();
-            if (cortexArea != null) {
-                Optional<Diffusion> optionalModule = getModules().stream()
-                        .filter(Diffusion.class::isInstance)
-                        .map(Diffusion.class::cast)
-                        .findAny();
-                if (optionalModule.isPresent()) {
-                    Ratio ratio = optionalModule.get().getFeature(Ratio.class);
-                    node.initializeDiffusiveReduction(cortexArea, ratio);
+            if (getVolumeLayer() != null) {
+                // for each volume
+                for (VolumeLikeAgent agent : getVolumeLayer().getAgents()) {
+                    // initialize reduction
+                    Polygon cortexArea = agent.getArea();
+                    if (optionalModule.isPresent()) {
+                        Ratio ratio = optionalModule.get().getFeature(Ratio.class);
+                        node.initializeDiffusiveReduction(cortexArea, ratio);
+                    }
+                }
+            }
+
+        }
+    }
+
+
+        public VesicleLayer getVesicleLayer () {
+            return vesicleLayer;
+        }
+
+        public void setVesicleLayer (VesicleLayer vesicleLayer){
+            this.vesicleLayer = vesicleLayer;
+        }
+
+        public MembraneLayer getMembraneLayer () {
+            return membraneLayer;
+        }
+
+        public void setMembraneLayer (MembraneLayer membraneLayer){
+            this.membraneLayer = membraneLayer;
+        }
+
+        public VolumeLayer getVolumeLayer () {
+            return volumeLayer;
+        }
+
+        public void setVolumeLayer (VolumeLayer volumeLayer){
+            this.volumeLayer = volumeLayer;
+        }
+
+        public LineLikeAgentLayer getLineLayer () {
+            return lineLayer;
+        }
+
+        public void setLineLayer (LineLikeAgentLayer lineLayer){
+            this.lineLayer = lineLayer;
+        }
+
+        public Rectangle getSimulationRegion () {
+            return simulationRegion;
+        }
+
+        public void setSimulationRegion (Rectangle simulationRegion){
+            this.simulationRegion = simulationRegion;
+        }
+
+        public ConcentrationInitializer getConcentrationInitializer () {
+            return concentrationInitializer;
+        }
+
+        public void collectUpdatables () {
+            updatables = new ArrayList<>(graph.getNodes());
+            updatables.addAll(vesicleLayer.getVesicles());
+        }
+
+        /**
+         * Apply all referenced assignment rules.
+         */
+        public void applyAssignmentRules () {
+            for (AssignmentRule rule : assignmentRules) {
+                for (AutomatonNode bioNode : graph.getNodes()) {
+                    rule.applyRule(bioNode);
                 }
             }
         }
-    }
 
+        /**
+         * Adds a list of assignment rules, sorting them by their dependencies.
+         *
+         * @param assignmentRules The assignment rules.
+         * @see AssignmentRules#sortAssignmentRulesByPriority(List)
+         */
+        public void setAssignmentRules (List < AssignmentRule > assignmentRules) {
+            this.assignmentRules = AssignmentRules.sortAssignmentRulesByPriority(assignmentRules);
+        }
 
-    public VesicleLayer getVesicleLayer() {
-        return vesicleLayer;
-    }
+        public ArrayList<Updatable> getUpdatables () {
+            return updatables;
+        }
 
-    public void setVesicleLayer(VesicleLayer vesicleLayer) {
-        this.vesicleLayer = vesicleLayer;
-    }
+        public List<UpdateModule> getModules () {
+            return modules;
+        }
 
-    public MembraneLayer getMembraneLayer() {
-        return membraneLayer;
-    }
-
-    public void setMembraneLayer(MembraneLayer membraneLayer) {
-        this.membraneLayer = membraneLayer;
-    }
-
-    public VolumeLayer getVolumeLayer() {
-        return volumeLayer;
-    }
-
-    public void setVolumeLayer(VolumeLayer volumeLayer) {
-        this.volumeLayer = volumeLayer;
-    }
-
-    public LineLikeAgentLayer getLineLayer() {
-        return lineLayer;
-    }
-
-    public void setLineLayer(LineLikeAgentLayer lineLayer) {
-        this.lineLayer = lineLayer;
-    }
-
-    public Rectangle getSimulationRegion() {
-        return simulationRegion;
-    }
-
-    public void setSimulationRegion(Rectangle simulationRegion) {
-        this.simulationRegion = simulationRegion;
-    }
-
-    public ConcentrationInitializer getConcentrationInitializer() {
-        return concentrationInitializer;
-    }
-
-    public void collectUpdatables() {
-        updatables = new ArrayList<>(graph.getNodes());
-        updatables.addAll(vesicleLayer.getVesicles());
-    }
-
-    /**
-     * Apply all referenced assignment rules.
-     */
-    public void applyAssignmentRules() {
-        for (AssignmentRule rule : assignmentRules) {
-            for (AutomatonNode bioNode : graph.getNodes()) {
-                rule.applyRule(bioNode);
+        public void addModule (UpdateModule module){
+            // logger.info("Adding module {}.", module.toString());
+            module.setSimulation(this);
+            module.checkFeatures();
+            for (ChemicalEntity referencedEntity : module.getReferencedEntities()) {
+                addReferencedEntity(referencedEntity);
             }
+            modules.add(module);
         }
-    }
 
-    /**
-     * Adds a list of assignment rules, sorting them by their dependencies.
-     *
-     * @param assignmentRules The assignment rules.
-     * @see AssignmentRules#sortAssignmentRulesByPriority(List)
-     */
-    public void setAssignmentRules(List<AssignmentRule> assignmentRules) {
-        this.assignmentRules = AssignmentRules.sortAssignmentRulesByPriority(assignmentRules);
-    }
-
-    public ArrayList<Updatable> getUpdatables() {
-        return updatables;
-    }
-
-    public List<UpdateModule> getModules() {
-        return modules;
-    }
-
-    public void addModule(UpdateModule module) {
-        // logger.info("Adding module {}.", module.toString());
-        module.setSimulation(this);
-        module.checkFeatures();
-        for (ChemicalEntity referencedEntity : module.getReferencedEntities()) {
-            addReferencedEntity(referencedEntity);
+        public void setGraph (AutomatonGraph graph){
+            // logger.info("Adding graph.");
+            this.graph = graph;
+            initializeSpatialRepresentations();
         }
-        modules.add(module);
-    }
 
-    public void setGraph(AutomatonGraph graph) {
-        // logger.info("Adding graph.");
-        this.graph = graph;
-        initializeSpatialRepresentations();
-    }
+        public UpdateScheduler getScheduler () {
+            return scheduler;
+        }
 
-    public UpdateScheduler getScheduler() {
-        return scheduler;
-    }
+        public void setScheduler (UpdateScheduler scheduler){
+            this.scheduler = scheduler;
+        }
 
-    public void setScheduler(UpdateScheduler scheduler) {
-        this.scheduler = scheduler;
-    }
+        public void setMaximalTimeStep (Quantity < Time > maximalTimeStep) {
+            this.maximalTimeStep = maximalTimeStep;
+            logger.info("Maximal timestep set to {}.", TimeFormatter.formatTime(maximalTimeStep));
+        }
 
-    public void setMaximalTimeStep(Quantity<Time> maximalTimeStep) {
-        this.maximalTimeStep = maximalTimeStep;
-        logger.info("Maximal timestep set to {}.", TimeFormatter.formatTime(maximalTimeStep));
-    }
+        /**
+         * Update the epoch counter and elapsed time.
+         */
+        private void updateEpoch () {
+            epoch++;
+            elapsedTime = elapsedTime.add(UnitRegistry.getTime());
+        }
 
-    /**
-     * Update the epoch counter and elapsed time.
-     */
-    private void updateEpoch() {
-        epoch++;
-        elapsedTime = elapsedTime.add(UnitRegistry.getTime());
-    }
+        public ComparableQuantity<Time> getElapsedTime () {
+            return elapsedTime;
+        }
 
-    public ComparableQuantity<Time> getElapsedTime() {
-        return elapsedTime;
-    }
+        public AutomatonGraph getGraph () {
+            return graph;
+        }
 
-    public AutomatonGraph getGraph() {
-        return graph;
-    }
+        public long getEpoch () {
+            return epoch;
+        }
 
-    public long getEpoch() {
-        return epoch;
-    }
+        /**
+         * Returns the chemical entities.
+         *
+         * @return The chemical entities.
+         */
+        public Collection<ChemicalEntity> getChemicalEntities () {
+            return chemicalEntities.values();
+        }
 
-    /**
-     * Returns the chemical entities.
-     *
-     * @return The chemical entities.
-     */
-    public Collection<ChemicalEntity> getChemicalEntities() {
-        return chemicalEntities.values();
-    }
-
-    public Set<ChemicalEntity> getAllChemicalEntities() {
-        Set<ChemicalEntity> entities = new HashSet<>();
-        for (ChemicalEntity entity : chemicalEntities.values()) {
-            entities.add(entity);
-            if (entity instanceof ComplexEntity) {
-                entities.addAll(((ComplexEntity) entity).getAllData());
+        public Set<ChemicalEntity> getAllChemicalEntities () {
+            Set<ChemicalEntity> entities = new HashSet<>();
+            for (ChemicalEntity entity : chemicalEntities.values()) {
+                entities.add(entity);
+                if (entity instanceof ComplexEntity) {
+                    entities.addAll(((ComplexEntity) entity).getAllData());
+                }
             }
+            return entities;
         }
-        return entities;
-    }
 
-    public ChemicalEntity getChemicalEntity(String primaryIdentifier) {
-        return chemicalEntities.get(new SimpleStringIdentifier(primaryIdentifier));
-    }
+        public ChemicalEntity getChemicalEntity (String primaryIdentifier){
+            return chemicalEntities.get(new SimpleStringIdentifier(primaryIdentifier));
+        }
 
-    public void addReferencedEntity(ChemicalEntity chemicalEntity) {
-        chemicalEntities.put(chemicalEntity.getIdentifier(), chemicalEntity);
-    }
+        public void addReferencedEntity (ChemicalEntity chemicalEntity){
+            chemicalEntities.put(chemicalEntity.getIdentifier(), chemicalEntity);
+        }
 
-    public void observe(Updatable updatable) {
-        observedUpdatables.add(updatable);
-        updatable.setObserved(true);
-    }
+        public void observe (Updatable updatable){
+            observedUpdatables.add(updatable);
+            updatable.setObserved(true);
+        }
 
-    public Set<Updatable> getObservedUpdatables() {
-        return observedUpdatables;
-    }
+        public Set<Updatable> getObservedUpdatables () {
+            return observedUpdatables;
+        }
 
-    public List<ConcentrationDelta> getPreviousObservedDeltas(Updatable updatable) {
-        return observedDeltas.get(updatable);
-    }
+        public List<ConcentrationDelta> getPreviousObservedDeltas (Updatable updatable){
+            return observedDeltas.get(updatable);
+        }
 
-    public void clearPreviouslyObservedDeltas() {
-        observedDeltas.clear();
-    }
+        public void clearPreviouslyObservedDeltas () {
+            observedDeltas.clear();
+        }
 
-    public void setConcentrationInitializer(ConcentrationInitializer concentrationInitializer) {
-        this.concentrationInitializer = concentrationInitializer;
+        public void setConcentrationInitializer (ConcentrationInitializer concentrationInitializer){
+            this.concentrationInitializer = concentrationInitializer;
+        }
     }
-}

@@ -57,7 +57,7 @@ public class VolumeLikeAgentContainment extends QualitativeModule {
             if (blacklistStates.contains(vesicle.getState())) {
                 continue;
             }
-            if (requiredAgent.getArea().isInside(vesicle.getPosition())) {
+            if (requiredAgent.getArea().containsVector(vesicle.getPosition())) {
                 containedVesicles.add(vesicle);
             }
         }

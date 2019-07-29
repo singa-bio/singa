@@ -34,7 +34,7 @@ public class Polygons {
      * @param vector The vector.
      * @return True, if the vector is inside the polygon, or false if not.
      */
-    public static boolean isInside(Polygon polygon, Vector2D vector) {
+    public static boolean containsVector(Polygon polygon, Vector2D vector) {
         // checks complex (convex and intersecting polygons)
         // http://alienryderflex.com/polygon
         int polyCorners = polygon.getNumberOfVertices();
