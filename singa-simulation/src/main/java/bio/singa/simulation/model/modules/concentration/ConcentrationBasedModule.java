@@ -419,7 +419,7 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
             double fullDelta = supplier.getCurrentFullDeltas().get(identifier).getValue();
             double halfDelta = supplier.getCurrentHalfDeltas().get(identifier).getValue();
             // calculate error
-            double localError = Math.abs(1 - (fullDelta / halfDelta));
+            double localError = Math.abs(fullDelta - halfDelta);
             // determine the largest error in the current deltas
             if (largestLocalError < localError) {
                 // check for numerical instabilities
