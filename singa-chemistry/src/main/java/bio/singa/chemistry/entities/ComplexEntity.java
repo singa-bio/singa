@@ -46,8 +46,6 @@ public class ComplexEntity extends BinaryTreeNode<ChemicalEntity> implements Che
 
     private FeatureContainer features;
 
-    private boolean membraneAnchored;
-
     public ComplexEntity() {
         annotations = new ArrayList<>();
         features = new ChemistryFeatureContainer();
@@ -107,7 +105,7 @@ public class ComplexEntity extends BinaryTreeNode<ChemicalEntity> implements Che
         // find path to modification position
         List<BinaryTreeNode<ChemicalEntity>> path = pathTo(replacementPosition);
         if (path == null || path.isEmpty()) {
-            throw new IllegalStateException("Replacement position" + replacementPosition + " could not be fund in " + this);
+            return;
         }
         // perform addition and rename path to addition
         ListIterator<BinaryTreeNode<ChemicalEntity>> iterator = path.listIterator(path.size());
@@ -134,6 +132,41 @@ public class ComplexEntity extends BinaryTreeNode<ChemicalEntity> implements Che
         }
     }
 
+    public boolean attach(ChemicalEntity attachment, ModificationSite attachmentPosition) {
+        // find path to modification position
+        List<BinaryTreeNode<ChemicalEntity>> path = pathTo(attachmentPosition);
+        // return if attachment position cannot be found
+        if (path == null || path.isEmpty()) {
+            return false;
+        }
+        // return if attachment position is not occupied
+        ModificationSite originalSite = (ModificationSite) path.get(path.size() - 1).getData();
+        if (originalSite.isOccupied()) {
+            return false;
+        }
+        // set occupied
+        ModificationSite modifiedSite = originalSite.copy();
+        modifiedSite.setOccupied(true);
+        // parent
+        ComplexEntity modifiedAttachment = ((ComplexEntity) attachment).copy();
+        modifiedAttachment.replace(modifiedSite, originalSite);
+        // perform addition and rename path to addition
+        ListIterator<BinaryTreeNode<ChemicalEntity>> iterator = path.listIterator(path.size());
+        while (iterator.hasPrevious()) {
+            BinaryTreeNode<ChemicalEntity> current = iterator.previous();
+            if (current.hasLeft() && current.getLeft().getData().equals(attachmentPosition)) {
+                current.setLeft(modifiedAttachment);
+            } else if (current.hasRight() && current.getRight().getData().equals(attachmentPosition)) {
+                current.setRight(modifiedAttachment);
+            }
+            // rename if complex entity
+            if (current instanceof ComplexEntity) {
+                ((ComplexEntity) current).setIdentifier(current.toNewickString(t -> t.getIdentifier().getContent(), ":"));
+            }
+        }
+        return true;
+    }
+
     /**
      * Removes the given entity, but only at the specified position and renames all affected inner nodes.
      *
@@ -158,13 +191,19 @@ public class ComplexEntity extends BinaryTreeNode<ChemicalEntity> implements Che
             }
         }
         if (retainedEntity == null) {
-            throw new IllegalStateException("Entity to remove" + toBeRemoved + " could not be fund in " + this);
+            throw new IllegalStateException("Entity to remove " + toBeRemoved + " could not be fund in " + this);
+        }
+        if (retainedEntity instanceof ModificationSite) {
+            // set occupied
+            ModificationSite modificationSite = ((ModificationSite) retainedEntity).copy();
+            modificationSite.setOccupied(false);
+            retainedEntity = modificationSite;
         }
         // substitute what remains to the modification position
         substitute(removalPosition, retainedEntity);
         // rename updated path to the root
         for (BinaryTreeNode<ChemicalEntity> current : path) {
-            ((ComplexEntity) current).setIdentifier(current.toNewickString(t -> t.getIdentifier().getContent(), ":"));
+                ((ComplexEntity) current).setIdentifier(current.toNewickString(t -> t.getIdentifier().getContent(), ":"));
         }
     }
 
@@ -200,6 +239,26 @@ public class ComplexEntity extends BinaryTreeNode<ChemicalEntity> implements Che
         for (BinaryTreeNode<ChemicalEntity> current : path) {
             ((ComplexEntity) current).setIdentifier(current.toNewickString(t -> t.getIdentifier().getContent(), ":"));
         }
+    }
+
+    public List<ModificationSite> getSites() {
+        List<ModificationSite> sites = new ArrayList<>();
+        inOrderTraversal(node -> {
+            if (node.getData() instanceof ModificationSite) {
+                sites.add(((ModificationSite) node.getData()));
+            }
+        });
+        return sites;
+    }
+
+    public int countParts(ChemicalEntity entity) {
+        List<ChemicalEntity> sites = new ArrayList<>();
+        inOrderTraversal(node -> {
+            if (node.getData().equals(entity)) {
+                sites.add((node.getData()));
+            }
+        });
+        return sites.size();
     }
 
     @Override
@@ -292,6 +351,18 @@ public class ComplexEntity extends BinaryTreeNode<ChemicalEntity> implements Che
     @Override
     public String toString() {
         return "Complex " + identifier;
+    }
+
+    public String nonSiteString() {
+        List<String> sites = new ArrayList<>();
+        inOrderTraversal(node -> {
+            if (node.isLeaf()) {
+                if (!(node.getData() instanceof ModificationSite)) {
+                    sites.add((node.getData().getIdentifier().toString()));
+                }
+            }
+        });
+        return String.join(" ", sites);
     }
 
 }

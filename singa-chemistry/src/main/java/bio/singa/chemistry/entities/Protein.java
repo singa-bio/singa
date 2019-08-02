@@ -39,6 +39,7 @@ public class Protein extends AbstractChemicalEntity {
      */
     protected Protein(SimpleStringIdentifier identifier) {
         super(identifier);
+        EntityRegistry.put(identifier.toString(), this);
     }
 
     /**

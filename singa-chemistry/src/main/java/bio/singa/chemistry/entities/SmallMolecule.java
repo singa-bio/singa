@@ -44,6 +44,7 @@ public class SmallMolecule extends AbstractChemicalEntity {
      */
     protected SmallMolecule(SimpleStringIdentifier identifier) {
         super(identifier);
+        EntityRegistry.put(identifier.toString(), this);
     }
 
     /**
