@@ -1,8 +1,6 @@
 package bio.singa.chemistry.entities;
 
 import bio.singa.chemistry.annotations.Annotatable;
-import bio.singa.features.identifiers.SimpleStringIdentifier;
-import bio.singa.features.identifiers.model.Identifiable;
 import bio.singa.features.identifiers.model.Identifier;
 import bio.singa.features.model.Featureable;
 import bio.singa.structure.features.molarmass.MolarMass;
@@ -18,7 +16,9 @@ import java.util.List;
  * @see <a href="https://de.wikipedia.org/wiki/Simplified_Molecular_Input_Line_Entry_Specification">Wikipedia:
  * SMILES</a>
  */
-public interface ChemicalEntity extends Identifiable<SimpleStringIdentifier>, Annotatable, Featureable {
+public interface ChemicalEntity extends Annotatable, Featureable {
+
+    String getIdentifier();
 
     List<Identifier> getAllIdentifiers();
 

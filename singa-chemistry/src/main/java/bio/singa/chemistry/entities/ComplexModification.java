@@ -66,7 +66,7 @@ public class ComplexModification {
         modifiedEntity.substitute(modification.getModificationPosition(), modification.getModificator());
         for (BinaryTreeNode<ChemicalEntity> current : path) {
             if (current instanceof ComplexEntity) {
-                ((ComplexEntity) current).setIdentifier(current.toNewickString(t -> t.getIdentifier().getContent(), ":"));
+                ((ComplexEntity) current).setIdentifier(current.toNewickString(ChemicalEntity::getIdentifier, ":"));
             }
         }
         return modifiedEntity;
@@ -88,7 +88,7 @@ public class ComplexModification {
         Objects.requireNonNull(retainedEntity);
         modifiedEntity.substitute(modification.getModificationPosition(), retainedEntity);
         for (BinaryTreeNode<ChemicalEntity> current : path) {
-            ((ComplexEntity) current).setIdentifier(current.toNewickString(t -> t.getIdentifier().getContent(), ":"));
+            ((ComplexEntity) current).setIdentifier(current.toNewickString(ChemicalEntity::getIdentifier, ":"));
         }
         return modifiedEntity;
     }
@@ -110,7 +110,7 @@ public class ComplexModification {
         Objects.requireNonNull(retainedEntity);
         modifiedEntity.substitute(path.get(path.size() - 1), retainedEntity);
         for (BinaryTreeNode<ChemicalEntity> current : path) {
-            ((ComplexEntity) current).setIdentifier(current.toNewickString(t -> t.getIdentifier().getContent(), ":"));
+            ((ComplexEntity) current).setIdentifier(current.toNewickString(ChemicalEntity::getIdentifier, ":"));
         }
         return modifiedEntity;
     }
@@ -131,7 +131,7 @@ public class ComplexModification {
             if (current.getLeft().getData().equals(modification.getModificationPosition())) {
                 current.setLeft(replacement);
             }
-            ((ComplexEntity) current).setIdentifier(current.toNewickString(t -> t.getIdentifier().getContent(), ":"));
+            ((ComplexEntity) current).setIdentifier(current.toNewickString(ChemicalEntity::getIdentifier, ":"));
         }
         return modifiedEntity;
     }

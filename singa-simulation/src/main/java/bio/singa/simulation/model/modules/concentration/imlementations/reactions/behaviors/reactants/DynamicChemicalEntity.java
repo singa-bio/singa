@@ -2,7 +2,6 @@ package bio.singa.simulation.model.modules.concentration.imlementations.reaction
 
 import bio.singa.chemistry.entities.AbstractChemicalEntity;
 import bio.singa.chemistry.entities.ChemicalEntity;
-import bio.singa.features.identifiers.SimpleStringIdentifier;
 import bio.singa.simulation.model.sections.CellTopology;
 import bio.singa.simulation.model.simulation.Updatable;
 
@@ -28,14 +27,10 @@ public class DynamicChemicalEntity extends AbstractChemicalEntity {
      *
      * @param identifier The pdbIdentifier.
      */
-    protected DynamicChemicalEntity(SimpleStringIdentifier identifier) {
+    protected DynamicChemicalEntity(String identifier) {
         super(identifier);
         composition = new ArrayList<>();
         possibleTopologies = new ArrayList<>();
-    }
-
-    public DynamicChemicalEntity(String identifier) {
-        this(new SimpleStringIdentifier(identifier));
     }
 
     public List<EntityCompositionCondition> getComposition() {
@@ -74,16 +69,12 @@ public class DynamicChemicalEntity extends AbstractChemicalEntity {
 
     public static class Builder extends AbstractChemicalEntity.Builder<DynamicChemicalEntity, Builder> {
 
-        public Builder(SimpleStringIdentifier identifier) {
+        public Builder(String identifier) {
             super(identifier);
         }
 
-        public Builder(String identifier) {
-            this(new SimpleStringIdentifier(identifier));
-        }
-
         @Override
-        protected DynamicChemicalEntity createObject(SimpleStringIdentifier primaryIdentifer) {
+        protected DynamicChemicalEntity createObject(String primaryIdentifer) {
             return new DynamicChemicalEntity(primaryIdentifer);
         }
 

@@ -406,7 +406,7 @@ public class ReactionBuilder {
 
         @Override
         public DynamicReactantStep addProduct(DynamicChemicalEntity dynamicChemicalEntity, ComplexModification modification) {
-            dynamicReactantBehavior.addDynamicProduct(dynamicChemicalEntity.getIdentifier().getContent(), modification);
+            dynamicReactantBehavior.addDynamicProduct(dynamicChemicalEntity.getIdentifier(), modification);
             return this;
         }
 

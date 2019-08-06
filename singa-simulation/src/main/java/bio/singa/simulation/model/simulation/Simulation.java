@@ -72,7 +72,7 @@ public class Simulation {
     /**
      * The chemical entities referenced in the graph.
      */
-    private Map<SimpleStringIdentifier, ChemicalEntity> chemicalEntities;
+    private Map<String, ChemicalEntity> chemicalEntities;
 
     /**
      * The assignment rules.

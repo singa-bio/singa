@@ -302,7 +302,7 @@ public class DynamicReactantBehavior implements ReactantBehavior {
             ChemicalEntity entity = matchingSubstrate.getEntity();
             // apply all modifications
             boolean split = false;
-            for (ComplexModification modification : dynamicProducts.get(dynamicSubstrate.getIdentifier().getContent())) {
+            for (ComplexModification modification : dynamicProducts.get(dynamicSubstrate.getIdentifier())) {
                 if (entity instanceof ComplexEntity) {
                     if (modification.getOperation().equals(SPLIT)) {
                         split = true;

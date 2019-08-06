@@ -84,7 +84,7 @@ public class ComplexEntityParser {
 
     private ChemicalEntity getFromReference(String entity) {
         for (ChemicalEntity chemicalEntity : reference) {
-            if (chemicalEntity.getIdentifier().getContent().equals(entity)) {
+            if (chemicalEntity.getIdentifier().equals(entity)) {
                 return chemicalEntity;
             }
         }
@@ -98,7 +98,7 @@ public class ComplexEntityParser {
                 ComplexEntity entity = (ComplexEntity) node;
                 // generate identifiers for inner nodes
                 entity.setData(entity);
-                entity.setIdentifier(entity.toNewickString(t -> t.getIdentifier().getContent(), ":"));
+                entity.setIdentifier(entity.toNewickString(ChemicalEntity::getIdentifier, ":"));
                 // replace leaf subtrees with actual entity representations
                 if (!(entity.getLeft().getData() instanceof ComplexEntity)) {
                     entity.setLeft(new BinaryTreeNode<>(entity.getLeft().getData()));

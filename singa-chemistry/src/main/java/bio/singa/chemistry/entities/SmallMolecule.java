@@ -3,8 +3,6 @@ package bio.singa.chemistry.entities;
 import bio.singa.chemistry.features.databases.chebi.ChEBIParserService;
 import bio.singa.chemistry.features.logp.LogP;
 import bio.singa.chemistry.features.smiles.Smiles;
-import bio.singa.features.identifiers.ChEBIIdentifier;
-import bio.singa.features.identifiers.SimpleStringIdentifier;
 import bio.singa.features.model.Feature;
 
 import java.util.HashSet;
@@ -25,10 +23,6 @@ public class SmallMolecule extends AbstractChemicalEntity {
         return new Builder(identifier);
     }
 
-    public static Builder create(SimpleStringIdentifier identifier) {
-        return new Builder(identifier);
-    }
-
     public static final Set<Class<? extends Feature>> availableFeatures = new HashSet<>();
 
     static {
@@ -38,22 +32,13 @@ public class SmallMolecule extends AbstractChemicalEntity {
     }
 
     /**
-     * Creates a new Species with the given {@link ChEBIIdentifier}.
+     * Creates a new Species with the given identifier
      *
-     * @param identifier The {@link SimpleStringIdentifier}.
-     */
-    protected SmallMolecule(SimpleStringIdentifier identifier) {
-        super(identifier);
-        EntityRegistry.put(identifier.toString(), this);
-    }
-
-    /**
-     * Creates a new Species using a String representation of a {@link SimpleStringIdentifier}.
-     *
-     * @param identifier A String representation of the {@link SimpleStringIdentifier}.
+     * @param identifier The identifier.
      */
     protected SmallMolecule(String identifier) {
-        this(new SimpleStringIdentifier(identifier));
+        super(identifier);
+        EntityRegistry.put(identifier, this);
     }
 
     @Override
@@ -63,16 +48,12 @@ public class SmallMolecule extends AbstractChemicalEntity {
 
     public static class Builder extends AbstractChemicalEntity.Builder<SmallMolecule, Builder> {
 
-        public Builder(SimpleStringIdentifier identifier) {
+        private Builder(String identifier) {
             super(identifier);
         }
 
-        private Builder(String identifier) {
-            this(new SimpleStringIdentifier(identifier));
-        }
-
         @Override
-        protected SmallMolecule createObject(SimpleStringIdentifier primaryIdentifer) {
+        protected SmallMolecule createObject(String primaryIdentifer) {
             return new SmallMolecule(primaryIdentifer);
         }
 

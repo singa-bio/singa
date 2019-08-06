@@ -34,7 +34,7 @@ public class FormatReactionKinetics {
                 section = "m";
                 break;
         }
-        return "[\\text{" + reactant.getEntity().getIdentifier().getContent() + "}]_" + section;
+        return "[\\text{" + reactant.getEntity().getIdentifier() + "}]_" + section;
     }
 
     public static String formatTex(Reaction reaction) {
@@ -46,8 +46,8 @@ public class FormatReactionKinetics {
             String substrates = formatSectionReactants(reaction.getReactantBehavior().getSubstrates());
             return "$k \\cdot " + substrates + "$";
         } else if (reaction.getKineticLaw() instanceof MichaelisMentenKineticLaw) {
-            String substrate = reaction.getReactantBehavior().getSubstrates().iterator().next().getEntity().getIdentifier().getContent();
-            String enzyme = reaction.getReactantBehavior().getCatalysts().iterator().next().getEntity().getIdentifier().getContent();
+            String substrate = reaction.getReactantBehavior().getSubstrates().iterator().next().getEntity().getIdentifier();
+            String enzyme = reaction.getReactantBehavior().getCatalysts().iterator().next().getEntity().getIdentifier();
             return String.format(michaelisMentenTemplate, enzyme, substrate, substrate);
         } else {
             return "not supported";

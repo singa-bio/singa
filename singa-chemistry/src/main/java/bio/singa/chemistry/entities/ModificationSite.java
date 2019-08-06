@@ -1,7 +1,5 @@
 package bio.singa.chemistry.entities;
 
-import bio.singa.features.identifiers.SimpleStringIdentifier;
-
 /**
  * @author cl
  */
@@ -13,13 +11,9 @@ public class ModificationSite extends AbstractChemicalEntity {
         return new Builder(identifier);
     }
 
-    public static Builder create(SimpleStringIdentifier identifier) {
-        return new Builder(identifier);
-    }
-
-    protected ModificationSite(SimpleStringIdentifier identifier) {
+    protected ModificationSite(String identifier) {
         super(identifier);
-        EntityRegistry.put(identifier.toString(), this);
+        EntityRegistry.put(identifier, this);
     }
 
     public boolean isOccupied() {
@@ -32,16 +26,12 @@ public class ModificationSite extends AbstractChemicalEntity {
 
     public static class Builder extends AbstractChemicalEntity.Builder<ModificationSite, Builder> {
 
-        public Builder(SimpleStringIdentifier identifier) {
+        public Builder(String identifier) {
             super(identifier);
         }
 
-        public Builder(String identifier) {
-            this(new SimpleStringIdentifier(identifier));
-        }
-
         @Override
-        protected ModificationSite createObject(SimpleStringIdentifier primaryIdentifer) {
+        protected ModificationSite createObject(String primaryIdentifer) {
             return new ModificationSite(primaryIdentifer);
         }
 

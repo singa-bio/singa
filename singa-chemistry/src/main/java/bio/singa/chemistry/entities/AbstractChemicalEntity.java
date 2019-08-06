@@ -37,7 +37,7 @@ public abstract class AbstractChemicalEntity implements ChemicalEntity {
     /**
      * The distinct {@link Identifier} by which this entity is identified.
      */
-    protected final SimpleStringIdentifier identifier;
+    protected final String identifier;
 
     /**
      * All annotations of this entity.
@@ -51,15 +51,14 @@ public abstract class AbstractChemicalEntity implements ChemicalEntity {
      *
      * @param identifier The identifier.
      */
-    protected AbstractChemicalEntity(SimpleStringIdentifier identifier) {
+    protected AbstractChemicalEntity(String identifier) {
         this.identifier = identifier;
         annotations = new ArrayList<>();
         features = new ChemistryFeatureContainer();
         // IdentifierPatternRegistry.instantiate(identifier.getContent()).ifPresent(this::setFeature);
     }
 
-    @Override
-    public SimpleStringIdentifier getIdentifier() {
+    public String getIdentifier() {
         return identifier;
     }
 
@@ -96,7 +95,7 @@ public abstract class AbstractChemicalEntity implements ChemicalEntity {
 
     public List<Identifier> getAllIdentifiers() {
         List<Identifier> identifiers = features.getAdditionalIdentifiers();
-        identifiers.add(identifier);
+        identifiers.add(new SimpleStringIdentifier(identifier));
         return identifiers;
     }
 
@@ -137,7 +136,7 @@ public abstract class AbstractChemicalEntity implements ChemicalEntity {
 
     @Override
     public String toString() {
-        return "Entity " + getIdentifier().getContent();
+        return "Entity " + getIdentifier();
     }
 
     @Override
@@ -158,17 +157,13 @@ public abstract class AbstractChemicalEntity implements ChemicalEntity {
         protected final TopLevelType topLevelObject;
         protected final BuilderType builderObject;
 
-        public Builder(SimpleStringIdentifier identifier) {
+
+        public Builder(String identifier) {
             topLevelObject = createObject(identifier);
             builderObject = getBuilder();
         }
 
-        public Builder(String identifier) {
-            topLevelObject = createObject(new SimpleStringIdentifier(identifier));
-            builderObject = getBuilder();
-        }
-
-        protected abstract TopLevelType createObject(SimpleStringIdentifier primaryIdentifer);
+        protected abstract TopLevelType createObject(String primaryIdentifer);
 
         protected abstract BuilderType getBuilder();
 

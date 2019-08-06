@@ -44,7 +44,7 @@ public class FormatReactionEquation {
     private static String formatSectionReactantTex(Reactant reactant) {
         String topology = mapTopologyToString(reactant.getPreferredTopology());
         return (reactant.getStoichiometricNumber() > 1 ? " " + (int) reactant.getStoichiometricNumber() + " " : "") +
-                reactant.getEntity().getIdentifier().getContent().replaceAll("(\\d)", " $1 ") + "$_" + topology + "$";
+                reactant.getEntity().getIdentifier().replaceAll("(\\d)", " $1 ") + "$_" + topology + "$";
     }
 
     private static String formatSectionReactantsASCII(Collection<Reactant> reactants, String delimiter) {
@@ -56,7 +56,7 @@ public class FormatReactionEquation {
     private static String formatSectionReactantASCII(Reactant reactant) {
         String topologies = mapTopologyToString(reactant.getPreferredTopology());
         return (reactant.getStoichiometricNumber() > 1 ? (int) reactant.getStoichiometricNumber() : "") +
-                reactant.getEntity().getIdentifier().getContent() + "(" + topologies + ")";
+                reactant.getEntity().getIdentifier() + "(" + topologies + ")";
     }
 
     private static String formatDynamicSubstrates(Collection<DynamicChemicalEntity> substrates) {
@@ -69,7 +69,7 @@ public class FormatReactionEquation {
         String topologies = substrate.getPossibleTopologies().stream()
                 .map(FormatReactionEquation::mapTopologyToString)
                 .collect(Collectors.joining(","));
-        return "[" + substrate.getIdentifier().getContent() + "]" + "(" + topologies + ")";
+        return "[" + substrate.getIdentifier() + "]" + "(" + topologies + ")";
     }
 
     private static String mapTopologyToString(CellTopology topology) {
@@ -101,7 +101,7 @@ public class FormatReactionEquation {
         if (complexModification.getOperation().getText().equals(ComplexModification.Operation.SPLIT.getText())) {
             return ComplexModification.Operation.SPLIT.getText();
         }
-        return complexModification.getOperation().getText() + complexModification.getModificator().getIdentifier().getContent();
+        return complexModification.getOperation().getText() + complexModification.getModificator().getIdentifier();
     }
 
     public static String formatTex(Reaction reaction) {

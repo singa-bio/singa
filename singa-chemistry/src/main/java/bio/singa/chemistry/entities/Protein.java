@@ -4,7 +4,6 @@ import bio.singa.chemistry.annotations.Annotation;
 import bio.singa.chemistry.annotations.AnnotationType;
 import bio.singa.chemistry.annotations.taxonomy.Organism;
 import bio.singa.features.identifiers.GoTerm;
-import bio.singa.features.identifiers.SimpleStringIdentifier;
 import bio.singa.features.model.Feature;
 
 import java.util.HashSet;
@@ -22,10 +21,6 @@ public class Protein extends AbstractChemicalEntity {
         return new Builder(identifier);
     }
 
-    public static Builder create(SimpleStringIdentifier identifier) {
-        return new Builder(identifier);
-    }
-
     static {
         Protein.availableFeatures.addAll(AbstractChemicalEntity.availableFeatures);
     }
@@ -37,9 +32,9 @@ public class Protein extends AbstractChemicalEntity {
      *
      * @param identifier The identifier.
      */
-    protected Protein(SimpleStringIdentifier identifier) {
+    protected Protein(String identifier) {
         super(identifier);
-        EntityRegistry.put(identifier.toString(), this);
+        EntityRegistry.put(identifier, this);
     }
 
     /**
@@ -140,16 +135,12 @@ public class Protein extends AbstractChemicalEntity {
 
     public static class Builder extends AbstractChemicalEntity.Builder<Protein, Builder> {
 
-        public Builder(SimpleStringIdentifier identifier) {
+        public Builder(String identifier) {
             super(identifier);
         }
 
-        public Builder(String identifier) {
-            this(new SimpleStringIdentifier(identifier));
-        }
-
         @Override
-        protected Protein createObject(SimpleStringIdentifier primaryIdentifer) {
+        protected Protein createObject(String primaryIdentifer) {
             return new Protein(primaryIdentifer);
         }
 

@@ -40,10 +40,10 @@ public class ReactantSet {
     @Override
     public String toString() {
         List<String> substrateStrings = substrates.stream()
-                .map(reactant -> reactant.getEntity().getIdentifier().getContent())
+                .map(reactant -> reactant.getEntity().getIdentifier())
                 .collect(Collectors.toList());
         List<String> productStrings = products.stream()
-                .map(reactant -> reactant.getEntity().getIdentifier().getContent())
+                .map(reactant -> reactant.getEntity().getIdentifier())
                 .collect(Collectors.toList());
         return String.join(" + ", substrateStrings) + " -> " + String.join(" + ", productStrings);
     }

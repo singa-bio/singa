@@ -37,7 +37,9 @@ public class ComplexEntity extends BinaryTreeNode<ChemicalEntity> implements Che
     /**
      * The distinct {@link Identifier} by which this entity is identified.
      */
-    private SimpleStringIdentifier identifier;
+    private String identifier;
+
+    private String referenceIdentifier;
 
     /**
      * All annotations of this entity.
@@ -51,8 +53,30 @@ public class ComplexEntity extends BinaryTreeNode<ChemicalEntity> implements Che
         features = new ChemistryFeatureContainer();
     }
 
-    private ComplexEntity(SimpleStringIdentifier identifier) {
+    private ComplexEntity(String identifier) {
         this.identifier = identifier;
+    }
+
+    private void updateName() {
+        setIdentifier(toNewickString(ChemicalEntity::getIdentifier, ":"));
+        referenceIdentifier = nonSiteString();
+        EntityRegistry.put(referenceIdentifier, this);
+    }
+
+    public String getReferenceIdentifier() {
+        return referenceIdentifier;
+    }
+
+    private String nonSiteString() {
+        List<String> sites = new ArrayList<>();
+        inOrderTraversal(node -> {
+            if (node.isLeaf()) {
+                if (!(node.getData() instanceof ModificationSite)) {
+                    sites.add((node.getData().getIdentifier().toString()));
+                }
+            }
+        });
+        return String.join("-", sites);
     }
 
     public static ComplexEntity from(ChemicalEntity... entities) {
@@ -79,7 +103,7 @@ public class ComplexEntity extends BinaryTreeNode<ChemicalEntity> implements Che
             complexEntity.addRight(second);
         }
         complexEntity.setData(complexEntity);
-        complexEntity.setIdentifier(complexEntity.toNewickString(t -> t.getIdentifier().getContent(), ":"));
+        complexEntity.updateName();
         return complexEntity;
     }
 
@@ -128,7 +152,9 @@ public class ComplexEntity extends BinaryTreeNode<ChemicalEntity> implements Che
                     current.addLeft(replacement);
                 }
             }
-            ((ComplexEntity) current).setIdentifier(current.toNewickString(t -> t.getIdentifier().getContent(), ":"));
+            if (current instanceof ComplexEntity) {
+                ((ComplexEntity) current).updateName();
+            }
         }
     }
 
@@ -161,7 +187,7 @@ public class ComplexEntity extends BinaryTreeNode<ChemicalEntity> implements Che
             }
             // rename if complex entity
             if (current instanceof ComplexEntity) {
-                ((ComplexEntity) current).setIdentifier(current.toNewickString(t -> t.getIdentifier().getContent(), ":"));
+                ((ComplexEntity) current).updateName();
             }
         }
         return true;
@@ -203,7 +229,9 @@ public class ComplexEntity extends BinaryTreeNode<ChemicalEntity> implements Che
         substitute(removalPosition, retainedEntity);
         // rename updated path to the root
         for (BinaryTreeNode<ChemicalEntity> current : path) {
-                ((ComplexEntity) current).setIdentifier(current.toNewickString(t -> t.getIdentifier().getContent(), ":"));
+            if (current instanceof ComplexEntity) {
+                ((ComplexEntity) current).updateName();
+            }
         }
     }
 
@@ -233,7 +261,7 @@ public class ComplexEntity extends BinaryTreeNode<ChemicalEntity> implements Che
         // rename updated path to the root
         for (BinaryTreeNode<ChemicalEntity> current : path) {
             if (current instanceof ComplexEntity) {
-                ((ComplexEntity) current).setIdentifier(current.toNewickString(t -> t.getIdentifier().getContent(), ":"));
+                ((ComplexEntity) current).updateName();
             }
         }
         return retainedEntity.getData();
@@ -265,15 +293,12 @@ public class ComplexEntity extends BinaryTreeNode<ChemicalEntity> implements Che
     }
 
     public void setIdentifier(String identifier) {
-        this.identifier = new SimpleStringIdentifier(identifier);
-    }
-
-    public void setIdentifier(SimpleStringIdentifier identifier) {
         this.identifier = identifier;
     }
 
+
     @Override
-    public SimpleStringIdentifier getIdentifier() {
+    public String getIdentifier() {
         return identifier;
     }
 
@@ -312,7 +337,7 @@ public class ComplexEntity extends BinaryTreeNode<ChemicalEntity> implements Che
 
     public List<Identifier> getAllIdentifiers() {
         List<Identifier> identifiers = features.getAdditionalIdentifiers();
-        identifiers.add(identifier);
+        identifiers.add(new SimpleStringIdentifier(identifier));
         return identifiers;
     }
 
@@ -349,18 +374,6 @@ public class ComplexEntity extends BinaryTreeNode<ChemicalEntity> implements Che
     @Override
     public String toString() {
         return "Complex " + identifier;
-    }
-
-    public String nonSiteString() {
-        List<String> sites = new ArrayList<>();
-        inOrderTraversal(node -> {
-            if (node.isLeaf()) {
-                if (!(node.getData() instanceof ModificationSite)) {
-                    sites.add((node.getData().getIdentifier().toString()));
-                }
-            }
-        });
-        return String.join("-", sites);
     }
 
 }
