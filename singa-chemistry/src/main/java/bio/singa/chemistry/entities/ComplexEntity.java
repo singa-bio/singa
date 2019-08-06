@@ -173,7 +173,7 @@ public class ComplexEntity extends BinaryTreeNode<ChemicalEntity> implements Che
      * @param toBeRemoved The entity to be removed.
      * @param removalPosition The removal position.
      */
-    public void remove(ChemicalEntity toBeRemoved, ChemicalEntity removalPosition) {
+    public void removeFromPosition(ChemicalEntity toBeRemoved, ChemicalEntity removalPosition) {
         // find path to modification position
         List<BinaryTreeNode<ChemicalEntity>> path = pathTo(removalPosition);
         if (path == null || path.isEmpty()) {
@@ -191,7 +191,7 @@ public class ComplexEntity extends BinaryTreeNode<ChemicalEntity> implements Che
             }
         }
         if (retainedEntity == null) {
-            throw new IllegalStateException("Entity to remove " + toBeRemoved + " could not be fund in " + this);
+            throw new IllegalStateException("Entity to removeFromSite " + toBeRemoved + " could not be fund in " + this);
         }
         if (retainedEntity instanceof ModificationSite) {
             // set occupied
@@ -207,38 +207,36 @@ public class ComplexEntity extends BinaryTreeNode<ChemicalEntity> implements Che
         }
     }
 
-    /**
-     * Removes the given entity from the tree and renames all affected inner nodes.
-     *
-     * @param toBeRemoved The entity to be removed.
-     */
-    public void remove(ChemicalEntity toBeRemoved) {
+    public ChemicalEntity removeFromSite(ModificationSite modificationSite) {
         // find path to modification position
-        List<BinaryTreeNode<ChemicalEntity>> path = pathTo(toBeRemoved);
+        List<BinaryTreeNode<ChemicalEntity>> path = pathTo(modificationSite);
         if (path == null || path.isEmpty()) {
-            throw new IllegalStateException("Entity to remove" + toBeRemoved + " could not be fund in " + this);
+            throw new IllegalStateException("Entity to removeFromSite" + modificationSite + " could not be fund in " + this);
         }
         // find part of the tree that will be maintained
-        BinaryTreeNode<ChemicalEntity> parent = path.get(path.size() - 1);
+        BinaryTreeNode<ChemicalEntity> parent = path.get(path.size() - 2);
         BinaryTreeNode<ChemicalEntity> retainedEntity = null;
         if (parent.hasLeft()) {
-            if (parent.getLeft().getData().equals(toBeRemoved)) {
+            if (parent.getLeft().getData().equals(modificationSite)) {
                 retainedEntity = parent.getRight();
             }
         } else if (parent.hasRight()) {
-            if (parent.getRight().getData().equals(toBeRemoved)) {
+            if (parent.getRight().getData().equals(modificationSite)) {
                 retainedEntity = parent.getLeft();
             }
         }
         if (retainedEntity == null) {
-            throw new IllegalStateException("Entity to remove" + toBeRemoved + " could not be fund in " + this);
+            throw new IllegalStateException("Entity to removeFromSite" + modificationSite + " could not be fund in " + this);
         }
-        // substitute what remains to the modification position
-        substitute(parent, retainedEntity);
+        // substitute binding site
+        substitute(parent, path.get(path.size() - 1));
         // rename updated path to the root
         for (BinaryTreeNode<ChemicalEntity> current : path) {
-            ((ComplexEntity) current).setIdentifier(current.toNewickString(t -> t.getIdentifier().getContent(), ":"));
+            if (current instanceof ComplexEntity) {
+                ((ComplexEntity) current).setIdentifier(current.toNewickString(t -> t.getIdentifier().getContent(), ":"));
+            }
         }
+        return retainedEntity.getData();
     }
 
     public List<ModificationSite> getSites() {
@@ -362,7 +360,7 @@ public class ComplexEntity extends BinaryTreeNode<ChemicalEntity> implements Che
                 }
             }
         });
-        return String.join(" ", sites);
+        return String.join("-", sites);
     }
 
 }

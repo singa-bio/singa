@@ -160,7 +160,7 @@ class ReactionRuleTest {
                 .andModification()
                 .remove(atp, atpSite)
                 .andModification()
-                .produce(adp)// FIXME currently does not work
+                .produce(adp)
                 .build();
         aggregator.addRule(pkacAutophosphorylation);
         aggregator.addRule(pkacAtpBinding);
@@ -209,9 +209,15 @@ class ReactionRuleTest {
                 .build();
         aggregator.addRule(pkacPdePhosphorylation);
 
-        // TODO currently production of adp does not work
-        // TODO p is added to the wrong position when added the second time
-        // TODO add split off reaction
+        ReactionRule aqpRelease = ReactionRule.create()
+                .entity(pkac)
+                .release(aqp, substrateSite)
+                .targetCondition(ReactantCondition
+                        .hasNumerOfPart(p, 2))
+                .build();
+        aggregator.addRule(aqpRelease);
+
+
 
     }
 }

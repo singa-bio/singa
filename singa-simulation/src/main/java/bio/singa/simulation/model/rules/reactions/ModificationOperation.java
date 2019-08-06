@@ -5,6 +5,6 @@ package bio.singa.simulation.model.rules.reactions;
  */
 public enum ModificationOperation {
 
-    BIND, ADD, REMOVE
+    BIND, RELEASE, ADD, REMOVE
 
 }

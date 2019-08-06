@@ -6,7 +6,6 @@ import bio.singa.chemistry.entities.ModificationSite;
 import bio.singa.mathematics.combinatorics.StreamPermutations;
 import bio.singa.mathematics.graphs.trees.BinaryTreeNode;
 import bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.reactants.Reactant;
-import bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.reactants.ReactantRole;
 import bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.reactants.ReactantSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +15,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.stream.Collectors;
+
+import static bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.reactants.ReactantRole.PRODUCT;
+import static bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.reactants.ReactantRole.SUBSTRATE;
+import static bio.singa.simulation.model.rules.reactions.ModificationOperation.*;
 
 /**
  * @author cl
@@ -36,12 +39,12 @@ public class ReactionRuleAggregator {
         reactantSets = new ArrayList<>();
     }
 
-    public void addRule(ReactionRule rule) {
+    public List<ReactantSet> addRule(ReactionRule rule) {
         rules.add(rule);
-        aggregate(rule);
+        return aggregate(rule);
     }
 
-    private void aggregate(ReactionRule rule) {
+    private List<ReactantSet> aggregate(ReactionRule rule) {
         // append new modification sites
         addEntitiesFromReactants(rule);
         // append modifications defined in the rule
@@ -50,16 +53,51 @@ public class ReactionRuleAggregator {
         // determine candidates for eac reactant
         List<List<Reactant>> reactionCandidates = determineReactionCandidates(rule);
         // determine possible modifications
+        List<ReactantSet> reactantSets = new ArrayList<>();
         List<List<Reactant>> validSubstrateCombinations = StreamPermutations.permutations(reactionCandidates);
         for (List<Reactant> substrates : validSubstrateCombinations) {
             Reactant product = determineProductForSubstrateCombination(substrates, rule);
             possibleEntities.add(product.getEntity());
-            ReactantSet reactantSet = new ReactantSet(substrates, Collections.singletonList(product), Collections.emptyList());
+            List<Reactant> products = collectProducts(rule, product);
+            products.addAll(collectReleasedEntities(rule, substrates));
+            ReactantSet reactantSet = new ReactantSet(substrates, products, Collections.emptyList());
+            reactantSets.add(reactantSet);
             System.out.println(reactantSet);
             System.out.println(((ComplexEntity) product.getEntity()).nonSiteString());
         }
         System.out.println();
+        return reactantSets;
+    }
 
+    private List<Reactant> collectReleasedEntities(ReactionRule rule, List<Reactant> substrates) {
+        List<Reactant> products = new ArrayList<>();
+        for (ReactantInformation reactantInformation : rule.getReactantInformation()) {
+            for (ReactantModification modification : reactantInformation.getModifications()) {
+                if (modification.getOperationType().equals(RELEASE)) {
+                    for (Reactant substrate : substrates) {
+                        ComplexEntity complexEntity = (ComplexEntity) substrate.getEntity();
+                        List<BinaryTreeNode<ChemicalEntity>> path = complexEntity.pathTo(modification.getModificator());
+                        BinaryTreeNode<ChemicalEntity> parent = path.get(path.size() - 2);
+                        ComplexEntity resultingEntity = ComplexEntity.from(modification.getSite(), parent.getData());
+                        Reactant reactant = determineProductForSubstrateCombination(Collections.singletonList(new Reactant(resultingEntity, SUBSTRATE)), rule);
+                        products.add(reactant);
+                    }
+                }
+            }
+        }
+        return products;
+    }
+
+    private List<Reactant> collectProducts(ReactionRule rule, Reactant product) {
+        List<Reactant> products = new ArrayList<>();
+        products.add(product);
+        for (ReactantInformation reactantInformation : rule.getReactantInformation()) {
+            Reactant candidate = reactantInformation.getReactant();
+            if (candidate.getRole().equals(PRODUCT)) {
+                products.add(candidate);
+            }
+        }
+        return products;
     }
 
     private void assignBindingSites() {
@@ -77,7 +115,8 @@ public class ReactionRuleAggregator {
                     }
                     // iterate modifications
                     for (ReactantModification modification : information.getModifications()) {
-                        if (modification.getOperationType().equals(ModificationOperation.REMOVE)) {
+                        if (modification.getOperationType().equals(REMOVE) ||
+                                modification.getOperationType().equals(RELEASE)) {
                             continue;
                         }
                         ComplexEntity complexEntity;
@@ -109,7 +148,7 @@ public class ReactionRuleAggregator {
                             continue;
                         }
                         // if this is no binding modification
-                        if (!modification.getOperationType().equals(ModificationOperation.BIND)) {
+                        if (!modification.getOperationType().equals(BIND)) {
                             continue;
                         }
                         // get the target of a binding modification
@@ -138,7 +177,7 @@ public class ReactionRuleAggregator {
         // have a look at all entities
         for (ReactantInformation information : rule.getReactantInformation()) {
             // skip non substrates
-            if (information.getReactant().getRole() != ReactantRole.SUBSTRATE) {
+            if (information.getReactant().getRole() != SUBSTRATE) {
                 continue;
             }
             // collect the matches for each reactant
@@ -161,7 +200,7 @@ public class ReactionRuleAggregator {
                         continue;
                     }
 
-                    if (modification.getOperationType().equals(ModificationOperation.REMOVE)) {
+                    if (modification.getOperationType().equals(REMOVE) || modification.getOperationType().equals(RELEASE)) {
                         // if removing something skip entities whose required binding sites are not occupied
                         ModificationSite targetSite = (ModificationSite) bindingSite.getData();
                         if (!targetSite.isOccupied()) {
@@ -179,7 +218,7 @@ public class ReactionRuleAggregator {
                 if (!ReactantCondition.testAll(information.getConditions(), complexEntity)) {
                     continue;
                 }
-                matches.add(new Reactant(complexEntity, ReactantRole.SUBSTRATE));
+                matches.add(new Reactant(complexEntity, SUBSTRATE));
             }
             candiadates.add(matches);
         }
@@ -206,6 +245,7 @@ public class ReactionRuleAggregator {
                         break;
                     }
                     case ADD:
+                    case RELEASE:
                     case REMOVE: {
                         product = modification.apply(product);
                         break;
@@ -218,7 +258,7 @@ public class ReactionRuleAggregator {
         if (product == null) {
             throw new IllegalStateException("No product could be created.");
         }
-        return new Reactant(product, ReactantRole.PRODUCT);
+        return new Reactant(product, PRODUCT);
     }
 
 

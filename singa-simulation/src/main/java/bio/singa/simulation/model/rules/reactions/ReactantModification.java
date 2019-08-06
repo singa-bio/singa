@@ -88,7 +88,13 @@ public class ReactantModification {
             case REMOVE: {
                 ComplexEntity modifiedEntity = target.copy();
                 // replace original site with the complex
-                modifiedEntity.remove(getModificator(), getModificationSite());
+                modifiedEntity.removeFromPosition(getModificator(), getModificationSite());
+                return modifiedEntity;
+            }
+            case RELEASE: {
+                ComplexEntity modifiedEntity = target.copy();
+                // released entity
+                modifiedEntity.removeFromSite(getSite());
                 return modifiedEntity;
             }
             default: {
@@ -109,6 +115,12 @@ public class ReactantModification {
 
     public static BindingSiteStep bind(ChemicalEntity modificator) {
         EntityModificationBuilder entityModificationBuilder = new EntityModificationBuilder(ModificationOperation.BIND);
+        entityModificationBuilder.modificator = modificator;
+        return entityModificationBuilder;
+    }
+
+    public static BindingSiteStep release(ChemicalEntity modificator) {
+        EntityModificationBuilder entityModificationBuilder = new EntityModificationBuilder(ModificationOperation.RELEASE);
         entityModificationBuilder.modificator = modificator;
         return entityModificationBuilder;
     }

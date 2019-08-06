@@ -49,6 +49,8 @@ public class ReactionRule {
 
         ConditionStep remove(ChemicalEntity modificator, ModificationSite bindingSite);
 
+        ConditionStep release(ChemicalEntity modificator, ModificationSite bindingSite);
+
         ConditionStep produce(ChemicalEntity result);
 
     }
@@ -107,6 +109,20 @@ public class ReactionRule {
             // binder
             currentModificator = new Reactant(modification.getModificator(), SUBSTRATE);
             currentModificatorConditions.add(ReactantCondition.hasPart(modification.getModificator()));
+            return performingModification(modification);
+        }
+
+        @Override
+        public ConditionStep release(ChemicalEntity modificator, ModificationSite bindingSite) {
+            ReactantModification modification = ReactantModification.release(modificator)
+                    .atSite(bindingSite)
+                    .toTarget(currentEntity)
+                    .build();
+            // binder
+            currentTarget = new Reactant(modification.getModificator(), SUBSTRATE);
+            currentTargetConditions.add(ReactantCondition.hasPart(modification.getModificator()));
+            currentTargetConditions.add(ReactantCondition.hasPart(modification.getTarget()));
+
             return performingModification(modification);
         }
 

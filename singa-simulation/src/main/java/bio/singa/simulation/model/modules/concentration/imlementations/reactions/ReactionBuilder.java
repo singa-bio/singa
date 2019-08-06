@@ -11,15 +11,16 @@ import bio.singa.simulation.model.modules.concentration.imlementations.reactions
 import bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.kineticlaws.IrreversibleKineticLaw;
 import bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.kineticlaws.MichaelisMentenKineticLaw;
 import bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.kineticlaws.ReversibleKineticLaw;
-import bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.reactants.DynamicChemicalEntity;
-import bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.reactants.DynamicReactantBehavior;
-import bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.reactants.Reactant;
-import bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.reactants.StaticReactantBehavior;
+import bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.reactants.*;
 import bio.singa.simulation.model.parameters.Parameter;
+import bio.singa.simulation.model.rules.reactions.ReactionRule;
+import bio.singa.simulation.model.rules.reactions.ReactionRuleAggregator;
 import bio.singa.simulation.model.sections.CellTopology;
 import bio.singa.simulation.model.simulation.Simulation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 import static bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.reactants.ReactantRole.*;
 
@@ -41,29 +42,11 @@ public class ReactionBuilder {
         return new DynamicBuilder(simulation);
     }
 
-    public interface StaticReactantStep {
+    public static RuleBasedStep ruleBased(Simulation simulation) {
+        return new RuleBasedBuilder(simulation);
+    }
 
-        StaticReactantStep addSubstrate(ChemicalEntity chemicalEntity);
-
-        StaticReactantStep addSubstrate(ChemicalEntity chemicalEntity, CellTopology topology);
-
-        StaticReactantStep addSubstrate(ChemicalEntity chemicalEntity, double stoichiometricNumber);
-
-        StaticReactantStep addSubstrate(ChemicalEntity chemicalEntity, CellTopology topology, double stoichiometricNumber);
-
-
-        StaticReactantStep addProduct(ChemicalEntity chemicalEntity);
-
-        StaticReactantStep addProduct(ChemicalEntity chemicalEntity, CellTopology topology);
-
-        StaticReactantStep addProduct(ChemicalEntity chemicalEntity, double stoichiometricNumber);
-
-        StaticReactantStep addProduct(ChemicalEntity chemicalEntity, CellTopology topology, double stoichiometricNumber);
-
-
-        StaticReactantStep addCatalyst(ChemicalEntity chemicalEntity);
-
-        StaticReactantStep addCatalyst(ChemicalEntity chemicalEntity, CellTopology topology);
+    public interface KineticStep {
 
         /**
          * Reversible reactions where the substrates form products, and products can also from substrates.
@@ -93,10 +76,35 @@ public class ReactionBuilder {
         MichaelisMentenReactionStep michaelisMenten();
 
         ParameterStep kineticLaw(String expression);
+    }
+
+    public interface StaticReactantStep extends KineticStep {
+
+        StaticReactantStep addSubstrate(ChemicalEntity chemicalEntity);
+
+        StaticReactantStep addSubstrate(ChemicalEntity chemicalEntity, CellTopology topology);
+
+        StaticReactantStep addSubstrate(ChemicalEntity chemicalEntity, double stoichiometricNumber);
+
+        StaticReactantStep addSubstrate(ChemicalEntity chemicalEntity, CellTopology topology, double stoichiometricNumber);
+
+
+        StaticReactantStep addProduct(ChemicalEntity chemicalEntity);
+
+        StaticReactantStep addProduct(ChemicalEntity chemicalEntity, CellTopology topology);
+
+        StaticReactantStep addProduct(ChemicalEntity chemicalEntity, double stoichiometricNumber);
+
+        StaticReactantStep addProduct(ChemicalEntity chemicalEntity, CellTopology topology, double stoichiometricNumber);
+
+
+        StaticReactantStep addCatalyst(ChemicalEntity chemicalEntity);
+
+        StaticReactantStep addCatalyst(ChemicalEntity chemicalEntity, CellTopology topology);
 
     }
 
-    public interface DynamicReactantStep {
+    public interface DynamicReactantStep extends KineticStep {
 
         DynamicReactantStep addSubstrate(DynamicChemicalEntity dynamicChemicalEntity);
 
@@ -126,16 +134,11 @@ public class ReactionBuilder {
 
         DynamicReactantStep addCatalyst(ChemicalEntity chemicalEntity, CellTopology topology);
 
+    }
 
-        ReversibleReactionStep reversible();
+    public interface RuleBasedStep {
 
-        IrreversibleReactionStep irreversible();
-
-        ComplexBuildingReactionStep complexBuilding();
-
-        MichaelisMentenReactionStep michaelisMenten();
-
-        ParameterStep kineticLaw(String expression);
+        KineticStep rule(ReactionRule rule);
 
     }
 
@@ -525,6 +528,28 @@ public class ReactionBuilder {
             return this;
         }
 
+    }
+
+    public static class RuleBasedBuilder extends GeneralReactionBuilder implements RuleBasedStep, KineticStep {
+
+        private static ReactionRuleAggregator aggregator = new ReactionRuleAggregator();
+
+        public RuleBasedBuilder(Simulation simulation) {
+            super(simulation);
+        }
+
+        @Override
+        public KineticStep rule(ReactionRule rule) {
+            List<ReactantSet> reactantSets = aggregator.addRule(rule);
+            reaction.setReactantBehavior(new RuleBasedReactantBehavior(reactantSets));
+            return this;
+        }
+
+        @Override
+        public ComplexBuildingReactionStep complexBuilding() {
+            reaction.setKineticLaw(new ReversibleKineticLaw(reaction));
+            return this;
+        }
     }
 
 }

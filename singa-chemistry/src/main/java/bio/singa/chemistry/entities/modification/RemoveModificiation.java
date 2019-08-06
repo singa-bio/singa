@@ -9,11 +9,11 @@ import bio.singa.chemistry.entities.ComplexEntity;
 public class RemoveModificiation extends AbstractModification {
 
     public RemoveModificiation(ChemicalEntity modificator) {
-        super(modificator, "remove");
+        super(modificator, "removeFromSite");
     }
 
     public RemoveModificiation(ChemicalEntity modificator, ChemicalEntity modificationPosition) {
-        super(modificator, modificationPosition, "remove");
+        super(modificator, modificationPosition, "removeFromSite");
     }
 
     @Override
@@ -21,9 +21,9 @@ public class RemoveModificiation extends AbstractModification {
         // copy original target
         ComplexEntity modifiedEntity = target.copy();
         if (getModificationPosition() != null) {
-            modifiedEntity.remove(getModificator(), getModificationPosition());
+            modifiedEntity.removeFromPosition(getModificator(), getModificationPosition());
         } else {
-            modifiedEntity.remove(getModificator());
+            // modifiedEntity.removeFromSite(getModificator());
         }
         return modifiedEntity;
     }
