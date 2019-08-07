@@ -39,6 +39,8 @@ public abstract class AbstractChemicalEntity implements ChemicalEntity {
      */
     protected final String identifier;
 
+    protected boolean membraneBound;
+
     /**
      * All annotations of this entity.
      */
@@ -60,6 +62,14 @@ public abstract class AbstractChemicalEntity implements ChemicalEntity {
 
     public String getIdentifier() {
         return identifier;
+    }
+
+    public boolean isMembraneBound() {
+        return membraneBound;
+    }
+
+    public void setMembraneBound(boolean membraneBound) {
+        this.membraneBound = membraneBound;
     }
 
     @Override
@@ -132,8 +142,6 @@ public abstract class AbstractChemicalEntity implements ChemicalEntity {
         return availableFeatures;
     }
 
-
-
     @Override
     public String toString() {
         return "Entity " + getIdentifier();
@@ -166,6 +174,11 @@ public abstract class AbstractChemicalEntity implements ChemicalEntity {
         protected abstract TopLevelType createObject(String primaryIdentifer);
 
         protected abstract BuilderType getBuilder();
+
+        public BuilderType membraneBound() {
+            topLevelObject.setMembraneBound(true);
+            return builderObject;
+        }
 
         public BuilderType assignFeature(Feature feature) {
             topLevelObject.setFeature(feature);

@@ -27,7 +27,7 @@ public class DynamicChemicalEntity extends AbstractChemicalEntity {
      *
      * @param identifier The pdbIdentifier.
      */
-    protected DynamicChemicalEntity(String identifier) {
+    public DynamicChemicalEntity(String identifier) {
         super(identifier);
         composition = new ArrayList<>();
         possibleTopologies = new ArrayList<>();

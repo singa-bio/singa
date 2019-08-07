@@ -13,8 +13,8 @@ import bio.singa.simulation.model.modules.concentration.imlementations.reactions
 import bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.kineticlaws.ReversibleKineticLaw;
 import bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.reactants.*;
 import bio.singa.simulation.model.parameters.Parameter;
+import bio.singa.simulation.model.rules.reactions.ReactionNetworkGenerator;
 import bio.singa.simulation.model.rules.reactions.ReactionRule;
-import bio.singa.simulation.model.rules.reactions.ReactionRuleAggregator;
 import bio.singa.simulation.model.sections.CellTopology;
 import bio.singa.simulation.model.simulation.Simulation;
 import org.slf4j.Logger;
@@ -78,6 +78,12 @@ public class ReactionBuilder {
         ParameterStep kineticLaw(String expression);
     }
 
+    public interface RuleBasedKineticStep extends KineticStep {
+
+        FinalStep noKinetics();
+
+    }
+
     public interface StaticReactantStep extends KineticStep {
 
         StaticReactantStep addSubstrate(ChemicalEntity chemicalEntity);
@@ -138,7 +144,7 @@ public class ReactionBuilder {
 
     public interface RuleBasedStep {
 
-        KineticStep rule(ReactionRule rule);
+        RuleBasedKineticStep rule(ReactionRule rule);
 
     }
 
@@ -530,16 +536,18 @@ public class ReactionBuilder {
 
     }
 
-    public static class RuleBasedBuilder extends GeneralReactionBuilder implements RuleBasedStep, KineticStep {
+    public static class RuleBasedBuilder extends GeneralReactionBuilder implements RuleBasedStep, RuleBasedKineticStep {
 
-        private static ReactionRuleAggregator aggregator = new ReactionRuleAggregator();
+        private static ReactionNetworkGenerator aggregator = new ReactionNetworkGenerator();
+
+        private boolean noKinetics;
 
         public RuleBasedBuilder(Simulation simulation) {
             super(simulation);
         }
 
         @Override
-        public KineticStep rule(ReactionRule rule) {
+        public RuleBasedKineticStep rule(ReactionRule rule) {
             List<ReactantSet> reactantSets = aggregator.addRule(rule);
             reaction.setReactantBehavior(new RuleBasedReactantBehavior(reactantSets));
             return this;
@@ -549,6 +557,21 @@ public class ReactionBuilder {
         public ComplexBuildingReactionStep complexBuilding() {
             reaction.setKineticLaw(new ReversibleKineticLaw(reaction));
             return this;
+        }
+
+        @Override
+        public FinalStep noKinetics() {
+            noKinetics = true;
+            return this;
+        }
+
+        @Override
+        public Reaction build() {
+            if (!noKinetics) {
+                return super.build();
+            }
+            reaction.postConstruct();
+            return reaction;
         }
     }
 

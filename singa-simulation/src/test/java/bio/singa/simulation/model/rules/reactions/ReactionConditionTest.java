@@ -33,14 +33,14 @@ class ReactionConditionTest {
     @Test
     void testHasPart() {
         ComplexEntity multiComplex = ComplexEntity.from(pkac, ComplexEntity.from(m1, atp), ComplexEntity.from(m2, akap));
-        ReactantCondition reactionCondition = new ReactantCondition(ComplexEntity.from(m1, atp), ReactantCondition.HAS_PART);
+        ReactantCondition reactionCondition = ReactantCondition.hasPart(ComplexEntity.from(m1, atp));
         assertTrue(reactionCondition.test(multiComplex));
     }
 
     @Test
     void testHasNotPart() {
         ComplexEntity multiComplex = ComplexEntity.from(pkac, m1, ComplexEntity.from(m2, akap));
-        ReactantCondition reactionCondition = new ReactantCondition(ComplexEntity.from(m1, atp), ReactantCondition.HAS_NOT_PART);
+        ReactantCondition reactionCondition = ReactantCondition.hasPart(ComplexEntity.from(m1, atp));
         assertTrue(reactionCondition.test(multiComplex));
     }
 

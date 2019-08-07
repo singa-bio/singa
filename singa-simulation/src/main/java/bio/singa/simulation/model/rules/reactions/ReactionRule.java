@@ -2,6 +2,7 @@ package bio.singa.simulation.model.rules.reactions;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.chemistry.entities.ModificationSite;
+import bio.singa.chemistry.entities.SmallMolecule;
 import bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.reactants.Reactant;
 
 import java.util.ArrayList;
@@ -10,19 +11,18 @@ import java.util.List;
 
 import static bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.reactants.ReactantRole.PRODUCT;
 import static bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.reactants.ReactantRole.SUBSTRATE;
+import static bio.singa.simulation.model.rules.reactions.ReactionNetworkGenerator.fromBoundStatus;
 
 /**
  * @author cl
  */
 public class ReactionRule {
 
-    public static int ruleId;
-
     private List<ReactantInformation> reactantInformation;
+    private boolean productsOnly;
 
     public ReactionRule(List<ReactantInformation> reactantInformation) {
         this.reactantInformation = reactantInformation;
-        ruleId++;
     }
 
     public List<ReactantInformation> getReactantInformation() {
@@ -31,6 +31,14 @@ public class ReactionRule {
 
     public void setReactantInformation(List<ReactantInformation> reactantInformation) {
         this.reactantInformation = reactantInformation;
+    }
+
+    public boolean isProductsOnly() {
+        return productsOnly;
+    }
+
+    public void setProductsOnly(boolean productsOnly) {
+        this.productsOnly = productsOnly;
     }
 
     public static EntityStep create() {
@@ -104,11 +112,19 @@ public class ReactionRule {
                     .atSite(bindingSite)
                     .toTarget(currentEntity)
                     .build();
-            // bindee
-            currentTarget = new Reactant(modification.getTarget(), SUBSTRATE);
             // binder
-            currentModificator = new Reactant(modification.getModificator(), SUBSTRATE);
-            currentModificatorConditions.add(ReactantCondition.hasPart(modification.getModificator()));
+            currentTarget = new Reactant(modification.getTarget(), SUBSTRATE, fromBoundStatus(modification.getTarget().isMembraneBound()));
+            currentTargetConditions.add(ReactantCondition.isUnoccupied(modification.getSite()));
+            // bindee
+            if (!(modification.getModificator() instanceof SmallMolecule)) {
+                currentModificator = new Reactant(modification.getModificator(), SUBSTRATE, fromBoundStatus(modification.getModificator().isMembraneBound()));
+                currentModificatorConditions.add(ReactantCondition.hasPart(modification.getModificator()));
+                currentModificatorConditions.add(ReactantCondition.isUnoccupied(modification.getSite()));
+            } else {
+                currentModificator = new Reactant(modification.getModificator(), SUBSTRATE, fromBoundStatus(modification.getModificator().isMembraneBound()));
+                currentModificatorConditions.add(ReactantCondition.isSmallMolecule());
+            }
+
             return performingModification(modification);
         }
 
@@ -119,7 +135,7 @@ public class ReactionRule {
                     .toTarget(currentEntity)
                     .build();
             // binder
-            currentTarget = new Reactant(modification.getModificator(), SUBSTRATE);
+            currentTarget = new Reactant(modification.getModificator(), SUBSTRATE, fromBoundStatus(modification.getModificator().isMembraneBound()));
             currentTargetConditions.add(ReactantCondition.hasPart(modification.getModificator()));
             currentTargetConditions.add(ReactantCondition.hasPart(modification.getTarget()));
 
@@ -135,7 +151,7 @@ public class ReactionRule {
                     .build();
             // reduced complex
             if (currentTarget == null) {
-                currentTarget = new Reactant(modification.getTarget(), SUBSTRATE);
+                currentTarget = new Reactant(modification.getTarget(), SUBSTRATE, fromBoundStatus(modification.getTarget().isMembraneBound()));
             }
             return performingModification(modification);
         }
@@ -148,13 +164,13 @@ public class ReactionRule {
                     .toTarget(currentEntity)
                     .build();
             // original
-            currentTarget = new Reactant(modification.getTarget(), SUBSTRATE);
+            currentTarget = new Reactant(modification.getTarget(), SUBSTRATE, fromBoundStatus(modification.getTarget().isMembraneBound()));
             return performingModification(modification);
         }
 
         @Override
         public ConditionStep produce(ChemicalEntity result) {
-            reactantInformation.add(new ReactantInformation(new Reactant(result, PRODUCT), Collections.emptyList(), Collections.emptyList()));
+            reactantInformation.add(new ReactantInformation(new Reactant(result, PRODUCT, fromBoundStatus(result.isMembraneBound())), Collections.emptyList(), Collections.emptyList()));
             return this;
         }
 
@@ -193,6 +209,5 @@ public class ReactionRule {
             return new ReactionRule(reactantInformation);
         }
     }
-
 
 }

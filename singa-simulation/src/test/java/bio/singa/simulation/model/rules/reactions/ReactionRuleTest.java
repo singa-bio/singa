@@ -43,7 +43,9 @@ class ReactionRuleTest {
 
     @BeforeAll
     static void initialize() {
-        akap = Protein.create("AKAP").build();
+        akap = Protein.create("AKAP")
+                .membraneBound()
+                .build();
         pkarSite1 = ModificationSite.create("pkar1").build();
         pkarSite2 = ModificationSite.create("pkar2").build();
         pkar = Protein.create("PKAR").build();
@@ -59,7 +61,9 @@ class ReactionRuleTest {
         p = SmallMolecule.create("P").build();
         substrateSite = ModificationSite.create("sub").build();
         pde = Protein.create("PDE").build();
-        aqp = Protein.create("AQP").build();
+        aqp = Protein.create("AQP")
+                .membraneBound()
+                .build();
         camp = SmallMolecule.create("CAMP").build();
     }
 
@@ -111,17 +115,27 @@ class ReactionRuleTest {
     @Disabled
     void createRules() {
 
-        ReactionRuleAggregator aggregator = new ReactionRuleAggregator();
+        ReactionNetworkGenerator aggregator = new ReactionNetworkGenerator();
 
         ReactionRule akapBindsPkar = ReactionRule.create()
                 .entity(akap)
                 .binds(pkar, pkarSite1)
                 .build();
+        akapBindsPkar.setProductsOnly(true);
         aggregator.addRule(akapBindsPkar);
+
+        ReactionRule pkacBindsPkar = ReactionRule.create()
+                .entity(pkac)
+                .binds(pkar, pkarSite2)
+                .build();
+        pkacBindsPkar.setProductsOnly(true);
+        aggregator.addRule(pkacBindsPkar);
 
         ReactionRule pkarBindsCamp1 = ReactionRule.create()
                 .entity(pkar)
                 .binds(camp, campSite1)
+                .targetCondition(ReactantCondition
+                        .hasNotPart(camp))
                 .build();
         aggregator.addRule(pkarBindsCamp1);
 
@@ -130,40 +144,32 @@ class ReactionRuleTest {
                 .binds(camp, campSite2)
                 .targetCondition(ReactantCondition
                         .hasPart(camp))
-                .modificatorCondition(ReactantCondition
-                        .solitaryBinding())
                 .build();
         aggregator.addRule(pkarBindsCamp2);
-
-        ReactionRule pkacBindsPkar = ReactionRule.create()
-                .entity(pkac)
-                .binds(pkar, pkarSite2)
-                .build();
-        aggregator.addRule(pkacBindsPkar);
 
         ReactionRule pkacAtpBinding = ReactionRule.create()
                 .entity(pkac)
                 .binds(atp, atpSite)
                 .targetCondition(ReactantCondition
                         .hasNumerOfPart(camp, 2))
-                .modificatorCondition(ReactantCondition
-                        .solitaryBinding())
+                .targetCondition(ReactantCondition
+                        .isUnoccupied(substrateSite))
                 .build();
         aggregator.addRule(pkacAtpBinding);
-
 
         ReactionRule pkacAutophosphorylation = ReactionRule.create()
                 .entity(pkar)
                 .adds(p, pkarPSite)
                 .targetCondition(ReactantCondition
                         .hasPart(atp))
+                .targetCondition(ReactantCondition
+                        .hasNotPart(p))
                 .andModification()
                 .remove(atp, atpSite)
                 .andModification()
                 .produce(adp)
                 .build();
         aggregator.addRule(pkacAutophosphorylation);
-        aggregator.addRule(pkacAtpBinding);
 
         ReactionRule pkacAqpSubstrateBinding = ReactionRule.create()
                 .entity(pkac)
@@ -217,7 +223,7 @@ class ReactionRuleTest {
                 .build();
         aggregator.addRule(aqpRelease);
 
-
+        aggregator.generateNetwork();
 
     }
 }

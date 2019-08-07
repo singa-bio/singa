@@ -6,6 +6,7 @@ import bio.singa.simulation.model.modules.concentration.imlementations.reactions
 import bio.singa.simulation.model.sections.CellTopology;
 
 import javax.measure.Unit;
+import java.util.Objects;
 
 /**
  * A {@code Reactant} encapsulates a {@link ChemicalEntity} for the use in {@link Reaction}s.
@@ -191,5 +192,18 @@ public class Reactant {
     @Override
     public String toString() {
         return "Reactant "+getEntity()+" "+getPreferredTopology();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Reactant reactant = (Reactant) o;
+        return Objects.equals(entity, reactant.entity);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(entity);
     }
 }

@@ -1,103 +1,50 @@
 package bio.singa.simulation.model.rules.reactions;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
-import bio.singa.chemistry.entities.ComplexEntity;
 import bio.singa.chemistry.entities.ModificationSite;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.ListIterator;
-import java.util.Objects;
-import java.util.function.BiPredicate;
+
+import static bio.singa.simulation.model.rules.reactions.CompositionPredicate.*;
 
 /**
  * @author cl
  */
 public class ReactantCondition {
 
-    private ChemicalEntity site;
-    private ChemicalEntity modification;
+    private final CompositionPredicate compositionPredicate;
+    private ChemicalEntity entity;
     private int number;
 
-    private BiPredicate<ReactantCondition, ComplexEntity> condition;
-
-    public static BiPredicate<ReactantCondition, ComplexEntity> HAS_PART = (condition, entity) -> Objects.nonNull(entity.find(condition.getSite()));
-
-    public static BiPredicate<ReactantCondition, ComplexEntity> HAS_NOT_PART = (condition, entity) -> Objects.isNull(entity.find(condition.getSite()));
-
-    public static  BiPredicate<ReactantCondition, ComplexEntity> SOLITARY_BINDING = (condition, entity) -> {
-        for (ModificationSite site : entity.getSites()) {
-            if (site.isOccupied()) {
-                return false;
-            }
-        }
-        return true;
-    };
-
-    public static  BiPredicate<ReactantCondition, ComplexEntity> COUNT_PART = (condition, entity) -> entity.countParts(condition.getModification()) == condition.number;
-
-    public ReactantCondition(ChemicalEntity site, BiPredicate<ReactantCondition, ComplexEntity> condition) {
-        this.site = site;
-        this.condition = condition;
+    public ReactantCondition(CompositionPredicate compositionPredicate) {
+        this.compositionPredicate = compositionPredicate;
     }
 
-    public ReactantCondition(ChemicalEntity site, ChemicalEntity modification, BiPredicate<ReactantCondition, ComplexEntity> condition) {
-        this.site = site;
-        this.modification = modification;
-        this.condition = condition;
+    public CompositionPredicate getCompositionPredicate() {
+        return compositionPredicate;
     }
 
-    public ChemicalEntity getSite() {
-        return site;
+    public ChemicalEntity getEntity() {
+        return entity;
     }
 
-    public void setSite(ChemicalEntity site) {
-        this.site = site;
+    public void setEntity(ChemicalEntity entity) {
+        this.entity = entity;
     }
 
-    public BiPredicate<ReactantCondition, ComplexEntity> getCondition() {
-        return condition;
+    public int getNumber() {
+        return number;
     }
 
-    public void setCondition(BiPredicate<ReactantCondition, ComplexEntity> condition) {
-        this.condition = condition;
+    public void setNumber(int number) {
+        this.number = number;
     }
 
-    public ChemicalEntity getModification() {
-        return modification;
+    public boolean test(ChemicalEntity entity) {
+        return compositionPredicate.getPredicate().test(this, entity);
     }
 
-    public void setModification(ChemicalEntity modification) {
-        this.modification = modification;
-    }
-
-    public boolean test(ComplexEntity entity) {
-        return condition.test(this, entity);
-    }
-
-    public static List<ChemicalEntity> reduce(List<ReactantCondition> conditions, List<ChemicalEntity> entities) {
-        if (conditions.isEmpty()) {
-            return entities;
-        }
-        List<ChemicalEntity> remainingEntities = new ArrayList<>(entities);
-        ListIterator<ChemicalEntity> iterator = remainingEntities.listIterator();
-
-        while (iterator.hasNext()) {
-            ChemicalEntity entity = iterator.next();
-            if (entity instanceof ComplexEntity) {
-                ComplexEntity complexEntity = (ComplexEntity) entity;
-                if (!testAll(conditions, complexEntity)) {
-                    iterator.remove();
-                }
-            } else {
-                iterator.remove();
-            }
-        }
-
-        return remainingEntities;
-    }
-
-    public static boolean testAll(List<ReactantCondition> conditions, ComplexEntity complexEntity) {
+    public static boolean testAll(List<ReactantCondition> conditions, ChemicalEntity complexEntity) {
         for (ReactantCondition condition : conditions) {
             if (!condition.test(complexEntity)) {
                 return false;
@@ -108,23 +55,52 @@ public class ReactantCondition {
 
 
     public static ReactantCondition hasPart(ChemicalEntity entity) {
-        return new ReactantCondition(entity, HAS_PART);
+        ReactantCondition condition = new ReactantCondition(HAS_PART);
+        condition.setEntity(entity);
+        return condition;
     }
 
     public static ReactantCondition hasNumerOfPart(ChemicalEntity entity, int number) {
-        ReactantCondition condition = new ReactantCondition(null, COUNT_PART);
-        condition.setModification(entity);
-        condition.number = number;
+        ReactantCondition condition = new ReactantCondition(HAS_N_PART);
+        condition.setEntity(entity);
+        condition.setNumber(number);
         return condition;
     }
 
     public static ReactantCondition hasNotPart(ChemicalEntity entity) {
-        return new ReactantCondition(entity, HAS_NOT_PART);
+        ReactantCondition condition = new ReactantCondition(HAS_NOT_PART);
+        condition.setEntity(entity);
+        return condition;
+    }
+
+    public static ReactantCondition isUnoccupied(ModificationSite modificationSite) {
+        ReactantCondition condition = new ReactantCondition(IS_UNOCCUPIED);
+        condition.setEntity(modificationSite);
+        return condition;
     }
 
     public static ReactantCondition solitaryBinding() {
-        return new ReactantCondition(null, SOLITARY_BINDING);
+        return new ReactantCondition(SOLITARY_BINDING);
     }
 
+    public static ReactantCondition isSmallMolecule() {
+        return new ReactantCondition(IS_SMALL_MOLECULE);
+    }
 
+    @Override
+    public String toString() {
+        switch (compositionPredicate) {
+            case HAS_PART:
+            case HAS_NOT_PART:
+            case IS_UNOCCUPIED:
+                return String.format(compositionPredicate.getDescriptor(), getEntity());
+            case HAS_N_PART:
+                return String.format(compositionPredicate.getDescriptor(), getEntity(), getNumber());
+            case IS_SMALL_MOLECULE:
+            case SOLITARY_BINDING:
+                return compositionPredicate.getDescriptor();
+            default:
+                return "unkonwn condition";
+        }
+    }
 }

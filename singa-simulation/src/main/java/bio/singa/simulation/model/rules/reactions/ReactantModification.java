@@ -103,7 +103,7 @@ public class ReactantModification {
         }
     }
 
-    public ComplexEntity apply(ComplexEntity target, ComplexEntity modificator) {
+    public ComplexEntity apply(ComplexEntity target, ChemicalEntity modificator) {
         if (operationType == ModificationOperation.BIND) {// copy original entity
             ComplexEntity modifiedEntity = target.copy();
             // replace original site with the complex
@@ -179,4 +179,17 @@ public class ReactantModification {
 
     }
 
+    @Override
+    public String toString() {
+        switch (operationType) {
+            case BIND:
+            case ADD:
+            case REMOVE:
+                return String.format(getOperationType().getDescriptor(), getModificator(), getTarget(), getSite());
+            case RELEASE:
+                return String.format(getOperationType().getDescriptor(), getTarget(), getModificator(), getSite());
+            default:
+                return "unknown modification";
+        }
+    }
 }

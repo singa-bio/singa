@@ -42,6 +42,11 @@ public class ModificationSite extends AbstractChemicalEntity {
 
     }
 
+    @Override
+    public String toString() {
+        return "ModificationSite "+identifier;
+    }
+
     public ModificationSite copy() {
         return new ModificationSite(getIdentifier());
     }

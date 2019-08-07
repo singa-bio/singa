@@ -5,6 +5,18 @@ package bio.singa.simulation.model.rules.reactions;
  */
 public enum ModificationOperation {
 
-    BIND, RELEASE, ADD, REMOVE
+    BIND("%s binds to %s at %s"),
+    RELEASE("%s releases %s at %s"),
+    ADD("%s is added to to %s at %s"),
+    REMOVE("%s is removed from %s at %s");
 
+    private final String descriptor;
+
+    ModificationOperation(String descriptor) {
+        this.descriptor = descriptor;
+    }
+
+    public String getDescriptor() {
+        return descriptor;
+    }
 }

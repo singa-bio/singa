@@ -20,6 +20,10 @@ public interface ChemicalEntity extends Annotatable, Featureable {
 
     String getIdentifier();
 
+    boolean isMembraneBound();
+
+    void setMembraneBound(boolean membraneBound);
+
     List<Identifier> getAllIdentifiers();
 
 }

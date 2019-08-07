@@ -41,6 +41,8 @@ public class ComplexEntity extends BinaryTreeNode<ChemicalEntity> implements Che
 
     private String referenceIdentifier;
 
+    private boolean membraneBound;
+
     /**
      * All annotations of this entity.
      */
@@ -57,10 +59,28 @@ public class ComplexEntity extends BinaryTreeNode<ChemicalEntity> implements Che
         this.identifier = identifier;
     }
 
-    private void updateName() {
+    private void update() {
         setIdentifier(toNewickString(ChemicalEntity::getIdentifier, ":"));
+        membraneBound = false;
+        for (ChemicalEntity entity : getAllData()) {
+            if (entity.isMembraneBound()) {
+                setMembraneBound(true);
+                break;
+            }
+        }
         referenceIdentifier = nonSiteString();
         EntityRegistry.put(referenceIdentifier, this);
+    }
+
+    private void updatePath(List<BinaryTreeNode<ChemicalEntity>> path) {
+        ListIterator<BinaryTreeNode<ChemicalEntity>> iterator = path.listIterator(path.size());
+        while (iterator.hasPrevious()) {
+            // rename if complex entity
+            BinaryTreeNode<ChemicalEntity> complexToUpdate = iterator.previous();
+            if (complexToUpdate instanceof ComplexEntity) {
+                ((ComplexEntity) complexToUpdate).update();
+            }
+        }
     }
 
     public String getReferenceIdentifier() {
@@ -72,19 +92,29 @@ public class ComplexEntity extends BinaryTreeNode<ChemicalEntity> implements Che
         inOrderTraversal(node -> {
             if (node.isLeaf()) {
                 if (!(node.getData() instanceof ModificationSite)) {
-                    sites.add((node.getData().getIdentifier().toString()));
+                    sites.add((node.getData().getIdentifier()));
                 }
             }
         });
         return String.join("-", sites);
     }
 
-    public static ComplexEntity from(ChemicalEntity... entities) {
-        if (entities.length < 2) {
+    @Override
+    public boolean isMembraneBound() {
+        return membraneBound;
+    }
+
+    @Override
+    public void setMembraneBound(boolean membraneBound) {
+        this.membraneBound = membraneBound;
+    }
+
+    public static ComplexEntity from(ChemicalEntity first, ChemicalEntity... entities) {
+        if (entities.length < 1) {
             throw new IllegalArgumentException("At least two entities are required to create a complex.");
         }
-        ChemicalEntity currentEntity = entities[0];
-        for (int i = 1; i < entities.length; i++) {
+        ChemicalEntity currentEntity = first;
+        for (int i = 0; i < entities.length; i++) {
             currentEntity = from(currentEntity, entities[i]);
         }
         return (ComplexEntity) currentEntity;
@@ -103,7 +133,7 @@ public class ComplexEntity extends BinaryTreeNode<ChemicalEntity> implements Che
             complexEntity.addRight(second);
         }
         complexEntity.setData(complexEntity);
-        complexEntity.updateName();
+        complexEntity.update();
         return complexEntity;
     }
 
@@ -131,31 +161,28 @@ public class ComplexEntity extends BinaryTreeNode<ChemicalEntity> implements Che
         if (path == null || path.isEmpty()) {
             return;
         }
-        // perform addition and rename path to addition
-        ListIterator<BinaryTreeNode<ChemicalEntity>> iterator = path.listIterator(path.size());
-        while (iterator.hasPrevious()) {
-            BinaryTreeNode<ChemicalEntity> current = iterator.previous();
-            if (current.getData().equals(replacementPosition)) {
-                continue;
-            }
-            if (current.getLeft().getData().equals(replacementPosition)) {
+        // get parent
+        BinaryTreeNode<ChemicalEntity> parentNode = path.get(path.size() - 2);
+        // replace with replacement
+        if (parentNode.hasLeft()) {
+            if (parentNode.getLeft().getData().equals(replacementPosition)) {
                 if (replacement instanceof ComplexEntity) {
-                    current.setLeft(((ComplexEntity) replacement));
+                    parentNode.setLeft(((ComplexEntity) replacement));
                 } else {
-                    current.addLeft(replacement);
+                    parentNode.addLeft(replacement);
                 }
-            }
-            if (current.getRight().getData().equals(replacementPosition)) {
-                if (replacement instanceof ComplexEntity) {
-                    current.setRight(((ComplexEntity) replacement));
-                } else {
-                    current.addLeft(replacement);
-                }
-            }
-            if (current instanceof ComplexEntity) {
-                ((ComplexEntity) current).updateName();
             }
         }
+        if (parentNode.hasRight()) {
+            if (parentNode.getRight().getData().equals(replacementPosition)) {
+                if (replacement instanceof ComplexEntity) {
+                    parentNode.setRight(((ComplexEntity) replacement));
+                } else {
+                    parentNode.addRight(replacement);
+                }
+            }
+        }
+        updatePath(path);
     }
 
     public boolean attach(ChemicalEntity attachment, ModificationSite attachmentPosition) {
@@ -173,23 +200,23 @@ public class ComplexEntity extends BinaryTreeNode<ChemicalEntity> implements Che
         // set occupied
         ModificationSite modifiedSite = originalSite.copy();
         modifiedSite.setOccupied(true);
-        // parent
-        ComplexEntity modifiedAttachment = ((ComplexEntity) attachment).copy();
-        modifiedAttachment.replace(modifiedSite, originalSite);
-        // perform addition and rename path to addition
-        ListIterator<BinaryTreeNode<ChemicalEntity>> iterator = path.listIterator(path.size());
-        while (iterator.hasPrevious()) {
-            BinaryTreeNode<ChemicalEntity> current = iterator.previous();
-            if (current.hasLeft() && current.getLeft().getData().equals(attachmentPosition)) {
-                current.setLeft(modifiedAttachment);
-            } else if (current.hasRight() && current.getRight().getData().equals(attachmentPosition)) {
-                current.setRight(modifiedAttachment);
-            }
-            // rename if complex entity
-            if (current instanceof ComplexEntity) {
-                ((ComplexEntity) current).updateName();
-            }
+        // create modified attachment
+        ComplexEntity modifiedAttachment;
+        if (attachment instanceof ComplexEntity) {
+            modifiedAttachment = ((ComplexEntity) attachment).copy();
+            modifiedAttachment.replace(modifiedSite, originalSite);
+        } else {
+            modifiedAttachment = ComplexEntity.from(modifiedSite, attachment);
         }
+        // perform addition at parent
+        BinaryTreeNode<ChemicalEntity> current = path.get(path.size() - 2);
+        if (current.hasLeft() && current.getLeft().getData().equals(attachmentPosition)) {
+            current.setLeft(modifiedAttachment);
+        } else if (current.hasRight() && current.getRight().getData().equals(attachmentPosition)) {
+            current.setRight(modifiedAttachment);
+        }
+        // rename path to addition
+        updatePath(path);
         return true;
     }
 
@@ -217,7 +244,7 @@ public class ComplexEntity extends BinaryTreeNode<ChemicalEntity> implements Che
             }
         }
         if (retainedEntity == null) {
-            throw new IllegalStateException("Entity to removeFromSite " + toBeRemoved + " could not be fund in " + this);
+            throw new IllegalStateException("Entity to remove " + toBeRemoved + " could not be fund in " + this);
         }
         if (retainedEntity instanceof ModificationSite) {
             // set occupied
@@ -228,42 +255,35 @@ public class ComplexEntity extends BinaryTreeNode<ChemicalEntity> implements Che
         // substitute what remains to the modification position
         substitute(removalPosition, retainedEntity);
         // rename updated path to the root
-        for (BinaryTreeNode<ChemicalEntity> current : path) {
-            if (current instanceof ComplexEntity) {
-                ((ComplexEntity) current).updateName();
-            }
-        }
+        updatePath(path);
     }
 
     public ChemicalEntity removeFromSite(ModificationSite modificationSite) {
         // find path to modification position
         List<BinaryTreeNode<ChemicalEntity>> path = pathTo(modificationSite);
         if (path == null || path.isEmpty()) {
-            throw new IllegalStateException("Entity to removeFromSite" + modificationSite + " could not be fund in " + this);
+            throw new IllegalStateException("Entity to remove" + modificationSite + " could not be fund in " + this);
         }
         // find part of the tree that will be maintained
-        BinaryTreeNode<ChemicalEntity> parent = path.get(path.size() - 2);
+        BinaryTreeNode<ChemicalEntity> parentNode = path.get(path.size() - 2);
         BinaryTreeNode<ChemicalEntity> retainedEntity = null;
-        if (parent.hasLeft()) {
-            if (parent.getLeft().getData().equals(modificationSite)) {
-                retainedEntity = parent.getRight();
+        if (parentNode.hasLeft()) {
+            if (parentNode.getLeft().getData().equals(modificationSite)) {
+                retainedEntity = parentNode.getRight();
             }
-        } else if (parent.hasRight()) {
-            if (parent.getRight().getData().equals(modificationSite)) {
-                retainedEntity = parent.getLeft();
+        }
+        if (parentNode.hasRight()) {
+            if (parentNode.getRight().getData().equals(modificationSite)) {
+                retainedEntity = parentNode.getLeft();
             }
         }
         if (retainedEntity == null) {
-            throw new IllegalStateException("Entity to removeFromSite" + modificationSite + " could not be fund in " + this);
+            throw new IllegalStateException("Entity to remove " + modificationSite + " could not be fund in " + this);
         }
         // substitute binding site
-        substitute(parent, path.get(path.size() - 1));
+        substitute(parentNode, path.get(path.size() - 1));
         // rename updated path to the root
-        for (BinaryTreeNode<ChemicalEntity> current : path) {
-            if (current instanceof ComplexEntity) {
-                ((ComplexEntity) current).updateName();
-            }
-        }
+        updatePath(path);
         return retainedEntity.getData();
     }
 
@@ -343,6 +363,7 @@ public class ComplexEntity extends BinaryTreeNode<ChemicalEntity> implements Che
 
     public ComplexEntity copy() {
         ComplexEntity copy = new ComplexEntity(identifier);
+        copy.membraneBound = isMembraneBound();
         if (hasLeft()) {
             copy.setLeft(getLeft().copy());
         }
