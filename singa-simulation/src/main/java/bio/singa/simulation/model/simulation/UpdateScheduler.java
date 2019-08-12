@@ -15,6 +15,8 @@ import javax.measure.quantity.Frequency;
 import javax.measure.quantity.Time;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import static bio.singa.simulation.model.modules.concentration.ModuleState.SUCCEEDED_WITH_PENDING_CHANGES;
 
@@ -58,6 +60,7 @@ public class UpdateScheduler {
     private volatile boolean interrupted;
     private boolean globalErrorAcceptable;
     private boolean calculateGlobalError;
+    private final ThreadPoolExecutor executor;
 
     public UpdateScheduler(Simulation simulation) {
         this.simulation = simulation;
@@ -65,6 +68,7 @@ public class UpdateScheduler {
         threads = Collections.synchronizedList(new ArrayList<>());
         largestLocalError = NumericalError.MINIMAL_EMPTY_ERROR;
         largestGlobalError = NumericalError.MINIMAL_EMPTY_ERROR;
+        executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(7);
     }
 
     public double getRecalculationCutoff() {
@@ -112,25 +116,20 @@ public class UpdateScheduler {
             logger.debug("Starting with latch at {}.", countDownLatch.getCount());
 
             int i = 0;
-
-            synchronized (threads) {
-                while (moduleIterator.hasNext()) {
-                    i++;
-                    UpdateModule module = moduleIterator.next();
-                    Thread thread = new Thread(module, "Module " + module.toString() + " (Thread " + i + ")");
-                    if (!interrupted) {
-                        threads.add(thread);
-                        thread.start();
-                    } else {
-                        logger.debug("Skipping module {}, decreasing latch to {}.", i, countDownLatch.getCount());
-                        countDownLatch.countDown();
-                    }
+            while (moduleIterator.hasNext()) {
+                i++;
+                UpdateModule module = moduleIterator.next();
+                if (!interrupted) {
+                    executor.execute(module);
+                } else {
+                    logger.debug("Skipping module {}, decreasing latch to {}.", i, countDownLatch.getCount());
+                    countDownLatch.countDown();
                 }
             }
 
+
             try {
                 countDownLatch.await();
-                threads.clear();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -144,7 +143,9 @@ public class UpdateScheduler {
             // evaluate total spatial displacement
             spatialDisplacementIsValid();
 
-        } while (recalculationRequired());
+        } while (
+
+                recalculationRequired());
         // System.out.println("accepted local error: "+largestLocalError.getValue());
         // resolve pending changes
         for (UpdateModule updateModule : modules) {
@@ -154,8 +155,10 @@ public class UpdateScheduler {
         }
 
         logger.debug("Finished processing modules for epoch {}.", simulation.getEpoch());
+
         // wrap up
         determineAccuracyGain();
+
         finalizeDeltas();
         modules.forEach(UpdateModule::resetState);
     }
