@@ -3,6 +3,7 @@ package bio.singa.simulation.model.rules.reactions;
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.chemistry.entities.ComplexEntity;
 import bio.singa.chemistry.entities.ModificationSite;
+import bio.singa.core.utility.Pair;
 
 /**
  * @author cl
@@ -91,16 +92,20 @@ public class ReactantModification {
                 modifiedEntity.removeFromPosition(getModificator(), getModificationSite());
                 return modifiedEntity;
             }
-            case RELEASE: {
-                ComplexEntity modifiedEntity = target.copy();
-                // released entity
-                modifiedEntity.removeFromSite(getSite());
-                return modifiedEntity;
-            }
             default: {
                 throw new IllegalArgumentException("Add and remove operations can only be called with one arguments");
             }
         }
+    }
+
+    public Pair<ComplexEntity> release(ComplexEntity target) {
+        if (operationType == ModificationOperation.RELEASE) {
+            ComplexEntity modifiedEntity = target.copy();
+            // released entity
+            ComplexEntity splitOffPart = modifiedEntity.splitOfComplex(getTarget(), getModificator(), getSite());
+            return new Pair<>(modifiedEntity, splitOffPart);
+        }
+        throw new IllegalArgumentException("Bind operations can only be called with two arguments");
     }
 
     public ComplexEntity apply(ComplexEntity target, ChemicalEntity modificator) {

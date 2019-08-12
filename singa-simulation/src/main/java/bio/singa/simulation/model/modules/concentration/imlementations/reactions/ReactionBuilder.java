@@ -80,7 +80,9 @@ public class ReactionBuilder {
 
     public interface RuleBasedKineticStep extends KineticStep {
 
-        FinalStep noKinetics();
+        RuleBasedKineticStep considerInversion();
+
+        FinalStep prereaction();
 
     }
 
@@ -538,9 +540,10 @@ public class ReactionBuilder {
 
     public static class RuleBasedBuilder extends GeneralReactionBuilder implements RuleBasedStep, RuleBasedKineticStep {
 
-        private static ReactionNetworkGenerator aggregator = new ReactionNetworkGenerator();
+        private static ReactionNetworkGenerator networkGenerator = new ReactionNetworkGenerator();
 
         private boolean noKinetics;
+        private ReactionRule rule;
 
         public RuleBasedBuilder(Simulation simulation) {
             super(simulation);
@@ -548,8 +551,12 @@ public class ReactionBuilder {
 
         @Override
         public RuleBasedKineticStep rule(ReactionRule rule) {
-            List<ReactantSet> reactantSets = aggregator.addRule(rule);
+            this.rule = rule;
+            List<ReactantSet> reactantSets = networkGenerator.addRule(rule);
             reaction.setReactantBehavior(new RuleBasedReactantBehavior(reactantSets));
+            if (rule.getIdentifier() != null && !rule.getIdentifier().isEmpty()) {
+                reaction.setIdentifier(rule.getIdentifier());
+            }
             return this;
         }
 
@@ -560,8 +567,15 @@ public class ReactionBuilder {
         }
 
         @Override
-        public FinalStep noKinetics() {
+        public FinalStep prereaction() {
             noKinetics = true;
+            networkGenerator.setPrereaction(rule);
+            return this;
+        }
+
+        @Override
+        public RuleBasedKineticStep considerInversion() {
+            networkGenerator.addRule(rule.invertRule());
             return this;
         }
 
@@ -573,6 +587,10 @@ public class ReactionBuilder {
             reaction.postConstruct();
             return reaction;
         }
+    }
+
+    public static void generateNetwork() {
+        RuleBasedBuilder.networkGenerator.generateNetwork();
     }
 
 }

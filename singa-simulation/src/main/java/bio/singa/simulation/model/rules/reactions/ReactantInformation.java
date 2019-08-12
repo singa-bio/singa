@@ -2,6 +2,7 @@ package bio.singa.simulation.model.rules.reactions;
 
 import bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.reactants.Reactant;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -13,8 +14,11 @@ public class ReactantInformation {
     private List<ReactantCondition> conditions;
     private List<ReactantModification> modifications;
 
-    public ReactantInformation(Reactant reactant) {
-        this.reactant = reactant;
+
+
+    public ReactantInformation() {
+        conditions = new ArrayList<>();
+        modifications = new ArrayList<>();
     }
 
     public ReactantInformation(Reactant reactant, List<ReactantCondition> conditions, List<ReactantModification> modifications) {

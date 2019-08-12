@@ -18,8 +18,10 @@ import static bio.singa.simulation.model.rules.reactions.ReactionNetworkGenerato
  */
 public class ReactionRule {
 
+    private String identifier;
     private List<ReactantInformation> reactantInformation;
     private boolean productsOnly;
+    private boolean allowInversion;
 
     public ReactionRule(List<ReactantInformation> reactantInformation) {
         this.reactantInformation = reactantInformation;
@@ -33,6 +35,14 @@ public class ReactionRule {
         this.reactantInformation = reactantInformation;
     }
 
+    public String getIdentifier() {
+        return identifier;
+    }
+
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
+    }
+
     public boolean isProductsOnly() {
         return productsOnly;
     }
@@ -41,12 +51,98 @@ public class ReactionRule {
         this.productsOnly = productsOnly;
     }
 
+    public boolean isAllowInversion() {
+        return allowInversion;
+    }
+
+    public void setAllowInversion(boolean allowInversion) {
+        this.allowInversion = allowInversion;
+    }
+
+    @Override
+    public String toString() {
+        return "ReactionRule: " + identifier;
+    }
+
     public static EntityStep create() {
         return new ReactionRuleBuilder();
     }
 
     public interface EntityStep {
         ModificationStep entity(ChemicalEntity entity);
+    }
+
+    public ReactionRule invertRule() {
+        // only for binding reactions
+        ReactantInformation inverseInformation = new ReactantInformation();
+        for (ReactantInformation information : reactantInformation) {
+            // if there is no primary reactant assigned yet
+            if (inverseInformation.getReactant() == null) {
+                inverseInformation.setReactant(information.getReactant());
+            }
+
+            // invert modifications
+            List<ReactantModification> modifications = information.getModifications();
+            if (modifications.isEmpty()) {
+                // assuming reactant information with no modifications is the binding partner (e.g. small molecule)
+                ReactantCondition hasPartCondition = ReactantCondition
+                        .hasPart(information.getReactant().getEntity());
+                addHasPast(inverseInformation, hasPartCondition);
+            }
+            ModificationSite modificationSite = null;
+            for (ReactantModification modification : modifications) {
+                if (modification.getOperationType().equals(ModificationOperation.BIND)) {
+                    // require occupied site
+                    modificationSite = modification.getSite();
+                    inverseInformation.getConditions().add(ReactantCondition
+                            .isOccupied(modificationSite));
+                    // add release modification
+                    inverseInformation.getModifications().add(ReactantModification
+                            .release(modification.getModificator())
+                            .atSite(modificationSite)
+                            .toTarget(modification.getTarget())
+                            .build());
+                }
+            }
+
+            // invert conditions
+            for (ReactantCondition condition : information.getConditions()) {
+                // skip small molecule conditions
+                if (condition.getCompositionPredicate().equals(CompositionPredicate.IS_SMALL_MOLECULE)) {
+                    continue;
+                }
+                // skip has not part conditions
+                if (condition.getCompositionPredicate().equals(CompositionPredicate.HAS_NOT_PART)) {
+                    continue;
+                }
+                // skip unoccupied conditions (has been previously processed)
+                if (condition.getCompositionPredicate().equals(CompositionPredicate.IS_UNOCCUPIED)) {
+                    if (!condition.getEntity().equals(modificationSite)) {
+                        inverseInformation.getConditions().add(condition);
+                    }
+                    continue;
+                }
+                // reuse has part conditions
+                if (condition.getCompositionPredicate().equals(CompositionPredicate.HAS_PART)) {
+                    // if condition is already present
+                    addHasPast(inverseInformation, condition);
+                }
+            }
+
+        }
+        ReactionRule reactionRule = new ReactionRule(Collections.singletonList(inverseInformation));
+        reactionRule.setIdentifier("inverted " + getIdentifier());
+        return reactionRule;
+    }
+
+    public void addHasPast(ReactantInformation information, ReactantCondition hasPartCondition) {
+        if (information.getConditions().contains(hasPartCondition)) {
+            information.getConditions().add(ReactantCondition
+                    .hasNumerOfPart(hasPartCondition.getEntity(), 2));
+            information.getConditions().remove(hasPartCondition);
+        } else {
+            information.getConditions().add(hasPartCondition);
+        }
     }
 
     public interface ModificationStep {
@@ -72,6 +168,8 @@ public class ReactionRule {
 
         ModificationStep andModification();
 
+        ConditionStep identifier(String identifier);
+
         ReactionRule build();
     }
 
@@ -86,6 +184,7 @@ public class ReactionRule {
         private List<ReactantCondition> currentModificatorConditions;
 
         private List<ReactantInformation> reactantInformation;
+        private String identifier;
 
         public ReactionRuleBuilder() {
             currentTargetModifications = new ArrayList<>();
@@ -199,6 +298,12 @@ public class ReactionRule {
         }
 
         @Override
+        public ConditionStep identifier(String identifier) {
+            this.identifier = identifier;
+            return this;
+        }
+
+        @Override
         public ReactionRule build() {
             if (currentTarget != null) {
                 reactantInformation.add(new ReactantInformation(currentTarget, currentTargetConditions, currentTargetModifications));
@@ -206,7 +311,9 @@ public class ReactionRule {
             if (currentModificator != null) {
                 reactantInformation.add(new ReactantInformation(currentModificator, currentModificatorConditions, Collections.emptyList()));
             }
-            return new ReactionRule(reactantInformation);
+            ReactionRule reactionRule = new ReactionRule(reactantInformation);
+            reactionRule.setIdentifier(identifier);
+            return reactionRule;
         }
     }
 

@@ -4,6 +4,7 @@ import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.chemistry.entities.ModificationSite;
 
 import java.util.List;
+import java.util.Objects;
 
 import static bio.singa.simulation.model.rules.reactions.CompositionPredicate.*;
 
@@ -79,8 +80,10 @@ public class ReactantCondition {
         return condition;
     }
 
-    public static ReactantCondition solitaryBinding() {
-        return new ReactantCondition(SOLITARY_BINDING);
+    public static ReactantCondition isOccupied(ModificationSite modificationSite) {
+        ReactantCondition condition = new ReactantCondition(IS_OCCUPIED);
+        condition.setEntity(modificationSite);
+        return condition;
     }
 
     public static ReactantCondition isSmallMolecule() {
@@ -93,14 +96,30 @@ public class ReactantCondition {
             case HAS_PART:
             case HAS_NOT_PART:
             case IS_UNOCCUPIED:
+            case IS_OCCUPIED:
                 return String.format(compositionPredicate.getDescriptor(), getEntity());
             case HAS_N_PART:
-                return String.format(compositionPredicate.getDescriptor(), getEntity(), getNumber());
+                return String.format(compositionPredicate.getDescriptor(), getNumber(), getEntity());
             case IS_SMALL_MOLECULE:
             case SOLITARY_BINDING:
                 return compositionPredicate.getDescriptor();
             default:
                 return "unkonwn condition";
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ReactantCondition that = (ReactantCondition) o;
+        return number == that.number &&
+                compositionPredicate == that.compositionPredicate &&
+                Objects.equals(entity, that.entity);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(compositionPredicate, entity, number);
     }
 }

@@ -5,6 +5,7 @@ import bio.singa.chemistry.entities.ComplexEntity;
 import bio.singa.chemistry.entities.ModificationSite;
 import bio.singa.chemistry.entities.SmallMolecule;
 import bio.singa.core.utility.ListHelper;
+import bio.singa.core.utility.Pair;
 import bio.singa.mathematics.combinatorics.StreamPermutations;
 import bio.singa.mathematics.graphs.trees.BinaryTreeNode;
 import bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.reactants.Reactant;
@@ -62,7 +63,7 @@ public class ReactionNetworkGenerator {
                 List<List<Reactant>> reactionCandidates = determineReactionCandidates(innerRule);
                 // determine possible modifications
                 List<ReactantSet> newReactantSets = generateReactantSets(innerRule, reactionCandidates);
-                removeEntityDuplicates();
+                removeDuplicatesFromPossibleEntities();
 
                 List<ReactantSet> existingReactantSets = reactions.get(innerRule);
                 int previousNumberOfReactions = existingReactantSets.size();
@@ -131,7 +132,7 @@ public class ReactionNetworkGenerator {
 
     private void determineEntites(ReactionRule rule) {
         // append new modification sites
-        addEntitiesFromReactants(rule);
+        addPossibleEntitiesFromReactants(rule);
         // remove duplicates
         possibleEntities = ListHelper.removeDuplicates(possibleEntities);
     }
@@ -140,45 +141,14 @@ public class ReactionNetworkGenerator {
         List<ReactantSet> reactantSets = new ArrayList<>();
         List<List<Reactant>> validSubstrateCombinations = StreamPermutations.permutations(reactionCandidates);
         for (List<Reactant> substrates : validSubstrateCombinations) {
-            Reactant product = determineProductForSubstrateCombination(substrates, rule);
-            possibleEntities.add(product.getEntity());
-            List<Reactant> products = collectProducts(rule, product);
-            products.addAll(collectReleasedEntities(rule, substrates));
+            List<Reactant> products = new ArrayList<>();
+            products.addAll(determineProductsForSubstrateCombination(substrates, rule));
+            products.addAll(collectSimpleProducts(rule));
+            addPossibleEntitiesFromProducts(products);
             ReactantSet reactantSet = new ReactantSet(substrates, products, Collections.emptyList());
             reactantSets.add(reactantSet);
         }
         return reactantSets;
-    }
-
-    private List<Reactant> collectReleasedEntities(ReactionRule rule, List<Reactant> substrates) {
-        List<Reactant> products = new ArrayList<>();
-        for (ReactantInformation reactantInformation : rule.getReactantInformation()) {
-            for (ReactantModification modification : reactantInformation.getModifications()) {
-                if (modification.getOperationType().equals(RELEASE)) {
-                    for (Reactant substrate : substrates) {
-                        ComplexEntity complexEntity = (ComplexEntity) substrate.getEntity();
-                        List<BinaryTreeNode<ChemicalEntity>> path = complexEntity.pathTo(modification.getModificator());
-                        BinaryTreeNode<ChemicalEntity> parent = path.get(path.size() - 2);
-                        ComplexEntity resultingEntity = ComplexEntity.from(modification.getSite(), parent.getData());
-                        Reactant reactant = determineProductForSubstrateCombination(Collections.singletonList(new Reactant(resultingEntity, SUBSTRATE, fromBoundStatus(resultingEntity.isMembraneBound()))), rule);
-                        products.add(reactant);
-                    }
-                }
-            }
-        }
-        return products;
-    }
-
-    private List<Reactant> collectProducts(ReactionRule rule, Reactant product) {
-        List<Reactant> products = new ArrayList<>();
-        products.add(product);
-        for (ReactantInformation reactantInformation : rule.getReactantInformation()) {
-            Reactant candidate = reactantInformation.getReactant();
-            if (candidate.getRole().equals(PRODUCT)) {
-                products.add(candidate);
-            }
-        }
-        return products;
     }
 
     private void determineBindingSites() {
@@ -188,9 +158,9 @@ public class ReactionNetworkGenerator {
             for (ReactantInformation reactantInformation : reactionRule.getReactantInformation()) {
                 for (ReactantModification modification : reactantInformation.getModifications()) {
                     if (modification.getOperationType().equals(BIND) || modification.getOperationType().equals(ADD)) {
-                        markModification(modification.getTarget(), modification.getSite());
+                        markForModification(modification.getTarget(), modification.getSite());
                         if (!(modification.getModificator() instanceof SmallMolecule)) {
-                            markModification(modification.getModificator(), modification.getSite());
+                            markForModification(modification.getModificator(), modification.getSite());
                         }
                     }
                 }
@@ -203,19 +173,6 @@ public class ReactionNetworkGenerator {
             possibleEntities.remove(entry.getKey());
             possibleEntities.add(complexEntity);
         }
-    }
-
-    private void markModification(ChemicalEntity entity, ModificationSite modification) {
-        if (!modifications.containsKey(entity)) {
-            modifications.put(entity, new LinkedHashSet<>());
-        }
-        modifications.get(entity).add(modification);
-    }
-
-    private void removeEntityDuplicates() {
-        possibleEntities = possibleEntities.stream()
-                .distinct()
-                .collect(Collectors.toList());
     }
 
     private List<List<Reactant>> determineReactionCandidates(ReactionRule rule) {
@@ -278,14 +235,15 @@ public class ReactionNetworkGenerator {
         return candiadates;
     }
 
-    private Reactant determineProductForSubstrateCombination(List<Reactant> reactionCandidates, ReactionRule rule) {
+    private List<Reactant> determineProductsForSubstrateCombination(List<Reactant> reactionCandidates, ReactionRule rule) {
         if (reactionCandidates.size() > 2) {
             logger.warn("Passed more than two reaction candidates to modification. This might result in unexpected modification.");
         }
         if (reactionCandidates.size() < 1) {
             throw new IllegalStateException("Modification require at least one substrates, but none was passed after substrate validation.");
         }
-        ComplexEntity product = ((ComplexEntity) reactionCandidates.get(0).getEntity());
+        ComplexEntity mainProductEntity = ((ComplexEntity) reactionCandidates.get(0).getEntity());
+        ComplexEntity byproductEntity = null;
         for (ReactantInformation reactantInformation : rule.getReactantInformation()) {
             for (ReactantModification modification : reactantInformation.getModifications()) {
                 switch (modification.getOperationType()) {
@@ -294,13 +252,27 @@ public class ReactionNetworkGenerator {
                             throw new IllegalStateException("Binding modification require two substrates, but only one was passed after substrate validation.");
                         }
                         ChemicalEntity secondEntity = reactionCandidates.get(1).getEntity();
-                        product = modification.apply(product, secondEntity);
+                        mainProductEntity = modification.apply(mainProductEntity, secondEntity);
+                        break;
+                    }
+                    case RELEASE: {
+                        // the first element is the original entity
+                        Pair<ComplexEntity> complexPair = modification.release(mainProductEntity);
+                        mainProductEntity = complexPair.getFirst();
+                        // the second part is split of
+                        byproductEntity = complexPair.getSecond();
                         break;
                     }
                     case ADD:
-                    case RELEASE:
                     case REMOVE: {
-                        product = modification.apply(product);
+                        // if target does not contain specified modification site try the other
+                        if (byproductEntity != null) {
+                            if (modification.getOperationType().equals(REMOVE) && mainProductEntity.find(modification.getModificator()) == null) {
+                                byproductEntity = modification.apply(byproductEntity);
+                            }
+                        } else {
+                            mainProductEntity = modification.apply(mainProductEntity);
+                        }
                         break;
                     }
                     default:
@@ -308,19 +280,56 @@ public class ReactionNetworkGenerator {
                 }
             }
         }
-        if (product == null) {
+        if (mainProductEntity == null) {
             throw new IllegalStateException("No product could be created.");
         }
-        return new Reactant(product, PRODUCT, fromBoundStatus(product.isMembraneBound()));
+        Reactant mainProduct = new Reactant(mainProductEntity, PRODUCT, fromBoundStatus(mainProductEntity.isMembraneBound()));
+        if (byproductEntity == null) {
+            return Collections.singletonList(mainProduct);
+        } else {
+            List<Reactant> reactants = new ArrayList<>();
+            reactants.add(mainProduct);
+            reactants.add(new Reactant(byproductEntity, PRODUCT, fromBoundStatus(byproductEntity.isMembraneBound())));
+            return reactants;
+        }
     }
 
+    private List<Reactant> collectSimpleProducts(ReactionRule rule) {
+        return rule.getReactantInformation().stream()
+                .map(ReactantInformation::getReactant)
+                .filter(reactant -> reactant.getRole().equals(PRODUCT))
+                .collect(Collectors.toList());
+    }
 
-    private void addEntitiesFromReactants(ReactionRule rule) {
+    private void addPossibleEntitiesFromReactants(ReactionRule rule) {
         rule.getReactantInformation().stream()
                 .map(information -> information.getReactant().getEntity())
-                .forEach(entity -> possibleEntities.add(entity));
+                .forEach(possibleEntities::add);
     }
 
+    private void addPossibleEntitiesFromProducts(List<Reactant> products) {
+        products.stream()
+                .map(Reactant::getEntity)
+                .forEach(possibleEntities::add);
+    }
+
+    private void removeDuplicatesFromPossibleEntities() {
+        possibleEntities = possibleEntities.stream()
+                .distinct()
+                .collect(Collectors.toList());
+    }
+
+    private void markForModification(ChemicalEntity entity, ModificationSite modification) {
+        if (!modifications.containsKey(entity)) {
+            modifications.put(entity, new LinkedHashSet<>());
+        }
+        modifications.get(entity).add(modification);
+    }
+
+    public void setPrereaction(ReactionRule rule) {
+        rule.setProductsOnly(true);
+        productOnlyRules.add(rule);
+    }
 
     public static CellTopology fromBoundStatus(boolean membraneBound) {
         if (membraneBound) {

@@ -32,6 +32,12 @@ public class EntityRegistry {
     }
 
     public static void put(String identifier, ChemicalEntity entity) {
+        if (entity instanceof ComplexEntity) {
+            // do not allow entities that are only small molecules or binding sites in complexes
+            if (((ComplexEntity) entity).getProteins().size() < 1) {
+                return;
+            }
+        }
         getInstance().entities.put(identifier, entity);
     }
 

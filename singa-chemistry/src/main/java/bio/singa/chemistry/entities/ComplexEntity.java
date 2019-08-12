@@ -56,6 +56,7 @@ public class ComplexEntity extends BinaryTreeNode<ChemicalEntity> implements Che
     }
 
     private ComplexEntity(String identifier) {
+        this();
         this.identifier = identifier;
     }
 
@@ -69,7 +70,15 @@ public class ComplexEntity extends BinaryTreeNode<ChemicalEntity> implements Che
             }
         }
         referenceIdentifier = nonSiteString();
-        EntityRegistry.put(referenceIdentifier, this);
+    }
+
+    private void updateGlobal() {
+        inOrderTraversal(node -> {
+            if (!node.isLeaf()) {
+                ComplexEntity entity = (ComplexEntity) node;
+                entity.update();
+            }
+        });
     }
 
     private void updatePath(List<BinaryTreeNode<ChemicalEntity>> path) {
@@ -114,13 +123,23 @@ public class ComplexEntity extends BinaryTreeNode<ChemicalEntity> implements Che
             throw new IllegalArgumentException("At least two entities are required to create a complex.");
         }
         ChemicalEntity currentEntity = first;
-        for (int i = 0; i < entities.length; i++) {
-            currentEntity = from(currentEntity, entities[i]);
+        for (ChemicalEntity entity : entities) {
+            currentEntity = combine(currentEntity, entity);
         }
-        return (ComplexEntity) currentEntity;
+        ComplexEntity complexEntity = (ComplexEntity) currentEntity;
+        complexEntity.update();
+        EntityRegistry.put(complexEntity.getReferenceIdentifier(), complexEntity);
+        return complexEntity;
     }
 
     public static ComplexEntity from(ChemicalEntity first, ChemicalEntity second) {
+        ComplexEntity complexEntity = combine(first, second);
+        complexEntity.update();
+        EntityRegistry.put(complexEntity.getReferenceIdentifier(), complexEntity);
+        return complexEntity;
+    }
+
+    private static ComplexEntity combine(ChemicalEntity first, ChemicalEntity second) {
         ComplexEntity complexEntity = new ComplexEntity();
         if (first instanceof ComplexEntity) {
             complexEntity.setLeft((ComplexEntity) first);
@@ -133,10 +152,8 @@ public class ComplexEntity extends BinaryTreeNode<ChemicalEntity> implements Che
             complexEntity.addRight(second);
         }
         complexEntity.setData(complexEntity);
-        complexEntity.update();
         return complexEntity;
     }
-
 
     public void appendEntity(ChemicalEntity data) {
         if (!hasLeft()) {
@@ -183,6 +200,7 @@ public class ComplexEntity extends BinaryTreeNode<ChemicalEntity> implements Che
             }
         }
         updatePath(path);
+        EntityRegistry.put(referenceIdentifier, this);
     }
 
     public boolean attach(ChemicalEntity attachment, ModificationSite attachmentPosition) {
@@ -217,15 +235,10 @@ public class ComplexEntity extends BinaryTreeNode<ChemicalEntity> implements Che
         }
         // rename path to addition
         updatePath(path);
+        EntityRegistry.put(referenceIdentifier, this);
         return true;
     }
 
-    /**
-     * Removes the given entity, but only at the specified position and renames all affected inner nodes.
-     *
-     * @param toBeRemoved The entity to be removed.
-     * @param removalPosition The removal position.
-     */
     public void removeFromPosition(ChemicalEntity toBeRemoved, ChemicalEntity removalPosition) {
         // find path to modification position
         List<BinaryTreeNode<ChemicalEntity>> path = pathTo(removalPosition);
@@ -256,35 +269,54 @@ public class ComplexEntity extends BinaryTreeNode<ChemicalEntity> implements Che
         substitute(removalPosition, retainedEntity);
         // rename updated path to the root
         updatePath(path);
+        EntityRegistry.put(referenceIdentifier, this);
     }
 
-    public ChemicalEntity removeFromSite(ModificationSite modificationSite) {
+    /**
+     * Searches for the modification part at the specified modification site, removes it from this tree and returns
+     * it. This tries to maintain all parts that are associated to the split of complex.
+     *
+     * @param target The binding partner that will be maintained.
+     * @param modification The binding partner that will be removed.
+     * @param site The binding site where both parts bind.
+     * @return The split of complex.
+     */
+    public ComplexEntity splitOfComplex(ChemicalEntity target, ChemicalEntity modification, ModificationSite site) {
         // find path to modification position
-        List<BinaryTreeNode<ChemicalEntity>> path = pathTo(modificationSite);
+        List<BinaryTreeNode<ChemicalEntity>> path = pathTo(site);
         if (path == null || path.isEmpty()) {
-            throw new IllegalStateException("Entity to remove" + modificationSite + " could not be fund in " + this);
+            throw new IllegalStateException("Site to split of from " + site + " could not be fund in " + this);
         }
-        // find part of the tree that will be maintained
-        BinaryTreeNode<ChemicalEntity> parentNode = path.get(path.size() - 2);
-        BinaryTreeNode<ChemicalEntity> retainedEntity = null;
-        if (parentNode.hasLeft()) {
-            if (parentNode.getLeft().getData().equals(modificationSite)) {
-                retainedEntity = parentNode.getRight();
+        // find part of the tree that will be removed
+        ListIterator<BinaryTreeNode<ChemicalEntity>> iterator = path.listIterator(path.size());
+        BinaryTreeNode<ChemicalEntity> previous = null;
+        while (iterator.hasPrevious()) {
+            BinaryTreeNode<ChemicalEntity> current = iterator.previous();
+            // if there is the target part in the tree we have traversed one too far
+            if (current.find(target) != null) {
+                //
+                if (current.getLeft().find(target) != null) {
+                    current.setRight(new BinaryTreeNode<>(site));
+                } else if (current.getRight().find(target) != null) {
+                    current.setLeft(new BinaryTreeNode<>(site));
+                }
+                break;
             }
+            // the previous part contains the part that contains the complex that is split off
+            previous = current;
         }
-        if (parentNode.hasRight()) {
-            if (parentNode.getRight().getData().equals(modificationSite)) {
-                retainedEntity = parentNode.getLeft();
-            }
-        }
-        if (retainedEntity == null) {
-            throw new IllegalStateException("Entity to remove " + modificationSite + " could not be fund in " + this);
-        }
-        // substitute binding site
-        substitute(parentNode, path.get(path.size() - 1));
         // rename updated path to the root
-        updatePath(path);
-        return retainedEntity.getData();
+        updateGlobal();
+        EntityRegistry.put(referenceIdentifier, this);
+        // also for the split of part
+        if (previous.getData() instanceof ComplexEntity) {
+            ComplexEntity splitOf = (ComplexEntity) previous.getData();
+            splitOf.update();
+            EntityRegistry.put(splitOf.getReferenceIdentifier(), splitOf);
+            return splitOf;
+        } else {
+            return ComplexEntity.from(previous.getData(), site);
+        }
     }
 
     public List<ModificationSite> getSites() {
@@ -296,6 +328,17 @@ public class ComplexEntity extends BinaryTreeNode<ChemicalEntity> implements Che
         });
         return sites;
     }
+
+    public List<Protein> getProteins() {
+        List<Protein> sites = new ArrayList<>();
+        inOrderTraversal(node -> {
+            if (node.getData() instanceof Protein) {
+                sites.add(((Protein) node.getData()));
+            }
+        });
+        return sites;
+    }
+
 
     public int countParts(ChemicalEntity entity) {
         List<ChemicalEntity> sites = new ArrayList<>();

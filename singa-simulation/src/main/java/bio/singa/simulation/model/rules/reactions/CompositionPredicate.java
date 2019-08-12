@@ -18,7 +18,7 @@ public enum CompositionPredicate {
             (condition, entityToTest) ->
                     Objects.nonNull(((ComplexEntity) entityToTest).find(condition.getEntity()))),
 
-    HAS_N_PART("has exactly %d of %s",
+    HAS_N_PART("has exactly %s of %s",
             (condition, entityToTest) ->
                     ((ComplexEntity) entityToTest).countParts(condition.getEntity()) == condition.getNumber()),
 
@@ -32,6 +32,16 @@ public enum CompositionPredicate {
                 if (binaryTreeNode != null) {
                     ModificationSite bindingSite = ((ModificationSite) binaryTreeNode.getData());
                     return !bindingSite.isOccupied();
+                }
+                return false;
+            }),
+
+    IS_OCCUPIED("has occupied %s",
+            (condition, entityToTest) -> {
+                BinaryTreeNode<ChemicalEntity> binaryTreeNode = ((ComplexEntity) entityToTest).find(condition.getEntity());
+                if (binaryTreeNode != null) {
+                    ModificationSite bindingSite = ((ModificationSite) binaryTreeNode.getData());
+                    return bindingSite.isOccupied();
                 }
                 return false;
             }),

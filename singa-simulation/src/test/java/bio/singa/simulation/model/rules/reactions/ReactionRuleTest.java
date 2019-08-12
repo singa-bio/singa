@@ -120,6 +120,7 @@ class ReactionRuleTest {
         ReactionRule akapBindsPkar = ReactionRule.create()
                 .entity(akap)
                 .binds(pkar, pkarSite1)
+                .identifier("akap pkar binding")
                 .build();
         akapBindsPkar.setProductsOnly(true);
         aggregator.addRule(akapBindsPkar);
@@ -127,6 +128,7 @@ class ReactionRuleTest {
         ReactionRule pkacBindsPkar = ReactionRule.create()
                 .entity(pkac)
                 .binds(pkar, pkarSite2)
+                .identifier("pkac pkar binding")
                 .build();
         pkacBindsPkar.setProductsOnly(true);
         aggregator.addRule(pkacBindsPkar);
@@ -136,6 +138,7 @@ class ReactionRuleTest {
                 .binds(camp, campSite1)
                 .targetCondition(ReactantCondition
                         .hasNotPart(camp))
+                .identifier("pkar camp binding 1")
                 .build();
         aggregator.addRule(pkarBindsCamp1);
 
@@ -144,8 +147,12 @@ class ReactionRuleTest {
                 .binds(camp, campSite2)
                 .targetCondition(ReactantCondition
                         .hasPart(camp))
+                .identifier("pkar camp binding 2")
                 .build();
         aggregator.addRule(pkarBindsCamp2);
+
+        ReactionRule pkarReleaseCamp2 = pkarBindsCamp2.invertRule();
+        aggregator.addRule(pkarReleaseCamp2);
 
         ReactionRule pkacAtpBinding = ReactionRule.create()
                 .entity(pkac)
@@ -154,6 +161,7 @@ class ReactionRuleTest {
                         .hasNumerOfPart(camp, 2))
                 .targetCondition(ReactantCondition
                         .isUnoccupied(substrateSite))
+                .identifier("pkac atp binding")
                 .build();
         aggregator.addRule(pkacAtpBinding);
 
@@ -168,6 +176,7 @@ class ReactionRuleTest {
                 .remove(atp, atpSite)
                 .andModification()
                 .produce(adp)
+                .identifier("pka autophosphorylation")
                 .build();
         aggregator.addRule(pkacAutophosphorylation);
 
@@ -178,6 +187,7 @@ class ReactionRuleTest {
                         .hasPart(atp))
                 .targetCondition(ReactantCondition
                         .hasNumerOfPart(p, 1))
+                .identifier("pkac aqp binding")
                 .build();
         aggregator.addRule(pkacAqpSubstrateBinding);
 
@@ -188,6 +198,7 @@ class ReactionRuleTest {
                         .hasPart(atp))
                 .targetCondition(ReactantCondition
                         .hasPart(p))
+                .identifier("pkac pde binding")
                 .build();
         aggregator.addRule(pkacPdeSubstrateBinding);
 
@@ -200,6 +211,7 @@ class ReactionRuleTest {
                 .remove(atp, atpSite)
                 .andModification()
                 .produce(adp)
+                .identifier("pkac aqp phosphorylation")
                 .build();
         aggregator.addRule(pkacAqpPhosphorylation);
 
@@ -212,6 +224,7 @@ class ReactionRuleTest {
                 .remove(atp, atpSite)
                 .andModification()
                 .produce(adp)
+                .identifier("pkac pde phosphorylation")
                 .build();
         aggregator.addRule(pkacPdePhosphorylation);
 
@@ -220,10 +233,21 @@ class ReactionRuleTest {
                 .release(aqp, substrateSite)
                 .targetCondition(ReactantCondition
                         .hasNumerOfPart(p, 2))
+                .identifier("aqpp release")
                 .build();
         aggregator.addRule(aqpRelease);
 
+        ReactionRule pdeRelease = ReactionRule.create()
+                .entity(pkac)
+                .release(pde, substrateSite)
+                .targetCondition(ReactantCondition
+                        .hasNumerOfPart(p, 2))
+                .identifier("pdep release")
+                .build();
+        aggregator.addRule(pdeRelease);
+
         aggregator.generateNetwork();
+        System.out.println();
 
     }
 }
