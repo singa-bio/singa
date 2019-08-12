@@ -309,33 +309,15 @@ public class UpdateScheduler {
     /**
      * Returns true if the calling module was the first to call the method, therefore being allowed to optimize the
      * time step.
-     *
-     * @param callingThread The calling thread.
-     * @param callingModule The associated module.
+
      * @return True if the calling module was the first to call the method.
      */
-    public synchronized boolean interruptAllBut(Thread callingThread, UpdateModule callingModule) {
+    public synchronized boolean interrupt() {
         // interrupt all threads but the calling thread and count down their latch
         if (!interrupted) {
-            logger.debug("Module {} triggered interrupt.", callingModule);
             interrupted = true;
-            List<String> interruptedThreads = new ArrayList<>();
-            synchronized (threads) {
-                for (Thread thread : threads) {
-                    if (thread != callingThread) {
-                        if (thread.isAlive()) {
-                            thread.interrupt();
-                            // countDownLatch.countDown();
-                            interruptedThreads.add(thread.getName());
-                        }
-                    }
-                }
-            }
-            // prioritize(callingModule);
-            logger.debug("{} interrupted {}", callingThread.getName(), interruptedThreads);
             return true;
         }
-        logger.debug("Module {} tried to interrupt, but interruption was already in progress.", callingModule);
         return false;
     }
 
