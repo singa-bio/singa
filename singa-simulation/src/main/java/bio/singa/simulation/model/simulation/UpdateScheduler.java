@@ -143,9 +143,7 @@ public class UpdateScheduler {
             // evaluate total spatial displacement
             spatialDisplacementIsValid();
 
-        } while (
-
-                recalculationRequired());
+        } while (recalculationRequired());
         // System.out.println("accepted local error: "+largestLocalError.getValue());
         // resolve pending changes
         for (UpdateModule updateModule : modules) {
@@ -309,7 +307,7 @@ public class UpdateScheduler {
     /**
      * Returns true if the calling module was the first to call the method, therefore being allowed to optimize the
      * time step.
-
+     *
      * @return True if the calling module was the first to call the method.
      */
     public synchronized boolean interrupt() {

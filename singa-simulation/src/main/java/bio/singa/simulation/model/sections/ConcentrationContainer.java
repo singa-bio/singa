@@ -9,9 +9,9 @@ import bio.singa.simulation.model.modules.concentration.imlementations.reactions
 
 import javax.measure.Quantity;
 import java.util.*;
+import java.util.stream.Collectors;
 
-import static bio.singa.simulation.model.sections.CellTopology.INNER;
-import static bio.singa.simulation.model.sections.CellTopology.OUTER;
+import static bio.singa.simulation.model.sections.CellTopology.*;
 
 /**
  * The concentration container manages the concentrations of one updatable. {@link MolarConcentration}s of
@@ -25,19 +25,19 @@ public class ConcentrationContainer {
     /**
      * The mapping of topology to subsection.
      */
-    private Map<CellTopology, CellSubsection> subsectionTopology;
+    private CellSubsection[] subsectionTopology;
 
     /**
      * The mapping of the subsection to the corresponding concentration pool.
      */
-    private Map<CellSubsection, ConcentrationPool> concentrations;
+    private ConcentrationPool[] concentrations;
 
     /**
      * Creates a new concentration container.
      */
     public ConcentrationContainer() {
-        subsectionTopology = new HashMap<>();
-        concentrations = new HashMap<>();
+        subsectionTopology = new CellSubsection[3];
+        concentrations = new ConcentrationPool[3];
     }
 
     /**
@@ -58,8 +58,8 @@ public class ConcentrationContainer {
      * @param concentrationPool The concentration pool.
      */
     public void putSubsectionPool(CellSubsection subsection, CellTopology topology, ConcentrationPool concentrationPool) {
-        subsectionTopology.put(topology, subsection);
-        concentrations.put(subsection, concentrationPool);
+        subsectionTopology[topology.getIndex()] = subsection;
+        concentrations[topology.getIndex()] = concentrationPool;
     }
 
     /**
@@ -68,8 +68,9 @@ public class ConcentrationContainer {
      * @param subsection The subsection to remove.
      */
     public void removeSubsection(CellSubsection subsection) {
-        concentrations.remove(subsection);
-        subsectionTopology.remove(getTopologyFromSubsection(subsection));
+        int topologyIndexFromSubsection = getTopologyIndexFromSubsection(subsection);
+        concentrations[topologyIndexFromSubsection] = null;
+        subsectionTopology[topologyIndexFromSubsection] = null;
     }
 
     /**
@@ -79,12 +80,21 @@ public class ConcentrationContainer {
      * @return the topology referenced to the subsection and null otherwise.
      */
     private CellTopology getTopologyFromSubsection(CellSubsection subsection) {
-        for (Map.Entry<CellTopology, CellSubsection> entry : subsectionTopology.entrySet()) {
-            if (Objects.equals(subsection, entry.getValue())) {
-                return entry.getKey();
+        for (int i = 0; i < subsectionTopology.length; i++) {
+            if (Objects.equals(subsection, subsectionTopology[i])) {
+                return CellTopology.getTopology(i);
             }
         }
         return null;
+    }
+
+    private int getTopologyIndexFromSubsection(CellSubsection subsection) {
+        for (int i = 0; i < subsectionTopology.length; i++) {
+            if (Objects.equals(subsection, subsectionTopology[i])) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     /**
@@ -93,12 +103,11 @@ public class ConcentrationContainer {
      * @param topology The topology to remove.
      */
     public void removeSubsection(CellTopology topology) {
-        CellSubsection subsection = subsectionTopology.get(topology);
-        concentrations.remove(subsection);
-        subsectionTopology.remove(getTopologyFromSubsection(subsection));
+        concentrations[topology.getIndex()] = null;
+        subsectionTopology[topology.getIndex()] = null;
     }
 
-    public Map<CellSubsection, ConcentrationPool> getConcentrations() {
+    public ConcentrationPool[] getConcentrations() {
         return concentrations;
     }
 
@@ -108,7 +117,9 @@ public class ConcentrationContainer {
      * @return All subsections, referenced in this container.
      */
     public Set<CellSubsection> getReferencedSubsections() {
-        return concentrations.keySet();
+        return Arrays.stream(subsectionTopology)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
     }
 
     /**
@@ -117,7 +128,9 @@ public class ConcentrationContainer {
      * @return All concentration pools in this container.
      */
     public Collection<ConcentrationPool> getPoolsOfConcentration() {
-        return concentrations.values();
+        return Arrays.stream(concentrations)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -127,8 +140,11 @@ public class ConcentrationContainer {
      */
     public Set<ChemicalEntity> getReferencedEntities() {
         Set<ChemicalEntity> chemicalEntities = new HashSet<>();
-        for (ConcentrationPool concentrationPool : concentrations.values()) {
-            chemicalEntities.addAll(concentrationPool.getReferencedEntities());
+        for (int i = 0; i < concentrations.length; i++) {
+            ConcentrationPool concentrationPool = concentrations[i];
+            if (concentrationPool != null) {
+                chemicalEntities.addAll(concentrationPool.getReferencedEntities());
+            }
         }
         return chemicalEntities;
     }
@@ -176,7 +192,7 @@ public class ConcentrationContainer {
     public Map.Entry<CellTopology, ConcentrationPool> getPool(CellSubsection subsection) {
         CellTopology topology = getTopologyFromSubsection(subsection);
         if (topology != null) {
-            return new AbstractMap.SimpleEntry<>(topology, concentrations.get(subsection));
+            return new AbstractMap.SimpleEntry<>(topology, concentrations[topology.getIndex()]);
         }
         return null;
     }
@@ -188,9 +204,9 @@ public class ConcentrationContainer {
      * @return The subsection and concentration pool for the topology.
      */
     public Map.Entry<CellSubsection, ConcentrationPool> getPool(CellTopology topology) {
-        CellSubsection subsection = subsectionTopology.get(topology);
+        CellSubsection subsection = subsectionTopology[topology.getIndex()];
         if (subsection != null) {
-            return new AbstractMap.SimpleEntry<>(subsection, concentrations.get(subsection));
+            return new AbstractMap.SimpleEntry<>(subsection, concentrations[topology.getIndex()]);
         }
         return null;
     }
@@ -203,7 +219,11 @@ public class ConcentrationContainer {
      * @return The concentration of the entity in the corresponding subsection.
      */
     public double get(CellSubsection subsection, ChemicalEntity entity) {
-        ConcentrationPool concentrationPool = concentrations.get(subsection);
+        int topology = getTopologyIndexFromSubsection(subsection);
+        ConcentrationPool concentrationPool = null;
+        if (topology != -1) {
+            concentrationPool = concentrations[topology];
+        }
         if (concentrationPool == null) {
             return 0.0;
         }
@@ -218,7 +238,7 @@ public class ConcentrationContainer {
      * @return The concentration of the entity in the corresponding topology.
      */
     public double get(CellTopology topology, ChemicalEntity entity) {
-        CellSubsection subsection = subsectionTopology.get(topology);
+        CellSubsection subsection = subsectionTopology[topology.getIndex()];
         if (subsection == null) {
             return 0.0;
         }
@@ -248,11 +268,11 @@ public class ConcentrationContainer {
      * @param concentration The concentration.
      */
     public void set(CellSubsection subsection, ChemicalEntity entity, double concentration) {
-        concentrations.get(subsection).set(entity, concentration);
+        concentrations[getTopologyIndexFromSubsection(subsection)].set(entity, concentration);
     }
 
     public void initialize(CellSubsection subsection, ChemicalEntity entity, Quantity<MolarConcentration> concentration) {
-        concentrations.get(subsection).set(entity, concentration.to(UnitRegistry.getConcentrationUnit()).getValue().doubleValue());
+        concentrations[getTopologyIndexFromSubsection(subsection)].set(entity, concentration.to(UnitRegistry.getConcentrationUnit()).getValue().doubleValue());
     }
 
     /**
@@ -263,11 +283,11 @@ public class ConcentrationContainer {
      * @param concentration The concentration.
      */
     public void set(CellTopology topology, ChemicalEntity entity, double concentration) {
-        set(subsectionTopology.get(topology), entity, concentration);
+        set(subsectionTopology[topology.getIndex()], entity, concentration);
     }
 
     public void initialize(CellTopology topology, ChemicalEntity entity, Quantity<MolarConcentration> concentration) {
-        initialize(subsectionTopology.get(topology), entity, concentration);
+        initialize(subsectionTopology[topology.getIndex()], entity, concentration);
     }
 
     /**
@@ -277,7 +297,7 @@ public class ConcentrationContainer {
      * @return The subsection.
      */
     public CellSubsection getSubsection(CellTopology topology) {
-        return subsectionTopology.get(topology);
+        return subsectionTopology[topology.getIndex()];
     }
 
     /**
@@ -286,7 +306,7 @@ public class ConcentrationContainer {
      * @return The inner subsection.
      */
     public CellSubsection getInnerSubsection() {
-        return subsectionTopology.get(INNER);
+        return subsectionTopology[INNER.getIndex()];
     }
 
     /**
@@ -295,7 +315,7 @@ public class ConcentrationContainer {
      * @return The outer subsection.
      */
     public CellSubsection getOuterSubsection() {
-        return subsectionTopology.get(OUTER);
+        return subsectionTopology[OUTER.getIndex()];
     }
 
     /**
@@ -304,7 +324,7 @@ public class ConcentrationContainer {
      * @return The membrane subsection.
      */
     public CellSubsection getMembraneSubsection() {
-        return subsectionTopology.get(CellTopology.MEMBRANE);
+        return subsectionTopology[MEMBRANE.getIndex()];
     }
 
     /**
@@ -314,8 +334,9 @@ public class ConcentrationContainer {
      */
     public ConcentrationContainer emptyCopy() {
         ConcentrationContainer concentrationContainer = new ConcentrationContainer();
-        for (Map.Entry<CellTopology, CellSubsection> entry : subsectionTopology.entrySet()) {
-            concentrationContainer.initializeSubsection(entry.getValue(), entry.getKey());
+        for (int i = 0; i < subsectionTopology.length; i++) {
+            if (subsectionTopology[i] != null)
+                concentrationContainer.initializeSubsection(subsectionTopology[i], CellTopology.getTopology(i));
         }
         return concentrationContainer;
     }
@@ -327,10 +348,12 @@ public class ConcentrationContainer {
      */
     public ConcentrationContainer fullCopy() {
         ConcentrationContainer concentrationContainer = new ConcentrationContainer();
-        for (Map.Entry<CellTopology, CellSubsection> entry : subsectionTopology.entrySet()) {
-            CellTopology topology = entry.getKey();
-            CellSubsection subsection = subsectionTopology.get(topology);
-            concentrationContainer.putSubsectionPool(subsection, topology, getPool(subsection).getValue().fullCopy());
+        for (int i = 0; i < subsectionTopology.length; i++) {
+            if (subsectionTopology[i] != null) {
+                CellTopology topology = CellTopology.getTopology(i);
+                CellSubsection subsection = subsectionTopology[i];
+                concentrationContainer.putSubsectionPool(subsection, topology, getPool(subsection).getValue().fullCopy());
+            }
         }
         return concentrationContainer;
     }

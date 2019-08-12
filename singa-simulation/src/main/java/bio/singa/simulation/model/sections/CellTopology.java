@@ -14,16 +14,40 @@ public enum CellTopology {
     /**
      * A membrane is enclosing this subsection.
      */
-    INNER,
-
-    /**
-     * A membrane is separating this subsection form the inner subsection.
-     */
-    OUTER,
+    INNER(0),
 
     /**
      * The membrane separating inner and outer subsections.
      */
-    MEMBRANE,
+    MEMBRANE(1),
+
+    /**
+     * A membrane is separating this subsection form the inner subsection.
+     */
+    OUTER(2);
+
+    private int index;
+
+    CellTopology(int index) {
+        this.index = index;
+    }
+
+    public int getIndex() {
+        return index;
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
+    }
+
+    public static CellTopology getTopology(int index) {
+        if (index == 0) {
+            return INNER;
+        }
+        if (index == 1) {
+            return MEMBRANE;
+        }
+        return OUTER;
+    }
 
 }

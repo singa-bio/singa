@@ -8,6 +8,7 @@ import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.simulation.model.agents.pointlike.Vesicle;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.sections.CellSubsection;
+import bio.singa.simulation.model.sections.CellTopology;
 import bio.singa.simulation.model.sections.ConcentrationPool;
 import bio.singa.simulation.model.simulation.Updatable;
 
@@ -30,34 +31,32 @@ public class TrajectoryDataPoint {
 
     public static TrajectoryDataPoint of(Updatable updatable, Unit<MolarConcentration> concentrationUnit) {
         TrajectoryDataPoint data = new TrajectoryDataPoint();
-        for (Map.Entry<CellSubsection, ConcentrationPool> subsectionEntry : updatable.getConcentrationContainer().getConcentrations().entrySet()) {
+        for (CellSubsection subsection : updatable.getConcentrationContainer().getReferencedSubsections()) {
+            Map.Entry<CellTopology, ConcentrationPool> poolEntry = updatable.getConcentrationContainer().getPool(subsection);
             // prepare inner map
             Map<ChemicalEntity, Double> concentrations = new HashMap<>();
-            for (Map.Entry<ChemicalEntity, Double> quantityEntry : subsectionEntry.getValue().getConcentrations().entrySet()) {
+            for (Map.Entry<ChemicalEntity, Double> quantityEntry : poolEntry.getValue().getConcentrations().entrySet()) {
                 concentrations.put(quantityEntry.getKey(), UnitRegistry.concentration(quantityEntry.getValue()).to(concentrationUnit).getValue().doubleValue());
             }
-
             List<Vector2D> positions = new ArrayList<>();
-            CellSubsection currentSubsection = subsectionEntry.getKey();
             if (updatable instanceof AutomatonNode) {
                 AutomatonNode node = (AutomatonNode) updatable;
-                if (currentSubsection.isMembrane()) {
+                if (subsection.isMembrane()) {
                     positions.addAll(node.getMembraneVectors());
                 } else {
-                    positions.addAll(node.getSubsectionRepresentations().get(currentSubsection).getVertices());
+                    positions.addAll(node.getSubsectionRepresentations().get(subsection).getVertices());
                 }
             } else if (updatable instanceof Vesicle) {
                 Vesicle vesicle = (Vesicle) updatable;
                 // current subsection is no membrane - add centroid of subsection polygon
-                if (currentSubsection.isMembrane()) {
+                if (subsection.isMembrane()) {
                     positions.add(vesicle.getPosition().add(new Vector2D(0,1).multiply(Environment.convertSystemToSimulationScale(vesicle.getRadius()))));
                 } else {
                     positions.add(vesicle.getPosition());
                 }
             }
-
             // add to outer map
-            data.subsectionData.put(currentSubsection, new SubsectionDataPoint(concentrations, positions));
+            data.subsectionData.put(subsection, new SubsectionDataPoint(concentrations, positions));
         }
         return data;
     }

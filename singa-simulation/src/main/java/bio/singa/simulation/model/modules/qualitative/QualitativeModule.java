@@ -61,7 +61,7 @@ public abstract class QualitativeModule implements UpdateModule {
                 case REQUIRING_RECALCULATION:
                     // optimize time step
                     logger.debug("{} requires recalculation.", Thread.currentThread().getName());
-                    boolean prioritizedModule = scheduler.interruptAllBut(Thread.currentThread(), this);
+                    boolean prioritizedModule = scheduler.interrupt();
                     if (prioritizedModule) {
                         optimizeTimeStep();
                     } else {

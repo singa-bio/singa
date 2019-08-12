@@ -165,7 +165,7 @@ class NthOrderReactionTest {
 
         Quantity<Dimensionless> molecules = MolarConcentration.concentrationToMolecules(vesicle.getConcentrationContainer().get(MEMBRANE, sm));
         assertEquals(60, molecules.getValue().intValue());
-        while (simulation.getElapsedTime().isLessThanOrEqualTo(Quantities.getQuantity(11, SECOND))) {
+        while (simulation.getElapsedTime().isLessThanOrEqualTo(Quantities.getQuantity(13, SECOND))) {
             simulation.nextEpoch();
             molecules = MolarConcentration.concentrationToMolecules(vesicle.getConcentrationContainer().get(MEMBRANE, sm));
         }

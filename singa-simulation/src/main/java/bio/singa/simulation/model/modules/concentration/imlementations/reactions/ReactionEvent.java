@@ -2,9 +2,9 @@ package bio.singa.simulation.model.modules.concentration.imlementations.reaction
 
 import bio.singa.simulation.model.agents.pointlike.Vesicle;
 import bio.singa.simulation.model.graphs.AutomatonNode;
+import bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.deltas.DeltaBehavior;
 import bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.deltas.NodeBehavior;
 import bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.deltas.ReactantDelta;
-import bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.deltas.DeltaBehavior;
 import bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.deltas.VesicleBehavior;
 import bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.reactants.ReactantSet;
 import bio.singa.simulation.model.sections.ConcentrationContainer;
@@ -51,8 +51,10 @@ public class ReactionEvent {
             updatableBehavior = new NodeBehavior(this);
             if (updatableBehavior.containsSubstrates(getCurrentNode().getConcentrationContainer())) {
                 double velocity = reaction.getKineticLaw().determineVelocity(this);
-                deltas.addAll(updatableBehavior.generateSubstrateDeltas(velocity));
-                deltas.addAll(updatableBehavior.generateProductDeltas(velocity));
+                if (velocity != 0.0) {
+                    deltas.addAll(updatableBehavior.generateSubstrateDeltas(velocity));
+                    deltas.addAll(updatableBehavior.generateProductDeltas(velocity));
+                }
             }
         }
         return deltas;
