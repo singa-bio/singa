@@ -230,8 +230,11 @@ public class LineLikeAgentLayer {
             for (AutomatonNode node : simulation.getGraph().getNodes()) {
                 node.getAssociatedLineLikeAgents().remove(misguidedFilament);
             }
-            // TODO adapt for microtubuli
-            simulation.getMembraneLayer().getMicrotubuleOrganizingCentre().spawnActin(this);
+            if (misguidedFilament.getType().equals(ACTIN)) {
+                simulation.getMembraneLayer().getMicrotubuleOrganizingCentre().spawnActin(this);
+            } else {
+                simulation.getMembraneLayer().getMicrotubuleOrganizingCentre().spawnMicrotubule(this);
+            }
         }
         misguidedFilaments.clear();
     }

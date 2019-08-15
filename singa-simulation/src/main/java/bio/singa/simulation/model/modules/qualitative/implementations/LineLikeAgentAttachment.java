@@ -20,6 +20,9 @@ import tech.units.indriya.ComparableQuantity;
 import javax.measure.Quantity;
 import javax.measure.quantity.Length;
 import java.util.*;
+
+import static bio.singa.simulation.model.agents.pointlike.VesicleStateRegistry.TAGGED_FOR_EXOCYTOSIS;
+
 /**
  * @author cl
  */
@@ -55,8 +58,8 @@ public class LineLikeAgentAttachment extends QualitativeModule {
             } else {
                 continue;
             }
-            // skip if vesicle is not unattached
-            if (!vesicle.getState().equals(VesicleStateRegistry.UNATTACHED)) {
+            // skip if vesicle is not unattached and not tagged for endocytosis
+            if (!vesicle.getState().equals(VesicleStateRegistry.UNATTACHED) && !vesicle.getState().equals(TAGGED_FOR_EXOCYTOSIS)) {
                 continue;
             }
             // attach if there is any close filament

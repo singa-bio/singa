@@ -16,6 +16,7 @@ public class VesicleStateRegistry {
     public static final String MEMBRANE_TETHERED = "MEMBRANE_TETHERED";
     public static final String UNATTACHED = "UNATTACHED";
     public static final String IN_PERINUCLEAR_STORAGE = "IN_PERINUCLEAR_STORAGE";
+    public static final String TAGGED_FOR_EXOCYTOSIS = "TAGGED_FOR_EXOCYTOSIS";
 
     private Set<String> states;
 
