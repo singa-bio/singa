@@ -1,5 +1,5 @@
 language: java
-jdk: jdk11
+jdk: openjdk11
 dist: bionic
 sudo: required
 addons:
