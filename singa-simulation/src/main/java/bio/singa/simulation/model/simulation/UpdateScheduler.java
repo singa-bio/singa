@@ -60,7 +60,7 @@ public class UpdateScheduler {
     private volatile boolean interrupted;
     private boolean globalErrorAcceptable;
     private boolean calculateGlobalError;
-    private final ThreadPoolExecutor executor;
+    private ThreadPoolExecutor executor;
 
     public UpdateScheduler(Simulation simulation) {
         this.simulation = simulation;
@@ -68,7 +68,10 @@ public class UpdateScheduler {
         threads = Collections.synchronizedList(new ArrayList<>());
         largestLocalError = NumericalError.MINIMAL_EMPTY_ERROR;
         largestGlobalError = NumericalError.MINIMAL_EMPTY_ERROR;
-        executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(7);
+    }
+
+    public void initializeThreadPool() {
+        executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(modules.size());
     }
 
     public double getRecalculationCutoff() {
@@ -250,6 +253,10 @@ public class UpdateScheduler {
         return timeStepRescaled;
     }
 
+    public void shutdownExecutorService() {
+        executor.shutdown();
+    }
+
     public boolean timeStepWasAlteredInThisEpoch() {
         return timeStepAlteredInThisEpoch;
     }
@@ -332,6 +339,8 @@ public class UpdateScheduler {
         modules.forEach(UpdateModule::resetState);
         // clear deltas that have previously been calculated
         updatables.forEach(updatable -> updatable.getConcentrationManager().clearPotentialDeltas());
+        // rest vesicle position
+        simulation.getVesicleLayer().clearUpdates();
         if (calculateGlobalError) {
             updatables.forEach(updatable -> updatable.getConcentrationManager().revertToOriginalConcentrations());
         }

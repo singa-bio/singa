@@ -24,6 +24,7 @@ import java.util.Map;
 public class TrajectoryDataPoint {
 
     private Map<CellSubsection, SubsectionDataPoint> subsectionData;
+    private String state;
 
     public TrajectoryDataPoint() {
         subsectionData = new HashMap<>();
@@ -50,19 +51,31 @@ public class TrajectoryDataPoint {
                 Vesicle vesicle = (Vesicle) updatable;
                 // current subsection is no membrane - add centroid of subsection polygon
                 if (subsection.isMembrane()) {
-                    positions.add(vesicle.getPosition().add(new Vector2D(0,1).multiply(Environment.convertSystemToSimulationScale(vesicle.getRadius()))));
+                    positions.add(vesicle.getPosition().add(new Vector2D(0, 1).multiply(Environment.convertSystemToSimulationScale(vesicle.getRadius()))));
                 } else {
                     positions.add(vesicle.getPosition());
                 }
+
             }
             // add to outer map
             data.subsectionData.put(subsection, new SubsectionDataPoint(concentrations, positions));
+            if (updatable instanceof Vesicle) {
+                data.setState(((Vesicle) updatable).getState());
+            }
         }
         return data;
     }
 
     public void put(CellSubsection cellSection, SubsectionDataPoint datapoint) {
         subsectionData.put(cellSection, datapoint);
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
     }
 
     public Map<CellSubsection, SubsectionDataPoint> getSubsectionData() {

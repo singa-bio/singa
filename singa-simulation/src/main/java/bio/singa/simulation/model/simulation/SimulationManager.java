@@ -264,6 +264,7 @@ public class SimulationManager implements Runnable {
             System.exit(1);
         }
         logger.info("Simulation finished.");
+        simulation.getScheduler().shutdownExecutorService();
         // close writers
         for (UpdateEventListener<UpdatableUpdatedEvent> nodeEventListener : getNodeListeners()) {
             if (nodeEventListener instanceof FlatUpdateRecorder) {

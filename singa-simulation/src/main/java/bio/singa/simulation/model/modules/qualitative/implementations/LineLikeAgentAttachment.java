@@ -55,7 +55,7 @@ public class LineLikeAgentAttachment extends QualitativeModule {
             } else {
                 continue;
             }
-            // and the current vesicle is unattached
+            // skip if vesicle is not unattached
             if (!vesicle.getState().equals(VesicleStateRegistry.UNATTACHED)) {
                 continue;
             }

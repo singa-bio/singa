@@ -1,6 +1,10 @@
 package bio.singa.simulation.export.reactiontable;
 
+import bio.singa.simulation.export.format.FormatFeature;
+import bio.singa.simulation.export.format.FormatReactionEquation;
+import bio.singa.simulation.export.format.FormatReactionKinetics;
 import bio.singa.simulation.model.modules.UpdateModule;
+import bio.singa.simulation.model.modules.concentration.imlementations.reactions.Reaction;
 import bio.singa.simulation.model.simulation.Simulation;
 
 /**
@@ -22,31 +26,14 @@ public class ReactionTableConverter {
     }
 
     private void convertModule(UpdateModule module) {
-
+        if (module instanceof Reaction) {
+            Reaction reaction = (Reaction) module;
+            table.addRow(new ReactionTable.ReactionTableRow(module.getIdentifier(),
+                    FormatReactionEquation.formatTex(reaction),
+                    FormatReactionKinetics.formatTex(reaction),
+                    FormatFeature.formatRates(reaction)));
+        }
     }
 
-//    private void addContentOfModule(Reaction reaction) {
-//        String identifier = reaction.getIdentifier().replace("_", " ");
-//        String equation = FormatReactionEquation.formatTex(reaction);
-//        String kinetics = FormatReactionKinetics.formatTex(reaction);
-//        ReactionTable.ReactionTableRow reactionTableRow = new ReactionTable.ReactionTableRow(identifier, equation, kinetics, null);
-//        table.addRow(reactionTableRow);
-//    }
-
-//    private void addContentOfModule(SectionDependentReaction reaction) {
-//        String identifier = reaction.getIdentifier().replace("_", " ");
-//        String equation = FormatReactionEquation.formatTex(reaction);
-//        String kinetics = FormatReactionKinetics.formatTex(reaction);
-//        ReactionTable.ReactionTableRow reactionTableRow = new ReactionTable.ReactionTableRow(identifier, equation, kinetics, null);
-//        table.addRow(reactionTableRow);
-//    }
-
-//    private void addContentOfModule(DynamicReaction reaction) {
-//        String identifier = reaction.getIdentifier().replace("_", " ");
-//        String equation = FormatReactionEquation.formatTex(reaction);
-//        String kinetics = FormatReactionKinetics.formatTex(reaction);
-//        ReactionTable.ReactionTableRow reactionTableRow = new ReactionTable.ReactionTableRow(identifier, equation, kinetics, null);
-//        table.addRow(reactionTableRow);
-//    }
 
 }

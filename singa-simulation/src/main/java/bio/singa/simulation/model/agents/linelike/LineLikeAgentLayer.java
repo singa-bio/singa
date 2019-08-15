@@ -240,6 +240,11 @@ public class LineLikeAgentLayer {
         return filaments;
     }
 
+    public void addFilament(LineLikeAgent filament) {
+        filament.associateInGraph(simulation.getGraph());
+        filaments.add(filament);
+    }
+
     public void setFilaments(List<LineLikeAgent> filaments) {
         this.filaments = filaments;
     }

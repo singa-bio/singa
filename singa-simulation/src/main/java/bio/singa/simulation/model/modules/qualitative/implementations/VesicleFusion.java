@@ -162,8 +162,8 @@ public class VesicleFusion extends QualitativeModule {
         List<Vesicle> vesicles = simulation.getVesicleLayer().getVesicles();
         // for each vesicle
         for (Vesicle vesicle : vesicles) {
-            if (vesicle.getState() == VesicleStateRegistry.ACTIN_PROPELLED ||
-                    vesicle.getState() == VesicleStateRegistry.MEMBRANE_TETHERED) {
+            if (vesicle.getState().equals(VesicleStateRegistry.ACTIN_PROPELLED) ||
+                    vesicle.getState().equals(VesicleStateRegistry.MEMBRANE_TETHERED)) {
                 continue;
             }
             Vector2D currentPosition = vesicle.getPosition();
@@ -260,7 +260,7 @@ public class VesicleFusion extends QualitativeModule {
         // System.out.println("reserved during tethering " + snareComplex + " " + MolarConcentration.concentrationToMolecules(concentration) + " snares");
     }
 
-    private class TetheringSnares {
+    private static class TetheringSnares {
 
         private Map<ChemicalEntity, Integer> rSnares;
         private Map<ChemicalEntity, Integer> qSnares;

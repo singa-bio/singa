@@ -139,6 +139,7 @@ public class Simulation {
             initializeConcentrations();
             initializeVesicleLayer();
             initializeSubsectionAdjacency();
+            scheduler.initializeThreadPool();
             initializationDone = true;
         }
         // clear observed nodes if necessary

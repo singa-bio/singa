@@ -1,9 +1,6 @@
 package bio.singa.core.utility;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author cl
@@ -14,7 +11,7 @@ public class ListHelper {
         public int count = 0;
     }
 
-    public static boolean haveSameElements(final List<String> list1, final List<String> list2) {
+    public static <Type> boolean haveSameElements(final Collection<Type> list1, final Collection<Type> list2) {
         // (list1, list1) is always true
         if (list1 == list2) return true;
 
@@ -24,23 +21,23 @@ public class ListHelper {
 
         // (switch the two checks above if (null, null) should return false)
 
-        Map<String, Count> counts = new HashMap<>();
+        Map<Type, Count> counts = new HashMap<>();
 
         // Count the items in list1
-        for (String item : list1) {
+        for (Type item : list1) {
             if (!counts.containsKey(item)) counts.put(item, new Count());
             counts.get(item).count += 1;
         }
 
         // Subtract the count of items in list2
-        for (String item : list2) {
+        for (Type item : list2) {
             // If the map doesn't contain the item here, then this item wasn't in list1
             if (!counts.containsKey(item)) return false;
             counts.get(item).count -= 1;
         }
 
         // If any count is nonzero at this point, then the two lists don't match
-        for (Map.Entry<String, Count> entry : counts.entrySet()) {
+        for (Map.Entry<Type, Count> entry : counts.entrySet()) {
             if (entry.getValue().count != 0) return false;
         }
 
