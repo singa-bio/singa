@@ -1,11 +1,12 @@
 language: java
-jdk: oraclejdk11
+jdk: openjdk11
 dist: bionic
 sudo: required
 addons:
   apt:
     packages:
       - r-base
+      - openjfx
 
 env:
   global:
