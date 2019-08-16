@@ -8,6 +8,8 @@ addons:
       - r-base
       - openjfx
 
+r_packages: sfsmisc
+
 env:
   global:
     - secure: "oKBf6W2GxUfCe80287zcVkjuGZuA3DntBG6hGm6BG/pM72Sc8u244g4aezHjRj6R2aZr6wmbY7+p9cXClz05KElrLRsFcwfl2zz5RbcKupY/o9GqotUu4tZkrQIZ3ltFHhLmDm9qMJ/W/3C4sbrakwOmA2wRbYEw5QNBmvAfRI4dqYTL6pg1VF1m4xeP5PZkqPCNAURN+leUcXSNlhcnpo8z4TOG+mgr9UL70hIPXXCPqRmZ+DDNiSOouyvaHGiK0VcWJlgdyd6WsIZiSYQptRpGJ7vTLMw4/WAIsj/CzMZ//+H99JcQhvXY562yxU8uqYDxQ5twmRq2Os8g/lxHsWm0JD+p1m7uN5uvb/Qi7gXAgJKgRgzVA39sqAEiUzAcZCXnTPRKN+6j5ZIqgVW/ErRWWoWsevlEcHAVN+QiKm4aKapFQKmiE6j9f+DKA74tE/l8MjIUmecm36vPdMFwQ0eIlUNbDFngCbcKtOJdgIY9t1sfV/8O0WRodDdlXkXlHscE+/ESawInYaghDThiCal+b7iikflaSbsyLaVr39HWec80sCDxwsFWaJFrtBxUaB6YlU5hi0vywM5Kop59l1P5RtvQ5mi0tsJpZCWFYkSg2GbZS0+g0aAiwepC8Zp2JCNcoNAQeoukgwR0KKWqcZV+R3KdIAw78hzwm/wqNIc="
@@ -25,7 +27,6 @@ before_install:
   - cd singa-all
 
 install:
-  - sudo Rscript -e 'install.packages("sfsmisc", repos="https://cran.rstudio.com/", lib="/usr/lib/R/library")'
   - mvn install -P !build-extras -DskipTests=true -Dmaven.javadoc.skip=true -B -V
 
 script: mvn test -P !build-extras -B
