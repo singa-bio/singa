@@ -22,10 +22,7 @@ import bio.singa.simulation.model.sections.CellTopology;
 import bio.singa.simulation.model.sections.concentration.ConcentrationInitializer;
 import bio.singa.simulation.model.simulation.Simulation;
 import bio.singa.structure.features.molarmass.MolarMass;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import tech.units.indriya.ComparableQuantity;
 import tech.units.indriya.quantity.Quantities;
 
@@ -486,6 +483,7 @@ class ReactionTest {
     }
 
     @Test
+    @Disabled
     void complexBuildingRuleBased() {
         Simulation simulation = new Simulation();
         AutomatonGraph automatonGraph = AutomatonGraphs.singularGraph(CELL_OUTER_MEMBRANE_REGION);

@@ -53,7 +53,7 @@ class FormatReactionEquationTest {
                 .turnover(turnoverNumber)
                 .build();
 
-        assertEquals("$\\frac{k_{\\text{cat}} \\cdot [\\text{E}] \\cdot [\\text{A}]}{K_m \\cdot [\\text{A}]}$", FormatReactionKinetics.formatTex(reaction));
+        assertEquals("$\\frac{k_{\\text{cat}} \\cdot [\\text{E}] \\cdot [\\text{A}]}{K_m \\cdot [\\text{A}]}$", FormatReactionKinetics.formatTex(reaction).get(0));
     }
 
     @Test
@@ -80,7 +80,7 @@ class FormatReactionEquationTest {
                 .rate(k)
                 .build();
 
-        assertEquals("\\ch{ 2 A$_i$ + B$_i$ ->  C$_i$ + D$_i$}", FormatReactionEquation.formatTex(reaction));
+        assertEquals("\\ch{ 2 !(inner)(A) + !(inner)(B) ->  !(inner)(C) + !(inner)(D)}", FormatReactionEquation.formatTex(reaction).get(0));
     }
 
     @Test
@@ -108,7 +108,7 @@ class FormatReactionEquationTest {
                 .backwardReactionRate(kb)
                 .build();
 
-        assertEquals("\\ch{A$_m$ <=>  B$_o$}", FormatReactionEquation.formatTex(reaction));
+        assertEquals("\\ch{!(membrane)(A) <=>  !(outer)(B)}", FormatReactionEquation.formatTex(reaction).get(0));
 
     }
 
@@ -143,7 +143,7 @@ class FormatReactionEquationTest {
                 .identifier("Adenylate Cyclase Reaction")
                 .build();
 
-        assertEquals("\\ch{ATP$_i$ -> [ ATP$_i$, GAT$_i$, AC 6 $_m$ ] CAMP$_i$}", FormatReactionEquation.formatTex(reaction));
+        assertEquals("\\ch{!(inner)(ATP) -> [ !(inner)(ATP), !(inner)(GAT), !(membrane)(AC6) ] !(inner)(CAMP)}", FormatReactionEquation.formatTex(reaction).get(0));
     }
 
 }

@@ -2,9 +2,12 @@ package bio.singa.simulation.model.rules.reactions;
 
 import bio.singa.chemistry.entities.*;
 import bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.reactants.Reactant;
+import bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.reactants.ReactantSet;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+
+import java.util.List;
 
 import static bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.reactants.ReactantRole.PRODUCT;
 import static bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.reactants.ReactantRole.SUBSTRATE;
@@ -74,46 +77,29 @@ class ReactionRuleTest {
                 .binds(pkar, pkarSite1)
                 .build();
 
-        assertEquals(2, akapBindsPkar.getReactantInformation().size());
+        ReactionNetworkGenerator generator = new ReactionNetworkGenerator();
+        List<ReactantSet> reactantSets = generator.addRule(akapBindsPkar);
+        generator.generateNetwork();
 
-        Reactant first = akapBindsPkar.getReactantInformation().get(0).getReactant();
+        assertEquals(1, reactantSets.size());
+
+        assertEquals(2, reactantSets.get(0).getSubstrates().size());
+        Reactant first = reactantSets.get(0).getSubstrates().get(0);
         assertEquals(ComplexEntity.from(akap, pkarSite1), first.getEntity());
         assertEquals(SUBSTRATE, first.getRole());
 
-        Reactant second = akapBindsPkar.getReactantInformation().get(1).getReactant();
-        assertEquals(ComplexEntity.from(pkarSite1, pkar), second.getEntity());
-        assertEquals(SUBSTRATE, second.getRole());
-    }
-
-    @Test
-    void testAddition() {
-        ReactionRule pkacPdePhosphorylation = ReactionRule.create()
-                .entity(pde)
-                .adds(p, pkarPSite)
-                .targetCondition(ReactantCondition
-                        .hasPart(pkac))
-                .andModification()
-                .produce(adp)
-                .build();
-
-        assertEquals(3, pkacPdePhosphorylation.getReactantInformation().size());
-
-        Reactant first = pkacPdePhosphorylation.getReactantInformation().get(0).getReactant();
-        assertEquals(ComplexEntity.from(pde, pkarPSite), first.getEntity());
-        assertEquals(SUBSTRATE, first.getRole());
-
-        Reactant second = pkacPdePhosphorylation.getReactantInformation().get(1).getReactant();
-        assertEquals(ComplexEntity.from(pkarPSite, p), second.getEntity());
+        Reactant second = reactantSets.get(0).getSubstrates().get(1);
+        assertEquals(ComplexEntity.from(pkar, pkarSite1), second.getEntity());
         assertEquals(SUBSTRATE, second.getRole());
 
-        Reactant third = pkacPdePhosphorylation.getReactantInformation().get(2).getReactant();
-        assertEquals(adp, third.getEntity());
+        Reactant third = reactantSets.get(0).getProducts().get(0);
+        assertEquals(EntityRegistry.matchExactly("AKAP", "PKAR"), third.getEntity());
         assertEquals(PRODUCT, third.getRole());
     }
 
     @Test
     @Disabled
-    void createRules() {
+    void createSomeRules() {
 
         ReactionNetworkGenerator aggregator = new ReactionNetworkGenerator();
 
@@ -247,7 +233,5 @@ class ReactionRuleTest {
         aggregator.addRule(pdeRelease);
 
         aggregator.generateNetwork();
-        System.out.println();
-
     }
 }
