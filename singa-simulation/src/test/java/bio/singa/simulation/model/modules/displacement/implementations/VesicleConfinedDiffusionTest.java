@@ -18,6 +18,8 @@ import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.sections.CellRegions;
 import bio.singa.simulation.model.simulation.Simulation;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import tech.units.indriya.ComparableQuantity;
 import tech.units.indriya.quantity.Quantities;
@@ -36,6 +38,17 @@ import static tech.units.indriya.unit.Units.SECOND;
  * @author cl
  */
 class VesicleConfinedDiffusionTest {
+
+    @BeforeAll
+    static void initialize() {
+        UnitRegistry.reinitialize();
+    }
+
+    @AfterEach
+    void cleanUp() {
+        UnitRegistry.reinitialize();
+        Environment.reset();
+    }
 
     @Test
     void testModuleInContext() {

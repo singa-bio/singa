@@ -8,6 +8,8 @@ import bio.singa.simulation.model.agents.pointlike.VesicleLayer;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.simulation.Simulation;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import tech.units.indriya.ComparableQuantity;
@@ -25,6 +27,17 @@ import static tech.units.indriya.unit.Units.METRE;
  * @author cl
  */
 class VesicleCytoplasmDiffusionTest {
+
+    @BeforeAll
+    static void initialize() {
+        UnitRegistry.reinitialize();
+    }
+
+    @AfterEach
+    void cleanUp() {
+        UnitRegistry.reinitialize();
+        Environment.reset();
+    }
 
     @Test
     @DisplayName("vesicle diffusion - should move at all")
