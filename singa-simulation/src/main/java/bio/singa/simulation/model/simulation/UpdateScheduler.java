@@ -122,14 +122,14 @@ public class UpdateScheduler {
             while (moduleIterator.hasNext()) {
                 i++;
                 UpdateModule module = moduleIterator.next();
-                if (!interrupted) {
+                // modules with pending changes generally only need to be calculated once if the time step was not reset (this is managed while resetting calculations)
+                if (!interrupted && !module.getState().equals(SUCCEEDED_WITH_PENDING_CHANGES)) {
                     executor.execute(module);
                 } else {
                     logger.debug("Skipping module {}, decreasing latch to {}.", i, countDownLatch.getCount());
                     countDownLatch.countDown();
                 }
             }
-
 
             try {
                 countDownLatch.await();
@@ -336,7 +336,13 @@ public class UpdateScheduler {
     public void resetCalculation() {
         logger.debug("Resetting calculations.");
         // reset states
-        modules.forEach(UpdateModule::resetState);
+        for (UpdateModule module : modules) {
+            // skip mudules with pending changes if timsep was not rescaled
+            if (module.getState().equals(SUCCEEDED_WITH_PENDING_CHANGES) && !timeStepRescaled) {
+                continue;
+            }
+            module.resetState();
+        }
         // clear deltas that have previously been calculated
         updatables.forEach(updatable -> updatable.getConcentrationManager().clearPotentialDeltas());
         // rest vesicle position
