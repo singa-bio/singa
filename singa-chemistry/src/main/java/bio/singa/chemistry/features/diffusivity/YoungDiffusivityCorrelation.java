@@ -15,12 +15,12 @@ import static tech.units.indriya.AbstractUnit.ONE;
 /**
  * @author cl
  */
-public class YoungCorrelation implements Correlation<Diffusivity> {
+public class YoungDiffusivityCorrelation implements Correlation<Diffusivity> {
 
-    private static final Evidence evidence = new Evidence(Evidence.SourceType.PREDICTION,
-            "Young Correlation",
+    private static final Evidence evidence = new Evidence(Evidence.SourceType.LITERATURE,
+            "Young 1980",
             "Young, M. E., P. A. Carroad, and R. L. Bell. \"Estimation of diffusion coefficients " +
-                    "of proteins.\" Biotechnology and Bioengineering 22.5 (1980): 947-955.");
+                    "of proteins.\" Biotechnology and Bioengineering 22.5 (1980): 947-955.", "correlation method");
 
     /**
      * Diffusion calculation coefficient [dimensionless] (8.34e-8 = 0.0000000834)

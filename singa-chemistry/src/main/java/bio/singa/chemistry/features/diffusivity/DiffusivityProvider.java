@@ -28,8 +28,8 @@ public class DiffusivityProvider extends FeatureProvider<Diffusivity> {
      * correlation (heavier than the threshold).
      */
     private static final Quantity<MolarMass> CORRELATION_THRESHOLD = Quantities.getQuantity(10000, GRAM_PER_MOLE);
-    private final WilkeCorrelation wilkeCorrelation = new WilkeCorrelation();
-    private final YoungCorrelation youngCorrelation = new YoungCorrelation();
+    private final WilkeDiffusivityCorrelation wilkeCorrelation = new WilkeDiffusivityCorrelation();
+    private final YoungDiffusivityCorrelation youngCorrelation = new YoungDiffusivityCorrelation();
 
     public DiffusivityProvider() {
         setProvidedFeature(Diffusivity.class);

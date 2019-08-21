@@ -238,11 +238,11 @@ public class ConcentrationContainer {
      * @return The concentration of the entity in the corresponding topology.
      */
     public double get(CellTopology topology, ChemicalEntity entity) {
-        CellSubsection subsection = subsectionTopology[topology.getIndex()];
-        if (subsection == null) {
+        ConcentrationPool concentrationPool = concentrations[topology.getIndex()];
+        if (concentrationPool == null) {
             return 0.0;
         }
-        return get(subsection, entity);
+        return concentrationPool.get(entity);
     }
 
     public double sumOf(DynamicChemicalEntity dynamicEntity) {

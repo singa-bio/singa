@@ -1,6 +1,5 @@
 package bio.singa.chemistry.features.diffusivity;
 
-import bio.singa.chemistry.entities.Protein;
 import bio.singa.chemistry.features.structure3d.Radius;
 import bio.singa.features.model.Correlation;
 import bio.singa.features.model.Evidence;
@@ -35,7 +34,7 @@ import static tech.units.indriya.unit.Units.*;
  *
  * @author cl
  */
-public class SaffmanDelbrueckDiffusivityCorrelation implements Correlation<Diffusivity> {
+public class SaffmanDelbrueckDiffusivityCorrelation implements Correlation<MembraneDiffusivity> {
 
     private static Evidence parameters = new Evidence(Evidence.SourceType.LITERATURE, "Ramadurai 2009", "Ramadurai, Sivaramakrishnan, et al. \"Lateral diffusion of membrane proteins.\" Journal of the American Chemical Society 131.35 (2009): 12650-12656.", "general parameters for the correlation");
     private static Evidence method = new Evidence(Evidence.SourceType.LITERATURE, "Saffman 1975", "Saffman, P. G., and M. Delbrück. \"Brownian motion in biological membranes.\" Proceedings of the National Academy of Sciences 72.8 (1975): 3111-3113.", "correlation method");
@@ -45,7 +44,7 @@ public class SaffmanDelbrueckDiffusivityCorrelation implements Correlation<Diffu
     private static Quantity<DynamicViscosity> bulkViscosity = Quantities.getQuantity(1.003, PASCAL.multiply(SECOND).asType(DynamicViscosity.class));
 
     @Override
-    public <FeatureableType extends Featureable> Diffusivity predict(FeatureableType featureable) {
+    public <FeatureableType extends Featureable> MembraneDiffusivity predict(FeatureableType featureable) {
         double kb = NaturalConstants.BOLTZMANN_CONSTANT.getValue().doubleValue();
         double em = NaturalConstants.EULER_MASCHERONI_CONSTANT.getValue().doubleValue();
         double t = Environment.getTemperature().getValue().doubleValue();
@@ -60,22 +59,10 @@ public class SaffmanDelbrueckDiffusivityCorrelation implements Correlation<Diffu
         double blzTerm = (kb * t) / (4 * PI * um * h);
         double dsd = blzTerm * (lsd - em);
 
-        Diffusivity diffusivity = new Diffusivity(Quantities.getQuantity(dsd, Diffusivity.SQUARE_METRE_PER_SECOND));
+        MembraneDiffusivity diffusivity = new MembraneDiffusivity(Quantities.getQuantity(dsd, Diffusivity.SQUARE_METRE_PER_SECOND));
         diffusivity.addEvidence(parameters);
         diffusivity.addEvidence(method);
         diffusivity.addEvidence(radius.getPrimaryEvidence());
         return diffusivity;
     }
-
-    public static void main(String[] args) {
-        // TODO add pdb evidence
-        Protein aqp = Protein.create("LacZ")
-                .assignFeature(new Radius(Quantities.getQuantity(3, NANO(METRE))))
-                .build();
-
-        SaffmanDelbrueckDiffusivityCorrelation correlation = new SaffmanDelbrueckDiffusivityCorrelation();
-        Diffusivity diffusivity = correlation.predict(aqp);
-
-    }
-
 }

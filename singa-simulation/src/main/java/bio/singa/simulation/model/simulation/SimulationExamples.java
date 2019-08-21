@@ -224,7 +224,8 @@ public class SimulationExamples {
         simulation.setGraph(graph);
 
         Diffusion.inSimulation(simulation)
-                .forAll(methanol, ethyleneGlycol, valine, sucrose)
+                .forAllEntities(methanol, ethyleneGlycol, valine, sucrose)
+                .forAllSections()
                 .build();
 
         return simulation;

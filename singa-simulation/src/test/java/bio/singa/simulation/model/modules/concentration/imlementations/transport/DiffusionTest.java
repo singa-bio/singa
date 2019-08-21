@@ -162,7 +162,8 @@ class DiffusionTest {
         simulation.setConcentrationInitializer(ci);
 
         Diffusion.inSimulation(simulation)
-                .onlyFor(ammonia)
+                .forEntity(ammonia)
+                .forAllSections()
                 .build();
 
         for (int i = 0; i < 10; i++) {
@@ -200,7 +201,8 @@ class DiffusionTest {
         simulation.setGraph(graph);
         // add diffusion module
         Diffusion.inSimulation(simulation)
-                .onlyFor(species)
+                .forEntity(species)
+                .forAllSections()
                 .build();
         // return complete simulation
         return simulation;

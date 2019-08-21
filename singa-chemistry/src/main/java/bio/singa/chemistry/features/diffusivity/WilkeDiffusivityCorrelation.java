@@ -15,12 +15,12 @@ import static tech.units.indriya.AbstractUnit.ONE;
 /**
  * @author cl
  */
-public class WilkeCorrelation implements Correlation<Diffusivity> {
+public class WilkeDiffusivityCorrelation implements Correlation<Diffusivity> {
 
-    private static final Evidence evidence = new Evidence(Evidence.SourceType.PREDICTION,
-            "Wilke Correlation",
+    private static final Evidence evidence = new Evidence(Evidence.SourceType.LITERATURE,
+            "Wilke 1955",
             "Wilke, C. R., and Pin Chang. \"Correlation of diffusion coefficients in dilute " +
-                    "solutions.\" AIChE Journal 1.2 (1955): 264-270.");
+                    "solutions.\" AIChE Journal 1.2 (1955): 264-270.", "correlation method");
 
     /**
      * Diffusion calculation coefficient [dimensionless] (7.4e-8 = 0.000000074)
