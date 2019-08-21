@@ -223,18 +223,26 @@ public class VesicleLayer {
                         if (sliceSegment.isVertical()) {
                             if (sliceSegment.getStartingPoint().isLeftOf(node.getPosition())) {
                                 vesicle.addAssociatedNode(node, remainingSurface);
-                                vesicle.addAssociatedNode(graph.getNode(node.getIdentifier().getNeighbour(NeumannRectangularDirection.WEST)), sliceSurface);
+                                if (node.getIdentifier().getColumn() - 1 > 0) {
+                                    vesicle.addAssociatedNode(graph.getNode(node.getIdentifier().getNeighbour(NeumannRectangularDirection.WEST)), sliceSurface);
+                                }
                             } else {
                                 vesicle.addAssociatedNode(node, remainingSurface);
-                                vesicle.addAssociatedNode(graph.getNode(node.getIdentifier().getNeighbour(NeumannRectangularDirection.EAST)), sliceSurface);
+                                if (node.getIdentifier().getColumn() + 1 < graph.getNumberOfColumns()) {
+                                    vesicle.addAssociatedNode(graph.getNode(node.getIdentifier().getNeighbour(NeumannRectangularDirection.EAST)), sliceSurface);
+                                }
                             }
                         } else {
                             if (sliceSegment.getStartingPoint().isBelow(node.getPosition())) {
                                 vesicle.addAssociatedNode(node, remainingSurface);
-                                vesicle.addAssociatedNode(graph.getNode(node.getIdentifier().getNeighbour(NeumannRectangularDirection.SOUTH)), sliceSurface);
+                                if (node.getIdentifier().getRow() + 1 < graph.getNumberOfRows()) {
+                                    vesicle.addAssociatedNode(graph.getNode(node.getIdentifier().getNeighbour(NeumannRectangularDirection.SOUTH)), sliceSurface);
+                                }
                             } else {
                                 vesicle.addAssociatedNode(node, remainingSurface);
-                                vesicle.addAssociatedNode(graph.getNode(node.getIdentifier().getNeighbour(NeumannRectangularDirection.NORTH)), sliceSurface);
+                                if (node.getIdentifier().getRow() - 1 > 0) {
+                                    vesicle.addAssociatedNode(graph.getNode(node.getIdentifier().getNeighbour(NeumannRectangularDirection.NORTH)), sliceSurface);
+                                }
                             }
                         }
                         return;

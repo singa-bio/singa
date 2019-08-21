@@ -325,14 +325,12 @@ public class ClathrinMediatedEndocytosis extends QualitativeModule {
             if (aspiringPit.sumCargo() >= criticalConcentration) {
                 // move to pre maturing pits
                 preMaturingPits.add(aspiringPit);
-                System.out.println("threshold reached");
                 continue;
             }
             // check it maximal aspiration time has been reached
             if (simulation.getElapsedTime().isGreaterThanOrEqualTo(aspiringPit.getCheckpointTime())) {
                 // move to aborting pits
                 abortedPits.add(aspiringPit);
-                System.out.println("pit aborted");
             }
         }
     }
