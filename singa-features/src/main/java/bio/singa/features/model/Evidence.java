@@ -14,6 +14,7 @@ public class Evidence {
     private SourceType type;
     private String identifier;
     private String description;
+    private String comment;
 
     public Evidence(SourceType type) {
         this.type = type;
@@ -23,6 +24,11 @@ public class Evidence {
         this.type = type;
         this.identifier = identifier;
         this.description = description;
+    }
+
+    public Evidence(SourceType type, String identifier, String description, String comment) {
+        this(type, identifier, description);
+        this.comment = comment;
     }
 
     public SourceType getType() {
@@ -43,6 +49,14 @@ public class Evidence {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
     }
 
     @Override

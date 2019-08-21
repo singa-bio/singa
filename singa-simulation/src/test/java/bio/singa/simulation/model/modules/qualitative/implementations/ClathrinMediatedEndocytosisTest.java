@@ -44,7 +44,7 @@ class ClathrinMediatedEndocytosisTest {
     @Test
     void testEndocytosis() {
 
-        ComparableQuantity<Length> systemExtend = Quantities.getQuantity(1, MICRO(METRE));
+        ComparableQuantity<Length> systemExtend = Quantities.getQuantity(0.5, MICRO(METRE));
         Environment.setSystemExtend(systemExtend);
         Environment.setSimulationExtend(100);
         Environment.setNodeSpacingToDiameter(systemExtend, 1);
@@ -55,13 +55,16 @@ class ClathrinMediatedEndocytosisTest {
         ChemicalEntity aqp = Protein.create("AQP").build();
 
         Simulation simulation = new Simulation();
+        simulation.setMaximalTimeStep(Quantities.getQuantity(10, MILLI(SECOND)));
 
         // define graphs
         AutomatonGraph graph = AutomatonGraphs.singularGraph();
         AutomatonNode node = graph.getNode(0, 0);
         node.setPosition(new Vector2D(50.0, 50.0));
         node.setCellRegion(CellRegions.CELL_OUTER_MEMBRANE_REGION);
-        node.getConcentrationContainer().initialize(MEMBRANE, aqp, Quantities.getQuantity(1, MICRO_MOLE_PER_LITRE));
+        ComparableQuantity<MolarConcentration> initialConcentration = Quantities.getQuantity(10, MICRO_MOLE_PER_LITRE);
+        node.getConcentrationContainer().initialize(MEMBRANE, aqp, initialConcentration);
+        System.out.println("initial membrane concentration: " + MolarConcentration.concentrationToMolecules(UnitRegistry.convert(initialConcentration).getValue().doubleValue()).getValue().doubleValue());
         simulation.setGraph(graph);
 
         // add vesicle layer
@@ -78,7 +81,7 @@ class ClathrinMediatedEndocytosisTest {
                 Environment.convertSystemToSimulationScale(Quantities.getQuantity(50, NANO(METRE)))), 0);
         membraneLayer.setMicrotubuleOrganizingCentre(moc);
 
-        ComparableQuantity<FirstOrderRate> kf_endoAddition = Quantities.getQuantity(0.005, ONE.divide(SECOND)
+        ComparableQuantity<FirstOrderRate> kf_endoAddition = Quantities.getQuantity(0.03, ONE.divide(SECOND)
                 .asType(FirstOrderRate.class));
 
         // 5b clathrin mediated endocytosis
@@ -86,17 +89,33 @@ class ClathrinMediatedEndocytosisTest {
         endocytosis.setTest();
         endocytosis.setIdentifier("endocytosis: aqp2 vesicle endocytosis");
         endocytosis.setFeature(new AffectedRegion(CellRegions.CELL_OUTER_MEMBRANE_REGION));
-        endocytosis.setFeature(new PitFormationRate(Quantities.getQuantity(1, PER_SQUARE_NANOMETRE_PER_SECOND)));
+        endocytosis.setFeature(new PitFormationRate(Quantities.getQuantity(4, PER_SQUARE_NANOMETRE_PER_SECOND)));
         endocytosis.setFeature(VesicleRadius.DEFAULT_VESICLE_RADIUS);
         endocytosis.setFeature(new CargoAdditionRate(kf_endoAddition));
         endocytosis.setFeature(new EndocytosisCheckpointTime(Quantities.getQuantity(30.0, SECOND)));
-        endocytosis.setFeature(new EndocytosisCheckpointConcentration(UnitRegistry.concentration(MolarConcentration.moleculesToConcentration(500))));
+        endocytosis.setFeature(new EndocytosisCheckpointConcentration(UnitRegistry.concentration(MolarConcentration.moleculesToConcentration(650))));
         endocytosis.setFeature(new Cargoes(EntityRegistry.matchExactly("AQP")));
         endocytosis.setFeature(new MaturationTime(Quantities.getQuantity(70.0, SECOND)));
         simulation.addModule(endocytosis);
 
         simulation.nextEpoch();
-        simulation.nextEpoch();
+        ClathrinMediatedEndocytosis clathrinMediatedEndocytosis = simulation.getModules().stream()
+                .filter(module -> (module instanceof ClathrinMediatedEndocytosis))
+                .findAny()
+                .map(ClathrinMediatedEndocytosis.class::cast)
+                .orElseThrow(IllegalStateException::new);
+
+        ClathrinMediatedEndocytosis.Pit pit = clathrinMediatedEndocytosis.getAspiringPits().get(0);
+        System.out.println("initial concentration: " + MolarConcentration.concentrationToMolecules(pit.getConcentrationDeltaManager().getConcentrationContainer()
+                .get(CellRegions.VESICLE_REGION.getMembraneSubsection(), EntityRegistry.matchExactly("AQP"))));
+
+        // todo check if this is working correctly
+        while (simulation.getElapsedTime().isLessThanOrEqualTo(Quantities.getQuantity(35, SECOND))) {
+            simulation.nextEpoch();
+            System.out.println("concentration: " + MolarConcentration.concentrationToMolecules(pit.getConcentrationDeltaManager().getConcentrationContainer()
+                    .get(CellRegions.VESICLE_REGION.getMembraneSubsection(), EntityRegistry.matchExactly("AQP"))));
+        }
+
 
     }
 }

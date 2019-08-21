@@ -39,7 +39,6 @@ public class ClathrinMediatedEndocytosis extends QualitativeModule {
     private static final Logger logger = LoggerFactory.getLogger(ClathrinMediatedEndocytosis.class);
 
     private List<MembraneSegment> segments;
-    // private Map<ChemicalEntity, AbstractMap.Entry<Quantity<Area>, Double>> initialMembraneCargo;
 
     // pits that collect cargo
     private List<Pit> preAspiringPits;
@@ -114,8 +113,9 @@ public class ClathrinMediatedEndocytosis extends QualitativeModule {
     @Override
     public void onReset() {
         preAspiringPits.clear();
-        // TODO revert to original concentrations for pits
-        // TODO remove previously calculated deltas
+        for (Pit aspiringPit : aspiringPits) {
+            aspiringPit.getConcentrationDeltaManager().clearPotentialDeltas();
+        }
         preMaturingPits.clear();
         abortedPits.clear();
         maturedPits.clear();
@@ -291,7 +291,7 @@ public class ClathrinMediatedEndocytosis extends QualitativeModule {
         for (ChemicalEntity cargo : cargoes) {
             double membraneConcentration = aspiringPit.getAssociatedNode().getConcentrationContainer().get(MEMBRANE, cargo);
             double concentrationDelta = additionRate * membraneConcentration;
-            cargoDeltas.add(new ConcentrationDelta(this, aspiringPit.getAssociatedNode().getConcentrationContainer().getMembraneSubsection(), cargo, concentrationDelta));
+            cargoDeltas.add(new ConcentrationDelta(this, CellRegions.VESICLE_REGION.getMembraneSubsection(), cargo, concentrationDelta));
         }
         return cargoDeltas;
     }
@@ -325,12 +325,14 @@ public class ClathrinMediatedEndocytosis extends QualitativeModule {
             if (aspiringPit.sumCargo() >= criticalConcentration) {
                 // move to pre maturing pits
                 preMaturingPits.add(aspiringPit);
+                System.out.println("threshold reached");
                 continue;
             }
             // check it maximal aspiration time has been reached
             if (simulation.getElapsedTime().isGreaterThanOrEqualTo(aspiringPit.getCheckpointTime())) {
                 // move to aborting pits
                 abortedPits.add(aspiringPit);
+                System.out.println("pit aborted");
             }
         }
     }
@@ -342,7 +344,7 @@ public class ClathrinMediatedEndocytosis extends QualitativeModule {
             AutomatonNode associatedNode = abortedPit.getAssociatedNode();
             Map.Entry<CellSubsection, ConcentrationPool> pool = abortedPit.getConcentrationDeltaManager().getConcentrationContainer().getPool(MEMBRANE);
             for (Map.Entry<ChemicalEntity, Double> entry : pool.getValue().getConcentrations().entrySet()) {
-                associatedNode.addPotentialDelta(new ConcentrationDelta(this, pool.getKey(), entry.getKey(), entry.getValue()));
+                associatedNode.addPotentialDelta(new ConcentrationDelta(this, associatedNode.getCellRegion().getMembraneSubsection(), entry.getKey(), entry.getValue()));
             }
             aspiringPits.remove(abortedPit);
         }
@@ -351,6 +353,10 @@ public class ClathrinMediatedEndocytosis extends QualitativeModule {
 
     public List<Pit> getAspiringPits() {
         return aspiringPits;
+    }
+
+    public List<Pit> getMaturingPits() {
+        return maturingPits;
     }
 
     public static class Pit {

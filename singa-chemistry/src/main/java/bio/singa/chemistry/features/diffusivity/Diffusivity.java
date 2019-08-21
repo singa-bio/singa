@@ -14,6 +14,8 @@ import javax.measure.Unit;
 import javax.measure.quantity.Length;
 import java.util.List;
 
+import static tech.units.indriya.unit.MetricPrefix.CENTI;
+import static tech.units.indriya.unit.MetricPrefix.MICRO;
 import static tech.units.indriya.unit.Units.METRE;
 import static tech.units.indriya.unit.Units.SECOND;
 
@@ -26,7 +28,8 @@ import static tech.units.indriya.unit.Units.SECOND;
  */
 public class Diffusivity extends ScalableQuantitativeFeature<Diffusivity> implements Quantity<Diffusivity> {
 
-    public static final Unit<Diffusivity> SQUARE_CENTIMETRE_PER_SECOND = new ProductUnit<>(METRE.divide(100).pow(2).divide(SECOND));
+    public static final Unit<Diffusivity> SQUARE_MICROMETRE_PER_SECOND = new ProductUnit<>(MICRO(METRE).pow(2).divide(SECOND));
+    public static final Unit<Diffusivity> SQUARE_CENTIMETRE_PER_SECOND = new ProductUnit<>(CENTI(METRE).pow(2).divide(SECOND));
     public static final Unit<Diffusivity> SQUARE_METRE_PER_SECOND = new ProductUnit<>(METRE.pow(2).divide(SECOND));
 
     private static final Evidence EINSTEIN1905 = new Evidence(Evidence.SourceType.PREDICTION, "Strokes-Einstein Equation", "Einstein, Albert. \"Über die von der molekularkinetischen Theorie der Wärme geforderte Bewegung von in ruhenden Flüssigkeiten suspendierten Teilchen.\" Annalen der physik 322.8 (1905): 549-560.");

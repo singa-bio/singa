@@ -191,6 +191,10 @@ public class UnitRegistry {
         return concentration.to(getInstance().concentrationDisplayUnit);
     }
 
+    public static Quantity<MolarConcentration> humanReadable(double concentration) {
+        return concentration(concentration).to(getInstance().concentrationDisplayUnit);
+    }
+
     public static <QuantityType extends Quantity<QuantityType>> Quantity<QuantityType> scale(Quantity<QuantityType> quantity) {
         Quantity<QuantityType> convert = convert(quantity);
         double value = convert.getValue().doubleValue();
