@@ -10,17 +10,17 @@ import bio.singa.simulation.model.simulation.Simulation;
 /**
  * @author cl
  */
-public class ReactionTableConverter {
+public class ModuleTableConverter {
 
-    private ReactionTable table;
+    private ModuleTable table;
 
-    public static ReactionTable convert(Simulation simulation) {
-        ReactionTableConverter converter = new ReactionTableConverter(simulation);
+    public static ModuleTable convert(Simulation simulation) {
+        ModuleTableConverter converter = new ModuleTableConverter(simulation);
         return converter.table;
     }
 
-    private ReactionTableConverter(Simulation simulation) {
-        table = new ReactionTable();
+    private ModuleTableConverter(Simulation simulation) {
+        table = new ModuleTable();
         simulation.getModules()
                 .forEach(this::convertModule);
     }
@@ -28,10 +28,12 @@ public class ReactionTableConverter {
     private void convertModule(UpdateModule module) {
         if (module instanceof Reaction) {
             Reaction reaction = (Reaction) module;
-            table.addRow(new ReactionTable.ReactionTableRow(module.getIdentifier(),
+            table.addRow(new ReactionTableRow(module.getIdentifier(),
                     FormatReactionEquation.formatTex(reaction),
                     FormatReactionKinetics.formatTex(reaction),
                     FormatFeature.formatRates(reaction)));
+        } else {
+            table.addRow(GeneralModuleRow.from(module));
         }
     }
 

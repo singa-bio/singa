@@ -102,7 +102,7 @@ public class VesicleFusion extends QualitativeModule {
 
     @Override
     public void onCompletion() {
-        logger.debug("Applying pending changes for {}.", this);
+        logger.trace("Applying pending changes for {}.", this);
         // fuse vesicles
         for (Vesicle fusingVesicle : fusingVesicles) {
             fuse(fusingVesicle);

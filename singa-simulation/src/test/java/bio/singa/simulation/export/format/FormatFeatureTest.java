@@ -34,7 +34,7 @@ class FormatFeatureTest {
         features.add(c1);
         features.add(c2);
 
-        System.out.println(FormatFeature.formatFeatures(features));
+
 
     }
 }
