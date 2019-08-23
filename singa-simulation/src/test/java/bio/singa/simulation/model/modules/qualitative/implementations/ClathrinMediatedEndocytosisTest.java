@@ -11,6 +11,7 @@ import bio.singa.mathematics.geometry.faces.Circle;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.simulation.features.*;
 import bio.singa.simulation.model.agents.linelike.MicrotubuleOrganizingCentre;
+import bio.singa.simulation.model.agents.pointlike.Vesicle;
 import bio.singa.simulation.model.agents.pointlike.VesicleLayer;
 import bio.singa.simulation.model.agents.surfacelike.Membrane;
 import bio.singa.simulation.model.agents.surfacelike.MembraneLayer;
@@ -32,6 +33,7 @@ import java.util.List;
 import static bio.singa.features.units.UnitProvider.MICRO_MOLE_PER_LITRE;
 import static bio.singa.simulation.features.SpawnRate.PER_SQUARE_NANOMETRE_PER_SECOND;
 import static bio.singa.simulation.model.sections.CellTopology.MEMBRANE;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static tech.units.indriya.AbstractUnit.ONE;
 import static tech.units.indriya.unit.MetricPrefix.*;
@@ -70,8 +72,8 @@ class ClathrinMediatedEndocytosisTest {
         simulation.setGraph(graph);
 
         // add vesicle layer
-        VesicleLayer layer = new VesicleLayer(simulation);
-        simulation.setVesicleLayer(layer);
+        VesicleLayer vesicleLayer = new VesicleLayer(simulation);
+        simulation.setVesicleLayer(vesicleLayer);
 
         // setup membrane
         List<Membrane> membranes = MembraneTracer.regionsToMembrane(graph);
@@ -88,7 +90,7 @@ class ClathrinMediatedEndocytosisTest {
 
         // clathrin mediated endocytosis
         ClathrinMediatedEndocytosis endocytosis = new ClathrinMediatedEndocytosis();
-        endocytosis.setTest();
+        endocytosis.limitPitsToOneAtATime();
         endocytosis.setIdentifier("endocytosis: aqp2 vesicle endocytosis");
         endocytosis.setFeature(new AffectedRegion(CellRegions.CELL_OUTER_MEMBRANE_REGION));
         endocytosis.setFeature(new PitFormationRate(Quantities.getQuantity(4, PER_SQUARE_NANOMETRE_PER_SECOND)));
@@ -98,7 +100,7 @@ class ClathrinMediatedEndocytosisTest {
         Quantity<MolarConcentration> checkpointConcentration = UnitRegistry.concentration(MolarConcentration.moleculesToConcentration(400));
         endocytosis.setFeature(new EndocytosisCheckpointConcentration(checkpointConcentration));
         endocytosis.setFeature(new Cargoes(EntityRegistry.matchExactly("AQP")));
-        endocytosis.setFeature(new MaturationTime(Quantities.getQuantity(70.0, SECOND)));
+        endocytosis.setFeature(new MaturationTime(Quantities.getQuantity(50.0, SECOND)));
         simulation.addModule(endocytosis);
 
         simulation.nextEpoch();
@@ -122,5 +124,15 @@ class ClathrinMediatedEndocytosisTest {
         assertTrue(UnitRegistry.concentration(pit.getConcentrationDeltaManager().getConcentrationContainer()
                 .get(MEMBRANE, EntityRegistry.matchExactly("AQP"))).getValue().doubleValue() >= checkpointConcentration.getValue().doubleValue());
 
+        while (simulation.getElapsedTime().isLessThanOrEqualTo(Quantities.getQuantity(80, SECOND))) {
+            simulation.nextEpoch();
+        }
+
+        List<Vesicle> vesicles = vesicleLayer.getVesicles();
+        assertEquals(1, vesicles.size());
+
+        Vesicle vesicle = vesicles.get(0);
+        assertEquals(400, MolarConcentration.concentrationToMolecules(vesicle.getConcentrationContainer()
+                    .get(CellRegions.VESICLE_REGION.getMembraneSubsection(), EntityRegistry.matchExactly("AQP"))).getValue().intValue());
     }
 }

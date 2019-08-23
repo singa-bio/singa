@@ -52,7 +52,7 @@ public class ClathrinMediatedEndocytosis extends QualitativeModule {
     // pits that ripened to vesicles
     private List<Pit> maturedPits;
 
-    private boolean test = false;
+    private boolean limitPits = false;
 
     public ClathrinMediatedEndocytosis() {
         segments = new ArrayList<>();
@@ -74,8 +74,8 @@ public class ClathrinMediatedEndocytosis extends QualitativeModule {
         getRequiredFeatures().add(MaturationTime.class);
     }
 
-    void setTest() {
-        test = true;
+    void limitPitsToOneAtATime() {
+        limitPits = true;
     }
 
     @Override
@@ -149,8 +149,8 @@ public class ClathrinMediatedEndocytosis extends QualitativeModule {
                     .getValue().doubleValue();
             // roll if event happens
             if (ThreadLocalRandom.current().nextDouble() < probability) {
-                if (test) {
-                    if (aspiringPits.size() < 1) {
+                if (limitPits) {
+                    if (aspiringPits.size() < 1 && maturingPits.size() < 1) {
                         initializeAspiringPit(segment);
                     }
                 } else {
@@ -260,11 +260,13 @@ public class ClathrinMediatedEndocytosis extends QualitativeModule {
      * @param maturedPit The original pit
      */
     private void initializeCargo(Vesicle vesicle, Pit maturedPit) {
-        for (InitialConcentration initialConcentration : simulation.getConcentrationInitializer().getInitialConcentrations()) {
-            if (initialConcentration instanceof SectionConcentration) {
-                SectionConcentration sectionConcentration = (SectionConcentration) initialConcentration;
-                if (sectionConcentration.getCellRegion() != null && sectionConcentration.getCellRegion().getIdentifier().equals("Vesicle (endocytosis)")) {
-                    initialConcentration.initializeUnchecked(vesicle, MEMBRANE);
+        if (simulation.getConcentrationInitializer() != null) {
+            for (InitialConcentration initialConcentration : simulation.getConcentrationInitializer().getInitialConcentrations()) {
+                if (initialConcentration instanceof SectionConcentration) {
+                    SectionConcentration sectionConcentration = (SectionConcentration) initialConcentration;
+                    if (sectionConcentration.getCellRegion() != null && sectionConcentration.getCellRegion().getIdentifier().equals("Vesicle (endocytosis)")) {
+                        initialConcentration.initializeUnchecked(vesicle, MEMBRANE);
+                    }
                 }
             }
         }
@@ -272,6 +274,7 @@ public class ClathrinMediatedEndocytosis extends QualitativeModule {
         for (Map.Entry<ChemicalEntity, Double> entry : pool.getValue().getConcentrations().entrySet()) {
             vesicle.addPotentialDelta(new ConcentrationDelta(this, pool.getKey(), entry.getKey(), entry.getValue()));
         }
+        vesicle.getConcentrationManager().shiftDeltas();
     }
 
     private void collectCargoes() {
