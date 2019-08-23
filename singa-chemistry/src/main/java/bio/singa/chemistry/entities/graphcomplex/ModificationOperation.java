@@ -1,4 +1,4 @@
-package bio.singa.simulation.model.rules.reactions;
+package bio.singa.chemistry.entities.graphcomplex;
 
 /**
  * @author cl

@@ -82,7 +82,7 @@ class ClathrinMediatedEndocytosisTest {
         simulation.setMembraneLayer(membraneLayer);
         // microtubule organizing centre
         MicrotubuleOrganizingCentre moc = new MicrotubuleOrganizingCentre(membraneLayer, new Circle(new Vector2D(50, 90),
-                Environment.convertSystemToSimulationScale(Quantities.getQuantity(50, NANO(METRE)))), 0);
+                Environment.convertSystemToSimulationScale(Quantities.getQuantity(50, NANO(METRE)))));
         membraneLayer.setMicrotubuleOrganizingCentre(moc);
 
         ComparableQuantity<FirstOrderRate> kf_endoAddition = Quantities.getQuantity(0.03, ONE.divide(SECOND)

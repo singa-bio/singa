@@ -19,4 +19,5 @@ public class UndirectedEdge extends AbstractEdge<RegularNode> {
     public UndirectedEdge(UndirectedEdge undirectedEdge) {
         super(undirectedEdge);
     }
+
 }

@@ -5,6 +5,7 @@ import bio.singa.mathematics.graphs.model.Graph;
 import bio.singa.mathematics.graphs.model.Node;
 import bio.singa.mathematics.vectors.Vector;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 /**
@@ -132,8 +133,8 @@ public class DisconnectedSubgraphFinder<NodeType extends Node<NodeType, VectorTy
             // create a new graph
             GraphType subgraph;
             try {
-                subgraph = (GraphType) graph.getClass().newInstance();
-            } catch (InstantiationException | IllegalAccessException e) {
+                subgraph = (GraphType) graph.getClass().getDeclaredConstructor().newInstance();
+            } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
                 throw new RuntimeException("Failed to create a new graph.");
             }
             // copy and add nodes

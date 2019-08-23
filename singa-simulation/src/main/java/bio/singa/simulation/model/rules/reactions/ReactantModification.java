@@ -3,6 +3,7 @@ package bio.singa.simulation.model.rules.reactions;
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.chemistry.entities.ComplexEntity;
 import bio.singa.chemistry.entities.ModificationSite;
+import bio.singa.chemistry.entities.graphcomplex.ModificationOperation;
 import bio.singa.core.utility.Pair;
 
 /**
@@ -24,11 +25,9 @@ public class ReactantModification {
         this.site = site;
         this.target = target;
         this.operationType = operationType;
-
         targetSite = ComplexEntity.from(target, site);
         modificationSite = ComplexEntity.from(site, modificator);
     }
-
 
     public ModificationOperation getOperationType() {
         return operationType;

@@ -16,16 +16,14 @@ public class MicrotubuleOrganizingCentre {
 
     private MembraneLayer membraneLayer;
     private Circle circleRepresentation;
-    private int initialFilaments;
 
-    public MicrotubuleOrganizingCentre(MembraneLayer membraneLayer, Circle circleRepresentation, int initialFilaments) {
+    public MicrotubuleOrganizingCentre(MembraneLayer membraneLayer, Circle circleRepresentation) {
         this.circleRepresentation = circleRepresentation;
-        this.initialFilaments = initialFilaments;
         this.membraneLayer = membraneLayer;
     }
 
-    public void initializeMicrotubules(LineLikeAgentLayer layer, CellRegion targetedMembrane) {
-        logger.info("Initializing microtubule network with {} filaments.", initialFilaments);
+    public void initializeMicrotubules(LineLikeAgentLayer layer, CellRegion targetedMembrane, int numberOfFilaments) {
+        logger.info("Initializing microtubule network with {} filaments.", numberOfFilaments);
         membraneLayer.setMicrotubuleOrganizingCentre(this);
         if (targetedMembrane != null) {
             layer.setTargetedGrowth(true);
@@ -36,7 +34,7 @@ public class MicrotubuleOrganizingCentre {
         // initialize filaments
         int currentFilaments = 0;
         Vector2D centre = circleRepresentation.getMidpoint();
-        while (currentFilaments != initialFilaments) {
+        while (currentFilaments != numberOfFilaments) {
             spawnMicrotubule(layer);
             // increment filaments
             currentFilaments++;
@@ -48,8 +46,8 @@ public class MicrotubuleOrganizingCentre {
         }
     }
 
-    public void initializeActin(LineLikeAgentLayer layer, CellRegion targetedMembrane) {
-        logger.info("Initializing actin network with {} filaments.", initialFilaments);
+    public void initializeActin(LineLikeAgentLayer layer, CellRegion targetedMembrane, int numberOfFilaments) {
+        logger.info("Initializing actin network with {} filaments.", numberOfFilaments);
         membraneLayer.setMicrotubuleOrganizingCentre(this);
         if (targetedMembrane != null) {
             layer.setTargetedGrowth(true);
@@ -60,7 +58,7 @@ public class MicrotubuleOrganizingCentre {
         // initialize filaments
         int currentFilaments = 0;
         Vector2D centre = circleRepresentation.getMidpoint();
-        while (currentFilaments != initialFilaments) {
+        while (currentFilaments != numberOfFilaments) {
             spawnActin(layer);
             // increment filaments
             currentFilaments++;
@@ -70,10 +68,6 @@ public class MicrotubuleOrganizingCentre {
             layer.nextEpoch();
             layer.purgeMisguidedFilaments();
         }
-    }
-
-    public void initializeActin(LineLikeAgentLayer layer) {
-        initializeActin(layer, null);
     }
 
     public void spawnActin(LineLikeAgentLayer layer) {
