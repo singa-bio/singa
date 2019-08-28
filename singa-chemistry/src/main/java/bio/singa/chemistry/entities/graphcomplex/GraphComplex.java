@@ -28,7 +28,7 @@ public class GraphComplex extends AbstractMapGraph<GraphComplexNode, GraphComple
         return graph;
     }
 
-    static GraphComplex from(ChemicalEntity chemicalEntity, BindingSite bindingSite) {
+    public static GraphComplex from(ChemicalEntity chemicalEntity, BindingSite bindingSite) {
         GraphComplex graph = from(chemicalEntity);
         graph.addBindingSite(chemicalEntity, bindingSite);
         graph.updateIdentifier();
@@ -92,7 +92,7 @@ public class GraphComplex extends AbstractMapGraph<GraphComplexNode, GraphComple
 
     public boolean containsEntity(ChemicalEntity entity) {
         return getNodes().stream()
-                .anyMatch(node -> node.getEntity().equals(entity));
+                .anyMatch(node -> node.isEntity(entity));
     }
 
     @Override
@@ -221,5 +221,12 @@ public class GraphComplex extends AbstractMapGraph<GraphComplexNode, GraphComple
     @Override
     public String toString() {
         return identifier;
+    }
+
+    public long countParts(ChemicalEntity entity) {
+        return getNodes().stream()
+                .filter(node -> node.isEntity(entity))
+                .count();
+
     }
 }

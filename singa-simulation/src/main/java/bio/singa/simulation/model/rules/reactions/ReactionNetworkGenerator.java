@@ -17,9 +17,9 @@ import org.slf4j.LoggerFactory;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static bio.singa.chemistry.entities.graphcomplex.modifications.ModificationOperation.*;
 import static bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.reactants.ReactantRole.PRODUCT;
 import static bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.reactants.ReactantRole.SUBSTRATE;
-import static bio.singa.chemistry.entities.graphcomplex.ModificationOperation.*;
 
 /**
  * @author cl

@@ -3,7 +3,7 @@ package bio.singa.simulation.model.rules.reactions;
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.chemistry.entities.ModificationSite;
 import bio.singa.chemistry.entities.SmallMolecule;
-import bio.singa.chemistry.entities.graphcomplex.ModificationOperation;
+import bio.singa.chemistry.entities.graphcomplex.modifications.ModificationOperation;
 import bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.reactants.Reactant;
 
 import java.util.ArrayList;

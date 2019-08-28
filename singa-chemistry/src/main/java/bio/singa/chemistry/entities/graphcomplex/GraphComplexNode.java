@@ -42,6 +42,10 @@ public class GraphComplexNode extends AbstractNode<GraphComplexNode, Vector2D, I
         this.entity = entity;
     }
 
+    public boolean isEntity(ChemicalEntity entity) {
+        return this.entity.equals(entity);
+    }
+
     public List<BindingSite> getBindingSites() {
         return bindingSites;
     }
