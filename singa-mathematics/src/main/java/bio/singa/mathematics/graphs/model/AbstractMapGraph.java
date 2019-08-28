@@ -171,12 +171,16 @@ public abstract class AbstractMapGraph<NodeType extends Node<NodeType, VectorTyp
         Optional<EdgeType> optionalEdge = getEdgeBetween(source, target);
         if (optionalEdge.isPresent()) {
             EdgeType edge = optionalEdge.get();
-            edges.remove(edge.getIdentifier());
-            source.getNeighbours().remove(target);
-            target.getNeighbours().remove(source);
-            return Optional.of(edge);
+            removeEdge(edge);
         }
         return Optional.empty();
+    }
+
+    public Optional<EdgeType> removeEdge(EdgeType edge) {
+        edges.remove(edge.getIdentifier());
+        edge.getSource().getNeighbours().remove(edge.getTarget());
+        edge.getTarget().getNeighbours().remove(edge.getSource());
+        return Optional.of(edge);
     }
 
     @Override
@@ -236,6 +240,17 @@ public abstract class AbstractMapGraph<NodeType extends Node<NodeType, VectorTyp
     @Override
     public boolean containsEdge(Object edge) {
         return edges.containsValue(edge);
+    }
+
+    public boolean containsEdge(Predicate<EdgeType> edgePredicate) {
+        return edges.values().stream()
+                .anyMatch(edgePredicate);
+    }
+
+    public Optional<EdgeType> getEdge(Predicate<EdgeType> edgePredicate) {
+        return edges.values().stream()
+                .filter(edgePredicate)
+                .findAny();
     }
 
     /**

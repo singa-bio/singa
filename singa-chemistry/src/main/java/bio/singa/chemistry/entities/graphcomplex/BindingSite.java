@@ -10,7 +10,7 @@ import java.util.Objects;
  */
 public class BindingSite {
 
-    String name;
+    private String name;
 
     public static BindingSite createNamed(String bindingSiteName) {
         return new BindingSite(bindingSiteName);
@@ -40,4 +40,10 @@ public class BindingSite {
     public int hashCode() {
         return Objects.hash(name);
     }
+
+    @Override
+    public String toString() {
+        return name;
+    }
+
 }

@@ -7,12 +7,15 @@ import bio.singa.mathematics.graphs.model.AbstractEdge;
  */
 public class GraphComplexEdge extends AbstractEdge<GraphComplexNode> {
 
+    private BindingSite connectedSite;
+
     public GraphComplexEdge(int identifier) {
         super(identifier);
     }
 
     public GraphComplexEdge(GraphComplexEdge edge, int identifierOffset) {
         this(edge.getIdentifier()+identifierOffset);
+        connectedSite = edge.getConnectedSite();
     }
 
     @Override
@@ -24,4 +27,11 @@ public class GraphComplexEdge extends AbstractEdge<GraphComplexNode> {
         return new GraphComplexEdge(this, identifierOffset);
     }
 
+    public BindingSite getConnectedSite() {
+        return connectedSite;
+    }
+
+    public void setConnectedSite(BindingSite connectedSite) {
+        this.connectedSite = connectedSite;
+    }
 }

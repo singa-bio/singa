@@ -58,42 +58,6 @@ public class GraphComplexNode extends AbstractNode<GraphComplexNode, Vector2D, I
         return bindingSites.contains(bindingSite);
     }
 
-    public boolean hasOccupiedBindingSite(BindingSite bindingSite) {
-        if (!hasBindingSite(bindingSite)) {
-            return false;
-        }
-        for (GraphComplexNode neighbour : getNeighbours()) {
-            if (neighbour.hasBindingSite(bindingSite)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public boolean hasUnoccupiedBindingSite(BindingSite bindingSite) {
-        if (!hasBindingSite(bindingSite)) {
-            return false;
-        }
-        for (GraphComplexNode neighbour : getNeighbours()) {
-            if (neighbour.hasBindingSite(bindingSite)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-
-    public boolean hasMatchingBindingSites(GraphComplexNode other) {
-        for (BindingSite thisSite : bindingSites) {
-            for (BindingSite thatSite : other.bindingSites) {
-                if (thisSite.equals(thatSite)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
     @Override
     public GraphComplexNode getCopy() {
         return new GraphComplexNode(this, 0);
@@ -101,5 +65,10 @@ public class GraphComplexNode extends AbstractNode<GraphComplexNode, Vector2D, I
 
     public GraphComplexNode getCopy(int identifierOffset) {
         return new GraphComplexNode(this, identifierOffset);
+    }
+
+    @Override
+    public String toString() {
+        return entity.getIdentifier();
     }
 }
