@@ -1,6 +1,6 @@
 package bio.singa.simulation.model.modules.concentration.imlementations.transport;
 
-import bio.singa.chemistry.entities.Protein;
+import bio.singa.chemistry.entities.simple.Protein;
 import bio.singa.chemistry.features.diffusivity.Diffusivity;
 import bio.singa.chemistry.features.diffusivity.MembraneDiffusivity;
 import bio.singa.chemistry.features.diffusivity.SaffmanDelbrueckDiffusivityCorrelation;

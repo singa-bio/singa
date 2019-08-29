@@ -1,8 +1,13 @@
 package bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.reactants;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
+import bio.singa.chemistry.entities.complex.GraphComplex;
+import bio.singa.chemistry.reactions.reactors.ReactionChain;
+import bio.singa.chemistry.reactions.reactors.ReactionElement;
+import bio.singa.simulation.model.sections.CellTopology;
 import bio.singa.simulation.model.simulation.Updatable;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -12,10 +17,37 @@ import java.util.stream.Stream;
  */
 public class RuleBasedReactantBehavior implements ReactantBehavior {
 
+    private ReactionChain reactionChain;
     private List<ReactantSet> reactantSets;
 
-    public RuleBasedReactantBehavior(List<ReactantSet> reactantSets) {
-        this.reactantSets = reactantSets;
+    public RuleBasedReactantBehavior(ReactionChain reactionChain) {
+        this.reactionChain = reactionChain;
+        reactantSets = new ArrayList<>();
+    }
+
+    public void prepareReactionSets() {
+        for (ReactionElement reactantElement : reactionChain.getReactantElements()) {
+            List<Reactant> substrates = new ArrayList<>();
+            for (GraphComplex substrate : reactantElement.getSubstrates()) {
+                Reactant reactant = new Reactant(substrate, ReactantRole.SUBSTRATE, determineNativeTopology(substrate));
+                substrates.add(reactant);
+            }
+
+            List<Reactant> products = new ArrayList<>();
+            for (GraphComplex substrate : reactantElement.getProducts()) {
+                Reactant reactant = new Reactant(substrate, ReactantRole.PRODUCT, determineNativeTopology(substrate));
+                products.add(reactant);
+            }
+            reactantSets.add(new ReactantSet(substrates, products));
+        }
+    }
+
+    private CellTopology determineNativeTopology(ChemicalEntity entity) {
+        if (entity.isMembraneBound()) {
+            return CellTopology.MEMBRANE;
+        } else {
+            return CellTopology.INNER;
+        }
     }
 
     public List<ReactantSet> getReactantSets() {

@@ -1,6 +1,5 @@
 package bio.singa.simulation.export.format;
 
-import bio.singa.chemistry.entities.ComplexEntity;
 import bio.singa.simulation.model.modules.concentration.imlementations.reactions.Reaction;
 import bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.kineticlaws.DynamicKineticLaw;
 import bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.kineticlaws.IrreversibleKineticLaw;
@@ -77,16 +76,8 @@ public class FormatReactionEquation {
         String stoichiometicNumber = reactant.getStoichiometricNumber() > 1
                 ? " " + (int) reactant.getStoichiometricNumber() + " "
                 : "";
-        String entity = getEntityString(reactant);
+        String entity = reactant.getEntity().getIdentifier();
         return stoichiometicNumber + "!(" + topology + ")(" + entity + ")";
-    }
-
-    static String getEntityString(Reactant reactant) {
-        if (reactant.getEntity() instanceof ComplexEntity) {
-            return ((ComplexEntity) reactant.getEntity()).getReferenceIdentifier();
-        } else {
-            return reactant.getEntity().getIdentifier();
-        }
     }
 
     private static String mapTopologyToString(CellTopology topology) {

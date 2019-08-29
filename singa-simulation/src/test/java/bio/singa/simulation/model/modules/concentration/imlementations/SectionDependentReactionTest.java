@@ -1,9 +1,9 @@
 package bio.singa.simulation.model.modules.concentration.imlementations;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
-import bio.singa.chemistry.entities.ComplexEntity;
-import bio.singa.chemistry.entities.Protein;
-import bio.singa.chemistry.entities.SmallMolecule;
+import bio.singa.chemistry.entities.complex.GraphComplex;
+import bio.singa.chemistry.entities.simple.Protein;
+import bio.singa.chemistry.entities.simple.SmallMolecule;
 import bio.singa.chemistry.features.reactions.RateConstant;
 import bio.singa.features.identifiers.ChEBIIdentifier;
 import bio.singa.features.identifiers.UniProtIdentifier;
@@ -61,7 +61,7 @@ class SectionDependentReactionTest {
                 .additionalIdentifier(new UniProtIdentifier("P35348"))
                 .build();
 
-        ComplexEntity complex = ComplexEntity.from(receptor, ligand);
+        GraphComplex complex = GraphComplex.from(receptor, ligand);
 
         // create simulation
         Simulation simulation = new Simulation();

@@ -1,6 +1,6 @@
 package bio.singa.chemistry.features.logp;
 
-import bio.singa.chemistry.entities.SmallMolecule;
+import bio.singa.chemistry.entities.simple.SmallMolecule;
 import bio.singa.chemistry.features.databases.chebi.ChEBIParserService;
 import bio.singa.features.identifiers.PubChemIdentifier;
 import org.junit.jupiter.api.Test;

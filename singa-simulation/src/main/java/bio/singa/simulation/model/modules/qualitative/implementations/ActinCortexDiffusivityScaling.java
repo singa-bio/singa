@@ -1,6 +1,6 @@
 package bio.singa.simulation.model.modules.qualitative.implementations;
 
-import bio.singa.chemistry.entities.Protein;
+import bio.singa.chemistry.entities.simple.Protein;
 import bio.singa.chemistry.features.diffusivity.Diffusivity;
 import bio.singa.features.identifiers.UniProtIdentifier;
 import bio.singa.features.units.UnitRegistry;

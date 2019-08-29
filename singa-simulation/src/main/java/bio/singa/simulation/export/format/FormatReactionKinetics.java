@@ -31,8 +31,8 @@ public class FormatReactionKinetics {
                 } else if (reaction.getKineticLaw() instanceof IrreversibleKineticLaw) {
                     kineticsString = formatIrreversibleKinetics(reactantSet.getSubstrates());
                 } else if (reaction.getKineticLaw() instanceof MichaelisMentenKineticLaw) {
-                    String substrate = FormatReactionEquation.getEntityString(reactantSet.getSubstrates().iterator().next());
-                    String enzyme = FormatReactionEquation.getEntityString(reactantSet.getCatalysts().iterator().next());
+                    String substrate = reactantSet.getSubstrates().iterator().next().getEntity().getIdentifier();
+                    String enzyme = reactantSet.getCatalysts().iterator().next().getEntity().getIdentifier();
                     kineticsString = formatMichaelisMentenKinetics(substrate, enzyme);
                 } else {
                     kineticsString = "";
@@ -46,8 +46,8 @@ public class FormatReactionKinetics {
             } else if (reaction.getKineticLaw() instanceof IrreversibleKineticLaw) {
                 kineticsString = formatIrreversibleKinetics(reaction.getReactantBehavior().getSubstrates());
             } else if (reaction.getKineticLaw() instanceof MichaelisMentenKineticLaw) {
-                String substrate = FormatReactionEquation.getEntityString(reaction.getReactantBehavior().getSubstrates().iterator().next());
-                String enzyme = FormatReactionEquation.getEntityString(reaction.getReactantBehavior().getCatalysts().iterator().next());
+                String substrate = reaction.getReactantBehavior().getSubstrates().iterator().next().getEntity().getIdentifier();
+                String enzyme = reaction.getReactantBehavior().getCatalysts().iterator().next().getEntity().getIdentifier();
                 kineticsString = formatMichaelisMentenKinetics(substrate, enzyme);
             } else {
                 kineticsString = "";
@@ -78,7 +78,7 @@ public class FormatReactionKinetics {
     }
 
     private static String formatSectionReactant(Reactant reactant) {
-        return "[\\text{" + FormatReactionEquation.getEntityString(reactant) + "}]";
+        return "[\\text{" + reactant.getEntity().getIdentifier() + "}]";
     }
 
 

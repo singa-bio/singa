@@ -2,7 +2,7 @@ package bio.singa.simulation.model.modules.qualitative.implementations;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.chemistry.entities.EntityRegistry;
-import bio.singa.chemistry.entities.Protein;
+import bio.singa.chemistry.entities.simple.Protein;
 import bio.singa.chemistry.features.reactions.FirstOrderRate;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.quantities.MolarConcentration;
@@ -124,7 +124,7 @@ class ClathrinMediatedEndocytosisTest {
         assertTrue(UnitRegistry.concentration(pit.getConcentrationDeltaManager().getConcentrationContainer()
                 .get(MEMBRANE, EntityRegistry.matchExactly("AQP"))).getValue().doubleValue() >= checkpointConcentration.getValue().doubleValue());
 
-        while (simulation.getElapsedTime().isLessThanOrEqualTo(Quantities.getQuantity(80, SECOND))) {
+        while (simulation.getElapsedTime().isLessThanOrEqualTo(Quantities.getQuantity(85, SECOND))) {
             simulation.nextEpoch();
         }
 

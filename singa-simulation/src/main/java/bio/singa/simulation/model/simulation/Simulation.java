@@ -1,9 +1,7 @@
 package bio.singa.simulation.model.simulation;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
-import bio.singa.chemistry.entities.ComplexEntity;
 import bio.singa.features.formatter.TimeFormatter;
-import bio.singa.features.identifiers.SimpleStringIdentifier;
 import bio.singa.features.model.Feature;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.units.UnitRegistry;
@@ -451,19 +449,8 @@ public class Simulation {
             return chemicalEntities.values();
         }
 
-        public Set<ChemicalEntity> getAllChemicalEntities () {
-            Set<ChemicalEntity> entities = new HashSet<>();
-            for (ChemicalEntity entity : chemicalEntities.values()) {
-                entities.add(entity);
-                if (entity instanceof ComplexEntity) {
-                    entities.addAll(((ComplexEntity) entity).getAllData());
-                }
-            }
-            return entities;
-        }
-
         public ChemicalEntity getChemicalEntity (String primaryIdentifier){
-            return chemicalEntities.get(new SimpleStringIdentifier(primaryIdentifier));
+            return chemicalEntities.get(primaryIdentifier);
         }
 
         public void addReferencedEntity (ChemicalEntity chemicalEntity){

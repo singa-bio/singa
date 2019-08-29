@@ -2,7 +2,7 @@ package bio.singa.simulation.model.modules.displacement.implementations;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.chemistry.entities.EntityRegistry;
-import bio.singa.chemistry.entities.Protein;
+import bio.singa.chemistry.entities.simple.Protein;
 import bio.singa.core.utility.ListHelper;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.units.UnitRegistry;

@@ -1,6 +1,6 @@
 package bio.singa.chemistry.features.databases.chebi;
 
-import bio.singa.chemistry.entities.SmallMolecule;
+import bio.singa.chemistry.entities.simple.SmallMolecule;
 import bio.singa.chemistry.features.smiles.Smiles;
 import bio.singa.chemistry.features.structure3d.MolStructureParser;
 import bio.singa.chemistry.features.structure3d.Structure3D;
