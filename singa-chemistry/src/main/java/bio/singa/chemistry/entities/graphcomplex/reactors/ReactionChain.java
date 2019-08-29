@@ -3,8 +3,7 @@ package bio.singa.chemistry.entities.graphcomplex.reactors;
 import bio.singa.chemistry.entities.graphcomplex.GraphComplex;
 import bio.singa.core.utility.ListHelper;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -14,13 +13,17 @@ public class ReactionChain {
 
     private String identifier;
     private List<ComplexReactor> reactors;
-    private List<List<List<GraphComplex>>> paths;
-    private List<ReactionElement> reactantElements;
+    private List<ReactionTrack> tracks;
+    private Set<ReactionElement> reactantElements;
+    private boolean considerInversion;
+
+    private List<ComplexReactor> invertedReactors;
 
     public ReactionChain(List<ComplexReactor> reactors) {
         this.reactors = reactors;
-        reactantElements = new ArrayList<>();
-        paths = new ArrayList<>();
+        invertedReactors = new ArrayList<>();
+        reactantElements = new HashSet<>();
+        tracks = new ArrayList<>();
     }
 
     public String getIdentifier() {
@@ -35,15 +38,33 @@ public class ReactionChain {
         return reactors;
     }
 
-    public List<List<List<GraphComplex>>> getPaths() {
-        return paths;
+    public List<ReactionTrack> getTracks() {
+        return tracks;
     }
 
-    public List<ReactionElement> getReactantElements() {
+    public void setTracks(List<ReactionTrack> tracks) {
+        this.tracks = tracks;
+    }
+
+    public Set<ReactionElement> getReactantElements() {
         return reactantElements;
     }
 
-    public void process(List<GraphComplex> availableEntities) {
+    public void process(Collection<GraphComplex> availableEntities) {
+        processReactors(availableEntities, reactors);
+        sealTracks();
+        if (considerInversion) {
+            if (invertedReactors.isEmpty()) {
+                invertReactors();
+            }
+            processReactors(availableEntities, invertedReactors);
+            sealTracks();
+        }
+        collectReactantElements();
+        tracks.clear();
+    }
+
+    private void processReactors(Collection<GraphComplex> availableEntities, List<ComplexReactor> reactors) {
         List<GraphComplex> next = new ArrayList<>(availableEntities);
         for (ComplexReactor reactor : reactors) {
             reactor.collectCandidates(next);
@@ -53,51 +74,79 @@ public class ReactionChain {
             next = products.stream()
                     .flatMap(product -> product.getProducts().stream())
                     .collect(Collectors.toList());
+            reactor.clear();
         }
-        collectReactantElements();
     }
 
     private void expandPath(List<ReactionElement> reactionElements) {
         for (ReactionElement element : reactionElements) {
             List<GraphComplex> substrates = element.getSubstrates();
             List<GraphComplex> products = element.getProducts();
-            if (paths.isEmpty()) {
+            if (tracks.isEmpty()) {
                 // add initial track
-                appendFreshPath(substrates, products);
+                initializeTrack(substrates, products);
             } else {
                 // look for the right track
-                List<List<GraphComplex>> relevantTrack = null;
-                for (List<List<GraphComplex>> currentTrack : paths) {
-                    List<GraphComplex> lastList = currentTrack.get(currentTrack.size() - 1);
-                    if (ListHelper.haveSameElements(lastList, substrates)) {
+                ReactionTrack relevantTrack = null;
+                for (ReactionTrack currentTrack : tracks) {
+                    if (currentTrack.isSealed()) {
+                        continue;
+                    }
+                    if (ListHelper.haveSameElements(currentTrack.getLast(), substrates)) {
                         relevantTrack = currentTrack;
                         break;
                     }
                 }
                 if (relevantTrack != null) {
-                    relevantTrack.add(products);
+                    relevantTrack.append(products);
                 } else {
-                    appendFreshPath(substrates, products);
+                    initializeTrack(substrates, products);
                 }
             }
         }
     }
 
-    private void appendFreshPath(List<GraphComplex> substrates, List<GraphComplex> products) {
-        List<List<GraphComplex>> track = new ArrayList<>();
-        track.add(substrates);
-        track.add(products);
-        paths.add(track);
+    private void initializeTrack(List<GraphComplex> substrates, List<GraphComplex> products) {
+        ReactionTrack track = new ReactionTrack();
+        track.append(substrates);
+        track.append(products);
+        tracks.add(track);
     }
 
-
     private void collectReactantElements() {
-        for (List<List<GraphComplex>> currentTrack : paths) {
-            int size = currentTrack.size();
-            List<GraphComplex> substrates = currentTrack.get(0);
-            List<GraphComplex> products = currentTrack.get(size-1);
-            reactantElements.add(new ReactionElement(substrates, products));
+        for (ReactionTrack track : tracks) {
+            List<GraphComplex> substrates = track.getFirst();
+            List<GraphComplex> products = track.getLast();
+            ReactionElement newElement = new ReactionElement(substrates, products);
+            if (considerInversion) {
+                ReactionElement inverseElement = new ReactionElement(products, substrates);
+                if (reactantElements.contains(inverseElement)){
+                    continue;
+                }
+            }
+            reactantElements.add(newElement);
         }
     }
 
+    private void sealTracks() {
+        for (ReactionTrack track : tracks) {
+            track.seal();
+        }
+    }
+
+    private void invertReactors() {
+        ListIterator<ComplexReactor> reactorIterator = reactors.listIterator(reactors.size());
+        while (reactorIterator.hasPrevious()) {
+            ComplexReactor reactor = reactorIterator.previous();
+            invertedReactors.add(reactor.invert());
+        }
+    }
+
+    public boolean isConsiderInversion() {
+        return considerInversion;
+    }
+
+    public void setConsiderInversion(boolean considerInversion) {
+        this.considerInversion = considerInversion;
+    }
 }

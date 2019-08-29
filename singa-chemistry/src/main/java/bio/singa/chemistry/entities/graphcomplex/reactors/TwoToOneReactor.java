@@ -7,6 +7,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.function.Predicate;
 
+import static bio.singa.chemistry.entities.graphcomplex.conditions.CandidateConditionBuilder.*;
+
 /**
  * @author cl
  */
@@ -72,6 +74,23 @@ public class TwoToOneReactor extends AbstractGraphComplexReactor {
                 getModification().clear();
             }
         }
+    }
+
+    @Override
+    public ComplexReactor invert() {
+        OneToTwoReactor invertedReactor = new OneToTwoReactor();
+        invertedReactor.setModification(getModification().invert());
+        invertedReactor.getPrimaryCandidateConditions().add(hasOccupiedBindingSite(getModification().getBindingSite()));
+        invertedReactor.getPrimaryCandidateConditions().add(hasAnyOfEntity(getModification().getPrimaryEntity()));
+        invertedReactor.getPrimaryCandidateConditions().add(hasAnyOfEntity(getModification().getSecondaryEntity()));
+
+        return invertedReactor;
+    }
+
+    @Override
+    public void clear() {
+        super.clear();
+        secondarySubstrates.clear();
     }
 
 }

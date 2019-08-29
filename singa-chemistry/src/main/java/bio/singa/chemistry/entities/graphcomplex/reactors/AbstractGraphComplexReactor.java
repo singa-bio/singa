@@ -81,4 +81,9 @@ public abstract class AbstractGraphComplexReactor implements ComplexReactor {
         this.primaryProducts = primaryProducts;
     }
 
+    @Override
+    public void clear() {
+        primarySubstrates.clear();
+        primaryProducts.clear();
+    }
 }

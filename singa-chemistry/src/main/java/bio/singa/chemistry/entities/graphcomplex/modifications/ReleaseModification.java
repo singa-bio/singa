@@ -31,4 +31,9 @@ public class ReleaseModification extends AbstractComplexEntityModification {
         return String.format("releasing at %s", getBindingSite());
     }
 
+    @Override
+    public ComplexEntityModification invert() {
+        throw new IllegalStateException("Not yet implemented");
+    }
+
 }

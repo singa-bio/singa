@@ -59,4 +59,14 @@ public class OneToTwoReactor extends AbstractGraphComplexReactor {
         }
     }
 
+    @Override
+    public ComplexReactor invert() {
+        throw new IllegalStateException("Not yet implemented");
+    }
+
+    @Override
+    public void clear() {
+        super.clear();
+        secondaryProducts.clear();
+    }
 }

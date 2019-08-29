@@ -10,7 +10,6 @@ import java.util.List;
  */
 public class OneToOneReactor extends AbstractGraphComplexReactor {
 
-
     @Override
     public void collectCandidates(List<GraphComplex> substrateCandidates) {
         setPrimarySubstrates(filterCandidates(substrateCandidates, getPrimaryCandidateConditions()));
@@ -43,4 +42,8 @@ public class OneToOneReactor extends AbstractGraphComplexReactor {
         }
     }
 
+    @Override
+    public ComplexReactor invert() {
+        throw new IllegalStateException("Not yet implemented");
+    }
 }

@@ -31,4 +31,13 @@ public class BindModification extends AbstractComplexEntityModification {
     public String toString() {
         return String.format("binding at %s", getBindingSite());
     }
+
+    @Override
+    public ComplexEntityModification invert() {
+        ComplexEntityModification modification = ComplexEntityModificationBuilder.release(getBindingSite());
+        modification.setPrimaryEntity(getPrimaryEntity());
+        modification.setSecondaryEntity(getSecondaryEntity());
+        return modification;
+    }
+
 }

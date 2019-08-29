@@ -34,4 +34,9 @@ public class RemoveModification extends AbstractComplexEntityModification {
         return String.format("removing %s at %s", getSecondaryEntity(), getBindingSite());
     }
 
+    @Override
+    public ComplexEntityModification invert() {
+        throw new IllegalStateException("Not yet implemented");
+    }
+
 }

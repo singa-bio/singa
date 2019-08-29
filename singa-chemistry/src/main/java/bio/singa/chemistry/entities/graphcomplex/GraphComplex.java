@@ -1,23 +1,28 @@
 package bio.singa.chemistry.entities.graphcomplex;
 
+import bio.singa.chemistry.annotations.Annotation;
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.chemistry.entities.SmallMolecule;
+import bio.singa.chemistry.features.ChemistryFeatureContainer;
+import bio.singa.features.identifiers.SimpleStringIdentifier;
+import bio.singa.features.identifiers.model.Identifier;
+import bio.singa.features.model.Feature;
+import bio.singa.features.model.FeatureContainer;
 import bio.singa.mathematics.graphs.model.AbstractMapGraph;
 import bio.singa.mathematics.graphs.model.Graphs;
-import bio.singa.mathematics.graphs.model.Node;
+import bio.singa.mathematics.graphs.model.IdentifierSupplier;
 import bio.singa.mathematics.vectors.Vector2D;
 
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
  * @author cl
  */
-public class GraphComplex extends AbstractMapGraph<GraphComplexNode, GraphComplexEdge, Vector2D, Integer> {
+public class GraphComplex extends AbstractMapGraph<GraphComplexNode, GraphComplexEdge, Vector2D, Integer> implements ChemicalEntity {
+
+    public static final Set<Class<? extends Feature>> availableFeatures = new HashSet<>();
 
     public static GraphComplex from(ChemicalEntity chemicalEntity) {
         GraphComplex graph = new GraphComplex();
@@ -45,23 +50,40 @@ public class GraphComplex extends AbstractMapGraph<GraphComplexNode, GraphComple
     }
 
     private String identifier;
+    private boolean membraneBound;
+    private List<Annotation> annotations;
+    private FeatureContainer features;
+
+    private IdentifierSupplier nodeSupplier;
+    private IdentifierSupplier edgeSupplier;
 
     public GraphComplex() {
+        annotations = new ArrayList<>();
+        features = new ChemistryFeatureContainer();
+        nodeSupplier = new IdentifierSupplier();
+        edgeSupplier = new IdentifierSupplier();
     }
 
-    private GraphComplex(GraphComplex graphComplex, int nodeOffset, int edgeOffset) {
+    private GraphComplex(GraphComplex graphComplex) {
+        this();
+        Map<Integer, Integer> identifierMapping = new HashMap<>();
         for (GraphComplexNode node : graphComplex.getNodes()) {
-            GraphComplexNode copy = node.getCopy(nodeOffset);
+            // conserve identifier
+            int newIdentifier = nextNodeIdentifier();
+            Integer oldIdentifier = node.getIdentifier();
+            identifierMapping.put(oldIdentifier, newIdentifier);
+            // create copy
+            GraphComplexNode copy = node.getCopy();
+            copy.setIdentifier(newIdentifier);
             addNode(copy);
         }
         for (GraphComplexEdge edge : graphComplex.getEdges()) {
-            GraphComplexEdge edgeCopy = edge.getCopy(edgeOffset);
-            GraphComplexNode source = getNode(edge.getSource().getIdentifier() + nodeOffset);
-            GraphComplexNode target = getNode(edge.getTarget().getIdentifier() + nodeOffset);
+            GraphComplexEdge edgeCopy = edge.getCopy();
+            edgeCopy.setIdentifier(nextEdgeIdentifier());
+            GraphComplexNode source = getNode(identifierMapping.get(edge.getSource().getIdentifier()));
+            GraphComplexNode target = getNode(identifierMapping.get(edge.getTarget().getIdentifier()));
             addEdgeBetween(edgeCopy, source, target);
-            nextEdgeIdentifier();
         }
-        updateIdentifier();
     }
 
     @Override
@@ -80,11 +102,6 @@ public class GraphComplex extends AbstractMapGraph<GraphComplexNode, GraphComple
         return addEdgeBetween(graphComplexEdge, source, target);
     }
 
-    public void addBindingSite(ChemicalEntity first, ChemicalEntity second) {
-        getNode(node -> node.getEntity().equals(first))
-                .ifPresent(node -> node.addBindingSite(BindingSite.forPair(first, second)));
-    }
-
     public void addBindingSite(ChemicalEntity first, BindingSite bindingSite) {
         getNode(node -> node.getEntity().equals(first))
                 .ifPresent(node -> node.addBindingSite(bindingSite));
@@ -95,12 +112,80 @@ public class GraphComplex extends AbstractMapGraph<GraphComplexNode, GraphComple
                 .anyMatch(node -> node.isEntity(entity));
     }
 
+    public long countParts(ChemicalEntity entity) {
+        return getNodes().stream()
+                .filter(node -> node.isEntity(entity))
+                .count();
+    }
+
     @Override
     public Integer nextNodeIdentifier() {
-        if (getNodes().isEmpty()) {
-            return 0;
+        return nodeSupplier.getAndIncrement();
+    }
+
+    @Override
+    public int nextEdgeIdentifier() {
+        return edgeSupplier.getAndIncrement();
+    }
+
+    @Override
+    public boolean isMembraneBound() {
+        return membraneBound;
+    }
+
+    @Override
+    public void setMembraneBound(boolean membraneBound) {
+        this.membraneBound = membraneBound;
+    }
+
+    @Override
+    public List<Annotation> getAnnotations() {
+        return annotations;
+    }
+
+    @Override
+    public List<Identifier> getAllIdentifiers() {
+        List<Identifier> identifiers = features.getAdditionalIdentifiers();
+        identifiers.add(new SimpleStringIdentifier(identifier));
+        return identifiers;
+    }
+
+    @Override
+    public Collection<Feature<?>> getFeatures() {
+        return features.getAllFeatures();
+    }
+
+    @Override
+    public <FeatureType extends Feature> FeatureType getFeature(Class<FeatureType> featureTypeClass) {
+        if (!features.hasFeature(featureTypeClass)) {
+            setFeature(featureTypeClass);
         }
-        return getNodes().size();
+        return features.getFeature(featureTypeClass);
+    }
+
+    @Override
+    public <FeatureType extends Feature> void setFeature(Class<FeatureType> featureTypeClass) {
+        features.setFeature(featureTypeClass, this);
+    }
+
+    @Override
+    public <FeatureType extends Feature> void setFeature(FeatureType feature) {
+        features.setFeature(feature);
+    }
+
+    @Override
+    public <FeatureType extends Feature> boolean hasFeature(Class<FeatureType> featureTypeClass) {
+        return features.hasFeature(featureTypeClass);
+    }
+
+    @Override
+    public Set<Class<? extends Feature>> getAvailableFeatures() {
+        return availableFeatures;
+    }
+
+    @Override
+    public GraphComplex getCopy() {
+        return new GraphComplex(this);
     }
 
     public Optional<GraphComplex> bind(GraphComplex otherComplex, BindingSite bindingSite) {
@@ -119,29 +204,26 @@ public class GraphComplex extends AbstractMapGraph<GraphComplexNode, GraphComple
     }
 
     public void combine(GraphComplexNode first, GraphComplexNode second, GraphComplex secondGraph, BindingSite bindingSite) {
-        // assuming that there are no isolated nodes
-        int nodeOffset = getNodes().size();
+        Map<Integer, Integer> identifierMapping = new HashMap<>();
         for (GraphComplexNode node : secondGraph.getNodes()) {
-            GraphComplexNode copy = node.getCopy(nodeOffset);
+            // conserve identifier
+            int newIdentifier = nextNodeIdentifier();
+            Integer oldIdentifier = node.getIdentifier();
+            identifierMapping.put(oldIdentifier, newIdentifier);
+            // create copy
+            GraphComplexNode copy = node.getCopy();
+            copy.setIdentifier(newIdentifier);
             addNode(copy);
         }
-        int edgeOffset = getEdges().size();
         for (GraphComplexEdge edge : secondGraph.getEdges()) {
-            GraphComplexEdge edgeCopy = edge.getCopy(edgeOffset);
-            GraphComplexNode source = getNode(edge.getSource().getIdentifier() + nodeOffset);
-            GraphComplexNode target = getNode(edge.getTarget().getIdentifier() + nodeOffset);
+            GraphComplexEdge edgeCopy = edge.getCopy();
+            edgeCopy.setIdentifier(nextEdgeIdentifier());
+            GraphComplexNode source = getNode(identifierMapping.get(edge.getSource().getIdentifier()));
+            GraphComplexNode target = getNode(identifierMapping.get(edge.getTarget().getIdentifier()));
             addEdgeBetween(edgeCopy, source, target);
         }
-        addEdgeBetween(first, getNode(second.getIdentifier() + nodeOffset), bindingSite);
+        addEdgeBetween(first, getNode(identifierMapping.get(second.getIdentifier())), bindingSite);
         updateIdentifier();
-    }
-
-    @Override
-    public int nextEdgeIdentifier() {
-        if (getEdges().isEmpty()) {
-            return 0;
-        }
-        return getEdges().size();
     }
 
     public Optional<List<GraphComplex>> unbind(BindingSite bindingSite) {
@@ -193,20 +275,11 @@ public class GraphComplex extends AbstractMapGraph<GraphComplexNode, GraphComple
                 .findAny();
     }
 
-    @Override
-    public GraphComplex getCopy() {
-        return new GraphComplex(this, 0, 0);
-    }
-
-    public GraphComplex getCopy(int nodeOffset, int edgeOffset) {
-        return new GraphComplex(this, nodeOffset, edgeOffset);
-    }
-
     private String generateIdentifier() {
         return getNodes().stream()
-                .sorted(Comparator.comparing(Node::getIdentifier))
                 .map(GraphComplexNode::getEntity)
                 .map(ChemicalEntity::getIdentifier)
+                .sorted()
                 .collect(Collectors.joining("-"));
     }
 
@@ -223,10 +296,17 @@ public class GraphComplex extends AbstractMapGraph<GraphComplexNode, GraphComple
         return identifier;
     }
 
-    public long countParts(ChemicalEntity entity) {
-        return getNodes().stream()
-                .filter(node -> node.isEntity(entity))
-                .count();
-
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        GraphComplex that = (GraphComplex) o;
+        return Objects.equals(identifier, that.identifier);
     }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(identifier);
+    }
+
 }

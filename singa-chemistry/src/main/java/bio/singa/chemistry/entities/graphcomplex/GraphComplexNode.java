@@ -28,8 +28,8 @@ public class GraphComplexNode extends AbstractNode<GraphComplexNode, Vector2D, I
         super(identifier, position);
     }
 
-    private GraphComplexNode(GraphComplexNode node, int identifierOffset) {
-        super(node.getIdentifier()+identifierOffset, node.getPosition().getCopy());
+    private GraphComplexNode(GraphComplexNode node) {
+        super(node.getIdentifier(), node.getPosition().getCopy());
         entity = node.getEntity();
         bindingSites = new ArrayList<>(node.getBindingSites());
     }
@@ -64,11 +64,7 @@ public class GraphComplexNode extends AbstractNode<GraphComplexNode, Vector2D, I
 
     @Override
     public GraphComplexNode getCopy() {
-        return new GraphComplexNode(this, 0);
-    }
-
-    public GraphComplexNode getCopy(int identifierOffset) {
-        return new GraphComplexNode(this, identifierOffset);
+        return new GraphComplexNode(this);
     }
 
     @Override

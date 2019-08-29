@@ -4,6 +4,7 @@ import bio.singa.chemistry.entities.graphcomplex.GraphComplex;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class ReactionElement {
@@ -69,5 +70,19 @@ public class ReactionElement {
                 .map(GraphComplex::getIdentifier)
                 .collect(Collectors.toList());
         return String.join(" + ", substrateStrings) + " -> " + String.join(" + ", productStrings);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ReactionElement element = (ReactionElement) o;
+        return Objects.equals(substrates, element.substrates) &&
+                Objects.equals(products, element.products);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(substrates, products);
     }
 }

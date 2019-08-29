@@ -20,6 +20,7 @@ public interface ComplexEntityModification {
     ChemicalEntity getSecondaryEntity();
 
     void apply();
+    ComplexEntityModification invert();
     void clear();
 
 }

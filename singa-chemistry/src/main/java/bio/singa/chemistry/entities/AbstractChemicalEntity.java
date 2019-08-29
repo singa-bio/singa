@@ -60,14 +60,17 @@ public abstract class AbstractChemicalEntity implements ChemicalEntity {
         // IdentifierPatternRegistry.instantiate(identifier.getContent()).ifPresent(this::setFeature);
     }
 
+    @Override
     public String getIdentifier() {
         return identifier;
     }
 
+    @Override
     public boolean isMembraneBound() {
         return membraneBound;
     }
 
+    @Override
     public void setMembraneBound(boolean membraneBound) {
         this.membraneBound = membraneBound;
     }
@@ -103,6 +106,7 @@ public abstract class AbstractChemicalEntity implements ChemicalEntity {
         setFeature(identifier);
     }
 
+    @Override
     public List<Identifier> getAllIdentifiers() {
         List<Identifier> identifiers = features.getAdditionalIdentifiers();
         identifiers.add(new SimpleStringIdentifier(identifier));

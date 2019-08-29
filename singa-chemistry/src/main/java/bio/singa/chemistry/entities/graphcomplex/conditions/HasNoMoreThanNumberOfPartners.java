@@ -20,7 +20,7 @@ public class HasNoMoreThanNumberOfPartners implements CandidateCondition {
     public boolean test(GraphComplex graphComplex) {
         return graphComplex.getNodes().stream()
                 .filter(node -> node.isEntity(chemicalEntity))
-                .anyMatch(match -> match.getNeighbours().size() < numberOfPartners);
+                .anyMatch(match -> match.getNeighbours().size() <= numberOfPartners);
     }
 
 }

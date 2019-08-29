@@ -42,7 +42,7 @@ public class ReactionChainBuilder {
         return new ReleaseReactionChainBuilder(chemicalEntity);
     }
 
-    public static RemoveReactorPrimaryConditionStep remove(BindingSite bindingSite, ChemicalEntity chemicalEntity) {
+    public static RemoveReactorSecondarySubstrateStep remove(BindingSite bindingSite, ChemicalEntity chemicalEntity) {
         return new RemoveReactionChainBuilder(bindingSite, chemicalEntity);
     }
 
@@ -59,7 +59,7 @@ public class ReactionChainBuilder {
 
         BindReactorPrimaryConditionStep bind(ChemicalEntity chemicalEntity);
 
-        ReleaseReactorPrimaryConditionStep release(BindingSite bindingSite, ChemicalEntity chemicalEntity);
+        ReleaseReactorSecondarySubstrateStep release(BindingSite bindingSite, ChemicalEntity chemicalEntity);
 
         ReleaseReactorSecondarySubstrateStep release(ChemicalEntity chemicalEntity);
 
@@ -72,6 +72,8 @@ public class ReactionChainBuilder {
         ConnectorStep identifier(String identifier);
 
         ReactorChoiceStep and();
+
+        ConnectorStep considerInversion();
 
         ReactionChain build();
     }
@@ -129,6 +131,8 @@ public class ReactionChainBuilder {
         protected ChemicalEntity primaryEntity;
         protected ChemicalEntity secondaryEntity;
 
+        protected boolean considerInversion;
+
         public AbstractReactorBuilder() {
             reactors = new ArrayList<>();
             primaryCandidateConditions = new ArrayList<>();
@@ -173,7 +177,7 @@ public class ReactionChainBuilder {
         }
 
         @Override
-        public ReleaseReactorPrimaryConditionStep release(BindingSite bindingSite, ChemicalEntity chemicalEntity) {
+        public ReleaseReactorSecondarySubstrateStep release(BindingSite bindingSite, ChemicalEntity chemicalEntity) {
             ReleaseReactionChainBuilder builder = new ReleaseReactionChainBuilder(bindingSite, chemicalEntity);
             passInformation(builder, this);
             return builder;
@@ -209,9 +213,6 @@ public class ReactionChainBuilder {
         public ReactorChoiceStep and() {
             ComplexReactor currentReactor = createAndChainReactor();
             reactors.add(currentReactor);
-            modification = null;
-            primaryCandidateConditions = new ArrayList<>();
-            secondaryCandidateConditions = new ArrayList<>();
             return this;
         }
 
@@ -222,10 +223,17 @@ public class ReactionChainBuilder {
         }
 
         @Override
+        public ConnectorStep considerInversion() {
+            considerInversion = true;
+            return this;
+        }
+
+        @Override
         public ReactionChain build() {
             and();
             ReactionChain reactionChain = new ReactionChain(reactors);
             reactionChain.setIdentifier(identifier);
+            reactionChain.setConsiderInversion(considerInversion);
             return reactionChain;
         }
     }
@@ -261,7 +269,7 @@ public class ReactionChainBuilder {
             modification = ComplexEntityModificationBuilder.add(bindingSite, secondaryEntity);
             modification.setPrimaryEntity(primaryEntity);
             modification.setSecondaryEntity(secondaryEntity);
-            primaryCandidateConditions.add(hasAnyOfEntity(primaryEntity));
+            primaryCandidateConditions.add(hasOneOfEntity(primaryEntity));
             primaryCandidateConditions.add(hasUnoccupiedBindingSite(bindingSite));
             return this;
         }
@@ -285,11 +293,11 @@ public class ReactionChainBuilder {
             reactor.setModification(modification);
             // small molecules are supposed to have only one possible binding partner at once
             if (modification.getPrimaryEntity() instanceof SmallMolecule) {
-                primaryCandidateConditions.add(hasNoMoreThanNumberOfPartners(modification.getPrimaryEntity(), 1));
+                primaryCandidateConditions.add(hasNoMoreThanNumberOfPartners(modification.getPrimaryEntity(), 0));
             }
             reactor.setPrimaryCandidateConditions(primaryCandidateConditions);
             if (modification.getSecondaryEntity() instanceof SmallMolecule) {
-                secondaryCandidateConditions.add(hasNoMoreThanNumberOfPartners(modification.getSecondaryEntity(), 1));
+                secondaryCandidateConditions.add(hasNoMoreThanNumberOfPartners(modification.getSecondaryEntity(), 0));
             }
             reactor.setSecondCandidateConditions(secondaryCandidateConditions);
             return reactor;
@@ -310,11 +318,11 @@ public class ReactionChainBuilder {
             modification = ComplexEntityModificationBuilder.bind(bindingSite);
 
             modification.setPrimaryEntity(primaryEntity);
-            primaryCandidateConditions.add(hasAnyOfEntity(primaryEntity));
+            primaryCandidateConditions.add(hasOneOfEntity(primaryEntity));
             primaryCandidateConditions.add(hasUnoccupiedBindingSite(bindingSite));
 
             modification.setSecondaryEntity(secondaryEntity);
-            secondaryCandidateConditions.add(hasAnyOfEntity(secondaryEntity));
+            secondaryCandidateConditions.add(hasOneOfEntity(secondaryEntity));
             secondaryCandidateConditions.add(hasUnoccupiedBindingSite(bindingSite));
             return this;
         }
@@ -363,8 +371,8 @@ public class ReactionChainBuilder {
             modification.setSecondaryEntity(secondaryEntity);
 
             primaryCandidateConditions.add(hasOccupiedBindingSite(bindingSite));
-            primaryCandidateConditions.add(hasAnyOfEntity(primaryEntity));
-            primaryCandidateConditions.add(hasAnyOfEntity(secondaryEntity));
+            primaryCandidateConditions.add(hasOneOfEntity(primaryEntity));
+            primaryCandidateConditions.add(hasOneOfEntity(secondaryEntity));
             return this;
         }
 
@@ -401,7 +409,7 @@ public class ReactionChainBuilder {
             modification = ComplexEntityModificationBuilder.remove(bindingSite, secondaryEntity);
             modification.setPrimaryEntity(primaryEntity);
             modification.setSecondaryEntity(secondaryEntity);
-            primaryCandidateConditions.add(hasAnyOfEntity(primaryEntity));
+            primaryCandidateConditions.add(hasOneOfEntity(primaryEntity));
             primaryCandidateConditions.add(hasOccupiedBindingSite(bindingSite));
             return this;
         }

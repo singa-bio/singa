@@ -6,8 +6,7 @@ import bio.singa.chemistry.entities.graphcomplex.BindingSite;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import static bio.singa.chemistry.entities.graphcomplex.conditions.CandidateConditionBuilder.hasNumberOfEntity;
-import static bio.singa.chemistry.entities.graphcomplex.conditions.CandidateConditionBuilder.hasOccupiedBindingSite;
+import static bio.singa.chemistry.entities.graphcomplex.conditions.CandidateConditionBuilder.*;
 
 /**
  * @author cl
@@ -20,6 +19,9 @@ class ReactionChainTest {
     private static SmallMolecule p;
     private static SmallMolecule atp;
     private static SmallMolecule camp;
+    private static Protein aqp;
+    private static Protein pde;
+    private static Protein pp2b;
 
     @BeforeAll
     static void initialize() {
@@ -28,6 +30,10 @@ class ReactionChainTest {
                 .build();
         pkar = Protein.create("PKAR").build();
         pkac = Protein.create("PKAC").build();
+        aqp = Protein.create("AQP2").build();
+        pde = Protein.create("PDE").build();
+        pp2b = Protein.create("PP2B").build();
+
         p = SmallMolecule.create("P").build();
         atp = SmallMolecule.create("ATP").build();
         camp = SmallMolecule.create("CAMP").build();
@@ -96,20 +102,29 @@ class ReactionChainTest {
     void testNetworkGeneration() {
         ReactionNetworkGenerator rng = new ReactionNetworkGenerator();
 
+        BindingSite camp1 = BindingSite.createNamed("pkar-camp1");
+        BindingSite camp2 = BindingSite.createNamed("pkar-camp2");
+        BindingSite pkarPSite = BindingSite.createNamed("pkar-s96");
+        BindingSite aqpPSite = BindingSite.createNamed("aqp2-s256");
+        BindingSite pdePSite = BindingSite.createNamed("pde4-s54");
+        BindingSite pkacSubstrate = BindingSite.createNamed("pkac-substrate");
+        BindingSite pp2bSubstrate = BindingSite.createNamed("pp2b-substrate");
+
         ReactionChain akapBinding = ReactionChainBuilder.bind(pkar)
+                .primaryCondition(hasUnoccupiedBindingSite(pkarPSite))
                 .to(akap)
                 .identifier("pka activation: akap pkar binding")
                 .build();
         rng.add(akapBinding);
 
         ReactionChain pkarBinding = ReactionChainBuilder.bind(pkac)
+                .primaryCondition(hasNoneOfEntity(atp))
                 .to(pkar)
+                .secondaryCondition(hasNoneOfEntity(p))
+                .secondaryCondition(hasNoneOfEntity(camp))
                 .identifier("pka activation: akap pkar binding")
                 .build();
         rng.add(pkarBinding);
-
-        BindingSite camp1 = BindingSite.createNamed("camp1");
-        BindingSite camp2 = BindingSite.createNamed("camp2");
 
         ReactionChain camp1Binding = ReactionChainBuilder.bind(camp1, camp)
                 .to(pkar)
@@ -120,19 +135,28 @@ class ReactionChainTest {
         ReactionChain camp2Binding = ReactionChainBuilder.bind(camp2, camp)
                 .to(pkar)
                 .secondaryCondition(hasOccupiedBindingSite(camp1))
+                .secondaryCondition(hasNoneOfEntity(pp2b))
                 .identifier("pka activation: pkar camp pocket b binding")
+                .considerInversion()
                 .build();
         rng.add(camp2Binding);
 
         ReactionChain atpBinding = ReactionChainBuilder.bind(atp)
                 .to(pkac)
-                .secondaryCondition(hasOccupiedBindingSite(camp1))
-                .secondaryCondition(hasOccupiedBindingSite(camp2))
+                .secondaryCondition(hasNoneOfEntity(pp2b))
+                .secondaryCondition(hasNoneOfEntity(pkar))
                 .identifier("pka activation: pkac ATP binding")
                 .build();
         rng.add(atpBinding);
 
-        BindingSite pkarPSite = BindingSite.createNamed("s96");
+        ReactionChain atpAutoBinding = ReactionChainBuilder.bind(atp)
+                .to(pkac)
+                .secondaryCondition(hasNumberOfEntity(pkar, 1))
+                .secondaryCondition(hasOccupiedBindingSite(camp1))
+                .secondaryCondition(hasOccupiedBindingSite(camp2))
+                .identifier("pka activation: pkac auophosphorylation ATP binding")
+                .build();
+        rng.add(atpAutoBinding);
 
         ReactionChain autophoshorylation = ReactionChainBuilder.add(pkarPSite, p)
                 .to(pkar)
@@ -143,10 +167,110 @@ class ReactionChainTest {
                 .from(pkac)
                 .and()
                 .release(pkac)
-                .from(akap)
+                .from(pkar)
                 .identifier("pka activation: pkac pkar autophosphorylation")
                 .build();
         rng.add(autophoshorylation);
+
+        ReactionChain aqpBind = ReactionChainBuilder.bind(pkacSubstrate, aqp)
+                .primaryCondition(hasUnoccupiedBindingSite(aqpPSite))
+                .to(pkac)
+                .secondaryCondition(hasNumberOfEntity(atp, 1))
+                .secondaryCondition(hasNoneOfEntity(pkar))
+                .identifier("pka phosphorylation: aqp binding")
+                .build();
+        rng.add(aqpBind);
+
+        ReactionChain pdeBind = ReactionChainBuilder.bind(pkacSubstrate, pde)
+                .primaryCondition(hasUnoccupiedBindingSite(pdePSite))
+                .to(pkac)
+                .secondaryCondition(hasNumberOfEntity(atp, 1))
+                .secondaryCondition(hasNoneOfEntity(pkar))
+                .identifier("pka phosphorylation: pde binding")
+                .build();
+        rng.add(pdeBind);
+
+        ReactionChain pdePhosphorlyation = ReactionChainBuilder.add(pdePSite, p)
+                .to(pde)
+                .condition(hasNumberOfEntity(pkac, 1))
+                .and()
+                .remove(atp)
+                .from(pkac)
+                .and()
+                .release(pkacSubstrate, pde)
+                .from(pkac)
+                .identifier("pka activation: pde phosphorylation")
+                .build();
+        rng.add(pdePhosphorlyation);
+
+        ReactionChain aqpPhosphorylation = ReactionChainBuilder.add(aqpPSite, p)
+                .to(aqp)
+                .condition(hasNumberOfEntity(pkac, 1))
+                .and()
+                .remove(atp)
+                .from(pkac)
+                .and()
+                .release(pkacSubstrate, aqp)
+                .from(pkac)
+                .identifier("pka activation: aqp2 phosphorylation")
+                .build();
+        rng.add(aqpPhosphorylation);
+
+        ReactionChain pp2bPdeBinding = ReactionChainBuilder.bind(pp2bSubstrate, pde)
+                .primaryCondition(hasOccupiedBindingSite(pdePSite))
+                .to(pp2b)
+                .secondaryCondition(hasNoMoreThanNumberOfPartners(pp2b, 0))
+                .identifier("pp2b dephosphorylation: pdep binding")
+                .build();
+        rng.add(pp2bPdeBinding);
+
+        ReactionChain pdeDephosphorylation = ReactionChainBuilder.remove(pdePSite, p)
+                .from(pde)
+                .condition(hasNumberOfEntity(pp2b, 1))
+                .and()
+                .release(pp2bSubstrate, pp2b)
+                .from(pde)
+                .identifier("pp2b dephosphorylation: pdep dephosphorylation")
+                .build();
+        rng.add(pdeDephosphorylation);
+
+        ReactionChain pp2bAqpBinding = ReactionChainBuilder.bind(pp2bSubstrate, aqp)
+                .primaryCondition(hasOccupiedBindingSite(aqpPSite))
+                .to(pp2b)
+                .secondaryCondition(hasNoMoreThanNumberOfPartners(pp2b, 0))
+                .identifier("pp2b dephosphorylation: aqp binding")
+                .build();
+        rng.add(pp2bAqpBinding);
+
+        ReactionChain aqpDephosphorylation = ReactionChainBuilder.remove(aqpPSite, p)
+                .from(aqp)
+                .condition(hasNumberOfEntity(pp2b, 1))
+                .and()
+                .release(pp2bSubstrate, pp2b)
+                .from(aqp)
+                .identifier("pp2b dephosphorylation: aqp dephosphorylation")
+                .build();
+        rng.add(aqpDephosphorylation);
+
+        ReactionChain pp2bpkarBinding = ReactionChainBuilder.bind(pp2bSubstrate, pkar)
+                .primaryCondition(hasOccupiedBindingSite(pkarPSite))
+                .primaryCondition(hasOneOfEntity(camp))
+                .primaryCondition(hasNoneOfEntity(atp))
+                .to(pp2b)
+                .secondaryCondition(hasNoMoreThanNumberOfPartners(pp2b, 0))
+                .identifier("pp2b dephosphorylation: pkar binding")
+                .build();
+        rng.add(pp2bpkarBinding);
+
+        ReactionChain pkarDephosphorylation = ReactionChainBuilder.remove(pkarPSite, p)
+                .from(pkar)
+                .condition(hasOneOfEntity(pp2b))
+                .and()
+                .release(pp2bSubstrate, pp2b)
+                .from(pkar)
+                .identifier("pp2b dephosphorylation: pkar dephosphorylation")
+                .build();
+        rng.add(pkarDephosphorylation);
 
         rng.generate();
         System.out.println();

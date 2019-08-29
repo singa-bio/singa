@@ -33,4 +33,9 @@ public class AddModification extends AbstractComplexEntityModification {
         return String.format("adding %s at %s", getSecondaryEntity(), getBindingSite());
     }
 
+    @Override
+    public ComplexEntityModification invert() {
+        throw new IllegalStateException("Not yet implemented");
+    }
+
 }

@@ -12,6 +12,10 @@ public class CandidateConditionBuilder {
         return new HasAnyNumberOfEntities(entity);
     }
 
+    public static Predicate<GraphComplex> hasOneOfEntity(ChemicalEntity entity) {
+        return new HasNumberOfEntities(entity, 1);
+    }
+
     public static Predicate<GraphComplex> hasNoneOfEntity(ChemicalEntity entity) {
         return new HasAnyNumberOfEntities(entity).negate();
     }
@@ -26,6 +30,10 @@ public class CandidateConditionBuilder {
 
     public static Predicate<GraphComplex> hasOccupiedBindingSite(BindingSite bindingSite) {
         return new HasOccupiedBindingSite(bindingSite);
+    }
+
+    public static Predicate<GraphComplex> isOnlyBoundAt(BindingSite bindingSite) {
+        return new IsOnlyBoundAt(bindingSite);
     }
 
     public static Predicate<GraphComplex> hasUnoccupiedBindingSite(BindingSite bindingSite) {
