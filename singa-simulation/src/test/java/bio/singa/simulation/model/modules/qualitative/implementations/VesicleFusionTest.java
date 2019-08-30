@@ -3,7 +3,7 @@ package bio.singa.simulation.model.modules.qualitative.implementations;
 import bio.singa.chemistry.annotations.Annotation;
 import bio.singa.chemistry.annotations.AnnotationType;
 import bio.singa.chemistry.entities.ChemicalEntity;
-import bio.singa.chemistry.entities.complex.GraphComplex;
+import bio.singa.chemistry.entities.complex.ComplexEntity;
 import bio.singa.chemistry.entities.simple.Protein;
 import bio.singa.features.identifiers.UniProtIdentifier;
 import bio.singa.features.parameters.Environment;
@@ -82,8 +82,8 @@ class VesicleFusionTest {
                 .annotation(new Annotation<>(AnnotationType.NOTE, "SNARE type", "Qbc-SNARE"))
                 .build();
 
-        GraphComplex snareComplex1 = GraphComplex.from(syntaxin3, snap23);
-        GraphComplex snareComplex2 = GraphComplex.from(syntaxin4, snap23);
+        ComplexEntity snareComplex1 = ComplexEntity.from(syntaxin3, snap23);
+        ComplexEntity snareComplex2 = ComplexEntity.from(syntaxin4, snap23);
 
         // setup graph
         AutomatonGraph graph = AutomatonGraphs.singularGraph();

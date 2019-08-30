@@ -1,7 +1,7 @@
 package bio.singa.simulation.model.modules.qualitative.implementations;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
-import bio.singa.chemistry.entities.complex.GraphComplex;
+import bio.singa.chemistry.entities.complex.ComplexEntity;
 import bio.singa.chemistry.entities.simple.Protein;
 import bio.singa.chemistry.entities.simple.SmallMolecule;
 import bio.singa.chemistry.features.reactions.RateConstant;
@@ -58,7 +58,7 @@ class ConcentrationStateChangeTest {
         // setup trigger entity
         Protein aqp2 = Protein.create("AQP2").build();
         ChemicalEntity p = SmallMolecule.create("P").build();
-        GraphComplex aqp2p = GraphComplex.from(aqp2, p);
+        ComplexEntity aqp2p = ComplexEntity.from(aqp2, p);
 
         // setup graph
         AutomatonGraph graph = AutomatonGraphs.singularGraph();

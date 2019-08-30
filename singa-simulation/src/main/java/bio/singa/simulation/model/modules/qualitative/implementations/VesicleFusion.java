@@ -1,7 +1,7 @@
 package bio.singa.simulation.model.modules.qualitative.implementations;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
-import bio.singa.chemistry.entities.complex.GraphComplex;
+import bio.singa.chemistry.entities.complex.ComplexEntity;
 import bio.singa.core.utility.Pair;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.quantities.MolarConcentration;
@@ -42,7 +42,7 @@ public class VesicleFusion extends QualitativeModule {
     private Map<Vesicle, Quantity<Time>> tetheredVesicles;
     private Map<Vesicle, AutomatonNode> tetheredNodes;
 
-    private Map<Pair<ChemicalEntity>, GraphComplex> complexes;
+    private Map<Pair<ChemicalEntity>, ComplexEntity> complexes;
 
     private Map<Updatable, ConcentrationPool> occupiedSnares;
 
@@ -73,7 +73,7 @@ public class VesicleFusion extends QualitativeModule {
         for (ChemicalEntity qSnare : qSnares.getContent()) {
             for (ChemicalEntity rSnare : rSnares.getContent()) {
                 Pair<ChemicalEntity> pair = new Pair<>(qSnare, rSnare);
-                complexes.put(pair, GraphComplex.from(qSnare, rSnare));
+                complexes.put(pair, ComplexEntity.from(qSnare, rSnare));
             }
         }
     }
@@ -233,7 +233,7 @@ public class VesicleFusion extends QualitativeModule {
             int rSnareIndex = ThreadLocalRandom.current().nextInt(rSnareEntities.size());
             ChemicalEntity rSnare = rSnareEntities.get(rSnareIndex);
             // reserve complex
-            GraphComplex snareComplex = complexes.get(new Pair<>(qSnare, rSnare));
+            ComplexEntity snareComplex = complexes.get(new Pair<>(qSnare, rSnare));
             reserveComplex(vesicle, snareComplex);
             // add deltas
             double concentration = MolarConcentration.moleculesToConcentration(-1.0);
@@ -248,7 +248,7 @@ public class VesicleFusion extends QualitativeModule {
 
     }
 
-    private void reserveComplex(Vesicle vesicle, GraphComplex snareComplex) {
+    private void reserveComplex(Vesicle vesicle, ComplexEntity snareComplex) {
         // reserve one snare
         double concentration = MolarConcentration.moleculesToConcentration(1.0);
         if (!occupiedSnares.containsKey(vesicle)) {

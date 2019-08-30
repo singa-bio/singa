@@ -3,7 +3,7 @@ package bio.singa.chemistry.reactions.modifications;
 import bio.singa.chemistry.entities.simple.Protein;
 import bio.singa.chemistry.entities.simple.SmallMolecule;
 import bio.singa.chemistry.entities.complex.BindingSite;
-import bio.singa.chemistry.entities.complex.GraphComplex;
+import bio.singa.chemistry.entities.complex.ComplexEntity;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -18,23 +18,23 @@ class ReleaseModificationTest {
     @Test
     void apply() {
         BindingSite bindingSite = BindingSite.forPair(a, b);
-        GraphComplex first = GraphComplex.from(a, bindingSite);
-        GraphComplex second = GraphComplex.from(b, bindingSite);
-        GraphComplex complex = first.bind(second, bindingSite).get();
+        ComplexEntity first = ComplexEntity.from(a, bindingSite);
+        ComplexEntity second = ComplexEntity.from(b, bindingSite);
+        ComplexEntity complex = first.bind(second, bindingSite).get();
 
         ComplexEntityModification modification = new ReleaseModification(bindingSite);
         modification.addCandidate(complex);
         modification.apply();
-        List<GraphComplex> results = modification.getResults();
+        List<ComplexEntity> results = modification.getResults();
 
         assertEquals(2, complex.getNodes().size());
         assertEquals(2, results.size());
-        GraphComplex firstResult = results.get(0);
+        ComplexEntity firstResult = results.get(0);
         assertEquals(1, firstResult.getNodes().size());
         assertTrue(firstResult.containsEntity(a));
         assertFalse(firstResult.containsEntity(b));
 
-        GraphComplex secondResult = results.get(1);
+        ComplexEntity secondResult = results.get(1);
         assertEquals(1, secondResult.getNodes().size());
         assertFalse(secondResult.containsEntity(a));
         assertTrue(secondResult.containsEntity(b));

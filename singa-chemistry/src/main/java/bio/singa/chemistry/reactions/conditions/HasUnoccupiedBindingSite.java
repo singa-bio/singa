@@ -1,7 +1,7 @@
 package bio.singa.chemistry.reactions.conditions;
 
 import bio.singa.chemistry.entities.complex.BindingSite;
-import bio.singa.chemistry.entities.complex.GraphComplex;
+import bio.singa.chemistry.entities.complex.ComplexEntity;
 
 public class HasUnoccupiedBindingSite implements CandidateCondition {
 
@@ -12,7 +12,7 @@ public class HasUnoccupiedBindingSite implements CandidateCondition {
     }
 
     @Override
-    public boolean test(GraphComplex graphComplex) {
+    public boolean test(ComplexEntity graphComplex) {
         return graphComplex.getNodeWithUnoccupiedBindingSite(bindingSite).isPresent();
     }
 

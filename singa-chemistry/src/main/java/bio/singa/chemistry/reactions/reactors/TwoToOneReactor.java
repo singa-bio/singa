@@ -1,6 +1,6 @@
 package bio.singa.chemistry.reactions.reactors;
 
-import bio.singa.chemistry.entities.complex.GraphComplex;
+import bio.singa.chemistry.entities.complex.ComplexEntity;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -14,32 +14,32 @@ import static bio.singa.chemistry.reactions.conditions.CandidateConditionBuilder
  */
 public class TwoToOneReactor extends AbstractGraphComplexReactor {
 
-    private List<Predicate<GraphComplex>> secondCandidateConditions;
-    private List<GraphComplex> secondarySubstrates;
+    private List<Predicate<ComplexEntity>> secondCandidateConditions;
+    private List<ComplexEntity> secondarySubstrates;
 
     public TwoToOneReactor() {
         secondCandidateConditions = new ArrayList<>();
         secondarySubstrates = new ArrayList<>();
     }
 
-    public List<Predicate<GraphComplex>> getSecondCandidateConditions() {
+    public List<Predicate<ComplexEntity>> getSecondCandidateConditions() {
         return secondCandidateConditions;
     }
 
-    public void setSecondCandidateConditions(List<Predicate<GraphComplex>> secondCandidateConditions) {
+    public void setSecondCandidateConditions(List<Predicate<ComplexEntity>> secondCandidateConditions) {
         this.secondCandidateConditions = secondCandidateConditions;
     }
 
-    public List<GraphComplex> getSecondarySubstrates() {
+    public List<ComplexEntity> getSecondarySubstrates() {
         return secondarySubstrates;
     }
 
-    public void setSecondarySubstrates(List<GraphComplex> secondarySubstrates) {
+    public void setSecondarySubstrates(List<ComplexEntity> secondarySubstrates) {
         this.secondarySubstrates = secondarySubstrates;
     }
 
     @Override
-    public void collectCandidates(List<GraphComplex> substrateCandidates) {
+    public void collectCandidates(List<ComplexEntity> substrateCandidates) {
         setPrimarySubstrates(filterCandidates(substrateCandidates, getPrimaryCandidateConditions()));
         setSecondarySubstrates(filterCandidates(substrateCandidates, getSecondCandidateConditions()));
     }
@@ -47,12 +47,12 @@ public class TwoToOneReactor extends AbstractGraphComplexReactor {
     @Override
     public List<ReactionElement> getProducts() {
         List<ReactionElement> elements = new ArrayList<>();
-        Iterator<GraphComplex> productIterator = getPrimaryProducts().iterator();
+        Iterator<ComplexEntity> productIterator = getPrimaryProducts().iterator();
         for (int primaryIndex = 0; primaryIndex < getPrimarySubstrates().size(); primaryIndex++) {
-            GraphComplex primarySubstrate = getPrimarySubstrates().get(primaryIndex);
+            ComplexEntity primarySubstrate = getPrimarySubstrates().get(primaryIndex);
             for (int secondaryIndex = 0; secondaryIndex < getSecondarySubstrates().size(); secondaryIndex++) {
-                GraphComplex secondarySubstrate = getSecondarySubstrates().get(secondaryIndex);
-                GraphComplex product = productIterator.next();
+                ComplexEntity secondarySubstrate = getSecondarySubstrates().get(secondaryIndex);
+                ComplexEntity product = productIterator.next();
                 elements.add(ReactionElement.createTwoToOne(primarySubstrate, secondarySubstrate, product));
             }
         }
@@ -66,7 +66,7 @@ public class TwoToOneReactor extends AbstractGraphComplexReactor {
                 getModification().addCandidate(getPrimarySubstrates().get(primaryIndex));
                 getModification().addCandidate(getSecondarySubstrates().get(secondaryIndex));
                 getModification().apply();
-                List<GraphComplex> results = getModification().getResults();
+                List<ComplexEntity> results = getModification().getResults();
                 if (results.size() != 1) {
                     logger.warn("Two to one modifications should only have one product per modification");
                 }

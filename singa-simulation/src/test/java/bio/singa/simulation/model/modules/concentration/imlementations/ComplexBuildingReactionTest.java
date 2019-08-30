@@ -1,7 +1,7 @@
 package bio.singa.simulation.model.modules.concentration.imlementations;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
-import bio.singa.chemistry.entities.complex.GraphComplex;
+import bio.singa.chemistry.entities.complex.ComplexEntity;
 import bio.singa.chemistry.entities.simple.Protein;
 import bio.singa.chemistry.entities.simple.SmallMolecule;
 import bio.singa.chemistry.features.reactions.RateConstant;
@@ -79,7 +79,7 @@ class ComplexBuildingReactionTest {
         // reactants
         ChemicalEntity bindee = SmallMolecule.create("bindee").build();
         Protein binder = Protein.create("binder").build();
-        GraphComplex complex = GraphComplex.from(binder, bindee);
+        ComplexEntity complex = ComplexEntity.from(binder, bindee);
 
         // create and add module
         ReactionBuilder.staticReactants(simulation)
@@ -134,7 +134,7 @@ class ComplexBuildingReactionTest {
                 .additionalIdentifier(new UniProtIdentifier("P35348"))
                 .build();
 
-        GraphComplex complex = GraphComplex.from(receptor, ligand);
+        ComplexEntity complex = ComplexEntity.from(receptor, ligand);
 
         // create simulation
         Simulation simulation = new Simulation();
@@ -217,7 +217,7 @@ class ComplexBuildingReactionTest {
         // reactants
         ChemicalEntity bindee = SmallMolecule.create("bindee").build();
         Protein binder = Protein.create("binder").build();
-        GraphComplex complex = GraphComplex.from(binder, bindee);
+        ComplexEntity complex = ComplexEntity.from(binder, bindee);
 
         // create and add module
         ReactionBuilder.staticReactants(simulation)
@@ -282,8 +282,8 @@ class ComplexBuildingReactionTest {
         ChemicalEntity innerBindee = SmallMolecule.create("inner bindee").build();
         ChemicalEntity outerBindee = SmallMolecule.create("outer bindee").build();
         Protein binder = Protein.create("binder").build();
-        GraphComplex innerComplex = GraphComplex.from(binder, innerBindee);
-        GraphComplex outerComplex = GraphComplex.from(binder, outerBindee);
+        ComplexEntity innerComplex = ComplexEntity.from(binder, innerBindee);
+        ComplexEntity outerComplex = ComplexEntity.from(binder, outerBindee);
 
 
         // create and add modules
@@ -364,7 +364,7 @@ class ComplexBuildingReactionTest {
         // reactants
         ChemicalEntity bindee = SmallMolecule.create("bindee").build();
         Protein binder = new Protein.Builder("binder").build();
-        GraphComplex complex = GraphComplex.from(binder, bindee);
+        ComplexEntity complex = ComplexEntity.from(binder, bindee);
 
         // create and add module
         ReactionBuilder.staticReactants(simulation)
@@ -442,7 +442,7 @@ class ComplexBuildingReactionTest {
         // reactants
         ChemicalEntity bindee = SmallMolecule.create("bindee").build();
         Protein binder = Protein.create("binder").build();
-        GraphComplex complex = GraphComplex.from(binder, bindee);
+        ComplexEntity complex = ComplexEntity.from(binder, bindee);
 
         // create and add module
         ReactionBuilder.staticReactants(simulation)

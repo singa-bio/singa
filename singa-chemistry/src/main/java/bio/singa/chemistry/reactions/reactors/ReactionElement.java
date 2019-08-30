@@ -1,6 +1,6 @@
 package bio.singa.chemistry.reactions.reactors;
 
-import bio.singa.chemistry.entities.complex.GraphComplex;
+import bio.singa.chemistry.entities.complex.ComplexEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,17 +9,17 @@ import java.util.stream.Collectors;
 
 public class ReactionElement {
 
-    private List<GraphComplex> substrates;
-    private List<GraphComplex> products;
+    private List<ComplexEntity> substrates;
+    private List<ComplexEntity> products;
 
-    public static ReactionElement createOneToOne(GraphComplex substrate, GraphComplex product) {
+    public static ReactionElement createOneToOne(ComplexEntity substrate, ComplexEntity product) {
         ReactionElement element = new ReactionElement();
         element.substrates.add(substrate);
         element.products.add(product);
         return element;
     }
 
-    public static ReactionElement createOneToTwo(GraphComplex substrate, GraphComplex primaryProduct, GraphComplex secondaryProduct) {
+    public static ReactionElement createOneToTwo(ComplexEntity substrate, ComplexEntity primaryProduct, ComplexEntity secondaryProduct) {
         ReactionElement element = new ReactionElement();
         element.substrates.add(substrate);
         element.products.add(primaryProduct);
@@ -27,7 +27,7 @@ public class ReactionElement {
         return element;
     }
 
-    public static ReactionElement createTwoToOne(GraphComplex primarySubstrate, GraphComplex secondarySubstrate, GraphComplex product) {
+    public static ReactionElement createTwoToOne(ComplexEntity primarySubstrate, ComplexEntity secondarySubstrate, ComplexEntity product) {
         ReactionElement element = new ReactionElement();
         element.substrates.add(primarySubstrate);
         element.substrates.add(secondarySubstrate);
@@ -40,34 +40,34 @@ public class ReactionElement {
         products = new ArrayList<>();
     }
 
-    public ReactionElement(List<GraphComplex> substrates, List<GraphComplex> products) {
+    public ReactionElement(List<ComplexEntity> substrates, List<ComplexEntity> products) {
         this.substrates = substrates;
         this.products = products;
     }
 
-    public List<GraphComplex> getSubstrates() {
+    public List<ComplexEntity> getSubstrates() {
         return substrates;
     }
 
-    public void setSubstrates(List<GraphComplex> substrates) {
+    public void setSubstrates(List<ComplexEntity> substrates) {
         this.substrates = substrates;
     }
 
-    public List<GraphComplex> getProducts() {
+    public List<ComplexEntity> getProducts() {
         return products;
     }
 
-    public void setProducts(List<GraphComplex> products) {
+    public void setProducts(List<ComplexEntity> products) {
         this.products = products;
     }
 
     @Override
     public String toString() {
         List<String> substrateStrings = substrates.stream()
-                .map(GraphComplex::getIdentifier)
+                .map(ComplexEntity::getIdentifier)
                 .collect(Collectors.toList());
         List<String> productStrings = products.stream()
-                .map(GraphComplex::getIdentifier)
+                .map(ComplexEntity::getIdentifier)
                 .collect(Collectors.toList());
         return String.join(" + ", substrateStrings) + " -> " + String.join(" + ", productStrings);
     }

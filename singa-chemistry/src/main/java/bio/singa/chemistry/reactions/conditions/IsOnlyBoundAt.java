@@ -1,7 +1,7 @@
 package bio.singa.chemistry.reactions.conditions;
 
 import bio.singa.chemistry.entities.complex.BindingSite;
-import bio.singa.chemistry.entities.complex.GraphComplex;
+import bio.singa.chemistry.entities.complex.ComplexEntity;
 
 /**
  * @author cl
@@ -15,7 +15,7 @@ public class IsOnlyBoundAt implements CandidateCondition {
     }
 
     @Override
-    public boolean test(GraphComplex graphComplex) {
+    public boolean test(ComplexEntity graphComplex) {
         return graphComplex.getEdges().size() == 1 && graphComplex.getEdges().iterator().next().getConnectedSite().equals(bindingSite);
     }
 

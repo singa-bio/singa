@@ -20,12 +20,12 @@ import java.util.stream.Stream;
 /**
  * @author cl
  */
-public class GraphComplex extends AbstractMapGraph<GraphComplexNode, GraphComplexEdge, Vector2D, Integer> implements ChemicalEntity {
+public class ComplexEntity extends AbstractMapGraph<GraphComplexNode, GraphComplexEdge, Vector2D, Integer> implements ChemicalEntity {
 
     public static final Set<Class<? extends Feature>> availableFeatures = new HashSet<>();
 
-    public static GraphComplex from(ChemicalEntity chemicalEntity) {
-        GraphComplex graph = new GraphComplex();
+    public static ComplexEntity from(ChemicalEntity chemicalEntity) {
+        ComplexEntity graph = new ComplexEntity();
         GraphComplexNode node = new GraphComplexNode(graph.nextNodeIdentifier());
         node.setEntity(chemicalEntity);
         graph.addNode(node);
@@ -33,15 +33,15 @@ public class GraphComplex extends AbstractMapGraph<GraphComplexNode, GraphComple
         return graph;
     }
 
-    public static GraphComplex from(ChemicalEntity chemicalEntity, BindingSite bindingSite) {
-        GraphComplex graph = from(chemicalEntity);
+    public static ComplexEntity from(ChemicalEntity chemicalEntity, BindingSite bindingSite) {
+        ComplexEntity graph = from(chemicalEntity);
         graph.addBindingSite(chemicalEntity, bindingSite);
         graph.updateIdentifier();
         return graph;
     }
 
-    public static GraphComplex from(ChemicalEntity chemicalEntity, Collection<BindingSite> bindingSites) {
-        GraphComplex graph = from(chemicalEntity);
+    public static ComplexEntity from(ChemicalEntity chemicalEntity, Collection<BindingSite> bindingSites) {
+        ComplexEntity graph = from(chemicalEntity);
         for (BindingSite bindingSite : bindingSites) {
             graph.addBindingSite(chemicalEntity, bindingSite);
         }
@@ -49,24 +49,10 @@ public class GraphComplex extends AbstractMapGraph<GraphComplexNode, GraphComple
         return graph;
     }
 
-    public static GraphComplex from(ChemicalEntity first, ChemicalEntity second) {
-        GraphComplex graph = new GraphComplex();
-        BindingSite bindingSite = BindingSite.forPair(first, second);
-
-        GraphComplexNode firstNode = new GraphComplexNode(graph.nextNodeIdentifier());
-        firstNode.setEntity(first);
-        graph.addNode(firstNode);
-        graph.addBindingSite(first, bindingSite);
-
-        GraphComplexNode secondNode = new GraphComplexNode(graph.nextNodeIdentifier());
-        secondNode.setEntity(second);
-        graph.addNode(secondNode);
-        graph.addBindingSite(second, bindingSite);
-
-        graph.addEdgeBetween(firstNode, secondNode, bindingSite);
-
-        graph.updateIdentifier();
-        return graph;
+    public static ComplexEntity from(ChemicalEntity first, ChemicalEntity second) {
+        return ComplexEntityBuilder.create()
+                .combine(first, second)
+                .build();
     }
 
     private String identifier;
@@ -77,14 +63,14 @@ public class GraphComplex extends AbstractMapGraph<GraphComplexNode, GraphComple
     private IdentifierSupplier nodeSupplier;
     private IdentifierSupplier edgeSupplier;
 
-    public GraphComplex() {
+    public ComplexEntity() {
         annotations = new ArrayList<>();
         features = new ChemistryFeatureContainer();
         nodeSupplier = new IdentifierSupplier();
         edgeSupplier = new IdentifierSupplier();
     }
 
-    private GraphComplex(GraphComplex graphComplex) {
+    private ComplexEntity(ComplexEntity graphComplex) {
         this();
         Map<Integer, Integer> identifierMapping = new HashMap<>();
         for (GraphComplexNode node : graphComplex.getNodes()) {
@@ -204,12 +190,12 @@ public class GraphComplex extends AbstractMapGraph<GraphComplexNode, GraphComple
     }
 
     @Override
-    public GraphComplex getCopy() {
-        return new GraphComplex(this);
+    public ComplexEntity getCopy() {
+        return new ComplexEntity(this);
     }
 
-    public Optional<GraphComplex> bind(GraphComplex otherComplex, BindingSite bindingSite) {
-        GraphComplex thisCopy = getCopy();
+    public Optional<ComplexEntity> bind(ComplexEntity otherComplex, BindingSite bindingSite) {
+        ComplexEntity thisCopy = getCopy();
         Optional<GraphComplexNode> firstPartner = thisCopy.getNodeWithUnoccupiedBindingSite(bindingSite);
         Optional<GraphComplexNode> secondPartner = otherComplex.getNodeWithUnoccupiedBindingSite(bindingSite);
         if (firstPartner.isPresent() && secondPartner.isPresent()) {
@@ -219,11 +205,11 @@ public class GraphComplex extends AbstractMapGraph<GraphComplexNode, GraphComple
         return Optional.empty();
     }
 
-    public Optional<GraphComplex> add(ChemicalEntity otherEntity, BindingSite bindingSite) {
-        return bind(GraphComplex.from(otherEntity, bindingSite), bindingSite);
+    public Optional<ComplexEntity> add(ChemicalEntity otherEntity, BindingSite bindingSite) {
+        return bind(ComplexEntity.from(otherEntity, bindingSite), bindingSite);
     }
 
-    public void combine(GraphComplexNode first, GraphComplexNode second, GraphComplex secondGraph, BindingSite bindingSite) {
+    public void combine(GraphComplexNode first, GraphComplexNode second, ComplexEntity secondGraph, BindingSite bindingSite) {
         Map<Integer, Integer> identifierMapping = new HashMap<>();
         for (GraphComplexNode node : secondGraph.getNodes()) {
             // conserve identifier
@@ -246,28 +232,28 @@ public class GraphComplex extends AbstractMapGraph<GraphComplexNode, GraphComple
         updateIdentifier();
     }
 
-    public Optional<List<GraphComplex>> unbind(BindingSite bindingSite) {
-        GraphComplex thisCopy = getCopy();
+    public Optional<List<ComplexEntity>> unbind(BindingSite bindingSite) {
+        ComplexEntity thisCopy = getCopy();
         Optional<GraphComplexEdge> edgeOptional = thisCopy.getEdge(edge -> edge.getConnectedSite().equals(bindingSite));
         if (!edgeOptional.isPresent()) {
             return Optional.empty();
         }
         thisCopy.removeEdge(edgeOptional.get());
-        List<GraphComplex> subgraphs = Graphs.findDisconnectedSubgraphs(thisCopy);
-        subgraphs.forEach(GraphComplex::updateIdentifier);
+        List<ComplexEntity> subgraphs = Graphs.findDisconnectedSubgraphs(thisCopy);
+        subgraphs.forEach(ComplexEntity::updateIdentifier);
         if (subgraphs.size() != 2) {
             return Optional.empty();
         }
         return Optional.of(subgraphs);
     }
 
-    public Optional<GraphComplex> remove(ChemicalEntity chemicalEntity, BindingSite bindingSite) {
-        GraphComplex thisCopy = getCopy();
+    public Optional<ComplexEntity> remove(ChemicalEntity chemicalEntity, BindingSite bindingSite) {
+        ComplexEntity thisCopy = getCopy();
         Optional<GraphComplexEdge> edgeOptional = thisCopy.getEdge(edge -> edge.getConnectedSite().equals(bindingSite));
         if (edgeOptional.isPresent()) {
             thisCopy.removeEdge(edgeOptional.get());
-            List<GraphComplex> subgraphs = Graphs.findDisconnectedSubgraphs(thisCopy);
-            for (GraphComplex subgraph : subgraphs) {
+            List<ComplexEntity> subgraphs = Graphs.findDisconnectedSubgraphs(thisCopy);
+            for (ComplexEntity subgraph : subgraphs) {
                 if (!subgraph.containsNode(node -> node.getEntity().equals(chemicalEntity))) {
                     subgraph.updateIdentifier();
                     return Optional.of(subgraph);
@@ -277,7 +263,15 @@ public class GraphComplex extends AbstractMapGraph<GraphComplexNode, GraphComple
         return Optional.empty();
     }
 
+    public List<GraphComplexNode> getNodesWithUnoccupiedBindingSite(BindingSite bindingSite) {
+        return unoccupiedNodesForBindingSite(bindingSite).collect(Collectors.toList());
+    }
+
     public Optional<GraphComplexNode> getNodeWithUnoccupiedBindingSite(BindingSite bindingSite) {
+        return unoccupiedNodesForBindingSite(bindingSite).findAny();
+    }
+
+    private Stream<GraphComplexNode> unoccupiedNodesForBindingSite(BindingSite bindingSite) {
         List<GraphComplexNode> occupiedNodes = getEdges().stream()
                 .filter(edge -> edge.getConnectedSite().equals(bindingSite))
                 .flatMap(edge -> Stream.of(edge.getSource(), edge.getTarget()))
@@ -291,8 +285,7 @@ public class GraphComplex extends AbstractMapGraph<GraphComplexNode, GraphComple
                         return node.getNeighbours().size() < 1;
                     }
                     return true;
-                })
-                .findAny();
+                });
     }
 
     private String generateIdentifier() {
@@ -301,6 +294,39 @@ public class GraphComplex extends AbstractMapGraph<GraphComplexNode, GraphComple
                 .map(ChemicalEntity::getIdentifier)
                 .sorted()
                 .collect(Collectors.joining("-"));
+    }
+
+    public void snapTo(ChemicalEntity chemicalEntity, Set<BindingSite> bindingSites) {
+        // check if there are already nodes with the chemical entity
+        List<GraphComplexNode> alreadyAvailableNodes = getNodes().stream()
+                .filter(node -> node.getEntity().equals(chemicalEntity))
+                .collect(Collectors.toList());
+        // if no node is available
+        if (alreadyAvailableNodes.isEmpty()) {
+            GraphComplexNode node = new GraphComplexNode(nextNodeIdentifier());
+            node.setEntity(chemicalEntity);
+            node.setBindingSites(new ArrayList<>(bindingSites));
+            addNode(node);
+        } else {
+            // assign binding sites if they dont already have it
+            for (GraphComplexNode availableNode : alreadyAvailableNodes) {
+                for (BindingSite bindingSite : bindingSites) {
+                    if (!availableNode.getBindingSites().contains(bindingSite)) {
+                        availableNode.getBindingSites().add(bindingSite);
+                    }
+                }
+            }
+        }
+        // add connections
+        for (BindingSite bindingSite : bindingSites) {
+            List<GraphComplexNode> nodesWithUnoccupiedBindingSite = getNodesWithUnoccupiedBindingSite(bindingSite);
+            if (nodesWithUnoccupiedBindingSite.size() > 1) {
+                GraphComplexNode first = nodesWithUnoccupiedBindingSite.get(0);
+                GraphComplexNode second = nodesWithUnoccupiedBindingSite.get(1);
+                addEdgeBetween(first, second, bindingSite);
+                break;
+            }
+        }
     }
 
     private void determineNativeMembraneAssociation() {
@@ -326,7 +352,7 @@ public class GraphComplex extends AbstractMapGraph<GraphComplexNode, GraphComple
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        GraphComplex that = (GraphComplex) o;
+        ComplexEntity that = (ComplexEntity) o;
         return Objects.equals(identifier, that.identifier);
     }
 

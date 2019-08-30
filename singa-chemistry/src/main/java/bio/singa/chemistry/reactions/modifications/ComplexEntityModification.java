@@ -2,14 +2,14 @@ package bio.singa.chemistry.reactions.modifications;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.chemistry.entities.complex.BindingSite;
-import bio.singa.chemistry.entities.complex.GraphComplex;
+import bio.singa.chemistry.entities.complex.ComplexEntity;
 
 import java.util.List;
 
 public interface ComplexEntityModification {
 
-    void addCandidate(GraphComplex candidate);
-    List<GraphComplex> getResults();
+    void addCandidate(ComplexEntity candidate);
+    List<ComplexEntity> getResults();
 
     BindingSite getBindingSite();
 

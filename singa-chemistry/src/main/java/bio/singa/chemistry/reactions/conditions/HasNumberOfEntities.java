@@ -1,7 +1,7 @@
 package bio.singa.chemistry.reactions.conditions;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
-import bio.singa.chemistry.entities.complex.GraphComplex;
+import bio.singa.chemistry.entities.complex.ComplexEntity;
 
 public class HasNumberOfEntities implements CandidateCondition {
 
@@ -14,7 +14,7 @@ public class HasNumberOfEntities implements CandidateCondition {
     }
 
     @Override
-    public boolean test(GraphComplex graphComplex) {
+    public boolean test(ComplexEntity graphComplex) {
         return graphComplex.countParts(chemicalEntity) == numberOfParts;
     }
 

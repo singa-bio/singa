@@ -1,7 +1,7 @@
 package bio.singa.chemistry.reactions.modifications;
 
 import bio.singa.chemistry.entities.complex.BindingSite;
-import bio.singa.chemistry.entities.complex.GraphComplex;
+import bio.singa.chemistry.entities.complex.ComplexEntity;
 
 /**
  * @author cl
@@ -17,12 +17,12 @@ public class BindModification extends AbstractComplexEntityModification {
         if (getCandidates().size() != 2) {
             logger.warn("Bind modifications only accept two candidates and return one result.");
         }
-        GraphComplex first = getCandidates().get(0);
-        GraphComplex second = getCandidates().get(1);
+        ComplexEntity first = getCandidates().get(0);
+        ComplexEntity second = getCandidates().get(1);
         apply(first, second);
     }
 
-    public void apply(GraphComplex first, GraphComplex second) {
+    public void apply(ComplexEntity first, ComplexEntity second) {
         first.bind(second, getBindingSite())
                 .ifPresent(this::addResult);
     }

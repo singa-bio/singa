@@ -1,6 +1,6 @@
 package bio.singa.chemistry.reactions.reactors;
 
-import bio.singa.chemistry.entities.complex.GraphComplex;
+import bio.singa.chemistry.entities.complex.ComplexEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,22 +10,22 @@ import java.util.List;
  */
 public class OneToTwoReactor extends AbstractGraphComplexReactor {
 
-    private List<GraphComplex> secondaryProducts;
+    private List<ComplexEntity> secondaryProducts;
 
     public OneToTwoReactor() {
         secondaryProducts = new ArrayList<>();
     }
 
-    public List<GraphComplex> getSecondaryProducts() {
+    public List<ComplexEntity> getSecondaryProducts() {
         return secondaryProducts;
     }
 
-    public void setSecondaryProducts(List<GraphComplex> secondaryProducts) {
+    public void setSecondaryProducts(List<ComplexEntity> secondaryProducts) {
         this.secondaryProducts = secondaryProducts;
     }
 
     @Override
-    public void collectCandidates(List<GraphComplex> substrateCandidates) {
+    public void collectCandidates(List<ComplexEntity> substrateCandidates) {
         setPrimarySubstrates(filterCandidates(substrateCandidates, getPrimaryCandidateConditions()));
     }
 
@@ -36,9 +36,9 @@ public class OneToTwoReactor extends AbstractGraphComplexReactor {
         }
         List<ReactionElement> elements = new ArrayList<>();
         for (int i = 0; i < getPrimarySubstrates().size(); i++) {
-            GraphComplex substrate = getPrimarySubstrates().get(i);
-            GraphComplex primaryProduct = getPrimaryProducts().get(i);
-            GraphComplex secondaryProduct = getSecondaryProducts().get(i);
+            ComplexEntity substrate = getPrimarySubstrates().get(i);
+            ComplexEntity primaryProduct = getPrimaryProducts().get(i);
+            ComplexEntity secondaryProduct = getSecondaryProducts().get(i);
             elements.add(ReactionElement.createOneToTwo(substrate, primaryProduct, secondaryProduct));
         }
         return elements;
@@ -46,10 +46,10 @@ public class OneToTwoReactor extends AbstractGraphComplexReactor {
 
     @Override
     public void apply() {
-        for (GraphComplex complex : getPrimarySubstrates()) {
+        for (ComplexEntity complex : getPrimarySubstrates()) {
             getModification().addCandidate(complex);
             getModification().apply();
-            List<GraphComplex> results = getModification().getResults();
+            List<ComplexEntity> results = getModification().getResults();
             if (results.size() != 2) {
                 logger.warn("One to two modifications should only have one product per modification");
             }

@@ -2,7 +2,7 @@ package bio.singa.chemistry.reactions.modifications;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.chemistry.entities.complex.BindingSite;
-import bio.singa.chemistry.entities.complex.GraphComplex;
+import bio.singa.chemistry.entities.complex.ComplexEntity;
 
 /**
  * @author cl
@@ -20,11 +20,11 @@ public class RemoveModification extends AbstractComplexEntityModification {
         if (getCandidates().size() != 1) {
             logger.warn("Remove modifications only accept one candidate and return one result.");
         }
-        GraphComplex candidate = getCandidates().get(0);
+        ComplexEntity candidate = getCandidates().get(0);
         apply(candidate);
     }
 
-    public void apply(GraphComplex complex) {
+    public void apply(ComplexEntity complex) {
         complex.remove(getSecondaryEntity(), getBindingSite())
                 .ifPresent(this::addResult);
     }

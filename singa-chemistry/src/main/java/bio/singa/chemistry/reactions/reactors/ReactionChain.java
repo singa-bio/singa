@@ -1,6 +1,6 @@
 package bio.singa.chemistry.reactions.reactors;
 
-import bio.singa.chemistry.entities.complex.GraphComplex;
+import bio.singa.chemistry.entities.complex.ComplexEntity;
 import bio.singa.core.utility.ListHelper;
 
 import java.util.*;
@@ -50,7 +50,7 @@ public class ReactionChain {
         return reactantElements;
     }
 
-    public void process(Collection<GraphComplex> availableEntities) {
+    public void process(Collection<ComplexEntity> availableEntities) {
         processReactors(availableEntities, reactors);
         sealTracks();
         if (considerInversion) {
@@ -64,8 +64,8 @@ public class ReactionChain {
         tracks.clear();
     }
 
-    private void processReactors(Collection<GraphComplex> availableEntities, List<ComplexReactor> reactors) {
-        List<GraphComplex> next = new ArrayList<>(availableEntities);
+    private void processReactors(Collection<ComplexEntity> availableEntities, List<ComplexReactor> reactors) {
+        List<ComplexEntity> next = new ArrayList<>(availableEntities);
         for (ComplexReactor reactor : reactors) {
             reactor.collectCandidates(next);
             reactor.apply();
@@ -80,8 +80,8 @@ public class ReactionChain {
 
     private void expandPath(List<ReactionElement> reactionElements) {
         for (ReactionElement element : reactionElements) {
-            List<GraphComplex> substrates = element.getSubstrates();
-            List<GraphComplex> products = element.getProducts();
+            List<ComplexEntity> substrates = element.getSubstrates();
+            List<ComplexEntity> products = element.getProducts();
             if (tracks.isEmpty()) {
                 // add initial track
                 initializeTrack(substrates, products);
@@ -106,7 +106,7 @@ public class ReactionChain {
         }
     }
 
-    private void initializeTrack(List<GraphComplex> substrates, List<GraphComplex> products) {
+    private void initializeTrack(List<ComplexEntity> substrates, List<ComplexEntity> products) {
         ReactionTrack track = new ReactionTrack();
         track.append(substrates);
         track.append(products);
@@ -115,8 +115,8 @@ public class ReactionChain {
 
     private void collectReactantElements() {
         for (ReactionTrack track : tracks) {
-            List<GraphComplex> substrates = track.getFirst();
-            List<GraphComplex> products = track.getLast();
+            List<ComplexEntity> substrates = track.getFirst();
+            List<ComplexEntity> products = track.getLast();
             ReactionElement newElement = new ReactionElement(substrates, products);
             if (considerInversion) {
                 ReactionElement inverseElement = new ReactionElement(products, substrates);

@@ -1,6 +1,6 @@
 package bio.singa.chemistry.reactions.reactors;
 
-import bio.singa.chemistry.entities.complex.GraphComplex;
+import bio.singa.chemistry.entities.complex.ComplexEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +11,7 @@ import java.util.List;
 public class OneToOneReactor extends AbstractGraphComplexReactor {
 
     @Override
-    public void collectCandidates(List<GraphComplex> substrateCandidates) {
+    public void collectCandidates(List<ComplexEntity> substrateCandidates) {
         setPrimarySubstrates(filterCandidates(substrateCandidates, getPrimaryCandidateConditions()));
     }
 
@@ -22,18 +22,18 @@ public class OneToOneReactor extends AbstractGraphComplexReactor {
         }
         List<ReactionElement> elements = new ArrayList<>();
         for (int i = 0; i < getPrimarySubstrates().size(); i++) {
-            GraphComplex substrate = getPrimarySubstrates().get(i);
-            GraphComplex product = getPrimaryProducts().get(i);
+            ComplexEntity substrate = getPrimarySubstrates().get(i);
+            ComplexEntity product = getPrimaryProducts().get(i);
             elements.add(ReactionElement.createOneToOne(substrate, product));
         }
         return elements;
     }
 
     public void apply() {
-        for (GraphComplex complex : getPrimarySubstrates()) {
+        for (ComplexEntity complex : getPrimarySubstrates()) {
             getModification().addCandidate(complex);
             getModification().apply();
-            List<GraphComplex> results = getModification().getResults();
+            List<ComplexEntity> results = getModification().getResults();
             if (results.size() != 1) {
                 logger.warn("One to one modifications should only have one product per modification");
             }

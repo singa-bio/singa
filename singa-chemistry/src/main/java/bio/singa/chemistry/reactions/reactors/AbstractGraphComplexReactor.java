@@ -2,7 +2,7 @@ package bio.singa.chemistry.reactions.reactors;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.chemistry.entities.complex.BindingSite;
-import bio.singa.chemistry.entities.complex.GraphComplex;
+import bio.singa.chemistry.entities.complex.ComplexEntity;
 import bio.singa.chemistry.reactions.modifications.ComplexEntityModification;
 import bio.singa.core.utility.Pair;
 import org.slf4j.Logger;
@@ -23,9 +23,9 @@ public abstract class AbstractGraphComplexReactor implements ComplexReactor {
 
     private ComplexEntityModification modification;
 
-    private List<Predicate<GraphComplex>> primaryCandidateConditions;
-    private List<GraphComplex> primarySubstrates;
-    private List<GraphComplex> primaryProducts;
+    private List<Predicate<ComplexEntity>> primaryCandidateConditions;
+    private List<ComplexEntity> primarySubstrates;
+    private List<ComplexEntity> primaryProducts;
 
     public AbstractGraphComplexReactor() {
         primaryCandidateConditions = new ArrayList<>();
@@ -33,11 +33,11 @@ public abstract class AbstractGraphComplexReactor implements ComplexReactor {
         primaryProducts = new ArrayList<>();
     }
 
-    protected List<GraphComplex> filterCandidates(List<GraphComplex> complexes, List<Predicate<GraphComplex>> conditions) {
-        List<GraphComplex> list = new ArrayList<>();
-        Predicate<GraphComplex> predicate = conditions.stream()
+    protected List<ComplexEntity> filterCandidates(List<ComplexEntity> complexes, List<Predicate<ComplexEntity>> conditions) {
+        List<ComplexEntity> list = new ArrayList<>();
+        Predicate<ComplexEntity> predicate = conditions.stream()
                 .reduce(Predicate::and).orElse(complex -> false);
-        for (GraphComplex graphComplex : complexes) {
+        for (ComplexEntity graphComplex : complexes) {
             if (predicate.test(graphComplex)) {
                 list.add(graphComplex);
             }
@@ -57,27 +57,27 @@ public abstract class AbstractGraphComplexReactor implements ComplexReactor {
         this.modification = modification;
     }
 
-    public List<Predicate<GraphComplex>> getPrimaryCandidateConditions() {
+    public List<Predicate<ComplexEntity>> getPrimaryCandidateConditions() {
         return primaryCandidateConditions;
     }
 
-    public void setPrimaryCandidateConditions(List<Predicate<GraphComplex>> primaryCandidateConditions) {
+    public void setPrimaryCandidateConditions(List<Predicate<ComplexEntity>> primaryCandidateConditions) {
         this.primaryCandidateConditions = primaryCandidateConditions;
     }
 
-    public List<GraphComplex> getPrimarySubstrates() {
+    public List<ComplexEntity> getPrimarySubstrates() {
         return primarySubstrates;
     }
 
-    public void setPrimarySubstrates(List<GraphComplex> primarySubstrates) {
+    public void setPrimarySubstrates(List<ComplexEntity> primarySubstrates) {
         this.primarySubstrates = primarySubstrates;
     }
 
-    public List<GraphComplex> getPrimaryProducts() {
+    public List<ComplexEntity> getPrimaryProducts() {
         return primaryProducts;
     }
 
-    public void setPrimaryProducts(List<GraphComplex> primaryProducts) {
+    public void setPrimaryProducts(List<ComplexEntity> primaryProducts) {
         this.primaryProducts = primaryProducts;
     }
 

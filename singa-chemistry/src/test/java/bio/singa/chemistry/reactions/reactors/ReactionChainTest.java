@@ -81,7 +81,6 @@ class ReactionChainTest {
                 .remove(atp)
                 .from(pkar)
                 .build();
-        System.out.println();
     }
 
     @Test
@@ -89,7 +88,6 @@ class ReactionChainTest {
         ReactionChain reactors = ReactionChainBuilder.add(p)
                 .to(pkar)
                 .condition(hasNumberOfEntity(atp, 1))
-                .identifier("blah")
                 .and()
                 .remove(atp)
                 .from(pkar)

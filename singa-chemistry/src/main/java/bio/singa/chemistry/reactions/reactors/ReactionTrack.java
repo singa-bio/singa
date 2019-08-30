@@ -1,6 +1,6 @@
 package bio.singa.chemistry.reactions.reactors;
 
-import bio.singa.chemistry.entities.complex.GraphComplex;
+import bio.singa.chemistry.entities.complex.ComplexEntity;
 
 import java.util.Deque;
 import java.util.LinkedList;
@@ -12,30 +12,30 @@ import java.util.stream.Collectors;
  */
 public class ReactionTrack {
 
-    private Deque<List<GraphComplex>> track;
+    private Deque<List<ComplexEntity>> track;
     private boolean sealed;
 
     public ReactionTrack() {
         track = new LinkedList<>();
     }
 
-    public Deque<List<GraphComplex>> getTrack() {
+    public Deque<List<ComplexEntity>> getTrack() {
         return track;
     }
 
-    public void setTrack(Deque<List<GraphComplex>> track) {
+    public void setTrack(Deque<List<ComplexEntity>> track) {
         this.track = track;
     }
 
-    public void append(List<GraphComplex> step) {
+    public void append(List<ComplexEntity> step) {
         track.addLast(step);
     }
 
-    public List<GraphComplex> getFirst() {
+    public List<ComplexEntity> getFirst() {
         return track.getFirst();
     }
 
-    public List<GraphComplex> getLast() {
+    public List<ComplexEntity> getLast() {
         return track.getLast();
     }
 
@@ -55,7 +55,7 @@ public class ReactionTrack {
     public String toString() {
         return track.stream()
                 .map(complexes -> complexes.stream()
-                        .map(GraphComplex::getIdentifier)
+                        .map(ComplexEntity::getIdentifier)
                         .collect(Collectors.joining(", ")))
                 .collect(Collectors.joining(" -> "));
     }

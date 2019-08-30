@@ -1,7 +1,7 @@
 package bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.reactants;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
-import bio.singa.chemistry.entities.complex.GraphComplex;
+import bio.singa.chemistry.entities.complex.ComplexEntity;
 import bio.singa.chemistry.reactions.reactors.ReactionChain;
 import bio.singa.chemistry.reactions.reactors.ReactionElement;
 import bio.singa.simulation.model.sections.CellTopology;
@@ -28,13 +28,13 @@ public class RuleBasedReactantBehavior implements ReactantBehavior {
     public void prepareReactionSets() {
         for (ReactionElement reactantElement : reactionChain.getReactantElements()) {
             List<Reactant> substrates = new ArrayList<>();
-            for (GraphComplex substrate : reactantElement.getSubstrates()) {
+            for (ComplexEntity substrate : reactantElement.getSubstrates()) {
                 Reactant reactant = new Reactant(substrate, ReactantRole.SUBSTRATE, determineNativeTopology(substrate));
                 substrates.add(reactant);
             }
 
             List<Reactant> products = new ArrayList<>();
-            for (GraphComplex substrate : reactantElement.getProducts()) {
+            for (ComplexEntity substrate : reactantElement.getProducts()) {
                 Reactant reactant = new Reactant(substrate, ReactantRole.PRODUCT, determineNativeTopology(substrate));
                 products.add(reactant);
             }

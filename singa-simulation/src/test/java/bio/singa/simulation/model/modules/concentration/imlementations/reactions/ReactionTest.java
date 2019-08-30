@@ -3,7 +3,7 @@ package bio.singa.simulation.model.modules.concentration.imlementations.reaction
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.chemistry.entities.EntityRegistry;
 import bio.singa.chemistry.entities.complex.BindingSite;
-import bio.singa.chemistry.entities.complex.GraphComplex;
+import bio.singa.chemistry.entities.complex.ComplexEntity;
 import bio.singa.chemistry.entities.simple.Protein;
 import bio.singa.chemistry.entities.simple.SmallMolecule;
 import bio.singa.chemistry.features.reactions.RateConstant;
@@ -192,7 +192,7 @@ class ReactionTest {
                 .additionalIdentifier(new UniProtIdentifier("P35348"))
                 .build();
 
-        GraphComplex complex = GraphComplex.from(receptor, ligand);
+        ComplexEntity complex = ComplexEntity.from(receptor, ligand);
 
         // create simulation
         Simulation simulation = new Simulation();
@@ -293,7 +293,7 @@ class ReactionTest {
                 .assignFeature(new MolarMass(100, Evidence.NO_EVIDENCE))
                 .build();
 
-        GraphComplex complex = GraphComplex.from(binder, bindee);
+        ComplexEntity complex = ComplexEntity.from(binder, bindee);
 
         // create and add module
         ReactionBuilder.staticReactants(simulation)
@@ -381,7 +381,7 @@ class ReactionTest {
                 .assignFeature(new MolarMass(100, Evidence.NO_EVIDENCE))
                 .build();
 
-        GraphComplex complex = GraphComplex.from(binder, bindee);
+        ComplexEntity complex = ComplexEntity.from(binder, bindee);
 
         // create and add module
         ReactionBuilder.staticReactants(simulation)

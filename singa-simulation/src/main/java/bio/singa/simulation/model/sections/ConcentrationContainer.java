@@ -1,7 +1,7 @@
 package bio.singa.simulation.model.sections;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
-import bio.singa.chemistry.entities.complex.GraphComplex;
+import bio.singa.chemistry.entities.complex.ComplexEntity;
 import bio.singa.chemistry.entities.complex.GraphComplexNode;
 import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.features.units.UnitRegistry;
@@ -153,8 +153,8 @@ public class ConcentrationContainer {
             if (query.equals(chemicalEntity)) {
                 return Optional.of(chemicalEntity);
             }
-            if (chemicalEntity instanceof GraphComplex) {
-                return ((GraphComplex) chemicalEntity).getNodes().stream()
+            if (chemicalEntity instanceof ComplexEntity) {
+                return ((ComplexEntity) chemicalEntity).getNodes().stream()
                         .filter(node -> node.getEntity().equals(query))
                         .map(GraphComplexNode::getEntity)
                         .findAny();

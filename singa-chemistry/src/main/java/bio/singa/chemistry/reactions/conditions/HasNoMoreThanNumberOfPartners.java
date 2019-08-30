@@ -1,7 +1,7 @@
 package bio.singa.chemistry.reactions.conditions;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
-import bio.singa.chemistry.entities.complex.GraphComplex;
+import bio.singa.chemistry.entities.complex.ComplexEntity;
 
 /**
  * @author cl
@@ -17,7 +17,7 @@ public class HasNoMoreThanNumberOfPartners implements CandidateCondition {
     }
 
     @Override
-    public boolean test(GraphComplex graphComplex) {
+    public boolean test(ComplexEntity graphComplex) {
         return graphComplex.getNodes().stream()
                 .filter(node -> node.isEntity(chemicalEntity))
                 .anyMatch(match -> match.getNeighbours().size() <= numberOfPartners);

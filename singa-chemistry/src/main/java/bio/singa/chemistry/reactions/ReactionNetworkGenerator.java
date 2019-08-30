@@ -3,7 +3,7 @@ package bio.singa.chemistry.reactions;
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.chemistry.entities.EntityRegistry;
 import bio.singa.chemistry.entities.complex.BindingSite;
-import bio.singa.chemistry.entities.complex.GraphComplex;
+import bio.singa.chemistry.entities.complex.ComplexEntity;
 import bio.singa.chemistry.entities.complex.GraphComplexNode;
 import bio.singa.chemistry.reactions.reactors.ComplexReactor;
 import bio.singa.chemistry.reactions.reactors.ReactionChain;
@@ -21,7 +21,7 @@ public class ReactionNetworkGenerator {
 
     private static final Logger logger = LoggerFactory.getLogger(ReactionNetworkGenerator.class);
 
-    private Set<GraphComplex> possibleEntities;
+    private Set<ComplexEntity> possibleEntities;
     private List<ReactionChain> reactionChains;
 
     public ReactionNetworkGenerator() {
@@ -66,7 +66,7 @@ public class ReactionNetworkGenerator {
 
     private void logBindingSites() {
         logger.debug("assigned binding sites:");
-        for (GraphComplex possibleEntity : possibleEntities) {
+        for (ComplexEntity possibleEntity : possibleEntities) {
             for (GraphComplexNode node : possibleEntity.getNodes()) {
                 logger.debug("  {}: {}", node.getEntity().getIdentifier(), node.getBindingSites());
             }
@@ -117,7 +117,7 @@ public class ReactionNetworkGenerator {
         for (Map.Entry<ChemicalEntity, Set<BindingSite>> entry : bindingSiteMapping.entrySet()) {
             ChemicalEntity entity = entry.getKey();
             Set<BindingSite> bindingSites = entry.getValue();
-            possibleEntities.add(GraphComplex.from(entity, bindingSites));
+            possibleEntities.add(ComplexEntity.from(entity, bindingSites));
         }
     }
 

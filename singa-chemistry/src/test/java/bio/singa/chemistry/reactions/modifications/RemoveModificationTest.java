@@ -3,7 +3,7 @@ package bio.singa.chemistry.reactions.modifications;
 import bio.singa.chemistry.entities.simple.Protein;
 import bio.singa.chemistry.entities.simple.SmallMolecule;
 import bio.singa.chemistry.entities.complex.BindingSite;
-import bio.singa.chemistry.entities.complex.GraphComplex;
+import bio.singa.chemistry.entities.complex.ComplexEntity;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -21,18 +21,18 @@ class RemoveModificationTest {
     @Test
     void apply() {
         BindingSite bindingSite = BindingSite.forPair(a, b);
-        GraphComplex first = GraphComplex.from(a, bindingSite);
-        GraphComplex second = GraphComplex.from(b, bindingSite);
-        GraphComplex complex = first.bind(second, bindingSite).get();
+        ComplexEntity first = ComplexEntity.from(a, bindingSite);
+        ComplexEntity second = ComplexEntity.from(b, bindingSite);
+        ComplexEntity complex = first.bind(second, bindingSite).get();
 
         ComplexEntityModification modification = new RemoveModification(bindingSite, b);
         modification.addCandidate(complex);
         modification.apply();
-        List<GraphComplex> results = modification.getResults();
+        List<ComplexEntity> results = modification.getResults();
 
         assertEquals(2, complex.getNodes().size());
         assertEquals(1, results.size());
-        GraphComplex graphComplex = results.get(0);
+        ComplexEntity graphComplex = results.get(0);
         assertEquals(1, graphComplex.getNodes().size());
         assertTrue(graphComplex.containsEntity(a));
         assertFalse(graphComplex.containsEntity(b));

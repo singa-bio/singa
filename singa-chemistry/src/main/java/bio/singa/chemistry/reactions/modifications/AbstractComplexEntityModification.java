@@ -2,7 +2,7 @@ package bio.singa.chemistry.reactions.modifications;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.chemistry.entities.complex.BindingSite;
-import bio.singa.chemistry.entities.complex.GraphComplex;
+import bio.singa.chemistry.entities.complex.ComplexEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,8 +18,8 @@ public abstract class AbstractComplexEntityModification implements ComplexEntity
     private ChemicalEntity primaryEntity;
     private ChemicalEntity secondaryEntity;
 
-    private List<GraphComplex> candidates;
-    private List<GraphComplex> results;
+    private List<ComplexEntity> candidates;
+    private List<ComplexEntity> results;
 
     public AbstractComplexEntityModification(BindingSite bindingSite) {
         this.bindingSite = bindingSite;
@@ -54,31 +54,31 @@ public abstract class AbstractComplexEntityModification implements ComplexEntity
         this.secondaryEntity = secondaryEntity;
     }
 
-    public List<GraphComplex> getCandidates() {
+    public List<ComplexEntity> getCandidates() {
         return candidates;
     }
 
-    public void setCandidates(List<GraphComplex> candidates) {
+    public void setCandidates(List<ComplexEntity> candidates) {
         this.candidates = candidates;
     }
 
-    public void addCandidate(GraphComplex candidate) {
+    public void addCandidate(ComplexEntity candidate) {
         candidates.add(candidate);
     }
 
-    public List<GraphComplex> getResults() {
+    public List<ComplexEntity> getResults() {
         return results;
     }
 
-    public void setResults(List<GraphComplex> results) {
+    public void setResults(List<ComplexEntity> results) {
         this.results = results;
     }
 
-    void addResult(GraphComplex result) {
+    void addResult(ComplexEntity result) {
         results.add(result);
     }
 
-    void addAllResults(Collection<GraphComplex> results) {
+    void addAllResults(Collection<ComplexEntity> results) {
         this.results.addAll(results);
     }
 
