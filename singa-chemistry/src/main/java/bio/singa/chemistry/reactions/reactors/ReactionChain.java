@@ -58,6 +58,7 @@ public class ReactionChain {
                 invertReactors();
             }
             processReactors(availableEntities, invertedReactors);
+            invertUnsealedTracks();
             sealTracks();
         }
         collectReactantElements();
@@ -117,14 +118,24 @@ public class ReactionChain {
         for (ReactionTrack track : tracks) {
             List<ComplexEntity> substrates = track.getFirst();
             List<ComplexEntity> products = track.getLast();
-            ReactionElement newElement = new ReactionElement(substrates, products);
-            if (considerInversion) {
-                ReactionElement inverseElement = new ReactionElement(products, substrates);
-                if (reactantElements.contains(inverseElement)){
-                    continue;
-                }
+            ReactionElement newElement = null;
+            if (track.isInverse()) {
+                newElement = new ReactionElement(products, substrates);
+            } else {
+                newElement = new ReactionElement(substrates, products);
+            }
+            if (reactantElements.contains(newElement)) {
+                continue;
             }
             reactantElements.add(newElement);
+        }
+    }
+
+    private void invertUnsealedTracks() {
+        for (ReactionTrack track : tracks) {
+            if (!track.isSealed()) {
+                track.setInverse(true);
+            }
         }
     }
 

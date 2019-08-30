@@ -53,8 +53,15 @@ public class OneToTwoReactor extends AbstractGraphComplexReactor {
             if (results.size() != 2) {
                 logger.warn("One to two modifications should only have one product per modification");
             }
-            getPrimaryProducts().add(results.get(0));
-            getSecondaryProducts().add(results.get(1));
+            ComplexEntity first = results.get(0);
+            ComplexEntity second = results.get(1);
+            if (first.containsEntity(getModification().getPrimaryEntity())) {
+                getPrimaryProducts().add(first);
+                getSecondaryProducts().add(second);
+            } else {
+                getPrimaryProducts().add(second);
+                getSecondaryProducts().add(first);
+            }
             getModification().clear();
         }
     }

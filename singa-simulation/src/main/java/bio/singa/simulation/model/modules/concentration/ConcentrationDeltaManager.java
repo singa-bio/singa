@@ -9,6 +9,8 @@ import bio.singa.simulation.model.sections.ConcentrationContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.measure.Quantity;
+import javax.measure.quantity.Dimensionless;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -200,8 +202,12 @@ public class ConcentrationDeltaManager {
         ChemicalEntity errorEntity = null;
         for (ChemicalEntity entity : currentConcentrations.getReferencedEntities()) {
             for (CellSubsection subsection : currentConcentrations.getReferencedSubsections()) {
-                double interimConcentration = interimConcentrations.get(subsection, entity);
                 double currentConcentration = currentConcentrations.get(subsection, entity);
+                Quantity<Dimensionless> molecules = MolarConcentration.concentrationToMolecules(currentConcentration);
+                if (molecules.getValue().doubleValue() < 1e-4) {
+                    continue;
+                }
+                double interimConcentration = interimConcentrations.get(subsection, entity);
                 if (currentConcentration != 0.0 && interimConcentration != 0.0) {
                     double globalError = Math.abs(1 - (interimConcentration / currentConcentration));
                     if (globalError > largestError) {
@@ -210,6 +216,9 @@ public class ConcentrationDeltaManager {
                     }
                 }
             }
+        }
+        if (errorEntity == null) {
+            return NumericalError.MINIMAL_EMPTY_ERROR;
         }
         return new NumericalError(null, errorEntity, largestError);
     }

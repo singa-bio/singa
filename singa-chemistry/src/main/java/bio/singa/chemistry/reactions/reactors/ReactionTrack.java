@@ -14,6 +14,7 @@ public class ReactionTrack {
 
     private Deque<List<ComplexEntity>> track;
     private boolean sealed;
+    private boolean inverse;
 
     public ReactionTrack() {
         track = new LinkedList<>();
@@ -45,6 +46,14 @@ public class ReactionTrack {
 
     public void setSealed(boolean sealed) {
         this.sealed = sealed;
+    }
+
+    public boolean isInverse() {
+        return inverse;
+    }
+
+    public void setInverse(boolean inverse) {
+        this.inverse = inverse;
     }
 
     public void seal() {
