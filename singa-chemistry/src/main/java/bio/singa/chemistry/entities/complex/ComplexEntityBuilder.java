@@ -66,7 +66,7 @@ public class ComplexEntityBuilder {
             }
             // connect
             bindingSiteMapping.forEach(complex::snapTo);
-            complex.updateIdentifier();
+            complex.update();
             return complex;
         }
     }

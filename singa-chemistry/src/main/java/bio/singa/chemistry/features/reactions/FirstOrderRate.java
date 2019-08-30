@@ -13,6 +13,7 @@ import static tech.units.indriya.AbstractUnit.ONE;
  */
 public interface FirstOrderRate extends ReactionRate<FirstOrderRate> {
 
+
     static Unit<FirstOrderRate> getConsistentUnit() {
         return ONE.divide(UnitRegistry.getTimeUnit()).asType(FirstOrderRate.class);
     }

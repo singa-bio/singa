@@ -2,6 +2,7 @@ package bio.singa.chemistry.entities.complex;
 
 import bio.singa.chemistry.annotations.Annotation;
 import bio.singa.chemistry.entities.ChemicalEntity;
+import bio.singa.chemistry.entities.EntityRegistry;
 import bio.singa.chemistry.entities.simple.SmallMolecule;
 import bio.singa.chemistry.features.ChemistryFeatureContainer;
 import bio.singa.features.identifiers.SimpleStringIdentifier;
@@ -29,14 +30,14 @@ public class ComplexEntity extends AbstractMapGraph<GraphComplexNode, GraphCompl
         GraphComplexNode node = new GraphComplexNode(graph.nextNodeIdentifier());
         node.setEntity(chemicalEntity);
         graph.addNode(node);
-        graph.updateIdentifier();
+        graph.update();
         return graph;
     }
 
     public static ComplexEntity from(ChemicalEntity chemicalEntity, BindingSite bindingSite) {
         ComplexEntity graph = from(chemicalEntity);
         graph.addBindingSite(chemicalEntity, bindingSite);
-        graph.updateIdentifier();
+        graph.update();
         return graph;
     }
 
@@ -45,7 +46,7 @@ public class ComplexEntity extends AbstractMapGraph<GraphComplexNode, GraphCompl
         for (BindingSite bindingSite : bindingSites) {
             graph.addBindingSite(chemicalEntity, bindingSite);
         }
-        graph.updateIdentifier();
+        graph.update();
         return graph;
     }
 
@@ -229,7 +230,7 @@ public class ComplexEntity extends AbstractMapGraph<GraphComplexNode, GraphCompl
             addEdgeBetween(edgeCopy, source, target);
         }
         addEdgeBetween(first, getNode(identifierMapping.get(second.getIdentifier())), bindingSite);
-        updateIdentifier();
+        update();
     }
 
     public Optional<List<ComplexEntity>> unbind(BindingSite bindingSite) {
@@ -240,7 +241,7 @@ public class ComplexEntity extends AbstractMapGraph<GraphComplexNode, GraphCompl
         }
         thisCopy.removeEdge(edgeOptional.get());
         List<ComplexEntity> subgraphs = Graphs.findDisconnectedSubgraphs(thisCopy);
-        subgraphs.forEach(ComplexEntity::updateIdentifier);
+        subgraphs.forEach(ComplexEntity::update);
         if (subgraphs.size() != 2) {
             return Optional.empty();
         }
@@ -255,7 +256,7 @@ public class ComplexEntity extends AbstractMapGraph<GraphComplexNode, GraphCompl
             List<ComplexEntity> subgraphs = Graphs.findDisconnectedSubgraphs(thisCopy);
             for (ComplexEntity subgraph : subgraphs) {
                 if (!subgraph.containsNode(node -> node.getEntity().equals(chemicalEntity))) {
-                    subgraph.updateIdentifier();
+                    subgraph.update();
                     return Optional.of(subgraph);
                 }
             }
@@ -334,9 +335,10 @@ public class ComplexEntity extends AbstractMapGraph<GraphComplexNode, GraphCompl
                 .anyMatch(node -> node.getEntity().isMembraneBound());
     }
 
-    public void updateIdentifier() {
+    public void update() {
         identifier = generateIdentifier();
         determineNativeMembraneAssociation();
+        EntityRegistry.put(this);
     }
 
     public String getIdentifier() {

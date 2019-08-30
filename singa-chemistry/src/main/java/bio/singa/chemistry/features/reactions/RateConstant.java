@@ -3,11 +3,14 @@ package bio.singa.chemistry.features.reactions;
 import bio.singa.features.model.Evidence;
 import bio.singa.features.model.ScalableQuantitativeFeature;
 import bio.singa.features.quantities.MolarConcentration;
+import tech.units.indriya.quantity.Quantities;
 import tech.units.indriya.unit.ProductUnit;
 
 import javax.measure.Quantity;
 import javax.measure.Unit;
 import javax.measure.quantity.Time;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static bio.singa.chemistry.features.reactions.RateConstant.Direction.BACKWARDS;
@@ -104,8 +107,7 @@ public abstract class RateConstant<ReactionRateType extends ReactionRate<Reactio
     }
 
     public interface OriginStep {
-        BuilderStep evidence(Evidence evidence);
-
+        BuilderStep evidence(Evidence... evidence);
         RateConstant build();
     }
 
@@ -118,12 +120,13 @@ public abstract class RateConstant<ReactionRateType extends ReactionRate<Reactio
         private Direction direction;
         private Order order;
         private double value;
-        private Evidence evidence;
+        private List<Evidence> evidence;
         private Unit<Time> timeUnit;
         private Unit<MolarConcentration> concentrationUnit;
 
         public RateBuilder(double value) {
             this.value = value;
+            evidence = new ArrayList<>();
         }
 
         @Override
@@ -175,48 +178,44 @@ public abstract class RateConstant<ReactionRateType extends ReactionRate<Reactio
         }
 
         @Override
-        public BuilderStep evidence(Evidence evidence) {
-            this.evidence = evidence;
+        public BuilderStep evidence(Evidence... evidence) {
+            this.evidence.addAll(Arrays.asList(evidence));
             return this;
         }
 
         @Override
         public RateConstant build() {
+            RateConstant<?> rateConstant = null;
             if (direction == FORWARDS && order == ZERO) {
-                return new ZeroOrderForwardsRateConstant(value,
-                        new ProductUnit<>(concentrationUnit.divide(timeUnit)), evidence);
+                ProductUnit<ZeroOrderRate> unit = new ProductUnit<>(concentrationUnit.divide(timeUnit));
+                rateConstant = new ZeroOrderForwardsRateConstant(Quantities.getQuantity(value, unit));
             }
             if (direction == FORWARDS && order == FIRST) {
-                return new FirstOrderForwardsRateConstant(value,
-                        new ProductUnit<>(ONE.divide(timeUnit)), evidence);
+                ProductUnit<FirstOrderRate> unit = new ProductUnit<>(ONE.divide(timeUnit));
+                rateConstant = new FirstOrderForwardsRateConstant(Quantities.getQuantity(value, unit));
             }
             if (direction == FORWARDS && order == SECOND) {
-                return new SecondOrderForwardsRateConstant(value,
-                        new ProductUnit<>(ONE.divide(concentrationUnit.multiply(timeUnit))), evidence);
-            }
-            if (direction == FORWARDS && order == THIRD) {
-                return new ThirdOrderForwardsRateConstant(value,
-                        new ProductUnit<>(ONE.divide(concentrationUnit.pow(2).multiply(timeUnit))), evidence);
+                ProductUnit<SecondOrderRate> unit = new ProductUnit<>(ONE.divide(concentrationUnit.multiply(timeUnit)));
+                rateConstant = new SecondOrderForwardsRateConstant(Quantities.getQuantity(value, unit));
             }
 
             if (direction == BACKWARDS && order == ZERO) {
-                return new ZeroOrderBackwardsRateConstant(value,
-                        new ProductUnit<>(concentrationUnit.divide(timeUnit)), evidence);
+                ProductUnit<ZeroOrderRate> unit = new ProductUnit<>(concentrationUnit.divide(timeUnit));
+                rateConstant = new ZeroOrderBackwardsRateConstant(Quantities.getQuantity(value, unit));
             }
             if (direction == BACKWARDS && order == FIRST) {
-                return new FirstOrderBackwardsRateConstant(value,
-                        new ProductUnit<>(ONE.divide(timeUnit)), evidence);
+                ProductUnit<FirstOrderRate> unit = new ProductUnit<>(ONE.divide(timeUnit));
+                rateConstant = new FirstOrderBackwardsRateConstant(Quantities.getQuantity(value, unit));
             }
             if (direction == BACKWARDS && order == SECOND) {
-                return new SecondOrderBackwardsRateConstant(value,
-                        new ProductUnit<>(ONE.divide(concentrationUnit.multiply(timeUnit))), evidence);
+                ProductUnit<SecondOrderRate> unit = new ProductUnit<>(ONE.divide(concentrationUnit.multiply(timeUnit)));
+                rateConstant = new SecondOrderBackwardsRateConstant(Quantities.getQuantity(value, unit));
             }
-            if (direction == BACKWARDS && order == THIRD) {
-                return new ThirdOrderBackwardsRateConstant(value,
-                        new ProductUnit<>(ONE.divide(concentrationUnit.pow(2).multiply(timeUnit))), evidence);
+            if (rateConstant == null) {
+                throw new IllegalStateException("Reaction Rate cannot be created with the given parameters.");
             }
-
-            throw new IllegalStateException("Reaction Rate cannot be created with the given parameters.");
+            evidence.forEach(rateConstant::addEvidence);
+            return rateConstant;
         }
     }
 
