@@ -288,10 +288,10 @@ public class SimulationManager implements Runnable {
                 // calculate time remaining
                 logger.info("PROGRESS: {} time remaining - {} passed time in simulation",
                         simulationStatus.getEstimatedTimeRemaining(), simulationStatus.getElapsedTime());
-                logger.info("SPEED   : {} ({},{}) epochs (increases, decreases) - {} (simulation time) per s(real time)",
-                        simulationStatus.getNumberOfEpochsSinceLastUpdate(), simulationStatus.getNumberOfTimeStepIncreasesSinceLastUpdate(), simulationStatus.getNumberOfTimeStepDecreasesSinceLastUpdate(), simulationStatus.getEstimatedSpeed());
-                logger.info("ERROR   : {} ({}) delta error (critical delta) - {} global error",
-                        simulationStatus.getLargestLocalError(), simulationStatus.getLargestLocalErrorUpdate(), simulationStatus.getLargestGlobalError());
+                logger.info("SPEED   : {} ({},{}) epochs (increases, decreases) - {} (simulation time) per s(real time) finish: {}",
+                        simulationStatus.getNumberOfEpochsSinceLastUpdate(), simulationStatus.getNumberOfTimeStepIncreasesSinceLastUpdate(), simulationStatus.getNumberOfTimeStepDecreasesSinceLastUpdate(), simulationStatus.getEstimatedSpeed(), simulationStatus.getEstimatedFinish());
+                logger.info("ERROR L : {} ({}, {}, {})", String.format("%6.3e",simulationStatus.getLargestLocalError().getValue()), simulationStatus.getLargestLocalError().getChemicalEntity(), simulationStatus.getLargestLocalError().getUpdatable().getStringIdentifier(), simulationStatus.getLocalErrorModule());
+                logger.info("ERROR G : {} ({}, {})", String.format("%6.3e",simulationStatus.getLargestGlobalError().getValue()), simulationStatus.getLargestGlobalError().getChemicalEntity(), simulationStatus.getLargestGlobalError().getUpdatable().getStringIdentifier());
             }
             previousTimeMillis = currentTimeMillis;
         }

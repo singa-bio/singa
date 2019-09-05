@@ -204,6 +204,9 @@ public class VesicleLayer {
                         // assign other corresponding nodes to neighbors
                         for (Map.Entry<MooreRectangularDirection, Double> entry : slices.entrySet()) {
                             RectangularCoordinate neighbor = MooreRectangularDirection.getNeighborOf(node.getIdentifier(), coordinateDirection, entry.getKey());
+                            if (neighbor.getRow() < 0 || neighbor.getColumn() < 0 || neighbor.getRow() > graph.getNumberOfRows()-1 || neighbor.getColumn() > graph.getNumberOfColumns()-1) {
+                                continue;
+                            }
                             vesicle.addAssociatedNode(graph.getNode(neighbor), entry.getValue());
                         }
                         // all neighbors have been associated

@@ -154,10 +154,12 @@ public class ConcentrationContainer {
                 return Optional.of(chemicalEntity);
             }
             if (chemicalEntity instanceof ComplexEntity) {
-                return ((ComplexEntity) chemicalEntity).getNodes().stream()
-                        .filter(node -> node.getEntity().equals(query))
-                        .map(GraphComplexNode::getEntity)
-                        .findAny();
+                for (GraphComplexNode node : ((ComplexEntity) chemicalEntity).getNodes()) {
+                    if (node.getEntity().equals(query)) {
+                        ChemicalEntity entity = node.getEntity();
+                        return Optional.of(entity);
+                    }
+                }
             }
         }
         return Optional.empty();

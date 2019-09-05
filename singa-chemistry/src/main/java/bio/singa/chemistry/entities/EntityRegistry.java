@@ -56,6 +56,20 @@ public class EntityRegistry {
         return null;
     }
 
+    public static List<ChemicalEntity> allWith(String... containedIdentifiers) {
+        List<ChemicalEntity> matches = new ArrayList<>();
+        List<String> identifiers = Arrays.asList(containedIdentifiers);
+        // for each entity
+        for (String referenceIdentifier : getInstance().entities.keySet()) {
+            // check if both have the same elements
+            List<String> split = Arrays.asList(referenceIdentifier.split("-"));
+            if (split.containsAll(identifiers)) {
+                matches.add(getInstance().entities.get(referenceIdentifier));
+            }
+        }
+        return matches;
+    }
+
     public static List<String> listEntities() {
         return getInstance().entities.entrySet().stream()
                 .map(entry -> entry.getKey() + " -> " + entry.getValue())

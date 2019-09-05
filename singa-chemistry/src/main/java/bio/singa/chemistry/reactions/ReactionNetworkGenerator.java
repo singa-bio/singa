@@ -44,6 +44,9 @@ public class ReactionNetworkGenerator {
                 reactionChain.process(possibleEntities);
                 Set<ReactionElement> reactantElements = reactionChain.getReactantElements();
                 reactantElements.stream()
+                        .map(ReactionElement::getSubstrates)
+                        .forEach(possibleEntities::addAll);
+                reactantElements.stream()
                         .map(ReactionElement::getProducts)
                         .forEach(possibleEntities::addAll);
                 int updatedNumberOfReactions = reactantElements.size();
