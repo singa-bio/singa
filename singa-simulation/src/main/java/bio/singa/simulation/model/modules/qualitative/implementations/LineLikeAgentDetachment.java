@@ -2,6 +2,7 @@ package bio.singa.simulation.model.modules.qualitative.implementations;
 
 import bio.singa.simulation.features.AppliedVesicleState;
 import bio.singa.simulation.features.DetachmentProbability;
+import bio.singa.simulation.features.RequiredVesicleState;
 import bio.singa.simulation.model.agents.pointlike.Vesicle;
 import bio.singa.simulation.model.modules.concentration.ModuleState;
 import bio.singa.simulation.model.modules.qualitative.QualitativeModule;
@@ -21,12 +22,13 @@ public class LineLikeAgentDetachment extends QualitativeModule {
         detachingVesicles = new ArrayList<>();
         // features
         getRequiredFeatures().add(DetachmentProbability.class);
+        getRequiredFeatures().add(RequiredVesicleState.class);
         getRequiredFeatures().add(AppliedVesicleState.class);
     }
 
     @Override
     public void calculateUpdates() {
-        String vesicleState = getFeature(AppliedVesicleState.class).getContent();
+        String vesicleState = getFeature(RequiredVesicleState.class).getContent();
         for (Vesicle vesicle : simulation.getVesicleLayer().getVesicles()) {
             // continue if state does not match
             if (!vesicle.getState().equals(vesicleState)) {
@@ -55,8 +57,10 @@ public class LineLikeAgentDetachment extends QualitativeModule {
 
     @Override
     public void onCompletion() {
+        String vesicleState = getFeature(AppliedVesicleState.class).getContent();
         for (Vesicle detachingVesicle : detachingVesicles) {
             detachingVesicle.clearAttachmentInformation();
+            detachingVesicle.setState(vesicleState);
         }
     }
 
