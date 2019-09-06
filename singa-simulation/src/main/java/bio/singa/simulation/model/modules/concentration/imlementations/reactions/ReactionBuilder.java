@@ -102,6 +102,7 @@ public class ReactionBuilder {
     public interface RuleBasedStep {
 
         KineticStep rule(ReactionChain rule);
+        void preReaction(ReactionChain chain);
 
     }
 
@@ -406,6 +407,11 @@ public class ReactionBuilder {
                 reaction.setIdentifier(chain.getIdentifier());
             }
             return this;
+        }
+
+        @Override
+        public void preReaction(ReactionChain chain) {
+            networkGenerator.addPreReaction(chain);
         }
 
         @Override

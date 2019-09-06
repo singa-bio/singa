@@ -1,8 +1,8 @@
 package bio.singa.chemistry.reactions.reactors;
 
+import bio.singa.chemistry.entities.complex.BindingSite;
 import bio.singa.chemistry.entities.simple.Protein;
 import bio.singa.chemistry.entities.simple.SmallMolecule;
-import bio.singa.chemistry.entities.complex.BindingSite;
 import bio.singa.chemistry.reactions.ReactionNetworkGenerator;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -110,18 +110,17 @@ class ReactionChainTest {
         BindingSite pp2bSubstrate = BindingSite.createNamed("pp2b-substrate");
 
         ReactionChain akapBinding = ReactionChainBuilder.bind(pkar)
-                .primaryCondition(hasUnoccupiedBindingSite(pkarPSite))
+                //.primaryCondition(hasUnoccupiedBindingSite(pkarPSite))
                 .to(akap)
                 .identifier("pka activation: akap pkar binding")
                 .build();
-        rng.add(akapBinding);
+        rng.addPreReaction(akapBinding);
 
         ReactionChain pkarBinding = ReactionChainBuilder.bind(pkac)
-                .primaryCondition(hasNoneOfEntity(atp))
+                .primaryCondition(hasUnoccupiedBindingSite(pkacSubstrate))
                 .to(pkar)
                 .secondaryCondition(hasNoneOfEntity(p))
-                .secondaryCondition(hasNoneOfEntity(camp))
-                .identifier("pka activation: akap pkar binding")
+                .identifier("pka activation: pkar pkac binding")
                 .build();
         rng.add(pkarBinding);
 
@@ -275,8 +274,6 @@ class ReactionChainTest {
         System.out.println();
 
     }
-
-
 
 
 }
