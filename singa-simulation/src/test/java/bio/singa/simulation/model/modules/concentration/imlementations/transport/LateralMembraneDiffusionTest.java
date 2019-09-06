@@ -88,7 +88,7 @@ class LateralMembraneDiffusionTest {
         lacz.setFeature(diffusivity);
 
         LateralMembraneDiffusion.inSimulation(simulation)
-                .onlyFor(lacz)
+                .forEntity(lacz)
                 .build();
 
         for (int i = 0; i < 10; i++) {

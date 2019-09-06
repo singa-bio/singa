@@ -45,6 +45,13 @@ public class SaffmanDelbrueckDiffusivityCorrelation implements Correlation<Membr
 
     @Override
     public <FeatureableType extends Featureable> MembraneDiffusivity predict(FeatureableType featureable) {
+        Radius radius = featureable.getFeature(Radius.class);
+        MembraneDiffusivity diffusivity = predict(radius.getContent());
+        diffusivity.addEvidence(radius.getPrimaryEvidence());
+        return diffusivity;
+    }
+
+    public static MembraneDiffusivity predict(Quantity<Length> radius) {
         double kb = NaturalConstants.BOLTZMANN_CONSTANT.getValue().doubleValue();
         double em = NaturalConstants.EULER_MASCHERONI_CONSTANT.getValue().doubleValue();
         double t = Environment.getTemperature().getValue().doubleValue();
@@ -52,8 +59,8 @@ public class SaffmanDelbrueckDiffusivityCorrelation implements Correlation<Membr
         double uf = bulkViscosity.getValue().doubleValue();
         double h = membraneThickness.to(METRE).getValue().doubleValue();
         // somewhere this is a factor 1000 astray
-        Radius radius = featureable.getFeature(Radius.class);
-        double a = radius.getContent().to(KILO(METRE)).getValue().doubleValue();
+
+        double a = radius.to(KILO(METRE)).getValue().doubleValue();
 
         double lsd = log((h * um) / (a * uf));
         double blzTerm = (kb * t) / (4 * PI * um * h);
@@ -62,7 +69,7 @@ public class SaffmanDelbrueckDiffusivityCorrelation implements Correlation<Membr
         MembraneDiffusivity diffusivity = new MembraneDiffusivity(Quantities.getQuantity(dsd, Diffusivity.SQUARE_METRE_PER_SECOND));
         diffusivity.addEvidence(parameters);
         diffusivity.addEvidence(method);
-        diffusivity.addEvidence(radius.getPrimaryEvidence());
         return diffusivity;
     }
+
 }

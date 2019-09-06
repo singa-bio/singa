@@ -2,7 +2,6 @@ package bio.singa.simulation.model.modules.concentration.imlementations.transpor
 
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.chemistry.features.diffusivity.Diffusivity;
-import bio.singa.features.model.Evidence;
 import bio.singa.features.model.Feature;
 import bio.singa.features.model.FeatureProvider;
 import bio.singa.simulation.features.AffectedSection;
@@ -170,23 +169,21 @@ public class Diffusion extends ConcentrationBasedModule<EntityDeltaFunction> {
         }
 
         public SectionLimitationStep forEntity(ChemicalEntity chemicalEntity) {
-            module.setFeature(new Cargoes(Collections.singletonList(chemicalEntity), Evidence.NO_EVIDENCE));
-            return this;
+            return forAllEntities(Collections.singletonList(chemicalEntity));
         }
 
         public SectionLimitationStep forAllEntities(ChemicalEntity... chemicalEntities) {
-            module.setFeature(new Cargoes(Arrays.asList(chemicalEntities), Evidence.NO_EVIDENCE));
-            return this;
+            return forAllEntities(Arrays.asList(chemicalEntities));
         }
 
         public SectionLimitationStep forAllEntities(Collection<ChemicalEntity> chemicalEntities) {
-            module.setFeature(new Cargoes(new ArrayList<>(chemicalEntities), Evidence.NO_EVIDENCE));
+            module.setFeature(new Cargoes(new ArrayList<>(chemicalEntities)));
             return this;
         }
 
         @Override
         public BuildStep forSection(CellSubsection subsection) {
-            module.setFeature(new AffectedSection(subsection, Evidence.NO_EVIDENCE));
+            module.setFeature(new AffectedSection(subsection));
             return this;
         }
 
