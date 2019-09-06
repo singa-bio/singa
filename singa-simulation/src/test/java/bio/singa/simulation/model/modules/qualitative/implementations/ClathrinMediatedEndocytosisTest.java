@@ -57,6 +57,7 @@ class ClathrinMediatedEndocytosisTest {
         UnitRegistry.setTime(timeStep);
 
         ChemicalEntity aqp = Protein.create("AQP").build();
+        ChemicalEntity other = Protein.create("OTHER").build();
 
         Simulation simulation = new Simulation();
         simulation.setMaximalTimeStep(Quantities.getQuantity(10, MILLI(SECOND)));
@@ -68,6 +69,7 @@ class ClathrinMediatedEndocytosisTest {
         node.setCellRegion(CellRegions.CELL_OUTER_MEMBRANE_REGION);
         ComparableQuantity<MolarConcentration> initialConcentration = Quantities.getQuantity(10, MICRO_MOLE_PER_LITRE);
         node.getConcentrationContainer().initialize(MEMBRANE, aqp, initialConcentration);
+        node.getConcentrationContainer().initialize(MEMBRANE, other, initialConcentration);
 //        System.out.println("initial membrane concentration: " + MolarConcentration.concentrationToMolecules(UnitRegistry.convert(initialConcentration).getValue().doubleValue()).getValue().doubleValue());
         simulation.setGraph(graph);
 

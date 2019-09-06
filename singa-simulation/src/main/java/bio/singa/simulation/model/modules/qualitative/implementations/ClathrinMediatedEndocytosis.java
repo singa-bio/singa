@@ -270,11 +270,23 @@ public class ClathrinMediatedEndocytosis extends QualitativeModule {
                 }
             }
         }
-        Map.Entry<CellSubsection, ConcentrationPool> pool = maturedPit.getConcentrationDeltaManager().getConcentrationContainer().getPool(MEMBRANE);
-        for (Map.Entry<ChemicalEntity, Double> entry : pool.getValue().getConcentrations().entrySet()) {
-            vesicle.addPotentialDelta(new ConcentrationDelta(this, pool.getKey(), entry.getKey(), entry.getValue()));
+        Map.Entry<CellSubsection, ConcentrationPool> pitPool = maturedPit.getConcentrationDeltaManager().getConcentrationContainer().getPool(MEMBRANE);
+        for (Map.Entry<ChemicalEntity, Double> entry : pitPool.getValue().getConcentrations().entrySet()) {
+            vesicle.addPotentialDelta(new ConcentrationDelta(this, pitPool.getKey(), entry.getKey(), entry.getValue()));
+        }
+        AutomatonNode associatedNode = maturedPit.getAssociatedNode();
+        Map.Entry<CellSubsection, ConcentrationPool> membranePool = associatedNode.getConcentrationContainer().getPool(MEMBRANE);
+        double pitArea = maturedPit.getSpawnRadius().multiply(maturedPit.getSpawnRadius()).multiply(Math.PI).getValue().doubleValue();
+        double totalArea = associatedNode.getMembraneArea().to(UnitRegistry.getAreaUnit()).getValue().doubleValue();
+        for (Map.Entry<ChemicalEntity, Double> entry : membranePool.getValue().getConcentrations().entrySet()) {
+            double membraneConcentration = entry.getValue();
+            // initial concentration = pit area * total cell membrane concentration / total cell membrane area
+            double concentration = pitArea * membraneConcentration / totalArea;
+            vesicle.addPotentialDelta(new ConcentrationDelta(this, pitPool.getKey(), entry.getKey(), concentration));
+            associatedNode.addPotentialDelta(new ConcentrationDelta(this, membranePool.getKey(), entry.getKey(), -concentration));
         }
         vesicle.getConcentrationManager().shiftDeltas();
+        associatedNode.getConcentrationManager().shiftDeltas();
     }
 
     private void collectCargoes() {

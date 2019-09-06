@@ -108,11 +108,11 @@ public class LateralMembraneDiffusion extends ConcentrationBasedModule<EntityDel
     public interface EntityLimitationStep {
         EntityLimitationStep identifier(String identifier);
 
-        BuildStep forEntity(ChemicalEntity chemicalEntity);
+        SectionLimitationStep forEntity(ChemicalEntity chemicalEntity);
 
-        BuildStep forAllEntities(ChemicalEntity... chemicalEntities);
+        SectionLimitationStep forAllEntities(ChemicalEntity... chemicalEntities);
 
-        BuildStep forAllEntities(Collection<ChemicalEntity> chemicalEntities);
+        SectionLimitationStep forAllEntities(Collection<ChemicalEntity> chemicalEntities);
 
     }
 
@@ -157,15 +157,15 @@ public class LateralMembraneDiffusion extends ConcentrationBasedModule<EntityDel
             return this;
         }
 
-        public BuildStep forEntity(ChemicalEntity chemicalEntity) {
+        public SectionLimitationStep forEntity(ChemicalEntity chemicalEntity) {
             return forAllEntities(Collections.singletonList(chemicalEntity));
         }
 
-        public BuildStep forAllEntities(ChemicalEntity... chemicalEntities) {
+        public SectionLimitationStep forAllEntities(ChemicalEntity... chemicalEntities) {
             return forAllEntities(Arrays.asList(chemicalEntities));
         }
 
-        public BuildStep forAllEntities(Collection<ChemicalEntity> chemicalEntities) {
+        public SectionLimitationStep forAllEntities(Collection<ChemicalEntity> chemicalEntities) {
             for (ChemicalEntity chemicalEntity : chemicalEntities) {
                 setDefaultFeatureIfNecessary(chemicalEntity);
             }

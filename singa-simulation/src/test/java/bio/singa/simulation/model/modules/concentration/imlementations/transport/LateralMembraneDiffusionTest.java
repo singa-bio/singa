@@ -89,6 +89,7 @@ class LateralMembraneDiffusionTest {
 
         LateralMembraneDiffusion.inSimulation(simulation)
                 .forEntity(lacz)
+                .forAllMembranes()
                 .build();
 
         for (int i = 0; i < 10; i++) {
