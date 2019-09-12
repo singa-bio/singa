@@ -1,6 +1,7 @@
 package bio.singa.chemistry.reactions.conditions;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
+import bio.singa.chemistry.entities.complex.BindingSite;
 import bio.singa.chemistry.entities.complex.ComplexEntity;
 
 /**
@@ -23,4 +24,13 @@ public class HasNoMoreThanNumberOfPartners implements CandidateCondition {
                 .anyMatch(match -> match.getNeighbours().size() <= numberOfPartners);
     }
 
+    @Override
+    public boolean concerns(ChemicalEntity chemicalEntity) {
+        return chemicalEntity.equals(this.chemicalEntity);
+    }
+
+    @Override
+    public boolean concerns(BindingSite bindingSite) {
+        return false;
+    }
 }

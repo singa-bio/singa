@@ -3,6 +3,7 @@ package bio.singa.chemistry.reactions.reactors;
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.chemistry.entities.complex.BindingSite;
 import bio.singa.chemistry.entities.complex.ComplexEntity;
+import bio.singa.chemistry.reactions.conditions.CandidateCondition;
 import bio.singa.chemistry.reactions.modifications.ComplexEntityModification;
 import bio.singa.core.utility.Pair;
 import org.slf4j.Logger;
@@ -12,7 +13,6 @@ import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Predicate;
 
 /**
  * @author cl
@@ -23,7 +23,7 @@ public abstract class AbstractGraphComplexReactor implements ComplexReactor {
 
     private ComplexEntityModification modification;
 
-    private List<Predicate<ComplexEntity>> primaryCandidateConditions;
+    private List<CandidateCondition> primaryCandidateConditions;
     private List<ComplexEntity> primarySubstrates;
     private List<ComplexEntity> primaryProducts;
 
@@ -33,14 +33,16 @@ public abstract class AbstractGraphComplexReactor implements ComplexReactor {
         primaryProducts = new ArrayList<>();
     }
 
-    protected List<ComplexEntity> filterCandidates(List<ComplexEntity> complexes, List<Predicate<ComplexEntity>> conditions) {
+    protected List<ComplexEntity> filterCandidates(List<ComplexEntity> complexes, List<CandidateCondition> conditions) {
         List<ComplexEntity> list = new ArrayList<>();
-        Predicate<ComplexEntity> predicate = conditions.stream()
-                .reduce(Predicate::and).orElse(complex -> false);
+        outer:
         for (ComplexEntity graphComplex : complexes) {
-            if (predicate.test(graphComplex)) {
-                list.add(graphComplex);
+            for (CandidateCondition condition : conditions) {
+                if (!condition.test(graphComplex)) {
+                    continue outer;
+                }
             }
+            list.add(graphComplex);
         }
         return list;
     }
@@ -57,11 +59,11 @@ public abstract class AbstractGraphComplexReactor implements ComplexReactor {
         this.modification = modification;
     }
 
-    public List<Predicate<ComplexEntity>> getPrimaryCandidateConditions() {
+    public List<CandidateCondition> getPrimaryCandidateConditions() {
         return primaryCandidateConditions;
     }
 
-    public void setPrimaryCandidateConditions(List<Predicate<ComplexEntity>> primaryCandidateConditions) {
+    public void setPrimaryCandidateConditions(List<CandidateCondition> primaryCandidateConditions) {
         this.primaryCandidateConditions = primaryCandidateConditions;
     }
 

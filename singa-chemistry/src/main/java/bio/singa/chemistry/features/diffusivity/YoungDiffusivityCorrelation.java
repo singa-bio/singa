@@ -41,9 +41,8 @@ public class YoungDiffusivityCorrelation implements Correlation<Diffusivity> {
         final double diffusivity = YOUNG_COEFFICIENT.getValue().doubleValue()
                 * (Environment.getTemperature().getValue().doubleValue()
                 / (Environment.getMatrixViscosity().getValue().doubleValue() * Math.cbrt(molarMass)));
-        final Quantity<Diffusivity> quantity = Quantities.getQuantity(diffusivity, Diffusivity.SQUARE_CENTIMETRE_PER_SECOND)
-                .to(Diffusivity.SQUARE_MICROMETRE_PER_SECOND);
-        return new Diffusivity(quantity, evidence);
+        final Quantity<Diffusivity> quantity = Quantities.getQuantity(diffusivity, Diffusivity.SQUARE_CENTIMETRE_PER_SECOND);
+        return new Diffusivity(quantity.to(Diffusivity.SQUARE_CENTIMETRE_PER_SECOND), evidence);
     }
 
     public <FeaturableType extends Featureable> Diffusivity predict(FeaturableType featureable, double cytoplasmCoefficient) {
@@ -53,8 +52,8 @@ public class YoungDiffusivityCorrelation implements Correlation<Diffusivity> {
                 * (Environment.getTemperature().getValue().doubleValue()
                 / (Environment.getMatrixViscosity().getValue().doubleValue() * Math.cbrt(molarMass)));
         final Quantity<Diffusivity> quantity = Quantities.getQuantity(diffusivity, Diffusivity.SQUARE_CENTIMETRE_PER_SECOND)
-                .to(Diffusivity.SQUARE_MICROMETRE_PER_SECOND).divide(cytoplasmCoefficient);
-        return new Diffusivity(quantity, evidence);
+                .to(Diffusivity.SQUARE_CENTIMETRE_PER_SECOND).divide(cytoplasmCoefficient);
+        return new Diffusivity(quantity.to(Diffusivity.SQUARE_CENTIMETRE_PER_SECOND), evidence);
     }
 
 

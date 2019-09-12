@@ -525,9 +525,9 @@ class ReactionTest {
             simulation.nextEpoch();
         }
         ConcentrationContainer container = simulation.getGraph().getNode(0, 0).getConcentrationContainer();
-        assertEquals(9.965E-11, container.get(INNER, EntityRegistry.matchExactly("PP1")), 1E-15);
-        assertEquals(3.144E-13, container.get(INNER, EntityRegistry.matchExactly("PP1", "P")), 1E-13);
-        assertEquals(3.144E-13, container.get(MEMBRANE, EntityRegistry.matchExactly("AQP2", "P")), 1E-13);
+        assertEquals(9.965E-11, container.get(INNER, EntityRegistry.matchExactly("PP1")), 1E-6);
+        assertEquals(3.144E-13, container.get(INNER, EntityRegistry.matchExactly("PP1", "P")), 1E-6);
+        assertEquals(3.144E-13, container.get(MEMBRANE, EntityRegistry.matchExactly("AQP2", "P")), 1E-6);
     }
 
 }

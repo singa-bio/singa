@@ -31,7 +31,7 @@ import static tech.units.indriya.unit.Units.SECOND;
 public class ActinCortexDiffusivityScaling extends QualitativeModule {
 
     public static final Diffusivity DEFAULT_CORTEX_DIFFUSIVITY = new Diffusivity(Quantities.getQuantity(2.45E-4, MICRO(METRE).pow(2).divide(SECOND)).asType(Diffusivity.class), LANG2000);
-    public static final Diffusivity DEFAULT_CYTOPLASM_DIFFUSIFITY = Diffusivity.calculate(Quantities.getQuantity(50.0, NANO(METRE)));
+    public static final Diffusivity DEFAULT_CYTOPLASM_DIFFUSIVITY = Diffusivity.calculate(Quantities.getQuantity(50.0, NANO(METRE)));
 
     private Protein tropomyosin = new Protein.Builder("TRP")
             .additionalIdentifier(new UniProtIdentifier("P09493"))

@@ -1,15 +1,14 @@
 package bio.singa.chemistry.reactions.reactors;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
-import bio.singa.chemistry.entities.simple.SmallMolecule;
 import bio.singa.chemistry.entities.complex.BindingSite;
-import bio.singa.chemistry.entities.complex.ComplexEntity;
+import bio.singa.chemistry.entities.simple.SmallMolecule;
+import bio.singa.chemistry.reactions.conditions.CandidateCondition;
 import bio.singa.chemistry.reactions.modifications.ComplexEntityModification;
 import bio.singa.chemistry.reactions.modifications.ComplexEntityModificationBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Predicate;
 
 import static bio.singa.chemistry.reactions.conditions.CandidateConditionBuilder.*;
 
@@ -63,7 +62,7 @@ public class ReactionChainBuilder {
 
         ReleaseReactorSecondarySubstrateStep release(ChemicalEntity chemicalEntity);
 
-        RemoveReactorPrimaryConditionStep remove(BindingSite bindingSite, ChemicalEntity chemicalEntity);
+        RemoveReactorSecondarySubstrateStep remove(BindingSite bindingSite, ChemicalEntity chemicalEntity);
 
         RemoveReactorSecondarySubstrateStep remove(ChemicalEntity chemicalEntity);
     }
@@ -80,7 +79,7 @@ public class ReactionChainBuilder {
 
 
     public interface AddReactorPrimaryConditionStep extends ConnectorStep {
-        AddReactorPrimaryConditionStep condition(Predicate<ComplexEntity> condition);
+        AddReactorPrimaryConditionStep condition(CandidateCondition condition);
     }
 
     public interface AddReactorSecondarySubstrateStep {
@@ -89,7 +88,7 @@ public class ReactionChainBuilder {
 
 
     public interface BindReactorPrimaryConditionStep extends BindReactorSecondarySubstrateStep {
-        BindReactorPrimaryConditionStep primaryCondition(Predicate<ComplexEntity> condition);
+        BindReactorPrimaryConditionStep primaryCondition(CandidateCondition condition);
     }
 
     public interface BindReactorSecondarySubstrateStep {
@@ -97,12 +96,12 @@ public class ReactionChainBuilder {
     }
 
     public interface BindReactorSecondaryConditionStep extends ConnectorStep {
-        BindReactorSecondaryConditionStep secondaryCondition(Predicate<ComplexEntity> condition);
+        BindReactorSecondaryConditionStep secondaryCondition(CandidateCondition condition);
     }
 
 
     public interface ReleaseReactorPrimaryConditionStep extends ConnectorStep {
-        ReleaseReactorPrimaryConditionStep condition(Predicate<ComplexEntity> condition);
+        ReleaseReactorPrimaryConditionStep condition(CandidateCondition condition);
     }
 
     public interface ReleaseReactorSecondarySubstrateStep {
@@ -110,7 +109,7 @@ public class ReactionChainBuilder {
     }
 
     public interface RemoveReactorPrimaryConditionStep extends ConnectorStep {
-        RemoveReactorPrimaryConditionStep condition(Predicate<ComplexEntity> condition);
+        RemoveReactorPrimaryConditionStep condition(CandidateCondition condition);
     }
 
     public interface RemoveReactorSecondarySubstrateStep {
@@ -124,8 +123,8 @@ public class ReactionChainBuilder {
         protected List<ComplexReactor> reactors;
 
         protected ComplexEntityModification modification;
-        protected List<Predicate<ComplexEntity>> primaryCandidateConditions;
-        protected List<Predicate<ComplexEntity>> secondaryCandidateConditions;
+        protected List<CandidateCondition> primaryCandidateConditions;
+        protected List<CandidateCondition> secondaryCandidateConditions;
 
         protected BindingSite bindingSite;
         protected ChemicalEntity primaryEntity;
@@ -191,7 +190,7 @@ public class ReactionChainBuilder {
         }
 
         @Override
-        public RemoveReactorPrimaryConditionStep remove(BindingSite bindingSite, ChemicalEntity chemicalEntity) {
+        public RemoveReactorSecondarySubstrateStep remove(BindingSite bindingSite, ChemicalEntity chemicalEntity) {
             RemoveReactionChainBuilder builder = new RemoveReactionChainBuilder(bindingSite, chemicalEntity);
             passInformation(builder, this);
             return builder;
@@ -258,7 +257,7 @@ public class ReactionChainBuilder {
         }
 
         @Override
-        public AddReactorPrimaryConditionStep condition(Predicate<ComplexEntity> condition) {
+        public AddReactorPrimaryConditionStep condition(CandidateCondition condition) {
             primaryCandidateConditions.add(condition);
             return this;
         }
@@ -304,7 +303,7 @@ public class ReactionChainBuilder {
         }
 
         @Override
-        public BindReactorPrimaryConditionStep primaryCondition(Predicate<ComplexEntity> condition) {
+        public BindReactorPrimaryConditionStep primaryCondition(CandidateCondition condition) {
             primaryCandidateConditions.add(condition);
             return this;
         }
@@ -328,7 +327,7 @@ public class ReactionChainBuilder {
         }
 
         @Override
-        public BindReactorSecondaryConditionStep secondaryCondition(Predicate<ComplexEntity> condition) {
+        public BindReactorSecondaryConditionStep secondaryCondition(CandidateCondition condition) {
             secondaryCandidateConditions.add(condition);
             return this;
         }
@@ -354,7 +353,7 @@ public class ReactionChainBuilder {
         }
 
         @Override
-        public ReleaseReactorPrimaryConditionStep condition(Predicate<ComplexEntity> condition) {
+        public ReleaseReactorPrimaryConditionStep condition(CandidateCondition condition) {
             primaryCandidateConditions.add(condition);
             return this;
         }
@@ -398,7 +397,7 @@ public class ReactionChainBuilder {
         }
 
         @Override
-        public RemoveReactorPrimaryConditionStep condition(Predicate<ComplexEntity> condition) {
+        public RemoveReactorPrimaryConditionStep condition(CandidateCondition condition) {
             primaryCandidateConditions.add(condition);
             return this;
         }

@@ -46,8 +46,8 @@ class DiffusivityTest {
         Diffusivity feature = testSpecies.getFeature(Diffusivity.class);
         // assert attributes and values
         assertEquals("Young 1980", feature.getPrimaryEvidence().getIdentifier());
-        assertEquals(1.134227930559286E-6, feature.getValue().doubleValue());
         assertEquals(Diffusivity.SQUARE_CENTIMETRE_PER_SECOND, feature.getUnit());
+        assertEquals(1.134227930559286E-6, feature.getValue().doubleValue());
     }
 
 }

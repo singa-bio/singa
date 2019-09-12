@@ -1,5 +1,6 @@
 package bio.singa.chemistry.reactions.conditions;
 
+import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.chemistry.entities.complex.BindingSite;
 import bio.singa.chemistry.entities.complex.ComplexEntity;
 
@@ -19,4 +20,13 @@ public class IsOnlyBoundAt implements CandidateCondition {
         return graphComplex.getEdges().size() == 1 && graphComplex.getEdges().iterator().next().getConnectedSite().equals(bindingSite);
     }
 
+    @Override
+    public boolean concerns(ChemicalEntity chemicalEntity) {
+        return false;
+    }
+
+    @Override
+    public boolean concerns(BindingSite bindingSite) {
+        return bindingSite.equals(this.bindingSite);
+    }
 }

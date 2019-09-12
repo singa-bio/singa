@@ -47,10 +47,10 @@ public class ClathrinMediatedEndocytosis extends QualitativeModule {
     // pits that are maturing
     private List<Pit> preMaturingPits;
     private List<Pit> maturingPits;
-    // pits that will be aborted
-    private List<Pit> abortedPits;
     // pits that ripened to vesicles
     private List<Pit> maturedPits;
+    // pits that will be aborted
+    private List<Pit> abortedPits;
 
     private boolean limitPits = false;
 

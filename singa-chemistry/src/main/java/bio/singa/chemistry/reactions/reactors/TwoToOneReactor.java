@@ -1,20 +1,22 @@
 package bio.singa.chemistry.reactions.reactors;
 
 import bio.singa.chemistry.entities.complex.ComplexEntity;
+import bio.singa.chemistry.reactions.conditions.CandidateCondition;
+import bio.singa.chemistry.reactions.modifications.ComplexEntityModification;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.function.Predicate;
 
-import static bio.singa.chemistry.reactions.conditions.CandidateConditionBuilder.*;
+import static bio.singa.chemistry.reactions.conditions.CandidateConditionBuilder.hasAnyOfEntity;
+import static bio.singa.chemistry.reactions.conditions.CandidateConditionBuilder.hasOccupiedBindingSite;
 
 /**
  * @author cl
  */
 public class TwoToOneReactor extends AbstractGraphComplexReactor {
 
-    private List<Predicate<ComplexEntity>> secondCandidateConditions;
+    private List<CandidateCondition> secondCandidateConditions;
     private List<ComplexEntity> secondarySubstrates;
 
     public TwoToOneReactor() {
@@ -22,11 +24,11 @@ public class TwoToOneReactor extends AbstractGraphComplexReactor {
         secondarySubstrates = new ArrayList<>();
     }
 
-    public List<Predicate<ComplexEntity>> getSecondCandidateConditions() {
+    public List<CandidateCondition> getSecondCandidateConditions() {
         return secondCandidateConditions;
     }
 
-    public void setSecondCandidateConditions(List<Predicate<ComplexEntity>> secondCandidateConditions) {
+    public void setSecondCandidateConditions(List<CandidateCondition> secondCandidateConditions) {
         this.secondCandidateConditions = secondCandidateConditions;
     }
 
@@ -79,11 +81,32 @@ public class TwoToOneReactor extends AbstractGraphComplexReactor {
     @Override
     public ComplexReactor invert() {
         OneToTwoReactor invertedReactor = new OneToTwoReactor();
-        invertedReactor.setModification(getModification().invert());
+
+        ComplexEntityModification invertedModification = getModification().invert();
+        invertedReactor.setModification(invertedModification);
         invertedReactor.getPrimaryCandidateConditions().add(hasOccupiedBindingSite(getModification().getBindingSite()));
         invertedReactor.getPrimaryCandidateConditions().add(hasAnyOfEntity(getModification().getPrimaryEntity()));
         invertedReactor.getPrimaryCandidateConditions().add(hasAnyOfEntity(getModification().getSecondaryEntity()));
 
+        // if condition does not consider the implicit conditions reuse it
+        for (CandidateCondition condition : getPrimaryCandidateConditions()) {
+            if (condition.concerns(getModification().getBindingSite())) {
+                continue;
+            }
+            if (condition.concerns(getModification().getPrimaryEntity())) {
+                continue;
+            }
+            invertedReactor.getPrimaryCandidateConditions().add(condition);
+        }
+        for (CandidateCondition condition : getSecondCandidateConditions()) {
+            if (condition.concerns(getModification().getBindingSite())) {
+                continue;
+            }
+            if (condition.concerns(getModification().getSecondaryEntity())) {
+                continue;
+            }
+            invertedReactor.getPrimaryCandidateConditions().add(condition);
+        }
         return invertedReactor;
     }
 
