@@ -43,6 +43,10 @@ public class EntityRegistry {
         return getInstance().entities.get(referenceIdentifier);
     }
 
+    public static boolean contains(String referenceIdentifier) {
+        return getInstance().entities.containsKey(referenceIdentifier);
+    }
+
     public static ChemicalEntity matchExactly(String... containedIdentifiers) {
         List<String> identifiers = Arrays.asList(containedIdentifiers);
         // for each entity
@@ -75,6 +79,10 @@ public class EntityRegistry {
                 .map(entry -> entry.getKey() + " -> " + entry.getValue())
                 .sorted()
                 .collect(Collectors.toList());
+    }
+
+    public static  Collection<ChemicalEntity> getAll() {
+        return getInstance().entities.values();
     }
 
 }

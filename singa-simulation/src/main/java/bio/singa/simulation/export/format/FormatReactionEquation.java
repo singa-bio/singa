@@ -36,7 +36,7 @@ public class FormatReactionEquation {
         List<String> resultingStrings = new ArrayList<>();
         boolean isReversible = reaction.getKineticLaw() instanceof ReversibleKineticLaw;
         if (reaction.getReactantBehavior() instanceof RuleBasedReactantBehavior) {
-            List<ReactantSet> reactantSets = reaction.getReactantBehavior().generateReactantSets(null);
+            List<ReactantSet> reactantSets = reaction.getReactantBehavior().getReactantSets();
             for (ReactantSet reactantSet : reactantSets) {
                 resultingStrings.add(formatReactantSet(reactantSet, isReversible));
             }

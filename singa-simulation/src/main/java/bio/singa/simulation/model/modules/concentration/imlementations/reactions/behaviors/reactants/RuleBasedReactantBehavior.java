@@ -5,7 +5,6 @@ import bio.singa.chemistry.entities.complex.ComplexEntity;
 import bio.singa.chemistry.reactions.reactors.ReactionChain;
 import bio.singa.chemistry.reactions.reactors.ReactionElement;
 import bio.singa.simulation.model.sections.CellTopology;
-import bio.singa.simulation.model.simulation.Updatable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +21,10 @@ public class RuleBasedReactantBehavior implements ReactantBehavior {
 
     public RuleBasedReactantBehavior(ReactionChain reactionChain) {
         this.reactionChain = reactionChain;
+        reactantSets = new ArrayList<>();
+    }
+
+    public RuleBasedReactantBehavior() {
         reactantSets = new ArrayList<>();
     }
 
@@ -50,16 +53,16 @@ public class RuleBasedReactantBehavior implements ReactantBehavior {
         }
     }
 
-    public List<ReactantSet> getReactantSets() {
-        return reactantSets;
-    }
-
     public void setReactantSets(List<ReactantSet> reactantSets) {
         this.reactantSets = reactantSets;
     }
 
+    public void addReactantSet(ReactantSet reactantSet) {
+        reactantSets.add(reactantSet);
+    }
+
     @Override
-    public List<ReactantSet> generateReactantSets(Updatable updatable) {
+    public List<ReactantSet> getReactantSets() {
         return reactantSets;
     }
 

@@ -61,6 +61,9 @@ public class LateralMembraneDiffusion extends ConcentrationBasedModule<EntityDel
         // feature
         getRequiredFeatures().add(MembraneDiffusivity.class);
         List<ChemicalEntity> cargoes = getFeature(Cargoes.class).getContent();
+        for (ChemicalEntity cargo : cargoes) {
+            LateralMembraneDiffusionBuilder.setDefaultFeatureIfNecessary(cargo);
+        }
         addReferencedEntities(cargoes);
     }
 
@@ -173,7 +176,7 @@ public class LateralMembraneDiffusion extends ConcentrationBasedModule<EntityDel
             return this;
         }
 
-        private void setDefaultFeatureIfNecessary(ChemicalEntity entity) {
+        private static void setDefaultFeatureIfNecessary(ChemicalEntity entity) {
             if (entity.hasFeature(MembraneDiffusivity.class)) {
                 return;
             }

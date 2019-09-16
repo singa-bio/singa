@@ -1,7 +1,6 @@
 package bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.reactants;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
-import bio.singa.simulation.model.simulation.Updatable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -77,7 +76,7 @@ public class StaticReactantBehavior implements ReactantBehavior {
     }
 
     @Override
-    public List<ReactantSet> generateReactantSets(Updatable updatable) {
+    public List<ReactantSet> getReactantSets() {
         return Collections.singletonList(new ReactantSet(substrates, products, catalysts));
     }
 

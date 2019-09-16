@@ -54,7 +54,7 @@ public class Reaction extends ConcentrationBasedModule<UpdatableDeltaFunction> {
 
     private Map<ConcentrationDeltaIdentifier, ConcentrationDelta> calculateDeltas(ConcentrationContainer concentrationContainer) {
         Map<ConcentrationDeltaIdentifier, ConcentrationDelta> deltas = new HashMap<>();
-        List<ReactantSet> reactantSets = reactantBehavior.generateReactantSets(supplier.getCurrentUpdatable());
+        List<ReactantSet> reactantSets = reactantBehavior.getReactantSets();
         for (ReactantSet reactantSet : reactantSets) {
             ReactionEvent reactionEvent = new ReactionEvent(this, reactantSet);
             List<ReactantDelta> reactantDeltas = reactionEvent.collectDeltas(supplier.getCurrentUpdatable());

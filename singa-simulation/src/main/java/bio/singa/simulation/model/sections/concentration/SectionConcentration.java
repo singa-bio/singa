@@ -93,7 +93,7 @@ public class SectionConcentration implements InitialConcentration {
     @Override
     public void initialize(Updatable updatable) {
         // special treatment for cell cortex areas
-        if (region != null && region.equals(CellRegions.CELL_CORTEX)) {
+        if (region != null && (region.equals(CellRegions.CELL_CORTEX) || region.getIdentifier().equals("perinuclear region of cytoplasm"))) {
             if (updatable instanceof AutomatonNode) {
                 AutomatonNode node = (AutomatonNode) updatable;
                 for (Map.Entry<CellSubsection, Polygon> entry : node.getSubsectionRepresentations().entrySet()) {

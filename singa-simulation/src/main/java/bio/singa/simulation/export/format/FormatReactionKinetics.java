@@ -23,7 +23,7 @@ public class FormatReactionKinetics {
     public static List<String> formatTex(Reaction reaction) {
         List<String> resultingStrings = new ArrayList<>();
         if (reaction.getReactantBehavior() instanceof RuleBasedReactantBehavior) {
-            List<ReactantSet> reactantSets = reaction.getReactantBehavior().generateReactantSets(null);
+            List<ReactantSet> reactantSets = reaction.getReactantBehavior().getReactantSets();
             for (ReactantSet reactantSet : reactantSets) {
                 String kineticsString;
                 if (reaction.getKineticLaw() instanceof ReversibleKineticLaw) {
