@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * @author cl
  */
-public class BlackListVesicleStates  extends MultiStringFeature {
+public class BlackListVesicleStates extends MultiStringFeature {
 
     public BlackListVesicleStates(List<String> vesicleStates, List<Evidence> evidence) {
         super(vesicleStates, evidence);
