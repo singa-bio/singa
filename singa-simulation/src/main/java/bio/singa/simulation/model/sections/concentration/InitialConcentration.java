@@ -9,7 +9,7 @@ import bio.singa.simulation.model.simulation.Updatable;
 /**
  * @author cl
  */
-public interface InitialConcentration  {
+public interface InitialConcentration {
 
     default void initialize(Simulation simulation) {
         for (Updatable updatable : simulation.getUpdatables()) {

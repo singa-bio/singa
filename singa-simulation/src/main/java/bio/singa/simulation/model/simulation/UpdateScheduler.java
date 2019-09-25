@@ -51,7 +51,6 @@ public class UpdateScheduler {
     private CountDownLatch countDownLatch;
 
     private final Deque<UpdateModule> modules;
-    private final List<Thread> threads;
 
     private double previousError;
     private Quantity<Time> previousTimeStep;
@@ -65,7 +64,6 @@ public class UpdateScheduler {
     public UpdateScheduler(Simulation simulation) {
         this.simulation = simulation;
         modules = new ArrayDeque<>(simulation.getModules());
-        threads = Collections.synchronizedList(new ArrayList<>());
         largestLocalError = NumericalError.MINIMAL_EMPTY_ERROR;
         largestGlobalError = NumericalError.MINIMAL_EMPTY_ERROR;
     }

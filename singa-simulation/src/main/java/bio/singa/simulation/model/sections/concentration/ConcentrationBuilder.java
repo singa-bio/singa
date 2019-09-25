@@ -84,7 +84,6 @@ public class ConcentrationBuilder {
 
     }
 
-
     public interface BuildStep {
 
         BuildStep evidence(Evidence evidence);
@@ -96,7 +95,6 @@ public class ConcentrationBuilder {
     public static class SectionConcentrationBuilder implements EntityStep, RegionStep, SubsectionStep, ConcentrationStep, ConcentrationUnitStep, BuildStep {
 
         private double concentrationValue;
-
         private final SectionConcentration sectionConcentration;
 
         public SectionConcentrationBuilder() {

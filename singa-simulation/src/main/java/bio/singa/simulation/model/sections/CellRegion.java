@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import static bio.singa.simulation.model.sections.CellTopology.*;
+
 /**
  * @author cl
  */
@@ -61,25 +63,39 @@ public class CellRegion {
     }
 
     public CellSubsection getInnerSubsection() {
-        return cellSubSections.get(CellTopology.INNER);
+        return cellSubSections.get(INNER);
     }
 
     public CellSubsection getOuterSubsection() {
-        return cellSubSections.get(CellTopology.OUTER);
+        return cellSubSections.get(OUTER);
     }
 
     public CellSubsection getMembraneSubsection() {
-        return cellSubSections.get(CellTopology.MEMBRANE);
+        return cellSubSections.get(MEMBRANE);
+    }
+
+    public boolean has(CellTopology topology) {
+        return cellSubSections.containsKey(topology);
     }
 
     public boolean hasMembrane() {
-        return cellSubSections.containsKey(CellTopology.MEMBRANE);
+        return cellSubSections.containsKey(MEMBRANE);
+    }
+
+    public boolean hasInner() {
+        return cellSubSections.containsKey(INNER);
+    }
+
+    public boolean hasOuter() {
+        return cellSubSections.containsKey(OUTER);
     }
 
     @Override
     public String toString() {
         return identifier + (goTerm != null ? " (" + goTerm.getContent() + ")" : "");
     }
+
+
 
     @Override
     public boolean equals(Object o) {
@@ -91,7 +107,6 @@ public class CellRegion {
 
     @Override
     public int hashCode() {
-
         return Objects.hash(identifier);
     }
 }

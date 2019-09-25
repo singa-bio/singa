@@ -102,6 +102,10 @@ public class ConcentrationDeltaManager {
         return originalConcentrations;
     }
 
+    public void setOriginalConcentrations(ConcentrationContainer originalConcentrations) {
+        this.originalConcentrations = originalConcentrations;
+    }
+
     /**
      * Returns true if the concentrations are observed.
      *

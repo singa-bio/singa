@@ -23,13 +23,9 @@ import static bio.singa.simulation.model.sections.concentration.InitialConcentra
 public class SectionConcentration implements InitialConcentration {
 
     private CellRegion region;
-
     private CellSubsection subsection;
-
     private ChemicalEntity entity;
-
     private Quantity<MolarConcentration> concentration;
-
     private Evidence evidence;
 
     SectionConcentration() {

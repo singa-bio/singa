@@ -21,13 +21,9 @@ import java.util.Objects;
 public class MembraneConcentration implements InitialConcentration {
 
     private CellRegion region;
-
     private ChemicalEntity entity;
-
     private Quantity<Area> area;
-
     private double numberOfMolecules;
-
     private Evidence evidence;
 
     MembraneConcentration() {

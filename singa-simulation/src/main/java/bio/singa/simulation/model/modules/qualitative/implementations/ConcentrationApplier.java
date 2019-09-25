@@ -77,6 +77,14 @@ public class ConcentrationApplier extends QualitativeModule {
     @Override
     public void onCompletion() {
         String state = getFeature(AppliedVesicleState.class).getContent();
+
+        for (Vesicle vesicle : containedVesicles) {
+            vesicle.setState(state);
+            // FIXME this could be mor elegant
+            vesicle.getConcentrationManager().setOriginalConcentrations(vesicle.getConcentrationManager().getOriginalConcentrations().emptyCopy());
+            vesicle.getConcentrationManager().clearPotentialDeltas();
+        }
+
         // set new state
         for (InitialConcentration initialConcentration : getSimulation().getConcentrationInitializer().getInitialConcentrations()) {
             if (initialConcentration instanceof SectionConcentration) {
@@ -85,8 +93,6 @@ public class ConcentrationApplier extends QualitativeModule {
                     continue;
                 }
                 for (Vesicle vesicle : containedVesicles) {
-                    vesicle.setState(state);
-                    vesicle.getConcentrationManager().setConcentrationContainer(vesicle.getConcentrationContainer().emptyCopy());
                     sectionConcentration.initialize(vesicle);
                 }
             }

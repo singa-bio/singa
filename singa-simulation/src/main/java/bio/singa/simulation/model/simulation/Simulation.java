@@ -191,7 +191,6 @@ public class Simulation {
 
     }
 
-
     private boolean timeStepShouldIncrease() {
         // if time step was reduced in this epoch there is no need to test if it should increase
         if (scheduler.timeStepWasAlteredInThisEpoch()) {
