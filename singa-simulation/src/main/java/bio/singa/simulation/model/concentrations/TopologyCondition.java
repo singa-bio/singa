@@ -1,4 +1,4 @@
-package bio.singa.simulation.model.sections.nconcentrations;
+package bio.singa.simulation.model.concentrations;
 
 import bio.singa.simulation.model.sections.CellTopology;
 import bio.singa.simulation.model.simulation.Updatable;
@@ -31,9 +31,9 @@ public class TopologyCondition extends AbstractConcentrationCondition {
     public static TopologyCondition isTopology(CellTopology topology) {
         switch (topology) {
             case INNER:
-                return IS_MEMBRANE;
-            case MEMBRANE:
                 return IS_INNER;
+            case MEMBRANE:
+                return IS_MEMBRANE;
             case OUTER:
                 return  IS_OUTER;
             default:

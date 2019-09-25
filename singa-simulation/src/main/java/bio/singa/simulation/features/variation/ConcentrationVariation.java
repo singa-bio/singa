@@ -4,7 +4,8 @@ import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.simulation.model.sections.CellRegion;
 import bio.singa.simulation.model.sections.CellSubsection;
-import bio.singa.simulation.model.sections.concentration.SectionConcentration;
+import bio.singa.simulation.model.concentrations.ConcentrationBuilder;
+import bio.singa.simulation.model.concentrations.InitialConcentration;
 
 import javax.measure.Quantity;
 
@@ -44,8 +45,15 @@ public class ConcentrationVariation extends Variation<MolarConcentration> {
     }
 
     @Override
-    public SectionConcentration create(Object concentration) {
-        return new SectionConcentration(cellRegion, subsection, entity, ((Quantity) concentration).asType(MolarConcentration.class));
+    public InitialConcentration create(Object concentration) {
+        ConcentrationBuilder.AdditionalConditionsStep conditionsStep = ConcentrationBuilder.create()
+                .entity(entity)
+                .subsection(subsection)
+                .concentration(((Quantity) concentration).asType(MolarConcentration.class));
+        if (cellRegion != null) {
+            conditionsStep = conditionsStep.region(cellRegion);
+        }
+        return conditionsStep.build();
     }
 
     @Override

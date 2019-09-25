@@ -7,12 +7,12 @@ import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.modules.concentration.imlementations.reactions.ReactionBuilder;
 import bio.singa.simulation.model.sections.CellRegions;
-import bio.singa.simulation.model.sections.CellSubsections;
-import bio.singa.simulation.model.sections.concentration.ConcentrationInitializer;
+import bio.singa.simulation.model.concentrations.ConcentrationBuilder;
 import org.junit.jupiter.api.Test;
 import tech.units.indriya.quantity.Quantities;
 
 import static bio.singa.features.units.UnitProvider.MICRO_MOLE_PER_LITRE;
+import static bio.singa.simulation.model.sections.CellSubsections.CYTOPLASM;
 import static tech.units.indriya.unit.Units.SECOND;
 
 /**
@@ -38,10 +38,19 @@ class UpdateSchedulerTest {
         SmallMolecule secondSubstrate = SmallMolecule.create("S2").build();
         SmallMolecule product = SmallMolecule.create("P").build();
 
-        ConcentrationInitializer ci = new ConcentrationInitializer();
-        ci.addInitialConcentration(CellSubsections.CYTOPLASM, firstSubstrate, Quantities.getQuantity(100, MICRO_MOLE_PER_LITRE));
-        ci.addInitialConcentration(CellSubsections.CYTOPLASM, secondSubstrate, Quantities.getQuantity(50, MICRO_MOLE_PER_LITRE));
-        simulation.setConcentrationInitializer(ci);
+        ConcentrationBuilder.create(simulation)
+                .entity(firstSubstrate)
+                .subsection(CYTOPLASM)
+                .concentrationValue(100)
+                .microMolar()
+                .build();
+
+        ConcentrationBuilder.create(simulation)
+                .entity(secondSubstrate)
+                .subsection(CYTOPLASM)
+                .concentrationValue(50)
+                .microMolar()
+                .build();
 
         RateConstant kf = RateConstant.create(1000)
                 .forward().secondOrder()
@@ -66,6 +75,7 @@ class UpdateSchedulerTest {
         for (int i = 0; i < 100; i++) {
             simulation.nextEpoch();
         }
+
         System.out.println(simulation.getScheduler().getTimestepsDecreased()+"/"+simulation.getScheduler().getTimestepsIncreased()+" (d/i)");
         System.out.println(simulation.getElapsedTime());
 

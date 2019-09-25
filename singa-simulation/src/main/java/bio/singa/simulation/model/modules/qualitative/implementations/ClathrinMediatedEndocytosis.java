@@ -17,8 +17,7 @@ import bio.singa.simulation.model.sections.CellRegion;
 import bio.singa.simulation.model.sections.CellRegions;
 import bio.singa.simulation.model.sections.CellSubsection;
 import bio.singa.simulation.model.sections.ConcentrationPool;
-import bio.singa.simulation.model.sections.concentration.InitialConcentration;
-import bio.singa.simulation.model.sections.concentration.SectionConcentration;
+import bio.singa.simulation.model.concentrations.InitialConcentration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,6 +71,7 @@ public class ClathrinMediatedEndocytosis extends QualitativeModule {
         getRequiredFeatures().add(EndocytosisCheckpointConcentration.class);
         getRequiredFeatures().add(Cargoes.class);
         getRequiredFeatures().add(MaturationTime.class);
+        getRequiredFeatures().add(InitialConcentrations.class);
     }
 
     void limitPitsToOneAtATime() {
@@ -260,20 +260,20 @@ public class ClathrinMediatedEndocytosis extends QualitativeModule {
      * @param maturedPit The original pit
      */
     private void initializeCargo(Vesicle vesicle, Pit maturedPit) {
-        if (simulation.getConcentrationInitializer() != null) {
-            for (InitialConcentration initialConcentration : simulation.getConcentrationInitializer().getInitialConcentrations()) {
-                if (initialConcentration instanceof SectionConcentration) {
-                    SectionConcentration sectionConcentration = (SectionConcentration) initialConcentration;
-                    if (sectionConcentration.getCellRegion() != null && sectionConcentration.getCellRegion().getIdentifier().equals("Vesicle (endocytosis)")) {
-                        initialConcentration.initializeUnchecked(vesicle, MEMBRANE);
-                    }
-                }
+
+        List<InitialConcentration> concentrations = getFeature(InitialConcentrations.class).getContent();
+
+        if (concentrations != null) {
+            for (InitialConcentration initialConcentration : concentrations) {
+                initialConcentration.apply(vesicle);
             }
         }
+
         Map.Entry<CellSubsection, ConcentrationPool> pitPool = maturedPit.getConcentrationDeltaManager().getConcentrationContainer().getPool(MEMBRANE);
         for (Map.Entry<ChemicalEntity, Double> entry : pitPool.getValue().getConcentrations().entrySet()) {
             vesicle.addPotentialDelta(new ConcentrationDelta(this, pitPool.getKey(), entry.getKey(), entry.getValue()));
         }
+
         AutomatonNode associatedNode = maturedPit.getAssociatedNode();
         Map.Entry<CellSubsection, ConcentrationPool> membranePool = associatedNode.getConcentrationContainer().getPool(MEMBRANE);
         double pitArea = maturedPit.getSpawnRadius().multiply(maturedPit.getSpawnRadius()).multiply(Math.PI).getValue().doubleValue();

@@ -13,6 +13,7 @@ import bio.singa.mathematics.geometry.faces.Rectangle;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.simulation.features.AppliedVesicleState;
 import bio.singa.simulation.features.ContainmentRegion;
+import bio.singa.simulation.features.InitialConcentrations;
 import bio.singa.simulation.features.WhiteListVesicleStates;
 import bio.singa.simulation.model.agents.pointlike.Vesicle;
 import bio.singa.simulation.model.agents.pointlike.VesicleLayer;
@@ -22,9 +23,8 @@ import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.modules.concentration.imlementations.reactions.ReactionBuilder;
-import bio.singa.simulation.model.sections.concentration.ConcentrationBuilder;
-import bio.singa.simulation.model.sections.concentration.ConcentrationInitializer;
-import bio.singa.simulation.model.sections.concentration.InitialConcentration;
+import bio.singa.simulation.model.concentrations.ConcentrationBuilder;
+import bio.singa.simulation.model.concentrations.InitialConcentration;
 import bio.singa.simulation.model.simulation.Simulation;
 import org.junit.jupiter.api.Test;
 import tech.units.indriya.ComparableQuantity;
@@ -39,6 +39,7 @@ import static bio.singa.simulation.model.agents.pointlike.VesicleStateRegistry.I
 import static bio.singa.simulation.model.agents.pointlike.VesicleStateRegistry.UNATTACHED;
 import static bio.singa.simulation.model.sections.CellRegions.CYTOPLASM_REGION;
 import static bio.singa.simulation.model.sections.CellRegions.VESICLE_REGION;
+import static bio.singa.simulation.model.sections.CellSubsections.VESICLE_MEMBRANE;
 import static bio.singa.simulation.model.sections.CellTopology.MEMBRANE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static tech.units.indriya.unit.MetricPrefix.*;
@@ -68,24 +69,26 @@ class ConcentrationApplierTest {
         ChemicalEntity p = SmallMolecule.create("P").build();
         ComplexEntity aqp2p = ComplexEntity.from(aqp2, p);
 
-        InitialConcentration aqp2Initial = ConcentrationBuilder.regular()
+        ConcentrationBuilder.create(simulation)
                 .entity(EntityRegistry.matchExactly("AQP2"))
-                .subsection(VESICLE_REGION.getMembraneSubsection())
+                .subsection(VESICLE_MEMBRANE)
                 .concentrationValue(10)
                 .microMolar()
                 .build();
 
-        InitialConcentration aqp2pInitial = ConcentrationBuilder.regular()
+        ConcentrationBuilder.create(simulation)
                 .entity(EntityRegistry.matchExactly("AQP2", "P"))
-                .subsection(VESICLE_REGION.getMembraneSubsection())
+                .subsection(VESICLE_MEMBRANE)
                 .concentrationValue(20)
                 .microMolar()
                 .build();
 
-        ConcentrationInitializer ci = new ConcentrationInitializer();
-        ci.addInitialConcentration(aqp2Initial);
-        ci.addInitialConcentration(aqp2pInitial);
-        simulation.setConcentrationInitializer(ci);
+        InitialConcentration appliedAqp2p = ConcentrationBuilder.create(simulation)
+                .entity(EntityRegistry.matchExactly("AQP2", "P"))
+                .subsection(VESICLE_MEMBRANE)
+                .concentrationValue(40)
+                .microMolar()
+                .build();
 
         // setup graph
         AutomatonGraph graph = AutomatonGraphs.singularGraph();
@@ -112,6 +115,7 @@ class ConcentrationApplierTest {
         stateChange.setFeature(new WhiteListVesicleStates(Collections.singletonList(IN_PERINUCLEAR_STORAGE)));
         stateChange.setFeature(new ContainmentRegion(VESICLE_REGION));
         stateChange.setFeature(new AppliedVesicleState(UNATTACHED));
+        stateChange.setFeature(new InitialConcentrations(Collections.singletonList(appliedAqp2p)));
 
         // setup reaction to introduce entity change
         ReactionBuilder.staticReactants(simulation)
@@ -132,8 +136,8 @@ class ConcentrationApplierTest {
         Quantity<MolarConcentration> caqp2p = UnitRegistry.concentration(vesicle.getConcentrationContainer().get(MEMBRANE, aqp2p)).to(MICRO_MOLE_PER_LITRE);
         Quantity<MolarConcentration> caqp2 = UnitRegistry.concentration(vesicle.getConcentrationContainer().get(MEMBRANE, aqp2)).to(MICRO_MOLE_PER_LITRE);
 
-        assertEquals(10.0, caqp2.getValue().doubleValue());
-        assertEquals(20.0, caqp2p.getValue().doubleValue());
+        assertEquals(0.0, caqp2.getValue().doubleValue());
+        assertEquals(40.0, caqp2p.getValue().doubleValue());
         assertEquals(UNATTACHED, vesicle.getState());
 
     }

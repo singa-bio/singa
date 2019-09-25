@@ -15,7 +15,7 @@ import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.sections.CellSubsections;
-import bio.singa.simulation.model.sections.concentration.ConcentrationInitializer;
+import bio.singa.simulation.model.concentrations.ConcentrationBuilder;
 import bio.singa.simulation.model.simulation.Simulation;
 import org.junit.jupiter.api.*;
 import org.slf4j.Logger;
@@ -30,6 +30,7 @@ import static bio.singa.chemistry.features.diffusivity.Diffusivity.SQUARE_CENTIM
 import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static bio.singa.simulation.model.sections.CellRegions.CELL_OUTER_MEMBRANE_REGION;
 import static bio.singa.simulation.model.sections.CellRegions.CYTOPLASM_REGION;
+import static bio.singa.simulation.model.sections.CellSubsections.CYTOPLASM;
 import static bio.singa.simulation.model.sections.CellSubsections.EXTRACELLULAR_REGION;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -156,10 +157,13 @@ class DiffusionTest {
                 },
                 recurrentNode -> recurrentNode.getCellRegion().equals(CYTOPLASM_REGION));
 
-        // set concentrations
-        ConcentrationInitializer ci = new ConcentrationInitializer();
-        ci.addInitialConcentration(CellSubsections.CYTOPLASM, ammonia, Quantities.getQuantity(1.0, MOLE_PER_LITRE));
-        simulation.setConcentrationInitializer(ci);
+        // set concentration
+        ConcentrationBuilder.create(simulation)
+                .entity(ammonia)
+                .subsection(CYTOPLASM)
+                .concentrationValue(1.0)
+                .unit(MOLE_PER_LITRE)
+                .build();
 
         Diffusion.inSimulation(simulation)
                 .forEntity(ammonia)
@@ -175,7 +179,7 @@ class DiffusionTest {
                 // nothing should permeate to the outer part
                 assertEquals(0.0, node.getConcentrationContainer().get(CellSubsections.EXTRACELLULAR_REGION, ammonia));
             } else {
-                assertTrue(node.getConcentrationContainer().get(CellSubsections.CYTOPLASM, ammonia) > 0.0);
+                assertTrue(node.getConcentrationContainer().get(CYTOPLASM, ammonia) > 0.0);
             }
         }
 

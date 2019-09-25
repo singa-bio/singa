@@ -2,14 +2,14 @@ package bio.singa.simulation.model.modules.qualitative.implementations;
 
 import bio.singa.simulation.features.AppliedVesicleState;
 import bio.singa.simulation.features.ContainmentRegion;
+import bio.singa.simulation.features.InitialConcentrations;
 import bio.singa.simulation.features.WhiteListVesicleStates;
 import bio.singa.simulation.model.agents.pointlike.Vesicle;
 import bio.singa.simulation.model.agents.volumelike.VolumeLikeAgent;
 import bio.singa.simulation.model.modules.concentration.ModuleState;
 import bio.singa.simulation.model.modules.qualitative.QualitativeModule;
 import bio.singa.simulation.model.sections.CellRegion;
-import bio.singa.simulation.model.sections.concentration.InitialConcentration;
-import bio.singa.simulation.model.sections.concentration.SectionConcentration;
+import bio.singa.simulation.model.concentrations.InitialConcentration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,6 +31,7 @@ public class ConcentrationApplier extends QualitativeModule {
         getRequiredFeatures().add(ContainmentRegion.class);
         getRequiredFeatures().add(WhiteListVesicleStates.class);
         getRequiredFeatures().add(AppliedVesicleState.class);
+        getRequiredFeatures().add(InitialConcentrations.class);
     }
 
     @Override
@@ -77,25 +78,18 @@ public class ConcentrationApplier extends QualitativeModule {
     @Override
     public void onCompletion() {
         String state = getFeature(AppliedVesicleState.class).getContent();
+        List<InitialConcentration> concentrations = getFeature(InitialConcentrations.class).getContent();
 
         for (Vesicle vesicle : containedVesicles) {
             vesicle.setState(state);
             // FIXME this could be mor elegant
             vesicle.getConcentrationManager().setOriginalConcentrations(vesicle.getConcentrationManager().getOriginalConcentrations().emptyCopy());
+            vesicle.getConcentrationManager().setConcentrationContainer(vesicle.getConcentrationManager().getOriginalConcentrations().emptyCopy());
             vesicle.getConcentrationManager().clearPotentialDeltas();
-        }
-
-        // set new state
-        for (InitialConcentration initialConcentration : getSimulation().getConcentrationInitializer().getInitialConcentrations()) {
-            if (initialConcentration instanceof SectionConcentration) {
-                SectionConcentration sectionConcentration = (SectionConcentration) initialConcentration;
-                if (sectionConcentration.getSubsection() == null) {
-                    continue;
-                }
-                for (Vesicle vesicle : containedVesicles) {
-                    sectionConcentration.initialize(vesicle);
-                }
+            for (InitialConcentration initialConcentration : concentrations) {
+                initialConcentration.apply(vesicle);
             }
         }
+
     }
 }

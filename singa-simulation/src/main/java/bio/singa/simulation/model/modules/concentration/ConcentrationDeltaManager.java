@@ -128,6 +128,10 @@ public class ConcentrationDeltaManager {
         fixedEntities.add(chemicalEntity);
     }
 
+    public List<ChemicalEntity> getFixedEntities() {
+        return fixedEntities;
+    }
+
     public boolean hasDeltas() {
         return !getFinalDeltas().isEmpty();
     }

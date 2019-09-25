@@ -20,6 +20,8 @@ import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.sections.CellRegions;
+import bio.singa.simulation.model.concentrations.ConcentrationBuilder;
+import bio.singa.simulation.model.concentrations.InitialConcentration;
 import bio.singa.simulation.model.simulation.Simulation;
 import org.junit.jupiter.api.Test;
 import tech.units.indriya.ComparableQuantity;
@@ -28,6 +30,7 @@ import tech.units.indriya.quantity.Quantities;
 import javax.measure.Quantity;
 import javax.measure.quantity.Length;
 import javax.measure.quantity.Time;
+import java.util.Collections;
 import java.util.List;
 
 import static bio.singa.features.units.UnitProvider.MICRO_MOLE_PER_LITRE;
@@ -58,6 +61,7 @@ class ClathrinMediatedEndocytosisTest {
 
         ChemicalEntity aqp = Protein.create("AQP").build();
         ChemicalEntity other = Protein.create("OTHER").build();
+        ChemicalEntity clathrin = Protein.create("CLA").build();
 
         Simulation simulation = new Simulation();
         simulation.setMaximalTimeStep(Quantities.getQuantity(5, MILLI(SECOND)));
@@ -67,11 +71,23 @@ class ClathrinMediatedEndocytosisTest {
         AutomatonNode node = graph.getNode(0, 0);
         node.setPosition(new Vector2D(50.0, 50.0));
         node.setCellRegion(CellRegions.CELL_OUTER_MEMBRANE_REGION);
-        ComparableQuantity<MolarConcentration> initialConcentration = Quantities.getQuantity(10, MICRO_MOLE_PER_LITRE);
-        node.getConcentrationContainer().initialize(MEMBRANE, aqp, initialConcentration);
-        node.getConcentrationContainer().initialize(MEMBRANE, other, initialConcentration);
-//        System.out.println("initial membrane concentration: " + MolarConcentration.concentrationToMolecules(UnitRegistry.convert(initialConcentration).getValue().doubleValue()).getValue().doubleValue());
         simulation.setGraph(graph);
+
+        ConcentrationBuilder.create(simulation)
+                .entity(aqp)
+                .topology(MEMBRANE)
+                .concentrationValue(10)
+                .microMolar()
+                .onlyNodes()
+                .build();
+
+        ConcentrationBuilder.create(simulation)
+                .entity(other)
+                .topology(MEMBRANE)
+                .concentrationValue(10)
+                .microMolar()
+                .onlyNodes()
+                .build();
 
         // add vesicle layer
         VesicleLayer vesicleLayer = new VesicleLayer(simulation);
@@ -82,6 +98,7 @@ class ClathrinMediatedEndocytosisTest {
         MembraneLayer membraneLayer = new MembraneLayer();
         membraneLayer.addMembranes(membranes);
         simulation.setMembraneLayer(membraneLayer);
+
         // microtubule organizing centre
         MicrotubuleOrganizingCentre moc = new MicrotubuleOrganizingCentre(membraneLayer, new Circle(new Vector2D(50, 90),
                 Environment.convertSystemToSimulationScale(Quantities.getQuantity(50, NANO(METRE)))));
@@ -89,6 +106,15 @@ class ClathrinMediatedEndocytosisTest {
 
         ComparableQuantity<FirstOrderRate> kf_endoAddition = Quantities.getQuantity(0.03, ONE.divide(SECOND)
                 .asType(FirstOrderRate.class));
+
+        InitialConcentration clathrinConcentration = ConcentrationBuilder.create()
+                .entity(clathrin)
+                .topology(MEMBRANE)
+                .concentrationValue(10)
+                .microMolar()
+                .build();
+
+        Quantity<MolarConcentration> checkpointConcentration = UnitRegistry.concentration(MolarConcentration.moleculesToConcentration(400));
 
         // clathrin mediated endocytosis
         ClathrinMediatedEndocytosis endocytosis = new ClathrinMediatedEndocytosis();
@@ -99,10 +125,10 @@ class ClathrinMediatedEndocytosisTest {
         endocytosis.setFeature(VesicleRadius.DEFAULT_VESICLE_RADIUS);
         endocytosis.setFeature(new CargoAdditionRate(kf_endoAddition));
         endocytosis.setFeature(new EndocytosisCheckpointTime(Quantities.getQuantity(30.0, SECOND)));
-        Quantity<MolarConcentration> checkpointConcentration = UnitRegistry.concentration(MolarConcentration.moleculesToConcentration(400));
         endocytosis.setFeature(new EndocytosisCheckpointConcentration(checkpointConcentration));
         endocytosis.setFeature(new Cargoes(EntityRegistry.matchExactly("AQP")));
         endocytosis.setFeature(new MaturationTime(Quantities.getQuantity(50.0, SECOND)));
+        endocytosis.setFeature(new InitialConcentrations(Collections.singletonList(clathrinConcentration)));
         simulation.addModule(endocytosis);
 
         simulation.nextEpoch();
@@ -136,5 +162,6 @@ class ClathrinMediatedEndocytosisTest {
         Vesicle vesicle = vesicles.get(0);
         assertTrue(400 < MolarConcentration.concentrationToMolecules(vesicle.getConcentrationContainer()
                     .get(CellRegions.VESICLE_REGION.getMembraneSubsection(), EntityRegistry.matchExactly("AQP"))).getValue().intValue());
+        assertEquals(10, UnitRegistry.concentration(vesicle.getConcentrationContainer().get(MEMBRANE, clathrin)).to(MICRO_MOLE_PER_LITRE).getValue().doubleValue());
     }
 }

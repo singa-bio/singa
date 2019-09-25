@@ -69,6 +69,9 @@ public class UpdateScheduler {
     }
 
     public void initializeThreadPool() {
+        if (modules.isEmpty()) {
+            return;
+        }
         executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(modules.size());
     }
 
@@ -94,7 +97,6 @@ public class UpdateScheduler {
         previousError = 0;
         largestLocalError = NumericalError.MINIMAL_EMPTY_ERROR;
         previousTimeStep = UnitRegistry.getTime();
-        simulation.collectUpdatables();
         updatables = simulation.getUpdatables();
         moduleIterator = modules.iterator();
         globalErrorAcceptable = true;

@@ -4,8 +4,7 @@ import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.simulation.model.modules.UpdateModule;
-import bio.singa.simulation.model.sections.concentration.InitialConcentration;
-import bio.singa.simulation.model.sections.concentration.SectionConcentration;
+import bio.singa.simulation.model.concentrations.InitialConcentration;
 import bio.singa.simulation.model.simulation.Simulation;
 
 import javax.measure.Quantity;
@@ -74,7 +73,7 @@ public class VariationSet {
         for (Object parameterVariation : parameterVariations) {
             if (parameterVariation instanceof InitialConcentration) {
                 // varying concentration
-                simulation.getConcentrationInitializer().addInitialConcentration((InitialConcentration) parameterVariation);
+                simulation.addConcentration((InitialConcentration) parameterVariation);
             } else if (parameterVariation instanceof EntityFeatureVariationEntry) {
                 // varying feature of a entity
                 Collection<ChemicalEntity> chemicalEntities = simulation.getChemicalEntities();
@@ -131,9 +130,9 @@ public class VariationSet {
 
     public static String getValueString(Object parameter) {
         // add membrane concentration
-        if (parameter instanceof SectionConcentration) {
+        if (parameter instanceof InitialConcentration) {
             // varying concentration
-            return String.valueOf(MolarConcentration.concentrationToMolecules(((SectionConcentration) parameter).getConcentration()
+            return String.valueOf(MolarConcentration.concentrationToMolecules(((InitialConcentration) parameter).getConcentration()
                     .to(UnitRegistry.getConcentrationUnit()).getValue().doubleValue())
                     .getValue().doubleValue());
         } else if (parameter instanceof EntityFeatureVariationEntry) {

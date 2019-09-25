@@ -1,4 +1,4 @@
-package bio.singa.simulation.model.sections.nconcentrations;
+package bio.singa.simulation.model.concentrations;
 
 import bio.singa.simulation.model.simulation.Updatable;
 

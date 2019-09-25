@@ -1,4 +1,4 @@
-package bio.singa.simulation.model.sections.nconcentrations;
+package bio.singa.simulation.model.concentrations;
 
 import bio.singa.simulation.model.agents.pointlike.Vesicle;
 import bio.singa.simulation.model.graphs.AutomatonNode;
@@ -10,7 +10,7 @@ import bio.singa.simulation.model.simulation.Updatable;
 public class NodeTypeCondition extends AbstractConcentrationCondition {
 
     private static final NodeTypeCondition IS_NODE = new NodeTypeCondition("node");
-    private static final NodeTypeCondition IS_VESICLE = new NodeTypeCondition("node");
+    private static final NodeTypeCondition IS_VESICLE = new NodeTypeCondition("vesicle");
 
     public static NodeTypeCondition isNode() {
         return IS_NODE;

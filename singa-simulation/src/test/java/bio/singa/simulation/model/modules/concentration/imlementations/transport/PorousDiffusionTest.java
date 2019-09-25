@@ -16,7 +16,7 @@ import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.sections.CellTopology;
-import bio.singa.simulation.model.sections.concentration.ConcentrationInitializer;
+import bio.singa.simulation.model.concentrations.ConcentrationBuilder;
 import bio.singa.simulation.model.simulation.Simulation;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -28,6 +28,7 @@ import java.util.List;
 
 import static bio.singa.features.units.UnitProvider.MICRO_MOLE_PER_LITRE;
 import static bio.singa.simulation.model.sections.CellRegions.CELL_OUTER_MEMBRANE_REGION;
+import static bio.singa.simulation.model.sections.CellSubsections.EXTRACELLULAR_REGION;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static tech.units.indriya.unit.MetricPrefix.MICRO;
 import static tech.units.indriya.unit.MetricPrefix.NANO;
@@ -81,9 +82,12 @@ class PorousDiffusionTest {
                 .identifier("porous diffusion")
                 .build();
 
-        ConcentrationInitializer ci = new ConcentrationInitializer();
-        ci.addInitialConcentration(CELL_OUTER_MEMBRANE_REGION.getOuterSubsection(), camp, Quantities.getQuantity(1.0, MICRO_MOLE_PER_LITRE));
-        simulation.setConcentrationInitializer(ci);
+        ConcentrationBuilder.create(simulation)
+                .entity(camp)
+                .subsection(EXTRACELLULAR_REGION)
+                .concentrationValue(1.0)
+                .microMolar()
+                .build();
 
         double previousOuterConcentration = UnitRegistry.convert(Quantities.getQuantity(1.0, MICRO_MOLE_PER_LITRE)).getValue().doubleValue();
         double previousInnerConcentration = 0.0;

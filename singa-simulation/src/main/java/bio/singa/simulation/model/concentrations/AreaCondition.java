@@ -1,4 +1,4 @@
-package bio.singa.simulation.model.sections.nconcentrations;
+package bio.singa.simulation.model.concentrations;
 
 import bio.singa.mathematics.geometry.model.Polygon;
 import bio.singa.simulation.model.agents.pointlike.Vesicle;
@@ -6,8 +6,8 @@ import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.sections.CellRegion;
 import bio.singa.simulation.model.simulation.Updatable;
 
-import static bio.singa.simulation.model.sections.nconcentrations.NodeTypeCondition.isNode;
-import static bio.singa.simulation.model.sections.nconcentrations.NodeTypeCondition.isVesicle;
+import static bio.singa.simulation.model.concentrations.NodeTypeCondition.isNode;
+import static bio.singa.simulation.model.concentrations.NodeTypeCondition.isVesicle;
 
 /**
  * @author cl

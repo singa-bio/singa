@@ -11,16 +11,13 @@ import bio.singa.simulation.model.modules.concentration.imlementations.reactions
 import bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.reactants.Reactant;
 import bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.reactants.ReactantRole;
 import bio.singa.simulation.model.sections.CellRegions;
-import bio.singa.simulation.model.sections.concentration.ConcentrationInitializer;
-import bio.singa.simulation.model.sections.concentration.SectionConcentration;
+import bio.singa.simulation.model.concentrations.ConcentrationBuilder;
 import bio.singa.simulation.model.simulation.Simulation;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import tech.units.indriya.quantity.Quantities;
 
-import static bio.singa.features.units.UnitProvider.NANO_MOLE_PER_LITRE;
 import static bio.singa.simulation.model.sections.CellSubsections.CYTOPLASM;
 import static bio.singa.simulation.model.sections.CellTopology.INNER;
 import static tech.units.indriya.unit.Units.SECOND;
@@ -73,11 +70,26 @@ public class DynamicReactionTest {
         AutomatonNode node = automatonGraph.getNode(0, 0);
         node.setCellRegion(CellRegions.CYTOPLASM_REGION);
 
-        ConcentrationInitializer ci = new ConcentrationInitializer();
-        ci.addInitialConcentration(new SectionConcentration(CYTOPLASM, substrate, Quantities.getQuantity(200, NANO_MOLE_PER_LITRE)));
-        ci.addInitialConcentration(new SectionConcentration(CYTOPLASM, product, Quantities.getQuantity(100, NANO_MOLE_PER_LITRE)));
-        ci.addInitialConcentration(new SectionConcentration(CYTOPLASM, catalyst, Quantities.getQuantity(30, NANO_MOLE_PER_LITRE)));
-        simulation.setConcentrationInitializer(ci);
+        ConcentrationBuilder.create(simulation)
+                .entity(substrate)
+                .subsection(CYTOPLASM)
+                .concentrationValue(200)
+                .nanoMolar()
+                .build();
+
+        ConcentrationBuilder.create(simulation)
+                .entity(product)
+                .subsection(CYTOPLASM)
+                .concentrationValue(100)
+                .nanoMolar()
+                .build();
+
+        ConcentrationBuilder.create(simulation)
+                .entity(catalyst)
+                .subsection(CYTOPLASM)
+                .concentrationValue(30)
+                .nanoMolar()
+                .build();
 
         for (int i = 0; i < 10; i++) {
             simulation.nextEpoch();

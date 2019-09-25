@@ -1,16 +1,14 @@
-package bio.singa.simulation.model.sections.nconcentrations;
+package bio.singa.simulation.model.concentrations;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
-import bio.singa.chemistry.entities.simple.SmallMolecule;
 import bio.singa.features.model.Evidence;
 import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.features.units.UnitRegistry;
-import bio.singa.mathematics.geometry.faces.Rectangle;
 import bio.singa.mathematics.geometry.model.Polygon;
-import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.simulation.model.sections.CellRegion;
 import bio.singa.simulation.model.sections.CellSubsection;
 import bio.singa.simulation.model.sections.CellTopology;
+import bio.singa.simulation.model.simulation.Simulation;
 import tech.units.indriya.ComparableQuantity;
 import tech.units.indriya.quantity.Quantities;
 
@@ -21,8 +19,6 @@ import java.util.List;
 
 import static bio.singa.features.units.UnitProvider.*;
 import static bio.singa.features.units.UnitRegistry.humanReadable;
-import static bio.singa.simulation.model.sections.CellSubsections.CYTOPLASM;
-import static bio.singa.simulation.model.sections.CellSubsections.VESICLE_LUMEN;
 import static tech.units.indriya.unit.MetricPrefix.MILLI;
 import static tech.units.indriya.unit.Units.MINUTE;
 import static tech.units.indriya.unit.Units.SECOND;
@@ -34,6 +30,10 @@ public class ConcentrationBuilder {
 
     public static EntityStep create() {
         return new ConcentrationBuilderImpl();
+    }
+
+    public static EntityStep create(Simulation simulation) {
+        return new ConcentrationBuilderImpl(simulation);
     }
 
     public interface EntityStep {
@@ -136,12 +136,18 @@ public class ConcentrationBuilder {
 
     public static class ConcentrationBuilderImpl implements EntityStep, PoolStep, ConcentrationStep, ConcentrationUnitStep, AdditionalConditionsStep, TimedUnitStep {
 
+        private Simulation simulation;
         private InitialConcentration initialConcentration;
         private double concentrationValue;
         private double timeValue;
 
         public ConcentrationBuilderImpl() {
             initialConcentration = new InitialConcentration();
+        }
+
+        public ConcentrationBuilderImpl(Simulation simulation) {
+            this();
+            this.simulation = simulation;
         }
 
         @Override
@@ -276,64 +282,11 @@ public class ConcentrationBuilder {
 
         @Override
         public InitialConcentration build() {
+            if (simulation != null) {
+                simulation.addConcentration(initialConcentration);
+            }
             return initialConcentration;
         }
-    }
-
-    public static void main(String[] args) {
-
-        SmallMolecule entity = SmallMolecule.create("001").build();
-
-        InitialConcentration sectionConcentration = ConcentrationBuilder.create()
-                .entity(entity)
-                .subsection(VESICLE_LUMEN)
-                .concentrationValue(10)
-                .microMolar()
-                .build();
-
-        System.out.println(sectionConcentration);
-
-        InitialConcentration fixedConcentration = ConcentrationBuilder.create()
-                .entity(entity)
-                .subsection(CYTOPLASM)
-                .concentrationValue(1)
-                .nanoMolar()
-                .fixed()
-                .build();
-
-        System.out.println(fixedConcentration);
-
-        InitialConcentration timedConcentration = ConcentrationBuilder.create()
-                .entity(entity)
-                .subsection(CYTOPLASM)
-                .molecules(200)
-                .atTimeValue(5)
-                .seconds()
-                .build();
-
-        System.out.println(timedConcentration);
-
-        InitialConcentration identifierConcentration = ConcentrationBuilder.create()
-                .entity(entity)
-                .subsection(CYTOPLASM)
-                .concentrationValue(100)
-                .milliMolar()
-                .updatableIdentifier("n(9,1)")
-                .build();
-
-        System.out.println(identifierConcentration);
-
-        InitialConcentration areaConcentration = ConcentrationBuilder.create()
-                .entity(entity)
-                .topology(CellTopology.INNER)
-                .concentrationValue(0.5)
-                .microMolar()
-                .onlyNodes()
-                .inArea(new Rectangle(new Vector2D(0, 0), new Vector2D(100, 100)))
-                .build();
-
-        System.out.println(areaConcentration);
-
     }
 
 }

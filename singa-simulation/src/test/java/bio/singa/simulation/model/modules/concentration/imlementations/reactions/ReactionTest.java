@@ -21,7 +21,7 @@ import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.sections.CellTopology;
 import bio.singa.simulation.model.sections.ConcentrationContainer;
-import bio.singa.simulation.model.sections.concentration.ConcentrationInitializer;
+import bio.singa.simulation.model.concentrations.ConcentrationBuilder;
 import bio.singa.simulation.model.simulation.Simulation;
 import bio.singa.structure.features.molarmass.MolarMass;
 import org.junit.jupiter.api.AfterEach;
@@ -35,10 +35,12 @@ import javax.measure.Quantity;
 import javax.measure.quantity.Length;
 import javax.measure.quantity.Time;
 
-import static bio.singa.chemistry.reactions.conditions.CandidateConditionBuilder.*;
+import static bio.singa.chemistry.reactions.conditions.CandidateConditionBuilder.hasOneOfEntity;
+import static bio.singa.chemistry.reactions.conditions.CandidateConditionBuilder.hasUnoccupiedBindingSite;
 import static bio.singa.chemistry.reactions.reactors.ReactionChainBuilder.add;
 import static bio.singa.chemistry.reactions.reactors.ReactionChainBuilder.bind;
-import static bio.singa.features.units.UnitProvider.*;
+import static bio.singa.features.units.UnitProvider.MICRO_MOLE_PER_LITRE;
+import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static bio.singa.simulation.model.sections.CellRegions.CELL_OUTER_MEMBRANE_REGION;
 import static bio.singa.simulation.model.sections.CellRegions.CYTOPLASM_REGION;
 import static bio.singa.simulation.model.sections.CellSubsections.CELL_OUTER_MEMBRANE;
@@ -76,10 +78,21 @@ class ReactionTest {
         ChemicalEntity b = SmallMolecule.create("B").build();
         ChemicalEntity c = SmallMolecule.create("C").build();
 
-        ConcentrationInitializer ci = new ConcentrationInitializer();
-        ci.addInitialConcentration(CYTOPLASM, a, Quantities.getQuantity(1, MICRO_MOLE_PER_LITRE));
-        ci.addInitialConcentration(CYTOPLASM, b, Quantities.getQuantity(1, MICRO_MOLE_PER_LITRE));
-        simulation.setConcentrationInitializer(ci);
+        // set concentrations
+        ConcentrationBuilder.create(simulation)
+                .entity(a)
+                .subsection(CYTOPLASM)
+                .concentrationValue(1.0)
+                .microMolar()
+                .build();
+
+        // set concentration
+        ConcentrationBuilder.create(simulation)
+                .entity(b)
+                .subsection(CYTOPLASM)
+                .concentrationValue(1.0)
+                .microMolar()
+                .build();
 
         RateConstant rate = RateConstant.create(1.0)
                 .forward().secondOrder()
@@ -114,10 +127,19 @@ class ReactionTest {
         ChemicalEntity b = SmallMolecule.create("B").build();
         ChemicalEntity c = SmallMolecule.create("C").build();
 
-        ConcentrationInitializer ci = new ConcentrationInitializer();
-        ci.addInitialConcentration(CYTOPLASM, a, Quantities.getQuantity(1, MICRO_MOLE_PER_LITRE));
-        ci.addInitialConcentration(CELL_OUTER_MEMBRANE, b, Quantities.getQuantity(1, MICRO_MOLE_PER_LITRE));
-        simulation.setConcentrationInitializer(ci);
+        ConcentrationBuilder.create(simulation)
+                .entity(a)
+                .subsection(CYTOPLASM)
+                .concentrationValue(1.0)
+                .microMolar()
+                .build();
+
+        ConcentrationBuilder.create(simulation)
+                .entity(b)
+                .subsection(CELL_OUTER_MEMBRANE)
+                .concentrationValue(1.0)
+                .microMolar()
+                .build();
 
         RateConstant rate = RateConstant.create(1.0)
                 .forward().secondOrder()
@@ -151,10 +173,19 @@ class ReactionTest {
         ChemicalEntity b = SmallMolecule.create("B").build();
         ChemicalEntity c = SmallMolecule.create("C").build();
 
-        ConcentrationInitializer ci = new ConcentrationInitializer();
-        ci.addInitialConcentration(CYTOPLASM, a, Quantities.getQuantity(1, MICRO_MOLE_PER_LITRE));
-        ci.addInitialConcentration(CYTOPLASM, b, Quantities.getQuantity(1, MICRO_MOLE_PER_LITRE));
-        simulation.setConcentrationInitializer(ci);
+        ConcentrationBuilder.create(simulation)
+                .entity(a)
+                .subsection(CYTOPLASM)
+                .concentrationValue(1.0)
+                .microMolar()
+                .build();
+
+        ConcentrationBuilder.create(simulation)
+                .entity(b)
+                .subsection(CYTOPLASM)
+                .concentrationValue(1.0)
+                .microMolar()
+                .build();
 
         RateConstant rate = RateConstant.create(1.0)
                 .forward().secondOrder()
@@ -203,8 +234,20 @@ class ReactionTest {
         // concentrations
         AutomatonNode membraneNode = automatonGraph.getNode(0, 0);
         membraneNode.setCellRegion(CELL_OUTER_MEMBRANE_REGION);
-        membraneNode.getConcentrationContainer().initialize(CYTOPLASM, ligand, UnitRegistry.concentration(0.1, MOLE_PER_LITRE));
-        membraneNode.getConcentrationContainer().initialize(CELL_OUTER_MEMBRANE, receptor, UnitRegistry.concentration(0.1, MOLE_PER_LITRE));
+
+        ConcentrationBuilder.create(simulation)
+                .entity(ligand)
+                .subsection(CYTOPLASM)
+                .concentrationValue(0.1)
+                .unit(MOLE_PER_LITRE)
+                .build();
+
+        ConcentrationBuilder.create(simulation)
+                .entity(receptor)
+                .subsection(CELL_OUTER_MEMBRANE)
+                .concentrationValue(0.1)
+                .unit(MOLE_PER_LITRE)
+                .build();
 
         // the corresponding rate constants
         RateConstant forwardsRate = RateConstant.create(2.4e8)
@@ -285,12 +328,12 @@ class ReactionTest {
 
         // the ligand
         ChemicalEntity bindee = SmallMolecule.create("bindee")
-                .assignFeature(new MolarMass(10, Evidence.NO_EVIDENCE))
+                .assignFeature(new MolarMass(10))
                 .build();
 
         // the receptor
         Protein binder = new Protein.Builder("binder")
-                .assignFeature(new MolarMass(100, Evidence.NO_EVIDENCE))
+                .assignFeature(new MolarMass(100))
                 .build();
 
         ComplexEntity complex = ComplexEntity.from(binder, bindee);
@@ -311,12 +354,26 @@ class ReactionTest {
 
         // vesicle contained
         Vesicle vesicle = new Vesicle(new Vector2D(25.0, 25.0), Quantities.getQuantity(20, NANO(METRE)));
-        vesicle.getConcentrationContainer().initialize(MEMBRANE, binder, Quantities.getQuantity(0.1, MOLE_PER_LITRE));
         vesicleLayer.addVesicle(vesicle);
 
         // concentrations
+        ConcentrationBuilder.create(simulation)
+                .entity(binder)
+                .topology(MEMBRANE)
+                .concentrationValue(0.1)
+                .unit(MOLE_PER_LITRE)
+                .onlyVesicles()
+                .build();
+
+        ConcentrationBuilder.create(simulation)
+                .entity(bindee)
+                .topology(INNER)
+                .concentrationValue(1.0)
+                .unit(MOLE_PER_LITRE)
+                .onlyNodes()
+                .build();
+
         AutomatonNode node = graph.getNode(0, 0);
-        node.getConcentrationContainer().initialize(INNER, bindee, Quantities.getQuantity(1.0, MOLE_PER_LITRE));
 
         // checkpoints
         Quantity<Time> firstCheckpoint = Quantities.getQuantity(50, MICRO(SECOND));
@@ -515,15 +572,32 @@ class ReactionTest {
         third.build();
         fourth.build();
 
-        ConcentrationInitializer ci = new ConcentrationInitializer();
-        ci.addInitialConcentration(CELL_OUTER_MEMBRANE, EntityRegistry.matchExactly("AQP2"), Quantities.getQuantity(100, MICRO_MOLE_PER_LITRE));
-        ci.addInitialConcentration(CYTOPLASM, EntityRegistry.matchExactly("PP1"), Quantities.getQuantity(100, MICRO_MOLE_PER_LITRE));
-        ci.addInitialConcentration(CYTOPLASM, EntityRegistry.matchExactly("PKA"), Quantities.getQuantity(100, MICRO_MOLE_PER_LITRE));
-        simulation.setConcentrationInitializer(ci);
+        // set concentrations
+        ConcentrationBuilder.create(simulation)
+                .entity(EntityRegistry.matchExactly("AQP2"))
+                .subsection(CELL_OUTER_MEMBRANE)
+                .concentrationValue(100)
+                .microMolar()
+                .build();
+
+        ConcentrationBuilder.create(simulation)
+                .entity(EntityRegistry.matchExactly("PP1"))
+                .subsection(CYTOPLASM)
+                .concentrationValue(100)
+                .microMolar()
+                .build();
+
+        ConcentrationBuilder.create(simulation)
+                .entity(EntityRegistry.matchExactly("PKA"))
+                .subsection(CYTOPLASM)
+                .concentrationValue(100)
+                .microMolar()
+                .build();
 
         while (simulation.getElapsedTime().isLessThan(Quantities.getQuantity(0.1, SECOND))) {
             simulation.nextEpoch();
         }
+
         ConcentrationContainer container = simulation.getGraph().getNode(0, 0).getConcentrationContainer();
         assertEquals(9.965E-11, container.get(INNER, EntityRegistry.matchExactly("PP1")), 1E-6);
         assertEquals(3.144E-13, container.get(INNER, EntityRegistry.matchExactly("PP1", "P")), 1E-6);

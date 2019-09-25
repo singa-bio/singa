@@ -1,4 +1,4 @@
-package bio.singa.simulation.model.sections.nconcentrations;
+package bio.singa.simulation.model.concentrations;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.features.model.Evidence;
@@ -10,10 +10,13 @@ import bio.singa.simulation.model.simulation.Updatable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tech.units.indriya.ComparableQuantity;
+import tech.units.indriya.quantity.Quantities;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Time;
 import java.util.TreeMap;
+
+import static tech.units.indriya.unit.Units.SECOND;
 
 /**
  * @author cl
@@ -34,6 +37,8 @@ public class InitialConcentration {
 
     InitialConcentration() {
         conditions = new TreeMap<>();
+        time = Quantities.getQuantity(0, SECOND);
+        fix = false;
     }
 
     TreeMap<Integer, ConcentrationCondition> getConditions() {
@@ -52,7 +57,7 @@ public class InitialConcentration {
         this.entity = entity;
     }
 
-    Quantity<MolarConcentration> getConcentration() {
+    public Quantity<MolarConcentration> getConcentration() {
         return concentration;
     }
 
@@ -60,7 +65,7 @@ public class InitialConcentration {
         this.concentration = concentration;
     }
 
-    ComparableQuantity<Time> getTime() {
+    public ComparableQuantity<Time> getTime() {
         return time;
     }
 
@@ -68,7 +73,7 @@ public class InitialConcentration {
         this.time = time;
     }
 
-    boolean isFix() {
+    public boolean isFix() {
         return fix;
     }
 
@@ -110,6 +115,10 @@ public class InitialConcentration {
         return true;
     }
 
+    public void apply(Simulation simulation) {
+        simulation.getUpdatables().forEach(this::apply);
+    }
+
     public void apply(Updatable updatable) {
         if (test(updatable)) {
             if (subsection != null) {
@@ -117,11 +126,10 @@ public class InitialConcentration {
             } else {
                 updatable.getConcentrationContainer().initialize(topology, entity, concentration);
             }
+            if (fix) {
+                updatable.getConcentrationManager().fix(entity);
+            }
         }
-    }
-
-    public void register(Simulation simulation) {
-
     }
 
 }
