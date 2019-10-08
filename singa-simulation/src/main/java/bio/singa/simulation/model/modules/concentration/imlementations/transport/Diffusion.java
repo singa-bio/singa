@@ -133,7 +133,7 @@ public class Diffusion extends ConcentrationBasedModule<EntityDeltaFunction> {
 
         BuildStep forAllSections();
 
-        BuildStep withReducedRatio(Ratio ratio);
+        SectionLimitationStep withReducedRatio(Ratio ratio);
 
     }
 
@@ -195,7 +195,7 @@ public class Diffusion extends ConcentrationBasedModule<EntityDeltaFunction> {
         }
 
         @Override
-        public BuildStep withReducedRatio(Ratio ratio) {
+        public SectionLimitationStep withReducedRatio(Ratio ratio) {
             module.setFeature(ratio);
             return this;
         }

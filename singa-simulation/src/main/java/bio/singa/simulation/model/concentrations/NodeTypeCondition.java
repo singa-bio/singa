@@ -38,6 +38,10 @@ public class NodeTypeCondition extends AbstractConcentrationCondition {
         }
     }
 
+    public String getType() {
+        return type;
+    }
+
     @Override
     public boolean test(Updatable updatable) {
         if (isNode) {

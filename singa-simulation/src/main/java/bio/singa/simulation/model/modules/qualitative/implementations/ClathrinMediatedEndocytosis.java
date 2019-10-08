@@ -8,6 +8,7 @@ import bio.singa.simulation.features.*;
 import bio.singa.simulation.model.agents.pointlike.Vesicle;
 import bio.singa.simulation.model.agents.pointlike.VesicleStateRegistry;
 import bio.singa.simulation.model.agents.surfacelike.MembraneSegment;
+import bio.singa.simulation.model.concentrations.InitialConcentration;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.modules.concentration.ConcentrationDelta;
 import bio.singa.simulation.model.modules.concentration.ConcentrationDeltaManager;
@@ -17,7 +18,6 @@ import bio.singa.simulation.model.sections.CellRegion;
 import bio.singa.simulation.model.sections.CellRegions;
 import bio.singa.simulation.model.sections.CellSubsection;
 import bio.singa.simulation.model.sections.ConcentrationPool;
-import bio.singa.simulation.model.concentrations.InitialConcentration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

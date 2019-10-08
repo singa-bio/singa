@@ -31,6 +31,10 @@ public class RegionCondition extends AbstractConcentrationCondition {
         this.regions = regions;
     }
 
+    public List<CellRegion> getRegions() {
+        return regions;
+    }
+
     @Override
     public boolean test(Updatable updatable) {
         return regions.contains(updatable.getCellRegion());

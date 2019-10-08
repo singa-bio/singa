@@ -29,6 +29,10 @@ public class AreaCondition extends AbstractConcentrationCondition {
         return inPolygon(region.getAreaRepresentation());
     }
 
+    public Polygon getPolygon() {
+        return polygon;
+    }
+
     @Override
     public boolean test(Updatable updatable) {
         if (isNode().test(updatable)) {

@@ -274,6 +274,14 @@ public class Simulation {
         }
     }
 
+    public List<InitialConcentration> getConcentrations() {
+        return concentrations;
+    }
+
+    public void setConcentrations(List<InitialConcentration> concentrations) {
+        this.concentrations = concentrations;
+    }
+
     public void initializeSpatialRepresentations() {
         logger.info("Initializing spatial representations of automaton nodes.");
         // TODO initialize via voronoi diagrams

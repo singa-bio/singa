@@ -35,25 +35,41 @@ public class InitialConcentration {
 
     private Evidence evidence;
 
-    InitialConcentration() {
+    public InitialConcentration() {
         conditions = new TreeMap<>();
         time = Quantities.getQuantity(0, SECOND);
         fix = false;
     }
 
-    TreeMap<Integer, ConcentrationCondition> getConditions() {
+    public CellSubsection getSubsection() {
+        return subsection;
+    }
+
+    public void setSubsection(CellSubsection subsection) {
+        this.subsection = subsection;
+    }
+
+    public CellTopology getTopology() {
+        return topology;
+    }
+
+    public void setTopology(CellTopology topology) {
+        this.topology = topology;
+    }
+
+    public TreeMap<Integer, ConcentrationCondition> getConditions() {
         return conditions;
     }
 
-    void setConditions(TreeMap<Integer, ConcentrationCondition> conditions) {
+    public void setConditions(TreeMap<Integer, ConcentrationCondition> conditions) {
         this.conditions = conditions;
     }
 
-    ChemicalEntity getEntity() {
+    public ChemicalEntity getEntity() {
         return entity;
     }
 
-    void setEntity(ChemicalEntity entity) {
+    public void setEntity(ChemicalEntity entity) {
         this.entity = entity;
     }
 
@@ -61,7 +77,7 @@ public class InitialConcentration {
         return concentration;
     }
 
-    void setConcentration(Quantity<MolarConcentration> concentration) {
+    public void setConcentration(Quantity<MolarConcentration> concentration) {
         this.concentration = concentration;
     }
 
@@ -69,7 +85,7 @@ public class InitialConcentration {
         return time;
     }
 
-    void setTime(ComparableQuantity<Time> time) {
+    public void setTime(ComparableQuantity<Time> time) {
         this.time = time;
     }
 
@@ -77,15 +93,15 @@ public class InitialConcentration {
         return fix;
     }
 
-    void setFix(boolean fix) {
+    public void setFix(boolean fix) {
         this.fix = fix;
     }
 
-    Evidence getEvidence() {
+    public Evidence getEvidence() {
         return evidence;
     }
 
-    void setEvidence(Evidence evidence) {
+    public void setEvidence(Evidence evidence) {
         this.evidence = evidence;
     }
 

@@ -64,5 +64,4 @@ public class Sampler {
         return samples;
     }
 
-
 }

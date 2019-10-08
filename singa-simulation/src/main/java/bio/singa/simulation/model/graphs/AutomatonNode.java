@@ -94,7 +94,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
                     }
                     double relativeAdjacentArea = entry.getValue().getLength() / defaultLength;
                     double relativeCentroidDistance = currentPolygon.getCentroid().distanceTo(neighborPolygon.getCentroid()) / defaultLength;
-                    double relativeEffectiveArea = relativeAdjacentArea / Math.sqrt(relativeCentroidDistance);
+                    double relativeEffectiveArea = relativeAdjacentArea / (relativeCentroidDistance * relativeCentroidDistance);
 
                     // TODO maybe add to neighbor map as well
                     if (relativeEffectiveArea > 0) {
@@ -213,6 +213,10 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
         return concentrationManager;
     }
 
+    public void setConcentrationManager(ConcentrationDeltaManager concentrationManager) {
+        this.concentrationManager = concentrationManager;
+    }
+
     /**
      * Returns all referenced sections in this node.
      *
@@ -280,10 +284,6 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
     public void setSpatialRepresentation(Polygon spatialRepresentation) {
         this.spatialRepresentation = spatialRepresentation;
         subsectionRepresentations.put(getCellRegion().getInnerSubsection(), spatialRepresentation);
-    }
-
-    public void setConcentrationManager(ConcentrationDeltaManager concentrationManager) {
-        this.concentrationManager = concentrationManager;
     }
 
     public Map<LineLikeAgent, Set<Vector2D>> getAssociatedLineLikeAgents() {

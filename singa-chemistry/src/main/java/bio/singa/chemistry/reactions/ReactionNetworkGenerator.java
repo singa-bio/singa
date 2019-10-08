@@ -67,7 +67,7 @@ public class ReactionNetworkGenerator {
                 logger.debug("repeating since reactions were unstable");
             }
         } while (reactionsUnstable);
-        intoLogCreatedReactions();
+        infoLogCreatedReactions();
         registerEntities();
     }
 
@@ -130,7 +130,7 @@ public class ReactionNetworkGenerator {
         }
     }
 
-    private void intoLogCreatedReactions() {
+    private void infoLogCreatedReactions() {
         for (ReactionChain reactionChain : reactionChains) {
             logger.info("rule {} produced the following reactions: ", reactionChain.getIdentifier());
             for (ReactionElement reactantElement : reactionChain.getReactantElements()) {

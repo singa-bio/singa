@@ -30,6 +30,10 @@ public class NodeIdentifierCondition extends AbstractConcentrationCondition {
         this.identifiers = identifiers;
     }
 
+    public List<String> getIdentifiers() {
+        return identifiers;
+    }
+
     @Override
     public boolean test(Updatable updatable) {
         return identifiers.contains(updatable.getStringIdentifier());
