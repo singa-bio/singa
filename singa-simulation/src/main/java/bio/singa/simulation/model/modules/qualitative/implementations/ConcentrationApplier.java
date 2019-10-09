@@ -6,10 +6,9 @@ import bio.singa.simulation.features.InitialConcentrations;
 import bio.singa.simulation.features.WhiteListVesicleStates;
 import bio.singa.simulation.model.agents.pointlike.Vesicle;
 import bio.singa.simulation.model.agents.volumelike.VolumeLikeAgent;
+import bio.singa.simulation.model.concentrations.InitialConcentration;
 import bio.singa.simulation.model.modules.concentration.ModuleState;
 import bio.singa.simulation.model.modules.qualitative.QualitativeModule;
-import bio.singa.simulation.model.sections.CellRegion;
-import bio.singa.simulation.model.concentrations.InitialConcentration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,18 +36,7 @@ public class ConcentrationApplier extends QualitativeModule {
     @Override
     public void calculateUpdates() {
         // determine region
-        CellRegion containmentRegion = getFeature(ContainmentRegion.class).getContent();
-        VolumeLikeAgent requiredAgent = null;
-        for (VolumeLikeAgent agent : simulation.getVolumeLayer().getAgents()) {
-            if (agent.getCellRegion().equals(containmentRegion)) {
-                requiredAgent = agent;
-            }
-        }
-        if (requiredAgent == null) {
-            logger.warn("There exists no region in the simulation matching the given region: " + containmentRegion);
-            state = ModuleState.SUCCEEDED;
-            return;
-        }
+        VolumeLikeAgent agent = getFeature(ContainmentRegion.class).retrieveAreaAgent(simulation);
         // get black listed states
         List<String> whiteLitsStates = getFeature(WhiteListVesicleStates.class).getContent();
         // set containment
@@ -57,7 +45,7 @@ public class ConcentrationApplier extends QualitativeModule {
             if (!whiteLitsStates.contains(vesicle.getState())) {
                 continue;
             }
-            if (requiredAgent.getArea().containsVector(vesicle.getPosition())) {
+            if (agent.getArea().containsVector(vesicle.getPosition())) {
                 containedVesicles.add(vesicle);
             }
         }

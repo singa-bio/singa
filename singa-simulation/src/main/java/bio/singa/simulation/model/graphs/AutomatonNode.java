@@ -166,10 +166,8 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
 
         UndirectedGraph nodeGraph = new UndirectedGraph();
         for (MembraneSegment membraneSegment : membraneSegments) {
-            Vector2D startingPoint = membraneSegment.getStartingPoint();
-            RegularNode start = nodeGraph.addNodeIf(node -> node.getPosition().equals(startingPoint), new RegularNode(nodeGraph.nextNodeIdentifier(), startingPoint));
-            Vector2D endingPoint = membraneSegment.getEndingPoint();
-            RegularNode end = nodeGraph.addNodeIf(node -> node.getPosition().equals(endingPoint), new RegularNode(nodeGraph.nextNodeIdentifier(), endingPoint));
+            RegularNode start = nodeGraph.snapNode(membraneSegment.getStartingPoint());
+            RegularNode end = nodeGraph.snapNode(membraneSegment.getEndingPoint());
             nodeGraph.addEdgeBetween(start, end);
         }
 

@@ -145,10 +145,8 @@ public class MembraneFactory {
         initializeNodeSubsectionMapping(node, regions.get(startingPoint));
         UndirectedGraph subsectionGraph = subsectionMapping.get(node);
         membrane.addSegment(node, new SimpleLineSegment(startingPoint, endingPoint));
-        RegularNode startingNode = subsectionGraph.addNodeIf(graphNode -> graphNode.getPosition().equals(startingPoint),
-                new RegularNode(subsectionGraph.nextNodeIdentifier(), startingPoint));
-        RegularNode endingNode = subsectionGraph.addNodeIf(graphNode -> graphNode.getPosition().equals(endingPoint),
-                new RegularNode(subsectionGraph.nextNodeIdentifier(), endingPoint));
+        RegularNode startingNode = subsectionGraph.snapNode(startingPoint);
+        RegularNode endingNode = subsectionGraph.snapNode(endingPoint);
         subsectionGraph.addEdgeBetween(startingNode, endingNode);
     }
 
@@ -161,8 +159,7 @@ public class MembraneFactory {
             // add the node created by the intersection but only if it does not already exist
             RegularNode intersectionNode = createIntersectionNode(subsectionGraph, intersectionFragment);
             // add the dangling node
-            RegularNode internalNode = subsectionGraph.addNodeIf(graphNode -> graphNode.getPosition().equals(internalPoint),
-                    new RegularNode(subsectionGraph.nextNodeIdentifier(), internalPoint));
+            RegularNode internalNode = subsectionGraph.snapNode(internalPoint);
             subsectionGraph.addEdgeBetween(internalNode, intersectionNode);
         } else {
             initializeNodeSubsectionMapping(node, regions.get(internalPoint));
