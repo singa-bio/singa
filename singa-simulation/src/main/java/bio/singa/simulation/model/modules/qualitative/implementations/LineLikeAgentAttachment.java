@@ -12,7 +12,6 @@ import bio.singa.simulation.model.agents.linelike.LineLikeAgent;
 import bio.singa.simulation.model.agents.pointlike.Vesicle;
 import bio.singa.simulation.model.agents.pointlike.VesicleStateRegistry;
 import bio.singa.simulation.model.graphs.AutomatonNode;
-import bio.singa.simulation.model.modules.concentration.ModuleState;
 import bio.singa.simulation.model.modules.qualitative.QualitativeModule;
 import bio.singa.simulation.model.sections.CellTopology;
 import tech.units.indriya.ComparableQuantity;
@@ -22,6 +21,7 @@ import javax.measure.quantity.Length;
 import java.util.*;
 
 import static bio.singa.simulation.model.agents.pointlike.VesicleStateRegistry.TAGGED_FOR_EXOCYTOSIS;
+import static bio.singa.simulation.model.modules.concentration.ModuleState.SUCCEEDED_WITH_PENDING_CHANGES;
 
 /**
  * @author cl
@@ -41,8 +41,8 @@ public class LineLikeAgentAttachment extends QualitativeModule {
 
     @Override
     public void calculateUpdates() {
-        processVesicles(simulation.getVesicleLayer().getVesicles());
-        state = ModuleState.SUCCEEDED_WITH_PENDING_CHANGES;
+        processVesicles(getSimulation().getVesicleLayer().getVesicles());
+        setState(SUCCEEDED_WITH_PENDING_CHANGES);
     }
 
     private void processVesicles(List<Vesicle> vesicles) {

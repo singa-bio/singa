@@ -86,7 +86,7 @@ public class VesicleFusion extends QualitativeModule {
     public void calculateUpdates() {
         checkTetheringTime();
         tetherVesicles();
-        state = ModuleState.SUCCEEDED_WITH_PENDING_CHANGES;
+        setState(ModuleState.SUCCEEDED_WITH_PENDING_CHANGES);
     }
 
     @Override
@@ -107,7 +107,7 @@ public class VesicleFusion extends QualitativeModule {
         for (Vesicle fusingVesicle : fusingVesicles) {
             fuse(fusingVesicle);
             tetheredVesicles.remove(fusingVesicle);
-            simulation.getVesicleLayer().removeVesicle(fusingVesicle);
+            getSimulation().getVesicleLayer().removeVesicle(fusingVesicle);
         }
         // tether vesicles
         for (Map.Entry<Vesicle, TetheringSnares> entry : tetheringVesicles.entrySet()) {
@@ -136,7 +136,7 @@ public class VesicleFusion extends QualitativeModule {
 
     private void tetherVesicle(Vesicle vesicle, TetheringSnares tetheringSnares) {
         // add tethering time to current time
-        ComparableQuantity<Time> tetheringTime = simulation.getElapsedTime().add(getFeature(FusionTime.class).getContent());
+        ComparableQuantity<Time> tetheringTime = getSimulation().getElapsedTime().add(getFeature(FusionTime.class).getContent());
         vesicle.setState(VesicleStateRegistry.MEMBRANE_TETHERED);
         // set time
         tetheredVesicles.put(vesicle, tetheringTime);
@@ -151,7 +151,7 @@ public class VesicleFusion extends QualitativeModule {
             Vesicle tetheredVesicle = entry.getKey();
             Quantity<Time> fusionTime = entry.getValue();
             // if tethered time is reached
-            if (simulation.getElapsedTime().isGreaterThanOrEqualTo(fusionTime)) {
+            if (getSimulation().getElapsedTime().isGreaterThanOrEqualTo(fusionTime)) {
                 // add vesicle to vesicle layer
                 fusingVesicles.add(tetheredVesicle);
             }
@@ -159,7 +159,7 @@ public class VesicleFusion extends QualitativeModule {
     }
 
     private void tetherVesicles() {
-        List<Vesicle> vesicles = simulation.getVesicleLayer().getVesicles();
+        List<Vesicle> vesicles = getSimulation().getVesicleLayer().getVesicles();
         // for each vesicle
         for (Vesicle vesicle : vesicles) {
             if (vesicle.getState().equals(VesicleStateRegistry.ACTIN_PROPELLED) ||

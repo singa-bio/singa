@@ -19,7 +19,7 @@ public interface UpdateModule extends Runnable {
     void setSimulation(Simulation simulation);
 
     ModuleState getState();
-    void resetState();
+    void reset();
 
     Set<Class<? extends Feature>> getRequiredFeatures();
     Collection<Feature<?>> getFeatures();

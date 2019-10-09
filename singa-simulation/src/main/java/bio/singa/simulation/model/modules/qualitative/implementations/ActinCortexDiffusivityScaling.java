@@ -8,9 +8,7 @@ import bio.singa.simulation.features.MaximalConcentration;
 import bio.singa.simulation.features.ModifiedDiffusivity;
 import bio.singa.simulation.features.OriginalDiffusivity;
 import bio.singa.simulation.model.agents.pointlike.Vesicle;
-import bio.singa.simulation.model.agents.pointlike.VesicleStateRegistry;
 import bio.singa.simulation.model.graphs.AutomatonNode;
-import bio.singa.simulation.model.modules.concentration.ModuleState;
 import bio.singa.simulation.model.modules.qualitative.QualitativeModule;
 import tech.units.indriya.quantity.Quantities;
 
@@ -19,6 +17,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static bio.singa.simulation.features.DefaultFeatureSources.LANG2000;
+import static bio.singa.simulation.model.agents.pointlike.VesicleStateRegistry.TETHERED;
+import static bio.singa.simulation.model.modules.concentration.ModuleState.SUCCEEDED_WITH_PENDING_CHANGES;
 import static bio.singa.simulation.model.sections.CellTopology.INNER;
 import static tech.units.indriya.unit.MetricPrefix.MICRO;
 import static tech.units.indriya.unit.MetricPrefix.NANO;
@@ -57,12 +57,12 @@ public class ActinCortexDiffusivityScaling extends QualitativeModule {
         double concentration = getFeature(MaximalConcentration.class).getContent().getValue().doubleValue();
         slope = (cortexDiffusivity - cytoplasmDiffusivity) / concentration;
 
-        for (Vesicle vesicle : simulation.getVesicleLayer().getVesicles()) {
-            if (vesicle.getState().equals(VesicleStateRegistry.TETHERED)) {
+        for (Vesicle vesicle : getSimulation().getVesicleLayer().getVesicles()) {
+            if (vesicle.getState().equals(TETHERED)) {
                 estimateDiffusivity(vesicle);
             }
         }
-        state = ModuleState.SUCCEEDED_WITH_PENDING_CHANGES;
+        setState(SUCCEEDED_WITH_PENDING_CHANGES);
     }
 
     public void estimateDiffusivity(Vesicle vesicle) {

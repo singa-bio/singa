@@ -3,11 +3,8 @@ package bio.singa.simulation.model.modules.qualitative;
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.features.model.Feature;
 import bio.singa.features.model.ScalableQuantitativeFeature;
-import bio.singa.simulation.model.modules.UpdateModule;
-import bio.singa.simulation.model.modules.concentration.ModuleState;
+import bio.singa.simulation.model.modules.AbstractUpdateModule;
 import bio.singa.simulation.model.parameters.FeatureManager;
-import bio.singa.simulation.model.simulation.Simulation;
-import bio.singa.simulation.model.simulation.UpdateScheduler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,92 +12,28 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import static bio.singa.simulation.model.modules.concentration.ModuleState.*;
-
 /**
  * @author cl
  */
-public abstract class QualitativeModule implements UpdateModule {
+public abstract class QualitativeModule extends AbstractUpdateModule {
 
     /**
      * The logger
      */
     private static final Logger logger = LoggerFactory.getLogger(QualitativeModule.class);
 
-    /**
-     * The simulation.
-     */
-    protected Simulation simulation;
-
-    protected UpdateScheduler updateScheduler;
-
-    /**
-     * The functions that are applied with each epoch.
-     */
-    private String identifier;
     private FeatureManager featureManager;
-    protected ModuleState state;
+
     private Set<ChemicalEntity> referencedChemicalEntities;
 
     public QualitativeModule() {
         referencedChemicalEntities = new HashSet<>();
         featureManager = new FeatureManager();
-        state = ModuleState.PENDING;
-    }
-
-    @Override
-    public void run() {
-        UpdateScheduler scheduler = getSimulation().getScheduler();
-        while (state == PENDING || state == REQUIRING_RECALCULATION) {
-            switch (state) {
-                case PENDING:
-                    // calculate update
-                    logger.debug("calculating updates for {}.", Thread.currentThread().getName());
-                    calculateUpdates();
-                    break;
-                case REQUIRING_RECALCULATION:
-                    // optimize time step
-                    logger.debug("{} requires recalculation.", Thread.currentThread().getName());
-                    boolean prioritizedModule = scheduler.interrupt();
-                    if (prioritizedModule) {
-                        optimizeTimeStep();
-                    } else {
-                        state = INTERRUPTED;
-                    }
-                    break;
-            }
-        }
-        scheduler.getCountDownLatch().countDown();
-        logger.debug("Module finished {}, latch at {}.", Thread.currentThread().getName(), scheduler.getCountDownLatch().getCount());
     }
 
     @Override
     public void initialize() {
 
-    }
-
-    public void setIdentifier(String identifier) {
-        this.identifier = identifier;
-    }
-
-    public void setSimulation(Simulation simulation) {
-        this.simulation = simulation;
-        updateScheduler = simulation.getScheduler();
-    }
-
-    public Simulation getSimulation() {
-        return simulation;
-    }
-
-    @Override
-    public ModuleState getState() {
-        return state;
-    }
-
-    @Override
-    public void resetState() {
-        state = ModuleState.PENDING;
-        onReset();
     }
 
     @Override
@@ -146,13 +79,4 @@ public abstract class QualitativeModule implements UpdateModule {
         return featureManager.getAllFeatures();
     }
 
-    @Override
-    public String getIdentifier() {
-        return identifier;
-    }
-
-    @Override
-    public String toString() {
-        return getClass().getSimpleName() + (getIdentifier() != null ? " " + getIdentifier() : "");
-    }
 }

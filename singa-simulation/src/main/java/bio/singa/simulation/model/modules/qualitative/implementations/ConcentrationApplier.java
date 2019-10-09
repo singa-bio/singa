@@ -36,11 +36,11 @@ public class ConcentrationApplier extends QualitativeModule {
     @Override
     public void calculateUpdates() {
         // determine region
-        VolumeLikeAgent agent = getFeature(ContainmentRegion.class).retrieveAreaAgent(simulation);
+        VolumeLikeAgent agent = getFeature(ContainmentRegion.class).retrieveAreaAgent(getSimulation());
         // get black listed states
         List<String> whiteLitsStates = getFeature(WhiteListVesicleStates.class).getContent();
         // set containment
-        for (Vesicle vesicle : simulation.getVesicleLayer().getVesicles()) {
+        for (Vesicle vesicle : getSimulation().getVesicleLayer().getVesicles()) {
             // ignore vesicles which are not on white list
             if (!whiteLitsStates.contains(vesicle.getState())) {
                 continue;
@@ -50,7 +50,7 @@ public class ConcentrationApplier extends QualitativeModule {
             }
         }
         // don't forget to set state
-        state = ModuleState.SUCCEEDED_WITH_PENDING_CHANGES;
+        setState(ModuleState.SUCCEEDED_WITH_PENDING_CHANGES);
     }
 
     @Override

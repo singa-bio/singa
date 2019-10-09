@@ -161,7 +161,7 @@ public class UpdateScheduler {
         determineAccuracyGain();
 
         finalizeDeltas();
-        modules.forEach(UpdateModule::resetState);
+        modules.forEach(UpdateModule::reset);
     }
 
     public void evaluateGlobalNumericalAccuracy() {
@@ -341,7 +341,7 @@ public class UpdateScheduler {
             if (module.getState().equals(SUCCEEDED_WITH_PENDING_CHANGES) && !timeStepRescaled) {
                 continue;
             }
-            module.resetState();
+            module.reset();
         }
         // clear deltas that have previously been calculated
         updatables.forEach(updatable -> updatable.getConcentrationManager().clearPotentialDeltas());
@@ -361,7 +361,7 @@ public class UpdateScheduler {
         if (!simulation.getVesicleLayer().deltasAreBelowDisplacementCutoff()) {
             decreaseTimeStep();
             simulation.getVesicleLayer().clearUpdates();
-            modules.forEach(UpdateModule::resetState);
+            modules.forEach(UpdateModule::reset);
             return false;
         }
         return true;

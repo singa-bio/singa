@@ -84,7 +84,7 @@ public class ClathrinMediatedEndocytosis extends QualitativeModule {
     }
 
     public void setMembraneRegion(CellRegion region) {
-        for (AutomatonNode node : simulation.getGraph().getNodes()) {
+        for (AutomatonNode node : getSimulation().getGraph().getNodes()) {
             // skip nodes with wrong region
             if (!node.getCellRegion().equals(region)) {
                 continue;
@@ -104,7 +104,7 @@ public class ClathrinMediatedEndocytosis extends QualitativeModule {
         // check if pits should be aborted, mature or continue to grow
         checkPitState();
         // set state
-        state = ModuleState.SUCCEEDED_WITH_PENDING_CHANGES;
+        setState(ModuleState.SUCCEEDED_WITH_PENDING_CHANGES);
     }
 
     public void optimizeTimeStep() {
@@ -168,9 +168,9 @@ public class ClathrinMediatedEndocytosis extends QualitativeModule {
     private void initializeAspiringPit(MembraneSegment segment) {
         // choose random point on that site, spawn a little on the inside
         Vector2D spawnSite = segment.getSegment().getRandomPoint();
-        spawnSite = spawnSite.add(simulation.getMembraneLayer().getMicrotubuleOrganizingCentre().getCircleRepresentation().getMidpoint().subtract(spawnSite).normalize());
+        spawnSite = spawnSite.add(getSimulation().getMembraneLayer().getMicrotubuleOrganizingCentre().getCircleRepresentation().getMidpoint().subtract(spawnSite).normalize());
         // sample maturation time
-        Quantity<Time> checkpointTime = simulation.getElapsedTime().add(FeatureRandomizer.varyTime(getFeature(EndocytosisCheckpointTime.class).getContent()));
+        Quantity<Time> checkpointTime = getSimulation().getElapsedTime().add(FeatureRandomizer.varyTime(getFeature(EndocytosisCheckpointTime.class).getContent()));
         // sample vesicle radius
         Quantity<Length> spawnRadius = FeatureRandomizer.varyLength(getFeature(VesicleRadius.class).getContent()).to(UnitRegistry.getSpaceUnit());
         List<ConcentrationDelta> concentrationDeltas = determineInitialConcentrations(segment, spawnRadius);
@@ -215,7 +215,7 @@ public class ClathrinMediatedEndocytosis extends QualitativeModule {
     private void prepareMaturePits() {
         for (Pit maturingPit : maturingPits) {
             // check each event if it should spawn
-            if (simulation.getElapsedTime().isGreaterThanOrEqualTo(maturingPit.getCheckpointTime())) {
+            if (getSimulation().getElapsedTime().isGreaterThanOrEqualTo(maturingPit.getCheckpointTime())) {
                 // move to completing events
                 maturedPits.add(maturingPit);
             }
@@ -230,7 +230,7 @@ public class ClathrinMediatedEndocytosis extends QualitativeModule {
         for (Pit preMaturingPit : preMaturingPits) {
             logger.debug("Clathrin-coated pit at {} entered maturation stage.", preMaturingPit.spawnSite);
             // determine new checkpoint
-            preMaturingPit.setCheckpointTime(simulation.getElapsedTime().add(FeatureRandomizer.varyTime(getFeature(MaturationTime.class).getContent())));
+            preMaturingPit.setCheckpointTime(getSimulation().getElapsedTime().add(FeatureRandomizer.varyTime(getFeature(MaturationTime.class).getContent())));
             maturingPits.add(preMaturingPit);
             aspiringPits.remove(preMaturingPit);
         }
@@ -247,7 +247,7 @@ public class ClathrinMediatedEndocytosis extends QualitativeModule {
             Vesicle vesicle = new Vesicle(maturedPit.getSpawnSite(), maturedPit.getSpawnRadius());
             vesicle.setState(VesicleStateRegistry.ACTIN_PROPELLED);
             initializeCargo(vesicle, maturedPit);
-            simulation.getVesicleLayer().addVesicle(vesicle);
+            getSimulation().getVesicleLayer().addVesicle(vesicle);
             maturingPits.remove(maturedPit);
         }
         maturedPits.clear();
@@ -349,7 +349,7 @@ public class ClathrinMediatedEndocytosis extends QualitativeModule {
                 continue;
             }
             // check it maximal aspiration time has been reached
-            if (simulation.getElapsedTime().isGreaterThanOrEqualTo(aspiringPit.getCheckpointTime())) {
+            if (getSimulation().getElapsedTime().isGreaterThanOrEqualTo(aspiringPit.getCheckpointTime())) {
                 // move to aborting pits
                 abortedPits.add(aspiringPit);
             }

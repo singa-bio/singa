@@ -6,12 +6,13 @@ import bio.singa.simulation.features.Cargoes;
 import bio.singa.simulation.features.Ratio;
 import bio.singa.simulation.features.RequiredVesicleState;
 import bio.singa.simulation.model.agents.pointlike.Vesicle;
-import bio.singa.simulation.model.modules.concentration.ModuleState;
 import bio.singa.simulation.model.modules.qualitative.QualitativeModule;
 import bio.singa.simulation.model.sections.CellTopology;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static bio.singa.simulation.model.modules.concentration.ModuleState.SUCCEEDED_WITH_PENDING_CHANGES;
 
 /**
  * @author cl
@@ -42,7 +43,7 @@ public class ConcentrationStateChange extends QualitativeModule {
         ChemicalEntity firstEntity = content.get(0);
         ChemicalEntity secondEntity = content.get(1);
         double ratio = getFeature(Ratio.class).getContent().getValue().doubleValue();
-        for (Vesicle vesicle : simulation.getVesicleLayer().getVesicles()) {
+        for (Vesicle vesicle : getSimulation().getVesicleLayer().getVesicles()) {
             if (vesicle.getState().equals(requiredState)) {
                 double firstConcentration = vesicle.getConcentrationContainer().get(CellTopology.MEMBRANE, firstEntity);
                 double secondConcentration = vesicle.getConcentrationContainer().get(CellTopology.MEMBRANE, secondEntity);
@@ -51,7 +52,7 @@ public class ConcentrationStateChange extends QualitativeModule {
                 }
             }
         }
-        state = ModuleState.SUCCEEDED_WITH_PENDING_CHANGES;
+        setState(SUCCEEDED_WITH_PENDING_CHANGES);
     }
 
     @Override
