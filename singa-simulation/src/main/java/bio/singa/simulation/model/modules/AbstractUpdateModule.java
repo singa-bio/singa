@@ -1,12 +1,19 @@
 package bio.singa.simulation.model.modules;
 
+import bio.singa.chemistry.entities.ChemicalEntity;
+import bio.singa.features.model.Feature;
+import bio.singa.features.model.ScalableQuantitativeFeature;
 import bio.singa.simulation.model.modules.concentration.ModuleState;
+import bio.singa.simulation.model.parameters.FeatureManager;
 import bio.singa.simulation.model.simulation.Simulation;
 import bio.singa.simulation.model.simulation.UpdateScheduler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 import static bio.singa.simulation.model.modules.concentration.ModuleState.*;
 
@@ -21,9 +28,9 @@ public abstract class AbstractUpdateModule implements UpdateModule {
     private static final Logger logger = LoggerFactory.getLogger(AbstractUpdateModule.class);
 
     /**
-     * The referenced simulation.
+     * The identifier of this module.
      */
-    private Simulation simulation;
+    private String identifier;
 
     /**
      * The current state of this module.
@@ -31,13 +38,25 @@ public abstract class AbstractUpdateModule implements UpdateModule {
     private ModuleState state;
 
     /**
-     * The identifier of this module.
+     * The referenced simulation.
      */
-    private String identifier;
+    private Simulation simulation;
+
+    /**
+     * The feature manager of this module
+     */
+    private FeatureManager featureManager;
+
+    /**
+     * All chemical entities that might be accessed by this module.
+     */
+    private Set<ChemicalEntity> referencedChemicalEntities;
 
     public AbstractUpdateModule() {
         state = PENDING;
         identifier = getClass().getSimpleName();
+        featureManager = new FeatureManager();
+        referencedChemicalEntities = new HashSet<>();
     }
 
     @Override
@@ -64,6 +83,47 @@ public abstract class AbstractUpdateModule implements UpdateModule {
         }
         scheduler.getCountDownLatch().countDown();
         logger.debug("Module finished {}, latch at {}.", Thread.currentThread().getName(), scheduler.getCountDownLatch().getCount());
+    }
+
+    /**
+     * Sets a feature.
+     * @param feature The feature.
+     */
+    @Override
+    public void setFeature(Feature<?> feature) {
+        featureManager.setFeature(feature);
+    }
+
+    public <FeatureType extends Feature> FeatureType getFeature(Class<FeatureType> featureTypeClass) {
+        return featureManager.getFeature(featureTypeClass);
+    }
+
+    @Override
+    public double getScaledFeature(Class<? extends ScalableQuantitativeFeature<?>> featureClass) {
+        return featureManager.getFeature(featureClass).getScaledQuantity();
+    }
+
+    public Collection<Feature<?>> getFeatures() {
+        return featureManager.getAllFeatures();
+    }
+
+    @Override
+    public Set<Class<? extends Feature>> getRequiredFeatures() {
+        return featureManager.getRequiredFeatures();
+    }
+
+    @Override
+    public void checkFeatures() {
+        outer:
+        for (Class<? extends Feature> featureClass : getRequiredFeatures()) {
+            for (Feature<?> feature : featureManager.getFeatures()) {
+                if (featureClass.isInstance(feature)) {
+                    logger.debug("Required feature {}: {} will be used and is set to {}.", featureClass.getSimpleName(), feature.getClass().getSimpleName(), feature.getContent());
+                    continue outer;
+                }
+            }
+            logger.warn("Required feature {} has not been set for module {}.", featureClass.getSimpleName(), getIdentifier());
+        }
     }
 
     @Override
@@ -114,6 +174,41 @@ public abstract class AbstractUpdateModule implements UpdateModule {
 
     public void setState(ModuleState state) {
         this.state = state;
+    }
+
+    public FeatureManager getFeatureManager() {
+        return featureManager;
+    }
+
+    public void setFeatureManager(FeatureManager featureManager) {
+        this.featureManager = featureManager;
+    }
+
+    /**
+     * Returns all chemical entities that might be accessed by this module.
+     *
+     * @return All chemical entities that might be accessed by this module.
+     */
+    public Set<ChemicalEntity> getReferencedChemicalEntities() {
+        return referencedChemicalEntities;
+    }
+
+    /**
+     * Adds a referenced chemical entity.
+     *
+     * @param chemicalEntity The chemical entity.
+     */
+    protected void addReferencedEntity(ChemicalEntity chemicalEntity) {
+        referencedChemicalEntities.add(chemicalEntity);
+    }
+
+    /**
+     * Adds multiple referenced chemical entities.
+     *
+     * @param chemicalEntities The chemical entities.
+     */
+    protected void addReferencedEntities(Collection<? extends ChemicalEntity> chemicalEntities) {
+        referencedChemicalEntities.addAll(chemicalEntities);
     }
 
     @Override

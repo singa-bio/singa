@@ -1,7 +1,6 @@
 package bio.singa.simulation.model.modules.concentration;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
-import bio.singa.features.model.Feature;
 import bio.singa.features.model.ScalableQuantitativeFeature;
 import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.features.units.UnitRegistry;
@@ -10,15 +9,11 @@ import bio.singa.simulation.model.modules.AbstractUpdateModule;
 import bio.singa.simulation.model.modules.concentration.functions.AbstractDeltaFunction;
 import bio.singa.simulation.model.modules.concentration.scope.UpdateScope;
 import bio.singa.simulation.model.modules.concentration.specifity.UpdateSpecificity;
-import bio.singa.simulation.model.parameters.FeatureManager;
 import bio.singa.simulation.model.simulation.Updatable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.Objects;
-import java.util.Set;
 import java.util.function.Predicate;
 
 import static bio.singa.simulation.model.modules.concentration.ModuleState.REQUIRING_RECALCULATION;
@@ -75,27 +70,15 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
     private UpdateSpecificity<DeltaFunctionType> specificity;
 
     /**
-     * The feature manager of this module
-     */
-    private FeatureManager featureManager;
-
-    /**
      * Evaluated every time the module is applied to any updatable.
      */
     private Predicate<Updatable> applicationCondition;
-
-    /**
-     * All chemical entities that might be accessed by this module.
-     */
-    private Set<ChemicalEntity> referencedChemicalEntities;
 
     /**
      * Creates a new concentration based module.
      */
     public ConcentrationBasedModule() {
         supplier = new FieldSupplier();
-        featureManager = new FeatureManager();
-        referencedChemicalEntities = new HashSet<>();
         applicationCondition = updatable -> true;
     }
 
@@ -134,32 +117,7 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
         return applicationCondition;
     }
 
-    /**
-     * Returns all chemical entities that might be accessed by this module.
-     *
-     * @return All chemical entities that might be accessed by this module.
-     */
-    public Set<ChemicalEntity> getReferencedEntities() {
-        return referencedChemicalEntities;
-    }
 
-    /**
-     * Adds a referenced chemical entity.
-     *
-     * @param chemicalEntity The chemical entity.
-     */
-    protected void addReferencedEntity(ChemicalEntity chemicalEntity) {
-        referencedChemicalEntities.add(chemicalEntity);
-    }
-
-    /**
-     * Adds multiple referenced chemical entities.
-     *
-     * @param chemicalEntities The chemical entities.
-     */
-    protected void addReferencedEntities(Collection<? extends ChemicalEntity> chemicalEntities) {
-        referencedChemicalEntities.addAll(chemicalEntities);
-    }
 
     /**
      * Returns the cutoff where deltas are validated to be effectively zero.
@@ -368,7 +326,6 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
         }
     }
 
-
     @Override
     public void calculateUpdates() {
         scope.processAllUpdatables(getSimulation().getUpdatables());
@@ -419,14 +376,9 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
     }
 
     @Override
-    public Set<Class<? extends Feature>> getRequiredFeatures() {
-        return featureManager.getRequiredFeatures();
-    }
-
-    @Override
     public double getScaledFeature(Class<? extends ScalableQuantitativeFeature<?>> featureClass) {
         // feature from the module (like reaction rates)
-        return choseScaling(featureManager.getFeature(featureClass));
+        return choseScaling(getFeature(featureClass));
     }
 
     /**
@@ -455,35 +407,6 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
         return feature.getScaledQuantity();
     }
 
-    /**
-     * Returns the requested feature.
-     *
-     * @param featureTypeClass The requested feature.
-     * @param <FeatureType> The resulting content type.
-     * @return The requested feature.
-     */
-    public <FeatureType extends Feature> FeatureType getFeature(Class<FeatureType> featureTypeClass) {
-        return featureManager.getFeature(featureTypeClass);
-    }
-
-    /**
-     * Sets a feature.
-     *
-     * @param feature The feature.
-     */
-    public void setFeature(Feature<?> feature) {
-        featureManager.setFeature(feature);
-    }
-
-    /**
-     * Returns all features of this module (not its entities).
-     *
-     * @return all features of this module.
-     */
-    public Collection<Feature<?>> getFeatures() {
-        return featureManager.getAllFeatures();
-    }
-
     @Override
     public void onReset() {
         supplier.resetError();
@@ -492,20 +415,6 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
     @Override
     public void onCompletion() {
 
-    }
-
-    @Override
-    public void checkFeatures() {
-        outer:
-        for (Class<? extends Feature> featureClass : getRequiredFeatures()) {
-            for (Feature<?> feature : featureManager.getFeatures()) {
-                if (featureClass.isInstance(feature)) {
-                    // logger.info("Required feature {}: {} will be used and is set to {}.", featureClass.getSimpleName(), feature.getClass().getSimpleName(), feature.getContent());
-                    continue outer;
-                }
-            }
-            logger.warn("Required feature {} has not been set for module {}.", featureClass.getSimpleName(), getIdentifier());
-        }
     }
 
 }

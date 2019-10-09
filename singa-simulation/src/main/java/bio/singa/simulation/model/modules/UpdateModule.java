@@ -15,7 +15,7 @@ import java.util.Set;
 public interface UpdateModule extends Runnable {
 
     String getIdentifier();
-    Set<ChemicalEntity> getReferencedEntities();
+    Set<ChemicalEntity> getReferencedChemicalEntities();
     void setSimulation(Simulation simulation);
 
     ModuleState getState();

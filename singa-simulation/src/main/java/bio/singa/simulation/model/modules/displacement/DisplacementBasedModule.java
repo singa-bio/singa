@@ -1,18 +1,16 @@
 package bio.singa.simulation.model.modules.displacement;
 
-import bio.singa.chemistry.entities.ChemicalEntity;
-import bio.singa.features.model.Feature;
-import bio.singa.features.model.ScalableQuantitativeFeature;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.simulation.model.agents.pointlike.Vesicle;
 import bio.singa.simulation.model.modules.AbstractUpdateModule;
-import bio.singa.simulation.model.parameters.FeatureManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -31,23 +29,18 @@ public class DisplacementBasedModule extends AbstractUpdateModule {
 
     private static final double DEFAULT_DISPLACEMENT_CUTOFF_FACTOR = 1.0/10.0;
 
+    private double displacementCutoffFactor = DEFAULT_DISPLACEMENT_CUTOFF_FACTOR;
+
     /**
      * The functions that are applied with each epoch.
      */
     private final Map<Function<Vesicle, DisplacementDelta>, Predicate<Vesicle>> deltaFunctions;
 
-    private FeatureManager featureManager;
-
-    private Set<ChemicalEntity> referencedChemicalEntities;
-
-    private double displacementCutoffFactor = DEFAULT_DISPLACEMENT_CUTOFF_FACTOR;
     private double displacementCutoff;
 
     public DisplacementBasedModule() {
         deltaFunctions = new HashMap<>();
         displacementCutoff = Environment.convertSystemToSimulationScale(UnitRegistry.getSpace().multiply(displacementCutoffFactor));
-        referencedChemicalEntities = new HashSet<>();
-        featureManager = new FeatureManager();
     }
 
     public void addDeltaFunction(Function<Vesicle, DisplacementDelta> deltaFunction, Predicate<Vesicle> predicate) {
@@ -56,6 +49,16 @@ public class DisplacementBasedModule extends AbstractUpdateModule {
 
     @Override
     public void initialize() {
+
+    }
+
+    @Override
+    public void onReset() {
+
+    }
+
+    @Override
+    public void onCompletion() {
 
     }
 
@@ -92,37 +95,6 @@ public class DisplacementBasedModule extends AbstractUpdateModule {
     }
 
     @Override
-    public Set<Class<? extends Feature>> getRequiredFeatures() {
-        return featureManager.getRequiredFeatures();
-    }
-
-    @Override
-    public double getScaledFeature(Class<? extends ScalableQuantitativeFeature<?>> featureClass) {
-        return featureManager.getFeature(featureClass).getScaledQuantity();
-    }
-
-    /**
-     * Sets a feature.
-     * @param feature The feature.
-     */
-    public void setFeature(Feature<?> feature) {
-        featureManager.setFeature(feature);
-    }
-
-    public <FeatureType extends Feature> FeatureType getFeature(Class<FeatureType> featureTypeClass) {
-        return featureManager.getFeature(featureTypeClass);
-    }
-
-    public Collection<Feature<?>> getFeatures() {
-        return featureManager.getAllFeatures();
-    }
-
-    protected double getScaledFeature(ChemicalEntity entity, Class<? extends ScalableQuantitativeFeature<?>> featureClass) {
-        ScalableQuantitativeFeature<?> feature = entity.getFeature(featureClass);
-        return feature.getScaledQuantity();
-    }
-
-    @Override
     public void optimizeTimeStep() {
         while (getState() == REQUIRING_RECALCULATION) {
             getSimulation().getVesicleLayer().clearUpdates();
@@ -146,31 +118,13 @@ public class DisplacementBasedModule extends AbstractUpdateModule {
         setState(SUCCEEDED);
     }
 
-    @Override
-    public void checkFeatures() {
-        for (Class<? extends Feature> featureClass : getRequiredFeatures()) {
-            if (featureManager.hasFeature(featureClass)) {
-                Feature feature = getFeature(featureClass);
-                logger.debug("Required feature {} has been set to {}.", feature.getDescriptor(), feature.getContent());
-            } else {
-                logger.warn("Required feature {} has not been set for module {}.", featureClass.getSimpleName(), getIdentifier());
-            }
-        }
+    public double getDisplacementCutoffFactor() {
+        return displacementCutoffFactor;
     }
 
-    @Override
-    public void onReset() {
-
-    }
-
-    @Override
-    public void onCompletion() {
-
-    }
-
-    @Override
-    public Set<ChemicalEntity> getReferencedEntities() {
-        return referencedChemicalEntities;
+    public void setDisplacementCutoffFactor(double displacementCutoffFactor) {
+        this.displacementCutoffFactor = displacementCutoffFactor;
+        displacementCutoff = Environment.convertSystemToSimulationScale(UnitRegistry.getSpace().multiply(displacementCutoffFactor));
     }
 
     @Override

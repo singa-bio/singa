@@ -412,7 +412,7 @@ public class Simulation {
         // logger.info("Adding module {}.", module.toString());
         module.setSimulation(this);
         module.checkFeatures();
-        for (ChemicalEntity referencedEntity : module.getReferencedEntities()) {
+        for (ChemicalEntity referencedEntity : module.getReferencedChemicalEntities()) {
             addReferencedEntity(referencedEntity);
         }
         modules.add(module);
