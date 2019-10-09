@@ -50,24 +50,28 @@ public class ComplexEntityBuilder {
             // collect binding sites
             Map<ChemicalEntity, Set<BindingSite>> bindingSiteMapping = new HashMap<>();
             for (Map.Entry<BindingSite, Pair<ChemicalEntity>> entry : bindingSiteMap.entrySet()) {
-                ChemicalEntity primaryEntity = entry.getValue().getFirst();
-                ChemicalEntity secondaryEntity = entry.getValue().getSecond();
-                BindingSite bindingSite = entry.getKey();
-
-                if (!bindingSiteMapping.containsKey(primaryEntity)) {
-                    bindingSiteMapping.put(primaryEntity, new HashSet<>());
-                }
-                bindingSiteMapping.get(primaryEntity).add(bindingSite);
-
-                if (!bindingSiteMapping.containsKey(secondaryEntity)) {
-                    bindingSiteMapping.put(secondaryEntity, new HashSet<>());
-                }
-                bindingSiteMapping.get(secondaryEntity).add(bindingSite);
+                attachBindingSites(bindingSiteMapping, entry);
             }
             // connect
             bindingSiteMapping.forEach(complex::snapTo);
             complex.update();
             return complex;
         }
+    }
+
+    public static void attachBindingSites(Map<ChemicalEntity, Set<BindingSite>> bindingSiteMapping, Map.Entry<BindingSite, Pair<ChemicalEntity>> entry) {
+        ChemicalEntity primaryEntity = entry.getValue().getFirst();
+        ChemicalEntity secondaryEntity = entry.getValue().getSecond();
+        BindingSite bindingSite = entry.getKey();
+
+        if (!bindingSiteMapping.containsKey(primaryEntity)) {
+            bindingSiteMapping.put(primaryEntity, new HashSet<>());
+        }
+        bindingSiteMapping.get(primaryEntity).add(bindingSite);
+
+        if (!bindingSiteMapping.containsKey(secondaryEntity)) {
+            bindingSiteMapping.put(secondaryEntity, new HashSet<>());
+        }
+        bindingSiteMapping.get(secondaryEntity).add(bindingSite);
     }
 }

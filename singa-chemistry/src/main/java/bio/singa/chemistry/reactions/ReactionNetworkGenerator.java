@@ -8,11 +8,12 @@ import bio.singa.chemistry.entities.complex.GraphComplexNode;
 import bio.singa.chemistry.reactions.reactors.ComplexReactor;
 import bio.singa.chemistry.reactions.reactors.ReactionChain;
 import bio.singa.chemistry.reactions.reactors.ReactionElement;
-import bio.singa.core.utility.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+
+import static bio.singa.chemistry.entities.complex.ComplexEntityBuilder.attachBindingSites;
 
 /**
  * @author cl
@@ -145,22 +146,7 @@ public class ReactionNetworkGenerator {
         Map<ChemicalEntity, Set<BindingSite>> bindingSiteMapping = new HashMap<>();
         for (ReactionChain reactionChain : allChains) {
             for (ComplexReactor reactor : reactionChain.getReactors()) {
-
-                Map.Entry<BindingSite, Pair<ChemicalEntity>> siteEntry = reactor.getBindingSite();
-                ChemicalEntity primaryEntity = siteEntry.getValue().getFirst();
-                ChemicalEntity secondaryEntity = siteEntry.getValue().getSecond();
-                BindingSite bindingSite = siteEntry.getKey();
-
-                if (!bindingSiteMapping.containsKey(primaryEntity)) {
-                    bindingSiteMapping.put(primaryEntity, new HashSet<>());
-                }
-                bindingSiteMapping.get(primaryEntity).add(bindingSite);
-
-                if (!bindingSiteMapping.containsKey(secondaryEntity)) {
-                    bindingSiteMapping.put(secondaryEntity, new HashSet<>());
-                }
-                bindingSiteMapping.get(secondaryEntity).add(bindingSite);
-
+                attachBindingSites(bindingSiteMapping, reactor.getBindingSite());
             }
         }
         return bindingSiteMapping;

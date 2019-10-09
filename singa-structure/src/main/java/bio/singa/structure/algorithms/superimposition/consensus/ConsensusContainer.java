@@ -51,6 +51,8 @@ public class ConsensusContainer {
         return structuralMotif;
     }
 
+
+
     public BinaryTree<ConsensusContainer> getConsensusTree() {
         return consensusTree;
     }

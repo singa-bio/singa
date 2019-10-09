@@ -19,7 +19,6 @@ public class NestedUpdateRecorder implements UpdateEventListener<GraphUpdatedEve
 
     public NestedUpdateRecorder(Simulation simulation) {
         this(simulation, UnitRegistry.getTimeUnit(), UnitRegistry.getConcentrationUnit());
-
     }
 
     public NestedUpdateRecorder(Simulation simulation, Unit<Time> timeUnit, Unit<MolarConcentration> concentrationUnit) {
