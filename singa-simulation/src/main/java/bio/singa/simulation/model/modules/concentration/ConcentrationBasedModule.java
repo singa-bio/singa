@@ -82,11 +82,6 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
         applicationCondition = updatable -> true;
     }
 
-    @Override
-    public void initialize() {
-
-    }
-
     /**
      * Adds a delta function to the module. Delta functions are applied according to {@link UpdateScope} and {@link
      * UpdateSpecificity}.
@@ -405,6 +400,11 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
             return feature.getHalfScaledQuantity();
         }
         return feature.getScaledQuantity();
+    }
+
+    @Override
+    public void initialize() {
+
     }
 
     @Override

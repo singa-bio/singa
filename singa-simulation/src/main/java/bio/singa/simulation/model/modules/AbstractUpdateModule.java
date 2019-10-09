@@ -85,6 +85,10 @@ public abstract class AbstractUpdateModule implements UpdateModule {
         logger.debug("Module finished {}, latch at {}.", Thread.currentThread().getName(), scheduler.getCountDownLatch().getCount());
     }
 
+    protected abstract void calculateUpdates();
+
+    protected abstract void optimizeTimeStep();
+
     /**
      * Sets a feature.
      * @param feature The feature.
@@ -98,7 +102,6 @@ public abstract class AbstractUpdateModule implements UpdateModule {
         return featureManager.getFeature(featureTypeClass);
     }
 
-    @Override
     public double getScaledFeature(Class<? extends ScalableQuantitativeFeature<?>> featureClass) {
         return featureManager.getFeature(featureClass).getScaledQuantity();
     }

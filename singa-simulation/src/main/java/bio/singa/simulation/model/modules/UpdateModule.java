@@ -2,7 +2,6 @@ package bio.singa.simulation.model.modules;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.features.model.Feature;
-import bio.singa.features.model.ScalableQuantitativeFeature;
 import bio.singa.simulation.model.modules.concentration.ModuleState;
 import bio.singa.simulation.model.simulation.Simulation;
 
@@ -15,26 +14,18 @@ import java.util.Set;
 public interface UpdateModule extends Runnable {
 
     String getIdentifier();
-    Set<ChemicalEntity> getReferencedChemicalEntities();
+    ModuleState getState();
     void setSimulation(Simulation simulation);
 
-    ModuleState getState();
-    void reset();
-
+    Set<ChemicalEntity> getReferencedChemicalEntities();
     Set<Class<? extends Feature>> getRequiredFeatures();
-    Collection<Feature<?>> getFeatures();
-    double getScaledFeature(Class<? extends ScalableQuantitativeFeature<?>> featureClass);
-    void setFeature(Feature<?> feature);
     void checkFeatures();
+    void setFeature(Feature<?> feature);
+    Collection<Feature<?>> getFeatures();
 
     void initialize();
-
-    void calculateUpdates();
-
-    void optimizeTimeStep();
-
+    void reset();
     void onReset();
-
     void onCompletion();
 
 }

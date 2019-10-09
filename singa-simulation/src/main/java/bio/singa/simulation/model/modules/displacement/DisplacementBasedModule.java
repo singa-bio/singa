@@ -68,7 +68,31 @@ public class DisplacementBasedModule extends AbstractUpdateModule {
         evaluateModuleState();
     }
 
-    public void processAllVesicles(List<Vesicle> vesicles) {
+    private void evaluateModuleState() {
+        for (Vesicle vesicle : getSimulation().getVesicleLayer().getVesicles()) {
+            if (vesicle.getSpatialDelta(this) != null) {
+                Vector2D displacement = vesicle.getSpatialDelta(this).getDeltaVector();
+                double length = displacement.getMagnitude();
+                if (length > displacementCutoff) {
+                    logger.trace("Recalculation required for module {} displacement magnitude {} exceeding threshold {}.", this, length, displacementCutoff);
+                    setState(REQUIRING_RECALCULATION);
+                    return;
+                }
+            }
+        }
+        setState(SUCCEEDED);
+    }
+
+    @Override
+    public void optimizeTimeStep() {
+        while (getState() == REQUIRING_RECALCULATION) {
+            getSimulation().getVesicleLayer().clearUpdates();
+            getSimulation().getScheduler().decreaseTimeStep();
+            calculateUpdates();
+        }
+    }
+
+    private void processAllVesicles(List<Vesicle> vesicles) {
         // determine deltas
         for (Vesicle vesicle : vesicles) {
             logger.trace("Determining delta for {}.", vesicle.getStringIdentifier());
@@ -76,7 +100,7 @@ public class DisplacementBasedModule extends AbstractUpdateModule {
         }
     }
 
-    public void determineDeltas(Vesicle vesicle) {
+    private void determineDeltas(Vesicle vesicle) {
         for (Map.Entry<Function<Vesicle, DisplacementDelta>, Predicate<Vesicle>> entry : deltaFunctions.entrySet()) {
             // test predicate
             if (entry.getValue().test(vesicle)) {
@@ -92,30 +116,6 @@ public class DisplacementBasedModule extends AbstractUpdateModule {
                 vesicle.getStringIdentifier(),
                 vesicle.getPosition(),
                 delta.getDeltaVector());
-    }
-
-    @Override
-    public void optimizeTimeStep() {
-        while (getState() == REQUIRING_RECALCULATION) {
-            getSimulation().getVesicleLayer().clearUpdates();
-            getSimulation().getScheduler().decreaseTimeStep();
-            calculateUpdates();
-        }
-    }
-
-    protected void evaluateModuleState() {
-        for (Vesicle vesicle : getSimulation().getVesicleLayer().getVesicles()) {
-            if (vesicle.getSpatialDelta(this) != null) {
-                Vector2D displacement = vesicle.getSpatialDelta(this).getDeltaVector();
-                double length = displacement.getMagnitude();
-                if (length > displacementCutoff) {
-                    logger.trace("Recalculation required for module {} displacement magnitude {} exceeding threshold {}.", this, length, displacementCutoff);
-                    setState(REQUIRING_RECALCULATION);
-                    return;
-                }
-            }
-        }
-        setState(SUCCEEDED);
     }
 
     public double getDisplacementCutoffFactor() {
