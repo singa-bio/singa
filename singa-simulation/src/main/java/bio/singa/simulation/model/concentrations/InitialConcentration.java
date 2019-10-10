@@ -3,6 +3,7 @@ package bio.singa.simulation.model.concentrations;
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.features.model.Evidence;
 import bio.singa.features.quantities.MolarConcentration;
+import bio.singa.features.units.UnitRegistry;
 import bio.singa.simulation.model.sections.CellSubsection;
 import bio.singa.simulation.model.sections.CellTopology;
 import bio.singa.simulation.model.simulation.Simulation;
@@ -148,4 +149,11 @@ public class InitialConcentration {
         }
     }
 
+    @Override
+    public String toString() {
+        String fixed = isFix() ? " [fixed] " : "";
+        String timed = time.isGreaterThan(Quantities.getQuantity(0, SECOND)) ? " [" + time.toString() + "] " : "";
+        String location = topology != null ? topology.toString() : subsection.getIdentifier();
+        return "concentration" + timed + fixed + ": location = " + location + ", entity = " + entity.getIdentifier() + ", value = " + UnitRegistry.humanReadable(getConcentration());
+    }
 }

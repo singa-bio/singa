@@ -98,6 +98,14 @@ public class SimulationStatus implements UpdateEventListener<GraphUpdatedEvent> 
         return simulation.getScheduler().getLargestLocalError();
     }
 
+    public String getLocalErrorStatus() {
+        NumericalError largestLocalError = getLargestLocalError();
+        return String.format("%6.3e", largestLocalError.getValue())+" "+
+                "("+ largestLocalError.getChemicalEntity().getIdentifier()+", "+
+                largestLocalError.getUpdatable().getStringIdentifier()+", "+
+                getLocalErrorModule()+" )";
+    }
+
     public UpdateModule getLocalErrorModule() {
         return simulation.getScheduler().getLocalErrorModule();
     }
