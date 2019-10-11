@@ -172,14 +172,14 @@ public class GraphDrawingTool<NodeType extends Node<NodeType, Vector2D, Identifi
             if (nextLocation.getX() < drawingWidth.doubleValue() && nextLocation.getX() > 0.0) {
                 nextX = nextLocation.getX();
             } else {
-                nextX = drawingWidth.doubleValue() / 2;
+                nextX = drawingWidth.doubleValue() / 2 + Math.random() - 0.5;
             }
 
             double nextY;
             if (nextLocation.getY() < drawingHeight.doubleValue() && nextLocation.getY() > 0.0) {
                 nextY = nextLocation.getY();
             } else {
-                nextY = drawingHeight.doubleValue() / 2;
+                nextY = drawingHeight.doubleValue() / 2 + Math.random() - 0.5;
             }
 
             // place node

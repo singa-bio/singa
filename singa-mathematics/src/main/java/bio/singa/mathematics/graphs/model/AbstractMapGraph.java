@@ -3,11 +3,9 @@ package bio.singa.mathematics.graphs.model;
 
 import bio.singa.mathematics.vectors.Vector;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * This is a simple implementation of the graph interface, that handles the most common operations defined for adding
@@ -211,6 +209,12 @@ public abstract class AbstractMapGraph<NodeType extends Node<NodeType, VectorTyp
                 .findAny();
     }
 
+    public List<NodeType> getAllNodes(Predicate<NodeType> nodePredicate) {
+        return nodes.values().stream()
+                .filter(nodePredicate)
+                .collect(Collectors.toList());
+    }
+
     /**
      * Evaluates the predicate for every node in the graph. An edge will be created between fhe first node that matches
      * the predicate and the given node.
@@ -223,6 +227,29 @@ public abstract class AbstractMapGraph<NodeType extends Node<NodeType, VectorTyp
         return getNode(appendPredicate)
                 .map(graphNode -> addEdgeBetween(graphNode, nodeToAppend))
                 .orElse(-1);
+    }
+
+    public void appendGraph(NodeType nodeToAppendTo, NodeType nodeToAppend, Graph<NodeType, EdgeType, IdentifierType> graphToAppend) {
+        Map<IdentifierType, IdentifierType> identifierMapping = new HashMap<>();
+        for (NodeType node : graphToAppend.getNodes()) {
+            // conserve identifier
+            IdentifierType newIdentifier = nextNodeIdentifier();
+            IdentifierType oldIdentifier = node.getIdentifier();
+            identifierMapping.put(oldIdentifier, newIdentifier);
+            // create copy
+            NodeType copy = node.getCopy();
+            copy.setIdentifier(newIdentifier);
+            addNode(copy);
+        }
+
+        for (EdgeType edge : graphToAppend.getEdges()) {
+            EdgeType edgeCopy = edge.getCopy();
+            edgeCopy.setIdentifier(nextEdgeIdentifier());
+            NodeType source = getNode(identifierMapping.get(edge.getSource().getIdentifier()));
+            NodeType target = getNode(identifierMapping.get(edge.getTarget().getIdentifier()));
+            addEdgeBetween(edgeCopy, source, target);
+        }
+        addEdgeBetween(nodeToAppendTo, getNode(identifierMapping.get(nodeToAppend.getIdentifier())));
     }
 
     /**
