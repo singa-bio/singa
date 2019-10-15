@@ -276,12 +276,14 @@ public class ConcentrationBuilder {
 
         @Override
         public BuildStep evidence(Evidence evidence) {
-            initialConcentration.setEvidence(evidence);
+            initialConcentration.addEvidence(evidence);
             return this;
         }
 
         @Override
         public InitialConcentration build() {
+            // this normally happens during Feature constructor call
+            // additionally this feature is not scaled to system units
             if (simulation != null) {
                 simulation.addConcentration(initialConcentration);
             }

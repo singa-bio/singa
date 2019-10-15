@@ -25,4 +25,8 @@ public abstract class QuantitativeFeature<FeatureContent extends Quantity<Featur
         FeatureRegistry.addQuantitativeFeature(this);
     }
 
+    public QuantitativeFeature() {
+        super();
+    }
+
 }

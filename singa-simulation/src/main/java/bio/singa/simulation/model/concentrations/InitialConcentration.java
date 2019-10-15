@@ -2,6 +2,8 @@ package bio.singa.simulation.model.concentrations;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.features.model.Evidence;
+import bio.singa.features.model.FeatureRegistry;
+import bio.singa.features.model.QuantitativeFeature;
 import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.simulation.model.sections.CellSubsection;
@@ -15,6 +17,7 @@ import tech.units.indriya.quantity.Quantities;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Time;
+import java.util.List;
 import java.util.TreeMap;
 
 import static tech.units.indriya.unit.Units.SECOND;
@@ -22,7 +25,7 @@ import static tech.units.indriya.unit.Units.SECOND;
 /**
  * @author cl
  */
-public class InitialConcentration {
+public class InitialConcentration extends QuantitativeFeature<MolarConcentration> {
 
     private static final Logger logger = LoggerFactory.getLogger(InitialConcentration.class);
 
@@ -30,13 +33,31 @@ public class InitialConcentration {
     private CellSubsection subsection;
     private CellTopology topology;
     private ChemicalEntity entity;
-    private Quantity<MolarConcentration> concentration;
     private ComparableQuantity<Time> time;
     private boolean fix;
 
-    private Evidence evidence;
+    public InitialConcentration(Quantity<MolarConcentration> quantity, List<Evidence> evidence) {
+        super(quantity, evidence);
+        initialize();
+    }
+
+    public InitialConcentration(Quantity<MolarConcentration> quantity, Evidence evidence) {
+        super(quantity, evidence);
+        initialize();
+    }
+
+    public InitialConcentration(Quantity<MolarConcentration> quantity) {
+        super(quantity);
+        initialize();
+    }
 
     public InitialConcentration() {
+        super();
+        initialize();
+    }
+
+    private void initialize() {
+        FeatureRegistry.addQuantitativeFeature(this);
         conditions = new TreeMap<>();
         time = Quantities.getQuantity(0, SECOND);
         fix = false;
@@ -75,11 +96,12 @@ public class InitialConcentration {
     }
 
     public Quantity<MolarConcentration> getConcentration() {
-        return concentration;
+        return featureContent;
     }
 
     public void setConcentration(Quantity<MolarConcentration> concentration) {
-        this.concentration = concentration;
+        featureContent = concentration;
+        baseContent = concentration;
     }
 
     public ComparableQuantity<Time> getTime() {
@@ -96,14 +118,6 @@ public class InitialConcentration {
 
     public void setFix(boolean fix) {
         this.fix = fix;
-    }
-
-    public Evidence getEvidence() {
-        return evidence;
-    }
-
-    public void setEvidence(Evidence evidence) {
-        this.evidence = evidence;
     }
 
     public void addCondition(ConcentrationCondition condition) {
@@ -139,9 +153,9 @@ public class InitialConcentration {
     public void apply(Updatable updatable) {
         if (test(updatable)) {
             if (subsection != null) {
-                updatable.getConcentrationContainer().initialize(subsection, entity, concentration);
+                updatable.getConcentrationContainer().initialize(subsection, entity, featureContent);
             } else {
-                updatable.getConcentrationContainer().initialize(topology, entity, concentration);
+                updatable.getConcentrationContainer().initialize(topology, entity, featureContent);
             }
             if (fix) {
                 updatable.getConcentrationManager().fix(entity);
