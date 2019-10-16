@@ -1,6 +1,7 @@
 package bio.singa.structure.model.molecules;
 
 import bio.singa.mathematics.geometry.faces.Rectangle;
+import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.mathematics.vectors.Vectors;
 import bio.singa.structure.algorithms.molecules.MoleculePathFinder;
 import bio.singa.structure.elements.Element;
@@ -26,7 +27,14 @@ public class MoleculeGraphs {
         MoleculeGraph graph = new MoleculeGraph();
         // add atoms first
         for (Atom atom : leafSubstructure.getAllAtoms()) {
-            graph.addNode(new MoleculeAtom(atom.getAtomIdentifier(), Vectors.generateRandom2DVector(defaultBoundingBox), atom.getElement()));
+            // set x and y coordinates of the graph
+            Vector2D position;
+            if (atom.getPosition() != null) {
+                position = new Vector2D(atom.getPosition().getX(), atom.getPosition().getY()).multiply(100);
+            } else {
+                position = Vectors.generateRandom2DVector(defaultBoundingBox);
+            }
+            graph.addNode(new MoleculeAtom(atom.getAtomIdentifier(), position, atom.getElement()));
         }
         // then add bonds
         for (OakBond bond : leafSubstructure.getBonds()) {
