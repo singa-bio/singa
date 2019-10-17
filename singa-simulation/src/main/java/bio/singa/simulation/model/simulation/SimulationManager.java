@@ -17,6 +17,10 @@ import tech.units.indriya.quantity.Quantities;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Time;
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.function.Predicate;
@@ -84,8 +88,13 @@ public class SimulationManager implements Runnable {
 
     private boolean keepPlatformOpen = DEFAULT_KEEP_PLATFORM_OPEN;
 
+    private Path targetPath;
+
     private CountDownLatch terminationLatch;
     private final SimulationStatus simulationStatus;
+
+    private boolean writeAliveFile = false;
+    private Path aliveFile;
 
     /**
      * Creates a new simulation manager for the given simulation.
@@ -232,6 +241,22 @@ public class SimulationManager implements Runnable {
         this.keepPlatformOpen = keepPlatformOpen;
     }
 
+    public boolean isWritingAliveFile() {
+        return writeAliveFile;
+    }
+
+    public void setWriteAliveFile(boolean writeAliveFile) {
+        this.writeAliveFile = writeAliveFile;
+    }
+
+    public Path getTargetPath() {
+        return targetPath;
+    }
+
+    public void setTargetPath(Path targetPath) {
+        this.targetPath = targetPath;
+    }
+
     /**
      * Returns the simulation.
      *
@@ -243,9 +268,15 @@ public class SimulationManager implements Runnable {
 
     @Override
     public void run() {
+        if (writeAliveFile) {
+            aliveFile = targetPath.resolve("alive");
+        }
         try {
             while (terminationCondition.test(simulation)) {
                 if (emitCondition.test(simulation)) {
+                    if (writeAliveFile) {
+                        updateAliveFile();
+                    }
                     logger.debug("Emitting event after {} (epoch {}).", TimeFormatter.formatTime(simulation.getElapsedTime()), simulation.getEpoch());
                     emitGraphEvent(simulation);
                     for (Updatable updatable : simulation.getObservedUpdatables()) {
@@ -294,6 +325,15 @@ public class SimulationManager implements Runnable {
                 logger.info("ERROR G : {} ({}, {})", String.format("%6.3e",simulationStatus.getLargestGlobalError().getValue()), simulationStatus.getLargestGlobalError().getChemicalEntity(), simulationStatus.getLargestGlobalError().getUpdatable().getStringIdentifier());
             }
             previousTimeMillis = currentTimeMillis;
+        }
+    }
+
+    private void updateAliveFile() {
+        String content = String.valueOf(System.currentTimeMillis());
+        try {
+            Files.write(aliveFile, content.getBytes());
+        } catch (IOException e) {
+            throw new UncheckedIOException("unable to write alive file.", e);
         }
     }
 

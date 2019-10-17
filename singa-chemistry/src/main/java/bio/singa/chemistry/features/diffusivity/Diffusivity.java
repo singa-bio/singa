@@ -2,6 +2,7 @@ package bio.singa.chemistry.features.diffusivity;
 
 import bio.singa.chemistry.features.FeatureProviderRegistry;
 import bio.singa.features.model.Evidence;
+import bio.singa.features.model.FeatureRegistry;
 import bio.singa.features.model.ScalableQuantitativeFeature;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.quantities.NaturalConstants;
@@ -12,7 +13,9 @@ import tech.units.indriya.unit.ProductUnit;
 import javax.measure.Quantity;
 import javax.measure.Unit;
 import javax.measure.quantity.Length;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static tech.units.indriya.unit.MetricPrefix.CENTI;
 import static tech.units.indriya.unit.MetricPrefix.MICRO;
@@ -34,6 +37,17 @@ public class Diffusivity extends ScalableQuantitativeFeature<Diffusivity> implem
 
     private static final Evidence EINSTEIN1905 = new Evidence(Evidence.SourceType.PREDICTION, "Strokes-Einstein Equation", "Einstein, Albert. \"Über die von der molekularkinetischen Theorie der Wärme geforderte Bewegung von in ruhenden Flüssigkeiten suspendierten Teilchen.\" Annalen der physik 322.8 (1905): 549-560.");
 
+    private static Map<Quantity<Length>, Diffusivity> cache;
+
+    private static Map<Quantity<Length>, Diffusivity> getCache() {
+        if (cache == null) {
+            synchronized (FeatureRegistry.class) {
+                cache = new HashMap<>();
+            }
+        }
+        return cache;
+    }
+
     /**
      * Every FeatureProvider that is registered in this method is invoked automatically when the Feature is requested
      * for the first time.
@@ -53,9 +67,15 @@ public class Diffusivity extends ScalableQuantitativeFeature<Diffusivity> implem
      * @return The diffusivity.
      */
     public static Diffusivity calculate(Quantity<Length> radius) {
+        Diffusivity cachedDiffusivity = getCache().get(radius);
+        if (cachedDiffusivity != null) {
+            return cachedDiffusivity;
+        }
         final double upper = NaturalConstants.BOLTZMANN_CONSTANT.getValue().doubleValue() * Environment.getTemperature().getValue().doubleValue();
         final double lower = 6 * Math.PI * Environment.getMacroViscosity().getValue().doubleValue() * radius.to(METRE).getValue().doubleValue();
-        return new Diffusivity(Quantities.getQuantity(upper / lower, Diffusivity.SQUARE_METRE_PER_SECOND), EINSTEIN1905);
+        Diffusivity diffusivity = new Diffusivity(Quantities.getQuantity(upper / lower, Diffusivity.SQUARE_METRE_PER_SECOND), EINSTEIN1905);
+        getCache().put(radius, diffusivity);
+        return diffusivity;
     }
 
     public Diffusivity(Quantity<Diffusivity> quantity, List<Evidence> evidence) {
