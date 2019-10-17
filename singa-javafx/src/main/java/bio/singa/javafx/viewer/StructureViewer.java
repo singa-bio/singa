@@ -2,7 +2,7 @@ package bio.singa.javafx.viewer;
 
 import bio.singa.mathematics.geometry.bodies.Cube;
 import bio.singa.mathematics.vectors.Vector3D;
-import bio.singa.mathematics.vectors.Vectors3D;
+import bio.singa.mathematics.vectors.Vectors;
 import bio.singa.structure.model.interfaces.Atom;
 import bio.singa.structure.model.interfaces.Chain;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
@@ -144,7 +144,7 @@ public class StructureViewer extends Application {
     private void translateToCentre() {
         List<Atom> allAtoms = structure.getAllAtoms();
 
-        centroid = Vectors3D.getCentroid(allAtoms.stream()
+        centroid = Vectors.get3DCentroid(allAtoms.stream()
                 .map(Atom::getPosition)
                 .collect(Collectors.toList()))
                 .multiply(3.0);

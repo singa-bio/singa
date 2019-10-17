@@ -36,7 +36,9 @@ public class GraphProducer<NodeType extends Node<NodeType, Vector2D, IdentifierT
     public void run() {
         ForceDirectedGraphLayout<NodeType, EdgeType, IdentifierType, GraphType> gdt = new ForceDirectedGraphLayout<>(graph,
                 renderer.drawingWidthProperty(), renderer.drawingHeightProperty(), 100);
-        gdt.fixNodes(fixedIdentifiers);
+        if (fixedIdentifiers != null) {
+            gdt.fixNodes(fixedIdentifiers);
+        }
         for (int i = 0; i < totalIterations; i++) {
             renderer.getGraphQueue().add(gdt.arrangeGraph(i));
             try {

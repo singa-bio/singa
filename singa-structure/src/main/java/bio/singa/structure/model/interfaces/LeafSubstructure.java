@@ -1,7 +1,7 @@
 package bio.singa.structure.model.interfaces;
 
 import bio.singa.mathematics.vectors.Vector3D;
-import bio.singa.mathematics.vectors.Vectors3D;
+import bio.singa.mathematics.vectors.Vectors;
 import bio.singa.structure.model.families.StructuralFamily;
 import bio.singa.structure.model.identifiers.LeafIdentifier;
 import bio.singa.structure.model.oak.Exchangeable;
@@ -49,7 +49,7 @@ public interface LeafSubstructure<FamilyType extends StructuralFamily> extends A
     }
 
     default Vector3D getPosition() {
-        return Vectors3D.getCentroid(getAllAtoms().stream()
+        return Vectors.get3DCentroid(getAllAtoms().stream()
                 .map(Atom::getPosition)
                 .collect(Collectors.toList()));
     }

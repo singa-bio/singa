@@ -7,6 +7,7 @@ import bio.singa.mathematics.graphs.model.Node;
 import bio.singa.mathematics.vectors.Vector2D;
 import javafx.beans.property.DoubleProperty;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
@@ -84,6 +85,7 @@ public class ForceDirectedGraphLayout<NodeType extends Node<NodeType, Vector2D, 
         for (NodeType n : graph.getNodes()) {
             velocities.put(n, new Vector2D(0.0, 0.0));
         }
+        fixedNodes = new ArrayList<>();
     }
 
     public void fixNodes(Collection<IdentifierType> identifiers) {

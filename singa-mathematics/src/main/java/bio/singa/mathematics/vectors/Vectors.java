@@ -316,6 +316,41 @@ public class Vectors {
     }
 
     /**
+     * Computes the centroid of all vectors in the collection by summing them and dividing by the number of vectors in
+     * the collection. This is faster than using the general implementation from the {@link Vectors} class.
+     *
+     * @param vectors The vectors to calculate the centroid from.
+     * @return The centroid.
+     */
+    public static Vector3D get3DCentroid(Collection<Vector3D> vectors) {
+        int vectorCount = vectors.size();
+        double[] sum = new double[3];
+        for (Vector3D vector : vectors) {
+            sum[0] += vector.getX();
+            sum[1] += vector.getY();
+            sum[2] += vector.getZ();
+        }
+        return new Vector3D(sum[0] / vectorCount, sum[1] / vectorCount, sum[2] / vectorCount);
+    }
+
+    /**
+     * Computes the centroid of all vectors in the collection by summing them and dividing by the number of vectors in
+     * the collection. This is faster than using the general implementation from the {@link Vectors} class.
+     *
+     * @param vectors The vectors to calculate the centroid from.
+     * @return The centroid.
+     */
+    public static Vector2D get2DCentroid(Collection<Vector2D> vectors) {
+        int vectorCount = vectors.size();
+        double[] sum = new double[3];
+        for (Vector2D vector : vectors) {
+            sum[0] += vector.getX();
+            sum[1] += vector.getY();
+        }
+        return new Vector2D(sum[0] / vectorCount, sum[1] / vectorCount);
+    }
+
+    /**
      * This method creates an orthonormalized set of vectors in an inner product space, in this case the Euclidean space
      * R^n equipped with the standard inner product ({@link Vector#dotProduct(Vector)}). The Gram-Schmidt process takes
      * a finite, linearly independent list S = {v1, ..., vk} for k ≤ n and generates an orthogonal list S′ = {u1, ...,
