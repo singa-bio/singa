@@ -95,6 +95,7 @@ public class MolParser {
                     break;
                 case 3:
                     type = BondType.TRIPLE_BOND;
+                    break;
                 case 1:
                 default:
                     type = BondType.SINGLE_BOND;
