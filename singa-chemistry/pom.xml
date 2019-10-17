@@ -7,23 +7,44 @@
     <parent>
         <artifactId>singa-all</artifactId>
         <groupId>bio.singa</groupId>
-        <version>0.5.0</version>
+        <version>0.6.0</version>
         <relativePath>../singa-all/pom.xml</relativePath>
     </parent>
 
     <artifactId>singa-chemistry</artifactId>
-    <version>0.5.0</version>
+    <version>0.6.0</version>
     <packaging>jar</packaging>
     <description>
         The chemistry package of SiNGA handles aspects that range into chemoinformatics, such as parsing and
         manipulation of chemical entities as well as their annotation with features.
     </description>
 
+    <repositories>
+        <repository>
+            <id>ebi-repo</id>
+            <url>http://www.ebi.ac.uk/intact/maven/nexus/content/repositories/ebi-repo/</url>
+        </repository>
+        <repository>
+            <id>ebi-repo-snapshots</id>
+            <url>http://www.ebi.ac.uk/intact/maven/nexus/content/repositories/ebi-repo-snapshots/</url>
+        </repository>
+    </repositories>
+
     <dependencies>
         <dependency>
             <groupId>bio.singa</groupId>
             <artifactId>singa-structure</artifactId>
-            <version>0.5.0</version>
+            <version>0.6.0</version>
+        </dependency>
+        <dependency>
+            <groupId>uk.ac.ebi.beam</groupId>
+            <artifactId>beam-core</artifactId>
+            <version>1.2.1</version>
+        </dependency>
+        <dependency>
+            <groupId>uk.ac.ebi.beam</groupId>
+            <artifactId>beam-func</artifactId>
+            <version>1.2.1</version>
         </dependency>
     </dependencies>
 

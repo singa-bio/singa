@@ -14,26 +14,13 @@ import java.util.Objects;
 public class CellSubsection {
 
     /**
-     * A general membrane subsection.
-     */
-    public static CellSubsection MEMBRANE = new CellSubsection("MEM");
-
-    /**
-     * A cellular subsection "A".
-     */
-    public static CellSubsection SECTION_A = new CellSubsection("SA");
-
-    /**
-     * A cellular subsection "B".
-     */
-    public static CellSubsection SECTION_B = new CellSubsection("SB");
-
-    /**
      * The identifier.
      */
     private String identifier;
 
     private GoTerm goTerm;
+
+    private boolean membrane;
 
     /**
      * Creates a new cell subsection with the given identifier and dynamic preferred concentration unit.
@@ -47,6 +34,12 @@ public class CellSubsection {
     public CellSubsection(String identifier, GoTerm goTerm) {
         this.identifier = identifier;
         this.goTerm = goTerm;
+    }
+
+    public CellSubsection(String identifier, GoTerm goTerm, boolean membrane) {
+        this.identifier = identifier;
+        this.goTerm = goTerm;
+        this.membrane = membrane;
     }
 
     /**
@@ -68,6 +61,14 @@ public class CellSubsection {
 
     public void setGoTerm(GoTerm goTerm) {
         this.goTerm = goTerm;
+    }
+
+    public boolean isMembrane() {
+        return membrane;
+    }
+
+    public void setMembrane(boolean membrane) {
+        this.membrane = membrane;
     }
 
     @Override

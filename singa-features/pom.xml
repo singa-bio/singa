@@ -7,12 +7,12 @@
     <parent>
         <artifactId>singa-all</artifactId>
         <groupId>bio.singa</groupId>
-        <version>0.5.0</version>
+        <version>0.6.0</version>
         <relativePath>../singa-all/pom.xml</relativePath>
     </parent>
 
     <artifactId>singa-features</artifactId>
-    <version>0.5.0</version>
+    <version>0.6.0</version>
     <packaging>jar</packaging>
     <description>
         The features package of SiNGA allows for automated retrieval and annotation of features to arbitrary data
@@ -22,9 +22,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>tec.units</groupId>
+            <groupId>tech.units</groupId>
             <artifactId>indriya</artifactId>
-            <version>1.0</version>
+            <version>1.2</version>
         </dependency>
     </dependencies>
 

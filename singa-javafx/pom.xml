@@ -7,12 +7,12 @@
     <parent>
         <artifactId>singa-all</artifactId>
         <groupId>bio.singa</groupId>
-        <version>0.5.0</version>
+        <version>0.6.0</version>
         <relativePath>../singa-all/pom.xml</relativePath>
     </parent>
 
     <artifactId>singa-javafx</artifactId>
-    <version>0.5.0</version>
+    <version>0.6.0</version>
     <packaging>jar</packaging>
     <description>
         The javafx package of SiNGA provides methods to render visual representations SiNGA data structures in javafx
@@ -21,14 +21,19 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-controls</artifactId>
+            <version>11</version>
+        </dependency>
+        <dependency>
             <groupId>bio.singa</groupId>
             <artifactId>singa-chemistry</artifactId>
-            <version>0.5.0</version>
+            <version>0.6.0</version>
         </dependency>
         <dependency>
             <groupId>bio.singa</groupId>
             <artifactId>singa-sequence</artifactId>
-            <version>0.5.0</version>
+            <version>0.6.0</version>
         </dependency>
     </dependencies>
 

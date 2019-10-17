@@ -102,8 +102,8 @@ public interface Polygon extends Polytope<Vector2D> {
                 .max().getAsDouble();
     }
 
-    default boolean isInside(Vector2D point) {
-        return Polygons.isInside(this, point);
+    default boolean containsVector(Vector2D point) {
+        return Polygons.containsVector(this, point);
     }
 
     Polygon getCopy();

@@ -78,7 +78,7 @@ public class Fit3DSiteAlignment implements Fit3D {
                         .anyMatch(leafSubstructure -> !(leafSubstructure.getFamily() instanceof AminoAcidFamily));
 
         if (containsNonAminoAcids) {
-            logger.info("sites contain non-amino acid residues, no Xie and PS-scores can be calculated");
+            logger.warn("sites contain non-amino acid residues, no Xie and PS-scores can be calculated");
         }
 
         exhaustive = builder.exhaustive;
@@ -87,7 +87,7 @@ public class Fit3DSiteAlignment implements Fit3D {
 
         // add exchanges against arbitrary types if not restricted
         if (!restrictToExchanges) {
-            logger.info("specified exchanges will be ignored for the Fit3DSite alignment and matched types will be arbitrary");
+            logger.warn("specified exchanges will be ignored for the Fit3DSite alignment and matched types will be arbitrary");
         }
 
         currentAlignmentSize = 2;
@@ -115,11 +115,11 @@ public class Fit3DSiteAlignment implements Fit3D {
 
         // combinatorial extension alignment if Kuhn-Munkres is not used
         if (!kuhnMunkres) {
-            logger.info("using combinatorial extension to find alignment");
+            logger.debug("using combinatorial extension to find alignment");
             calculateSimilarities();
             extendAlignment();
         } else {
-            logger.info("using Kuhn-Munkres optimization with substitution matrix {} to find alignment", substitutionMatrix);
+            logger.debug("using Kuhn-Munkres optimization with substitution matrix {} to find alignment", substitutionMatrix);
             calculateAssignment();
             calculateAlignment();
         }
@@ -151,7 +151,7 @@ public class Fit3DSiteAlignment implements Fit3D {
         while (currentBestScore <= cutoffScore) {
             // terminate if one site is fully aligned
             if (site1.size() == currentAlignmentSize || site2.size() == currentAlignmentSize) {
-                logger.info("alignment fully terminated after {} iterations", currentAlignmentSize);
+                logger.debug("alignment fully terminated after {} iterations", currentAlignmentSize);
                 break;
             }
             // extent site partitions
@@ -159,7 +159,7 @@ public class Fit3DSiteAlignment implements Fit3D {
             // recalculate similarities
             calculateSimilarities();
             if (cutoffScoreReached) {
-                logger.info("alignment reached cutoff score of {}", cutoffScore);
+                logger.debug("alignment reached cutoff score of {}", cutoffScore);
                 break;
             }
         }
@@ -172,7 +172,7 @@ public class Fit3DSiteAlignment implements Fit3D {
             }
             outputSummary();
         } else {
-            logger.info("no suitable alignment could be found");
+            logger.debug("no suitable alignment could be found");
         }
     }
 
@@ -215,7 +215,7 @@ public class Fit3DSiteAlignment implements Fit3D {
                 String.format("%-7s", "PsS") + "|" + (containsNonAminoAcids ? "NaN" : getPsScore().getScore()) + "\n" +
                 String.format("%-7s", "PsExp") + "|" + (containsNonAminoAcids ? "NaN" : getPsScore().getSignificance()) + "\n" +
                 String.format("%-7s", "s1algn") + site1Joiner.toString() + "\n" + String.format("%-7s", "s2algn") + site2Joiner.toString();
-        logger.info("aligned {} residues (site 1 contains {} residues and site 2 contains {} residues)\n{}",
+        logger.debug("aligned {} residues (site 1 contains {} residues and site 2 contains {} residues)\n{}",
                 currentAlignmentSize, site1.size(), site2.size(), alignmentString);
     }
 
@@ -393,7 +393,7 @@ public class Fit3DSiteAlignment implements Fit3D {
             // if the alignment terminates in the next round do not set new best matching pair and score
             double scoreValue = currentSimilarityMatrix.getValueFromPosition(minimalScores.get(0));
             if (scoreValue > cutoffScore) {
-                logger.info("cutoff score exceeded");
+                logger.debug("cutoff score exceeded");
                 currentAlignmentSize--;
                 cutoffScoreReached = true;
                 return;
@@ -401,13 +401,13 @@ public class Fit3DSiteAlignment implements Fit3D {
             currentBestMatchingPair = new Pair<>(first, second);
             currentBestScore = scoreValue;
             currentBestSuperimposition = localBestSuperimposition;
-            logger.info("current best matching pair of size {} is {} with RMSD {}", currentAlignmentSize,
+            logger.debug("current best matching pair of size {} is {} with RMSD {}", currentAlignmentSize,
                     currentBestMatchingPair, currentBestScore);
         } else {
             if (currentAlignmentSize == 2) {
                 throw new Fit3DException("could not find minimal agreement of partitions in first iteration");
             }
-            logger.info("no suitable alignment found in iteration {}", currentAlignmentSize);
+            logger.debug("no suitable alignment found in iteration {}", currentAlignmentSize);
             currentAlignmentSize--;
             currentBestScore = Double.MAX_VALUE;
         }

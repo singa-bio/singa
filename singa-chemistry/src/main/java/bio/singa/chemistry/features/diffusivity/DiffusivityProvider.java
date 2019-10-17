@@ -3,13 +3,13 @@ package bio.singa.chemistry.features.diffusivity;
 import bio.singa.features.model.FeatureProvider;
 import bio.singa.features.model.Featureable;
 import bio.singa.structure.features.molarmass.MolarMass;
-import tec.units.indriya.quantity.Quantities;
+import tech.units.indriya.quantity.Quantities;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Dimensionless;
 
 import static bio.singa.structure.features.molarmass.MolarMass.GRAM_PER_MOLE;
-import static tec.units.indriya.AbstractUnit.ONE;
+import static tech.units.indriya.AbstractUnit.ONE;
 
 /**
  * @author cl
@@ -28,8 +28,8 @@ public class DiffusivityProvider extends FeatureProvider<Diffusivity> {
      * correlation (heavier than the threshold).
      */
     private static final Quantity<MolarMass> CORRELATION_THRESHOLD = Quantities.getQuantity(10000, GRAM_PER_MOLE);
-    private final WilkeCorrelation wilkeCorrelation = new WilkeCorrelation();
-    private final YoungCorrelation youngCorrelation = new YoungCorrelation();
+    private final WilkeDiffusivityCorrelation wilkeCorrelation = new WilkeDiffusivityCorrelation();
+    private final YoungDiffusivityCorrelation youngCorrelation = new YoungDiffusivityCorrelation();
 
     public DiffusivityProvider() {
         setProvidedFeature(Diffusivity.class);

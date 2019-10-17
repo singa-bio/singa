@@ -21,11 +21,15 @@ public class IrreversibleKineticLaw extends AbstractKineticLaw {
         // get rates
         final double forwardsRateConstant = getScaledRate(ForwardsRateConstant.class);
         Feature rate = getRate(ForwardsRateConstant.class);
-        if (rate instanceof ZeroOrderRateConstant) {
-            return forwardsRateConstant;
-        }
         // multiply substrates
         double substrateConcentration = multiply(reactionEvent.getUpdatableBehavior().collectSubstrates());
+        if (rate instanceof ZeroOrderRateConstant) {
+            if (substrateConcentration != 0.0) {
+                return forwardsRateConstant;
+            } else {
+                return 0.0;
+            }
+        }
         // calculate velocity
         return forwardsRateConstant * substrateConcentration;
     }

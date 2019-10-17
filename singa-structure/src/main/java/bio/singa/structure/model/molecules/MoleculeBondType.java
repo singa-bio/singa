@@ -7,20 +7,22 @@ import java.util.stream.Stream;
  */
 public enum MoleculeBondType {
 
-    SINGLE_BOND('-'),
-    DOUBLE_BOND('='),
-    TRIPLE_BOND('#'),
-    QUADRUPLE_BOND('$'),
-    ISOMERIC_BOND_UP('/'),
-    ISOMERIC_BOND_DOWN('\\'),
-    AROMATIC_BOND(':'),
-    UNCONNECTED('.');
+    SINGLE_BOND('-', 1),
+    DOUBLE_BOND('=', 2),
+    TRIPLE_BOND('#', 3),
+    QUADRUPLE_BOND('$', 4),
+    ISOMERIC_BOND_UP('/', 0),
+    ISOMERIC_BOND_DOWN('\\', 0),
+    AROMATIC_BOND(':', 0),
+    UNCONNECTED('.', 0);
     // '.' is a "non bond"
 
     private final char smilesRepresentation;
+    private final int bondOrder;
 
-    MoleculeBondType(char smilesRepresentation) {
+    MoleculeBondType(char smilesRepresentation, int bondOrder) {
         this.smilesRepresentation = smilesRepresentation;
+        this.bondOrder = bondOrder;
     }
 
     public static MoleculeBondType getBondForSMILESSymbol(char smilesSymbol) {
@@ -28,6 +30,10 @@ public enum MoleculeBondType {
                 .filter(type -> type.getSmilesRepresentation() == smilesSymbol)
                 .findAny()
                 .orElse(SINGLE_BOND);
+    }
+
+    public int getBondOrder() {
+        return bondOrder;
     }
 
     public char getSmilesRepresentation() {

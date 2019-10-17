@@ -17,13 +17,13 @@ SiNGA is deployed to the [Maven Central Repository](https://mvnrepository.com/ar
     <dependency>
         <groupId>bio.singa</groupId>
         <artifactId>singa-[module]</artifactId>
-        <version>0.5.0</version>
+        <version>0.6.0</version>
     </dependency>
     <!-- more dependencies -->
 </dependencies>
 ```
 ## Documentation
-The full JavaDocs are available at [cleberecht.github.io/singa-doc](https://cleberecht.github.io/singa-doc).
+The full JavaDocs are available at [singa-bio.github.io/singa-doc](https://singa-bio.github.io/singa-doc).
 
 ## Requirements
 Make sure you have the following tools and libraries installed:

@@ -2,8 +2,8 @@ package bio.singa.simulation.features;
 
 import bio.singa.features.model.Evidence;
 import bio.singa.features.model.QuantitativeFeature;
-import tec.units.indriya.AbstractUnit;
-import tec.units.indriya.quantity.Quantities;
+import tech.units.indriya.AbstractUnit;
+import tech.units.indriya.quantity.Quantities;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Dimensionless;

@@ -1,6 +1,6 @@
 package bio.singa.simulation.model.modules.qualitative.implementations;
 
-import bio.singa.chemistry.entities.Protein;
+import bio.singa.chemistry.entities.simple.Protein;
 import bio.singa.chemistry.features.diffusivity.Diffusivity;
 import bio.singa.features.identifiers.UniProtIdentifier;
 import bio.singa.features.units.UnitRegistry;
@@ -8,22 +8,22 @@ import bio.singa.simulation.features.MaximalConcentration;
 import bio.singa.simulation.features.ModifiedDiffusivity;
 import bio.singa.simulation.features.OriginalDiffusivity;
 import bio.singa.simulation.model.agents.pointlike.Vesicle;
-import bio.singa.simulation.model.agents.pointlike.VesicleStateRegistry;
 import bio.singa.simulation.model.graphs.AutomatonNode;
-import bio.singa.simulation.model.modules.concentration.ModuleState;
 import bio.singa.simulation.model.modules.qualitative.QualitativeModule;
-import tec.units.indriya.quantity.Quantities;
+import tech.units.indriya.quantity.Quantities;
 
 import javax.measure.Quantity;
 import java.util.HashMap;
 import java.util.Map;
 
 import static bio.singa.simulation.features.DefaultFeatureSources.LANG2000;
+import static bio.singa.simulation.model.agents.pointlike.VesicleStateRegistry.TETHERED;
+import static bio.singa.simulation.model.modules.concentration.ModuleState.SUCCEEDED_WITH_PENDING_CHANGES;
 import static bio.singa.simulation.model.sections.CellTopology.INNER;
-import static tec.units.indriya.unit.MetricPrefix.MICRO;
-import static tec.units.indriya.unit.MetricPrefix.NANO;
-import static tec.units.indriya.unit.Units.METRE;
-import static tec.units.indriya.unit.Units.SECOND;
+import static tech.units.indriya.unit.MetricPrefix.MICRO;
+import static tech.units.indriya.unit.MetricPrefix.NANO;
+import static tech.units.indriya.unit.Units.METRE;
+import static tech.units.indriya.unit.Units.SECOND;
 
 /**
  * @author cl
@@ -31,7 +31,7 @@ import static tec.units.indriya.unit.Units.SECOND;
 public class ActinCortexDiffusivityScaling extends QualitativeModule {
 
     public static final Diffusivity DEFAULT_CORTEX_DIFFUSIVITY = new Diffusivity(Quantities.getQuantity(2.45E-4, MICRO(METRE).pow(2).divide(SECOND)).asType(Diffusivity.class), LANG2000);
-    public static final Diffusivity DEFAULT_CYTOPLASM_DIFFUSIFITY = Diffusivity.calculate(Quantities.getQuantity(50.0, NANO(METRE)));
+    public static final Diffusivity DEFAULT_CYTOPLASM_DIFFUSIVITY = Diffusivity.calculate(Quantities.getQuantity(50.0, NANO(METRE)));
 
     private Protein tropomyosin = new Protein.Builder("TRP")
             .additionalIdentifier(new UniProtIdentifier("P09493"))
@@ -57,12 +57,12 @@ public class ActinCortexDiffusivityScaling extends QualitativeModule {
         double concentration = getFeature(MaximalConcentration.class).getContent().getValue().doubleValue();
         slope = (cortexDiffusivity - cytoplasmDiffusivity) / concentration;
 
-        for (Vesicle vesicle : simulation.getVesicleLayer().getVesicles()) {
-            if (vesicle.getState().equals(VesicleStateRegistry.ACTIN_TETHERED)) {
+        for (Vesicle vesicle : getSimulation().getVesicleLayer().getVesicles()) {
+            if (vesicle.getState().equals(TETHERED)) {
                 estimateDiffusivity(vesicle);
             }
         }
-        state = ModuleState.SUCCEEDED_WITH_PENDING_CHANGES;
+        setState(SUCCEEDED_WITH_PENDING_CHANGES);
     }
 
     public void estimateDiffusivity(Vesicle vesicle) {

@@ -157,7 +157,7 @@ public class LineLikeAgent {
                 // get representative region of the node
                 Polygon polygon = node.getSpatialRepresentation();
                 // associate segment to the node with the largest part of the vesicle (midpoint is inside)
-                if (polygon.isInside(segment)) {
+                if (polygon.containsVector(segment)) {
                     node.addLineLikeAgentSegment(this, segment);
                 }
                 // associate partial containment to other nodes
@@ -247,7 +247,7 @@ public class LineLikeAgent {
             // get representative region of the node
             Polygon polygon = node.getSpatialRepresentation();
             // associate segment to the node with the largest part of the vesicle (midpoint is inside)
-            if (polygon.isInside(segment)) {
+            if (polygon.containsVector(segment)) {
                 node.addLineLikeAgentSegment(this, segment);
                 associatedNodes.add(node);
             }

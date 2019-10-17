@@ -2,14 +2,14 @@ package bio.singa.features.quantities;
 
 import bio.singa.features.model.AbstractFeature;
 import bio.singa.features.model.Evidence;
-import tec.units.indriya.quantity.Quantities;
-import tec.units.indriya.unit.ProductUnit;
+import tech.units.indriya.quantity.Quantities;
+import tech.units.indriya.unit.ProductUnit;
 
 import javax.measure.Quantity;
 import javax.measure.Unit;
 
 import static bio.singa.features.units.UnitProvider.ANGSTROEM;
-import static tec.units.indriya.unit.Units.*;
+import static tech.units.indriya.unit.Units.*;
 
 /**
  * The molar volume, symbol Vm, is the volume occupied by one mole of a substance (chemical element or chemical

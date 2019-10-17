@@ -1,30 +1,26 @@
 package bio.singa.simulation.model.modules.displacement;
 
-import bio.singa.chemistry.entities.ChemicalEntity;
-import bio.singa.features.model.Feature;
-import bio.singa.features.model.ScalableQuantitativeFeature;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.simulation.model.agents.pointlike.Vesicle;
-import bio.singa.simulation.model.modules.UpdateModule;
-import bio.singa.simulation.model.modules.concentration.ModuleState;
-import bio.singa.simulation.model.parameters.FeatureManager;
-import bio.singa.simulation.model.simulation.Simulation;
-import bio.singa.simulation.model.simulation.UpdateScheduler;
+import bio.singa.simulation.model.modules.AbstractUpdateModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import static bio.singa.simulation.model.modules.concentration.ModuleState.*;
+import static bio.singa.simulation.model.modules.concentration.ModuleState.REQUIRING_RECALCULATION;
+import static bio.singa.simulation.model.modules.concentration.ModuleState.SUCCEEDED;
 
 /**
  * @author cl
  */
-public class DisplacementBasedModule implements UpdateModule {
+public class DisplacementBasedModule extends AbstractUpdateModule {
 
     /**
      * The logger.
@@ -33,61 +29,18 @@ public class DisplacementBasedModule implements UpdateModule {
 
     private static final double DEFAULT_DISPLACEMENT_CUTOFF_FACTOR = 1.0/10.0;
 
-    /**
-     * The simulation.
-     */
-    protected Simulation simulation;
+    private double displacementCutoffFactor = DEFAULT_DISPLACEMENT_CUTOFF_FACTOR;
 
     /**
      * The functions that are applied with each epoch.
      */
     private final Map<Function<Vesicle, DisplacementDelta>, Predicate<Vesicle>> deltaFunctions;
 
-    private String identifier;
-    private FeatureManager featureManager;
-    protected ModuleState state;
-    protected UpdateScheduler updateScheduler;
-    private Set<ChemicalEntity> referencedChemicalEntities;
-
-    private double displacementCutoffFactor = DEFAULT_DISPLACEMENT_CUTOFF_FACTOR;
     private double displacementCutoff;
 
     public DisplacementBasedModule() {
         deltaFunctions = new HashMap<>();
         displacementCutoff = Environment.convertSystemToSimulationScale(UnitRegistry.getSpace().multiply(displacementCutoffFactor));
-        referencedChemicalEntities = new HashSet<>();
-        featureManager = new FeatureManager();
-        state = ModuleState.PENDING;
-    }
-
-    @Override
-    public void run() {
-        UpdateScheduler scheduler = getSimulation().getScheduler();
-        while (state == PENDING || state == REQUIRING_RECALCULATION) {
-            switch (state) {
-                case PENDING:
-                    // calculate update
-                    logger.debug("calculating updates for {}.", Thread.currentThread().getName());
-                    calculateUpdates();
-                    break;
-                case REQUIRING_RECALCULATION:
-                    // optimize time step
-                    logger.debug("{} requires recalculation.", Thread.currentThread().getName());
-                    boolean prioritizedModule = scheduler.interruptAllBut(Thread.currentThread(), this);
-                    if (prioritizedModule) {
-                        optimizeTimeStep();
-                    } else {
-                        state = INTERRUPTED;
-                    }
-                    break;
-            }
-        }
-        scheduler.getCountDownLatch().countDown();
-        logger.debug("Module finished {}, latch at {}.", Thread.currentThread().getName(), scheduler.getCountDownLatch().getCount());
-    }
-
-    public void setIdentifier(String identifier) {
-        this.identifier = identifier;
     }
 
     public void addDeltaFunction(Function<Vesicle, DisplacementDelta> deltaFunction, Predicate<Vesicle> predicate) {
@@ -100,12 +53,46 @@ public class DisplacementBasedModule implements UpdateModule {
     }
 
     @Override
+    public void onReset() {
+
+    }
+
+    @Override
+    public void onCompletion() {
+
+    }
+
+    @Override
     public void calculateUpdates() {
-        processAllVesicles(simulation.getVesicleLayer().getVesicles());
+        processAllVesicles(getSimulation().getVesicleLayer().getVesicles());
         evaluateModuleState();
     }
 
-    public void processAllVesicles(List<Vesicle> vesicles) {
+    private void evaluateModuleState() {
+        for (Vesicle vesicle : getSimulation().getVesicleLayer().getVesicles()) {
+            if (vesicle.getSpatialDelta(this) != null) {
+                Vector2D displacement = vesicle.getSpatialDelta(this).getDeltaVector();
+                double length = displacement.getMagnitude();
+                if (length > displacementCutoff) {
+                    logger.trace("Recalculation required for module {} displacement magnitude {} exceeding threshold {}.", this, length, displacementCutoff);
+                    setState(REQUIRING_RECALCULATION);
+                    return;
+                }
+            }
+        }
+        setState(SUCCEEDED);
+    }
+
+    @Override
+    public void optimizeTimeStep() {
+        while (getState() == REQUIRING_RECALCULATION) {
+            getSimulation().getVesicleLayer().clearUpdates();
+            getSimulation().getScheduler().decreaseTimeStep();
+            calculateUpdates();
+        }
+    }
+
+    private void processAllVesicles(List<Vesicle> vesicles) {
         // determine deltas
         for (Vesicle vesicle : vesicles) {
             logger.trace("Determining delta for {}.", vesicle.getStringIdentifier());
@@ -113,7 +100,7 @@ public class DisplacementBasedModule implements UpdateModule {
         }
     }
 
-    public void determineDeltas(Vesicle vesicle) {
+    private void determineDeltas(Vesicle vesicle) {
         for (Map.Entry<Function<Vesicle, DisplacementDelta>, Predicate<Vesicle>> entry : deltaFunctions.entrySet()) {
             // test predicate
             if (entry.getValue().test(vesicle)) {
@@ -131,110 +118,13 @@ public class DisplacementBasedModule implements UpdateModule {
                 delta.getDeltaVector());
     }
 
-    public void setSimulation(Simulation simulation) {
-        this.simulation = simulation;
-        updateScheduler = simulation.getScheduler();
+    public double getDisplacementCutoffFactor() {
+        return displacementCutoffFactor;
     }
 
-    public Simulation getSimulation() {
-        return simulation;
-    }
-
-    @Override
-    public ModuleState getState() {
-        return state;
-    }
-
-    @Override
-    public void resetState() {
-        state = ModuleState.PENDING;
-    }
-
-    @Override
-    public Set<Class<? extends Feature>> getRequiredFeatures() {
-        return featureManager.getRequiredFeatures();
-    }
-
-    @Override
-    public double getScaledFeature(Class<? extends ScalableQuantitativeFeature<?>> featureClass) {
-        return featureManager.getFeature(featureClass).getScaledQuantity();
-    }
-
-    /**
-     * Sets a feature.
-     * @param feature The feature.
-     */
-    public void setFeature(Feature<?> feature) {
-        featureManager.setFeature(feature);
-    }
-
-    public <FeatureType extends Feature> FeatureType getFeature(Class<FeatureType> featureTypeClass) {
-        return featureManager.getFeature(featureTypeClass);
-    }
-
-    public Collection<Feature<?>> getFeatures() {
-        return featureManager.getAllFeatures();
-    }
-
-    protected double getScaledFeature(ChemicalEntity entity, Class<? extends ScalableQuantitativeFeature<?>> featureClass) {
-        ScalableQuantitativeFeature<?> feature = entity.getFeature(featureClass);
-        return feature.getScaledQuantity();
-    }
-
-    @Override
-    public void optimizeTimeStep() {
-        while (state == ModuleState.REQUIRING_RECALCULATION) {
-            simulation.getVesicleLayer().clearUpdates();
-            updateScheduler.decreaseTimeStep();
-            calculateUpdates();
-        }
-    }
-
-    protected void evaluateModuleState() {
-        for (Vesicle vesicle : simulation.getVesicleLayer().getVesicles()) {
-            if (vesicle.getSpatialDelta(this) != null) {
-                Vector2D displacement = vesicle.getSpatialDelta(this).getDeltaVector();
-                double length = displacement.getMagnitude();
-                if (length > displacementCutoff) {
-                    logger.trace("Recalculation required for module {} displacement magnitude {} exceeding threshold.", this, length, displacementCutoff);
-                    state = ModuleState.REQUIRING_RECALCULATION;
-                    return;
-                }
-            }
-        }
-        state = ModuleState.SUCCEEDED;
-    }
-
-    @Override
-    public void checkFeatures() {
-        for (Class<? extends Feature> featureClass : getRequiredFeatures()) {
-            if (featureManager.hasFeature(featureClass)) {
-                Feature feature = getFeature(featureClass);
-                logger.debug("Required feature {} has been set to {}.", feature.getDescriptor(), feature.getContent());
-            } else {
-                logger.warn("Required feature {} has not been set.", featureClass.getSimpleName());
-            }
-        }
-    }
-
-    @Override
-    public void onReset() {
-
-    }
-
-    @Override
-    public void onCompletion() {
-
-    }
-
-    @Override
-    public String getIdentifier() {
-        return identifier;
-    }
-
-    @Override
-    public Set<ChemicalEntity> getReferencedEntities() {
-        return referencedChemicalEntities;
+    public void setDisplacementCutoffFactor(double displacementCutoffFactor) {
+        this.displacementCutoffFactor = displacementCutoffFactor;
+        displacementCutoff = Environment.convertSystemToSimulationScale(UnitRegistry.getSpace().multiply(displacementCutoffFactor));
     }
 
     @Override

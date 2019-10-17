@@ -1,6 +1,6 @@
 package bio.singa.chemistry.features.databases.uniprot;
 
-import bio.singa.chemistry.entities.Protein;
+import bio.singa.chemistry.entities.simple.Protein;
 import bio.singa.core.parser.AbstractXMLParser;
 import bio.singa.features.identifiers.model.Identifier;
 import bio.singa.features.identifiers.model.IdentifierPatternRegistry;

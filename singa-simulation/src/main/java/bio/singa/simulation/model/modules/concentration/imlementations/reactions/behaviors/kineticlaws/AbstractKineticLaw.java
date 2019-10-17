@@ -44,7 +44,7 @@ public abstract class AbstractKineticLaw implements KineticLaw {
         return rate.getScaledQuantity();
     }
 
-    protected <T extends Feature>T getRate(Class<T> featureClass) {
+    public  <T extends Feature>T getRate(Class<T> featureClass) {
         for (Feature<?> potentialRate : reaction.getFeatures()) {
             if (featureClass.isInstance(potentialRate)) {
                 return (T) potentialRate;

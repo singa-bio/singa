@@ -22,6 +22,7 @@ public class GraphUpdatedEvent {
     /**
      * Creates a new GraphUpdatedEvent.
      * @param graph The graph.
+     * @param elapsedTime The time at which the update was emitted.
      */
     public GraphUpdatedEvent(AutomatonGraph graph, Quantity<Time> elapsedTime) {
         this.graph = graph;

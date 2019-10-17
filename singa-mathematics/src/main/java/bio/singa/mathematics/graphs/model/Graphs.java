@@ -14,7 +14,11 @@ import bio.singa.mathematics.vectors.Vectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * A factory class used to create graphs and convert other things to graphs.
@@ -196,9 +200,16 @@ public class Graphs {
         logger.debug("Creating randomized grid graph with with {} columns and {} rows.", columns, rows);
         GridGraph graph = new GridGraph(columns, rows);
         double horizontalSpacing = boundingBox.getWidth() / columns;
-        double horizontalOffset = 0.5 * horizontalSpacing;
         double verticalSpacing = boundingBox.getHeight() / rows;
+
+        if (horizontalSpacing > verticalSpacing) {
+            horizontalSpacing = verticalSpacing;
+        } else if (verticalSpacing > horizontalSpacing) {
+            verticalSpacing = horizontalSpacing;
+        }
+
         double verticalOffset = 0.5 * verticalSpacing;
+        double horizontalOffset = 0.5 * horizontalSpacing;
 
         // adding nodes
         logger.trace("Creating and placing nodes ...");
@@ -306,5 +317,35 @@ public class Graphs {
         return DisconnectedSubgraphFinder.findDisconnectedSubgraphs(graph);
     }
 
+    public static <NodeType extends Node<NodeType, VectorType, IdentifierType>,
+            EdgeType extends Edge<NodeType>, VectorType extends Vector, IdentifierType,
+            GraphType extends Graph<NodeType, EdgeType, IdentifierType>> GraphType copy(GraphType graph) {
+        GraphType resultGraph;
+        try {
+            resultGraph = (GraphType) graph.getClass().getDeclaredConstructor().newInstance();
+        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+            throw new RuntimeException("Failed to create a new graph.");
+        }
+        Objects.requireNonNull(resultGraph);
+        Map<IdentifierType, IdentifierType> identifierMapping = new HashMap<>();
+        for (NodeType node : graph.getNodes()) {
+            // conserve identifier
+            IdentifierType newIdentifier = resultGraph.nextNodeIdentifier();
+            IdentifierType oldIdentifier = node.getIdentifier();
+            identifierMapping.put(oldIdentifier, newIdentifier);
+            // create copy
+            NodeType copy = node.getCopy();
+            copy.setIdentifier(newIdentifier);
+            resultGraph.addNode(copy);
+        }
+        for (EdgeType edge : graph.getEdges()) {
+            EdgeType edgeCopy = edge.getCopy();
+            edgeCopy.setIdentifier(resultGraph.nextEdgeIdentifier());
+            NodeType source = resultGraph.getNode(identifierMapping.get(edge.getSource().getIdentifier()));
+            NodeType target = resultGraph.getNode(identifierMapping.get(edge.getTarget().getIdentifier()));
+            resultGraph.addEdgeBetween(edgeCopy, source, target);
+        }
+        return resultGraph;
+    }
 
 }

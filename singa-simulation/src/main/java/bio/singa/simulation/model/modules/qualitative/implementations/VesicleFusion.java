@@ -1,7 +1,7 @@
 package bio.singa.simulation.model.modules.qualitative.implementations;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
-import bio.singa.chemistry.entities.ComplexEntity;
+import bio.singa.chemistry.entities.complex.ComplexEntity;
 import bio.singa.core.utility.Pair;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.quantities.MolarConcentration;
@@ -20,7 +20,7 @@ import bio.singa.simulation.model.sections.ConcentrationPool;
 import bio.singa.simulation.model.simulation.Updatable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tec.units.indriya.ComparableQuantity;
+import tech.units.indriya.ComparableQuantity;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Length;
@@ -86,7 +86,7 @@ public class VesicleFusion extends QualitativeModule {
     public void calculateUpdates() {
         checkTetheringTime();
         tetherVesicles();
-        state = ModuleState.SUCCEEDED_WITH_PENDING_CHANGES;
+        setState(ModuleState.SUCCEEDED_WITH_PENDING_CHANGES);
     }
 
     @Override
@@ -102,12 +102,12 @@ public class VesicleFusion extends QualitativeModule {
 
     @Override
     public void onCompletion() {
-        logger.debug("Applying pending changes for {}.", this);
+        logger.trace("Applying pending changes for {}.", this);
         // fuse vesicles
         for (Vesicle fusingVesicle : fusingVesicles) {
             fuse(fusingVesicle);
             tetheredVesicles.remove(fusingVesicle);
-            simulation.getVesicleLayer().removeVesicle(fusingVesicle);
+            getSimulation().getVesicleLayer().removeVesicle(fusingVesicle);
         }
         // tether vesicles
         for (Map.Entry<Vesicle, TetheringSnares> entry : tetheringVesicles.entrySet()) {
@@ -136,7 +136,7 @@ public class VesicleFusion extends QualitativeModule {
 
     private void tetherVesicle(Vesicle vesicle, TetheringSnares tetheringSnares) {
         // add tethering time to current time
-        ComparableQuantity<Time> tetheringTime = simulation.getElapsedTime().add(getFeature(FusionTime.class).getContent());
+        ComparableQuantity<Time> tetheringTime = getSimulation().getElapsedTime().add(getFeature(FusionTime.class).getContent());
         vesicle.setState(VesicleStateRegistry.MEMBRANE_TETHERED);
         // set time
         tetheredVesicles.put(vesicle, tetheringTime);
@@ -151,7 +151,7 @@ public class VesicleFusion extends QualitativeModule {
             Vesicle tetheredVesicle = entry.getKey();
             Quantity<Time> fusionTime = entry.getValue();
             // if tethered time is reached
-            if (simulation.getElapsedTime().isGreaterThanOrEqualTo(fusionTime)) {
+            if (getSimulation().getElapsedTime().isGreaterThanOrEqualTo(fusionTime)) {
                 // add vesicle to vesicle layer
                 fusingVesicles.add(tetheredVesicle);
             }
@@ -159,11 +159,11 @@ public class VesicleFusion extends QualitativeModule {
     }
 
     private void tetherVesicles() {
-        List<Vesicle> vesicles = simulation.getVesicleLayer().getVesicles();
+        List<Vesicle> vesicles = getSimulation().getVesicleLayer().getVesicles();
         // for each vesicle
         for (Vesicle vesicle : vesicles) {
-            if (vesicle.getState() == VesicleStateRegistry.ACTIN_PROPELLED ||
-                    vesicle.getState() == VesicleStateRegistry.MEMBRANE_TETHERED) {
+            if (vesicle.getState().equals(VesicleStateRegistry.ACTIN_PROPELLED) ||
+                    vesicle.getState().equals(VesicleStateRegistry.MEMBRANE_TETHERED)) {
                 continue;
             }
             Vector2D currentPosition = vesicle.getPosition();
@@ -260,7 +260,7 @@ public class VesicleFusion extends QualitativeModule {
         // System.out.println("reserved during tethering " + snareComplex + " " + MolarConcentration.concentrationToMolecules(concentration) + " snares");
     }
 
-    private class TetheringSnares {
+    private static class TetheringSnares {
 
         private Map<ChemicalEntity, Integer> rSnares;
         private Map<ChemicalEntity, Integer> qSnares;

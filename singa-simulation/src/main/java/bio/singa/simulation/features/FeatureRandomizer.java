@@ -1,6 +1,6 @@
 package bio.singa.simulation.features;
 
-import tec.units.indriya.quantity.Quantities;
+import tech.units.indriya.quantity.Quantities;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Length;

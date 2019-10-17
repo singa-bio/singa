@@ -30,11 +30,11 @@ public class Polygons {
      * Returns true, if the vector is inside the polygon, or false if not. If the point is exactly on the edge it may
      * return true or false.
      *
-     * @param polygon The polygon
+     * @param polygon The polygon.
      * @param vector The vector.
-     * @return True, if the vector is inside the polygon, false if not.
+     * @return True, if the vector is inside the polygon, or false if not.
      */
-    public static boolean isInside(Polygon polygon, Vector2D vector) {
+    public static boolean containsVector(Polygon polygon, Vector2D vector) {
         // checks complex (convex and intersecting polygons)
         // http://alienryderflex.com/polygon
         int polyCorners = polygon.getNumberOfVertices();
@@ -57,6 +57,16 @@ public class Polygons {
         return oddNodes;
     }
 
+    /**
+     * Returns a map of all touching line segments. The key is the pair of line segments that touch and the value is the
+     * actual line segment that both lines share. The first element of the key pair is the line segment from the first
+     * polygon and vice versa.
+     *
+     * @param first The first polygon.
+     * @param second The second polygon.
+     *
+     * @return A map of touching line segments.
+     */
     public static Map<Pair<LineSegment>, LineSegment> getTouchingLineSegments(Polygon first, Polygon second) {
 
         // groups line segments that are pairwise parallel
@@ -66,22 +76,22 @@ public class Polygons {
 
         // determine which lines are parallel
         for (LineSegment firstLineSegment : first.getEdges()) {
-            for (LineSegment secondLineSegement : second.getEdges()) {
+            for (LineSegment secondLineSegment : second.getEdges()) {
                 // trivial case: if both lines are identical definitely touch
-                if (firstLineSegment.isCongruentTo(secondLineSegement)) {
-                    resultMap.put(new Pair<>(firstLineSegment, secondLineSegement), firstLineSegment);
+                if (firstLineSegment.isCongruentTo(secondLineSegment)) {
+                    resultMap.put(new Pair<>(firstLineSegment, secondLineSegment), firstLineSegment);
                     break;
                 }
                 // two line segments are parallel if their unit vectors are equal or opposite
                 Vector2D firstUnitVector = firstLineSegment.getUnitVector();
-                Vector2D secondUnitVector = secondLineSegement.getUnitVector();
+                Vector2D secondUnitVector = secondLineSegment.getUnitVector();
                 if (unitVectorsAreParallel(firstUnitVector, secondUnitVector)) {
                     // sort them to a list where all line segments are parallel
                     boolean sorted = false;
                     for (List<Pair<LineSegment>> parallelSegmentGroup : allParallelSegments) {
-                        Vector2D reperentativeUnitVector = parallelSegmentGroup.iterator().next().getFirst().getUnitVector();
-                        if (unitVectorsAreParallel(firstUnitVector, reperentativeUnitVector)) {
-                            parallelSegmentGroup.add(new Pair<>(firstLineSegment, secondLineSegement));
+                        Vector2D representativeUnitVector = parallelSegmentGroup.iterator().next().getFirst().getUnitVector();
+                        if (unitVectorsAreParallel(firstUnitVector, representativeUnitVector)) {
+                            parallelSegmentGroup.add(new Pair<>(firstLineSegment, secondLineSegment));
                             sorted = true;
                             break;
                         }
@@ -89,7 +99,7 @@ public class Polygons {
                     // create new group if it could not be sorted into existing ones
                     if (!sorted) {
                         List<Pair<LineSegment>> parallelSegmentGroup = new ArrayList<>();
-                        parallelSegmentGroup.add(new Pair<>(firstLineSegment, secondLineSegement));
+                        parallelSegmentGroup.add(new Pair<>(firstLineSegment, secondLineSegment));
                         allParallelSegments.add(parallelSegmentGroup);
                     }
                 }
@@ -107,12 +117,13 @@ public class Polygons {
                     LineSegment secondSegment = parallelSegmentGroup.get(secondIterator).getSecond();
                     Vector2D startingPoint = firstSegment.getStartingPoint();
                     Vector2D endingPoint = secondSegment.getEndingPoint();
-                    if (!startingPoint.equals(endingPoint)) {
-                        Vector2D candidateUnitVector = new SimpleLineSegment(startingPoint, endingPoint).getUnitVector();
-                        if (unitVectorsAreParallel(referenceUnitVector, candidateUnitVector)) {
-                            Pair<LineSegment> segmentPair = new Pair<>(firstSegment, secondSegment);
-                            touchingLineSegments.add(segmentPair);
-                        }
+                    if (startingPoint.equals(endingPoint)) {
+                        endingPoint = secondSegment.getStartingPoint();
+                    }
+                    Vector2D candidateUnitVector = new SimpleLineSegment(startingPoint, endingPoint).getUnitVector();
+                    if (unitVectorsAreParallel(referenceUnitVector, candidateUnitVector)) {
+                        Pair<LineSegment> segmentPair = new Pair<>(firstSegment, secondSegment);
+                        touchingLineSegments.add(segmentPair);
                     }
                 }
             }

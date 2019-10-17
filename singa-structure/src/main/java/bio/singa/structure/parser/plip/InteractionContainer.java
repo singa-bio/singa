@@ -375,7 +375,7 @@ public class InteractionContainer {
             logger.debug("Fixed to leaf identifier {}.", leafIdentifier);
             interaction.setSource(leafIdentifier);
         } else {
-            logger.warn("Unable to fix {}.", interaction);
+            logger.debug("Unable to fix {}.", interaction);
         }
     }
 
@@ -390,7 +390,7 @@ public class InteractionContainer {
             logger.debug("Fixed to leaf identifier {}.", leafIdentifier);
             interaction.setTarget(leafIdentifier);
         } else {
-            logger.warn("Unable to fix {}.", interaction);
+            logger.debug("Unable to fix {}.", interaction);
         }
     }
 

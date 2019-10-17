@@ -1,7 +1,7 @@
 package bio.singa.simulation.model.modules.concentration.imlementations;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
-import bio.singa.chemistry.entities.SmallMolecule;
+import bio.singa.chemistry.entities.simple.SmallMolecule;
 import bio.singa.chemistry.features.diffusivity.Diffusivity;
 import bio.singa.chemistry.features.permeability.MembranePermeability;
 import bio.singa.features.model.Evidence;
@@ -16,11 +16,11 @@ import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.modules.concentration.imlementations.transport.MembraneDiffusion;
 import bio.singa.simulation.model.modules.displacement.implementations.VesicleCytoplasmDiffusion;
-import bio.singa.simulation.model.sections.CellRegion;
+import bio.singa.simulation.model.sections.CellRegions;
 import bio.singa.simulation.model.simulation.Simulation;
 import org.junit.jupiter.api.Test;
-import tec.units.indriya.ComparableQuantity;
-import tec.units.indriya.quantity.Quantities;
+import tech.units.indriya.ComparableQuantity;
+import tech.units.indriya.quantity.Quantities;
 
 import javax.measure.quantity.Length;
 import java.util.concurrent.ThreadLocalRandom;
@@ -31,10 +31,10 @@ import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static bio.singa.simulation.model.sections.CellTopology.INNER;
 import static bio.singa.simulation.model.sections.CellTopology.OUTER;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static tec.units.indriya.unit.MetricPrefix.MICRO;
-import static tec.units.indriya.unit.MetricPrefix.NANO;
-import static tec.units.indriya.unit.Units.METRE;
-import static tec.units.indriya.unit.Units.SECOND;
+import static tech.units.indriya.unit.MetricPrefix.MICRO;
+import static tech.units.indriya.unit.MetricPrefix.NANO;
+import static tech.units.indriya.unit.Units.METRE;
+import static tech.units.indriya.unit.Units.SECOND;
 
 /**
  * @author cl
@@ -98,7 +98,7 @@ class VesicleDiffusionTest {
         simulation.setGraph(graph);
 
         for (AutomatonNode node : graph.getNodes()) {
-            node.setCellRegion(CellRegion.CYTOSOL_A);
+            node.setCellRegion(CellRegions.CYTOPLASM_REGION);
             node.getConcentrationContainer().set(INNER, water, 40.0);
         }
 

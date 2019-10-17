@@ -129,7 +129,7 @@ public class VesicleLayer {
                             for (VolumeLikeAgent agent : simulation.getVolumeLayer().getAgents()) {
                                 if (agent.getCellRegion().equals(vesicleConfinedDiffusion.getConfinedVolume())) {
                                     // and is not inside the volume
-                                    return !agent.getArea().isInside(vesicle1.getNextPosition());
+                                    return !agent.getArea().containsVector(vesicle1.getNextPosition());
                                 }
                             }
                         }
@@ -181,7 +181,7 @@ public class VesicleLayer {
             // get representative region of the node
             Polygon polygon = node.getSpatialRepresentation();
             // associate vesicle to the node with the largest part of the vesicle (midpoint is inside)
-            if (polygon.isInside(vesicle.getPosition())) {
+            if (polygon.containsVector(vesicle.getPosition())) {
                 // check if vesicle intersects with more than two regions at once
                 for (Vector2D polygonVertex : polygon.getVertices()) {
                     // this is the case if the distance to the edge is smaller than the radius
@@ -197,11 +197,16 @@ public class VesicleLayer {
                             }
                         }
                         if (coordinateDirection == null) {
-                            throw new IllegalStateException("Tried to associate vesicle " + vesicle + " with " + node + " but no areas could be determined.");
+//                            throw new IllegalStateException("Tried to associate vesicle " + vesicle + " with " + node + " but no areas could be determined.");
+                            logger.warn("Tried to associate vesicle " + vesicle + " with " + node + " but no areas could be determined.");
+                            return;
                         }
                         // assign other corresponding nodes to neighbors
                         for (Map.Entry<MooreRectangularDirection, Double> entry : slices.entrySet()) {
                             RectangularCoordinate neighbor = MooreRectangularDirection.getNeighborOf(node.getIdentifier(), coordinateDirection, entry.getKey());
+                            if (neighbor.getRow() < 0 || neighbor.getColumn() < 0 || neighbor.getRow() > graph.getNumberOfRows()-1 || neighbor.getColumn() > graph.getNumberOfColumns()-1) {
+                                continue;
+                            }
                             vesicle.addAssociatedNode(graph.getNode(neighbor), entry.getValue());
                         }
                         // all neighbors have been associated
@@ -221,18 +226,26 @@ public class VesicleLayer {
                         if (sliceSegment.isVertical()) {
                             if (sliceSegment.getStartingPoint().isLeftOf(node.getPosition())) {
                                 vesicle.addAssociatedNode(node, remainingSurface);
-                                vesicle.addAssociatedNode(graph.getNode(node.getIdentifier().getNeighbour(NeumannRectangularDirection.WEST)), sliceSurface);
+                                if (node.getIdentifier().getColumn() - 1 > 0) {
+                                    vesicle.addAssociatedNode(graph.getNode(node.getIdentifier().getNeighbour(NeumannRectangularDirection.WEST)), sliceSurface);
+                                }
                             } else {
                                 vesicle.addAssociatedNode(node, remainingSurface);
-                                vesicle.addAssociatedNode(graph.getNode(node.getIdentifier().getNeighbour(NeumannRectangularDirection.EAST)), sliceSurface);
+                                if (node.getIdentifier().getColumn() + 1 < graph.getNumberOfColumns()) {
+                                    vesicle.addAssociatedNode(graph.getNode(node.getIdentifier().getNeighbour(NeumannRectangularDirection.EAST)), sliceSurface);
+                                }
                             }
                         } else {
                             if (sliceSegment.getStartingPoint().isBelow(node.getPosition())) {
                                 vesicle.addAssociatedNode(node, remainingSurface);
-                                vesicle.addAssociatedNode(graph.getNode(node.getIdentifier().getNeighbour(NeumannRectangularDirection.SOUTH)), sliceSurface);
+                                if (node.getIdentifier().getRow() + 1 < graph.getNumberOfRows()) {
+                                    vesicle.addAssociatedNode(graph.getNode(node.getIdentifier().getNeighbour(NeumannRectangularDirection.SOUTH)), sliceSurface);
+                                }
                             } else {
                                 vesicle.addAssociatedNode(node, remainingSurface);
-                                vesicle.addAssociatedNode(graph.getNode(node.getIdentifier().getNeighbour(NeumannRectangularDirection.NORTH)), sliceSurface);
+                                if (node.getIdentifier().getRow() - 1 > 0) {
+                                    vesicle.addAssociatedNode(graph.getNode(node.getIdentifier().getNeighbour(NeumannRectangularDirection.NORTH)), sliceSurface);
+                                }
                             }
                         }
                         return;

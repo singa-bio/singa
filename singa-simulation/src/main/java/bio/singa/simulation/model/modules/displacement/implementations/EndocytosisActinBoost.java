@@ -11,7 +11,7 @@ import bio.singa.simulation.model.agents.pointlike.VesicleStateRegistry;
 import bio.singa.simulation.model.modules.displacement.DisplacementBasedModule;
 import bio.singa.simulation.model.modules.displacement.DisplacementDelta;
 import bio.singa.simulation.model.sections.CellTopology;
-import tec.units.indriya.quantity.Quantities;
+import tech.units.indriya.quantity.Quantities;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Length;
@@ -47,7 +47,7 @@ public class EndocytosisActinBoost extends DisplacementBasedModule {
         double systemSpeed = scaledVelocity * pullingEntity;
         Quantity<Length> distance = Quantities.getQuantity(systemSpeed, UnitRegistry.getSpaceUnit());
         // determine direction
-        Vector2D centre = simulation.getMembraneLayer().getMicrotubuleOrganizingCentre().getCircleRepresentation().getMidpoint();
+        Vector2D centre = getSimulation().getMembraneLayer().getMicrotubuleOrganizingCentre().getCircleRepresentation().getMidpoint();
         Vector2D direction = centre.subtract(vesicle.getPosition()).normalize();
         // determine delta
         Vector2D delta = direction.multiply(Environment.convertSystemToSimulationScale(distance));

@@ -53,7 +53,7 @@ public class EntitySpecific implements UpdateSpecificity<EntityDeltaFunction> {
     public void processContainer(ConcentrationContainer container) {
         for (CellSubsection cellSection : supply().getCurrentUpdatable().getAllReferencedSections()) {
             supply().setCurrentSubsection(cellSection);
-            for (ChemicalEntity chemicalEntity : module.getReferencedEntities()) {
+            for (ChemicalEntity chemicalEntity : module.getReferencedChemicalEntities()) {
                 supply().setCurrentEntity(chemicalEntity);
                 determineDeltas(container);
             }

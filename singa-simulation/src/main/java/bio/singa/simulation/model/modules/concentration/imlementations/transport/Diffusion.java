@@ -2,10 +2,11 @@ package bio.singa.simulation.model.modules.concentration.imlementations.transpor
 
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.chemistry.features.diffusivity.Diffusivity;
-import bio.singa.features.model.Evidence;
 import bio.singa.features.model.Feature;
 import bio.singa.features.model.FeatureProvider;
+import bio.singa.simulation.features.AffectedSection;
 import bio.singa.simulation.features.Cargoes;
+import bio.singa.simulation.features.Ratio;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.modules.concentration.ConcentrationBasedModule;
 import bio.singa.simulation.model.modules.concentration.ConcentrationDelta;
@@ -28,7 +29,6 @@ import java.util.*;
  * is only applied for automaton nodes for the entities specified during the build process (via
  * {@link DiffusionBuilder}). Diffusion is parametrized by the {@link Diffusivity} {@link Feature}, therefore
  * Diffusivity must be assigned to each entity or a {@link FeatureProvider} will try to resolve it.
-
  * <pre>
  *  // define the feature to parametrize the diffusion
  *  Diffusivity diffusivity = new Diffusivity(Quantities.getValue(2.28E-05, SQUARE_CENTIMETRE_PER_SECOND),
@@ -53,7 +53,9 @@ public class Diffusion extends ConcentrationBasedModule<EntityDeltaFunction> {
      */
     private static final Logger logger = LoggerFactory.getLogger(Diffusion.class);
 
-    public static SelectionStep inSimulation(Simulation simulation) {
+    private CellSubsection restrictedSubsection;
+
+    public static EntityLimitationStep inSimulation(Simulation simulation) {
         return new DiffusionBuilder(simulation);
     }
 
@@ -65,10 +67,18 @@ public class Diffusion extends ConcentrationBasedModule<EntityDeltaFunction> {
         // apply
         setApplicationCondition(updatable -> updatable instanceof AutomatonNode);
         // function
-        EntityDeltaFunction function = new EntityDeltaFunction(this::calculateDelta, this::onlyForReferencedEntities);
+        AffectedSection affectedSection = getFeature(AffectedSection.class);
+        EntityDeltaFunction function;
+        if (affectedSection == null) {
+            function = new EntityDeltaFunction(this::calculateDelta, this::unrestrictedApplication);
+        } else {
+            restrictedSubsection = affectedSection.getContent();
+            function = new EntityDeltaFunction(this::calculateDelta, this::restrictedApplication);
+        }
         addDeltaFunction(function);
         // feature
         getRequiredFeatures().add(Diffusivity.class);
+        getRequiredFeatures().add(Ratio.class);
         List<ChemicalEntity> cargoes = getFeature(Cargoes.class).getContent();
         addReferencedEntities(cargoes);
     }
@@ -79,30 +89,22 @@ public class Diffusion extends ConcentrationBasedModule<EntityDeltaFunction> {
         CellSubsection subsection = supplier.getCurrentSubsection();
         final double currentConcentration = concentrationContainer.get(subsection, entity);
         final double diffusivity = getScaledFeature(entity, Diffusivity.class);
-        // calculate entering term
-        int numberOfNeighbors = 0;
-        double concentration = 0;
-        // traverse each neighbouring cells
-        for (AutomatonNode neighbour : node.getNeighbours()) {
-            if (neighbour.getConcentrationContainer().getReferencedSubsections().contains(subsection)) {
-                // if the neighbour actually contains the same subsection
-                double availableConcentration = neighbour.getConcentrationContainer().get(subsection, entity);
-                concentration += availableConcentration;
-                numberOfNeighbors++;
-            }
+        // traverse each neighbouring subsection
+        List<AutomatonNode.AreaMapping> areaMappings = node.getSubsectionAdjacency().get(subsection);
+        double delta = 0.0;
+        for (AutomatonNode.AreaMapping mapping : areaMappings) {
+            delta += diffusivity * mapping.getRelativeArea() * mapping.getDiffusiveRatio() * (mapping.getNode().getConcentrationContainer().get(mapping.getSubsection(), entity) - currentConcentration);
         }
-        // entering amount
-        final double enteringConcentration = concentration * diffusivity;
-        // calculate leaving amount
-        final double leavingConcentration = numberOfNeighbors * diffusivity * currentConcentration;
-        // calculate next concentration
-        final double delta = enteringConcentration - leavingConcentration;
         // return delta
         return new ConcentrationDelta(this, subsection, entity, delta);
     }
 
-    private boolean onlyForReferencedEntities(ConcentrationContainer container) {
-        return getReferencedEntities().contains(supplier.getCurrentEntity());
+    private boolean unrestrictedApplication(ConcentrationContainer container) {
+        return !supplier.getCurrentSubsection().isMembrane();
+    }
+
+    private boolean restrictedApplication(ConcentrationContainer container) {
+        return supplier.getCurrentSubsection().equals(restrictedSubsection);
     }
 
     @Override
@@ -114,14 +116,24 @@ public class Diffusion extends ConcentrationBasedModule<EntityDeltaFunction> {
         return new DiffusionBuilder(simulation);
     }
 
-    public interface SelectionStep {
-        SelectionStep identifier(String identifier);
+    public interface EntityLimitationStep {
+        EntityLimitationStep identifier(String identifier);
 
-        BuildStep onlyFor(ChemicalEntity chemicalEntity);
+        SectionLimitationStep forEntity(ChemicalEntity chemicalEntity);
 
-        BuildStep forAll(ChemicalEntity... chemicalEntities);
+        SectionLimitationStep forAllEntities(ChemicalEntity... chemicalEntities);
 
-        BuildStep forAll(Collection<ChemicalEntity> chemicalEntities);
+        SectionLimitationStep forAllEntities(Collection<ChemicalEntity> chemicalEntities);
+
+    }
+
+    public interface SectionLimitationStep {
+
+        BuildStep forSection(CellSubsection subsection);
+
+        BuildStep forAllSections();
+
+        SectionLimitationStep withReducedRatio(Ratio ratio);
 
     }
 
@@ -129,7 +141,7 @@ public class Diffusion extends ConcentrationBasedModule<EntityDeltaFunction> {
         Diffusion build();
     }
 
-    public static class DiffusionBuilder implements SelectionStep, BuildStep, ModuleBuilder<Diffusion> {
+    public static class DiffusionBuilder implements EntityLimitationStep, SectionLimitationStep, BuildStep, ModuleBuilder<Diffusion> {
 
         Diffusion module;
         private Simulation simulation;
@@ -158,18 +170,33 @@ public class Diffusion extends ConcentrationBasedModule<EntityDeltaFunction> {
             return this;
         }
 
-        public BuildStep onlyFor(ChemicalEntity chemicalEntity) {
-            module.setFeature(new Cargoes(Collections.singletonList(chemicalEntity), Evidence.NO_EVIDENCE));
+        public SectionLimitationStep forEntity(ChemicalEntity chemicalEntity) {
+            return forAllEntities(Collections.singletonList(chemicalEntity));
+        }
+
+        public SectionLimitationStep forAllEntities(ChemicalEntity... chemicalEntities) {
+            return forAllEntities(Arrays.asList(chemicalEntities));
+        }
+
+        public SectionLimitationStep forAllEntities(Collection<ChemicalEntity> chemicalEntities) {
+            module.setFeature(new Cargoes(new ArrayList<>(chemicalEntities)));
             return this;
         }
 
-        public BuildStep forAll(ChemicalEntity... chemicalEntities) {
-            module.setFeature(new Cargoes(Arrays.asList(chemicalEntities), Evidence.NO_EVIDENCE));
+        @Override
+        public BuildStep forSection(CellSubsection subsection) {
+            module.setFeature(new AffectedSection(subsection));
             return this;
         }
 
-        public BuildStep forAll(Collection<ChemicalEntity> chemicalEntities) {
-            module.setFeature(new Cargoes(new ArrayList<>(chemicalEntities), Evidence.NO_EVIDENCE));
+        @Override
+        public BuildStep forAllSections() {
+            return this;
+        }
+
+        @Override
+        public SectionLimitationStep withReducedRatio(Ratio ratio) {
+            module.setFeature(ratio);
             return this;
         }
 

@@ -19,6 +19,18 @@ public class UndirectedGraph extends AbstractMapGraph<RegularNode, UndirectedEdg
         return addNode(new RegularNode(nextNodeIdentifier(), position));
     }
 
+    /**
+     * Adds a node with the given position to the graph, but only if no node with the exact same position is not
+     * already present.
+     *
+     * @param position The position of the node.
+     * @return The identifier of the added node.
+     */
+    public RegularNode snapNode(Vector2D position) {
+        return addNodeIf(graphNode -> graphNode.getPosition().equals(position),
+                new RegularNode(nextNodeIdentifier(), position));
+    }
+
     @Override
     public int addEdgeBetween(int identifier, RegularNode source, RegularNode target) {
         return addEdgeBetween(new UndirectedEdge(identifier), source, target);

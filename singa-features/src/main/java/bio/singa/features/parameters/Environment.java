@@ -5,7 +5,7 @@ import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.features.units.UnitRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tec.units.indriya.quantity.Quantities;
+import tech.units.indriya.quantity.Quantities;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Length;
@@ -14,9 +14,9 @@ import java.util.Observable;
 import java.util.Observer;
 
 import static bio.singa.features.units.UnitProvider.PASCAL_SECOND;
-import static tec.units.indriya.unit.MetricPrefix.MICRO;
-import static tec.units.indriya.unit.MetricPrefix.MILLI;
-import static tec.units.indriya.unit.Units.*;
+import static tech.units.indriya.unit.MetricPrefix.MICRO;
+import static tech.units.indriya.unit.MetricPrefix.MILLI;
+import static tech.units.indriya.unit.Units.*;
 
 public class Environment extends Observable {
 

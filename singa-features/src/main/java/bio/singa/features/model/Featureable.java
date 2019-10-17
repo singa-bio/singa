@@ -10,8 +10,20 @@ public interface Featureable {
 
     Collection<Feature<?>> getFeatures();
 
+    /**
+     * Returns the requested feature.
+     *
+     * @param featureTypeClass The requested feature.
+     * @param <FeatureType> The resulting content type.
+     * @return The requested feature.
+     */
     <FeatureType extends Feature> FeatureType getFeature(Class<FeatureType> featureTypeClass);
 
+    /**
+     * Sets a feature.
+     *
+     * @param featureTypeClass The feature.
+     */
     <FeatureType extends Feature> void setFeature(Class<FeatureType> featureTypeClass);
 
     <FeatureType extends Feature> void setFeature(FeatureType feature);

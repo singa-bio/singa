@@ -9,16 +9,23 @@ import java.util.Objects;
  */
 public abstract class AbstractFeature<FeatureContent> implements Feature<FeatureContent> {
 
+    private int identifier;
+    protected FeatureContent baseContent;
     protected FeatureContent featureContent;
+    private List<FeatureContent> alternativeContents;
     private List<Evidence> evidence;
 
     public AbstractFeature(FeatureContent featureContent, List<Evidence> evidence) {
         this.featureContent = featureContent;
+        baseContent = featureContent;
+        alternativeContents = new ArrayList<>();
         this.evidence = evidence;
     }
 
     public AbstractFeature(FeatureContent featureContent, Evidence evidence) {
         this.featureContent = featureContent;
+        baseContent = featureContent;
+        alternativeContents = new ArrayList<>();
         this.evidence = new ArrayList<>();
         if (evidence != null) {
             this.evidence.add(evidence);
@@ -27,7 +34,22 @@ public abstract class AbstractFeature<FeatureContent> implements Feature<Feature
 
     public AbstractFeature(FeatureContent featureContent) {
         this.featureContent = featureContent;
+        baseContent = featureContent;
+        alternativeContents = new ArrayList<>();
         evidence = new ArrayList<>();
+    }
+
+    public AbstractFeature() {
+        alternativeContents = new ArrayList<>();
+        evidence = new ArrayList<>();
+    }
+
+    public void setIdentifier(int identifier) {
+        this.identifier = identifier;
+    }
+
+    public int getIdentifier() {
+        return identifier;
     }
 
     @Override
@@ -56,6 +78,23 @@ public abstract class AbstractFeature<FeatureContent> implements Feature<Feature
     @Override
     public FeatureContent getContent() {
         return featureContent;
+    }
+
+    public List<FeatureContent> getAlternativeContents() {
+        return alternativeContents;
+    }
+
+    public void setAlternativeContents(List<FeatureContent> alternativeContents) {
+        this.alternativeContents = alternativeContents;
+    }
+
+    public void addAlternativeContent(FeatureContent alternativeContent) {
+        alternativeContents.add(alternativeContent);
+    }
+
+    @Override
+    public void setAlternativeContent(int index) {
+        featureContent = alternativeContents.get(index);
     }
 
     @Override

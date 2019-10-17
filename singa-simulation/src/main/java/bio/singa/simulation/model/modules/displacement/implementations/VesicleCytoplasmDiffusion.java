@@ -11,7 +11,9 @@ import bio.singa.simulation.model.modules.displacement.DisplacementBasedModule;
 import bio.singa.simulation.model.modules.displacement.DisplacementDelta;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tec.units.indriya.quantity.Quantities;
+import tech.units.indriya.quantity.Quantities;
+
+import static bio.singa.simulation.model.agents.pointlike.VesicleStateRegistry.TAGGED_FOR_EXOCYTOSIS;
 
 /**
  * @author cl
@@ -27,7 +29,7 @@ public class VesicleCytoplasmDiffusion extends DisplacementBasedModule {
 
     public VesicleCytoplasmDiffusion() {
         // delta function
-        addDeltaFunction(this::calculateDisplacement, vesicle -> vesicle.getState() == VesicleStateRegistry.UNATTACHED);
+        addDeltaFunction(this::calculateDisplacement, vesicle -> vesicle.getState().equals(VesicleStateRegistry.UNATTACHED) || vesicle.getState().equals(TAGGED_FOR_EXOCYTOSIS));
         // feature
         getRequiredFeatures().add(Diffusivity.class);
     }

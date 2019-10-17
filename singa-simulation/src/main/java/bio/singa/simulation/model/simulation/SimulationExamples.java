@@ -1,7 +1,7 @@
 package bio.singa.simulation.model.simulation;
 
-import bio.singa.chemistry.entities.Protein;
-import bio.singa.chemistry.entities.SmallMolecule;
+import bio.singa.chemistry.entities.simple.Protein;
+import bio.singa.chemistry.entities.simple.SmallMolecule;
 import bio.singa.chemistry.features.databases.chebi.ChEBIParserService;
 import bio.singa.chemistry.features.diffusivity.Diffusivity;
 import bio.singa.chemistry.features.reactions.MichaelisConstant;
@@ -16,23 +16,22 @@ import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.modules.concentration.imlementations.reactions.ReactionBuilder;
 import bio.singa.simulation.model.modules.concentration.imlementations.transport.Diffusion;
-import bio.singa.simulation.model.sections.CellRegions;
-import bio.singa.simulation.model.sections.CellSubsection;
-import bio.singa.simulation.model.sections.CellSubsections;
-import bio.singa.simulation.model.sections.concentration.ConcentrationInitializer;
+import bio.singa.simulation.model.concentrations.ConcentrationBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tec.units.indriya.quantity.Quantities;
-import tec.units.indriya.unit.ProductUnit;
+import tech.units.indriya.quantity.Quantities;
+import tech.units.indriya.unit.ProductUnit;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Time;
 
 import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
-import static tec.units.indriya.AbstractUnit.ONE;
-import static tec.units.indriya.unit.MetricPrefix.MILLI;
-import static tec.units.indriya.unit.MetricPrefix.NANO;
-import static tec.units.indriya.unit.Units.*;
+import static bio.singa.simulation.model.sections.CellSubsections.CYTOPLASM;
+import static bio.singa.simulation.model.sections.CellSubsections.EXTRACELLULAR_REGION;
+import static tech.units.indriya.AbstractUnit.ONE;
+import static tech.units.indriya.unit.MetricPrefix.MILLI;
+import static tech.units.indriya.unit.MetricPrefix.NANO;
+import static tech.units.indriya.unit.Units.*;
 
 /**
  * A factory class that can be used to create different examples to test and explore certain aspects to the api.
@@ -62,10 +61,13 @@ public class SimulationExamples {
         // setup graph with a single node
         AutomatonGraph graph = AutomatonGraphs.singularGraph();
 
-        // initialize species in graph with desired concentration
-        ConcentrationInitializer ci = new ConcentrationInitializer();
-        ci.addInitialConcentration(CellRegions.EXTRACELLULAR_REGION, CellSubsections.EXTRACELLULAR_REGION, dinitrogenPentaoxide, Quantities.getQuantity(0.02, MOLE_PER_LITRE));
-        simulation.setConcentrationInitializer(ci);
+        // initialize concentration
+        ConcentrationBuilder.create(simulation)
+                .entity(dinitrogenPentaoxide)
+                .subsection(EXTRACELLULAR_REGION)
+                .concentrationValue(0.02)
+                .unit(MOLE_PER_LITRE)
+                .build();
 
         RateConstant rateConstant = RateConstant.create(0.07)
                 .forward().firstOrder()
@@ -105,10 +107,13 @@ public class SimulationExamples {
         // setup graph with a single node
         AutomatonGraph graph = AutomatonGraphs.singularGraph();
 
-        // initialize species in graph with desired concentration
-        ConcentrationInitializer ci = new ConcentrationInitializer();
-        ci.addInitialConcentration(CellRegions.EXTRACELLULAR_REGION, CellSubsections.EXTRACELLULAR_REGION, speciesA, Quantities.getQuantity(1.0, MOLE_PER_LITRE));
-        simulation.setConcentrationInitializer(ci);
+        // initialize concentration
+        ConcentrationBuilder.create(simulation)
+                .entity(speciesA)
+                .subsection(EXTRACELLULAR_REGION)
+                .concentrationValue(1.0)
+                .unit(MOLE_PER_LITRE)
+                .build();
 
         RateConstant forwardsRate = RateConstant.create(10)
                 .forward().firstOrder()
@@ -162,11 +167,20 @@ public class SimulationExamples {
         MichaelisConstant michaelisConstant = new MichaelisConstant(Quantities.getQuantity(9.0e-3, MOLE_PER_LITRE), Evidence.NO_EVIDENCE);
         TurnoverNumber turnoverNumber = new TurnoverNumber(76, new ProductUnit<>(ONE.divide(MINUTE)), Evidence.NO_EVIDENCE);
 
-        // initialize species in graph with desired concentration
-        ConcentrationInitializer ci = new ConcentrationInitializer();
-        ci.addInitialConcentration(CellRegions.EXTRACELLULAR_REGION, CellSubsections.EXTRACELLULAR_REGION, fructosePhosphate, Quantities.getQuantity(0.1, MOLE_PER_LITRE));
-        ci.addInitialConcentration(CellRegions.EXTRACELLULAR_REGION, CellSubsections.EXTRACELLULAR_REGION, aldolase, Quantities.getQuantity(0.2, MOLE_PER_LITRE));
-        simulation.setConcentrationInitializer(ci);
+        // initialize concentrations
+        ConcentrationBuilder.create(simulation)
+                .entity(fructosePhosphate)
+                .subsection(EXTRACELLULAR_REGION)
+                .concentrationValue(0.1)
+                .unit(MOLE_PER_LITRE)
+                .build();
+
+        ConcentrationBuilder.create(simulation)
+                .entity(aldolase)
+                .subsection(EXTRACELLULAR_REGION)
+                .concentrationValue(0.2)
+                .unit(MOLE_PER_LITRE)
+                .build();
 
         // create reaction using the properties of the enzyme
         ReactionBuilder.staticReactants(simulation)
@@ -212,10 +226,10 @@ public class SimulationExamples {
         // initialize species in graph with desired concentration leaving the right "half" empty
         for (AutomatonNode node : graph.getNodes()) {
             if (node.getIdentifier().getColumn() < (graph.getNumberOfColumns() / 2)) {
-                node.getConcentrationContainer().set(CellSubsection.SECTION_A, methanol, 1.0);
-                node.getConcentrationContainer().set(CellSubsection.SECTION_A, ethyleneGlycol, 1.0);
-                node.getConcentrationContainer().set(CellSubsection.SECTION_A, valine, 1.0);
-                node.getConcentrationContainer().set(CellSubsection.SECTION_A, sucrose, 1.0);
+                node.getConcentrationContainer().set(CYTOPLASM, methanol, 1.0);
+                node.getConcentrationContainer().set(CYTOPLASM, ethyleneGlycol, 1.0);
+                node.getConcentrationContainer().set(CYTOPLASM, valine, 1.0);
+                node.getConcentrationContainer().set(CYTOPLASM, sucrose, 1.0);
             }
         }
 
@@ -225,7 +239,8 @@ public class SimulationExamples {
         simulation.setGraph(graph);
 
         Diffusion.inSimulation(simulation)
-                .forAll(methanol, ethyleneGlycol, valine, sucrose)
+                .forAllEntities(methanol, ethyleneGlycol, valine, sucrose)
+                .forAllSections()
                 .build();
 
         return simulation;
@@ -270,14 +285,14 @@ public class SimulationExamples {
         AutomatonGraph graph = AutomatonGraphs.singularGraph();
         // initialize species in graph with desired concentration
         logger.debug("Initializing starting concentrations of species and node states in graph ...");
-        graph.getNode(0, 0).getConcentrationContainer().set(CellSubsection.SECTION_A, hydron, 0.05);
-        graph.getNode(0, 0).getConcentrationContainer().set(CellSubsection.SECTION_A, iodide, 0.05);
-        graph.getNode(0, 0).getConcentrationContainer().set(CellSubsection.SECTION_A, diiodine, 0.05);
-        graph.getNode(0, 0).getConcentrationContainer().set(CellSubsection.SECTION_A, water, 0.05);
-        graph.getNode(0, 0).getConcentrationContainer().set(CellSubsection.SECTION_A, hia, 0.05);
-        graph.getNode(0, 0).getConcentrationContainer().set(CellSubsection.SECTION_A, ia, 0.05);
-        graph.getNode(0, 0).getConcentrationContainer().set(CellSubsection.SECTION_A, iodineDioxid, 0.05);
-        graph.getNode(0, 0).getConcentrationContainer().set(CellSubsection.SECTION_A, iodate, 0.05);
+        graph.getNode(0, 0).getConcentrationContainer().set(CYTOPLASM, hydron, 0.05);
+        graph.getNode(0, 0).getConcentrationContainer().set(CYTOPLASM, iodide, 0.05);
+        graph.getNode(0, 0).getConcentrationContainer().set(CYTOPLASM, diiodine, 0.05);
+        graph.getNode(0, 0).getConcentrationContainer().set(CYTOPLASM, water, 0.05);
+        graph.getNode(0, 0).getConcentrationContainer().set(CYTOPLASM, hia, 0.05);
+        graph.getNode(0, 0).getConcentrationContainer().set(CYTOPLASM, ia, 0.05);
+        graph.getNode(0, 0).getConcentrationContainer().set(CYTOPLASM, iodineDioxid, 0.05);
+        graph.getNode(0, 0).getConcentrationContainer().set(CYTOPLASM, iodate, 0.05);
 
 
         logger.debug("Composing simulation ... ");

@@ -486,8 +486,7 @@ public class StructureParser {
                     return mmtfStructure;
                 }
             } catch (IOException e) {
-                logger.warn("failed to parse structure", e);
-                throw new StructureParserException(e.getMessage());
+                logger.warn("failed to parse structure {}", selector.sourceSelector.contentIterator.next().get(0));
             }
             return StructureCollector.parse(selector.sourceSelector.contentIterator.next(), selector);
         }

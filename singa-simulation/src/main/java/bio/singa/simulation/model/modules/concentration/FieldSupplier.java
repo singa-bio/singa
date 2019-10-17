@@ -42,7 +42,7 @@ public class FieldSupplier {
     /**
      * The larges error as of yet.
      */
-    private LocalError largestLocalError;
+    private NumericalError largestLocalError;
 
     /**
      * Determines if the module currently processes full calculations of strut (half) calculations.
@@ -55,7 +55,7 @@ public class FieldSupplier {
     FieldSupplier() {
         fullDeltas = new HashMap<>();
         halfDeltas = new HashMap<>();
-        largestLocalError = LocalError.MINIMAL_EMPTY_ERROR;
+        largestLocalError = NumericalError.MINIMAL_EMPTY_ERROR;
     }
 
     /**
@@ -126,7 +126,7 @@ public class FieldSupplier {
      * Returns the largest error as of yet.
      * @return the largest error as of yet.
      */
-    public LocalError getLargestLocalError() {
+    public NumericalError getLargestLocalError() {
         return largestLocalError;
     }
 
@@ -134,7 +134,7 @@ public class FieldSupplier {
      * Sets the largest error as of yet.
      * @param largestLocalError the largest error as of yet.
      */
-    public void setLargestLocalError(LocalError largestLocalError) {
+    public void setLargestLocalError(NumericalError largestLocalError) {
         this.largestLocalError = largestLocalError;
     }
 
@@ -142,7 +142,7 @@ public class FieldSupplier {
      * Resets the error to the minimal error.
      */
     public void resetError() {
-        largestLocalError = LocalError.MINIMAL_EMPTY_ERROR;
+        largestLocalError = NumericalError.MINIMAL_EMPTY_ERROR;
     }
 
     /**

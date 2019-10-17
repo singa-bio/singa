@@ -1,7 +1,7 @@
 package bio.singa.simulation.export.format;
 
-import bio.singa.chemistry.entities.Protein;
-import bio.singa.chemistry.entities.SmallMolecule;
+import bio.singa.chemistry.entities.simple.Protein;
+import bio.singa.chemistry.entities.simple.SmallMolecule;
 import bio.singa.chemistry.features.reactions.MichaelisConstant;
 import bio.singa.chemistry.features.reactions.RateConstant;
 import bio.singa.chemistry.features.reactions.TurnoverNumber;
@@ -12,8 +12,8 @@ import bio.singa.simulation.model.modules.concentration.imlementations.reactions
 import bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.reactants.Reactant;
 import bio.singa.simulation.model.simulation.Simulation;
 import org.junit.jupiter.api.Test;
-import tec.units.indriya.quantity.Quantities;
-import tec.units.indriya.unit.ProductUnit;
+import tech.units.indriya.quantity.Quantities;
+import tech.units.indriya.unit.ProductUnit;
 
 import static bio.singa.features.model.Evidence.SourceType.PREDICTION;
 import static bio.singa.features.units.UnitProvider.MICRO_MOLE_PER_LITRE;
@@ -22,9 +22,9 @@ import static bio.singa.simulation.model.modules.concentration.imlementations.re
 import static bio.singa.simulation.model.sections.CellTopology.MEMBRANE;
 import static bio.singa.simulation.model.sections.CellTopology.OUTER;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static tec.units.indriya.AbstractUnit.ONE;
-import static tec.units.indriya.unit.Units.MINUTE;
-import static tec.units.indriya.unit.Units.SECOND;
+import static tech.units.indriya.AbstractUnit.ONE;
+import static tech.units.indriya.unit.Units.MINUTE;
+import static tech.units.indriya.unit.Units.SECOND;
 
 /**
  * @author cl
@@ -53,7 +53,7 @@ class FormatReactionEquationTest {
                 .turnover(turnoverNumber)
                 .build();
 
-        assertEquals("$\\frac{k_{\\text{cat}} \\cdot [\\text{E}] \\cdot [\\text{A}]}{K_m \\cdot [\\text{A}]}$", FormatReactionKinetics.formatTex(reaction));
+        assertEquals("$\\frac{k_{\\text{cat}} \\cdot [\\text{E}] \\cdot [\\text{A}]}{K_m \\cdot [\\text{A}]}$", FormatReactionKinetics.formatTex(reaction).get(0));
     }
 
     @Test
@@ -80,7 +80,7 @@ class FormatReactionEquationTest {
                 .rate(k)
                 .build();
 
-        assertEquals("\\ch{ 2 A$_i$ + B$_i$ ->  C$_i$ + D$_i$}", FormatReactionEquation.formatTex(reaction));
+        assertEquals("\\ch{ 2 !(inner)(A) + !(inner)(B) ->  !(inner)(C) + !(inner)(D)}", FormatReactionEquation.formatTex(reaction).get(0));
     }
 
     @Test
@@ -108,7 +108,7 @@ class FormatReactionEquationTest {
                 .backwardReactionRate(kb)
                 .build();
 
-        assertEquals("\\ch{A$_m$ <=>  B$_o$}", FormatReactionEquation.formatTex(reaction));
+        assertEquals("\\ch{!(membrane)(A) <=>  !(outer)(B)}", FormatReactionEquation.formatTex(reaction).get(0));
 
     }
 
@@ -143,7 +143,7 @@ class FormatReactionEquationTest {
                 .identifier("Adenylate Cyclase Reaction")
                 .build();
 
-        assertEquals("\\ch{ATP$_i$ -> [ ATP$_i$, GAT$_i$, AC 6 $_m$ ] CAMP$_i$}", FormatReactionEquation.formatTex(reaction));
+        assertEquals("\\ch{!(inner)(ATP) -> [ !(inner)(ATP), !(inner)(GAT), !(membrane)(AC6) ] !(inner)(CAMP)}", FormatReactionEquation.formatTex(reaction).get(0));
     }
 
 }

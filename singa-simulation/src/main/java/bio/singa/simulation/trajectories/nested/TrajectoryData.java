@@ -11,22 +11,26 @@ import java.util.*;
  */
 public class TrajectoryData {
 
-    private Map<Updatable, TrajactoryDataPoint> concentrationData;
+    private Map<Updatable, TrajectoryDataPoint> concentrationData;
 
-    private TrajectoryData() {
+    public TrajectoryData() {
         concentrationData = new HashMap<>();
     }
 
-    public Map<Updatable, TrajactoryDataPoint> getConcentrationData() {
+    public Map<Updatable, TrajectoryDataPoint> getConcentrationData() {
         return concentrationData;
     }
 
     public static TrajectoryData of(Collection<Updatable> updatables, Unit<MolarConcentration> concentrationUnit) {
         TrajectoryData data = new TrajectoryData();
         for (Updatable updatable : updatables) {
-            data.concentrationData.put(updatable, TrajactoryDataPoint.of(updatable, concentrationUnit));
+            data.put(updatable, TrajectoryDataPoint.of(updatable, concentrationUnit));
         }
         return data;
+    }
+
+    public void put(Updatable updatable, TrajectoryDataPoint dataPoint) {
+        concentrationData.put(updatable, dataPoint);
     }
 
 }

@@ -1,6 +1,7 @@
 package bio.singa.mathematics.vectors;
 
-import bio.singa.mathematics.geometry.faces.Rectangle;
+import bio.singa.mathematics.geometry.faces.Polygons;
+import bio.singa.mathematics.geometry.model.Polygon;
 
 /**
  * The {@code Vector2D} class handles the general properties and operations of
@@ -243,14 +244,13 @@ public class Vector2D extends RegularVector {
     }
 
     /**
-     * Validates, if this vector can be placed in the given {@link Rectangle}.
+     * Validates if this vector can be placed in the given polygon.
      *
-     * @param rectangle The rectangle.
-     * @return {@code true} if vector can be placed in the rectangle.
+     * @param polygon The polygon.
+     * @return {@code true} if vector can be placed in the polygon.
      */
-    public boolean canBePlacedIn(Rectangle rectangle) {
-        return valueOfXIsBetween(rectangle.getLeftMostXPosition(), rectangle.getRightMostXPosition())
-                && valueOfYIsBetween(rectangle.getBottomMostYPosition(), rectangle.getTopMostYPosition());
+    public boolean isInside(Polygon polygon) {
+        return Polygons.containsVector(polygon, this);
     }
 
     public boolean isAbove(Vector2D vector) {
