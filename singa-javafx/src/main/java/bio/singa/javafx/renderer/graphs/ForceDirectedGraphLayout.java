@@ -191,7 +191,7 @@ public class ForceDirectedGraphLayout<NodeType extends Node<NodeType, Vector2D, 
         // placement depending on current velocity
         for (NodeType node : graph.getNodes()) {
 
-            if (fixedNodes.contains(node.getIdentifier())) {
+            if (fixedNodes == null || fixedNodes.contains(node.getIdentifier())) {
                 continue;
             }
 
