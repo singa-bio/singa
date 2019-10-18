@@ -5,6 +5,7 @@ import bio.singa.mathematics.graphs.model.Graphs;
 import bio.singa.mathematics.graphs.model.Node;
 import bio.singa.mathematics.vectors.Vector2D;
 import javafx.application.Application;
+import javafx.event.ActionEvent;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -14,8 +15,11 @@ import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+
+import java.io.File;
 
 import static bio.singa.javafx.renderer.graphs.GraphRenderer.RenderingMode;
 
@@ -26,6 +30,8 @@ public class GraphDisplayApplication extends Application {
 
     public static Graph<? extends Node<?, Vector2D, ?>, ?, ?> graph = Graphs.buildGridGraph(5, 5);
     public static GraphRenderer renderer = new GraphRenderer();
+    private Stage primaryStage;
+    private Canvas canvas;
 
     public static void main(String[] args) {
         launch();
@@ -41,6 +47,7 @@ public class GraphDisplayApplication extends Application {
 
     @Override
     public void start(Stage primaryStage) {
+        this.primaryStage = primaryStage;
         // root pane
         BorderPane root = new BorderPane();
 
@@ -52,7 +59,7 @@ public class GraphDisplayApplication extends Application {
         root.setTop(topContainer);
 
         // center part
-        Canvas canvas = new GraphCanvas();
+        canvas = new GraphCanvas();
         renderer.renderVoronoi(false);
         root.setCenter(canvas);
 
@@ -110,9 +117,9 @@ public class GraphDisplayApplication extends Application {
         mILoadBioGraph.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_DOWN));
         // mILoadBioGraph.setOnAction(this::loadBioGraph);
         // save Graph
-        MenuItem mISaveGraph = new MenuItem("Save graph ...");
+        MenuItem mISaveGraph = new MenuItem("Save as png ...");
         mISaveGraph.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN));
-        // mISaveGraph.setOnAction(this::saveBioGraph);
+        mISaveGraph.setOnAction(this::saveGraph);
 
         // rendering menu
         Menu menuRendering = new Menu("Rendering");
@@ -148,6 +155,18 @@ public class GraphDisplayApplication extends Application {
         // add menus to menu bar
         menuBar.getMenus().addAll(menuFile, menuRendering);
         return menuBar;
+    }
+
+    private void saveGraph(ActionEvent actionEvent) {
+        FileChooser fileChooser = new FileChooser();
+        // set extension filter
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("png files (*.png)", "*.png");
+        fileChooser.getExtensionFilters().add(extFilter);
+        // show save file dialog
+        File file = fileChooser.showSaveDialog(primaryStage);
+        // export
+        PNGExporter.exportGraphToPNG(file, renderer, canvas);
+
     }
 
 }

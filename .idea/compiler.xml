@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="CompilerConfiguration">
+    <option name="USE_RELEASE_OPTION" value="false" />
     <annotationProcessing>
       <profile name="Maven default annotation processors profile" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
@@ -8,13 +9,13 @@
         <outputRelativeToContentRoot value="true" />
         <module name="singa-chemistry" />
         <module name="singa-core" />
+        <module name="singa-mathematics" />
         <module name="singa-features" />
         <module name="singa-javafx" />
-        <module name="singa-mathematics" />
-        <module name="singa-sequence" />
         <module name="singa-simulation" />
         <module name="singa-structure" />
         <module name="singa-units" />
+        <module name="singa-sequence" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>

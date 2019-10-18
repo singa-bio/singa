@@ -37,6 +37,7 @@ public class GraphRenderer<NodeType extends Node<NodeType, Vector2D, IdentifierT
     private Function<GraphType, Void> renderAfterFunction;
     private GraphicsContext graphicsContext;
     private StringProperty renderingMode;
+    private Rectangle boundingBox;
 
 
     public GraphRenderer() {
@@ -87,6 +88,7 @@ public class GraphRenderer<NodeType extends Node<NodeType, Vector2D, IdentifierT
     }
 
     public void render(GraphType graph) {
+        determineGraphBoundingBox(graph);
         fillBackground();
         if (renderBeforeFunction != null) {
             renderBeforeFunction.apply(graph);
@@ -243,6 +245,36 @@ public class GraphRenderer<NodeType extends Node<NodeType, Vector2D, IdentifierT
 
     public StringProperty renderingModeProperty() {
         return renderingMode;
+    }
+
+    private void determineGraphBoundingBox(GraphType graph) {
+        List<Vector2D> vectors = graph.getNodes().stream().map(NodeType::getPosition).collect(Collectors.toList());
+        double minX = Double.MAX_VALUE;
+        double minY = Double.MAX_VALUE;
+        double maxX = -Double.MAX_VALUE;
+        double maxY = -Double.MAX_VALUE;
+        for (Vector2D vector : vectors) {
+            double x = vector.getX();
+            double y = vector.getY();
+            if (x < minX) {
+                minX = x;
+            }
+            if (x > maxX) {
+                maxX = x;
+            }
+            if (y < minY) {
+                minY = y;
+            }
+            if (y > maxY) {
+                maxY = y;
+            }
+        }
+        double offset = getRenderingOptions().getNodeDiameter();
+        boundingBox = new Rectangle(new Vector2D(minX-offset, minY-offset), new Vector2D(maxX+offset, maxY+offset));
+    }
+
+    public Rectangle getBoundingBox() {
+        return boundingBox;
     }
 
     public enum RenderingMode {
