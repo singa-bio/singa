@@ -29,6 +29,7 @@ import java.util.*;
  */
 public class MolParser {
 
+    private boolean ignoreUnknownElements;
     private List<String> lines;
 
     private String headerInformation;
@@ -37,15 +38,35 @@ public class MolParser {
 
     private List<OakAtom> atoms;
     private Map<Pair<Integer>, BondType> bonds;
+    private int skippedAtoms;
 
     public MolParser(List<String> lines) {
-        this.lines = lines;
+        this.lines = new ArrayList<>(lines);
+        skippedAtoms = 0;
         atoms = new ArrayList<>();
         bonds = new HashMap<>();
     }
 
-    public MolParser(Path molFile) throws IOException {
+    public MolParser(Path molFile, boolean ignoreUnknownElements) throws IOException {
         this(Files.readAllLines(molFile));
+        this.ignoreUnknownElements = ignoreUnknownElements;
+    }
+
+    public static MoleculeGraph parseAsMoleculeGraph(Path molFile) throws IOException {
+        List<String> lines = Files.readAllLines(molFile);
+        MolParser parser = new MolParser(lines);
+        parser.parseNextStructure();
+        return parser.parseNextMoleculeGraph();
+    }
+
+    public static List<MoleculeGraph> parseMultiMolFile(Path multiMolFile) throws IOException {
+        List<String> lines = Files.readAllLines(multiMolFile);
+        MolParser parser = new MolParser(lines);
+        List<MoleculeGraph> graphs = new ArrayList<>();
+        while (parser.hasAnotherStructure()) {
+            graphs.add(parser.parseNextMoleculeGraph());
+        }
+        return graphs;
     }
 
     private void parseCountsLine() {
@@ -67,14 +88,17 @@ public class MolParser {
             final double x = Double.parseDouble(line.substring(0, 10));
             final double y = Double.parseDouble(line.substring(10, 20));
             final double z = Double.parseDouble(line.substring(20, 30));
-            final Optional<Element> optinalElement = ElementProvider.getElementBySymbol(line.substring(31, 34).trim());
+            final Optional<Element> optionalElement = ElementProvider.getElementBySymbol(line.substring(31, 34).trim());
             final int charge = Integer.parseInt(line.substring(36, 39).trim());
             // create entities
-            final Element element = optinalElement.orElse(ElementProvider.UNKOWN);
-            final OakAtom atom = new OakAtom(blockIndex, element.asIon(charge), element.getSymbol(), new Vector3D(x, y, z));
+            final Element element = optionalElement.orElse(ElementProvider.UNKOWN);
+            if (element == ElementProvider.UNKOWN && ignoreUnknownElements) {
+                skippedAtoms++;
+                continue;
+            }
+            final OakAtom atom = new OakAtom(blockIndex - skippedAtoms, element.asIon(charge), element.getSymbol(), new Vector3D(x, y, z));
             atoms.add(atom);
         }
-
     }
 
     private void parseBondBlock() {
@@ -102,7 +126,7 @@ public class MolParser {
                     break;
             }
 
-            bonds.put(new Pair<>(first, second), type);
+            bonds.put(new Pair<>(first - skippedAtoms, second - skippedAtoms), type);
         }
     }
 
@@ -113,28 +137,11 @@ public class MolParser {
         atoms.forEach(ligand::addAtom);
         int bondCounter = 0;
         for (Map.Entry<Pair<Integer>, BondType> bond : bonds.entrySet()) {
-            ligand.addBondBetween(new OakBond(bondCounter, bond.getValue()), atoms.get(bond.getKey().getFirst()-1),
-                    atoms.get(bond.getKey().getSecond()-1));
+            ligand.addBondBetween(new OakBond(bondCounter, bond.getValue()), atoms.get(bond.getKey().getFirst() - 1),
+                    atoms.get(bond.getKey().getSecond() - 1));
             bondCounter++;
         }
         return ligand;
-    }
-
-    public static MoleculeGraph parseAsMoleculeGraph(Path molFile) throws IOException {
-        List<String> lines = Files.readAllLines(molFile);
-        MolParser parser = new MolParser(lines);
-        parser.parseNextStructure();
-        return parser.parseNextMoleculeGraph();
-    }
-
-    public static List<MoleculeGraph> parseMultiMolFile(Path multiMolFile) throws IOException {
-        List<String> lines = Files.readAllLines(multiMolFile);
-        MolParser parser = new MolParser(lines);
-        List<MoleculeGraph> graphs = new ArrayList<>();
-        while (parser.hasAnotherStructure()) {
-            graphs.add(parser.parseNextMoleculeGraph());
-        }
-        return graphs;
     }
 
     public boolean hasAnotherStructure() {
@@ -153,8 +160,8 @@ public class MolParser {
         // then add bonds
         for (Map.Entry<Pair<Integer>, BondType> entry : bonds.entrySet()) {
             // only use bonds connecting the leaf internally
-            int source = entry.getKey().getFirst()-1;
-            int target = entry.getKey().getSecond()-1;
+            int source = entry.getKey().getFirst() - 1;
+            int target = entry.getKey().getSecond() - 1;
             MoleculeAtom sourceNode = graph.getNode(source);
             MoleculeAtom targetNode = graph.getNode(target);
             if (sourceNode != null && targetNode != null) {
@@ -192,7 +199,6 @@ public class MolParser {
             }
         }
     }
-
 
 
 }
