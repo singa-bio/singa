@@ -38,11 +38,11 @@ public class MolParser {
 
     private List<OakAtom> atoms;
     private Map<Pair<Integer>, BondType> bonds;
-    private int skippedAtoms;
+    private List<Integer> skippedAtoms;
 
     public MolParser(List<String> lines) {
         this.lines = new ArrayList<>(lines);
-        skippedAtoms = 0;
+        skippedAtoms = new ArrayList<>();
         atoms = new ArrayList<>();
         bonds = new HashMap<>();
     }
@@ -93,10 +93,10 @@ public class MolParser {
             // create entities
             final Element element = optionalElement.orElse(ElementProvider.UNKOWN);
             if (element == ElementProvider.UNKOWN && ignoreUnknownElements) {
-                skippedAtoms++;
+                skippedAtoms.add(blockIndex + 1);
                 continue;
             }
-            final OakAtom atom = new OakAtom(blockIndex - skippedAtoms, element.asIon(charge), element.getSymbol(), new Vector3D(x, y, z));
+            final OakAtom atom = new OakAtom(blockIndex - skippedAtoms.size(), element.asIon(charge), element.getSymbol(), new Vector3D(x, y, z));
             atoms.add(atom);
         }
     }
@@ -110,6 +110,11 @@ public class MolParser {
             // acquire data
             final int first = Integer.parseInt(line.substring(0, 3).trim());
             final int second = Integer.parseInt(line.substring(3, 6).trim());
+
+            if (skippedAtoms.contains(first) || skippedAtoms.contains(second)) {
+                continue;
+            }
+
             final int typeInt = Integer.parseInt(line.substring(6, 9).trim());
             BondType type;
             switch (typeInt) {
@@ -125,8 +130,10 @@ public class MolParser {
                     type = BondType.SINGLE_BOND;
                     break;
             }
-
-            bonds.put(new Pair<>(first - skippedAtoms, second - skippedAtoms), type);
+            // compute shift of bonds
+            int delta1 = (int) skippedAtoms.stream().filter(atomIndex -> atomIndex < first).count();
+            int delta2 = (int) skippedAtoms.stream().filter(atomIndex -> atomIndex < second).count();
+            bonds.put(new Pair<>(first - delta1, second - delta2), type);
         }
     }
 
