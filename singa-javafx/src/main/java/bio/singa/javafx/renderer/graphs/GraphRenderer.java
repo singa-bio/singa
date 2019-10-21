@@ -1,6 +1,9 @@
 package bio.singa.javafx.renderer.graphs;
 
 import bio.singa.javafx.renderer.Renderer;
+import bio.singa.javafx.renderer.layouts.LayoutRenderer;
+import bio.singa.javafx.renderer.layouts.force.ForceDirectedGraphLayout;
+import bio.singa.javafx.renderer.layouts.relax.RelaxationProducer;
 import bio.singa.mathematics.algorithms.voronoi.VoronoiGenerator;
 import bio.singa.mathematics.algorithms.voronoi.VoronoiRelaxation;
 import bio.singa.mathematics.algorithms.voronoi.model.VoronoiDiagram;
@@ -52,6 +55,12 @@ public class GraphRenderer<NodeType extends Node<NodeType, Vector2D, IdentifierT
 
     public void arrangeGraph(GraphType graph) {
         Thread graphProducer = new Thread(new GraphProducer<>(this, graph, 100));
+        graphProducer.start();
+        start();
+    }
+
+    public void arrangeGraph(GraphType graph, int i) {
+        Thread graphProducer = new Thread(new GraphProducer<>(this, graph, i));
         graphProducer.start();
         start();
     }

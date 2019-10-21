@@ -1,5 +1,6 @@
 package bio.singa.javafx.renderer.graphs;
 
+import bio.singa.javafx.renderer.layouts.force.ForceDirectedGraphLayout;
 import bio.singa.mathematics.graphs.model.Edge;
 import bio.singa.mathematics.graphs.model.Graph;
 import bio.singa.mathematics.graphs.model.Node;
@@ -35,7 +36,7 @@ public class GraphProducer<NodeType extends Node<NodeType, Vector2D, IdentifierT
     @Override
     public void run() {
         ForceDirectedGraphLayout<NodeType, EdgeType, IdentifierType, GraphType> gdt = new ForceDirectedGraphLayout<>(graph,
-                renderer.drawingWidthProperty(), renderer.drawingHeightProperty(), 100);
+                renderer.drawingWidthProperty(), renderer.drawingHeightProperty(), totalIterations);
         if (fixedIdentifiers != null) {
             gdt.fixNodes(fixedIdentifiers);
         }

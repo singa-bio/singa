@@ -96,10 +96,10 @@ public class GraphDisplayApplication extends Application {
         Button forceDirectedLayout = new Button("Arrange");
         forceDirectedLayout.setOnAction(action -> renderer.arrangeGraph(graph));
         // relax button
-        Button relaxLayout = new Button("Relax");
-        relaxLayout.setOnAction(action -> renderer.relaxGraph(graph));
+//        Button relaxLayout = new Button("Relax");
+//        relaxLayout.setOnAction(action -> renderer.relaxGraph(graph));
         // add items to toolbar
-        toolBar.getItems().addAll(center, forceDirectedLayout, relaxLayout);
+        toolBar.getItems().addAll(center, forceDirectedLayout);
         return toolBar;
     }
 

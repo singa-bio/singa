@@ -30,7 +30,7 @@ public class MolTester {
 
         // display
 //        GraphDisplayApplication.renderer = new MoleculeGraphRenderer();
-        GraphDisplayApplication.graph = Graphs.buildLinearGraph(20);
+        GraphDisplayApplication.graph = Graphs.buildGridGraph(10,10);
         Application.launch(GraphDisplayApplication.class);
     }
 

@@ -60,15 +60,16 @@ public class FeatureProviderRegistry {
         try {
             if (!getInstance().featureRegistry.containsKey(featureClass)) {
                 featureClass.getDeclaredMethod("register").invoke(null);
+                return getInstance().featureRegistry.get(featureClass).newInstance();
             }
-            return getInstance().featureRegistry.get(featureClass).newInstance();
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new IllegalFeatureRequestException(e);
         } catch (NoSuchMethodException e) {
             throw new IllegalFeatureRequestException(featureClass, e);
         } catch (InstantiationException e) {
-            throw new IllegalFeatureRequestException(featureClass, e);
+            e.printStackTrace();
         }
+        throw new IllegalStateException("No provider for feature " + featureClass);
     }
 
 }

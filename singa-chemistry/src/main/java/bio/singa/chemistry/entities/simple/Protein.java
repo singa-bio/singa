@@ -118,9 +118,7 @@ public class Protein extends AbstractChemicalEntity {
         return primaryGeneName;
     }
 
-    /**
-     * Sets the primary gene name of this {@link Protein} according to UniProt.
-     */
+
     public void setPrimaryGeneName(String primaryGeneName) {
         this.primaryGeneName = primaryGeneName;
     }

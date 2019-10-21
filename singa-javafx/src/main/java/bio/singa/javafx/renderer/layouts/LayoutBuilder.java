@@ -1,5 +1,7 @@
-package bio.singa.javafx.renderer.graphs;
+package bio.singa.javafx.renderer.layouts;
 
+import bio.singa.javafx.renderer.layouts.force.Force;
+import bio.singa.javafx.renderer.layouts.force.ForceDirectedGraphLayout;
 import bio.singa.mathematics.graphs.model.Edge;
 import bio.singa.mathematics.graphs.model.Graph;
 import bio.singa.mathematics.graphs.model.Node;
