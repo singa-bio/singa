@@ -1,7 +1,7 @@
 package bio.singa.structure.features.molarmass;
 
-import bio.singa.features.model.AbstractFeature;
 import bio.singa.features.model.Evidence;
+import bio.singa.features.model.QualitativeFeature;
 import tech.units.indriya.quantity.Quantities;
 import tech.units.indriya.unit.ProductUnit;
 
@@ -17,7 +17,7 @@ import static tech.units.indriya.unit.Units.MOLE;
  *
  * @author cl
  */
-public class MolarMass extends AbstractFeature<Quantity<MolarMass>> implements Quantity<MolarMass> {
+public class MolarMass extends QualitativeFeature<Quantity<MolarMass>> implements Quantity<MolarMass> {
 
     public static final Unit<MolarMass> GRAM_PER_MOLE = new ProductUnit<>(GRAM.divide(MOLE));
 
