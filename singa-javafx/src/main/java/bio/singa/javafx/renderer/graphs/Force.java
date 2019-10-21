@@ -9,6 +9,22 @@ import java.util.function.BiFunction;
  *
  * @author cl
  */
-public interface Force<NodeType extends Node<NodeType, Vector2D, ?>> extends BiFunction<NodeType, NodeType, Vector2D> {
+public abstract class Force<NodeType extends Node<NodeType, Vector2D, ?>> {
+
+    private BiFunction<NodeType, NodeType, Vector2D> force;
+
+    public Force(BiFunction<NodeType, NodeType, Vector2D> force) {
+        this.force = force;
+    }
+
+    public BiFunction<NodeType, NodeType, Vector2D> getForce() {
+        return force;
+    }
+
+    public void setForce(BiFunction<NodeType, NodeType, Vector2D> force) {
+        this.force = force;
+    }
+
+    public abstract void calculateAcceleration(NodeType first, NodeType second);
 
 }
