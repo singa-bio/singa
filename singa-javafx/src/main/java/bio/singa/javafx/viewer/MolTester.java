@@ -1,7 +1,8 @@
 package bio.singa.javafx.viewer;
 
 import bio.singa.javafx.renderer.graphs.GraphDisplayApplication;
-import bio.singa.mathematics.graphs.model.Graphs;
+import bio.singa.javafx.renderer.molecules.MoleculeGraphRenderer;
+import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.structure.model.molecules.MoleculeGraph;
 import bio.singa.structure.parser.mol.MolParser;
 import javafx.application.Application;
@@ -16,22 +17,21 @@ import java.nio.file.Paths;
 public class MolTester {
 
     public static void main(String[] args) throws IOException {
-        Path sdfFilePath = Paths.get("/home/leberech/Downloads/fragments/structures/*CCCC(C)=CCC1=C(C)C(=O)C(OC)=C(OC)C1=O.mol");
+        Path sdfFilePath = Paths.get("/tmp/*C(C)CCC=C(C)CCC=C(C)C.mol");
 
         // parse all at once, this takes some time
         // List<MoleculeGraph> moleculeGraphs = MolParser.parseMultiMolFile(sdfFilePath);
 
         // parse structures one by one
-        MolParser molParser = new MolParser(sdfFilePath);
+        MolParser molParser = new MolParser(sdfFilePath, true);
         MoleculeGraph first = molParser.parseNextMoleculeGraph();
         MoleculeGraph second = molParser.parseNextMoleculeGraph();
         // moves to the center (on my monitor)
-        // second.getNodes().forEach(atom -> atom.setPosition(atom.getPosition().add(new Vector2D(600,500))));
+        second.getNodes().forEach(atom -> atom.setPosition(atom.getPosition().add(new Vector2D(600, 500))));
 
         // display
-//        GraphDisplayApplication.renderer = new MoleculeGraphRenderer();
-        GraphDisplayApplication.graph = Graphs.buildGridGraph(10,10);
+        GraphDisplayApplication.renderer = new MoleculeGraphRenderer();
+        GraphDisplayApplication.graph = second;
         Application.launch(GraphDisplayApplication.class);
     }
-
 }
