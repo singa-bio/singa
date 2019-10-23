@@ -31,11 +31,12 @@ public class ForceDirectedGraphLayout<NodeType extends Node<NodeType, Vector2D, 
     private final IntegerProperty nodeNumber;
     private final GraphType graph;
     private final Map<NodeType, Vector2D> velocities;
-    private final CentralAttractiveForce<NodeType> centralAttractiveForce;
     private DoubleBinding forceConstant;
     private int iteration;
-    private List<Force<NodeType>> forces;
+    private List<BinaryForce<NodeType>> forces;
     private Collection<IdentifierType> fixedNodes;
+    private UnaryForce<NodeType> centralPull;
+
 
     /**
      * Creates a new GraphDrawingTool.
@@ -55,13 +56,14 @@ public class ForceDirectedGraphLayout<NodeType extends Node<NodeType, Vector2D, 
 
         initializeForceConstant();
 
-        Force<NodeType> attractiveForce = new AttractiveForce<>(this);
-        Force<NodeType> repulsiveForce = new RepulsiveForce<>(this);
-        centralAttractiveForce = new CentralAttractiveForce<>(this);
+        BinaryForce<NodeType> generalAttraction = new BinaryAttractiveForce<>(this);
+        BinaryForce<NodeType> generalRepulsion = new BinaryRepulsiveForce<>(this);
+//        centralPull = new UnaryAttractiveForce<>(this, drawingWidth.divide(2.0), drawingHeight.divide(2.0));
 
         forces = new ArrayList<>();
-        forces.add(attractiveForce);
-        forces.add(repulsiveForce);
+        forces.add(generalAttraction);
+        forces.add(generalRepulsion);
+//        forces.add(centralPull);
 
         fixedNodes = new ArrayList<>();
     }
@@ -106,7 +108,7 @@ public class ForceDirectedGraphLayout<NodeType extends Node<NodeType, Vector2D, 
         return drawingHeight;
     }
 
-    public double getForceConstant() {
+    public Number getForceConstant() {
         return forceConstant.get();
     }
 
@@ -138,8 +140,9 @@ public class ForceDirectedGraphLayout<NodeType extends Node<NodeType, Vector2D, 
     public GraphType arrangeGraph(int i) {
 
         // calculate the temperature
-        double t = DecayFunctions.linear(i, totalIterations, drawingWidth.doubleValue() / 200);
-        applyForce();
+        double t = DecayFunctions.linear(i, totalIterations, drawingWidth.doubleValue() / 50);
+        // apply forces
+        forces.forEach(nodeTypeForce -> nodeTypeForce.apply(graph));
 
         // placement depending on current velocity
         for (NodeType node : graph.getNodes()) {
@@ -191,13 +194,13 @@ public class ForceDirectedGraphLayout<NodeType extends Node<NodeType, Vector2D, 
         // compute forces
         for (int rowIndex = 0; rowIndex < compactValues.length; rowIndex++) {
             NodeType source = nodes.get(rowIndex);
-            centralAttractiveForce.determineDisplacement(source);
+//            centralPull.determineDisplacement(source);
             for (int columnIndex = 0; columnIndex < compactValues[rowIndex].length - 1; columnIndex++) {
                 NodeType target = nodes.get(columnIndex);
                 if (source == target) {
                     continue;
                 }
-                for (Force<NodeType> force : forces) {
+                for (BinaryForce<NodeType> force : forces) {
                     // calculate accelerations
                     force.determineDisplacement(source, target);
                 }
