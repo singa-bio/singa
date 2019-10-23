@@ -287,7 +287,7 @@ public interface Renderer {
     }
 
     default void strokeRectangle(Rectangle rectangle) {
-        getGraphicsContext().strokeRect(rectangle.getTopLeftVertex().getX(), rectangle.getTopLeftVertex().getY(), rectangle.getHeight(), rectangle.getWidth());
+        strokePolygon(rectangle);
     }
 
     /**
