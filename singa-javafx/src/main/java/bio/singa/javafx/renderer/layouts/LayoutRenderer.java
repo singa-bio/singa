@@ -1,4 +1,4 @@
-package bio.singa.javafx.renderer.graphs;
+package bio.singa.javafx.renderer.layouts;
 
 import bio.singa.mathematics.graphs.model.Edge;
 import bio.singa.mathematics.graphs.model.Graph;
@@ -9,5 +9,9 @@ public interface LayoutRenderer<NodeType extends Node<NodeType, Vector2D, Identi
         IdentifierType, GraphType extends Graph<NodeType, EdgeType, IdentifierType>> {
 
     GraphType optimizeLayout();
+
+    double getDrawingWidth();
+
+    double getDrawingHeight();
 
 }

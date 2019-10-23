@@ -28,6 +28,8 @@ public class Vector2D extends RegularVector {
     public static final Vector2D UNIT_VECTOR_DOWN = new Vector2D(0, 1);
     public static final Vector2D UNIT_VECTOR_RIGHT = new Vector2D(1, 0);
     public static final Vector2D UNIT_VECTOR_LEFT = new Vector2D(-1, 0);
+    public static final Vector2D ZERO = new Vector2D(0, 0);
+
 
     /**
      * Creates a new vector with the given elements.

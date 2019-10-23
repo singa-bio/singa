@@ -20,10 +20,10 @@ public class GraphCanvas extends Canvas {
     public GraphCanvas() {
         editMode = new SimpleBooleanProperty(true);
         // handle events
-//        addEventHandler(MouseEvent.MOUSE_CLICKED, this::handleClick);
-//        addEventHandler(MouseEvent.MOUSE_PRESSED, this::handleDrag);
-//        addEventHandler(MouseEvent.MOUSE_DRAGGED, this::handleDrag);
-//        addEventHandler(MouseEvent.MOUSE_RELEASED, this::handleDrag);
+        addEventHandler(MouseEvent.MOUSE_CLICKED, this::handleClick);
+        addEventHandler(MouseEvent.MOUSE_PRESSED, this::handleDrag);
+        addEventHandler(MouseEvent.MOUSE_DRAGGED, this::handleDrag);
+        addEventHandler(MouseEvent.MOUSE_RELEASED, this::handleDrag);
     }
 
     public void handleDrag(MouseEvent event) {
@@ -44,7 +44,7 @@ public class GraphCanvas extends Canvas {
                 }
             } else if (event.getEventType() == MouseEvent.MOUSE_RELEASED) {
                 draggedNode = null;
-                GraphDisplayApplication.renderer.render(GraphDisplayApplication.getGraph());
+                GraphDisplayApplication.renderer.arrangeGraph(GraphDisplayApplication.getGraph(), 30);
             }
         }
     }

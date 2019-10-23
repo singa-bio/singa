@@ -1,5 +1,6 @@
-package bio.singa.javafx.renderer.graphs;
+package bio.singa.javafx.renderer.layouts.relax;
 
+import bio.singa.javafx.renderer.graphs.GraphRenderer;
 import bio.singa.mathematics.algorithms.voronoi.VoronoiRelaxation;
 import bio.singa.mathematics.geometry.faces.Rectangle;
 import bio.singa.mathematics.graphs.model.Edge;
