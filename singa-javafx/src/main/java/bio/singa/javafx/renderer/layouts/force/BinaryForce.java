@@ -1,5 +1,6 @@
 package bio.singa.javafx.renderer.layouts.force;
 
+import bio.singa.mathematics.graphs.model.Edge;
 import bio.singa.mathematics.graphs.model.Graph;
 import bio.singa.mathematics.graphs.model.Node;
 import bio.singa.mathematics.vectors.Vector2D;
@@ -11,11 +12,12 @@ import java.util.function.BiPredicate;
 /**
  * @author cl
  */
-public abstract class BinaryForce<NodeType extends Node<NodeType, Vector2D, ?>> extends Force<NodeType> {
+public abstract class BinaryForce<NodeType extends Node<NodeType, Vector2D, IdentifierType>, EdgeType extends Edge<NodeType>,
+        IdentifierType, GraphType extends Graph<NodeType, EdgeType, IdentifierType>> extends Force<NodeType, EdgeType, IdentifierType, GraphType> {
 
     private BiPredicate<NodeType, NodeType> forcePredicate;
 
-    public BinaryForce(ForceDirectedGraphLayout<NodeType, ?, ?, ?> parentLayout) {
+    public BinaryForce(ForceDirectedGraphLayout<NodeType, EdgeType, IdentifierType, GraphType> parentLayout) {
         super(parentLayout);
     }
 
@@ -28,7 +30,7 @@ public abstract class BinaryForce<NodeType extends Node<NodeType, Vector2D, ?>> 
     }
 
     @Override
-    public void apply(Graph<NodeType, ?, ?> graph) {
+    public void apply(GraphType graph) {
         List<NodeType> nodes = new ArrayList<>(graph.getNodes());
         int nodeNumber = nodes.size();
         for (int i = 0; i < nodeNumber; i++) {

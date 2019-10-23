@@ -81,11 +81,7 @@ public class GraphCanvas extends Canvas {
     }
 
     private void handleArrangement() {
-        if (GraphDisplayApplication.renderer.getRenderingMode().equals(GraphRenderer.RenderingMode.LLOYDS_RELAXATION.name())) {
-            GraphDisplayApplication.renderer.relaxOnce(GraphDisplayApplication.getGraph());
-        } else {
-            GraphDisplayApplication.renderer.arrangeOnce(GraphDisplayApplication.getGraph());
-        }
+        GraphDisplayApplication.renderer.arrangeOnce(GraphDisplayApplication.getGraph());
     }
 
     private boolean isClickedOnNode(MouseEvent event, Node<?, Vector2D, ?> node) {

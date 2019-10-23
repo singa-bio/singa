@@ -1,11 +1,11 @@
 package bio.singa.javafx.renderer.graphs;
 
 import bio.singa.javafx.renderer.Renderer;
-import bio.singa.javafx.renderer.layouts.LayoutRenderer;
+import bio.singa.javafx.renderer.layouts.force.BinaryAttractiveForce;
+import bio.singa.javafx.renderer.layouts.force.BinaryRepulsiveForce;
 import bio.singa.javafx.renderer.layouts.force.ForceDirectedGraphLayout;
-import bio.singa.javafx.renderer.layouts.relax.RelaxationProducer;
+import bio.singa.javafx.renderer.layouts.force.UnaryAttractiveForce;
 import bio.singa.mathematics.algorithms.voronoi.VoronoiGenerator;
-import bio.singa.mathematics.algorithms.voronoi.VoronoiRelaxation;
 import bio.singa.mathematics.algorithms.voronoi.model.VoronoiDiagram;
 import bio.singa.mathematics.geometry.edges.SimpleLineSegment;
 import bio.singa.mathematics.geometry.faces.Rectangle;
@@ -42,25 +42,29 @@ public class GraphRenderer<NodeType extends Node<NodeType, Vector2D, IdentifierT
     private StringProperty renderingMode;
     private Rectangle boundingBox;
 
+    ForceDirectedGraphLayout<NodeType, EdgeType, IdentifierType, GraphType> layout;
 
     public GraphRenderer() {
         drawingWidth = new SimpleDoubleProperty();
         drawingHeight = new SimpleDoubleProperty();
         renderingMode = new SimpleStringProperty(FORCE_DIRECTED.name());
+
+        layout = new ForceDirectedGraphLayout<>(null, this, 100);
+        layout.addForce(new BinaryAttractiveForce<>(layout));
+        layout.addForce(new BinaryRepulsiveForce<>(layout));
+        layout.addForce(new UnaryAttractiveForce<>(layout, drawingWidth.divide(2.0), drawingHeight.divide(2.0)));
     }
 
-    public void optimizeLayout(LayoutRenderer<NodeType, EdgeType, IdentifierType, GraphType> renderer) {
-        render(renderer.optimizeLayout());
-    }
 
     public void arrangeGraph(GraphType graph) {
-        Thread graphProducer = new Thread(new GraphProducer<>(this, graph, 100));
+        layout.setGraph(graph);
+        Thread graphProducer = new Thread(new GraphProducer<>(layout, this));
         graphProducer.start();
         start();
     }
 
     public void arrangeGraph(GraphType graph, int i) {
-        Thread graphProducer = new Thread(new GraphProducer<>(this, graph, i));
+        Thread graphProducer = new Thread(new GraphProducer<>(layout, this));
         graphProducer.start();
         start();
     }
@@ -72,20 +76,8 @@ public class GraphRenderer<NodeType extends Node<NodeType, Vector2D, IdentifierT
     }
 
     public void arrangeOnce(GraphType graph) {
-        ForceDirectedGraphLayout<NodeType, EdgeType, IdentifierType, GraphType> gdt = new ForceDirectedGraphLayout<>(graph,
-                drawingWidthProperty(), drawingHeightProperty(), 100);
-        render(gdt.arrangeGraph(80));
-    }
-
-    public void relaxGraph(GraphType graph) {
-        Thread graphProducer = new Thread(new RelaxationProducer<>(this, graph, 100));
-        graphProducer.start();
-        start();
-    }
-
-    public void relaxOnce(GraphType graph) {
-        final Rectangle boundingBox = new Rectangle(drawingWidthProperty().doubleValue(), drawingHeightProperty().doubleValue());
-        render(VoronoiRelaxation.relax(graph, boundingBox));
+        layout.setGraph(graph);
+        render(layout.arrangeGraph(80));
     }
 
     @Override
@@ -250,6 +242,14 @@ public class GraphRenderer<NodeType extends Node<NodeType, Vector2D, IdentifierT
 
     public void setRenderingMode(String renderingMode) {
         this.renderingMode.set(renderingMode);
+    }
+
+    public ForceDirectedGraphLayout<NodeType, EdgeType, IdentifierType, GraphType> getLayout() {
+        return layout;
+    }
+
+    public void setLayout(ForceDirectedGraphLayout<NodeType, EdgeType, IdentifierType, GraphType> layout) {
+        this.layout = layout;
     }
 
     public StringProperty renderingModeProperty() {

@@ -8,10 +8,5 @@ import bio.singa.mathematics.vectors.Vector2D;
 public interface LayoutRenderer<NodeType extends Node<NodeType, Vector2D, IdentifierType>, EdgeType extends Edge<NodeType>,
         IdentifierType, GraphType extends Graph<NodeType, EdgeType, IdentifierType>> {
 
-    GraphType optimizeLayout();
-
-    double getDrawingWidth();
-
-    double getDrawingHeight();
 
 }

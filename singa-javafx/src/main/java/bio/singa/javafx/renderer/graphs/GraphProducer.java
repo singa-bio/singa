@@ -14,15 +14,13 @@ import java.util.Collection;
 public class GraphProducer<NodeType extends Node<NodeType, Vector2D, IdentifierType>, EdgeType extends Edge<NodeType>,
         IdentifierType, GraphType extends Graph<NodeType, EdgeType, IdentifierType>> implements Runnable {
 
+    private ForceDirectedGraphLayout<NodeType, EdgeType, IdentifierType, GraphType> layout;
     private final GraphRenderer<NodeType, EdgeType, IdentifierType, GraphType> renderer;
-    private final GraphType graph;
-    private final int totalIterations;
     private Collection<IdentifierType> fixedIdentifiers;
 
-    public GraphProducer(GraphRenderer<NodeType, EdgeType, IdentifierType, GraphType> renderer, GraphType graph, int totalIterations) {
+    public GraphProducer(ForceDirectedGraphLayout<NodeType, EdgeType, IdentifierType, GraphType> layout, GraphRenderer<NodeType, EdgeType, IdentifierType, GraphType> renderer) {
         this.renderer = renderer;
-        this.graph = graph;
-        this.totalIterations = totalIterations;
+        this.layout = layout;
     }
 
     public Collection<IdentifierType> getFixedIdentifiers() {
@@ -35,13 +33,11 @@ public class GraphProducer<NodeType extends Node<NodeType, Vector2D, IdentifierT
 
     @Override
     public void run() {
-        ForceDirectedGraphLayout<NodeType, EdgeType, IdentifierType, GraphType> gdt = new ForceDirectedGraphLayout<>(graph,
-                renderer.drawingWidthProperty(), renderer.drawingHeightProperty(), totalIterations);
         if (fixedIdentifiers != null) {
-            gdt.fixNodes(fixedIdentifiers);
+            layout.fixNodes(fixedIdentifiers);
         }
-        for (int i = 0; i < totalIterations; i++) {
-            renderer.getGraphQueue().add(gdt.arrangeGraph(i));
+        for (int i = 0; i < 100; i++) {
+            renderer.getGraphQueue().add(layout.arrangeGraph(i));
             try {
                 Thread.sleep(40);
             } catch (InterruptedException e) {
