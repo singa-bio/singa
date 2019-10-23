@@ -12,10 +12,10 @@ import java.util.stream.Collectors;
 /**
  * A runnable to center a 2D graph when drawn.
  *
- * @param <NodeType> The node type of the graph.
- * @param <EdgeType> The edge type of the graph.
+ * @param <NodeType>       The node type of the graph.
+ * @param <EdgeType>       The edge type of the graph.
  * @param <IdentifierType> The identifier type of the graph.
- * @param <GraphType> The type of the graph.
+ * @param <GraphType>      The type of the graph.
  */
 public class GraphAligner<NodeType extends Node<NodeType, Vector2D, IdentifierType>, EdgeType extends Edge<NodeType>,
         IdentifierType, GraphType extends Graph<NodeType, EdgeType, IdentifierType>> implements Runnable {
@@ -30,7 +30,10 @@ public class GraphAligner<NodeType extends Node<NodeType, Vector2D, IdentifierTy
 
     @Override
     public void run() {
-        // get shift vector
+        graphRenderer.getGraphQueue().add(centerGraph());
+    }
+
+    public GraphType centerGraph() {
         double drawingWidth = graphRenderer.getDrawingWidth();
         double drawingHeight = graphRenderer.getDrawingHeight();
         Vector2D referenceCentroid = new Vector2D(drawingWidth, drawingHeight).divide(2.0);
@@ -41,6 +44,6 @@ public class GraphAligner<NodeType extends Node<NodeType, Vector2D, IdentifierTy
         for (NodeType node : graph.getNodes()) {
             node.setPosition(node.getPosition().add(shiftVector));
         }
-        graphRenderer.getGraphQueue().add(graph);
+        return graph;
     }
 }

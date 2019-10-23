@@ -75,6 +75,11 @@ public class GraphRenderer<NodeType extends Node<NodeType, Vector2D, IdentifierT
         start();
     }
 
+    public void centerOnce(GraphType graph) {
+        GraphAligner<NodeType, EdgeType, IdentifierType, GraphType> graphAligner = new GraphAligner<>(this, graph);
+        render(graphAligner.centerGraph());
+    }
+
     public void arrangeOnce(GraphType graph) {
         layout.setGraph(graph);
         render(layout.arrangeGraph(80));
