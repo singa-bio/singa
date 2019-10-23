@@ -1,22 +1,16 @@
 package bio.singa.javafx.renderer;
 
-import bio.singa.core.utility.Pair;
-import bio.singa.mathematics.geometry.edges.Line;
-import bio.singa.mathematics.geometry.edges.LineSegment;
-import bio.singa.mathematics.geometry.faces.ComplexPolygon;
-import bio.singa.mathematics.geometry.faces.Polygons;
-import bio.singa.mathematics.geometry.faces.Rectangle;
-import bio.singa.mathematics.geometry.model.Polygon;
 import bio.singa.mathematics.vectors.Vector2D;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontPosture;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
-
-import java.util.Map;
 
 /**
  * @author cl
@@ -37,51 +31,66 @@ public class RendererExamples extends Application implements Renderer {
         BorderPane root = new BorderPane();
         root.setCenter(canvas);
 
-        // add axis
-        getGraphicsContext().setLineWidth(5);
-        getGraphicsContext().setStroke(Color.BLACK);
+        // set font
+        Font arial = Font.font("arial", FontWeight.LIGHT, FontPosture.REGULAR, 30);
+        getGraphicsContext().setFont(arial);
+        // set starting position
+        double previousYPosition = 100;
+        double totalHeight = 0;
 
-        Line xAxis = new Line(0, 0);
-        Line yAxis = new Line(0, Double.POSITIVE_INFINITY);
+        // for each letter
+        // determine height of letter
+        String letter = "A";
+        Text text = new Text(letter);
+        text.setFont(arial);
+        double height = text.getLayoutBounds().getHeight() * 0.62;
+        // set scaling factor
+        double yScale = 5.0;
+        totalHeight += height * yScale;
+        // apply transformation
+        // TODO determine max width of a single letter (probably W) and x scale to that width
+        getGraphicsContext().scale(1, yScale);
+        // the coordinate system is transformed as well , so you have to transform coordinates as well
+        previousYPosition = previousYPosition + height * yScale;
+        getGraphicsContext().fillText(letter, 100, previousYPosition / yScale);
+        // invert to original scaling
+        getGraphicsContext().scale(1, 1 / yScale);
+        // dor loop ends
 
-        Rectangle r1 = new Rectangle(new Vector2D(500, 500), new Vector2D(600, 600));
-        Polygon r2 = new ComplexPolygon(new Vector2D(550.0, 400.0), new Vector2D(550.0, 500.0), new Vector2D(500.0, 500.0), new Vector2D(500.0, 400.0));
+        // determine height of letter
+        letter = "C";
+        text = new Text(letter);
+        text.setFont(arial);
+        height = text.getLayoutBounds().getHeight() * 0.62;
+        // set scaling factor
+        yScale = 1.0;
+        totalHeight += height * yScale;
+        // apply transformation
+        getGraphicsContext().scale(1, yScale);
+        // the coordinate system is transformed, so you have to transform coordinates as well
+        previousYPosition = previousYPosition + height * yScale;
+        getGraphicsContext().fillText(letter, 100, previousYPosition / yScale);
+        // invert to original scaling
+        getGraphicsContext().scale(1, 1 / yScale);
 
-        strokePolygon(r1);
-        strokePolygon(r2);
-        getGraphicsContext().setStroke(Color.RED);
-        Map<Pair<LineSegment>, LineSegment> touchingLineSegments = Polygons.getTouchingLineSegments(r1, r2);
-        LineSegment segment = touchingLineSegments.values().iterator().next();
-        strokeLineSegment(segment);
+        // determine height of letter
+        letter = "W";
+        text = new Text(letter);
+        text.setFont(arial);
+        height = text.getLayoutBounds().getHeight() * 0.62;
+        // set scaling factor
+        yScale = 3.0;
+        totalHeight += height * yScale;
+        // apply transformation
+        getGraphicsContext().scale(1, yScale);
+        // the coordinate system is transformed, so you have to transform coordinates as well
+        previousYPosition = previousYPosition + height * yScale;
+        getGraphicsContext().fillText(letter, 100, previousYPosition / yScale);
+        // invert to original scaling
+        getGraphicsContext().scale(1, 1 / yScale);
 
-        // strokeLine(xAxis);
-        // strokeLine(yAxis);
-
-//        getGraphicsContext().setStroke(Color.INDIANRED);
-//        Vector2D focus = new Vector2D(150, 70);
-//        fillPoint(focus);
-//
-//        getGraphicsContext().setLineWidth(2);
-//        getGraphicsContext().setFill(Color.CORAL);
-//        Line directrix = new Line(50, 0);
-//        strokeLine(directrix);
-//
-//        Parabola parabola = new Parabola(focus, directrix);
-//        strokeParabola(parabola, 30);
-//
-//        Line randomLine = new Line(new Vector2D(140, 60), Double.POSITIVE_INFINITY);
-//        getGraphicsContext().setStroke(Color.DARKGOLDENROD);
-//        strokeLine(randomLine);
-//        getGraphicsContext().setLineWidth(5);
-//        getGraphicsContext().setFill(Color.BROWN);
-//        parabola.getIntercepts(randomLine).forEach(this::fillPoint);
-
-//        SimpleLineSegment edge = new SimpleLineSegment(new Vector2D(47.603305785123965, 447.2727272727273), new Vector2D(41.98347107438017, 435.702479338843));
-//        SimpleLineSegment points = new SimpleLineSegment(new Vector2D(0.0, 363.6363636363637), new Vector2D(0.0, 327.2727272727273));
-
-//        strokeLineSegment(edge);
-//        strokeLineSegment(points);
-
+        // total height of box
+        strokeStraight(new Vector2D(90, 100), new Vector2D(90, 100+totalHeight));
 
         // show
         Scene scene = new Scene(root);
