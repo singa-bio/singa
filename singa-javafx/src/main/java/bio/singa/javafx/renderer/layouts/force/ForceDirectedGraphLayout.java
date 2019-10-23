@@ -10,16 +10,15 @@ import bio.singa.mathematics.vectors.Vector2D;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 
 import java.util.*;
 
 /**
- * This class tries to arrange a graph using force directed placement. <br>
- * The algorithm is based on Fruchterman, Thomas MJ, and Edward M. Reingold.
- * "Graph drawing by force-directed placement." Softw., Pract. Exper. 21.11
- * (1991): 1129-1164.<br>
- * With some modifications.
+ * This class tries to arrange a graph using force directed placement. <br> The algorithm is based on Fruchterman,
+ * Thomas MJ, and Edward M. Reingold. "Graph drawing by force-directed placement." Softw., Pract. Exper. 21.11 (1991):
+ * 1129-1164.<br> With some modifications.
  *
  * @author cl
  */
@@ -30,11 +29,10 @@ public class ForceDirectedGraphLayout<NodeType extends Node<NodeType, Vector2D, 
     private final DoubleProperty drawingWidth;
     private final DoubleProperty drawingHeight;
     private final IntegerProperty nodeNumber;
-    private GraphType graph;
     private final Map<NodeType, Vector2D> velocities;
+    private GraphType graph;
     private DoubleBinding forceConstant;
     private int iteration;
-
     private List<Force<NodeType, EdgeType, IdentifierType, GraphType>> forces;
     private Collection<IdentifierType> fixedNodes;
 
@@ -62,7 +60,7 @@ public class ForceDirectedGraphLayout<NodeType extends Node<NodeType, Vector2D, 
 
             @Override
             protected double computeValue() {
-                return Math.sqrt((drawingHeight.get() * drawingWidth.get()) / (nodeNumber.get()));
+                return Math.sqrt((drawingHeight.get() * drawingWidth.get()) / (nodeNumber.get() * 50));
             }
         };
     }
@@ -73,7 +71,7 @@ public class ForceDirectedGraphLayout<NodeType extends Node<NodeType, Vector2D, 
 
     public void setGraph(GraphType graph) {
         this.graph = graph;
-        nodeNumber.setValue(graph.getNodes().size()*2);
+        nodeNumber.setValue(graph.getNodes().size() * 2);
     }
 
     public double getDrawingWidth() {
@@ -108,12 +106,12 @@ public class ForceDirectedGraphLayout<NodeType extends Node<NodeType, Vector2D, 
         return forces;
     }
 
-    public void addForce(Force<NodeType, EdgeType, IdentifierType, GraphType> force) {
-        forces.add(force);
-    }
-
     public void setForces(List<Force<NodeType, EdgeType, IdentifierType, GraphType>> forces) {
         this.forces = forces;
+    }
+
+    public void addForce(Force<NodeType, EdgeType, IdentifierType, GraphType> force) {
+        forces.add(force);
     }
 
     public DoubleBinding forceConstantProperty() {
@@ -129,8 +127,7 @@ public class ForceDirectedGraphLayout<NodeType extends Node<NodeType, Vector2D, 
     }
 
     /**
-     * Calculates one iteration of the optimization process and returns the
-     * resulting graph.
+     * Calculates one iteration of the optimization process and returns the resulting graph.
      *
      * @param i The current iteration.
      * @return The resulting graph
@@ -152,6 +149,9 @@ public class ForceDirectedGraphLayout<NodeType extends Node<NodeType, Vector2D, 
 
             Vector2D currentLocation = node.getPosition();
             Vector2D currentVelocity = velocities.get(node);
+            if (currentVelocity == null) {
+                continue;
+            }
             double magnitude = currentVelocity.getMagnitude();
 
             // calculate new position v = v.pos + v^ * min(|v|,temp)
