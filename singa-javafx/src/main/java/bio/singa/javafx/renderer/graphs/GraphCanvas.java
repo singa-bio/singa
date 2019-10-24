@@ -1,5 +1,6 @@
 package bio.singa.javafx.renderer.graphs;
 
+import bio.singa.mathematics.graphs.model.Graph;
 import bio.singa.mathematics.graphs.model.Node;
 import bio.singa.mathematics.vectors.Vector2D;
 import javafx.beans.property.BooleanProperty;
@@ -13,11 +14,15 @@ import javafx.scene.input.MouseEvent;
  */
 public class GraphCanvas extends Canvas {
 
+    private final GraphRenderer renderer;
+    private final Graph<? extends Node<?, Vector2D, ?>, ?, ?> graph;
     public BooleanProperty editMode;
     public Vector2D dragStart;
     public Node<?, Vector2D, ?> draggedNode;
 
-    public GraphCanvas() {
+    public GraphCanvas(GraphRenderer renderer, Graph<? extends Node<?, Vector2D, ?>, ?, ?> graph) {
+        this.renderer = renderer;
+        this.graph = graph;
         editMode = new SimpleBooleanProperty(true);
         // handle events
         addEventHandler(MouseEvent.MOUSE_CLICKED, this::handleClick);
@@ -31,7 +36,7 @@ public class GraphCanvas extends Canvas {
         if (event.getButton().equals(MouseButton.PRIMARY)) {
             if (event.getEventType() == MouseEvent.MOUSE_PRESSED) {
                 dragStart = new Vector2D(event.getX(), event.getY());
-                for (Node node : GraphDisplayApplication.getGraph().getNodes()) {
+                for (Node node : graph.getNodes()) {
                     if (isClickedOnNode(event, node)) {
                         draggedNode = node;
                         break;
@@ -44,7 +49,7 @@ public class GraphCanvas extends Canvas {
                 }
             } else if (event.getEventType() == MouseEvent.MOUSE_RELEASED) {
                 draggedNode = null;
-                GraphDisplayApplication.renderer.arrangeGraph(GraphDisplayApplication.getGraph(), 30);
+                renderer.arrangeGraph(graph, 30);
             }
         }
     }
@@ -59,7 +64,7 @@ public class GraphCanvas extends Canvas {
 
     private void handleRightClick(MouseEvent event) {
         boolean isNode = false;
-        for (Node node : GraphDisplayApplication.getGraph().getNodes()) {
+        for (Node node : graph.getNodes()) {
             if (isClickedOnNode(event, node)) {
                 // do something in case of right click on node
                 isNode = true;
@@ -72,7 +77,7 @@ public class GraphCanvas extends Canvas {
     }
 
     private void handleLeftClick(MouseEvent event) {
-        for (Node<?, Vector2D, ?> node : GraphDisplayApplication.getGraph().getNodes()) {
+        for (Node<?, Vector2D, ?> node : graph.getNodes()) {
             if (isClickedOnNode(event, node)) {
                 // do something in case of left click on node
                 break;
@@ -81,13 +86,13 @@ public class GraphCanvas extends Canvas {
     }
 
     private void handleArrangement() {
-        GraphDisplayApplication.renderer.arrangeOnce(GraphDisplayApplication.getGraph());
+        renderer.arrangeOnce(graph);
     }
 
     private boolean isClickedOnNode(MouseEvent event, Node<?, Vector2D, ?> node) {
-        return node.getPosition().isNearVector(new Vector2D(event.getX() + GraphDisplayApplication.getRenderer().getRenderingOptions().getNodeDiameter() / 2,
-                        event.getY() + GraphDisplayApplication.getRenderer().getRenderingOptions().getNodeDiameter() / 2),
-                GraphDisplayApplication.getRenderer().getRenderingOptions().getNodeDiameter() / 2);
+        return node.getPosition().isNearVector(new Vector2D(event.getX() + renderer.getRenderingOptions().getNodeDiameter() / 2,
+                        event.getY() + renderer.getRenderingOptions().getNodeDiameter() / 2),
+                renderer.getRenderingOptions().getNodeDiameter() / 2);
     }
 
     @Override

@@ -10,7 +10,6 @@ import bio.singa.mathematics.vectors.Vector2D;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 
 import java.util.*;
@@ -25,9 +24,11 @@ import java.util.*;
 public class ForceDirectedGraphLayout<NodeType extends Node<NodeType, Vector2D, IdentifierType>, EdgeType extends Edge<NodeType>,
         IdentifierType, GraphType extends Graph<NodeType, EdgeType, IdentifierType>> implements LayoutRenderer<NodeType, EdgeType, IdentifierType, GraphType> {
 
+    private static final double DEFAULT_FORCE_CONSTANT_FACTOR = 10.0;
     private final int totalIterations;
     private final DoubleProperty drawingWidth;
     private final DoubleProperty drawingHeight;
+    private final double forceConstantFactor;
     private final IntegerProperty nodeNumber;
     private final Map<NodeType, Vector2D> velocities;
     private GraphType graph;
@@ -37,12 +38,17 @@ public class ForceDirectedGraphLayout<NodeType extends Node<NodeType, Vector2D, 
     private Collection<IdentifierType> fixedNodes;
 
     public ForceDirectedGraphLayout(GraphType graph, GraphRenderer<NodeType, EdgeType, IdentifierType, GraphType> renderer, int totalIterations) {
+        this(graph, renderer, totalIterations, DEFAULT_FORCE_CONSTANT_FACTOR);
+    }
+
+    public ForceDirectedGraphLayout(GraphType graph, GraphRenderer<NodeType, EdgeType, IdentifierType, GraphType> renderer, int totalIterations, double forceConstantFactor) {
         drawingWidth = renderer.drawingWidthProperty();
         drawingHeight = renderer.drawingHeightProperty();
         forces = new ArrayList<>();
 
-        this.totalIterations = totalIterations;
         this.graph = graph;
+        this.totalIterations = totalIterations;
+        this.forceConstantFactor = forceConstantFactor;
         nodeNumber = new SimpleIntegerProperty(10);
         velocities = new HashMap<>();
 
@@ -60,7 +66,7 @@ public class ForceDirectedGraphLayout<NodeType extends Node<NodeType, Vector2D, 
 
             @Override
             protected double computeValue() {
-                return Math.sqrt((drawingHeight.get() * drawingWidth.get()) / (nodeNumber.get() * 50));
+                return Math.sqrt((drawingHeight.get() * drawingWidth.get()) / (nodeNumber.get() * forceConstantFactor));
             }
         };
     }

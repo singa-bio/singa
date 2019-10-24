@@ -59,7 +59,7 @@ public class GraphDisplayApplication extends Application {
         root.setTop(topContainer);
 
         // center part
-        canvas = new GraphCanvas();
+        canvas = new GraphCanvas(renderer, graph);
         renderer.renderVoronoi(false);
         root.setCenter(canvas);
 

@@ -22,6 +22,7 @@ import javafx.scene.paint.Color;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static bio.singa.javafx.renderer.graphs.GraphRenderer.RenderingMode.FORCE_DIRECTED;
@@ -32,6 +33,7 @@ import static bio.singa.javafx.renderer.graphs.GraphRenderer.RenderingMode.FORCE
 public class GraphRenderer<NodeType extends Node<NodeType, Vector2D, IdentifierType>, EdgeType extends Edge<NodeType>,
         IdentifierType, GraphType extends Graph<NodeType, EdgeType, IdentifierType>> extends AnimationTimer implements Renderer {
 
+    ForceDirectedGraphLayout<NodeType, EdgeType, IdentifierType, GraphType> layout;
     private final ConcurrentLinkedQueue<GraphType> graphQueue = new ConcurrentLinkedQueue<>();
     private final DoubleProperty drawingWidth;
     private final DoubleProperty drawingHeight;
@@ -41,8 +43,6 @@ public class GraphRenderer<NodeType extends Node<NodeType, Vector2D, IdentifierT
     private GraphicsContext graphicsContext;
     private StringProperty renderingMode;
     private Rectangle boundingBox;
-
-    ForceDirectedGraphLayout<NodeType, EdgeType, IdentifierType, GraphType> layout;
 
     public GraphRenderer() {
         drawingWidth = new SimpleDoubleProperty();
@@ -70,13 +70,21 @@ public class GraphRenderer<NodeType extends Node<NodeType, Vector2D, IdentifierT
     }
 
     public void centerGraph(GraphType graph) {
-        Thread graphAligner = new Thread(new GraphAligner<>(this, graph));
+        centerGraph(graph, (node) -> true);
+    }
+
+    public void centerGraph(GraphType graph, Predicate<NodeType> nodePredicate) {
+        Thread graphAligner = new Thread(new GraphAligner<>(this, graph, nodePredicate));
         graphAligner.start();
         start();
     }
 
     public void centerOnce(GraphType graph) {
-        GraphAligner<NodeType, EdgeType, IdentifierType, GraphType> graphAligner = new GraphAligner<>(this, graph);
+        centerOnce(graph, (node -> true));
+    }
+
+    public void centerOnce(GraphType graph, Predicate<NodeType> nodePredicate) {
+        GraphAligner<NodeType, EdgeType, IdentifierType, GraphType> graphAligner = new GraphAligner<>(this, graph, nodePredicate);
         render(graphAligner.centerGraph());
     }
 
@@ -284,7 +292,7 @@ public class GraphRenderer<NodeType extends Node<NodeType, Vector2D, IdentifierT
             }
         }
         double offset = getRenderingOptions().getNodeDiameter();
-        boundingBox = new Rectangle(new Vector2D(minX-offset, minY-offset), new Vector2D(maxX+offset, maxY+offset));
+        boundingBox = new Rectangle(new Vector2D(minX - offset, minY - offset), new Vector2D(maxX + offset, maxY + offset));
     }
 
     public Rectangle getBoundingBox() {
