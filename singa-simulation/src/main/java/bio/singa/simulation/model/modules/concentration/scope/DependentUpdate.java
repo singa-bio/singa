@@ -58,6 +58,7 @@ public class DependentUpdate implements UpdateScope {
     @Override
     public void processAllUpdatables(Collection<Updatable> updatables) {
         // calculate all full updates first
+        module.inBetweenHalfSteps();
         supply().setStrutCalculation(false);
         for (Updatable updatable : updatables) {
             if (module.getApplicationCondition().test(updatable)) {
@@ -67,11 +68,13 @@ public class DependentUpdate implements UpdateScope {
         }
         // explicitly calculate half step concentrations
         determineHalfStepConcentrations();
+        module.inBetweenHalfSteps();
         supply().setStrutCalculation(true);
         for (ConcentrationDeltaIdentifier identifier : supply().getCurrentFullDeltas().keySet()) {
             supply().setCurrentUpdatable(identifier.getUpdatable());
             specify().processContainer(getHalfStepConcentration(identifier.getUpdatable()), identifier.getSubsection(), identifier.getEntity());
         }
+        module.inBetweenHalfSteps();
         // set largest local error
         supply().setLargestLocalError(module.determineLargestLocalError());
         // clear used deltas
@@ -124,7 +127,9 @@ public class DependentUpdate implements UpdateScope {
     public ConcentrationContainer getHalfStepConcentration(Updatable updatable) {
         ConcentrationContainer container = halfConcentrations.get(updatable);
         if (container == null) {
-            throw new IllegalStateException("No half concentration container has been defined for " + updatable + ".");
+            // if there was no concentration container assigned, there was no delta calculated for this node,
+            // therefore the concentration between half and full did not change
+            return updatable.getConcentrationContainer();
         }
         return container;
     }

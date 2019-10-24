@@ -90,7 +90,7 @@ public class Simulation {
     /**
      * The sections top be updated
      */
-    private ArrayList<Updatable> updatables;
+    private List<Updatable> updatables;
 
     /**
      * The nodes, that are observed during simulation.
@@ -400,7 +400,7 @@ public class Simulation {
         this.assignmentRules = AssignmentRules.sortAssignmentRulesByPriority(assignmentRules);
     }
 
-    public ArrayList<Updatable> getUpdatables() {
+    public List<Updatable> getUpdatables() {
         return updatables;
     }
 

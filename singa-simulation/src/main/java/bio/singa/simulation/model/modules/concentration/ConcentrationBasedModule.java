@@ -351,11 +351,19 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
         if (localErrorIsAcceptable()) {
             setState(SUCCEEDED);
         } else {
-            logger.trace("Recalculation required for error {}.", supplier.getLargestLocalError().getValue());
-            setState(REQUIRING_RECALCULATION);
-            supplier.clearDeltas();
-            scope.clearPotentialDeltas();
+            onRequireRecalculation();
         }
+    }
+
+    protected void onRequireRecalculation() {
+        logger.trace("Recalculation required for error {}.", supplier.getLargestLocalError().getValue());
+        setState(REQUIRING_RECALCULATION);
+        supplier.clearDeltas();
+        scope.clearPotentialDeltas();
+    }
+
+    public void inBetweenHalfSteps() {
+
     }
 
     private boolean localErrorIsAcceptable() {

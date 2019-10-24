@@ -77,6 +77,10 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
                 Map<CellSubsection, Polygon> neighborSubsections = neighbour.getSubsectionRepresentations();
                 for (Map.Entry<CellSubsection, Polygon> neighborSubsectionEntry : neighborSubsections.entrySet()) {
                     CellSubsection neighborSubsection = neighborSubsectionEntry.getKey();
+                    // check if it was already initialized
+                    if (containsMapping(currentSubsection, neighbour)) {
+                        continue;
+                    }
                     Polygon neighborPolygon = neighborSubsectionEntry.getValue();
                     // the first element of the pair is the frist argument entering the getTouchingLineSegments method
                     Map<Pair<LineSegment>, LineSegment> touchingLineSegments = Polygons.getTouchingLineSegments(currentPolygon, neighborPolygon);
@@ -96,18 +100,31 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
                     double relativeCentroidDistance = currentPolygon.getCentroid().distanceTo(neighborPolygon.getCentroid()) / defaultLength;
                     double relativeEffectiveArea = relativeAdjacentArea / (relativeCentroidDistance * relativeCentroidDistance);
 
-                    // TODO maybe add to neighbor map as well
                     if (relativeEffectiveArea > 0) {
-                        if (!subsectionAdjacency.containsKey(currentSubsection)) {
-                            subsectionAdjacency.put(currentSubsection, new ArrayList<>());
-                        }
-                        subsectionAdjacency.get(currentSubsection).add(new AreaMapping(neighbour, neighborSubsection, relativeEffectiveArea));
+                        AreaMapping mapping = new AreaMapping(this, neighbour, neighborSubsection, relativeEffectiveArea);
+                        addAreaMapping(currentSubsection, mapping);
+                        neighbour.addAreaMapping(currentSubsection, mapping);
                     }
 
                 }
             }
         }
         initializeConnectedMembrane();
+    }
+
+    public void addAreaMapping(CellSubsection subsection, AreaMapping mapping) {
+        if (!subsectionAdjacency.containsKey(subsection)) {
+            subsectionAdjacency.put(subsection, new ArrayList<>());
+        }
+        subsectionAdjacency.get(subsection).add(mapping);
+    }
+
+    public boolean containsMapping(CellSubsection subsection, AutomatonNode neighbour) {
+        if (subsectionAdjacency.containsKey(subsection)) {
+            return subsectionAdjacency.get(subsection).stream()
+                    .anyMatch(entry -> entry.target.equals(this) && entry.source.equals(neighbour));
+        }
+        return false;
     }
 
     public void initializeDiffusiveReduction(Polygon area, Ratio reductionRatio) {
@@ -155,7 +172,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
 
     private AreaMapping getCorrectMapping(List<AreaMapping> mappings, AutomatonNode node, CellSubsection subsection) {
         for (AutomatonNode.AreaMapping mapping : mappings) {
-            if (mapping.getNode().equals(node) && mapping.getSubsection().equals(subsection)) {
+            if (mapping.getSource().equals(node) && mapping.getSubsection().equals(subsection)) {
                 return mapping;
             }
         }
@@ -317,6 +334,14 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
         subsectionRepresentations.put(subsection, representation);
     }
 
+    public void clearCaches() {
+        for (List<AreaMapping> areaMappings : subsectionAdjacency.values()) {
+            for (AreaMapping areaMapping : areaMappings) {
+                areaMapping.clear();
+            }
+        }
+    }
+
     @Override
     public String toString() {
         return "Node " + getIdentifier() + " (" + cellRegion + ")";
@@ -330,20 +355,54 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
 
     public static class AreaMapping {
 
-        private final AutomatonNode node;
+        private final AutomatonNode source;
+        private final AutomatonNode target;
         private final CellSubsection subsection;
         private final double relativeArea;
+        private double partialDelta;
+        private boolean cached;
         private double diffusiveRatio;
 
-        public AreaMapping(AutomatonNode node, CellSubsection subsection, double relativeArea) {
-            this.node = node;
+        public AreaMapping(AutomatonNode source, AutomatonNode target, CellSubsection subsection, double relativeArea) {
+            this.source = source;
+            this.target = target;
             this.subsection = subsection;
             this.relativeArea = relativeArea;
+            cached = false;
             diffusiveRatio = 1.0;
         }
 
-        public AutomatonNode getNode() {
-            return node;
+
+        public AutomatonNode getOther(AutomatonNode currentNode) {
+            if (currentNode.equals(target)) {
+                return source;
+            }
+            return target;
+        }
+
+        public AutomatonNode getSource() {
+            return source;
+        }
+
+        public AutomatonNode getTarget() {
+            return target;
+        }
+
+        public boolean isCached() {
+            return cached;
+        }
+
+        public double getCached() {
+            return partialDelta;
+        }
+
+        public void setCache(double partialDelta) {
+            this.partialDelta = -partialDelta;
+            cached = true;
+        }
+
+        public void clear() {
+            cached = false;
         }
 
         public CellSubsection getSubsection() {
@@ -367,13 +426,13 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             AreaMapping that = (AreaMapping) o;
-            return Objects.equals(node, that.node) &&
+            return Objects.equals(source, that.source) &&
                     Objects.equals(subsection, that.subsection);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(node, subsection);
+            return Objects.hash(source, subsection);
         }
     }
 

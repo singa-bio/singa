@@ -407,12 +407,12 @@ public class MembraneFactory {
                     double relativeArea = firstSide.multiply(secondSide).asType(Area.class).divide(UnitRegistry.getArea()).getValue().doubleValue();
 
                     // add symmetric adjacency
-                    AutomatonNode.AreaMapping firstMapping = new AutomatonNode.AreaMapping(node, secondSubsection, relativeArea);
+                    AutomatonNode.AreaMapping firstMapping = new AutomatonNode.AreaMapping(node, node, secondSubsection, relativeArea);
                     List<AutomatonNode.AreaMapping> firstMappings = new ArrayList<>();
                     firstMappings.add(firstMapping);
                     node.getSubsectionAdjacency().put(firstSubsection, firstMappings);
 
-                    AutomatonNode.AreaMapping secondMapping = new AutomatonNode.AreaMapping(node, firstSubsection, relativeArea);
+                    AutomatonNode.AreaMapping secondMapping = new AutomatonNode.AreaMapping(node, node, firstSubsection, relativeArea);
                     List<AutomatonNode.AreaMapping> secondMappings = new ArrayList<>();
                     secondMappings.add(secondMapping);
                     node.getSubsectionAdjacency().put(secondSubsection, secondMappings);
