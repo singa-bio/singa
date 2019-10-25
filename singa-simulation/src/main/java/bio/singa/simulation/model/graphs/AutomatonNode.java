@@ -372,7 +372,6 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
             diffusiveRatio = 1.0;
         }
 
-
         public AutomatonNode getOther(AutomatonNode currentNode) {
             if (currentNode.equals(target)) {
                 return source;

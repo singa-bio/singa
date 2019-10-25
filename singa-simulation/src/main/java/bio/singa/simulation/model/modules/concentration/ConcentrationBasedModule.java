@@ -13,7 +13,6 @@ import bio.singa.simulation.model.simulation.Updatable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Objects;
 import java.util.function.Predicate;
 
 import static bio.singa.simulation.model.modules.concentration.ModuleState.REQUIRING_RECALCULATION;
@@ -284,8 +283,11 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
         ConcentrationDeltaIdentifier largestIdentifier = null;
         double associatedDelta = 0.0;
         for (ConcentrationDeltaIdentifier identifier : supplier.getCurrentFullDeltas().keySet()) {
-            double fullDelta = supplier.getCurrentFullDeltas().get(identifier).getValue();
             double halfDelta = supplier.getCurrentHalfDeltas().get(identifier).getValue();
+            if (halfDelta < getSimulation().getScheduler().getMoleculeFraction()) {
+                continue;
+            }
+            double fullDelta = supplier.getCurrentFullDeltas().get(identifier).getValue();
             // calculate error
             double localError = Math.abs(1 - (fullDelta / halfDelta));
             // determine the largest error in the current deltas
@@ -297,8 +299,9 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
                 associatedDelta = fullDelta;
             }
         }
-        // safety check
-        Objects.requireNonNull(largestIdentifier);
+        if (largestIdentifier == null) {
+            return NumericalError.MINIMAL_EMPTY_ERROR;
+        }
         NumericalError localError = new NumericalError(largestIdentifier.getUpdatable(), largestIdentifier.getEntity(), largestLocalError);
         // set local error and return local error
         getSimulation().getScheduler().setLargestLocalError(localError, this, associatedDelta);
@@ -351,15 +354,11 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
         if (localErrorIsAcceptable()) {
             setState(SUCCEEDED);
         } else {
-            onRequireRecalculation();
+            logger.trace("Recalculation required for error {}.", supplier.getLargestLocalError().getValue());
+            setState(REQUIRING_RECALCULATION);
+            supplier.clearDeltas();
+            scope.clearPotentialDeltas();
         }
-    }
-
-    protected void onRequireRecalculation() {
-        logger.trace("Recalculation required for error {}.", supplier.getLargestLocalError().getValue());
-        setState(REQUIRING_RECALCULATION);
-        supplier.clearDeltas();
-        scope.clearPotentialDeltas();
     }
 
     public void inBetweenHalfSteps() {

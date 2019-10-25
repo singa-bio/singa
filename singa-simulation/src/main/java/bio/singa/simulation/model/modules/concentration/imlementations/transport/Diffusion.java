@@ -97,18 +97,19 @@ public class Diffusion extends ConcentrationBasedModule<EntityDeltaFunction> {
         List<AutomatonNode.AreaMapping> areaMappings = node.getSubsectionAdjacency().get(subsection);
         double delta = 0.0;
         for (AutomatonNode.AreaMapping mapping : areaMappings) {
-            double cachedDelta = 0.0;
+            double partialDelta = 0.0;
             if (mapping.isCached()) {
-                cachedDelta = mapping.getCached();
-            }
-            AutomatonNode other = mapping.getOther(node);
-            ConcentrationContainer nodeContainer;
-            if (supplier.isStrutCalculation()) {
-                nodeContainer = getScope().getHalfStepConcentration(other);
+                partialDelta = mapping.getCached();
             } else {
-                nodeContainer = other.getConcentrationContainer();
+                AutomatonNode other = mapping.getOther(node);
+                ConcentrationContainer otherContainer;
+                if (supplier.isStrutCalculation()) {
+                    otherContainer = getScope().getHalfStepConcentration(other);
+                } else {
+                    otherContainer = other.getConcentrationContainer();
+                }
+                partialDelta = diffusivity * mapping.getRelativeArea() * mapping.getDiffusiveRatio() * (otherContainer.get(mapping.getSubsection(), entity) - currentConcentration);
             }
-            double partialDelta = diffusivity * mapping.getRelativeArea() * mapping.getDiffusiveRatio() * (nodeContainer.get(mapping.getSubsection(), entity) - currentConcentration);
             delta += partialDelta;
             mapping.setCache(partialDelta);
         }

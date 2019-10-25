@@ -58,7 +58,6 @@ public class DependentUpdate implements UpdateScope {
     @Override
     public void processAllUpdatables(Collection<Updatable> updatables) {
         // calculate all full updates first
-        module.inBetweenHalfSteps();
         supply().setStrutCalculation(false);
         for (Updatable updatable : updatables) {
             if (module.getApplicationCondition().test(updatable)) {
@@ -66,9 +65,9 @@ public class DependentUpdate implements UpdateScope {
                 specify().processContainer(updatable.getConcentrationContainer());
             }
         }
+        module.inBetweenHalfSteps();
         // explicitly calculate half step concentrations
         determineHalfStepConcentrations();
-        module.inBetweenHalfSteps();
         supply().setStrutCalculation(true);
         for (ConcentrationDeltaIdentifier identifier : supply().getCurrentFullDeltas().keySet()) {
             supply().setCurrentUpdatable(identifier.getUpdatable());

@@ -59,7 +59,7 @@ public class FormatFeature {
     }
 
     /**
-     * map: key: feature -> value: list: evidence
+     * map: key: feature - value: list: evidence
      *
      * @param reaction
      * @return

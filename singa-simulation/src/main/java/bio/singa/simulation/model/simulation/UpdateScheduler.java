@@ -60,12 +60,14 @@ public class UpdateScheduler {
     private boolean globalErrorAcceptable;
     private boolean calculateGlobalError;
     private ThreadPoolExecutor executor;
+    private final double moleculeFraction;
 
     public UpdateScheduler(Simulation simulation) {
         this.simulation = simulation;
         modules = new ArrayDeque<>(simulation.getModules());
         largestLocalError = NumericalError.MINIMAL_EMPTY_ERROR;
         largestGlobalError = NumericalError.MINIMAL_EMPTY_ERROR;
+        moleculeFraction = MolarConcentration.moleculesToConcentration(1.0/10000.0);
     }
 
     public void initializeThreadPool() {
@@ -89,6 +91,10 @@ public class UpdateScheduler {
 
     public long getTimestepsIncreased() {
         return timestepsIncreased;
+    }
+
+    public double getMoleculeFraction() {
+        return moleculeFraction;
     }
 
     public void nextEpoch() {
