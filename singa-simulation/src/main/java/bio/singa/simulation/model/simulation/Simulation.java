@@ -319,7 +319,6 @@ public class Simulation {
         // for each node
         NeighborhoodMappingManager.initializeNeighborhoodForGraph(graph);
         for (AutomatonNode node : graph.getNodes()) {
-            node.initializeAdjacency();
             if (getVolumeLayer() != null) {
                 // for each volume
                 for (VolumeLikeAgent agent : getVolumeLayer().getAgents()) {
