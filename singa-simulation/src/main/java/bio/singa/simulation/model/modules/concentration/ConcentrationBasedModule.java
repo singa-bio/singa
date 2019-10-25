@@ -284,9 +284,9 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
         double associatedDelta = 0.0;
         for (ConcentrationDeltaIdentifier identifier : supplier.getCurrentFullDeltas().keySet()) {
             double halfDelta = supplier.getCurrentHalfDeltas().get(identifier).getValue();
-            if (halfDelta < getSimulation().getScheduler().getMoleculeFraction()) {
-                continue;
-            }
+//            if (halfDelta < getSimulation().getScheduler().getMoleculeFraction()) {
+//                continue;
+//            }
             double fullDelta = supplier.getCurrentFullDeltas().get(identifier).getValue();
             // calculate error
             double localError = Math.abs(1 - (fullDelta / halfDelta));

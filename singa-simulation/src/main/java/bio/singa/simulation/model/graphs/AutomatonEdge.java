@@ -6,7 +6,6 @@ public class AutomatonEdge extends AbstractEdge<AutomatonNode> {
 
     public AutomatonEdge(int identifier) {
         super(identifier);
-
     }
 
 }

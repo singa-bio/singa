@@ -65,7 +65,7 @@ public class ShortestPathFinder<NodeType extends Node<NodeType, VectorType, Iden
                 }
             }
         }
-        return null;
+        return GraphPath.emptyPath();
     }
 
     /**

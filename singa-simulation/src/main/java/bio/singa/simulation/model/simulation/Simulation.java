@@ -16,6 +16,7 @@ import bio.singa.simulation.model.agents.volumelike.VolumeLayer;
 import bio.singa.simulation.model.agents.volumelike.VolumeLikeAgent;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonNode;
+import bio.singa.simulation.model.graphs.NeighborhoodMappingManager;
 import bio.singa.simulation.model.modules.UpdateModule;
 import bio.singa.simulation.model.modules.concentration.ConcentrationDelta;
 import bio.singa.simulation.model.modules.concentration.NumericalError;
@@ -316,6 +317,7 @@ public class Simulation {
                 .map(Diffusion.class::cast)
                 .findAny();
         // for each node
+        NeighborhoodMappingManager.initializeNeighborhoodForGraph(graph);
         for (AutomatonNode node : graph.getNodes()) {
             node.initializeAdjacency();
             if (getVolumeLayer() != null) {
@@ -325,7 +327,7 @@ public class Simulation {
                     Polygon cortexArea = agent.getArea();
                     if (optionalModule.isPresent()) {
                         Ratio ratio = optionalModule.get().getFeature(Ratio.class);
-                        node.initializeDiffusiveReduction(cortexArea, ratio);
+                        NeighborhoodMappingManager.initializeDiffusiveReduction(node, cortexArea, ratio);
                     }
                 }
             }

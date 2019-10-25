@@ -27,6 +27,8 @@ import javax.measure.quantity.Length;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static bio.singa.mathematics.graphs.model.GraphPredicates.nodeHasPosition;
+
 /**
  * @author cl
  */
@@ -41,6 +43,12 @@ public class MembraneFactory {
     private Membrane membrane;
 
     private Map<AutomatonNode, UndirectedGraph> subsectionMapping;
+
+    private MembraneFactory(AutomatonGraph graph, Map<Vector2D, CellRegion> regions) {
+        this.graph = graph;
+        this.regions = regions;
+        subsectionMapping = new HashMap<>();
+    }
 
     static Membrane createLinearMembrane(List<Vector2D> vectors, CellRegion innerRegion, CellRegion membraneRegion, Vector2D innerPoint, AutomatonGraph graph, Map<Vector2D, CellRegion> regions) {
         logger.info("Initializing linear membrane from {} vectors", vectors.size());
@@ -67,116 +75,14 @@ public class MembraneFactory {
         return factory.membrane;
     }
 
-    private MembraneFactory(AutomatonGraph graph, Map<Vector2D, CellRegion> regions) {
-        this.graph = graph;
-        this.regions = regions;
-        subsectionMapping = new HashMap<>();
-    }
-
-    private void initializeMembrane(CellRegion innerRegion, CellRegion membraneRegion) {
-        membrane = new Membrane(membraneRegion.getIdentifier());
-        membrane.setInnerRegion(innerRegion);
-        membrane.setMembraneRegion(membraneRegion);
-        membrane.setInnerPoint(innerPoint);
-    }
-
-    private Map<CellRegion, List<Vector2D>> reconstructRegionMap() {
-        Map<CellRegion, List<Vector2D>> regionMap = new HashMap<>();
-        for (Map.Entry<Vector2D, CellRegion> entry : regions.entrySet()) {
-            if (!regionMap.containsKey(entry.getValue())) {
-                regionMap.put(entry.getValue(), new ArrayList<>());
-            }
-            regionMap.get(entry.getValue()).add(entry.getKey());
-        }
-        return regionMap;
-    }
-
-    /**
-     * Associates membranes to their nodes and nodes to their membranes. This means regions are set for each node
-     * depending on the membrane the the region associated to each membrane segment.
-     *
-     * @param segments the path
-     */
-    private void associateToGraph(List<LineSegment> segments) {
-        // determine and setup membrane cells
-        for (LineSegment lineSegment : segments) {
-            Vector2D startingPoint = lineSegment.getStartingPoint();
-            Vector2D endingPoint = lineSegment.getEndingPoint();
-            for (AutomatonNode node : graph.getNodes()) {
-
-                Polygon spatialRepresentation = node.getSpatialRepresentation();
-                boolean startIsInside = spatialRepresentation.containsVector(startingPoint);
-                boolean endIsInside = spatialRepresentation.containsVector(endingPoint);
-                List<IntersectionFragment> intersections = spatialRepresentation.getIntersectionFragments(lineSegment);
-                if (startIsInside && endIsInside) {
-                    // completely internal
-                    handleNoIntersection(node, startingPoint, endingPoint);
-                } else if (startIsInside && intersections.size() == 1) {
-                    // start inside or on line
-                    handleSingleIntersection(startingPoint, node, intersections.iterator().next());
-                } else if (endIsInside && intersections.size() == 1) {
-                    // end inside or on line
-                    handleSingleIntersection(endingPoint, node, intersections.iterator().next());
-                } else if (intersections.size() == 2) {
-                    // line only crosses the membrane
-                    initializeNodeSubsectionMapping(node, regions.get(startingPoint));
-                    UndirectedGraph subsectionGraph = subsectionMapping.get(node);
-
-                    Iterator<IntersectionFragment> iterator = intersections.iterator();
-                    IntersectionFragment firstFragment = iterator.next();
-                    IntersectionFragment secondFragment = iterator.next();
-
-                    Vector2D firstIntersection = firstFragment.getIntersection();
-                    Vector2D secondIntersection = secondFragment.getIntersection();
-
-                    // TODO handle if first and second intersection are equal, the segment passes through a vertex
-
-                    membrane.addSegment(node, new SimpleLineSegment(firstIntersection, secondIntersection));
-                    RegularNode firstIntersectionNode = createIntersectionNode(subsectionGraph, firstFragment);
-                    RegularNode secondIntersectionNode = createIntersectionNode(subsectionGraph, secondFragment);
-
-                    subsectionGraph.addEdgeBetween(firstIntersectionNode, secondIntersectionNode);
-                }
-            }
-        }
-    }
-
-    private void handleNoIntersection(AutomatonNode node, Vector2D startingPoint, Vector2D endingPoint) {
-        initializeNodeSubsectionMapping(node, regions.get(startingPoint));
-        UndirectedGraph subsectionGraph = subsectionMapping.get(node);
-        membrane.addSegment(node, new SimpleLineSegment(startingPoint, endingPoint));
-        RegularNode startingNode = subsectionGraph.snapNode(startingPoint);
-        RegularNode endingNode = subsectionGraph.snapNode(endingPoint);
-        subsectionGraph.addEdgeBetween(startingNode, endingNode);
-    }
-
-    private void handleSingleIntersection(Vector2D internalPoint, AutomatonNode node, IntersectionFragment intersectionFragment) {
-        Vector2D intersection = intersectionFragment.getIntersection();
-        if (!intersection.equals(internalPoint)) {
-            initializeNodeSubsectionMapping(node, regions.get(internalPoint));
-            UndirectedGraph subsectionGraph = subsectionMapping.get(node);
-            membrane.addSegment(node, new SimpleLineSegment(internalPoint, intersection));
-            // add the node created by the intersection but only if it does not already exist
-            RegularNode intersectionNode = createIntersectionNode(subsectionGraph, intersectionFragment);
-            // add the dangling node
-            RegularNode internalNode = subsectionGraph.snapNode(internalPoint);
-            subsectionGraph.addEdgeBetween(internalNode, intersectionNode);
-        } else {
-            initializeNodeSubsectionMapping(node, regions.get(internalPoint));
-            UndirectedGraph subsectionGraph = subsectionMapping.get(node);
-            // add the node created by the intersection
-            createIntersectionNode(subsectionGraph, intersectionFragment);
-        }
-    }
-
     private static RegularNode createIntersectionNode(UndirectedGraph subsectionGraph, IntersectionFragment fragment) {
         Vector2D intersection = fragment.getIntersection();
         // add the node created by the intersection but only if it does not already exist
-        RegularNode firstIntersectionNode = subsectionGraph.addNodeIf(graphNode -> graphNode.getPosition().equals(intersection),
+        RegularNode firstIntersectionNode = subsectionGraph.addNodeIf(node -> nodeHasPosition(node, intersection),
                 new RegularNode(subsectionGraph.nextNodeIdentifier(), intersection));
         // reconnect intersection node
-        Optional<RegularNode> optionalFirstStart = subsectionGraph.getNode(graphNode -> graphNode.getPosition().equals(fragment.getIntersectedStart()));
-        Optional<RegularNode> optionalFirstEnd = subsectionGraph.getNode(graphNode -> graphNode.getPosition().equals(fragment.getIntersectedEnd()));
+        Optional<RegularNode> optionalFirstStart = subsectionGraph.getNode(node -> nodeHasPosition(node, fragment.getIntersectedStart()));
+        Optional<RegularNode> optionalFirstEnd = subsectionGraph.getNode(node -> nodeHasPosition(node, fragment.getIntersectedEnd()));
         if (optionalFirstStart.isPresent() && optionalFirstEnd.isPresent()) {
             // remove previous connections between original nodes
             RegularNode startNode = optionalFirstStart.get();
@@ -187,147 +93,6 @@ public class MembraneFactory {
             subsectionGraph.addEdgeBetween(firstIntersectionNode, endNode);
         }
         return firstIntersectionNode;
-    }
-
-    private void initializeNodeSubsectionMapping(AutomatonNode node, CellRegion region) {
-        if (!subsectionMapping.containsKey(node)) {
-            subsectionMapping.put(node, node.getSpatialRepresentation().toGraph());
-            node.setCellRegion(region);
-            node.getSubsectionRepresentations().clear();
-        }
-    }
-
-    private void fillInternalNodes() {
-        // TODO maybe this can be improved
-        Set<CellRegion> region = new HashSet<>(regions.values());
-        // fill region inside of the organelle
-        AutomatonNode startingNode = null;
-        if (polygon != null) {
-            // if this is a closed membrane section
-            for (AutomatonNode node : graph.getNodes()) {
-                // determine cell that is completely inside of the membrane as starting point
-                // therefore check if all path of the representative region are inside
-                boolean allPointsAreInside = true;
-                for (Vector2D vector : node.getSpatialRepresentation().getVertices()) {
-                    // break is any point is not inside
-                    if (!polygon.containsVector(vector)) {
-                        allPointsAreInside = false;
-                        break;
-                    }
-                }
-                if (allPointsAreInside) {
-                    startingNode = node;
-                    break;
-                }
-            }
-        } else {
-            for (AutomatonNode node : graph.getNodes()) {
-                // use given internal point to determine inner subsection
-                if (node.getSubsectionRepresentations().isEmpty() && node.getCellRegion().equals(membrane.getMembraneRegion())) {
-                    node.getSpatialRepresentation().containsVector(innerPoint);
-                    break;
-                }
-            }
-        }
-
-        if (startingNode != null) {
-            // use flood fill algorithm
-            FloodFill.fill(graph.getGrid(), startingNode.getIdentifier(),
-                    currentNode -> currentNode.getCellRegion().equals(membrane.getMembraneRegion()),
-                    rectangularCoordinate -> {
-                        AutomatonNode currentNode = graph.getNode(rectangularCoordinate);
-                        currentNode.setCellRegion(membrane.getInnerRegion());
-                        currentNode.getSubsectionRepresentations().clear();
-                        currentNode.addSubsectionRepresentation(membrane.getMembraneRegion().getInnerSubsection(), currentNode.getSpatialRepresentation());
-                    },
-                    recurrentNode -> recurrentNode.getCellRegion().equals(membrane.getInnerRegion()));
-        }
-
-    }
-
-    private void setupSubsectionRepresentations() {
-        for (Map.Entry<AutomatonNode, UndirectedGraph> entry : subsectionMapping.entrySet()) {
-            AutomatonNode node = entry.getKey();
-            UndirectedGraph representationGraph = node.getSpatialRepresentation().toGraph();
-            List<RegularNode> innerNodeList = entry.getValue().getNodes().stream()
-                    .filter(subsectionNode -> !representationGraph.containsNode(representationNode -> representationNode.getPosition().equals(subsectionNode.getPosition())))
-                    .collect(Collectors.toList());
-
-            Iterator<RegularNode> iterator = innerNodeList.iterator();
-            // get starting point
-            RegularNode firstNode = iterator.next();
-            RegularNode currentNode = firstNode;
-            RegularNode targetNode = null;
-            // get other node that is also in the inner section
-            for (RegularNode neighbour : currentNode.getNeighbours()) {
-                if (innerNodeList.contains(neighbour)) {
-                    targetNode = neighbour;
-                    break;
-                }
-            }
-            List<RegularNode> circleNodes = new ArrayList<>();
-            circleNodes.add(currentNode);
-            entry.getValue().removeEdge(currentNode, targetNode);
-            if (targetNode == null) {
-                throw new IllegalStateException("Unable to crate subsection, no neighbouring internal nodes");
-            }
-            do {
-                // determine next on path
-                List<RegularNode> neighbours = currentNode.getNeighbours();
-                if (neighbours.contains(targetNode)) {
-                    circleNodes.add(targetNode);
-                    break;
-                }
-                RegularNode closestNeighbour = null;
-                double closestNeighbourDistance = Double.MAX_VALUE;
-                for (RegularNode neighbour : neighbours) {
-                    if (!circleNodes.contains(neighbour)) {
-                        double currentDistance = neighbour.getPosition().distanceTo(innerPoint);
-                        if (currentDistance < closestNeighbourDistance) {
-                            closestNeighbourDistance = currentDistance;
-                            closestNeighbour = neighbour;
-                        }
-                    }
-                }
-                circleNodes.add(closestNeighbour);
-                currentNode = closestNeighbour;
-            } while (!currentNode.equals(targetNode));
-            List<Vector2D> innerVectors = circleNodes.stream()
-                    .map(Node::getPosition)
-                    .collect(Collectors.toList());
-            node.addSubsectionRepresentation(membrane.getMembraneRegion().getInnerSubsection(), new ComplexPolygon(innerVectors));
-
-            // get last node (probably be last added intersection)
-            circleNodes.clear();
-            currentNode = firstNode;
-            circleNodes.add(currentNode);
-            do {
-                // determine next on path
-                List<RegularNode> neighbours = currentNode.getNeighbours();
-                if (neighbours.contains(targetNode)) {
-                    circleNodes.add(targetNode);
-                    break;
-                }
-                RegularNode farthestNeighbour = null;
-                double farthestNeighbourDistance = -Double.MAX_VALUE;
-                for (RegularNode neighbour : neighbours) {
-                    if (!circleNodes.contains(neighbour)) {
-                        double currentDistance = neighbour.getPosition().distanceTo(innerPoint);
-                        if (currentDistance > farthestNeighbourDistance) {
-                            farthestNeighbourDistance = currentDistance;
-                            farthestNeighbour = neighbour;
-                        }
-                    }
-                }
-                circleNodes.add(farthestNeighbour);
-                currentNode = farthestNeighbour;
-            } while (!currentNode.equals(targetNode));
-            List<Vector2D> outerVectors = circleNodes.stream()
-                    .map(Node::getPosition)
-                    .collect(Collectors.toList());
-            node.addSubsectionRepresentation(membrane.getMembraneRegion().getOuterSubsection(), new ComplexPolygon(outerVectors));
-
-        }
     }
 
     public static void handleMembraneGaps(AutomatonGraph graph) {
@@ -367,7 +132,7 @@ public class MembraneFactory {
                                 // add the node created by the intersection but only if it does not already exist
                                 RegularNode intersectionNode = createIntersectionNode(connectionGraph, new IntersectionFragment(onLineVector, lineSegment.getStartingPoint(), lineSegment.getEndingPoint()));
                                 // add the dangling node
-                                RegularNode internalNode = connectionGraph.addNodeIf(graphNode -> graphNode.getPosition().equals(internalPoint),
+                                RegularNode internalNode = connectionGraph.addNodeIf(graphNode -> nodeHasPosition(graphNode, internalPoint),
                                         new RegularNode(connectionGraph.nextNodeIdentifier(), internalPoint));
                                 internalNodes.add(internalNode);
                                 connectionGraph.addEdgeBetween(internalNode, intersectionNode);
@@ -514,6 +279,242 @@ public class MembraneFactory {
         }
     }
 
+    private void initializeMembrane(CellRegion innerRegion, CellRegion membraneRegion) {
+        membrane = new Membrane(membraneRegion.getIdentifier());
+        membrane.setInnerRegion(innerRegion);
+        membrane.setMembraneRegion(membraneRegion);
+        membrane.setInnerPoint(innerPoint);
+    }
+
+    private Map<CellRegion, List<Vector2D>> reconstructRegionMap() {
+        Map<CellRegion, List<Vector2D>> regionMap = new HashMap<>();
+        for (Map.Entry<Vector2D, CellRegion> entry : regions.entrySet()) {
+            if (!regionMap.containsKey(entry.getValue())) {
+                regionMap.put(entry.getValue(), new ArrayList<>());
+            }
+            regionMap.get(entry.getValue()).add(entry.getKey());
+        }
+        return regionMap;
+    }
+
+    /**
+     * Associates membranes to their nodes and nodes to their membranes. This means regions are set for each node
+     * depending on the membrane the the region associated to each membrane segment.
+     *
+     * @param segments the path
+     */
+    private void associateToGraph(List<LineSegment> segments) {
+        // determine and setup membrane cells
+        for (LineSegment lineSegment : segments) {
+            Vector2D startingPoint = lineSegment.getStartingPoint();
+            Vector2D endingPoint = lineSegment.getEndingPoint();
+            for (AutomatonNode node : graph.getNodes()) {
+
+                Polygon spatialRepresentation = node.getSpatialRepresentation();
+                boolean startIsInside = spatialRepresentation.containsVector(startingPoint);
+                boolean endIsInside = spatialRepresentation.containsVector(endingPoint);
+                List<IntersectionFragment> intersections = spatialRepresentation.getIntersectionFragments(lineSegment);
+                if (startIsInside && endIsInside) {
+                    // completely internal
+                    handleNoIntersection(node, startingPoint, endingPoint);
+                } else if (startIsInside && intersections.size() == 1) {
+                    // start inside or on line
+                    handleSingleIntersection(startingPoint, node, intersections.iterator().next());
+                } else if (endIsInside && intersections.size() == 1) {
+                    // end inside or on line
+                    handleSingleIntersection(endingPoint, node, intersections.iterator().next());
+                } else if (intersections.size() == 2) {
+                    // line only crosses the membrane
+                    initializeNodeSubsectionMapping(node, regions.get(startingPoint));
+                    UndirectedGraph subsectionGraph = subsectionMapping.get(node);
+
+                    Iterator<IntersectionFragment> iterator = intersections.iterator();
+                    IntersectionFragment firstFragment = iterator.next();
+                    IntersectionFragment secondFragment = iterator.next();
+
+                    Vector2D firstIntersection = firstFragment.getIntersection();
+                    Vector2D secondIntersection = secondFragment.getIntersection();
+
+                    // TODO handle if first and second intersection are equal, the segment passes through a vertex
+
+                    membrane.addSegment(node, new SimpleLineSegment(firstIntersection, secondIntersection));
+                    RegularNode firstIntersectionNode = createIntersectionNode(subsectionGraph, firstFragment);
+                    RegularNode secondIntersectionNode = createIntersectionNode(subsectionGraph, secondFragment);
+
+                    subsectionGraph.addEdgeBetween(firstIntersectionNode, secondIntersectionNode);
+                }
+            }
+        }
+    }
+
+    private void handleNoIntersection(AutomatonNode node, Vector2D startingPoint, Vector2D endingPoint) {
+        initializeNodeSubsectionMapping(node, regions.get(startingPoint));
+        UndirectedGraph subsectionGraph = subsectionMapping.get(node);
+        membrane.addSegment(node, new SimpleLineSegment(startingPoint, endingPoint));
+        RegularNode startingNode = subsectionGraph.snapNode(startingPoint);
+        RegularNode endingNode = subsectionGraph.snapNode(endingPoint);
+        subsectionGraph.addEdgeBetween(startingNode, endingNode);
+    }
+
+    private void handleSingleIntersection(Vector2D internalPoint, AutomatonNode node, IntersectionFragment intersectionFragment) {
+        Vector2D intersection = intersectionFragment.getIntersection();
+        if (!intersection.equals(internalPoint)) {
+            initializeNodeSubsectionMapping(node, regions.get(internalPoint));
+            UndirectedGraph subsectionGraph = subsectionMapping.get(node);
+            membrane.addSegment(node, new SimpleLineSegment(internalPoint, intersection));
+            // add the node created by the intersection but only if it does not already exist
+            RegularNode intersectionNode = createIntersectionNode(subsectionGraph, intersectionFragment);
+            // add the dangling node
+            RegularNode internalNode = subsectionGraph.snapNode(internalPoint);
+            subsectionGraph.addEdgeBetween(internalNode, intersectionNode);
+        } else {
+            initializeNodeSubsectionMapping(node, regions.get(internalPoint));
+            UndirectedGraph subsectionGraph = subsectionMapping.get(node);
+            // add the node created by the intersection
+            createIntersectionNode(subsectionGraph, intersectionFragment);
+        }
+    }
+
+    private void initializeNodeSubsectionMapping(AutomatonNode node, CellRegion region) {
+        if (!subsectionMapping.containsKey(node)) {
+            subsectionMapping.put(node, node.getSpatialRepresentation().toGraph());
+            node.setCellRegion(region);
+            node.getSubsectionRepresentations().clear();
+        }
+    }
+
+    private void fillInternalNodes() {
+        // TODO maybe this can be improved
+        Set<CellRegion> region = new HashSet<>(regions.values());
+        // fill region inside of the organelle
+        AutomatonNode startingNode = null;
+        if (polygon != null) {
+            // if this is a closed membrane section
+            for (AutomatonNode node : graph.getNodes()) {
+                // determine cell that is completely inside of the membrane as starting point
+                // therefore check if all path of the representative region are inside
+                boolean allPointsAreInside = true;
+                for (Vector2D vector : node.getSpatialRepresentation().getVertices()) {
+                    // break is any point is not inside
+                    if (!polygon.containsVector(vector)) {
+                        allPointsAreInside = false;
+                        break;
+                    }
+                }
+                if (allPointsAreInside) {
+                    startingNode = node;
+                    break;
+                }
+            }
+        } else {
+            for (AutomatonNode node : graph.getNodes()) {
+                // use given internal point to determine inner subsection
+                if (node.getSubsectionRepresentations().isEmpty() && node.getCellRegion().equals(membrane.getMembraneRegion())) {
+                    node.getSpatialRepresentation().containsVector(innerPoint);
+                    break;
+                }
+            }
+        }
+
+        if (startingNode != null) {
+            // use flood fill algorithm
+            FloodFill.fill(graph.getGrid(), startingNode.getIdentifier(),
+                    currentNode -> currentNode.getCellRegion().equals(membrane.getMembraneRegion()),
+                    rectangularCoordinate -> {
+                        AutomatonNode currentNode = graph.getNode(rectangularCoordinate);
+                        currentNode.setCellRegion(membrane.getInnerRegion());
+                        currentNode.getSubsectionRepresentations().clear();
+                        currentNode.addSubsectionRepresentation(membrane.getMembraneRegion().getInnerSubsection(), currentNode.getSpatialRepresentation());
+                    },
+                    recurrentNode -> recurrentNode.getCellRegion().equals(membrane.getInnerRegion()));
+        }
+
+    }
+
+    private void setupSubsectionRepresentations() {
+        for (Map.Entry<AutomatonNode, UndirectedGraph> entry : subsectionMapping.entrySet()) {
+            AutomatonNode node = entry.getKey();
+            UndirectedGraph representationGraph = node.getSpatialRepresentation().toGraph();
+            List<RegularNode> innerNodeList = entry.getValue().getNodes().stream()
+                    .filter(subsectionNode -> !representationGraph.containsNode(representationNode -> representationNode.getPosition().equals(subsectionNode.getPosition())))
+                    .collect(Collectors.toList());
+
+            Iterator<RegularNode> iterator = innerNodeList.iterator();
+            // get starting point
+            RegularNode firstNode = iterator.next();
+            RegularNode currentNode = firstNode;
+            RegularNode targetNode = null;
+            // get other node that is also in the inner section
+            for (RegularNode neighbour : currentNode.getNeighbours()) {
+                if (innerNodeList.contains(neighbour)) {
+                    targetNode = neighbour;
+                    break;
+                }
+            }
+            List<RegularNode> circleNodes = new ArrayList<>();
+            circleNodes.add(currentNode);
+            entry.getValue().removeEdge(currentNode, targetNode);
+            if (targetNode == null) {
+                throw new IllegalStateException("Unable to crate subsection, no neighbouring internal nodes");
+            }
+            do {
+                // determine next on path
+                List<RegularNode> neighbours = currentNode.getNeighbours();
+                if (neighbours.contains(targetNode)) {
+                    circleNodes.add(targetNode);
+                    break;
+                }
+                RegularNode closestNeighbour = null;
+                double closestNeighbourDistance = Double.MAX_VALUE;
+                for (RegularNode neighbour : neighbours) {
+                    if (!circleNodes.contains(neighbour)) {
+                        double currentDistance = neighbour.getPosition().distanceTo(innerPoint);
+                        if (currentDistance < closestNeighbourDistance) {
+                            closestNeighbourDistance = currentDistance;
+                            closestNeighbour = neighbour;
+                        }
+                    }
+                }
+                circleNodes.add(closestNeighbour);
+                currentNode = closestNeighbour;
+            } while (!currentNode.equals(targetNode));
+            List<Vector2D> innerVectors = circleNodes.stream()
+                    .map(Node::getPosition)
+                    .collect(Collectors.toList());
+            node.addSubsectionRepresentation(membrane.getMembraneRegion().getInnerSubsection(), new ComplexPolygon(innerVectors));
+
+            // get last node (probably be last added intersection)
+            circleNodes.clear();
+            currentNode = firstNode;
+            circleNodes.add(currentNode);
+            do {
+                // determine next on path
+                List<RegularNode> neighbours = currentNode.getNeighbours();
+                if (neighbours.contains(targetNode)) {
+                    circleNodes.add(targetNode);
+                    break;
+                }
+                RegularNode farthestNeighbour = null;
+                double farthestNeighbourDistance = -Double.MAX_VALUE;
+                for (RegularNode neighbour : neighbours) {
+                    if (!circleNodes.contains(neighbour)) {
+                        double currentDistance = neighbour.getPosition().distanceTo(innerPoint);
+                        if (currentDistance > farthestNeighbourDistance) {
+                            farthestNeighbourDistance = currentDistance;
+                            farthestNeighbour = neighbour;
+                        }
+                    }
+                }
+                circleNodes.add(farthestNeighbour);
+                currentNode = farthestNeighbour;
+            } while (!currentNode.equals(targetNode));
+            List<Vector2D> outerVectors = circleNodes.stream()
+                    .map(Node::getPosition)
+                    .collect(Collectors.toList());
+            node.addSubsectionRepresentation(membrane.getMembraneRegion().getOuterSubsection(), new ComplexPolygon(outerVectors));
+
+        }
+    }
 
 
 }

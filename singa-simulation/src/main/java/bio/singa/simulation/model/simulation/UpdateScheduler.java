@@ -150,7 +150,7 @@ public class UpdateScheduler {
             }
 
             // evaluate total spatial displacement
-            spatialDisplacementIsValid();
+            evaluateSpatialDisplacement();
 
         } while (recalculationRequired());
         // System.out.println("accepted local error: "+largestLocalError.getValue());
@@ -332,18 +332,11 @@ public class UpdateScheduler {
         return false;
     }
 
-    private void prioritize(UpdateModule module) {
-        // remove the module from wherever it is
-        modules.remove(module);
-        // and add it to the front
-        modules.addFirst(module);
-    }
-
     public void resetCalculation() {
         logger.debug("Resetting calculations.");
         // reset states
         for (UpdateModule module : modules) {
-            // skip mudules with pending changes if timsep was not rescaled
+            // skip modules with pending changes if time step was not rescaled
             if (module.getState().equals(SUCCEEDED_WITH_PENDING_CHANGES) && !timeStepRescaled) {
                 continue;
             }
@@ -360,17 +353,15 @@ public class UpdateScheduler {
         moduleIterator = modules.iterator();
     }
 
-    private boolean spatialDisplacementIsValid() {
+    private void evaluateSpatialDisplacement() {
         if (simulation.getVesicleLayer().getVesicles().isEmpty()) {
-            return true;
+            return;
         }
         if (!simulation.getVesicleLayer().deltasAreBelowDisplacementCutoff()) {
             decreaseTimeStep();
             simulation.getVesicleLayer().clearUpdates();
             modules.forEach(UpdateModule::reset);
-            return false;
         }
-        return true;
     }
 
 }

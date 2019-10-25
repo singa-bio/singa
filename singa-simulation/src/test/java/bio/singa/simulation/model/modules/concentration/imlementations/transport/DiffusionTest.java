@@ -93,7 +93,6 @@ class DiffusionTest {
 
     @Test
     @DisplayName("diffusion of hydrogen with 20 nodes")
-    @Disabled
     void shouldReachCorrectHalfLife2() {
         // setup and run simulation
         Simulation simulation = setUpSimulation(20, hydrogen);
