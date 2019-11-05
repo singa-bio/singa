@@ -11,6 +11,7 @@ import bio.singa.features.identifiers.*;
 import bio.singa.features.model.Evidence;
 import bio.singa.structure.features.molarmass.MolarMass;
 import bio.singa.structure.model.families.AminoAcidFamily;
+import bio.singa.structure.model.identifiers.PDBIdentifier;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.Locator;
@@ -50,6 +51,7 @@ public class UniProtContentHandler implements ContentHandler {
     private List<ENAAccessionNumber> genomicSequenceIdentifiers;
     private List<SequenceVariant> sequenceVariants;
     private List<GoTerm> goTerms;
+    private List<PDBIdentifier> pdbIdentifiers;
     private SequenceVariant currentSequenceVariant;
     private String primaryGeneName;
 
@@ -74,6 +76,7 @@ public class UniProtContentHandler implements ContentHandler {
     private boolean inEMBLReference = false;
     private boolean inGoReference = false;
     private boolean inCitation;
+    private boolean inPdbReference = false;
     private boolean inSequenceVariant;
 
     private String proteinSequenceID;
@@ -84,6 +87,7 @@ public class UniProtContentHandler implements ContentHandler {
     private String currentGoTerm;
     private String currentGoEvidence;
     private String currentGoProject;
+    private String currentPdbIdentifier;
 
     public UniProtContentHandler() {
         names = new ArrayList<>();
@@ -93,6 +97,7 @@ public class UniProtContentHandler implements ContentHandler {
         sequenceVariants = new ArrayList<>();
         evidenceMap = new HashMap<>();
         goTerms = new ArrayList<>();
+        pdbIdentifiers = new ArrayList<>();
     }
 
     public UniProtContentHandler(String primaryIdentifier) {
@@ -127,6 +132,8 @@ public class UniProtContentHandler implements ContentHandler {
         ecNumbers.forEach(protein::addAdditionalIdentifier);
         // add GO terms
         goTerms.forEach(protein::addGoTerm);
+        // add PDB identifiers
+        pdbIdentifiers.forEach(protein::addPdbIdentifier);
         // add variants
         protein.setFeature(new SequenceVariants(sequenceVariants, UniProtDatabase.evidence));
         // add gene name
@@ -175,6 +182,7 @@ public class UniProtContentHandler implements ContentHandler {
             case "ecNumber":
             case "taxon":
             case "original":
+            case "source":
             case "variation": {
                 currentTag = qName;
                 break;
@@ -306,6 +314,11 @@ public class UniProtContentHandler implements ContentHandler {
                         currentGoIdentifier = atts.getValue("id");
                         inGoReference = true;
                     }
+                    // TODO check if there is more elegant way to avoid double parsing of PDB-IDs than checking for tag
+                    if (atts.getValue("type").equals("PDB") && !currentTag.equals("source")) {
+                        currentPdbIdentifier = atts.getValue("id");
+                        inPdbReference = true;
+                    }
                 }
                 break;
             }
@@ -403,6 +416,10 @@ public class UniProtContentHandler implements ContentHandler {
                     goTerms.add(new GoTerm(currentGoIdentifier, currentGoTerm, new Evidence(DATABASE, currentGoEvidence, currentGoProject)));
                     inGoReference = false;
                 }
+                if (inPdbReference) {
+                    pdbIdentifiers.add(new PDBIdentifier(currentPdbIdentifier));
+                    inPdbReference = false;
+                }
                 inEMBLReference = false;
                 break;
             }
@@ -428,7 +445,7 @@ public class UniProtContentHandler implements ContentHandler {
     public void characters(char[] ch, int start, int length) {
         switch (currentTag) {
             case "accession": {
-                // set pdbIdentifier
+                // set UniProt Identifier
                 identifier = new UniProtIdentifier(new String(ch, start, length));
                 break;
             }

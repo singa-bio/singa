@@ -6,6 +6,7 @@ import bio.singa.chemistry.annotations.taxonomy.Organism;
 import bio.singa.features.identifiers.GoTerm;
 import bio.singa.features.identifiers.SimpleStringIdentifier;
 import bio.singa.features.model.Feature;
+import bio.singa.structure.model.identifiers.PDBIdentifier;
 
 import java.util.HashSet;
 import java.util.List;
@@ -17,14 +18,6 @@ import java.util.Set;
 public class Protein extends AbstractChemicalEntity {
 
     private static final Set<Class<? extends Feature>> availableFeatures = new HashSet<>();
-
-    public static Builder create(String identifier) {
-        return new Builder(identifier);
-    }
-
-    public static Builder create(SimpleStringIdentifier identifier) {
-        return new Builder(identifier);
-    }
 
     static {
         Protein.availableFeatures.addAll(AbstractChemicalEntity.availableFeatures);
@@ -41,6 +34,14 @@ public class Protein extends AbstractChemicalEntity {
         super(identifier);
     }
 
+    public static Builder create(String identifier) {
+        return new Builder(identifier);
+    }
+
+    public static Builder create(SimpleStringIdentifier identifier) {
+        return new Builder(identifier);
+    }
+
     /**
      * Adds an organism as an annotation.
      *
@@ -53,7 +54,7 @@ public class Protein extends AbstractChemicalEntity {
     /**
      * Adds an organism with a description as an annotation to
      *
-     * @param organism The organism.
+     * @param organism    The organism.
      * @param description The description.
      */
     public void addOrganism(Organism organism, String description) {
@@ -135,6 +136,15 @@ public class Protein extends AbstractChemicalEntity {
      */
     public void addGoTerm(GoTerm goTerm) {
         addAnnotation(new Annotation<>(AnnotationType.GO_TERM, goTerm));
+    }
+
+    /**
+     * Adds a new {@link PDBIdentifier} to the protein.
+     *
+     * @param pdbIdentifier The {@link PDBIdentifier} to be added.
+     */
+    public void addPdbIdentifier(PDBIdentifier pdbIdentifier) {
+        addAnnotation(new Annotation<>(AnnotationType.PDB_STRUCTURE, pdbIdentifier));
     }
 
     public static class Builder extends AbstractChemicalEntity.Builder<Protein, Builder> {

@@ -21,6 +21,11 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-controls</artifactId>
+            <version>13</version>
+        </dependency>
+        <dependency>
             <groupId>bio.singa</groupId>
             <artifactId>singa-chemistry</artifactId>
             <version>0.6.0</version>

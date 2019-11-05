@@ -12,6 +12,7 @@ public enum AnnotationType {
     NAME("Additional Name"),
     ORGANISM("Organism"),
     GO_TERM("GO"),
+    PDB_STRUCTURE("PDB"),
     ADDITIONAL_IDENTIFIER("Additional Identifier");
 
     private final String outputString;

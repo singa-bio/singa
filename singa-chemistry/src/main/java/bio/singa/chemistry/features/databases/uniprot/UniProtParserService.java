@@ -53,7 +53,7 @@ public class UniProtParserService extends AbstractXMLParser<Protein> {
 
     public void setIdentifier(String identifier) {
         this.identifier = IdentifierPatternRegistry.instantiate(identifier)
-                .orElseThrow(() -> new IllegalArgumentException(identifier + "is neither an uniprot name nor identifier."));
+                .orElseThrow(() -> new IllegalArgumentException(identifier + "is neither an UniProt name nor identifier."));
 
     }
 
@@ -70,7 +70,7 @@ public class UniProtParserService extends AbstractXMLParser<Protein> {
         try {
             getXmlReader().parse(new InputSource(getFetchResult()));
         } catch (IOException e) {
-            throw new UncheckedIOException("Could not parse xml from fetch result, the server seems to be unavailable.", e);
+            throw new UncheckedIOException("Could not parse XML from fetch result, the server seems to be unavailable.", e);
         } catch (SAXException e) {
             e.printStackTrace();
         }

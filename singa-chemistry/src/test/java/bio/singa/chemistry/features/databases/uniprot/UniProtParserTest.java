@@ -13,6 +13,7 @@ import bio.singa.features.identifiers.model.Identifier;
 import bio.singa.features.identifiers.model.IdentifierPatternRegistry;
 import bio.singa.features.model.Evidence;
 import bio.singa.structure.model.families.AminoAcidFamily;
+import bio.singa.structure.model.identifiers.PDBIdentifier;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -114,7 +115,7 @@ class UniProtParserTest {
 
     @Test
     @DisplayName("parse uniprot - by entry name")
-    void shouldParseByEntryName89() {
+    void shouldParseByEntryName() {
         UniProtIdentifier uniProtIdentifier = aarsByName.getFeature(UniProtIdentifier.class);
         assertEquals("P21889", uniProtIdentifier.getContent());
     }
@@ -134,5 +135,13 @@ class UniProtParserTest {
         assertEquals("GO:0005524", ((GoTerm) annotations.get(2).getContent()).getContent());
         assertEquals("GO:0003676", ((GoTerm) annotations.get(3).getContent()).getContent());
         assertEquals("GO:0006422", ((GoTerm) annotations.get(4).getContent()).getContent());
+    }
+
+    @Test
+    void parsePdbIdentifier() {
+        List<Annotation> annotations = aars.getAnnotationsOfType(AnnotationType.PDB_STRUCTURE);
+        assertEquals("1C0A", ((PDBIdentifier) annotations.get(0).getContent()).getContent());
+        assertEquals("1EQR", ((PDBIdentifier) annotations.get(1).getContent()).getContent());
+        assertEquals("1IL2", ((PDBIdentifier) annotations.get(2).getContent()).getContent());
     }
 }
