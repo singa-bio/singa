@@ -3,6 +3,7 @@ package bio.singa.simulation.model.agents.linelike;
 import bio.singa.mathematics.geometry.faces.Circle;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.simulation.model.agents.surfacelike.MembraneLayer;
+import bio.singa.simulation.model.sections.CellRegion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,60 +16,78 @@ public class MicrotubuleOrganizingCentre {
 
     private MembraneLayer membraneLayer;
     private Circle circleRepresentation;
-    private int initialFilaments;
 
-    public MicrotubuleOrganizingCentre(MembraneLayer membraneLayer, Circle circleRepresentation, int initialFilaments) {
+    public MicrotubuleOrganizingCentre(MembraneLayer membraneLayer, Circle circleRepresentation) {
         this.circleRepresentation = circleRepresentation;
-        this.initialFilaments = initialFilaments;
         this.membraneLayer = membraneLayer;
     }
 
-    public void initializeMicrotubules(LineLikeAgentLayer layer) {
-        logger.info("Initializing microtubule network with {} filaments.", initialFilaments);
+    public void initializeMicrotubules(LineLikeAgentLayer layer, CellRegion targetedMembrane, int numberOfFilaments) {
+        logger.info("Initializing microtubule network with {} filaments.", numberOfFilaments);
         membraneLayer.setMicrotubuleOrganizingCentre(this);
+        if (targetedMembrane != null) {
+            layer.setTargetedGrowth(true);
+            layer.setTargetMembrane(targetedMembrane);
+        } else {
+            layer.setTargetedGrowth(false);
+        }
         // initialize filaments
         int currentFilaments = 0;
         Vector2D centre = circleRepresentation.getMidpoint();
-        while (currentFilaments != initialFilaments) {
-            // random point on circle circumference
-            double angle = Math.random() * Math.PI * 2;
-            double x = Math.cos(angle) * circleRepresentation.getRadius();
-            double y = Math.sin(angle) * circleRepresentation.getRadius();
-            // set starting position and direction
-            Vector2D initialPosition = centre.add(new Vector2D(x, y));
-            layer.addMicrotubule(initialPosition, centre.subtract(initialPosition));
+        while (currentFilaments != numberOfFilaments) {
+            spawnMicrotubule(layer);
             // increment filaments
             currentFilaments++;
         }
         // grow filaments
         while (layer.hasGrowingFilaments()) {
             layer.nextEpoch();
+            layer.purgeMisguidedFilaments();
         }
-
     }
 
-    public void initializeActin(LineLikeAgentLayer layer) {
-        logger.info("Initializing actin network with {} filaments.", initialFilaments);
+    public void initializeActin(LineLikeAgentLayer layer, CellRegion targetedMembrane, int numberOfFilaments) {
+        logger.info("Initializing actin network with {} filaments.", numberOfFilaments);
         membraneLayer.setMicrotubuleOrganizingCentre(this);
+        if (targetedMembrane != null) {
+            layer.setTargetedGrowth(true);
+            layer.setTargetMembrane(targetedMembrane);
+        } else {
+            layer.setTargetedGrowth(false);
+        }
         // initialize filaments
         int currentFilaments = 0;
         Vector2D centre = circleRepresentation.getMidpoint();
-        while (currentFilaments != initialFilaments) {
-            // random point on circle circumference
-            double angle = Math.random() * Math.PI * 2;
-            double x = Math.cos(angle) * circleRepresentation.getRadius();
-            double y = Math.sin(angle) * circleRepresentation.getRadius();
-            // set starting position and direction
-            Vector2D initialPosition = centre.add(new Vector2D(x, y));
-            layer.addActin(initialPosition, centre.subtract(initialPosition));
+        while (currentFilaments != numberOfFilaments) {
+            spawnActin(layer);
             // increment filaments
             currentFilaments++;
         }
         // grow filaments
         while (layer.hasGrowingFilaments()) {
             layer.nextEpoch();
+            layer.purgeMisguidedFilaments();
         }
+    }
 
+    public void spawnActin(LineLikeAgentLayer layer) {
+        // random point on circle circumference
+        double angle = Math.random() * Math.PI * 2;
+        double x = Math.cos(angle) * circleRepresentation.getRadius();
+        double y = Math.sin(angle) * circleRepresentation.getRadius();
+        // set starting position and direction
+        Vector2D initialPosition = circleRepresentation.getMidpoint().add(new Vector2D(x, y));
+        layer.addActin(initialPosition, circleRepresentation.getMidpoint().subtract(initialPosition));
+    }
+
+    public void spawnMicrotubule(LineLikeAgentLayer layer) {
+        // random point on circle circumference
+        double angle = Math.random() * Math.PI * 2;
+        double x = Math.cos(angle) * circleRepresentation.getRadius();
+        double y = Math.sin(angle) * circleRepresentation.getRadius();
+        // set starting position and direction
+        Vector2D initialPosition = circleRepresentation.getMidpoint().add(new Vector2D(x, y));
+        layer.addMicrotubule(initialPosition, circleRepresentation.getMidpoint().subtract(initialPosition));
     }
 
     public Circle getCircleRepresentation() {

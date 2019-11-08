@@ -18,6 +18,7 @@ public abstract class FeatureProvider<FeatureType extends Feature> {
 
     private final TreeMap<Integer, Set<Class<? extends Feature>>> strategies;
     private Class<? extends Feature> providedFeature;
+    private int retries = 0;
 
     private int preferredStrategyIndex;
 
@@ -52,12 +53,19 @@ public abstract class FeatureProvider<FeatureType extends Feature> {
         }
         // no strategy can be resolved
         if (preferredStrategyIndex == -1) {
+            if (retries > 5) {
+                return;
+            }
+            retries++;
             for (Map.Entry<Integer, Set<Class<? extends Feature>>> entry : strategies.entrySet()) {
                 for (Class<? extends Feature> featureClass : entry.getValue()) {
                     if (featureable.hasFeature(featureClass)) {
                         continue;
                     }
                     featureable.setFeature(featureClass);
+                    if (!featureable.hasFeature(featureClass)) {
+                        return;
+                    }
                 }
                 Set<Class<? extends Feature>> requirements = entry.getValue();
                 if (featureable.meetsAllRequirements(requirements)) {
@@ -65,13 +73,14 @@ public abstract class FeatureProvider<FeatureType extends Feature> {
                     break;
                 }
             }
+
         }
 
         boolean resolved = resolveRequirements(featureable, preferredStrategyIndex);
 
         // if strategies did not work
         if (!resolved) {
-            throw new FeatureUnassignableException("The feature " + providedFeature.getSimpleName() + " could not be assigned, since requirements could not be resolved.");
+            logger.warn("The feature " + providedFeature.getSimpleName() + " could not be assigned, since requirements could not be resolved.");
         }
     }
 
@@ -102,11 +111,25 @@ public abstract class FeatureProvider<FeatureType extends Feature> {
         return true;
     }
 
+    private <FeatureableType extends Featureable> boolean meetsRequirements(FeatureableType featureable) {
+        Set<Class<? extends Feature>> features = strategies.get(preferredStrategyIndex);
+        for (Class<? extends Feature> feature : features) {
+            if (!featureable.hasFeature(feature)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public <FeatureableType extends Featureable> void assign(FeatureableType featureable) {
         logger.debug("Assigning {} to {}.", providedFeature.getSimpleName(), featureable);
         if (!featureable.hasFeature(providedFeature)) {
             if (featureable.canBeFeaturedWith(providedFeature)) {
                 resolveRequirements(featureable);
+                if (retries >= 5 || preferredStrategyIndex == -1) {
+                    return;
+                }
+                retries = 0;
                 featureable.setFeature(provide(featureable));
                 // reset preferredStrategyIndex
                 preferredStrategyIndex = -1;

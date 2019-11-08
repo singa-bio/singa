@@ -1,5 +1,7 @@
 package bio.singa.structure.model.molecules;
 
+import bio.singa.structure.model.oak.BondType;
+
 import java.util.stream.Stream;
 
 /**
@@ -30,6 +32,19 @@ public enum MoleculeBondType {
                 .filter(type -> type.getSmilesRepresentation() == smilesSymbol)
                 .findAny()
                 .orElse(SINGLE_BOND);
+    }
+
+    public static MoleculeBondType getBondForOakBondType(BondType bondType) {
+        switch (bondType) {
+            case SINGLE_BOND:
+                return SINGLE_BOND;
+            case DOUBLE_BOND:
+                return DOUBLE_BOND;
+            case TRIPLE_BOND:
+                return TRIPLE_BOND;
+            default:
+                return UNCONNECTED;
+        }
     }
 
     public int getBondOrder() {

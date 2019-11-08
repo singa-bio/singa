@@ -223,7 +223,7 @@ public class RECAPFragmenter {
                         targetAtom.setElement(targetAtom.getElement().asAnion(electronsGained));
 
                         // remove cleavage bond
-                        moleculeGraph.removeEdge(bondToRemove);
+                        moleculeGraph.removeEdge(bondToRemove.getSource(), bondToRemove.getTarget());
 
                         // check if new fragmentation was achieved
                         List<MoleculeGraph> disconnectedSubgraphs = DisconnectedSubgraphFinder.findDisconnectedSubgraphs(moleculeGraph);

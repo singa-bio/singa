@@ -28,7 +28,7 @@ public class MoleculeIsomorphismFinder {
     private MoleculeGraph target;
 
     private MoleculeIsomorphismFinder(MoleculeGraph pattern, MoleculeGraph target, BiFunction<MoleculeAtom, MoleculeAtom, Boolean> atomCondition, BiFunction<MoleculeBond, MoleculeBond, Boolean> bondCondition) {
-        logger.info("molecule isomorphism finder initialized with pattern {} against target {}", pattern, target);
+        logger.debug("molecule isomorphism finder initialized with pattern {} against target {}", pattern, target);
         this.pattern = pattern;
         this.target = target;
         this.atomCondition = atomCondition;

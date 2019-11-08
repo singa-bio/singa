@@ -1,6 +1,7 @@
 package bio.singa.features.model;
 
 import bio.singa.features.units.UnitRegistry;
+import tech.units.indriya.quantity.Quantities;
 
 import javax.measure.Quantity;
 import java.util.List;
@@ -34,6 +35,17 @@ public abstract class ScalableQuantitativeFeature<FeatureContent extends Quantit
 
     public double getHalfScaledQuantity() {
         return halfScaledQuantity;
+    }
+
+    @Override
+    public void setAlternativeContent(int index) {
+        double value = getAlternativeContents().get(index).getValue().doubleValue();
+        featureContent = Quantities.getQuantity(value, baseContent.getUnit());
+        scale();
+    }
+
+    public void addAlternativeValue(Double alternativeValue) {
+        super.addAlternativeContent(Quantities.getQuantity(alternativeValue, baseContent.getUnit()));
     }
 
     public void scale() {

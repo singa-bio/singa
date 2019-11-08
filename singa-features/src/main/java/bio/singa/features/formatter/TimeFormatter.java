@@ -2,15 +2,15 @@ package bio.singa.features.formatter;
 
 import bio.singa.features.units.UnitProvider;
 import bio.singa.features.units.UnitRegistry;
-import tec.units.indriya.ComparableQuantity;
-import tec.units.indriya.quantity.Quantities;
+import tech.units.indriya.ComparableQuantity;
+import tech.units.indriya.quantity.Quantities;
 
 import javax.measure.Quantity;
 import javax.measure.Unit;
 import javax.measure.quantity.Time;
 
-import static tec.units.indriya.unit.MetricPrefix.FEMTO;
-import static tec.units.indriya.unit.Units.SECOND;
+import static tech.units.indriya.unit.MetricPrefix.FEMTO;
+import static tech.units.indriya.unit.Units.SECOND;
 
 /**
  * @author cl

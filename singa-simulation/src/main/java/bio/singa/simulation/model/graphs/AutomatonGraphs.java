@@ -67,9 +67,9 @@ public class AutomatonGraphs {
         // copy nodes
         for (GridNode regularNode : gridGraph.getNodes()) {
             RectangularCoordinate coordinate = regularNode.getIdentifier();
-            AutomatonNode bioNode = new AutomatonNode(coordinate);
-            bioNode.setPosition(regularNode.getPosition());
-            bioGraph.addNode(bioNode);
+            AutomatonNode node = new AutomatonNode(coordinate);
+            node.setPosition(regularNode.getPosition());
+            bioGraph.addNode(node);
         }
         // copy edges
         for (GridEdge undirectedEdge : gridGraph.getEdges()) {

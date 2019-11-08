@@ -1,37 +1,40 @@
 package bio.singa.simulation.model.simulation;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
-import bio.singa.chemistry.entities.ComplexEntity;
 import bio.singa.features.formatter.TimeFormatter;
-import bio.singa.features.identifiers.SimpleStringIdentifier;
 import bio.singa.features.model.Feature;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.geometry.faces.Rectangle;
+import bio.singa.mathematics.geometry.model.Polygon;
 import bio.singa.mathematics.vectors.Vector2D;
+import bio.singa.simulation.features.Ratio;
 import bio.singa.simulation.model.agents.linelike.LineLikeAgentLayer;
 import bio.singa.simulation.model.agents.pointlike.VesicleLayer;
 import bio.singa.simulation.model.agents.surfacelike.MembraneLayer;
 import bio.singa.simulation.model.agents.volumelike.VolumeLayer;
+import bio.singa.simulation.model.agents.volumelike.VolumeLikeAgent;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.modules.UpdateModule;
 import bio.singa.simulation.model.modules.concentration.ConcentrationDelta;
+import bio.singa.simulation.model.modules.concentration.NumericalError;
+import bio.singa.simulation.model.modules.concentration.imlementations.transport.Diffusion;
 import bio.singa.simulation.model.modules.displacement.DisplacementBasedModule;
 import bio.singa.simulation.model.rules.AssignmentRule;
 import bio.singa.simulation.model.rules.AssignmentRules;
-import bio.singa.simulation.model.sections.concentration.ConcentrationInitializer;
+import bio.singa.simulation.model.concentrations.InitialConcentration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tec.units.indriya.ComparableQuantity;
-import tec.units.indriya.quantity.Quantities;
+import tech.units.indriya.ComparableQuantity;
+import tech.units.indriya.quantity.Quantities;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Time;
 import java.util.*;
 
-import static tec.units.indriya.unit.MetricPrefix.MICRO;
-import static tec.units.indriya.unit.Units.SECOND;
+import static tech.units.indriya.unit.MetricPrefix.MICRO;
+import static tech.units.indriya.unit.Units.SECOND;
 
 /**
  * @author cl
@@ -67,7 +70,7 @@ public class Simulation {
     /**
      * The chemical entities referenced in the graph.
      */
-    private Map<SimpleStringIdentifier, ChemicalEntity> chemicalEntities;
+    private Map<String, ChemicalEntity> chemicalEntities;
 
     /**
      * The assignment rules.
@@ -98,13 +101,14 @@ public class Simulation {
 
     private List<UpdateModule> modules;
 
-    private ConcentrationInitializer concentrationInitializer;
+    private List<InitialConcentration> concentrations;
 
     private Quantity<Time> maximalTimeStep;
 
     private Map<Updatable, List<ConcentrationDelta>> observedDeltas;
 
     private boolean initializationDone;
+
     private boolean vesiclesWillMove;
 
     /**
@@ -113,6 +117,7 @@ public class Simulation {
     public Simulation() {
         modules = new ArrayList<>();
         assignmentRules = new ArrayList<>();
+        concentrations = new ArrayList<>();
         chemicalEntities = new HashMap<>();
         elapsedTime = Quantities.getQuantity(0.0, UnitRegistry.getTimeUnit());
         epoch = 0;
@@ -131,10 +136,12 @@ public class Simulation {
         logger.debug("Starting epoch {} ({}).", epoch, elapsedTime);
         if (!initializationDone) {
             initializeModules();
-            initializeConcentrations();
             initializeVesicleLayer();
+            initializeSubsectionAdjacency();
+            scheduler.initializeThreadPool();
             initializationDone = true;
         }
+
         // clear observed nodes if necessary
         if (!observedUpdatables.isEmpty()) {
             for (Updatable observedUpdatable : observedUpdatables) {
@@ -150,6 +157,13 @@ public class Simulation {
                 observedUpdatable.getConcentrationManager().clearPotentialDeltas();
             }
         }
+
+        // collect newly created updatables
+        collectUpdatables();
+
+        // apply concentrations
+        applyConcentrations();
+
         // apply all modules
         scheduler.nextEpoch();
         // apply generated deltas
@@ -157,6 +171,11 @@ public class Simulation {
         for (Updatable updatable : updatables) {
             if (updatable.getConcentrationManager().hasDeltas()) {
                 logger.trace("Deltas in {}:", updatable.getStringIdentifier());
+//                if (updatable.getStringIdentifier().equals("n(19,4)")) {
+//                    for (ConcentrationDelta finalDelta : updatable.getConcentrationManager().getFinalDeltas()) {
+//                        System.out.println(finalDelta);
+//                    }
+//                }
                 updatable.getConcentrationManager().applyDeltas();
             }
         }
@@ -177,7 +196,6 @@ public class Simulation {
         }
 
     }
-
 
     private boolean timeStepShouldIncrease() {
         // if time step was reduced in this epoch there is no need to test if it should increase
@@ -203,8 +221,8 @@ public class Simulation {
 
         // if the the error that was computed previously is very small
         final double recalculationCutoff = scheduler.getRecalculationCutoff();
-        final double latestGlobalError = scheduler.getLargestGlobalError();
-        if (recalculationCutoff - latestGlobalError > 0.1 * recalculationCutoff) {
+        final NumericalError latestGlobalError = scheduler.getLargestGlobalError();
+        if (recalculationCutoff - latestGlobalError.getValue() > 0.1 * recalculationCutoff) {
             // System.out.println("global error "+ latestGlobalError);
             final double latestLocalError = scheduler.getLargestLocalError().getValue();
             // System.out.println("local error "+ latestLocalError);
@@ -235,11 +253,33 @@ public class Simulation {
         }
     }
 
-    private void initializeConcentrations() {
-        if (concentrationInitializer != null) {
-            logger.info("Initializing starting concentrations:");
-            concentrationInitializer.initialize(this);
+    public void addConcentration(InitialConcentration initialConcentration) {
+        concentrations.add(initialConcentration);
+    }
+
+    private void applyConcentrations() {
+        // skip if concentrations is empty
+        if (concentrations == null || concentrations.isEmpty()) {
+            return;
         }
+        // apply concentrations
+        ListIterator<InitialConcentration> iterator = concentrations.listIterator();
+        while (iterator.hasNext()) {
+            InitialConcentration concentration = iterator.next();
+            if (concentration.getTime().isLessThanOrEqualTo(elapsedTime)) {
+                logger.info("Initialized concentration {}.", concentration);
+                concentration.apply(this);
+                iterator.remove();
+            }
+        }
+    }
+
+    public List<InitialConcentration> getConcentrations() {
+        return concentrations;
+    }
+
+    public void setConcentrations(List<InitialConcentration> concentrations) {
+        this.concentrations = concentrations;
     }
 
     public void initializeSpatialRepresentations() {
@@ -265,6 +305,34 @@ public class Simulation {
         vesicleLayer.setSimulation(this);
         vesicleLayer.associateVesicles();
     }
+
+    private void initializeSubsectionAdjacency() {
+        if (graph.getNodes().size() < 1) {
+            return;
+        }
+        // if there is diffusion in the modules, adjacency needs to be defined
+        Optional<Diffusion> optionalModule = getModules().stream()
+                .filter(Diffusion.class::isInstance)
+                .map(Diffusion.class::cast)
+                .findAny();
+        // for each node
+        for (AutomatonNode node : graph.getNodes()) {
+            node.initializeAdjacency();
+            if (getVolumeLayer() != null) {
+                // for each volume
+                for (VolumeLikeAgent agent : getVolumeLayer().getAgents()) {
+                    // initialize reduction
+                    Polygon cortexArea = agent.getArea();
+                    if (optionalModule.isPresent()) {
+                        Ratio ratio = optionalModule.get().getFeature(Ratio.class);
+                        node.initializeDiffusiveReduction(cortexArea, ratio);
+                    }
+                }
+            }
+
+        }
+    }
+
 
     public VesicleLayer getVesicleLayer() {
         return vesicleLayer;
@@ -306,10 +374,6 @@ public class Simulation {
         this.simulationRegion = simulationRegion;
     }
 
-    public ConcentrationInitializer getConcentrationInitializer() {
-        return concentrationInitializer;
-    }
-
     public void collectUpdatables() {
         updatables = new ArrayList<>(graph.getNodes());
         updatables.addAll(vesicleLayer.getVesicles());
@@ -348,16 +412,10 @@ public class Simulation {
         // logger.info("Adding module {}.", module.toString());
         module.setSimulation(this);
         module.checkFeatures();
-        for (ChemicalEntity referencedEntity : module.getReferencedEntities()) {
+        for (ChemicalEntity referencedEntity : module.getReferencedChemicalEntities()) {
             addReferencedEntity(referencedEntity);
         }
         modules.add(module);
-    }
-
-    public void setGraph(AutomatonGraph graph) {
-        // logger.info("Adding graph.");
-        this.graph = graph;
-        initializeSpatialRepresentations();
     }
 
     public UpdateScheduler getScheduler() {
@@ -389,6 +447,12 @@ public class Simulation {
         return graph;
     }
 
+    public void setGraph(AutomatonGraph graph) {
+        // logger.info("Adding graph.");
+        this.graph = graph;
+        initializeSpatialRepresentations();
+    }
+
     public long getEpoch() {
         return epoch;
     }
@@ -402,19 +466,8 @@ public class Simulation {
         return chemicalEntities.values();
     }
 
-    public Set<ChemicalEntity> getAllChemicalEntities() {
-        Set<ChemicalEntity> entities = new HashSet<>();
-        for (ChemicalEntity entity : chemicalEntities.values()) {
-            entities.add(entity);
-            if (entity instanceof ComplexEntity) {
-                entities.addAll(((ComplexEntity) entity).getAllData());
-            }
-        }
-        return entities;
-    }
-
     public ChemicalEntity getChemicalEntity(String primaryIdentifier) {
-        return chemicalEntities.get(new SimpleStringIdentifier(primaryIdentifier));
+        return chemicalEntities.get(primaryIdentifier);
     }
 
     public void addReferencedEntity(ChemicalEntity chemicalEntity) {
@@ -438,7 +491,4 @@ public class Simulation {
         observedDeltas.clear();
     }
 
-    public void setConcentrationInitializer(ConcentrationInitializer concentrationInitializer) {
-        this.concentrationInitializer = concentrationInitializer;
-    }
 }

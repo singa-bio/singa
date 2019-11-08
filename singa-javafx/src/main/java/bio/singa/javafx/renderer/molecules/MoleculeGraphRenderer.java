@@ -68,7 +68,6 @@ public class MoleculeGraphRenderer extends GraphRenderer<MoleculeAtom, MoleculeB
                 break;
         }
 
-
     }
 
 }

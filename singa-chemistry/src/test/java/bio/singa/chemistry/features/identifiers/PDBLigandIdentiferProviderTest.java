@@ -1,7 +1,7 @@
 package bio.singa.chemistry.features.identifiers;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
-import bio.singa.chemistry.entities.SmallMolecule;
+import bio.singa.chemistry.entities.simple.SmallMolecule;
 import bio.singa.features.identifiers.ChEBIIdentifier;
 import bio.singa.features.identifiers.InChIKey;
 import bio.singa.features.identifiers.PDBLigandIdentifier;

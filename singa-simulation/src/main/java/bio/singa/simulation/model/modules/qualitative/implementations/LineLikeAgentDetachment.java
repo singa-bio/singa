@@ -2,13 +2,15 @@ package bio.singa.simulation.model.modules.qualitative.implementations;
 
 import bio.singa.simulation.features.AppliedVesicleState;
 import bio.singa.simulation.features.DetachmentProbability;
+import bio.singa.simulation.features.RequiredVesicleState;
 import bio.singa.simulation.model.agents.pointlike.Vesicle;
-import bio.singa.simulation.model.modules.concentration.ModuleState;
 import bio.singa.simulation.model.modules.qualitative.QualitativeModule;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
+
+import static bio.singa.simulation.model.modules.concentration.ModuleState.SUCCEEDED_WITH_PENDING_CHANGES;
 
 /**
  * @author cl
@@ -21,13 +23,14 @@ public class LineLikeAgentDetachment extends QualitativeModule {
         detachingVesicles = new ArrayList<>();
         // features
         getRequiredFeatures().add(DetachmentProbability.class);
+        getRequiredFeatures().add(RequiredVesicleState.class);
         getRequiredFeatures().add(AppliedVesicleState.class);
     }
 
     @Override
     public void calculateUpdates() {
-        String vesicleState = getFeature(AppliedVesicleState.class).getContent();
-        for (Vesicle vesicle : simulation.getVesicleLayer().getVesicles()) {
+        String vesicleState = getFeature(RequiredVesicleState.class).getContent();
+        for (Vesicle vesicle : getSimulation().getVesicleLayer().getVesicles()) {
             // continue if state does not match
             if (!vesicle.getState().equals(vesicleState)) {
                 continue;
@@ -36,7 +39,7 @@ public class LineLikeAgentDetachment extends QualitativeModule {
                 detachingVesicles.add(vesicle);
             }
         }
-        state = ModuleState.SUCCEEDED_WITH_PENDING_CHANGES;
+        setState(SUCCEEDED_WITH_PENDING_CHANGES);
     }
 
     private boolean detachmentEventHappened() {
@@ -55,8 +58,10 @@ public class LineLikeAgentDetachment extends QualitativeModule {
 
     @Override
     public void onCompletion() {
+        String vesicleState = getFeature(AppliedVesicleState.class).getContent();
         for (Vesicle detachingVesicle : detachingVesicles) {
             detachingVesicle.clearAttachmentInformation();
+            detachingVesicle.setState(vesicleState);
         }
     }
 

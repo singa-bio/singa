@@ -4,17 +4,19 @@ import bio.singa.features.formatter.TimeFormatter;
 import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.simulation.model.modules.UpdateModule;
-import bio.singa.simulation.model.modules.concentration.LocalError;
+import bio.singa.simulation.model.modules.concentration.NumericalError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tec.units.indriya.AbstractUnit;
-import tec.units.indriya.quantity.Quantities;
+import tech.units.indriya.AbstractUnit;
+import tech.units.indriya.quantity.Quantities;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Frequency;
 import javax.measure.quantity.Time;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import static bio.singa.simulation.model.modules.concentration.ModuleState.SUCCEEDED_WITH_PENDING_CHANGES;
 
@@ -40,16 +42,15 @@ public class UpdateScheduler {
     private boolean timeStepAlteredInThisEpoch;
     private long timestepsDecreased = 0;
     private long timestepsIncreased = 0;
-    private LocalError largestLocalError;
+    private NumericalError largestLocalError;
     private UpdateModule localErrorModule;
     private double localErrorUpdate;
 
-    private double largestGlobalError;
+    private NumericalError largestGlobalError;
 
     private CountDownLatch countDownLatch;
 
     private final Deque<UpdateModule> modules;
-    private final List<Thread> threads;
 
     private double previousError;
     private Quantity<Time> previousTimeStep;
@@ -58,12 +59,20 @@ public class UpdateScheduler {
     private volatile boolean interrupted;
     private boolean globalErrorAcceptable;
     private boolean calculateGlobalError;
+    private ThreadPoolExecutor executor;
 
     public UpdateScheduler(Simulation simulation) {
         this.simulation = simulation;
         modules = new ArrayDeque<>(simulation.getModules());
-        threads = Collections.synchronizedList(new ArrayList<>());
-        largestLocalError = LocalError.MINIMAL_EMPTY_ERROR;
+        largestLocalError = NumericalError.MINIMAL_EMPTY_ERROR;
+        largestGlobalError = NumericalError.MINIMAL_EMPTY_ERROR;
+    }
+
+    public void initializeThreadPool() {
+        if (modules.isEmpty()) {
+            return;
+        }
+        executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(modules.size());
     }
 
     public double getRecalculationCutoff() {
@@ -86,9 +95,8 @@ public class UpdateScheduler {
         // initialize fields
         timeStepAlteredInThisEpoch = false;
         previousError = 0;
-        largestLocalError = LocalError.MINIMAL_EMPTY_ERROR;
+        largestLocalError = NumericalError.MINIMAL_EMPTY_ERROR;
         previousTimeStep = UnitRegistry.getTime();
-        simulation.collectUpdatables();
         updatables = simulation.getUpdatables();
         moduleIterator = modules.iterator();
         globalErrorAcceptable = true;
@@ -101,7 +109,7 @@ public class UpdateScheduler {
         // until all models passed
         do {
             if (timeStepRescaled || interrupted || !globalErrorAcceptable) {
-                largestLocalError = LocalError.MINIMAL_EMPTY_ERROR;
+                largestLocalError = NumericalError.MINIMAL_EMPTY_ERROR;
                 resetCalculation();
             }
             timeStepRescaled = false;
@@ -111,25 +119,20 @@ public class UpdateScheduler {
             logger.debug("Starting with latch at {}.", countDownLatch.getCount());
 
             int i = 0;
-
-            synchronized (threads) {
-                while (moduleIterator.hasNext()) {
-                    i++;
-                    UpdateModule module = moduleIterator.next();
-                    Thread thread = new Thread(module, "Module " + module.toString() + " (Thread " + i + ")");
-                    if (!interrupted) {
-                        threads.add(thread);
-                        thread.start();
-                    } else {
-                        logger.debug("Skipping module {}, decreasing latch to {}.", i, countDownLatch.getCount());
-                        countDownLatch.countDown();
-                    }
+            while (moduleIterator.hasNext()) {
+                i++;
+                UpdateModule module = moduleIterator.next();
+                // modules with pending changes generally only need to be calculated once if the time step was not reset (this is managed while resetting calculations)
+                if (!interrupted && !module.getState().equals(SUCCEEDED_WITH_PENDING_CHANGES)) {
+                    executor.execute(module);
+                } else {
+                    logger.debug("Skipping module {}, decreasing latch to {}.", i, countDownLatch.getCount());
+                    countDownLatch.countDown();
                 }
             }
 
             try {
                 countDownLatch.await();
-                threads.clear();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -153,10 +156,12 @@ public class UpdateScheduler {
         }
 
         logger.debug("Finished processing modules for epoch {}.", simulation.getEpoch());
+
         // wrap up
         determineAccuracyGain();
+
         finalizeDeltas();
-        modules.forEach(UpdateModule::resetState);
+        modules.forEach(UpdateModule::reset);
     }
 
     public void evaluateGlobalNumericalAccuracy() {
@@ -174,18 +179,19 @@ public class UpdateScheduler {
         } else {
             // evaluate global numerical accuracy
             // for each node
-            double largestGlobalError = 0.0;
+            NumericalError largestGlobalError = NumericalError.MINIMAL_EMPTY_ERROR;
             for (Updatable updatable : updatables) {
                 // determine full concentrations with full update and 2 * half update
                 updatable.getConcentrationManager().determineComparisionConcentrations();
                 // determine error between both
-                double globalError = updatable.getConcentrationManager().determineGlobalNumericalError();
-                if (largestGlobalError < globalError) {
+                NumericalError globalError = updatable.getConcentrationManager().determineGlobalNumericalError();
+                if (largestGlobalError.isSmallerThan(globalError)) {
+                    globalError.setUpdatable(updatable);
                     largestGlobalError = globalError;
                 }
             }
             // set interim check false if global error is to large and true if you can continue
-            if (largestGlobalError > recalculationCutoff) {
+            if (largestGlobalError.getValue() > recalculationCutoff) {
                 // System.out.println("rejected global error: "+largestGlobalError+" @ "+TimeFormatter.formatTime(UnitRegistry.getTime()));
                 simulation.getScheduler().decreaseTimeStep();
                 globalErrorAcceptable = false;
@@ -194,12 +200,12 @@ public class UpdateScheduler {
                 // System.out.println("accepted global error: "+largestGlobalError+ " @ "+TimeFormatter.formatTime(UnitRegistry.getTime()));
                 globalErrorAcceptable = true;
             }
-            if (getLargestLocalError().getValue() != LocalError.MINIMAL_EMPTY_ERROR.getValue()) {
+            if (getLargestLocalError().getValue() != NumericalError.MINIMAL_EMPTY_ERROR.getValue()) {
                 logger.debug("Largest local error : {} ({}, {}, {})", getLargestLocalError().getValue(), getLargestLocalError().getChemicalEntity(), getLargestLocalError().getUpdatable().getStringIdentifier(), getLocalErrorModule());
             } else {
                 logger.debug("Largest local error : minimal");
             }
-            logger.debug("Largest global error: {} ", largestGlobalError);
+            logger.debug("Largest global error: {} ({}, {})", largestGlobalError.getValue(), largestGlobalError.getChemicalEntity(), largestGlobalError.getUpdatable().getStringIdentifier());
             this.largestGlobalError = largestGlobalError;
         }
 
@@ -219,11 +225,11 @@ public class UpdateScheduler {
         return timeStepRescaled || interrupted || !globalErrorAcceptable;
     }
 
-    public LocalError getLargestLocalError() {
+    public NumericalError getLargestLocalError() {
         return largestLocalError;
     }
 
-    public void setLargestLocalError(LocalError localError, UpdateModule associatedModule, double associatedConcentration) {
+    public void setLargestLocalError(NumericalError localError, UpdateModule associatedModule, double associatedConcentration) {
         if (localError.getValue() > largestLocalError.getValue()) {
             largestLocalError = localError;
             localErrorModule = associatedModule;
@@ -239,12 +245,16 @@ public class UpdateScheduler {
         return MolarConcentration.concentrationToMolecules(localErrorUpdate).getValue().doubleValue();
     }
 
-    public double getLargestGlobalError() {
+    public NumericalError getLargestGlobalError() {
         return largestGlobalError;
     }
 
     public boolean timeStepWasRescaled() {
         return timeStepRescaled;
+    }
+
+    public void shutdownExecutorService() {
+        executor.shutdown();
     }
 
     public boolean timeStepWasAlteredInThisEpoch() {
@@ -305,32 +315,14 @@ public class UpdateScheduler {
      * Returns true if the calling module was the first to call the method, therefore being allowed to optimize the
      * time step.
      *
-     * @param callingThread The calling thread.
-     * @param callingModule The associated module.
      * @return True if the calling module was the first to call the method.
      */
-    public synchronized boolean interruptAllBut(Thread callingThread, UpdateModule callingModule) {
+    public synchronized boolean interrupt() {
         // interrupt all threads but the calling thread and count down their latch
         if (!interrupted) {
-            logger.debug("Module {} triggered interrupt.", callingModule);
             interrupted = true;
-            List<String> interruptedThreads = new ArrayList<>();
-            synchronized (threads) {
-                for (Thread thread : threads) {
-                    if (thread != callingThread) {
-                        if (thread.isAlive()) {
-                            thread.interrupt();
-                            // countDownLatch.countDown();
-                            interruptedThreads.add(thread.getName());
-                        }
-                    }
-                }
-            }
-            // prioritize(callingModule);
-            logger.debug("{} interrupted {}", callingThread.getName(), interruptedThreads);
             return true;
         }
-        logger.debug("Module {} tried to interrupt, but interruption was already in progress.", callingModule);
         return false;
     }
 
@@ -344,9 +336,17 @@ public class UpdateScheduler {
     public void resetCalculation() {
         logger.debug("Resetting calculations.");
         // reset states
-        modules.forEach(UpdateModule::resetState);
+        for (UpdateModule module : modules) {
+            // skip mudules with pending changes if timsep was not rescaled
+            if (module.getState().equals(SUCCEEDED_WITH_PENDING_CHANGES) && !timeStepRescaled) {
+                continue;
+            }
+            module.reset();
+        }
         // clear deltas that have previously been calculated
         updatables.forEach(updatable -> updatable.getConcentrationManager().clearPotentialDeltas());
+        // rest vesicle position
+        simulation.getVesicleLayer().clearUpdates();
         if (calculateGlobalError) {
             updatables.forEach(updatable -> updatable.getConcentrationManager().revertToOriginalConcentrations());
         }
@@ -361,7 +361,7 @@ public class UpdateScheduler {
         if (!simulation.getVesicleLayer().deltasAreBelowDisplacementCutoff()) {
             decreaseTimeStep();
             simulation.getVesicleLayer().clearUpdates();
-            modules.forEach(UpdateModule::resetState);
+            modules.forEach(UpdateModule::reset);
             return false;
         }
         return true;

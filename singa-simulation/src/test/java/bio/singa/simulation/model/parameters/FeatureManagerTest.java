@@ -6,16 +6,16 @@ import bio.singa.features.units.UnitRegistry;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import tec.units.indriya.quantity.Quantities;
+import tech.units.indriya.quantity.Quantities;
 
 import javax.measure.Quantity;
 import javax.measure.Unit;
 
 import static bio.singa.chemistry.features.diffusivity.Diffusivity.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static tec.units.indriya.AbstractUnit.ONE;
-import static tec.units.indriya.unit.MetricPrefix.*;
-import static tec.units.indriya.unit.Units.*;
+import static tech.units.indriya.AbstractUnit.ONE;
+import static tech.units.indriya.unit.MetricPrefix.*;
+import static tech.units.indriya.unit.Units.*;
 
 /**
  * @author cl

@@ -9,7 +9,7 @@ import bio.singa.simulation.model.modules.concentration.imlementations.reactions
 import bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.deltas.ReactantConcentration;
 import bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.reactants.Reactant;
 import bio.singa.simulation.model.parameters.Parameter;
-import tec.units.indriya.quantity.Quantities;
+import tech.units.indriya.quantity.Quantities;
 import uk.co.cogitolearning.cogpar.*;
 
 import javax.measure.Quantity;
@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static tec.units.indriya.AbstractUnit.ONE;
+import static tech.units.indriya.AbstractUnit.ONE;
 
 /**
  * @author cl

@@ -1,28 +1,23 @@
 package bio.singa.simulation.model.modules.concentration;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
-import bio.singa.features.model.Feature;
 import bio.singa.features.model.ScalableQuantitativeFeature;
+import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.simulation.exceptions.NumericalInstabilityException;
-import bio.singa.simulation.model.modules.UpdateModule;
+import bio.singa.simulation.model.modules.AbstractUpdateModule;
 import bio.singa.simulation.model.modules.concentration.functions.AbstractDeltaFunction;
 import bio.singa.simulation.model.modules.concentration.scope.UpdateScope;
 import bio.singa.simulation.model.modules.concentration.specifity.UpdateSpecificity;
-import bio.singa.simulation.model.parameters.FeatureManager;
-import bio.singa.simulation.model.simulation.Simulation;
 import bio.singa.simulation.model.simulation.Updatable;
-import bio.singa.simulation.model.simulation.UpdateScheduler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.Objects;
-import java.util.Set;
 import java.util.function.Predicate;
 
-import static bio.singa.simulation.model.modules.concentration.ModuleState.*;
+import static bio.singa.simulation.model.modules.concentration.ModuleState.REQUIRING_RECALCULATION;
+import static bio.singa.simulation.model.modules.concentration.ModuleState.SUCCEEDED;
 
 /**
  * Concentration based modules handle updates that are applied to the concentrations in {@link Updatable}s during a
@@ -32,7 +27,7 @@ import static bio.singa.simulation.model.modules.concentration.ModuleState.*;
  *
  * @author cl
  */
-public abstract class ConcentrationBasedModule<DeltaFunctionType extends AbstractDeltaFunction> implements UpdateModule {
+public abstract class ConcentrationBasedModule<DeltaFunctionType extends AbstractDeltaFunction> extends AbstractUpdateModule {
 
     /**
      * The logger
@@ -50,16 +45,6 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
     private static final double DEFAULT_ERROR_CUTOFF = 100;
 
     /**
-     * The identifier of this module.
-     */
-    private String identifier;
-
-    /**
-     * The current state of this module.
-     */
-    private ModuleState state;
-
-    /**
      * The cutoff where deltas are validated to be effectively zero.
      */
     private double deltaCutoff = DEFAULT_NUMERICAL_CUTOFF;
@@ -68,11 +53,6 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
      * The cutoff where numerical errors to be considered irretrievably unstable.
      */
     private double errorCutoff = DEFAULT_ERROR_CUTOFF;
-
-    /**
-     * The referenced simulation.
-     */
-    private Simulation simulation;
 
     /**
      * Frequently required fields.
@@ -90,61 +70,16 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
     private UpdateSpecificity<DeltaFunctionType> specificity;
 
     /**
-     * The feature manager of this module
-     */
-    private FeatureManager featureManager;
-
-    /**
      * Evaluated every time the module is applied to any updatable.
      */
     private Predicate<Updatable> applicationCondition;
-
-    /**
-     * All chemical entities that might be accessed by this module.
-     */
-    private Set<ChemicalEntity> referencedChemicalEntities;
 
     /**
      * Creates a new concentration based module.
      */
     public ConcentrationBasedModule() {
         supplier = new FieldSupplier();
-        featureManager = new FeatureManager();
-        referencedChemicalEntities = new HashSet<>();
-        state = PENDING;
         applicationCondition = updatable -> true;
-        identifier = getClass().getSimpleName();
-    }
-
-    @Override
-    public void initialize() {
-
-    }
-
-    @Override
-    public void run() {
-        UpdateScheduler scheduler = getSimulation().getScheduler();
-        while (state == PENDING || state == REQUIRING_RECALCULATION) {
-            switch (state) {
-                case PENDING:
-                    // calculate update
-                    logger.debug("calculating updates for {}.", Thread.currentThread().getName());
-                    calculateUpdates();
-                    break;
-                case REQUIRING_RECALCULATION:
-                    // optimize time step
-                    logger.debug("{} requires recalculation.", Thread.currentThread().getName());
-                    boolean prioritizedModule = scheduler.interruptAllBut(Thread.currentThread(), this);
-                    if (prioritizedModule) {
-                        optimizeTimeStep();
-                    } else {
-                        state = INTERRUPTED;
-                    }
-                    break;
-            }
-        }
-        scheduler.getCountDownLatch().countDown();
-        logger.debug("Module finished {}, latch at {}.", Thread.currentThread().getName(), scheduler.getCountDownLatch().getCount());
     }
 
     /**
@@ -177,32 +112,7 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
         return applicationCondition;
     }
 
-    /**
-     * Returns all chemical entities that might be accessed by this module.
-     *
-     * @return All chemical entities that might be accessed by this module.
-     */
-    public Set<ChemicalEntity> getReferencedEntities() {
-        return referencedChemicalEntities;
-    }
 
-    /**
-     * Adds a referenced chemical entity.
-     *
-     * @param chemicalEntity The chemical entity.
-     */
-    protected void addReferencedEntity(ChemicalEntity chemicalEntity) {
-        referencedChemicalEntities.add(chemicalEntity);
-    }
-
-    /**
-     * Adds multiple referenced chemical entities.
-     *
-     * @param chemicalEntities The chemical entities.
-     */
-    protected void addReferencedEntities(Collection<? extends ChemicalEntity> chemicalEntities) {
-        referencedChemicalEntities.addAll(chemicalEntities);
-    }
 
     /**
      * Returns the cutoff where deltas are validated to be effectively zero.
@@ -238,42 +148,6 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
      */
     public void setErrorCutoff(double errorCutoff) {
         this.errorCutoff = errorCutoff;
-    }
-
-    /**
-     * Returns the referenced simulation.
-     *
-     * @return The referenced simulation.
-     */
-    public Simulation getSimulation() {
-        return simulation;
-    }
-
-    /**
-     * References the simulation to this module.
-     *
-     * @param simulation The simulation.
-     */
-    public void setSimulation(Simulation simulation) {
-        this.simulation = simulation;
-    }
-
-    /**
-     * Returns the identifier of this module.
-     *
-     * @return The identifier.
-     */
-    public String getIdentifier() {
-        return identifier;
-    }
-
-    /**
-     * Sets the identifier of this module.
-     *
-     * @param identifier The identifier.
-     */
-    public void setIdentifier(String identifier) {
-        this.identifier = identifier;
     }
 
     /**
@@ -319,11 +193,6 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
      */
     void setSpecificity(UpdateSpecificity<DeltaFunctionType> specificity) {
         this.specificity = specificity;
-    }
-
-    @Override
-    public ModuleState getState() {
-        return state;
     }
 
     /**
@@ -399,15 +268,15 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
      * @throws NumericalInstabilityException if any of the encountered errors is the result of an numerical
      * instability.
      */
-    public LocalError determineLargestLocalError() {
+    public NumericalError determineLargestLocalError() {
         // no deltas mean this module did not change anything in the course of this simulation step
         if (supplier.getCurrentFullDeltas().isEmpty()) {
-            return LocalError.MINIMAL_EMPTY_ERROR;
+            return NumericalError.MINIMAL_EMPTY_ERROR;
         }
         if (supplier.getCurrentFullDeltas().size() != supplier.getCurrentHalfDeltas().size()) {
             logger.trace("The deltas that should be applied have fallen below " +
                     "the threshold of " + deltaCutoff + ". (Module: " + getIdentifier() + ")");
-            return LocalError.MINIMAL_EMPTY_ERROR;
+            return NumericalError.MINIMAL_EMPTY_ERROR;
         }
 
         // compare full and half deltas
@@ -419,10 +288,10 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
             double halfDelta = supplier.getCurrentHalfDeltas().get(identifier).getValue();
             // calculate error
             double localError = Math.abs(1 - (fullDelta / halfDelta));
-            // check for numerical instabilities
-            checkErrorStability(fullDelta, halfDelta, localError);
             // determine the largest error in the current deltas
             if (largestLocalError < localError) {
+                // check for numerical instabilities
+                checkErrorStability(fullDelta, halfDelta, localError);
                 largestIdentifier = identifier;
                 largestLocalError = localError;
                 associatedDelta = fullDelta;
@@ -430,9 +299,9 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
         }
         // safety check
         Objects.requireNonNull(largestIdentifier);
-        LocalError localError = new LocalError(largestIdentifier.getUpdatable(), largestIdentifier.getEntity(), largestLocalError);
+        NumericalError localError = new NumericalError(largestIdentifier.getUpdatable(), largestIdentifier.getEntity(), largestLocalError);
         // set local error and return local error
-        simulation.getScheduler().setLargestLocalError(localError, this, associatedDelta);
+        getSimulation().getScheduler().setLargestLocalError(localError, this, associatedDelta);
         return localError;
     }
 
@@ -444,7 +313,7 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
      * @param error The error.
      */
     private void checkErrorStability(double fullDelta, double halfDelta, double error) {
-        if (error > errorCutoff) {
+        if (error > errorCutoff && MolarConcentration.concentrationToMolecules(fullDelta).getValue().doubleValue() > getSimulation().getScheduler().getRecalculationCutoff()) {
             throw new NumericalInstabilityException("The module " + toString() + " experiences numerical instabilities. " +
                     "The local error between the full step delta (" + fullDelta + ") and half step delta (" + halfDelta +
                     ") is " + error + ". This can be an result of time steps that have been initially chosen too large" +
@@ -452,21 +321,20 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
         }
     }
 
-
     @Override
     public void calculateUpdates() {
-        scope.processAllUpdatables(simulation.getUpdatables());
+        scope.processAllUpdatables(getSimulation().getUpdatables());
         evaluateModuleState();
     }
 
     @Override
     public void optimizeTimeStep() {
         Updatable updatable = supplier.getLargestLocalError().getUpdatable();
-        while (state == REQUIRING_RECALCULATION) {
+        while (getState() == REQUIRING_RECALCULATION) {
             // reset previous error
             supplier.resetError();
             // determine new local error with decreased time step
-            simulation.getScheduler().decreaseTimeStep();
+            getSimulation().getScheduler().decreaseTimeStep();
             scope.processUpdatable(updatable);
             // evaluate module state by error
             evaluateModuleState();
@@ -481,10 +349,10 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
     private void evaluateModuleState() {
         // calculate ration of local and global error
         if (localErrorIsAcceptable()) {
-            state = SUCCEEDED;
+            setState(SUCCEEDED);
         } else {
             logger.trace("Recalculation required for error {}.", supplier.getLargestLocalError().getValue());
-            state = REQUIRING_RECALCULATION;
+            setState(REQUIRING_RECALCULATION);
             supplier.clearDeltas();
             scope.clearPotentialDeltas();
         }
@@ -492,31 +360,20 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
 
     private boolean localErrorIsAcceptable() {
         boolean errorRatioIsValid = false;
-        if (simulation.getScheduler().getLargestGlobalError() != 0.0) {
+        if (getSimulation().getScheduler().getLargestGlobalError().getValue() != 0.0) {
             // calculate ratio of local and global error
-            double errorRatio = supplier.getLargestLocalError().getValue() / simulation.getScheduler().getLargestGlobalError();
+            double errorRatio = supplier.getLargestLocalError().getValue() / getSimulation().getScheduler().getLargestGlobalError().getValue();
             errorRatioIsValid = errorRatio > 100000;
         }
         // use threshold
-        boolean thresholdIsValid = supplier.getLargestLocalError().getValue() < simulation.getScheduler().getRecalculationCutoff();
+        boolean thresholdIsValid = supplier.getLargestLocalError().getValue() < getSimulation().getScheduler().getRecalculationCutoff();
         return errorRatioIsValid || thresholdIsValid;
-    }
-
-    @Override
-    public void resetState() {
-        state = PENDING;
-        supplier.resetError();
-    }
-
-    @Override
-    public Set<Class<? extends Feature>> getRequiredFeatures() {
-        return featureManager.getRequiredFeatures();
     }
 
     @Override
     public double getScaledFeature(Class<? extends ScalableQuantitativeFeature<?>> featureClass) {
         // feature from the module (like reaction rates)
-        return choseScaling(featureManager.getFeature(featureClass));
+        return choseScaling(getFeature(featureClass));
     }
 
     /**
@@ -545,75 +402,19 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
         return feature.getScaledQuantity();
     }
 
-    /**
-     * Returns the requested feature.
-     *
-     * @param featureTypeClass The requested feature.
-     * @param <FeatureType> The resulting content type.
-     * @return The requested feature.
-     */
-    public <FeatureType extends Feature> FeatureType getFeature(Class<FeatureType> featureTypeClass) {
-        return featureManager.getFeature(featureTypeClass);
-    }
+    @Override
+    public void initialize() {
 
-    /**
-     * Sets a feature.
-     *
-     * @param feature The feature.
-     */
-    public void setFeature(Feature<?> feature) {
-        featureManager.setFeature(feature);
-    }
-
-    /**
-     * Returns all features of this module (not its entities).
-     *
-     * @return all features of this module.
-     */
-    public Collection<Feature<?>> getFeatures() {
-        return featureManager.getAllFeatures();
     }
 
     @Override
     public void onReset() {
-
+        supplier.resetError();
     }
 
     @Override
     public void onCompletion() {
 
-    }
-
-    @Override
-    public void checkFeatures() {
-        outer:
-        for (Class<? extends Feature> featureClass : getRequiredFeatures()) {
-            for (Feature<?> feature : featureManager.getFeatures()) {
-                if (featureClass.isInstance(feature)) {
-                    // logger.info("Required feature {}: {} will be used and is set to {}.", featureClass.getSimpleName(), feature.getClass().getSimpleName(), feature.getContent());
-                    continue outer;
-                }
-            }
-            logger.warn("Required feature {} has not been set.", featureClass.getSimpleName());
-        }
-    }
-
-    @Override
-    public String toString() {
-        return getIdentifier();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ConcentrationBasedModule<?> that = (ConcentrationBasedModule<?>) o;
-        return Objects.equals(identifier, that.identifier);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(identifier);
     }
 
 }

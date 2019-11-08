@@ -142,15 +142,15 @@ public class Fit3DAlignmentBatch implements Fit3D {
                 try {
                     structure = multiParser.next();
                     if (skipAlphaCarbonTargets && Structures.isAlphaCarbonStructure(structure)) {
-                        logger.info("ignored alpha carbon only structure {}", structure);
+                        logger.debug("ignored alpha carbon only structure {}", structure);
                         return null;
                     }
                     if (skipBackboneTargets && Structures.isBackboneStructure(structure)) {
-                        logger.info("ignored backbone only structure {}", structure);
+                        logger.debug("ignored backbone only structure {}", structure);
                         return null;
                     }
                     Model target = structure.getFirstModel();
-                    logger.info("computing Fit3D alignment against {}", target);
+                    logger.debug("computing Fit3D alignment against {}", target);
                     // create Fit3DAlignment and decide between AtomFilter or RepresentationScheme
                     Fit3DBuilder.ParameterStep parameterStep;
                     if (representationScheme == null) {

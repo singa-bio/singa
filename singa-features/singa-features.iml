@@ -13,9 +13,9 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="R User Library" level="project" />
     <orderEntry type="library" name="R Skeletons" level="application" />
-    <orderEntry type="library" name="Maven: tec.units:indriya:1.0" level="project" />
+    <orderEntry type="library" name="Maven: tech.units:indriya:1.2" level="project" />
     <orderEntry type="library" name="Maven: javax.measure:unit-api:1.0" level="project" />
-    <orderEntry type="library" name="Maven: tec.uom.lib:uom-lib-common:1.0.2" level="project" />
+    <orderEntry type="library" name="Maven: tech.uom.lib:uom-lib-common:1.1" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.junit.jupiter:junit-jupiter-api:5.3.1" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.apiguardian:apiguardian-api:1.0.0" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.opentest4j:opentest4j:1.1.1" level="project" />

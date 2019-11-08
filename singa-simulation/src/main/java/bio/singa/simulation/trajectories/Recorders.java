@@ -41,7 +41,7 @@ public class Recorders {
 
     public static  Path appendTimestampedFolder(Path parentPath) {
         Date date = Calendar.getInstance().getTime();
-        String timeStamp = new SimpleDateFormat("yyyy-MM-dd'T'HH-mm-ss'Z'").format(date);
+        String timeStamp = new SimpleDateFormat("yyyy-MM-dd'T'HH-mm-ss-SSS'Z'").format(date);
         return parentPath.resolve(timeStamp);
     }
 

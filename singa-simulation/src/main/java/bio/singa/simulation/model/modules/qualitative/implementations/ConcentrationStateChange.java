@@ -6,12 +6,13 @@ import bio.singa.simulation.features.Cargoes;
 import bio.singa.simulation.features.Ratio;
 import bio.singa.simulation.features.RequiredVesicleState;
 import bio.singa.simulation.model.agents.pointlike.Vesicle;
-import bio.singa.simulation.model.modules.concentration.ModuleState;
 import bio.singa.simulation.model.modules.qualitative.QualitativeModule;
 import bio.singa.simulation.model.sections.CellTopology;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static bio.singa.simulation.model.modules.concentration.ModuleState.SUCCEEDED_WITH_PENDING_CHANGES;
 
 /**
  * @author cl
@@ -28,9 +29,9 @@ public class ConcentrationStateChange extends QualitativeModule {
         // unattached
         getRequiredFeatures().add(AppliedVesicleState.class);
 
-        // first: AQP2  second: AQP2P
+        // first: AQP2P  second: AQP2
         getRequiredFeatures().add(Cargoes.class);
-        // 3/4
+        // 1.5
         getRequiredFeatures().add(Ratio.class);
 
     }
@@ -42,17 +43,16 @@ public class ConcentrationStateChange extends QualitativeModule {
         ChemicalEntity firstEntity = content.get(0);
         ChemicalEntity secondEntity = content.get(1);
         double ratio = getFeature(Ratio.class).getContent().getValue().doubleValue();
-        for (Vesicle vesicle : simulation.getVesicleLayer().getVesicles()) {
+        for (Vesicle vesicle : getSimulation().getVesicleLayer().getVesicles()) {
             if (vesicle.getState().equals(requiredState)) {
-                // if c(AQP2)/c(AQP2P) >= 3/4
                 double firstConcentration = vesicle.getConcentrationContainer().get(CellTopology.MEMBRANE, firstEntity);
                 double secondConcentration = vesicle.getConcentrationContainer().get(CellTopology.MEMBRANE, secondEntity);
-                if (firstConcentration/secondConcentration < ratio) {
+                if (firstConcentration/secondConcentration > ratio) {
                     changingVesicles.add(vesicle);
                 }
             }
         }
-        state = ModuleState.SUCCEEDED_WITH_PENDING_CHANGES;
+        setState(SUCCEEDED_WITH_PENDING_CHANGES);
     }
 
     @Override

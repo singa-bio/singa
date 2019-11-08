@@ -9,6 +9,8 @@ import bio.singa.simulation.model.sections.ConcentrationContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.measure.Quantity;
+import javax.measure.quantity.Dimensionless;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -63,7 +65,7 @@ public class ConcentrationDeltaManager {
     /**
      * A flag signifying if this node has a fixed concentration.
      */
-    private boolean concentrationFixed;
+    private List<ChemicalEntity> fixedEntities;
 
     /**
      * Creates a new Concentration Delta Manager.
@@ -74,7 +76,7 @@ public class ConcentrationDeltaManager {
         finalDeltas = new ArrayList<>();
         potentialDeltas = Collections.synchronizedList(new ArrayList<>());
         observed = false;
-        concentrationFixed = false;
+        fixedEntities = new ArrayList<>();
         currentConcentrations = initialConcentrations;
     }
 
@@ -100,6 +102,10 @@ public class ConcentrationDeltaManager {
         return originalConcentrations;
     }
 
+    public void setOriginalConcentrations(ConcentrationContainer originalConcentrations) {
+        this.originalConcentrations = originalConcentrations;
+    }
+
     /**
      * Returns true if the concentrations are observed.
      *
@@ -118,22 +124,12 @@ public class ConcentrationDeltaManager {
         this.observed = observed;
     }
 
-    /**
-     * Returns true if the concentration is fixed - no deltas are applied.
-     *
-     * @return true if the concentration is fixed - no deltas are applied.
-     */
-    public boolean isConcentrationFixed() {
-        return concentrationFixed;
+    public void fix(ChemicalEntity chemicalEntity) {
+        fixedEntities.add(chemicalEntity);
     }
 
-    /**
-     * Sets the concentration to be fixed - no deltas will be applied.
-     *
-     * @param concentrationFixed True if the concentration should be fixed.
-     */
-    public void setConcentrationFixed(boolean concentrationFixed) {
-        this.concentrationFixed = concentrationFixed;
+    public List<ChemicalEntity> getFixedEntities() {
+        return fixedEntities;
     }
 
     public boolean hasDeltas() {
@@ -184,6 +180,13 @@ public class ConcentrationDeltaManager {
         } while (repeat);
     }
 
+    /**
+     * If deltas would result in negative concentrations (negative delta value is higher than concentration in updatable)
+     * the affected deltas are scaled accordingly to the remaining concentration.
+     *
+     * @param module The module that generated the delta.
+     * @param delta The delta that was too large.
+     */
     private void capDeltas(UpdateModule module, ConcentrationDelta delta) {
         double remainingConcentration = currentConcentrations.get(delta.getCellSubsection(), delta.getChemicalEntity());
         List<ConcentrationDelta> affectedDeltas = potentialDeltas.stream()
@@ -191,7 +194,7 @@ public class ConcentrationDeltaManager {
                 .collect(Collectors.toList());
         double deltaValue = delta.getValue();
         for (ConcentrationDelta affectedDelta : affectedDeltas) {
-            if (affectedDelta.equals(delta)) {
+            if (affectedDelta.getValue() == deltaValue) {
                 delta.setValue(-remainingConcentration);
             } else {
                 // determine relationship
@@ -202,21 +205,30 @@ public class ConcentrationDeltaManager {
 
     }
 
-    public double determineGlobalNumericalError() {
+    public NumericalError determineGlobalNumericalError() {
         double largestError = 0.0;
+        ChemicalEntity errorEntity = null;
         for (ChemicalEntity entity : currentConcentrations.getReferencedEntities()) {
             for (CellSubsection subsection : currentConcentrations.getReferencedSubsections()) {
-                double interimConcentration = interimConcentrations.get(subsection, entity);
                 double currentConcentration = currentConcentrations.get(subsection, entity);
+                Quantity<Dimensionless> molecules = MolarConcentration.concentrationToMolecules(currentConcentration);
+                if (molecules.getValue().doubleValue() < 1e-4) {
+                    continue;
+                }
+                double interimConcentration = interimConcentrations.get(subsection, entity);
                 if (currentConcentration != 0.0 && interimConcentration != 0.0) {
                     double globalError = Math.abs(1 - (interimConcentration / currentConcentration));
                     if (globalError > largestError) {
                         largestError = globalError;
+                        errorEntity = entity;
                     }
                 }
             }
         }
-        return largestError;
+        if (errorEntity == null) {
+            return NumericalError.MINIMAL_EMPTY_ERROR;
+        }
+        return new NumericalError(null, errorEntity, largestError);
     }
 
 
@@ -294,6 +306,9 @@ public class ConcentrationDeltaManager {
         currentConcentrations = originalConcentrations;
         interimConcentrations = originalConcentrations;
         for (ConcentrationDelta delta : finalDeltas) {
+            if (fixedEntities.contains(delta.getChemicalEntity())) {
+                continue;
+            }
             // it may happen that concentrations are calculated as strut points that have no representations in the
             // original concentrations and therefore non existent entities would be removed
             double previousConcentration = currentConcentrations.get(delta.getCellSubsection(), delta.getChemicalEntity());

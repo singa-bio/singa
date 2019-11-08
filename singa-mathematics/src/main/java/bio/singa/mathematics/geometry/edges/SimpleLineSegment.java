@@ -191,7 +191,6 @@ public class SimpleLineSegment extends Line implements LineSegment {
 
     @Override
     public int hashCode() {
-
         return Objects.hash(super.hashCode(), startingPoint, endingPoint);
     }
 

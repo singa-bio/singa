@@ -4,7 +4,7 @@ import bio.singa.features.units.UnitRegistry;
 
 import javax.measure.Unit;
 
-import static tec.units.indriya.AbstractUnit.ONE;
+import static tech.units.indriya.AbstractUnit.ONE;
 
 /**
  * Second order rates are in concentration^-1 * time^-1.

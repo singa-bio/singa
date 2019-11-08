@@ -166,7 +166,7 @@ public class FofanovEstimation implements StatisticalModel {
                 rmsdValuesPath.toString(),
                 pvaluesPath.toString());
         Process process;
-        if (logger.isDebugEnabled() || logger.isInfoEnabled()) {
+        if (logger.isDebugEnabled()) {
             process = processBuilder.inheritIO().start();
         } else {
             process = processBuilder.start();

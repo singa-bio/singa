@@ -1,8 +1,8 @@
 package bio.singa.chemistry.features.databases.chebi;
 
-import bio.singa.chemistry.entities.SmallMolecule;
+import bio.singa.chemistry.entities.simple.SmallMolecule;
 import bio.singa.chemistry.features.smiles.Smiles;
-import bio.singa.chemistry.features.structure3d.MolStructureParser;
+import bio.singa.structure.parser.mol.MolParser;
 import bio.singa.chemistry.features.structure3d.Structure3D;
 import bio.singa.features.identifiers.InChIKey;
 import bio.singa.features.identifiers.SimpleStringIdentifier;
@@ -127,12 +127,12 @@ public class ChEBIContentHandler implements ContentHandler {
             case "ChemicalStructures":
                 if (is3DStructure && isMolStructure) {
                     // create structure
-                    MolStructureParser parser = new MolStructureParser(Arrays.asList(structureBuilder.toString().split("\\R")));
-                    ligand3D = parser.parse();
+                    MolParser parser = new MolParser(Arrays.asList(structureBuilder.toString().split("\\R")));
+                    ligand3D = parser.parseNextAsLigand();
                 } else if (is2DStructure && isDefaultStrucutre){
                     // create structure
-                    MolStructureParser parser = new MolStructureParser(Arrays.asList(structureBuilder.toString().split("\\R")));
-                    ligand2D = parser.parse();
+                    MolParser parser = new MolParser(Arrays.asList(structureBuilder.toString().split("\\R")));
+                    ligand2D = parser.parseNextAsLigand();
                 }
                 // clean up
                 structureBuilder = new StringBuilder();

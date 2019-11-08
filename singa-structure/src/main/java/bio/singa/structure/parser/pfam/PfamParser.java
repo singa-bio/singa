@@ -89,8 +89,10 @@ public class PfamParser {
 
         // decide whether to parse chains or domains
         if (parseChains) {
+            logger.info("Parsing Pfam {} chains", pfamIdentifier);
             parseChains();
         } else {
+            logger.info("Parsing Pfam {} domains.", pfamIdentifier);
             parseDomains();
         }
     }
@@ -100,8 +102,8 @@ public class PfamParser {
         for (String relevantLine : relevantLines) {
             String pdbIdentifier = PfamToken.PDBToken.PDB_IDENTIFIER.extract(relevantLine).toLowerCase();
             String chainIdentifier = PfamToken.PDBToken.CHAIN_IDENTIFIER.extract(relevantLine);
-            int startPdb = Integer.valueOf(PfamToken.PDBToken.PDB_RESIDUE_START.extract(relevantLine));
-            int endPdb = Integer.valueOf(PfamToken.PDBToken.PDB_RESIDUE_END.extract(relevantLine));
+            int startPdb = Integer.parseInt(PfamToken.PDBToken.PDB_RESIDUE_START.extract(relevantLine));
+            int endPdb = Integer.parseInt(PfamToken.PDBToken.PDB_RESIDUE_END.extract(relevantLine));
             List<LeafSubstructure<?>> domain;
             if (structureParserOptions != null) {
                 domain = StructureParser.pdb()
@@ -135,7 +137,7 @@ public class PfamParser {
         for (String relevantLine : relevantLines) {
             String pdbIdentifier = PfamToken.PDBToken.PDB_IDENTIFIER.extract(relevantLine).toLowerCase();
             String chainIdentifier = PfamToken.PDBToken.CHAIN_IDENTIFIER.extract(relevantLine);
-            logger.info("parsing Pfam chain {}_{}", pdbIdentifier, chainIdentifier);
+            logger.debug("parsing Pfam chain {}_{}", pdbIdentifier, chainIdentifier);
             Chain chain;
             if (structureParserOptions != null) {
                 chain = StructureParser.pdb()
@@ -166,13 +168,13 @@ public class PfamParser {
             fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
             fos.close();
             rbc.close();
-            logger.info("unzipping mapping file {}", temporaryZippedFile);
+            logger.debug("unzipping mapping file {}", temporaryZippedFile);
             try (GZIPInputStream zip = new GZIPInputStream(new FileInputStream(temporaryZippedFile.toFile()));
                  BufferedReader reader = new BufferedReader(new InputStreamReader(zip, "UTF-8"))) {
                 relevantLines = reader.lines()
                         .filter(line -> PfamToken.IdentifierToken.PFAM_IDENTIFIER.extract(line).equals(pfamIdentifier.getContent()))
                         .collect(Collectors.toList());
-                logger.info("Pfam {} has {} entries", pfamIdentifier, relevantLines.size());
+                logger.debug("Pfam {} has {} entries", pfamIdentifier, relevantLines.size());
             }
         } catch (IOException e) {
             throw new UncheckedIOException(e);

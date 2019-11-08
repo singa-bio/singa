@@ -1,22 +1,16 @@
 package bio.singa.simulation.model.modules.displacement.implementations;
 
 import bio.singa.core.utility.Pair;
-import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.simulation.features.AppliedVesicleState;
 import bio.singa.simulation.features.MotorMovementVelocity;
 import bio.singa.simulation.model.agents.pointlike.Vesicle;
 import bio.singa.simulation.model.modules.displacement.DisplacementBasedModule;
 import bio.singa.simulation.model.modules.displacement.DisplacementDelta;
-import tec.units.indriya.quantity.Quantities;
 
-import javax.measure.Quantity;
-import javax.measure.quantity.Length;
 import java.util.ListIterator;
 
 import static bio.singa.simulation.features.MotorPullDirection.MINUS;
-
-
 /**
  * @author cl
  */
@@ -70,8 +64,8 @@ public class VesicleTransport extends DisplacementBasedModule {
         if (guide == null) {
             return new DisplacementDelta(this, new Vector2D(0.0, 0.0));
         }
-        Quantity<Length> distance = Quantities.getQuantity(getScaledFeature(MotorMovementVelocity.class), UnitRegistry.getSpaceUnit());
-        return new DisplacementDelta(this, guide.multiply(distance.getValue().doubleValue()));
+        double distance = getScaledFeature(MotorMovementVelocity.class);
+        return new DisplacementDelta(this, guide.multiply(distance));
     }
 
     private Pair<Vector2D> scoutMinusEnd(ListIterator<Vector2D> segmentIterator) {

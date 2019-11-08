@@ -98,9 +98,16 @@ public interface Graph<NodeType extends Node<NodeType, ? extends Vector, Identif
      */
     int addEdgeBetween(NodeType source, NodeType target);
 
-    default Optional<EdgeType> getEdgeBetween(NodeType source, NodeType target) {
+    /**
+     * Returns the any edge between both nodes. The ordering (source, target) that may be defined does not matter.
+     *
+     * @param first The first node.
+     * @param second The second node.
+     * @return Any edge that connects both nodes, or an empty node otherwise.
+     */
+    default Optional<EdgeType> getEdgeBetween(NodeType first, NodeType second) {
         return getEdges().stream()
-                .filter(edge -> edge.containsNode(source) && edge.containsNode(target))
+                .filter(edge -> edge.containsNode(first) && edge.containsNode(second))
                 .findAny();
     }
 

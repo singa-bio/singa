@@ -1,13 +1,14 @@
 package bio.singa.features.quantities;
 
 
-import tec.units.indriya.AbstractUnit;
-import tec.units.indriya.quantity.Quantities;
-import tec.units.indriya.unit.ProductUnit;
+import tech.units.indriya.AbstractUnit;
+import tech.units.indriya.quantity.Quantities;
+import tech.units.indriya.unit.ProductUnit;
 
 import javax.measure.Quantity;
+import javax.measure.quantity.Dimensionless;
 
-import static tec.units.indriya.unit.Units.*;
+import static tech.units.indriya.unit.Units.*;
 
 /**
  * This class holds values and units of natural constants.
@@ -39,5 +40,14 @@ public class NaturalConstants {
      * @see <a href="https://physics.nist.gov/cgi-bin/cuu/Value?na">NIST</a>
      */
     public static Quantity AVOGADRO_CONSTANT = Quantities.getQuantity(6.022140857e23, new ProductUnit(AbstractUnit.ONE.divide(MOLE)));
+
+    /**
+     * The Euler–Mascheroni constant is defined as the limiting difference between the harmonic series and the natural
+     * logarithm.
+     *
+     * @see <a href="http://dlmf.nist.gov/3.12.E4">NIST</a>
+     */
+    public static Quantity<Dimensionless> EULER_MASCHERONI_CONSTANT = Quantities.getQuantity(0.577215664901532, AbstractUnit.ONE);
+
 
 }

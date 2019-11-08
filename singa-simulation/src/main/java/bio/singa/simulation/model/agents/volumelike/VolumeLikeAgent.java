@@ -11,13 +11,10 @@ public class VolumeLikeAgent {
     private Polygon area;
     private CellRegion cellRegion;
 
-    public VolumeLikeAgent(Polygon area) {
-        this.area = area;
-    }
-
     public VolumeLikeAgent(Polygon area, CellRegion cellRegion) {
         this.area = area;
         this.cellRegion = cellRegion;
+        cellRegion.setAreaRepresentation(area);
     }
 
     public Polygon getArea() {

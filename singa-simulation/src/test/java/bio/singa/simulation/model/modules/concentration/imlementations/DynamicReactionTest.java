@@ -1,7 +1,7 @@
 package bio.singa.simulation.model.modules.concentration.imlementations;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
-import bio.singa.chemistry.entities.SmallMolecule;
+import bio.singa.chemistry.entities.simple.SmallMolecule;
 import bio.singa.chemistry.features.reactions.RateConstant;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
@@ -10,20 +10,17 @@ import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.modules.concentration.imlementations.reactions.ReactionBuilder;
 import bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.reactants.Reactant;
 import bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.reactants.ReactantRole;
-import bio.singa.simulation.model.sections.CellRegion;
-import bio.singa.simulation.model.sections.concentration.ConcentrationInitializer;
-import bio.singa.simulation.model.sections.concentration.SectionConcentration;
+import bio.singa.simulation.model.sections.CellRegions;
+import bio.singa.simulation.model.concentrations.ConcentrationBuilder;
 import bio.singa.simulation.model.simulation.Simulation;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import tec.units.indriya.quantity.Quantities;
 
-import static bio.singa.features.units.UnitProvider.NANO_MOLE_PER_LITRE;
-import static bio.singa.simulation.model.sections.CellSubsection.SECTION_A;
+import static bio.singa.simulation.model.sections.CellSubsections.CYTOPLASM;
 import static bio.singa.simulation.model.sections.CellTopology.INNER;
-import static tec.units.indriya.unit.Units.SECOND;
+import static tech.units.indriya.unit.Units.SECOND;
 
 /**
  * @author cl
@@ -71,19 +68,34 @@ public class DynamicReactionTest {
         simulation.setGraph(automatonGraph);
         // set concentrations
         AutomatonNode node = automatonGraph.getNode(0, 0);
-        node.setCellRegion(CellRegion.CYTOSOL_A);
+        node.setCellRegion(CellRegions.CYTOPLASM_REGION);
 
-        ConcentrationInitializer ci = new ConcentrationInitializer();
-        ci.addInitialConcentration(new SectionConcentration(SECTION_A, substrate, Quantities.getQuantity(200, NANO_MOLE_PER_LITRE)));
-        ci.addInitialConcentration(new SectionConcentration(SECTION_A, product, Quantities.getQuantity(100, NANO_MOLE_PER_LITRE)));
-        ci.addInitialConcentration(new SectionConcentration(SECTION_A, catalyst, Quantities.getQuantity(30, NANO_MOLE_PER_LITRE)));
-        simulation.setConcentrationInitializer(ci);
+        ConcentrationBuilder.create(simulation)
+                .entity(substrate)
+                .subsection(CYTOPLASM)
+                .concentrationValue(200)
+                .nanoMolar()
+                .build();
+
+        ConcentrationBuilder.create(simulation)
+                .entity(product)
+                .subsection(CYTOPLASM)
+                .concentrationValue(100)
+                .nanoMolar()
+                .build();
+
+        ConcentrationBuilder.create(simulation)
+                .entity(catalyst)
+                .subsection(CYTOPLASM)
+                .concentrationValue(30)
+                .nanoMolar()
+                .build();
 
         for (int i = 0; i < 10; i++) {
             simulation.nextEpoch();
-            System.out.println(node.getConcentrationContainer().get(SECTION_A, substrate));
-            System.out.println(node.getConcentrationContainer().get(SECTION_A, product));
-            System.out.println(node.getConcentrationContainer().get(SECTION_A, catalyst));
+            System.out.println(node.getConcentrationContainer().get(CYTOPLASM, substrate));
+            System.out.println(node.getConcentrationContainer().get(CYTOPLASM, product));
+            System.out.println(node.getConcentrationContainer().get(CYTOPLASM, catalyst));
         }
     }
 

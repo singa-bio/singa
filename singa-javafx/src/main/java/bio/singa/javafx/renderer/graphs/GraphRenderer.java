@@ -1,8 +1,11 @@
 package bio.singa.javafx.renderer.graphs;
 
 import bio.singa.javafx.renderer.Renderer;
+import bio.singa.javafx.renderer.layouts.force.BinaryAttractiveForce;
+import bio.singa.javafx.renderer.layouts.force.BinaryRepulsiveForce;
+import bio.singa.javafx.renderer.layouts.force.ForceDirectedGraphLayout;
+import bio.singa.javafx.renderer.layouts.force.UnaryAttractiveForce;
 import bio.singa.mathematics.algorithms.voronoi.VoronoiGenerator;
-import bio.singa.mathematics.algorithms.voronoi.VoronoiRelaxation;
 import bio.singa.mathematics.algorithms.voronoi.model.VoronoiDiagram;
 import bio.singa.mathematics.geometry.edges.SimpleLineSegment;
 import bio.singa.mathematics.geometry.faces.Rectangle;
@@ -19,6 +22,7 @@ import javafx.scene.paint.Color;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static bio.singa.javafx.renderer.graphs.GraphRenderer.RenderingMode.FORCE_DIRECTED;
@@ -29,43 +33,64 @@ import static bio.singa.javafx.renderer.graphs.GraphRenderer.RenderingMode.FORCE
 public class GraphRenderer<NodeType extends Node<NodeType, Vector2D, IdentifierType>, EdgeType extends Edge<NodeType>,
         IdentifierType, GraphType extends Graph<NodeType, EdgeType, IdentifierType>> extends AnimationTimer implements Renderer {
 
+    ForceDirectedGraphLayout<NodeType, EdgeType, IdentifierType, GraphType> layout;
     private final ConcurrentLinkedQueue<GraphType> graphQueue = new ConcurrentLinkedQueue<>();
+    private final DoubleProperty drawingWidth;
+    private final DoubleProperty drawingHeight;
     private GraphRenderOptions<NodeType> renderingOptions = new GraphRenderOptions<>();
     private Function<GraphType, Void> renderBeforeFunction;
     private Function<GraphType, Void> renderAfterFunction;
     private GraphicsContext graphicsContext;
-
-    private final DoubleProperty drawingWidth;
-    private final DoubleProperty drawingHeight;
     private StringProperty renderingMode;
+    private Rectangle boundingBox;
 
     public GraphRenderer() {
         drawingWidth = new SimpleDoubleProperty();
         drawingHeight = new SimpleDoubleProperty();
         renderingMode = new SimpleStringProperty(FORCE_DIRECTED.name());
+
+        layout = new ForceDirectedGraphLayout<>(null, this, 100);
+        layout.addForce(new BinaryAttractiveForce<>(layout));
+        layout.addForce(new BinaryRepulsiveForce<>(layout));
+        layout.addForce(new UnaryAttractiveForce<>(layout, drawingWidth.divide(2.0), drawingHeight.divide(2.0)));
     }
 
+
     public void arrangeGraph(GraphType graph) {
-        Thread graphProducer = new Thread(new GraphProducer<>(this, graph, 100));
+        layout.setGraph(graph);
+        Thread graphProducer = new Thread(new GraphProducer<>(layout, this));
         graphProducer.start();
         start();
+    }
+
+    public void arrangeGraph(GraphType graph, int i) {
+        Thread graphProducer = new Thread(new GraphProducer<>(layout, this));
+        graphProducer.start();
+        start();
+    }
+
+    public void centerGraph(GraphType graph) {
+        centerGraph(graph, (node) -> true);
+    }
+
+    public void centerGraph(GraphType graph, Predicate<NodeType> nodePredicate) {
+        Thread graphAligner = new Thread(new GraphAligner<>(this, graph, nodePredicate));
+        graphAligner.start();
+        start();
+    }
+
+    public void centerOnce(GraphType graph) {
+        centerOnce(graph, (node -> true));
+    }
+
+    public void centerOnce(GraphType graph, Predicate<NodeType> nodePredicate) {
+        GraphAligner<NodeType, EdgeType, IdentifierType, GraphType> graphAligner = new GraphAligner<>(this, graph, nodePredicate);
+        render(graphAligner.centerGraph());
     }
 
     public void arrangeOnce(GraphType graph) {
-        GraphDrawingTool<NodeType, EdgeType, IdentifierType, GraphType> gdt = new GraphDrawingTool<>(graph,
-                drawingWidthProperty(), drawingHeightProperty(), 100);
-        render(gdt.arrangeGraph(80));
-    }
-
-    public void relaxGraph(GraphType graph) {
-        Thread graphProducer = new Thread(new RelaxationProducer<>(this, graph, 100));
-        graphProducer.start();
-        start();
-    }
-
-    public void relaxOnce(GraphType graph) {
-        final Rectangle boundingBox = new Rectangle(drawingWidthProperty().doubleValue(), drawingHeightProperty().doubleValue());
-        render(VoronoiRelaxation.relax(graph, boundingBox));
+        layout.setGraph(graph);
+        render(layout.arrangeGraph(80));
     }
 
     @Override
@@ -77,6 +102,7 @@ public class GraphRenderer<NodeType extends Node<NodeType, Vector2D, IdentifierT
     }
 
     public void render(GraphType graph) {
+        determineGraphBoundingBox(graph);
         fillBackground();
         if (renderBeforeFunction != null) {
             renderBeforeFunction.apply(graph);
@@ -227,12 +253,50 @@ public class GraphRenderer<NodeType extends Node<NodeType, Vector2D, IdentifierT
         return renderingMode.get();
     }
 
+    public void setRenderingMode(String renderingMode) {
+        this.renderingMode.set(renderingMode);
+    }
+
+    public ForceDirectedGraphLayout<NodeType, EdgeType, IdentifierType, GraphType> getLayout() {
+        return layout;
+    }
+
+    public void setLayout(ForceDirectedGraphLayout<NodeType, EdgeType, IdentifierType, GraphType> layout) {
+        this.layout = layout;
+    }
+
     public StringProperty renderingModeProperty() {
         return renderingMode;
     }
 
-    public void setRenderingMode(String renderingMode) {
-        this.renderingMode.set(renderingMode);
+    private void determineGraphBoundingBox(GraphType graph) {
+        List<Vector2D> vectors = graph.getNodes().stream().map(NodeType::getPosition).collect(Collectors.toList());
+        double minX = Double.MAX_VALUE;
+        double minY = Double.MAX_VALUE;
+        double maxX = -Double.MAX_VALUE;
+        double maxY = -Double.MAX_VALUE;
+        for (Vector2D vector : vectors) {
+            double x = vector.getX();
+            double y = vector.getY();
+            if (x < minX) {
+                minX = x;
+            }
+            if (x > maxX) {
+                maxX = x;
+            }
+            if (y < minY) {
+                minY = y;
+            }
+            if (y > maxY) {
+                maxY = y;
+            }
+        }
+        double offset = getRenderingOptions().getNodeDiameter();
+        boundingBox = new Rectangle(new Vector2D(minX - offset, minY - offset), new Vector2D(maxX + offset, maxY + offset));
+    }
+
+    public Rectangle getBoundingBox() {
+        return boundingBox;
     }
 
     public enum RenderingMode {

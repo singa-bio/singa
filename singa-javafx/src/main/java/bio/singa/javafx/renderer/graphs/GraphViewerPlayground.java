@@ -1,12 +1,15 @@
 package bio.singa.javafx.renderer.graphs;
 
 
+import bio.singa.chemistry.features.smiles.SmilesParser;
+import bio.singa.javafx.renderer.molecules.MoleculeGraphRenderer;
 import bio.singa.mathematics.algorithms.graphs.NeighbourhoodExtractor;
 import bio.singa.mathematics.graphs.model.GenericGraph;
 import bio.singa.mathematics.graphs.model.GenericNode;
 import bio.singa.structure.model.interfaces.Chain;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.interfaces.Structure;
+import bio.singa.structure.model.molecules.MoleculeGraph;
 import bio.singa.structure.parser.pdb.structures.StructureParser;
 import bio.singa.structure.parser.pdb.structures.StructureSelector;
 import bio.singa.structure.parser.plip.InteractionContainer;
@@ -48,10 +51,11 @@ public class GraphViewerPlayground {
         List<GenericNode<LeafSubstructure<?>>> firstShell = NeighbourhoodExtractor.extractShell(graph, referenceNode, 1);
         List<GenericNode<LeafSubstructure<?>>> secondShell = NeighbourhoodExtractor.extractShell(graph, referenceNode, 2);
         List<GenericNode<LeafSubstructure<?>>> thirdShell = NeighbourhoodExtractor.extractShell(graph, referenceNode, 3);
-
-        GraphDisplayApplication.graph = subgraph;
+        String originalSmiles = "C1:C1C1:C1";
+        MoleculeGraph moleculeGraph = SmilesParser.parse(originalSmiles);
+        GraphDisplayApplication.graph = moleculeGraph;
         LeafShellRenderer renderer = new LeafShellRenderer();
-        GraphDisplayApplication.renderer = renderer;
+        GraphDisplayApplication.renderer = new MoleculeGraphRenderer();
 
         renderer.setRenderBefore((currentGraph) -> {
             renderer.getGraphicsContext().setStroke(Color.DARKBLUE);

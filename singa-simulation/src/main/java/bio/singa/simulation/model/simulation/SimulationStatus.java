@@ -4,15 +4,22 @@ import bio.singa.core.events.UpdateEventListener;
 import bio.singa.features.formatter.TimeFormatter;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.simulation.events.GraphUpdatedEvent;
-import tec.units.indriya.ComparableQuantity;
-import tec.units.indriya.quantity.Quantities;
+import bio.singa.simulation.model.modules.UpdateModule;
+import bio.singa.simulation.model.modules.concentration.NumericalError;
+import tech.units.indriya.ComparableQuantity;
+import tech.units.indriya.quantity.Quantities;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Time;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.Temporal;
 
-import static tec.units.indriya.unit.MetricPrefix.MICRO;
-import static tec.units.indriya.unit.MetricPrefix.MILLI;
-import static tec.units.indriya.unit.Units.SECOND;
+import static tech.units.indriya.unit.MetricPrefix.MICRO;
+import static tech.units.indriya.unit.MetricPrefix.MILLI;
+import static tech.units.indriya.unit.Units.SECOND;
 
 /**
  * @author cl
@@ -36,6 +43,7 @@ public class SimulationStatus implements UpdateEventListener<GraphUpdatedEvent> 
 
     private Quantity<Time> estimatedTimeRemaining;
     private Quantity<Time> estimatedSpeed;
+    private final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     public SimulationStatus(Simulation simulation) {
         this.simulation = simulation;
@@ -86,16 +94,28 @@ public class SimulationStatus implements UpdateEventListener<GraphUpdatedEvent> 
         previousTimeSimulation = currentTimeSimulation;
     }
 
-    public String getLargestLocalError() {
-        return String.valueOf(simulation.getScheduler().getLargestLocalError().getValue());
+    public NumericalError getLargestLocalError() {
+        return simulation.getScheduler().getLargestLocalError();
+    }
+
+    public String getLocalErrorStatus() {
+        NumericalError largestLocalError = getLargestLocalError();
+        return String.format("%6.3e", largestLocalError.getValue())+" "+
+                "("+ largestLocalError.getChemicalEntity().getIdentifier()+", "+
+                largestLocalError.getUpdatable().getStringIdentifier()+", "+
+                getLocalErrorModule()+" )";
+    }
+
+    public UpdateModule getLocalErrorModule() {
+        return simulation.getScheduler().getLocalErrorModule();
     }
 
     public String getLargestLocalErrorUpdate() {
         return String.valueOf(simulation.getScheduler().getLocalErrorUpdate());
     }
 
-    public String getLargestGlobalError() {
-        return String.valueOf(simulation.getScheduler().getLargestGlobalError());
+    public NumericalError getLargestGlobalError() {
+        return simulation.getScheduler().getLargestGlobalError();
     }
 
     public String getNumberOfEpochsSinceLastUpdate() {
@@ -119,6 +139,14 @@ public class SimulationStatus implements UpdateEventListener<GraphUpdatedEvent> 
             return TimeFormatter.formatTime(estimatedTimeRemaining);
         }
         return "";
+    }
+
+    public String getEstimatedFinish() {
+        LocalDateTime today = LocalDateTime.now();
+        Duration duration = Duration.of(estimatedTimeRemaining.to(MILLI(SECOND)).getValue().intValue(), ChronoUnit.MILLIS);
+        Temporal temporal = duration.addTo(today);
+        LocalDateTime finishedDate = LocalDateTime.from(temporal);
+        return dateFormat.format(finishedDate);
     }
 
     public String getEstimatedSpeed() {

@@ -12,18 +12,22 @@ import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.trajectories.flat.FlatUpdateRecorder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tec.units.indriya.ComparableQuantity;
-import tec.units.indriya.quantity.Quantities;
+import tech.units.indriya.ComparableQuantity;
+import tech.units.indriya.quantity.Quantities;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Time;
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.function.Predicate;
 
-import static tec.units.indriya.unit.MetricPrefix.MICRO;
-import static tec.units.indriya.unit.MetricPrefix.MILLI;
-import static tec.units.indriya.unit.Units.SECOND;
+import static tech.units.indriya.unit.MetricPrefix.MICRO;
+import static tech.units.indriya.unit.MetricPrefix.MILLI;
+import static tech.units.indriya.unit.Units.SECOND;
 
 /**
  * Changes in simulations can be observed by tagging {@link AutomatonNode}s of the {@link AutomatonGraph}. As a standard
@@ -84,8 +88,13 @@ public class SimulationManager implements Runnable {
 
     private boolean keepPlatformOpen = DEFAULT_KEEP_PLATFORM_OPEN;
 
+    private Path targetPath;
+
     private CountDownLatch terminationLatch;
     private final SimulationStatus simulationStatus;
+
+    private boolean writeAliveFile = false;
+    private Path aliveFile;
 
     /**
      * Creates a new simulation manager for the given simulation.
@@ -232,6 +241,22 @@ public class SimulationManager implements Runnable {
         this.keepPlatformOpen = keepPlatformOpen;
     }
 
+    public boolean isWritingAliveFile() {
+        return writeAliveFile;
+    }
+
+    public void setWriteAliveFile(boolean writeAliveFile) {
+        this.writeAliveFile = writeAliveFile;
+    }
+
+    public Path getTargetPath() {
+        return targetPath;
+    }
+
+    public void setTargetPath(Path targetPath) {
+        this.targetPath = targetPath;
+    }
+
     /**
      * Returns the simulation.
      *
@@ -243,9 +268,15 @@ public class SimulationManager implements Runnable {
 
     @Override
     public void run() {
+        if (writeAliveFile) {
+            aliveFile = targetPath.resolve("alive");
+        }
         try {
             while (terminationCondition.test(simulation)) {
                 if (emitCondition.test(simulation)) {
+                    if (writeAliveFile) {
+                        updateAliveFile();
+                    }
                     logger.debug("Emitting event after {} (epoch {}).", TimeFormatter.formatTime(simulation.getElapsedTime()), simulation.getEpoch());
                     emitGraphEvent(simulation);
                     for (Updatable updatable : simulation.getObservedUpdatables()) {
@@ -264,6 +295,7 @@ public class SimulationManager implements Runnable {
             System.exit(1);
         }
         logger.info("Simulation finished.");
+        simulation.getScheduler().shutdownExecutorService();
         // close writers
         for (UpdateEventListener<UpdatableUpdatedEvent> nodeEventListener : getNodeListeners()) {
             if (nodeEventListener instanceof FlatUpdateRecorder) {
@@ -287,12 +319,21 @@ public class SimulationManager implements Runnable {
                 // calculate time remaining
                 logger.info("PROGRESS: {} time remaining - {} passed time in simulation",
                         simulationStatus.getEstimatedTimeRemaining(), simulationStatus.getElapsedTime());
-                logger.info("SPEED   : {} ({},{}) epochs (increases, decreases) - {} (simulation time) per s(real time)",
-                        simulationStatus.getNumberOfEpochsSinceLastUpdate(), simulationStatus.getNumberOfTimeStepIncreasesSinceLastUpdate(), simulationStatus.getNumberOfTimeStepDecreasesSinceLastUpdate(), simulationStatus.getEstimatedSpeed());
-                logger.info("ERROR   : {} ({}) delta error (critical delta) - {} global error",
-                        simulationStatus.getLargestLocalError(), simulationStatus.getLargestLocalErrorUpdate(), simulationStatus.getLargestGlobalError());
+                logger.info("SPEED   : {} ({},{}) epochs (increases, decreases) - {} (simulation time) per s(real time) finish: {}",
+                        simulationStatus.getNumberOfEpochsSinceLastUpdate(), simulationStatus.getNumberOfTimeStepIncreasesSinceLastUpdate(), simulationStatus.getNumberOfTimeStepDecreasesSinceLastUpdate(), simulationStatus.getEstimatedSpeed(), simulationStatus.getEstimatedFinish());
+                logger.info("ERROR L : {} ({}, {}, {})", String.format("%6.3e",simulationStatus.getLargestLocalError().getValue()), simulationStatus.getLargestLocalError().getChemicalEntity(), simulationStatus.getLargestLocalError().getUpdatable().getStringIdentifier(), simulationStatus.getLocalErrorModule());
+                logger.info("ERROR G : {} ({}, {})", String.format("%6.3e",simulationStatus.getLargestGlobalError().getValue()), simulationStatus.getLargestGlobalError().getChemicalEntity(), simulationStatus.getLargestGlobalError().getUpdatable().getStringIdentifier());
             }
             previousTimeMillis = currentTimeMillis;
+        }
+    }
+
+    private void updateAliveFile() {
+        String content = String.valueOf(System.currentTimeMillis());
+        try {
+            Files.write(aliveFile, content.getBytes());
+        } catch (IOException e) {
+            throw new UncheckedIOException("unable to write alive file.", e);
         }
     }
 

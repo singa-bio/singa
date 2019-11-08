@@ -1,6 +1,6 @@
 package bio.singa.chemistry.features.databases.pubchem;
 
-import bio.singa.chemistry.entities.SmallMolecule;
+import bio.singa.chemistry.entities.simple.SmallMolecule;
 import bio.singa.chemistry.features.logp.LogP;
 import bio.singa.chemistry.features.smiles.Smiles;
 import bio.singa.features.identifiers.ChEBIIdentifier;

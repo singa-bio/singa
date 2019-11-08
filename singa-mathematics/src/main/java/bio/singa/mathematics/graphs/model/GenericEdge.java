@@ -17,4 +17,8 @@ public class GenericEdge<ContentType> extends AbstractEdge<GenericNode<ContentTy
         super(identifier);
     }
 
+    public GenericEdge(GenericEdge edge) {
+        this(edge.getIdentifier());
+    }
+
 }

@@ -1,5 +1,8 @@
 package bio.singa.chemistry.entities;
 
+import bio.singa.chemistry.entities.complex.ComplexEntity;
+import bio.singa.chemistry.entities.complex.GraphComplexNode;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -28,7 +31,9 @@ public class ChemicalEntities {
         for (ChemicalEntity targetEntity : entities) {
             if (targetEntity instanceof ComplexEntity) {
                 // check if it is required elsewhere
-                Collection<ChemicalEntity> allData = ((ComplexEntity) targetEntity).getAllData();
+                List<ChemicalEntity> allData = ((ComplexEntity) targetEntity).getNodes().stream()
+                        .map(GraphComplexNode::getEntity)
+                        .collect(Collectors.toList());
                 allData.remove(targetEntity);
                 creationRequirements.get(targetEntity).addAll(allData);
             }

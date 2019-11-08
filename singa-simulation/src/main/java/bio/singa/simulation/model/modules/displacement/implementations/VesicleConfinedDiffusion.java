@@ -13,7 +13,7 @@ import bio.singa.simulation.model.modules.displacement.DisplacementDelta;
 import bio.singa.simulation.model.sections.CellRegion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tec.units.indriya.quantity.Quantities;
+import tech.units.indriya.quantity.Quantities;
 
 /**
  * @author cl

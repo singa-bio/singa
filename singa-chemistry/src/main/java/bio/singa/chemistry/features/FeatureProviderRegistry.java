@@ -37,10 +37,13 @@ public class FeatureProviderRegistry {
         addProviderForFeature(MolarVolume.class, MolarVolumePredictor.class);
     }
 
-    private final Map<Class<? extends Feature>, Class<? extends FeatureProvider>> featureRegistry;
+    private final Map<Class<? extends Feature>, Class<? extends FeatureProvider>> classRegistry;
+    private final Map<Class<? extends Feature>, FeatureProvider> instanceRegistry;
+
 
     private FeatureProviderRegistry() {
-        featureRegistry = new HashMap<>();
+        classRegistry = new HashMap<>();
+        instanceRegistry = new HashMap<>();
     }
 
     public static FeatureProviderRegistry getInstance() {
@@ -53,15 +56,20 @@ public class FeatureProviderRegistry {
     }
 
     public static synchronized <FeatureType extends Feature, ProviderType extends FeatureProvider> void addProviderForFeature(Class<FeatureType> featureClass, Class<ProviderType> providerClass) {
-        getInstance().featureRegistry.put(featureClass, providerClass);
+        getInstance().classRegistry.put(featureClass, providerClass);
     }
 
     public static <FeatureType extends Feature> FeatureProvider getProvider(Class<FeatureType> featureClass) {
         try {
-            if (!getInstance().featureRegistry.containsKey(featureClass)) {
+            if (getInstance().instanceRegistry.containsKey(featureClass)) {
+                return getInstance().instanceRegistry.get(featureClass);
+            }
+            if (!getInstance().classRegistry.containsKey(featureClass)) {
                 featureClass.getDeclaredMethod("register").invoke(null);
             }
-            return getInstance().featureRegistry.get(featureClass).newInstance();
+            FeatureProvider providerInstance = getInstance().classRegistry.get(featureClass).getDeclaredConstructor().newInstance();
+            getInstance().instanceRegistry.put(featureClass, providerInstance);
+            return providerInstance;
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new IllegalFeatureRequestException(e);
         } catch (NoSuchMethodException e) {

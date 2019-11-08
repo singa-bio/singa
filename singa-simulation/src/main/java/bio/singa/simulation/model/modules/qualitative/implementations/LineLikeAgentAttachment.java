@@ -12,14 +12,17 @@ import bio.singa.simulation.model.agents.linelike.LineLikeAgent;
 import bio.singa.simulation.model.agents.pointlike.Vesicle;
 import bio.singa.simulation.model.agents.pointlike.VesicleStateRegistry;
 import bio.singa.simulation.model.graphs.AutomatonNode;
-import bio.singa.simulation.model.modules.concentration.ModuleState;
 import bio.singa.simulation.model.modules.qualitative.QualitativeModule;
 import bio.singa.simulation.model.sections.CellTopology;
-import tec.units.indriya.ComparableQuantity;
+import tech.units.indriya.ComparableQuantity;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Length;
 import java.util.*;
+
+import static bio.singa.simulation.model.agents.pointlike.VesicleStateRegistry.TAGGED_FOR_EXOCYTOSIS;
+import static bio.singa.simulation.model.modules.concentration.ModuleState.SUCCEEDED_WITH_PENDING_CHANGES;
+
 /**
  * @author cl
  */
@@ -38,8 +41,8 @@ public class LineLikeAgentAttachment extends QualitativeModule {
 
     @Override
     public void calculateUpdates() {
-        processVesicles(simulation.getVesicleLayer().getVesicles());
-        state = ModuleState.SUCCEEDED_WITH_PENDING_CHANGES;
+        processVesicles(getSimulation().getVesicleLayer().getVesicles());
+        setState(SUCCEEDED_WITH_PENDING_CHANGES);
     }
 
     private void processVesicles(List<Vesicle> vesicles) {
@@ -55,8 +58,8 @@ public class LineLikeAgentAttachment extends QualitativeModule {
             } else {
                 continue;
             }
-            // and the current vesicle is unattached
-            if (!vesicle.getState().equals(VesicleStateRegistry.UNATTACHED)) {
+            // skip if vesicle is not unattached and not tagged for endocytosis
+            if (!vesicle.getState().equals(VesicleStateRegistry.UNATTACHED) && !vesicle.getState().equals(TAGGED_FOR_EXOCYTOSIS)) {
                 continue;
             }
             // attach if there is any close filament

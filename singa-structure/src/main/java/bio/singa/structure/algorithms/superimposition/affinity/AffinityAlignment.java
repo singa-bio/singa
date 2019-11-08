@@ -3,14 +3,10 @@ package bio.singa.structure.algorithms.superimposition.affinity;
 
 import bio.singa.mathematics.algorithms.clustering.AffinityPropagation;
 import bio.singa.mathematics.matrices.LabeledSymmetricMatrix;
-import bio.singa.mathematics.vectors.RegularVector;
-import bio.singa.mathematics.vectors.Vectors;
-import bio.singa.structure.algorithms.superimposition.SubstructureSuperimposer;
+import bio.singa.structure.algorithms.superimposition.AlignmentMethod;
 import bio.singa.structure.algorithms.superimposition.SubstructureSuperimposition;
 import bio.singa.structure.algorithms.superimposition.consensus.ConsensusAlignment;
 import bio.singa.structure.algorithms.superimposition.consensus.ConsensusBuilder;
-import bio.singa.structure.algorithms.superimposition.fit3d.representations.RepresentationScheme;
-import bio.singa.structure.algorithms.superimposition.fit3d.representations.RepresentationSchemeFactory;
 import bio.singa.structure.algorithms.superimposition.fit3d.representations.RepresentationSchemeType;
 import bio.singa.structure.model.interfaces.Atom;
 import bio.singa.structure.model.oak.StructuralEntityFilter;
@@ -35,17 +31,14 @@ import java.util.stream.Collectors;
  *
  * @author fk
  */
-public class AffinityAlignment {
+public class AffinityAlignment extends AlignmentMethod {
 
     private static final Logger logger = LoggerFactory.getLogger(AffinityAlignment.class);
     private static final int MAXIMAL_EPOCHS = 1000;
     private static final double LAMBDA = 0.5;
 
     private final List<StructuralMotif> input;
-    private final boolean idealSuperimposition;
-    private final Predicate<Atom> atomFilter;
 
-    private RepresentationScheme representationScheme;
     private LabeledSymmetricMatrix<StructuralMotif> distanceMatrix;
     private double selfDissimilarity;
     private Map<StructuralMotif, List<StructuralMotif>> clusters;
@@ -58,15 +51,12 @@ public class AffinityAlignment {
                 .map(StructuralMotif::getCopy)
                 .collect(Collectors.toList());
 
-        // create representation scheme if given
-        RepresentationSchemeType representationSchemeType = builder.representationSchemeType;
-        if (representationSchemeType != null) {
-            logger.info("using representation scheme {}", representationSchemeType);
-            representationScheme = RepresentationSchemeFactory.createRepresentationScheme(representationSchemeType);
-        }
+        setAtomFilter(builder.atomFilter);
 
-        idealSuperimposition = builder.idealSuperimposition;
-        atomFilter = builder.atomFilter;
+        // create representation scheme if given
+        setRepresentationSchemeFromType(builder.representationSchemeType);
+
+        setIdealSuperimposition(builder.idealSuperimposition);
 
         logger.info("affinity alignment initialized with {} input structures", input.size());
 
@@ -114,24 +104,7 @@ public class AffinityAlignment {
             List<StructuralMotif> alignedCluster = new ArrayList<>();
             reference = entry.getKey();
             for (StructuralMotif structuralMotif : entry.getValue()) {
-                SubstructureSuperimposition superimposition;
-                if (representationScheme == null) {
-                    superimposition = idealSuperimposition ?
-                            SubstructureSuperimposer.calculateIdealSubstructureSuperimposition(
-                                    reference,
-                                    structuralMotif, atomFilter) :
-                            SubstructureSuperimposer.calculateSubstructureSuperimposition(
-                                    reference.getAllLeafSubstructures(),
-                                    structuralMotif.getAllLeafSubstructures(), atomFilter);
-                } else {
-                    superimposition = idealSuperimposition ?
-                            SubstructureSuperimposer.calculateIdealSubstructureSuperimposition(
-                                    reference,
-                                    structuralMotif, representationScheme) :
-                            SubstructureSuperimposer.calculateSubstructureSuperimposition(
-                                    reference.getAllLeafSubstructures(),
-                                    structuralMotif.getAllLeafSubstructures(), representationScheme);
-                }
+                SubstructureSuperimposition superimposition = superimpose(reference, structuralMotif);
                 alignedCluster.add(StructuralMotif.fromLeafSubstructures(superimposition.getMappedFullCandidate()));
             }
             entry.setValue(alignedCluster);
@@ -161,24 +134,7 @@ public class AffinityAlignment {
                 StructuralMotif candidate = input.get(j);
 
                 // calculate superimposition
-                SubstructureSuperimposition superimposition;
-                if (representationScheme == null) {
-                    superimposition = idealSuperimposition ?
-                            SubstructureSuperimposer.calculateIdealSubstructureSuperimposition(
-                                    reference,
-                                    candidate, atomFilter) :
-                            SubstructureSuperimposer.calculateSubstructureSuperimposition(
-                                    reference.getAllLeafSubstructures(),
-                                    candidate.getAllLeafSubstructures(), atomFilter);
-                } else {
-                    superimposition = idealSuperimposition ?
-                            SubstructureSuperimposer.calculateIdealSubstructureSuperimposition(
-                                    reference,
-                                    candidate, representationScheme) :
-                            SubstructureSuperimposer.calculateSubstructureSuperimposition(
-                                    reference.getAllLeafSubstructures(),
-                                    candidate.getAllLeafSubstructures(), representationScheme);
-                }
+                SubstructureSuperimposition superimposition = superimpose(reference, candidate);
 
                 temporaryDistanceMatrix[i][j] = superimposition.getRmsd();
                 temporaryDistanceMatrix[j][i] = superimposition.getRmsd();

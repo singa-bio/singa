@@ -1,40 +1,24 @@
 package bio.singa.simulation.model.sections;
 
 import bio.singa.features.identifiers.GoTerm;
+import bio.singa.mathematics.geometry.model.Polygon;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import static bio.singa.simulation.model.sections.CellTopology.*;
+
 /**
  * @author cl
  */
 public class CellRegion {
 
-    public static CellRegion CYTOSOL_A = new CellRegion("Cytoplasm");
-
-    static {
-        CYTOSOL_A.addSubsection(CellTopology.INNER, CellSubsection.SECTION_A);
-    }
-
-    public static CellRegion CYTOSOL_B = new CellRegion("Cytoplasm");
-
-    static {
-        CYTOSOL_B.addSubsection(CellTopology.INNER, CellSubsection.SECTION_B);
-    }
-
-    public static CellRegion MEMBRANE = new CellRegion("Membrane");
-
-    static {
-        MEMBRANE.addSubsection(CellTopology.INNER, CellSubsection.SECTION_A);
-        MEMBRANE.addSubsection(CellTopology.MEMBRANE, CellSubsection.MEMBRANE);
-        MEMBRANE.addSubsection(CellTopology.OUTER, CellSubsection.SECTION_B);
-    }
-
     private String identifier;
     private GoTerm goTerm;
     private Map<CellTopology, CellSubsection> cellSubSections;
+    private Polygon areaRepresentation;
 
     public CellRegion(String identifier) {
         this.identifier = identifier;
@@ -58,6 +42,14 @@ public class CellRegion {
         cellSubSections.put(topology, subsection);
     }
 
+    public Polygon getAreaRepresentation() {
+        return areaRepresentation;
+    }
+
+    public void setAreaRepresentation(Polygon areaRepresentation) {
+        this.areaRepresentation = areaRepresentation;
+    }
+
     public Collection<CellSubsection> getSubsections() {
         return cellSubSections.values();
     }
@@ -71,25 +63,39 @@ public class CellRegion {
     }
 
     public CellSubsection getInnerSubsection() {
-        return cellSubSections.get(CellTopology.INNER);
+        return cellSubSections.get(INNER);
     }
 
     public CellSubsection getOuterSubsection() {
-        return cellSubSections.get(CellTopology.OUTER);
+        return cellSubSections.get(OUTER);
     }
 
     public CellSubsection getMembraneSubsection() {
-        return cellSubSections.get(CellTopology.MEMBRANE);
+        return cellSubSections.get(MEMBRANE);
+    }
+
+    public boolean has(CellTopology topology) {
+        return cellSubSections.containsKey(topology);
     }
 
     public boolean hasMembrane() {
-        return cellSubSections.containsKey(CellTopology.MEMBRANE);
+        return cellSubSections.containsKey(MEMBRANE);
+    }
+
+    public boolean hasInner() {
+        return cellSubSections.containsKey(INNER);
+    }
+
+    public boolean hasOuter() {
+        return cellSubSections.containsKey(OUTER);
     }
 
     @Override
     public String toString() {
         return identifier + (goTerm != null ? " (" + goTerm.getContent() + ")" : "");
     }
+
+
 
     @Override
     public boolean equals(Object o) {
@@ -101,7 +107,6 @@ public class CellRegion {
 
     @Override
     public int hashCode() {
-
         return Objects.hash(identifier);
     }
 }

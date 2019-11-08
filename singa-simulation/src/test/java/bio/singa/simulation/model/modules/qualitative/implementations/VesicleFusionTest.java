@@ -3,8 +3,8 @@ package bio.singa.simulation.model.modules.qualitative.implementations;
 import bio.singa.chemistry.annotations.Annotation;
 import bio.singa.chemistry.annotations.AnnotationType;
 import bio.singa.chemistry.entities.ChemicalEntity;
-import bio.singa.chemistry.entities.Protein;
-import bio.singa.chemistry.entities.ComplexEntity;
+import bio.singa.chemistry.entities.complex.ComplexEntity;
+import bio.singa.chemistry.entities.simple.Protein;
 import bio.singa.features.identifiers.UniProtIdentifier;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.quantities.MolarConcentration;
@@ -20,23 +20,23 @@ import bio.singa.simulation.model.agents.surfacelike.MembraneTracer;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.graphs.AutomatonNode;
-import bio.singa.simulation.model.sections.CellRegion;
+import bio.singa.simulation.model.sections.CellRegions;
 import bio.singa.simulation.model.sections.CellTopology;
 import bio.singa.simulation.model.simulation.Simulation;
 import org.junit.jupiter.api.Test;
-import tec.units.indriya.ComparableQuantity;
-import tec.units.indriya.quantity.Quantities;
+import tech.units.indriya.ComparableQuantity;
+import tech.units.indriya.quantity.Quantities;
 
 import javax.measure.quantity.Length;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static tec.units.indriya.AbstractUnit.ONE;
-import static tec.units.indriya.unit.MetricPrefix.MICRO;
-import static tec.units.indriya.unit.MetricPrefix.NANO;
-import static tec.units.indriya.unit.Units.METRE;
-import static tec.units.indriya.unit.Units.SECOND;
+import static tech.units.indriya.AbstractUnit.ONE;
+import static tech.units.indriya.unit.MetricPrefix.MICRO;
+import static tech.units.indriya.unit.MetricPrefix.NANO;
+import static tech.units.indriya.unit.Units.METRE;
+import static tech.units.indriya.unit.Units.SECOND;
 
 /**
  * @author cl
@@ -44,7 +44,8 @@ import static tec.units.indriya.unit.Units.SECOND;
 class VesicleFusionTest {
 
     @Test
-    void shouldSimulateFusionTethering() {
+    void testModuleInContext() {
+
         // setup simulation
         Simulation simulation = new Simulation();
         final double simulationExtend = 100;
@@ -88,7 +89,7 @@ class VesicleFusionTest {
         AutomatonGraph graph = AutomatonGraphs.singularGraph();
         AutomatonNode node = graph.getNode(0, 0);
         node.setPosition(new Vector2D(50.0, 50.0));
-        node.setCellRegion(CellRegion.MEMBRANE);
+        node.setCellRegion(CellRegions.CELL_OUTER_MEMBRANE_REGION);
         node.getConcentrationContainer().set(CellTopology.MEMBRANE, snareComplex1, MolarConcentration.moleculesToConcentration(10));
         simulation.setGraph(graph);
 

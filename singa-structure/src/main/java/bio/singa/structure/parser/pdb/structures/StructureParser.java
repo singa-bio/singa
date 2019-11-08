@@ -123,7 +123,7 @@ public class StructureParser {
         /**
          * The location of a local PDB installation in addition to the structure, that is to be parsed.
          *
-         * @param localPDB The local pdb.
+         * @param localPDB      The local pdb.
          * @param pdbIdentifier The PDB identifier.
          * @return Branch selection
          */
@@ -132,7 +132,7 @@ public class StructureParser {
         /**
          * The location of a local PDB installation in addition to a list of structures, that are to be parsed.
          *
-         * @param localPDB The local pdb.
+         * @param localPDB       The local pdb.
          * @param pdbIdentifiers The PDB identifiers.
          * @return Branch selection
          */
@@ -183,7 +183,7 @@ public class StructureParser {
          * Reads the provided chainIdentifier list from a file. Each line in the file should have the format:
          * <pre>[PDBId][separator][ChainId] </pre>
          *
-         * @param path The path of the chainIdentifier list file
+         * @param path      The path of the chainIdentifier list file
          * @param separator The separator between the PDBId and the ChainId
          * @return The MultiParser.
          */
@@ -486,8 +486,7 @@ public class StructureParser {
                     return mmtfStructure;
                 }
             } catch (IOException e) {
-                logger.warn("failed to parse structure", e);
-                throw new StructureParserException(e.getMessage());
+                logger.warn("failed to parse structure {}", selector.sourceSelector.contentIterator.next().get(0));
             }
             return StructureCollector.parse(selector.sourceSelector.contentIterator.next(), selector);
         }
@@ -873,7 +872,7 @@ public class StructureParser {
          * Reads a pdb identifier chain identifier mapping file.
          *
          * @param mappingPath The path to the mapping file.
-         * @param separator The String separating both.
+         * @param separator   The String separating both.
          * @return A list of pdb identifier chain paris.
          * @throws IOException if the file could not be read.
          */
@@ -890,7 +889,7 @@ public class StructureParser {
          * Reads a file of pdb identifier chain identifier paris and converts them to be read by the {@link
          * StructureContentIterator}.
          *
-         * @param lines The lines that should be parsed.
+         * @param lines     The lines that should be parsed.
          * @param separator The String separating the pairs.
          * @return A list of pdb identifier chain paris.
          */
@@ -928,16 +927,29 @@ public class StructureParser {
          * Creates a new reference for a local pdb installation.
          *
          * @param localPdbLocation The location of the local PDB installation.
-         * @param sourceLocation The type of file used (either {@link SourceLocation#OFFLINE_MMTF} or {@link SourceLocation#OFFLINE_PDB}).
+         * @param sourceLocation   The type of file used (either {@link SourceLocation#OFFLINE_MMTF} or {@link
+         *                         SourceLocation#OFFLINE_PDB}).
          */
         public LocalPDB(String localPdbLocation, SourceLocation sourceLocation) {
+            this(localPdbLocation, sourceLocation, BASE_PATH_PDB);
+        }
+
+        /**
+         * Creates a new reference for a local pdb installation.
+         *
+         * @param localPdbLocation The location of the local PDB installation.
+         * @param sourceLocation   The type of file used (either {@link SourceLocation#OFFLINE_MMTF} or {@link
+         *                         SourceLocation#OFFLINE_PDB}).
+         * @param basePathPdb      The base PDB path if different from data/structures/divided/
+         */
+        public LocalPDB(String localPdbLocation, SourceLocation sourceLocation, Path basePathPdb) {
             this.sourceLocation = sourceLocation;
             switch (sourceLocation) {
                 case OFFLINE_MMTF:
-                    localPdbPath = Paths.get(localPdbLocation).resolve(BASE_PATH_PDB).resolve("mmtf");
+                    localPdbPath = Paths.get(localPdbLocation).resolve(basePathPdb).resolve("mmtf");
                     break;
                 case OFFLINE_PDB:
-                    localPdbPath = Paths.get(localPdbLocation).resolve(BASE_PATH_PDB).resolve("pdb");
+                    localPdbPath = Paths.get(localPdbLocation).resolve(basePathPdb).resolve("pdb");
                     break;
                 default:
                     throw new IllegalArgumentException("Source location mus be offline.");

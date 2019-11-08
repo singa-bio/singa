@@ -11,11 +11,12 @@ public class VesicleStateRegistry {
 
     public static final String ACTIN_PROPELLED = "ACTIN_PROPELLED";
     public static final String ACTIN_ATTACHED = "ACTIN_ATTACHED";
-    public static final String ACTIN_TETHERED = "ACTIN_TETHERED";
+    public static final String TETHERED = "TETHERED";
     public static final String MICROTUBULE_ATTACHED = "MICROTUBULE_ATTACHED";
     public static final String MEMBRANE_TETHERED = "MEMBRANE_TETHERED";
     public static final String UNATTACHED = "UNATTACHED";
-    public static final String IN_STORAGE = "IN_STORAGE";
+    public static final String IN_PERINUCLEAR_STORAGE = "IN_PERINUCLEAR_STORAGE";
+    public static final String TAGGED_FOR_EXOCYTOSIS = "TAGGED_FOR_EXOCYTOSIS";
 
     private Set<String> states;
 
@@ -30,10 +31,11 @@ public class VesicleStateRegistry {
         states = new HashSet<>();
         states.add(ACTIN_PROPELLED);
         states.add(ACTIN_ATTACHED);
+        states.add(TETHERED);
         states.add(MICROTUBULE_ATTACHED);
         states.add(MEMBRANE_TETHERED);
         states.add(UNATTACHED);
-        states.add(IN_STORAGE);
+        states.add(IN_PERINUCLEAR_STORAGE);
     }
 
     public static void reinitialize() {

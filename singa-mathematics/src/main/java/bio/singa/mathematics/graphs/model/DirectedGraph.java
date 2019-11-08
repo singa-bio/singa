@@ -35,9 +35,9 @@ public class DirectedGraph<NodeType extends Node<NodeType, Vector2D, Integer>> e
     }
 
     @Override
-    public Optional<DirectedEdge<NodeType>> getEdgeBetween(NodeType source, NodeType target) {
+    public Optional<DirectedEdge<NodeType>> getEdgeBetween(NodeType first, NodeType second) {
         return getEdges().stream()
-                .filter(edge -> edge.getSource().equals(source) && edge.getTarget().equals(target))
+                .filter(edge -> edge.getSource().equals(first) && edge.getTarget().equals(second))
                 .findAny();
     }
 }

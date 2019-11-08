@@ -8,14 +8,18 @@ import java.util.List;
  */
 public interface Feature<FeatureContent> {
 
+    int getIdentifier();
+    void setIdentifier(int identifier);
     FeatureContent getContent();
+    String getDescriptor();
+
+    List<FeatureContent> getAlternativeContents();
+    void addAlternativeContent(FeatureContent alternativeContent);
+    void setAlternativeContent(int index);
 
     Evidence getPrimaryEvidence();
-
     List<Evidence> getAllEvidence();
-
     void addEvidence(Evidence evidence);
 
-    String getDescriptor();
 
 }

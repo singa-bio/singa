@@ -4,6 +4,10 @@ import bio.singa.mathematics.geometry.faces.Rectangle;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.mathematics.vectors.Vectors;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.Collection;
+import java.util.Collections;
+
 /**
  * The generic node class is a container for the content, that is specified by the content type.
  *
@@ -39,7 +43,23 @@ public class GenericNode<ContentType> extends AbstractNode<GenericNode<ContentTy
 
     private GenericNode(GenericNode<ContentType> node) {
         super(node);
-        content = node.getContent();
+        ContentType content = node.getContent();
+        if (Collection.class.isAssignableFrom(content.getClass()) && !content.equals(Collections.emptyList())) {
+            if (((Collection) content).size() == 1) {
+                // for singleton lists
+                this.content = content;
+            } else {
+                try {
+                    this.content = (ContentType) content.getClass().getConstructor(Collection.class).newInstance(content);
+                } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+                        | NoSuchMethodException | SecurityException e) {
+                    e.printStackTrace();
+                    throw new UnsupportedOperationException("Instance types must match to copy successfully.");
+                }
+            }
+        } else {
+            this.content = content;
+        }
     }
 
     /**

@@ -14,6 +14,8 @@ public class Trajectories {
 
     private Unit<Time> timeUnit;
     private Unit<MolarConcentration> concentrationUnit;
+    private double simulationWidth;
+    private double simulationHeight;
     private Map<Double, TrajectoryData> trajectoryData;
 
     public Trajectories() {
@@ -40,6 +42,22 @@ public class Trajectories {
 
     public void addTrajectoryData(Double timeStep, TrajectoryData data) {
         trajectoryData.put(timeStep, data);
+    }
+
+    public double getSimulationWidth() {
+        return simulationWidth;
+    }
+
+    public void setSimulationWidth(double simulationWidth) {
+        this.simulationWidth = simulationWidth;
+    }
+
+    public double getSimulationHeight() {
+        return simulationHeight;
+    }
+
+    public void setSimulationHeight(double simulationHeight) {
+        this.simulationHeight = simulationHeight;
     }
 
 }

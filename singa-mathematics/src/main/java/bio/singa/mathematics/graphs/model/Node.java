@@ -20,6 +20,8 @@ public interface Node<NodeType extends Node<NodeType, VectorType, IdentifierType
      */
     IdentifierType getIdentifier();
 
+    void setIdentifier(IdentifierType identifier);
+
     /**
      * Returns the position of the node.
      *

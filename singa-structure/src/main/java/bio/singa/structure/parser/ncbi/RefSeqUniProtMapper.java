@@ -16,8 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Uses the UniProt ID mapping service to convert RefSeq nucleotide IDs to UniProt IDs. For each mapped UniProt ID
- * information about the status is given ("reviewed" or "unreviewed").
+ * Uses the UniProt ID mapping service to convert RefSeq nucleotide IDs to UniProt IDs.
  *
  * @see <a href="https://www.uniprot.org/help/api_idmapping"></a>
  */
@@ -36,6 +35,9 @@ public class RefSeqUniProtMapper extends AbstractUniProtIdentifierMappingParser<
         parameterMap.put("from", "REFSEQ_NT_ID");
         parameterMap.put("to", "ACC");
         parameterMap.put("format", "tab");
+        parameterMap.put("columns", "id,reviewed");
+        // https://www.uniprot.org/help/api_queries
+        // https://www.uniprot.org/help/uniprotkb_column_names
         parameterMap.put("query", refSeqIdentifier.toString());
         fetchWithQuery(parameterMap);
     }
@@ -51,7 +53,7 @@ public class RefSeqUniProtMapper extends AbstractUniProtIdentifierMappingParser<
             while ((line = bufferedReader.readLine()) != null) {
                 String[] split = line.split("\t");
                 try {
-                    uniProtIdentifiers.add(new UniProtIdentifier(split[1]));
+                    uniProtIdentifiers.add(new UniProtIdentifier(split[0]));
                 } catch (IllegalArgumentException e) {
                     logger.debug("skipping malformed UniProt identifier {}", line);
                 }

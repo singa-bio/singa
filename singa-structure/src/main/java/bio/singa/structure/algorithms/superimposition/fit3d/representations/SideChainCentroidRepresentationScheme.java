@@ -1,7 +1,7 @@
 package bio.singa.structure.algorithms.superimposition.fit3d.representations;
 
 import bio.singa.mathematics.vectors.Vector3D;
-import bio.singa.mathematics.vectors.Vectors3D;
+import bio.singa.mathematics.vectors.Vectors;
 import bio.singa.structure.elements.ElementProvider;
 import bio.singa.structure.model.families.AminoAcidFamily;
 import bio.singa.structure.model.interfaces.AminoAcid;
@@ -47,7 +47,7 @@ public class SideChainCentroidRepresentationScheme extends AbstractRepresentatio
         return new OakAtom(leafSubstructure.getAllAtoms().get(0).getAtomIdentifier(),
                 ElementProvider.UNKOWN,
                 RepresentationSchemeType.SIDE_CHAIN_CENTROID.getAtomNameString(),
-                Vectors3D.getCentroid(atomPositions));
+                Vectors.get3DCentroid(atomPositions));
     }
 
     @Override

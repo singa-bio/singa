@@ -4,20 +4,9 @@ import bio.singa.core.utility.Pair;
 import bio.singa.mathematics.graphs.trees.BinaryTree;
 import bio.singa.mathematics.graphs.trees.BinaryTreeNode;
 import bio.singa.mathematics.matrices.LabeledSymmetricMatrix;
-import bio.singa.structure.algorithms.superimposition.SubstructureSuperimposer;
+import bio.singa.structure.algorithms.superimposition.AlignmentMethod;
 import bio.singa.structure.algorithms.superimposition.SubstructureSuperimposition;
-import bio.singa.structure.algorithms.superimposition.fit3d.representations.RepresentationScheme;
-import bio.singa.structure.algorithms.superimposition.fit3d.representations.RepresentationSchemeFactory;
-import bio.singa.structure.algorithms.superimposition.fit3d.representations.RepresentationSchemeType;
-import bio.singa.structure.model.families.AminoAcidFamily;
-import bio.singa.structure.model.families.StructuralFamily;
-import bio.singa.structure.model.identifiers.LeafIdentifier;
-import bio.singa.structure.model.interfaces.Atom;
-import bio.singa.structure.model.interfaces.AtomContainer;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
-import bio.singa.structure.model.oak.LeafSubstructureFactory;
-import bio.singa.structure.model.oak.OakAtom;
-import bio.singa.structure.model.oak.OakLeafSubstructure;
 import bio.singa.structure.model.oak.StructuralMotif;
 import bio.singa.structure.parser.pdb.structures.StructureWriter;
 import org.slf4j.Logger;
@@ -27,9 +16,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /**
  * A consensus alignment of same-sized {@link StructuralMotif}s can be used to cluster them according their geometric
@@ -39,19 +26,19 @@ import java.util.stream.IntStream;
  *
  * @author fk
  */
-public class ConsensusAlignment {
+public class ConsensusAlignment extends AlignmentMethod {
 
     private static final Logger logger = LoggerFactory.getLogger(ConsensusAlignment.class);
 
     private final List<ConsensusContainer> input;
-    private final boolean idealSuperimposition;
+
     private final List<BinaryTree<ConsensusContainer>> consensusTrees;
     private final List<Double> alignmentTrace;
     private final List<Integer> alignmentCounts;
-    private final Predicate<Atom> atomFilter;
+
     private final boolean alignWithinClusters;
     private final double clusterCutoff;
-    private RepresentationScheme representationScheme;
+
     private double consensusScore;
     private int iterationCounter;
     private TreeMap<SubstructureSuperimposition, Pair<ConsensusContainer>> alignments;
@@ -71,16 +58,13 @@ public class ConsensusAlignment {
 
         clusterCutoff = builder.clusterCutoff;
         alignWithinClusters = builder.alignWithinClusters;
-        atomFilter = builder.atomFilter;
+
+        setAtomFilter(builder.atomFilter);
 
         // create representation scheme if given
-        RepresentationSchemeType representationSchemeType = builder.representationSchemeType;
-        if (representationSchemeType != null) {
-            logger.info("using representation scheme {}", representationSchemeType);
-            representationScheme = RepresentationSchemeFactory.createRepresentationScheme(representationSchemeType);
-        }
+        setRepresentationSchemeFromType(builder.representationSchemeType);
 
-        idealSuperimposition = builder.idealSuperimposition;
+        setIdealSuperimposition(builder.idealSuperimposition);
 
         // check if all substructures are of the same size
         if (input.stream()
@@ -175,24 +159,7 @@ public class ConsensusAlignment {
             // reference is always the root consensus
             ConsensusContainer reference = cluster.getRoot().getData();
             cluster.getLeafNodes().stream().map(BinaryTreeNode::getData).forEach(consensusContainer -> {
-                SubstructureSuperimposition superimposition;
-                if (representationScheme == null) {
-                    superimposition = idealSuperimposition ?
-                            SubstructureSuperimposer.calculateIdealSubstructureSuperimposition(
-                                    reference.getStructuralMotif(),
-                                    consensusContainer.getStructuralMotif(), atomFilter) :
-                            SubstructureSuperimposer.calculateSubstructureSuperimposition(
-                                    reference.getStructuralMotif().getAllLeafSubstructures(),
-                                    consensusContainer.getStructuralMotif().getAllLeafSubstructures(), atomFilter);
-                } else {
-                    superimposition = idealSuperimposition ?
-                            SubstructureSuperimposer.calculateIdealSubstructureSuperimposition(
-                                    reference.getStructuralMotif(),
-                                    consensusContainer.getStructuralMotif(), representationScheme) :
-                            SubstructureSuperimposer.calculateSubstructureSuperimposition(
-                                    reference.getStructuralMotif().getAllLeafSubstructures(),
-                                    consensusContainer.getStructuralMotif().getAllLeafSubstructures(), representationScheme);
-                }
+                SubstructureSuperimposition superimposition = superimpose(reference, consensusContainer);
                 consensusContainer.setSuperimposition(superimposition);
             });
         });
@@ -347,24 +314,7 @@ public class ConsensusAlignment {
         for (ConsensusContainer inputStructure : input) {
 
             // calculate superimposition
-            SubstructureSuperimposition superimposition;
-            if (representationScheme == null) {
-                superimposition = idealSuperimposition ?
-                        SubstructureSuperimposer.calculateIdealSubstructureSuperimposition(
-                                currentConsensus.getStructuralMotif(),
-                                inputStructure.getStructuralMotif(), atomFilter) :
-                        SubstructureSuperimposer.calculateSubstructureSuperimposition(
-                                currentConsensus.getStructuralMotif().getAllLeafSubstructures(),
-                                inputStructure.getStructuralMotif().getAllLeafSubstructures(), atomFilter);
-            } else {
-                superimposition = idealSuperimposition ?
-                        SubstructureSuperimposer.calculateIdealSubstructureSuperimposition(
-                                currentConsensus.getStructuralMotif(),
-                                inputStructure.getStructuralMotif(), representationScheme) :
-                        SubstructureSuperimposer.calculateSubstructureSuperimposition(
-                                currentConsensus.getStructuralMotif().getAllLeafSubstructures(),
-                                inputStructure.getStructuralMotif().getAllLeafSubstructures(), representationScheme);
-            }
+            SubstructureSuperimposition superimposition = superimpose(currentConsensus, inputStructure);
 
             // store alignment
             Pair<ConsensusContainer> alignmentPair = new Pair<>(currentConsensus, inputStructure);
@@ -383,100 +333,8 @@ public class ConsensusAlignment {
      */
     private void createConsensus(Map.Entry<SubstructureSuperimposition, Pair<ConsensusContainer>> substructurePair) {
 
-        List<LeafSubstructure<?>> reference = substructurePair.getValue().getFirst().getStructuralMotif().getAllLeafSubstructures();
-        List<LeafSubstructure<?>> candidate = substructurePair.getKey().getMappedFullCandidate();
+        List<LeafSubstructure<?>> consensusLeaveSubstructures = determineConsensus(substructurePair);
 
-//        Chain chainReference = new Chain(0);
-//        reference.forEach(chainReference::addBranchSubstructure);
-//        Chain chainCandidate = new Chain(1);
-//        candidate.forEach(chainCandidate::addBranchSubstructure);
-//        Structure structure = new Structure();
-//        structure.addBranchSubstructure(chainReference);
-//        structure.addBranchSubstructure(chainCandidate);
-//        StructureViewer.structure = structure;
-//        Application.launch(StructureViewer.class);
-
-        Map<Pair<LeafSubstructure>, Set<String>> perAtomAlignment = new LinkedHashMap<>();
-
-        // create pairs of substructures to align
-        IntStream.range(0, reference.size())
-                .forEach(i -> perAtomAlignment.put(new Pair<>(reference.get(i), candidate.get(i)),
-                        new HashSet<>()));
-
-        // create atom subsets to align
-        perAtomAlignment.entrySet()
-                .forEach(this::defineIntersectingAtoms);
-
-        // collect intersecting, filtered and sorted atoms
-        List<List<Atom>> referenceAtoms;
-        List<List<Atom>> candidateAtoms;
-        if (representationScheme == null) {
-            referenceAtoms = perAtomAlignment.entrySet().stream()
-                    .map(pairSetEntry -> pairSetEntry.getKey().getFirst().getAllAtoms().stream()
-                            .filter(atomFilter)
-                            .filter(atom -> pairSetEntry.getValue().contains(atom.getAtomName()))
-                            .sorted(Comparator.comparing(Atom::getAtomName))
-                            .collect(Collectors.toList()))
-                    .collect(Collectors.toList());
-            candidateAtoms = perAtomAlignment.entrySet().stream()
-                    .map(pairSetEntry -> pairSetEntry.getKey().getSecond().getAllAtoms().stream()
-                            .filter(atomFilter)
-                            .filter(atom -> pairSetEntry.getValue().contains(atom.getAtomName()))
-                            .sorted(Comparator.comparing(Atom::getAtomName))
-                            .collect(Collectors.toList()))
-                    .collect(Collectors.toList());
-        } else {
-            referenceAtoms = perAtomAlignment.entrySet().stream()
-                    .map(pairSetEntry -> {
-                        List<Atom> atomList = new ArrayList<>();
-                        atomList.add(representationScheme.determineRepresentingAtom(pairSetEntry.getKey().getFirst()));
-                        return atomList;
-                    }).collect(Collectors.toList());
-            candidateAtoms = perAtomAlignment.entrySet().stream()
-                    .map(pairSetEntry -> {
-                        List<Atom> atomList = new ArrayList<>();
-                        atomList.add(representationScheme.determineRepresentingAtom(pairSetEntry.getKey().getSecond()));
-                        return atomList;
-                    })
-                    .collect(Collectors.toList());
-
-        }
-
-        // create consensus substructures
-        List<LeafSubstructure<?>> consensusLeaveSubstructures = new ArrayList<>();
-        int atomCounter = 1;
-        int leafCounter = 1;
-        for (int i = 0; i < referenceAtoms.size(); i++) {
-            List<Atom> currentReferenceAtoms = referenceAtoms.get(i);
-            List<Atom> currentCandidateAtoms = candidateAtoms.get(i);
-            // average atoms
-            List<OakAtom> averagedAtoms = new ArrayList<>();
-            for (int j = 0; j < currentReferenceAtoms.size(); j++) {
-                Atom referenceAtom = currentReferenceAtoms.get(j);
-                Atom candidateAtom = currentCandidateAtoms.get(j);
-                // calculate average atom
-                averagedAtoms.add(new OakAtom(atomCounter,
-                        referenceAtom.getElement(), referenceAtom.getAtomName(),
-                        referenceAtom.getPosition().add(candidateAtom.getPosition()).divide(2.0)));
-                atomCounter++;
-            }
-
-            // try to retain family notation for each consensus leaf substructure if possible
-            StructuralFamily family = null;
-            if (reference.get(i).getFamily().equals(candidate.get(i).getFamily())) {
-                family = candidate.get(i).getFamily();
-            }
-            // default to unknown if family type differs
-            if (family == null) {
-                family = AminoAcidFamily.UNKNOWN;
-            }
-
-            // create new atom container
-            OakLeafSubstructure<?> leafSubstructure = LeafSubstructureFactory.createLeafSubstructure(new LeafIdentifier(leafCounter), family);
-            averagedAtoms.forEach(leafSubstructure::addAtom);
-            consensusLeaveSubstructures.add(leafSubstructure);
-            leafCounter++;
-        }
         currentConsensus = new ConsensusContainer(StructuralMotif.fromLeafSubstructures(consensusLeaveSubstructures), true);
 
         // create tree node
@@ -518,6 +376,8 @@ public class ConsensusAlignment {
         //        substructurePair.getValue().getSecond().addToConsensusDistance(substructurePair.getKey().getRmsd() / 2);
     }
 
+
+
     /**
      * Returns the leave in the alignment tree that is equal to a given {@link ConsensusContainer}.
      *
@@ -549,27 +409,7 @@ public class ConsensusAlignment {
         return nodeForObservation;
     }
 
-    /**
-     * Determines the intersecting atoms for a {@link Pair} of {@link AtomContainer}s.
-     *
-     * @param pairListEntry the map entry for which intersecting atoms should be defined
-     */
-    private void defineIntersectingAtoms(Map.Entry<Pair<LeafSubstructure>, Set<String>> pairListEntry) {
 
-        if (representationScheme == null) {
-            pairListEntry.getValue().addAll(pairListEntry.getKey().getFirst().getAllAtoms().stream()
-                    .filter(atomFilter)
-                    .map(Atom::getAtomName)
-                    .collect(Collectors.toSet()));
-            pairListEntry.getValue().retainAll(pairListEntry.getKey().getSecond().getAllAtoms().stream()
-                    .filter(atomFilter)
-                    .map(Atom::getAtomName)
-                    .collect(Collectors.toSet()));
-        } else {
-            pairListEntry.getValue().add(representationScheme.determineRepresentingAtom(pairListEntry.getKey().getFirst()).getAtomName());
-            pairListEntry.getValue().add(representationScheme.determineRepresentingAtom(pairListEntry.getKey().getSecond()).getAtomName());
-        }
-    }
 
     /**
      * Initially calculates the leaves of the alignment tree.
@@ -601,24 +441,7 @@ public class ConsensusAlignment {
                 StructuralMotif candidate = input.get(j).getStructuralMotif();
 
                 // calculate superimposition
-                SubstructureSuperimposition superimposition;
-                if (representationScheme == null) {
-                    superimposition = idealSuperimposition ?
-                            SubstructureSuperimposer.calculateIdealSubstructureSuperimposition(
-                                    reference,
-                                    candidate, atomFilter) :
-                            SubstructureSuperimposer.calculateSubstructureSuperimposition(
-                                    reference.getAllLeafSubstructures(),
-                                    candidate.getAllLeafSubstructures(), atomFilter);
-                } else {
-                    superimposition = idealSuperimposition ?
-                            SubstructureSuperimposer.calculateIdealSubstructureSuperimposition(
-                                    reference,
-                                    candidate, representationScheme) :
-                            SubstructureSuperimposer.calculateSubstructureSuperimposition(
-                                    reference.getAllLeafSubstructures(),
-                                    candidate.getAllLeafSubstructures(), representationScheme);
-                }
+                SubstructureSuperimposition superimposition = superimpose(reference, candidate);
 
                 // store alignment
                 Pair<ConsensusContainer> alignmentPair = new Pair<>(new ConsensusContainer(reference, false),

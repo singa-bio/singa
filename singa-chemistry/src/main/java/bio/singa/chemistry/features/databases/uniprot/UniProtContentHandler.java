@@ -4,7 +4,7 @@ import bio.singa.chemistry.annotations.Annotation;
 import bio.singa.chemistry.annotations.AnnotationType;
 import bio.singa.chemistry.annotations.taxonomy.Organism;
 import bio.singa.chemistry.annotations.taxonomy.Taxon;
-import bio.singa.chemistry.entities.Protein;
+import bio.singa.chemistry.entities.simple.Protein;
 import bio.singa.chemistry.features.variants.SequenceVariant;
 import bio.singa.chemistry.features.variants.SequenceVariants;
 import bio.singa.features.identifiers.*;
@@ -15,7 +15,7 @@ import bio.singa.structure.model.identifiers.PDBIdentifier;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.Locator;
-import tec.units.indriya.quantity.Quantities;
+import tech.units.indriya.quantity.Quantities;
 
 import javax.measure.Quantity;
 import java.util.*;

@@ -1,6 +1,6 @@
 package bio.singa.chemistry.features.databases.chebi;
 
-import bio.singa.chemistry.entities.SmallMolecule;
+import bio.singa.chemistry.entities.simple.SmallMolecule;
 import bio.singa.core.parser.AbstractXMLParser;
 import bio.singa.features.identifiers.ChEBIIdentifier;
 import org.slf4j.Logger;
