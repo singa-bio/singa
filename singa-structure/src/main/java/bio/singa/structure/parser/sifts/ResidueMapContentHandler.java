@@ -1,5 +1,6 @@
 package bio.singa.structure.parser.sifts;
 
+import bio.singa.features.identifiers.UniProtIdentifier;
 import bio.singa.structure.model.identifiers.LeafIdentifier;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
@@ -7,6 +8,7 @@ import org.xml.sax.Locator;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -15,9 +17,8 @@ import java.util.regex.Pattern;
  */
 public class ResidueMapContentHandler implements ContentHandler {
 
-    public Map<LeafIdentifier, Integer> mapping;
     private static final Pattern insertionCode = Pattern.compile("(\\d+)(\\p{Alpha}*)");
-
+    public Map<UniProtIdentifier, Map<LeafIdentifier, Integer>> mapping;
     private String currentTag;
 
     private String currentPdbid;
@@ -26,6 +27,7 @@ public class ResidueMapContentHandler implements ContentHandler {
     private int currentResidue;
     private int mappedResidue;
     private char currentInsertionCode;
+    private UniProtIdentifier currentUniProtIdentifier;
 
     private boolean inResidue;
     private boolean skip;
@@ -35,7 +37,7 @@ public class ResidueMapContentHandler implements ContentHandler {
         mapping = new HashMap<>();
     }
 
-    public Map<LeafIdentifier, Integer> getMapping() {
+    public Map<UniProtIdentifier, Map<LeafIdentifier, Integer>> getMapping() {
         return mapping;
     }
 
@@ -89,6 +91,7 @@ public class ResidueMapContentHandler implements ContentHandler {
                             }
                         } else if (dbSource.equals("UniProt")) {
                             final String dbResNum = atts.getValue("dbResNum");
+                            currentUniProtIdentifier = new UniProtIdentifier(atts.getValue("dbAccessionId"));
                             mappedResidue = Integer.valueOf(dbResNum);
                         }
                     }
@@ -105,7 +108,12 @@ public class ResidueMapContentHandler implements ContentHandler {
                 if (skip) {
                     skip = false;
                 } else {
-                    mapping.put(new LeafIdentifier(currentPdbid, currentModel, currentChain, currentResidue, currentInsertionCode), mappedResidue);
+                    if (!mapping.containsKey(currentUniProtIdentifier)) {
+                        mapping.put(currentUniProtIdentifier, new TreeMap<>());
+                    } else {
+                        LeafIdentifier leafIdentifier = new LeafIdentifier(currentPdbid, currentModel, currentChain, currentResidue, currentInsertionCode);
+                        mapping.get(currentUniProtIdentifier).put(leafIdentifier, mappedResidue);
+                    }
                 }
                 inResidue = false;
             }

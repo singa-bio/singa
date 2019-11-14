@@ -1,6 +1,7 @@
 package bio.singa.structure.parser.sifts;
 
 import bio.singa.core.parser.AbstractXMLParser;
+import bio.singa.features.identifiers.UniProtIdentifier;
 import bio.singa.structure.model.identifiers.LeafIdentifier;
 import bio.singa.structure.model.identifiers.PDBIdentifier;
 import org.slf4j.Logger;
@@ -16,28 +17,28 @@ import java.util.zip.GZIPInputStream;
 /**
  * @author cl
  */
-public class UniProtResidueMapParser extends AbstractXMLParser<Map<LeafIdentifier, Integer>> {
+public class UniProtResidueMapParser extends AbstractXMLParser<Map<UniProtIdentifier, Map<LeafIdentifier, Integer>>> {
 
     private static final Logger logger = LoggerFactory.getLogger(UniProtResidueMapParser.class);
     private static final String RESIDUE_MAP_FETCH_URL = "http://ftp.ebi.ac.uk/pub/databases/msd/sifts/xml/%s.xml.gz";
 
     public UniProtResidueMapParser(PDBIdentifier identifier) {
         getXmlReader().setContentHandler(new ResidueMapContentHandler(identifier.toString()));
-        setResource(String.format(RESIDUE_MAP_FETCH_URL, identifier.getContent()));
+        setResource(String.format(RESIDUE_MAP_FETCH_URL, identifier.getContent().toLowerCase()));
     }
 
-    public static Map<LeafIdentifier, Integer> parse(String pdbIdentifier) {
+    public static Map<UniProtIdentifier, Map<LeafIdentifier, Integer>> parse(String pdbIdentifier) {
         return UniProtResidueMapParser.parse(new PDBIdentifier(pdbIdentifier));
     }
 
-    public static Map<LeafIdentifier, Integer> parse(PDBIdentifier pdbIdentifier) {
-        logger.info("Parsing chemical entity with identifier " + pdbIdentifier + " from SIFTS Database");
+    public static Map<UniProtIdentifier, Map<LeafIdentifier, Integer>> parse(PDBIdentifier pdbIdentifier) {
+        logger.info("parsing PDB structure with identifier " + pdbIdentifier + " from SIFTS Database");
         UniProtResidueMapParser parser = new UniProtResidueMapParser(pdbIdentifier);
         return parser.parse();
     }
 
     @Override
-    public Map<LeafIdentifier, Integer> parse() {
+    public Map<UniProtIdentifier, Map<LeafIdentifier, Integer>> parse() {
         parseXML();
         return ((ResidueMapContentHandler) getXmlReader().getContentHandler()).getMapping();
     }

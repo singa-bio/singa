@@ -7,6 +7,6 @@ import bio.singa.features.model.Feature;
  *
  * @author cl
  */
-public interface Identifier  extends Feature<String>  {
+public interface Identifier extends Feature<String> {
 
 }
