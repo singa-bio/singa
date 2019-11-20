@@ -1,5 +1,6 @@
 package bio.singa.mathematics.graphs.model;
 
+import bio.singa.core.utility.Pair;
 import bio.singa.mathematics.algorithms.graphs.DisconnectedSubgraphFinder;
 import bio.singa.mathematics.geometry.faces.Rectangle;
 import bio.singa.mathematics.graphs.grid.GridGraph;
@@ -15,10 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * A factory class used to create graphs and convert other things to graphs.
@@ -27,9 +25,8 @@ import java.util.Objects;
  */
 public class Graphs {
 
-    private static final Logger logger = LoggerFactory.getLogger(Graphs.class);
-
     public static final Rectangle DEFAULT_BOUNDING_BOX = new Rectangle(400, 400);
+    private static final Logger logger = LoggerFactory.getLogger(Graphs.class);
 
     /**
      * Generates a linear graph with the given number of nodes. Each node will be connected to its predecessor.
@@ -315,6 +312,55 @@ public class Graphs {
             EdgeType extends Edge<NodeType>, VectorType extends Vector, IdentifierType,
             GraphType extends Graph<NodeType, EdgeType, IdentifierType>> List<GraphType> findDisconnectedSubgraphs(GraphType graph) {
         return DisconnectedSubgraphFinder.findDisconnectedSubgraphs(graph);
+    }
+
+    /**
+     * Returns a modular product graph of the graphs G and G'.
+     *
+     * @param graph1 The first graph (G).
+     * @param graph2 The second graph (G').
+     * @param <NodeType> The type of the nodes.
+     * @param <EdgeType> The type of the edges.
+     * @param <GraphType> The type of the graph.
+     * @param <VectorType> The position type.
+     * @param <IdentifierType> The type of the identifier.
+     * @return A modular graph with nodes containing pairs of nodes u and u' from G and G'.
+     */
+    public static <NodeType extends Node<NodeType, VectorType, IdentifierType>,
+            EdgeType extends Edge<NodeType>, VectorType extends Vector, IdentifierType,
+            GraphType extends Graph<NodeType, EdgeType, IdentifierType>> GenericGraph<Pair<NodeType>> modularProduct(GraphType graph1, GraphType graph2) {
+        List<NodeType> nodes1 = new ArrayList<>(graph1.getNodes());
+        List<NodeType> nodes2 = new ArrayList<>(graph2.getNodes());
+        List<Pair<NodeType>> nodePairs = new ArrayList<>();
+        // generate node pairs
+        for (int i = 0; i < nodes1.size(); i++) {
+            for (int j = 0; j < nodes2.size(); j++) {
+                Pair<NodeType> nodePair = new Pair<>(nodes1.get(i), nodes2.get(j));
+                nodePairs.add(nodePair);
+            }
+        }
+        GenericGraph<Pair<NodeType>> modularProduct = new GenericGraph<>();
+        nodePairs.forEach(modularProduct::addNode);
+        // check for connectivity of product nodes
+        for (int i = 0; i < nodePairs.size(); i++) {
+            Pair<NodeType> pair1 = nodePairs.get(i);
+            for (int j = i + 1; j < nodePairs.size(); j++) {
+                // pairs (u,v) and (u',v') are connected iff:
+                // u is adjacent with u' and v is adjacent with v' , or
+                // u is not adjacent with u' and v is not adjacent with v'
+                Pair<NodeType> pair2 = nodePairs.get(j);
+                if (pair1.getFirst().equals(pair2.getFirst()) || pair1.getSecond().equals(pair2.getSecond())) {
+                    continue;
+                }
+                boolean uCondition = pair1.getFirst().getNeighbours().contains(pair2.getFirst());
+                boolean vCondition = pair1.getSecond().getNeighbours().contains(pair2.getSecond());
+                if ((uCondition && vCondition) || (!uCondition && !vCondition)) {
+                    // connect pair nodes
+                    modularProduct.addEdgeBetween(pair1, pair2);
+                }
+            }
+        }
+        return modularProduct;
     }
 
     public static <NodeType extends Node<NodeType, VectorType, IdentifierType>,
