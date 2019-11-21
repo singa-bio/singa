@@ -1,6 +1,7 @@
 package bio.singa.simulation.model.modules;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
+import bio.singa.features.model.Evidence;
 import bio.singa.features.model.Feature;
 import bio.singa.features.model.ScalableQuantitativeFeature;
 import bio.singa.simulation.model.modules.concentration.ModuleState;
@@ -10,10 +11,7 @@ import bio.singa.simulation.model.simulation.UpdateScheduler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 import static bio.singa.simulation.model.modules.concentration.ModuleState.*;
 
@@ -52,11 +50,14 @@ public abstract class AbstractUpdateModule implements UpdateModule {
      */
     private Set<ChemicalEntity> referencedChemicalEntities;
 
+    private List<Evidence> evidence;
+
     public AbstractUpdateModule() {
         state = PENDING;
         identifier = getClass().getSimpleName();
         featureManager = new FeatureManager();
         referencedChemicalEntities = new HashSet<>();
+        evidence = new ArrayList<>();
     }
 
     @Override
@@ -212,6 +213,18 @@ public abstract class AbstractUpdateModule implements UpdateModule {
      */
     protected void addReferencedEntities(Collection<? extends ChemicalEntity> chemicalEntities) {
         referencedChemicalEntities.addAll(chemicalEntities);
+    }
+
+    public List<Evidence> getEvidence() {
+        return evidence;
+    }
+
+    public void addEvidence(Evidence evidence) {
+        this.evidence.add(evidence);
+    }
+
+    public void setEvidence(List<Evidence> evidence) {
+        this.evidence = evidence;
     }
 
     @Override

@@ -140,6 +140,10 @@ public class ReactionBuilder {
 
         FinalStep identifier(String identifier);
 
+        FinalStep evidence(Evidence evidence);
+
+        FinalStep evidence(Evidence ... evidence);
+
         Reaction build();
 
     }
@@ -252,6 +256,20 @@ public class ReactionBuilder {
         @Override
         public FinalStep identifier(String identifier) {
             reaction.setIdentifier(identifier);
+            return this;
+        }
+
+        @Override
+        public FinalStep evidence(Evidence evidence) {
+            reaction.addEvidence(evidence);
+            return this;
+        }
+
+        @Override
+        public FinalStep evidence(Evidence... evidence) {
+            for (Evidence e : evidence) {
+                reaction.addEvidence(e);
+            }
             return this;
         }
 
