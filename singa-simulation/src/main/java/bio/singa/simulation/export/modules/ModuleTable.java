@@ -1,4 +1,4 @@
-package bio.singa.simulation.export.reactiontable;
+package bio.singa.simulation.export.modules;
 
 import java.util.ArrayList;
 import java.util.List;

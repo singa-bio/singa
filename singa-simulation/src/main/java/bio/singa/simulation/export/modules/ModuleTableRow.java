@@ -1,8 +1,10 @@
-package bio.singa.simulation.export.reactiontable;
+package bio.singa.simulation.export.modules;
 
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import static bio.singa.simulation.export.TeXTableSyntax.COLUMN_END_NON_BREAKING;
 
 /**
  * @author cl
@@ -10,11 +12,9 @@ import java.util.Map;
 public interface ModuleTableRow {
 
     String fullSpace = "\\addlinespace[1em]\n";
-    String nonBreakingColumnEnd = "\\\\*\n";
-    String breakingColumnEnd = "\\\\\n";
 
     default String generateHeader(String identifier) {
-        return multiColumnEnvironment("\\textbf{" + identifier + "}", 2) + nonBreakingColumnEnd;
+        return multiColumnEnvironment("\\textbf{" + identifier + "}", 2) + COLUMN_END_NON_BREAKING;
     }
 
     default String generateFeatureString(Map<String, List<String>> featureMap) {
@@ -31,7 +31,7 @@ public interface ModuleTableRow {
             if (evidenceCount == 0 && featureCounter == featureCount) {
 
             } else {
-                parameters.append(nonBreakingColumnEnd);
+                parameters.append(COLUMN_END_NON_BREAKING);
             }
             for (int evidenceCounter = 0; evidenceCounter < evidenceCount; evidenceCounter++) {
                 String evidenceString = entry.getValue().get(evidenceCounter);
@@ -42,10 +42,10 @@ public interface ModuleTableRow {
                     if (evidenceCounter == evidenceCount - 1) {
 
                     } else {
-                        parameters.append(nonBreakingColumnEnd);
+                        parameters.append(COLUMN_END_NON_BREAKING);
                     }
                 } else {
-                    parameters.append(nonBreakingColumnEnd);
+                    parameters.append(COLUMN_END_NON_BREAKING);
                 }
             }
         }

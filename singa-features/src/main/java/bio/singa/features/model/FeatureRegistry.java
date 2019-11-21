@@ -95,4 +95,12 @@ public class FeatureRegistry {
         return getInstance().scalableQuantitativeFeatures;
     }
 
+    public static List<Feature<?>> getAllFeatures() {
+        List<Feature<?>> features = new ArrayList<>();
+        features.addAll(getQualitativeFeatures());
+        features.addAll(getQuantitativeFeatures());
+        features.addAll(getScalableQuantitativeFeatures());
+        return features;
+    }
+
 }

@@ -1,4 +1,4 @@
-package bio.singa.simulation.export.reactiontable;
+package bio.singa.simulation.export.modules;
 
 import bio.singa.simulation.export.format.FormatFeature;
 import bio.singa.simulation.export.format.FormatReactionEquation;

@@ -1,7 +1,9 @@
-package bio.singa.simulation.export.reactiontable;
+package bio.singa.simulation.export.modules;
 
 import java.util.List;
 import java.util.Map;
+
+import static bio.singa.simulation.export.TeXTableSyntax.*;
 
 /**
  * @author cl
@@ -57,12 +59,14 @@ public class ReactionTableRow implements ModuleTableRow {
         for (int i = 0; i < equations.size(); i++) {
             kineticsBody.append(assembleRowsSet(i));
         }
-        return generateHeader(identifier) + kineticsBody.toString() + generateFeatureString(rates) + breakingColumnEnd;
+        return generateHeader(identifier) + kineticsBody.toString() + generateFeatureString(rates) + COLUMN_END_BREAKING;
     }
 
     public String assembleRowsSet(int identifier) {
-        return (ModuleTable.appendCount++) + " & " + equations.get(identifier) + nonBreakingColumnEnd +
-                "& " + kinetics.get(identifier) + nonBreakingColumnEnd;
+        return (ModuleTable.appendCount++) + COLUMN_SEPERATOR_SPACED +
+                equations.get(identifier) + COLUMN_END_NON_BREAKING +
+                COLUMN_SEPERATOR_SPACED +
+                kinetics.get(identifier) + COLUMN_END_NON_BREAKING;
     }
 
 }

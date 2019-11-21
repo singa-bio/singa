@@ -98,12 +98,11 @@ public class FormatFeature {
     public static Map<String, List<String>> formatFeatures(UpdateModule module) {
         Map<String, List<String>> rates = new HashMap<>();
         for (Feature<?> feature : module.getFeatures()) {
-            String kmString = feature.getDescriptor() + " = " + feature.getContent().toString().replace("_", "\\_");
+            String descriptor = feature.getDescriptor() + " = " + feature.getContent().toString().replace("_", "\\_");
             List<String> kmEvidence = formatAllEvidence(feature);
-            rates.put(kmString, kmEvidence);
+            rates.put(descriptor, kmEvidence);
         }
         return rates;
     }
-
 
 }
