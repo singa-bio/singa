@@ -35,6 +35,10 @@ public class ChEBIIdentifier extends AbstractIdentifier {
         super(identifier, PATTERN, evidence);
     }
 
+    public ChEBIIdentifier(String identifier, Evidence ... evidence) throws IllegalArgumentException {
+        super(identifier, PATTERN, evidence);
+    }
+
     /**
      * Returns the consecutive number without the "CHEBI:" part.
      *

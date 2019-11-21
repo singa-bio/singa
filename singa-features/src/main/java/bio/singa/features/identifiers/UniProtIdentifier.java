@@ -34,5 +34,8 @@ public class UniProtIdentifier extends AbstractIdentifier {
         super(identifier, PATTERN, evidence);
     }
 
+    public UniProtIdentifier(String identifier, Evidence ... evidence) throws IllegalArgumentException {
+        super(identifier, PATTERN, evidence);
+    }
 
 }

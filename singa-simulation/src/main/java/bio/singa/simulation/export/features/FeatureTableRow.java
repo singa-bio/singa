@@ -1,7 +1,6 @@
 package bio.singa.simulation.export.features;
 
 import bio.singa.features.model.Feature;
-import bio.singa.simulation.export.format.FormatFeature;
 
 import java.util.stream.Collectors;
 
@@ -17,8 +16,9 @@ public class FeatureTableRow {
         String identifier = String.valueOf(feature.getIdentifier());
         String type = feature.getDescriptor();
         String content = feature.getContent().toString();
-        String evidence = FormatFeature.formatAllEvidence(feature).stream()
-                .collect(Collectors.joining(",","\\cite{","}"));
+        String evidence = feature.getAllEvidence().stream()
+                .map(e -> e.getIdentifier().replace(" ", ""))
+                .collect(Collectors.joining(",", "\\cite{", "}"));
 
         return identifier + COLUMN_SEPERATOR_SPACED +
                 type + COLUMN_SEPERATOR_SPACED +

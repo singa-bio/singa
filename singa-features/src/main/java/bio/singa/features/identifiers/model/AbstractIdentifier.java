@@ -3,6 +3,7 @@ package bio.singa.features.identifiers.model;
 import bio.singa.features.model.Evidence;
 import bio.singa.features.model.StringFeature;
 
+import java.util.Arrays;
 import java.util.regex.Pattern;
 
 /**
@@ -14,11 +15,19 @@ import java.util.regex.Pattern;
 public abstract class AbstractIdentifier extends StringFeature implements Identifier  {
 
     public AbstractIdentifier(String identifier, Pattern pattern) {
-        this(identifier, pattern, null);
+        this(identifier, pattern, Evidence.NO_EVIDENCE);
     }
 
     public AbstractIdentifier(String identifier, Pattern pattern, Evidence evidence) throws IllegalArgumentException {
         super(identifier, evidence);
+        if (!pattern.matcher(identifier).matches()) {
+            throw new IllegalArgumentException("The identifer \"" + identifier + "\" is no valid " +
+                    getClass().getSimpleName() + ".");
+        }
+    }
+
+    public AbstractIdentifier(String identifier, Pattern pattern, Evidence ... evidence) throws IllegalArgumentException {
+        super(identifier, Arrays.asList(evidence));
         if (!pattern.matcher(identifier).matches()) {
             throw new IllegalArgumentException("The identifer \"" + identifier + "\" is no valid " +
                     getClass().getSimpleName() + ".");
