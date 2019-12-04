@@ -1,7 +1,7 @@
 package bio.singa.features.quantities;
 
-import bio.singa.features.model.AbstractFeature;
 import bio.singa.features.model.Evidence;
+import bio.singa.features.model.QualitativeFeature;
 import tech.units.indriya.quantity.Quantities;
 import tech.units.indriya.unit.ProductUnit;
 
@@ -18,7 +18,7 @@ import static tech.units.indriya.unit.Units.*;
  *
  * @author cl
  */
-public class MolarVolume extends AbstractFeature<Quantity<MolarVolume>> implements Quantity<MolarVolume> {
+public class MolarVolume extends QualitativeFeature<Quantity<MolarVolume>> implements Quantity<MolarVolume> {
 
     public static final Unit<MolarVolume> CUBIC_METRE_PER_MOLE = new ProductUnit<>(CUBIC_METRE.divide(MOLE));
     public static final Unit<MolarVolume> LITRE_PER_MOLE = new ProductUnit<>(LITRE.divide(MOLE));

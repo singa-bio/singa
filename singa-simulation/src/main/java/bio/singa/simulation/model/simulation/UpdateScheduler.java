@@ -60,12 +60,14 @@ public class UpdateScheduler {
     private boolean globalErrorAcceptable;
     private boolean calculateGlobalError;
     private ThreadPoolExecutor executor;
+    private final double moleculeFraction;
 
     public UpdateScheduler(Simulation simulation) {
         this.simulation = simulation;
         modules = new ArrayDeque<>(simulation.getModules());
         largestLocalError = NumericalError.MINIMAL_EMPTY_ERROR;
         largestGlobalError = NumericalError.MINIMAL_EMPTY_ERROR;
+        moleculeFraction = MolarConcentration.moleculesToConcentration(1.0/10000.0);
     }
 
     public void initializeThreadPool() {
@@ -89,6 +91,10 @@ public class UpdateScheduler {
 
     public long getTimestepsIncreased() {
         return timestepsIncreased;
+    }
+
+    public double getMoleculeFraction() {
+        return moleculeFraction;
     }
 
     public void nextEpoch() {
@@ -144,7 +150,7 @@ public class UpdateScheduler {
             }
 
             // evaluate total spatial displacement
-            spatialDisplacementIsValid();
+            evaluateSpatialDisplacement();
 
         } while (recalculationRequired());
         // System.out.println("accepted local error: "+largestLocalError.getValue());
@@ -326,18 +332,11 @@ public class UpdateScheduler {
         return false;
     }
 
-    private void prioritize(UpdateModule module) {
-        // remove the module from wherever it is
-        modules.remove(module);
-        // and add it to the front
-        modules.addFirst(module);
-    }
-
     public void resetCalculation() {
         logger.debug("Resetting calculations.");
         // reset states
         for (UpdateModule module : modules) {
-            // skip mudules with pending changes if timsep was not rescaled
+            // skip modules with pending changes if time step was not rescaled
             if (module.getState().equals(SUCCEEDED_WITH_PENDING_CHANGES) && !timeStepRescaled) {
                 continue;
             }
@@ -354,17 +353,15 @@ public class UpdateScheduler {
         moduleIterator = modules.iterator();
     }
 
-    private boolean spatialDisplacementIsValid() {
+    private void evaluateSpatialDisplacement() {
         if (simulation.getVesicleLayer().getVesicles().isEmpty()) {
-            return true;
+            return;
         }
         if (!simulation.getVesicleLayer().deltasAreBelowDisplacementCutoff()) {
             decreaseTimeStep();
             simulation.getVesicleLayer().clearUpdates();
             modules.forEach(UpdateModule::reset);
-            return false;
         }
-        return true;
     }
 
 }

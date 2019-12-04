@@ -16,6 +16,7 @@ import bio.singa.simulation.model.agents.volumelike.VolumeLayer;
 import bio.singa.simulation.model.agents.volumelike.VolumeLikeAgent;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonNode;
+import bio.singa.simulation.model.graphs.NeighborhoodMappingManager;
 import bio.singa.simulation.model.modules.UpdateModule;
 import bio.singa.simulation.model.modules.concentration.ConcentrationDelta;
 import bio.singa.simulation.model.modules.concentration.NumericalError;
@@ -90,7 +91,7 @@ public class Simulation {
     /**
      * The sections top be updated
      */
-    private ArrayList<Updatable> updatables;
+    private List<Updatable> updatables;
 
     /**
      * The nodes, that are observed during simulation.
@@ -316,8 +317,8 @@ public class Simulation {
                 .map(Diffusion.class::cast)
                 .findAny();
         // for each node
+        NeighborhoodMappingManager.initializeNeighborhoodForGraph(graph);
         for (AutomatonNode node : graph.getNodes()) {
-            node.initializeAdjacency();
             if (getVolumeLayer() != null) {
                 // for each volume
                 for (VolumeLikeAgent agent : getVolumeLayer().getAgents()) {
@@ -325,7 +326,7 @@ public class Simulation {
                     Polygon cortexArea = agent.getArea();
                     if (optionalModule.isPresent()) {
                         Ratio ratio = optionalModule.get().getFeature(Ratio.class);
-                        node.initializeDiffusiveReduction(cortexArea, ratio);
+                        NeighborhoodMappingManager.initializeDiffusiveReduction(node, cortexArea, ratio);
                     }
                 }
             }
@@ -400,7 +401,7 @@ public class Simulation {
         this.assignmentRules = AssignmentRules.sortAssignmentRulesByPriority(assignmentRules);
     }
 
-    public ArrayList<Updatable> getUpdatables() {
+    public List<Updatable> getUpdatables() {
         return updatables;
     }
 

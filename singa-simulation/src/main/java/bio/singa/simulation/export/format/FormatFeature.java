@@ -58,6 +58,12 @@ public class FormatFeature {
         return evidenceString;
     }
 
+    /**
+     * map: key: feature - value: list: evidence
+     *
+     * @param reaction
+     * @return
+     */
     public static Map<String, List<String>> formatRates(Reaction reaction) {
         Map<String, List<String>> rates = new HashMap<>();
         if (reaction.getKineticLaw() instanceof ReversibleKineticLaw) {

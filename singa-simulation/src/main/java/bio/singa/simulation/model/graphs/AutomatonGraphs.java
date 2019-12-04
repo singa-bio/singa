@@ -178,26 +178,22 @@ public class AutomatonGraphs {
         return nodes;
     }
 
-    public static void fillRegion(AutomatonGraph graph, CellRegion innerRegion, RectangularCoordinate centre, int radius)
-    {
+    public static void fillRegion(AutomatonGraph graph, CellRegion innerRegion, RectangularCoordinate centre, int radius) {
         int x0 = centre.getColumn();
         int y0 = centre.getRow();
 
-        int x = radius-1;
+        int x = radius - 1;
         int y = 0;
         int xChange = 1 - (radius << 1);
         int yChange = 0;
         int radiusError = 0;
 
-        while (x >= y)
-        {
-            for (int i = x0 - x; i <= x0 + x; i++)
-            {
+        while (x >= y) {
+            for (int i = x0 - x; i <= x0 + x; i++) {
                 graph.getNode(i, y0 + y).setCellRegion(innerRegion);
                 graph.getNode(i, y0 - y).setCellRegion(innerRegion);
             }
-            for (int i = x0 - y; i <= x0 + y; i++)
-            {
+            for (int i = x0 - y; i <= x0 + y; i++) {
                 graph.getNode(i, y0 + x).setCellRegion(innerRegion);
                 graph.getNode(i, y0 - x).setCellRegion(innerRegion);
             }
@@ -205,15 +201,12 @@ public class AutomatonGraphs {
             y++;
             radiusError += yChange;
             yChange += 2;
-            if (((radiusError << 1) + xChange) > 0)
-            {
+            if (((radiusError << 1) + xChange) > 0) {
                 x--;
                 radiusError += xChange;
                 xChange += 2;
             }
         }
     }
-
-
 
 }

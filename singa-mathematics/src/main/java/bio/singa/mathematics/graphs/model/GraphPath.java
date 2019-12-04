@@ -7,8 +7,14 @@ import java.util.LinkedList;
  */
 public class GraphPath<NodeType extends Node<NodeType, ?, ?>, EdgeType extends Edge<NodeType>>  {
 
+    private static final GraphPath emptyPath = new GraphPath();
+
     private LinkedList<NodeType> nodes;
     private LinkedList<EdgeType> edges;
+
+    public static <N extends Node<N, ?, ?>, E extends Edge<N>> GraphPath<N,E> emptyPath() {
+        return (GraphPath<N,E>) emptyPath;
+    }
 
     public GraphPath() {
         nodes = new LinkedList<>();
@@ -29,6 +35,10 @@ public class GraphPath<NodeType extends Node<NodeType, ?, ?>, EdgeType extends E
 
     public LinkedList<EdgeType> getEdges() {
         return edges;
+    }
+
+    public int size() {
+        return nodes.size();
     }
 
 }

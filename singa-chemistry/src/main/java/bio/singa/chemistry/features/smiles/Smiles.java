@@ -1,13 +1,13 @@
 package bio.singa.chemistry.features.smiles;
 
 import bio.singa.chemistry.features.FeatureProviderRegistry;
-import bio.singa.features.model.AbstractFeature;
 import bio.singa.features.model.Evidence;
+import bio.singa.features.model.QualitativeFeature;
 
 /**
  * @author cl
  */
-public class Smiles extends AbstractFeature<String> {
+public class Smiles extends QualitativeFeature<String> {
 
     public Smiles(String smilesString, Evidence evidence) {
         super(smilesString, evidence);

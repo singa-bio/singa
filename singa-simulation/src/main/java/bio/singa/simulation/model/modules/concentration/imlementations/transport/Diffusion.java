@@ -55,12 +55,16 @@ public class Diffusion extends ConcentrationBasedModule<EntityDeltaFunction> {
 
     private CellSubsection restrictedSubsection;
 
+    public Diffusion() {
+
+    }
+
     public static EntityLimitationStep inSimulation(Simulation simulation) {
         return new DiffusionBuilder(simulation);
     }
 
-    public Diffusion() {
-
+    public static ModuleBuilder getBuilder(Simulation simulation) {
+        return new DiffusionBuilder(simulation);
     }
 
     private void postConstruct() {
@@ -93,7 +97,21 @@ public class Diffusion extends ConcentrationBasedModule<EntityDeltaFunction> {
         List<AutomatonNode.AreaMapping> areaMappings = node.getSubsectionAdjacency().get(subsection);
         double delta = 0.0;
         for (AutomatonNode.AreaMapping mapping : areaMappings) {
-            delta += diffusivity * mapping.getRelativeArea() * mapping.getDiffusiveRatio() * (mapping.getNode().getConcentrationContainer().get(mapping.getSubsection(), entity) - currentConcentration);
+            double partialDelta = 0.0;
+            if (mapping.isCached()) {
+                partialDelta = mapping.getCached();
+            } else {
+                AutomatonNode other = mapping.getOther(node);
+                ConcentrationContainer otherContainer;
+                if (supplier.isStrutCalculation()) {
+                    otherContainer = getScope().getHalfStepConcentration(other);
+                } else {
+                    otherContainer = other.getConcentrationContainer();
+                }
+                partialDelta = diffusivity * mapping.getRelativeArea() * mapping.getDiffusiveRatio() * (otherContainer.get(mapping.getSubsection(), entity) - currentConcentration);
+            }
+            delta += partialDelta;
+            mapping.setCache(partialDelta);
         }
         // return delta
         return new ConcentrationDelta(this, subsection, entity, delta);
@@ -112,8 +130,9 @@ public class Diffusion extends ConcentrationBasedModule<EntityDeltaFunction> {
         logger.debug("The module " + getClass().getSimpleName() + " requires the Feature Diffusivity to be annotated to all requested chemical entities.");
     }
 
-    public static ModuleBuilder getBuilder(Simulation simulation) {
-        return new DiffusionBuilder(simulation);
+    @Override
+    public void inBetweenHalfSteps() {
+        getSimulation().getGraph().getNodes().forEach(AutomatonNode::clearCaches);
     }
 
     public interface EntityLimitationStep {

@@ -2,6 +2,8 @@ package bio.singa.mathematics.graphs.model;
 
 import bio.singa.mathematics.vectors.Vector2D;
 
+import static bio.singa.mathematics.graphs.model.GraphPredicates.*;
+
 /**
  * The graph class contains {@link Node}s connected by {@link Edge}s.
  *
@@ -27,7 +29,7 @@ public class UndirectedGraph extends AbstractMapGraph<RegularNode, UndirectedEdg
      * @return The identifier of the added node.
      */
     public RegularNode snapNode(Vector2D position) {
-        return addNodeIf(graphNode -> graphNode.getPosition().equals(position),
+        return addNodeIf(node -> nodeHasPosition(node, position),
                 new RegularNode(nextNodeIdentifier(), position));
     }
 
