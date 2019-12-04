@@ -64,13 +64,14 @@ class VesicleDiffusionTest {
     void shouldRescaleDiffusivity() {
         Environment.setSystemExtend(Quantities.getQuantity(20, MICRO(METRE)));
         Environment.setSimulationExtend(500);
-        UnitRegistry.setTime(Quantities.getQuantity(1, MICRO(SECOND)));
 
         Vesicle vesicle = new Vesicle(new Vector2D(50, 50), Quantities.getQuantity(100, NANO(METRE)));
 
-        assertEquals(2.1460983910913096E-9, vesicle.getFeature(Diffusivity.class).getValue().doubleValue(), 1e-8);
+        assertEquals(0.015, vesicle.getFeature(Diffusivity.class).getValue().doubleValue());
+        UnitRegistry.setTime(Quantities.getQuantity(1, MICRO(SECOND)));
+        assertEquals(1.5e-8, vesicle.getFeature(Diffusivity.class).getScaledQuantity());
         UnitRegistry.setTime(Quantities.getQuantity(2, MICRO(SECOND)));
-        assertEquals(4.292196782182619E-9, vesicle.getFeature(Diffusivity.class).getValue().doubleValue(), 1e-8);
+        assertEquals(3.0e-8, vesicle.getFeature(Diffusivity.class).getScaledQuantity());
     }
 
     @Test
