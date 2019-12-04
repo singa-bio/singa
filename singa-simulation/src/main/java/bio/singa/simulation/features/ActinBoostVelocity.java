@@ -1,7 +1,7 @@
 package bio.singa.simulation.features;
 
 import bio.singa.features.model.Evidence;
-import bio.singa.features.model.ScalableQuantitativeFeature;
+import bio.singa.features.model.AbstractScalableQuantitativeFeature;
 import tech.units.indriya.unit.ProductUnit;
 
 import javax.measure.Quantity;
@@ -16,7 +16,7 @@ import static tech.units.indriya.unit.Units.SECOND;
 /**
  * @author cl
  */
-public class ActinBoostVelocity extends ScalableQuantitativeFeature<Speed> {
+public class ActinBoostVelocity extends AbstractScalableQuantitativeFeature<Speed> {
 
     public static final Unit<Speed> NANOMETRE_PER_SECOND = new ProductUnit<>(NANO(METRE).divide(SECOND));
 

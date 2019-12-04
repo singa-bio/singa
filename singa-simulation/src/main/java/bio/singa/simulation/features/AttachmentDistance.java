@@ -1,7 +1,7 @@
 package bio.singa.simulation.features;
 
 import bio.singa.features.model.Evidence;
-import bio.singa.features.model.QuantitativeFeature;
+import bio.singa.features.model.AbstractQuantitativeFeature;
 import tech.units.indriya.quantity.Quantities;
 
 import javax.measure.Quantity;
@@ -14,7 +14,7 @@ import static tech.units.indriya.unit.Units.METRE;
 /**
  * @author cl
  */
-public class AttachmentDistance extends QuantitativeFeature<Length> {
+public class AttachmentDistance extends AbstractQuantitativeFeature<Length> {
 
     /**
      * Size of the dynein complex fom vesicle surface to microtubule.

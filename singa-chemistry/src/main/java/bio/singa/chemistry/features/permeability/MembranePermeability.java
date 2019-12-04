@@ -1,7 +1,7 @@
 package bio.singa.chemistry.features.permeability;
 
 import bio.singa.features.model.Evidence;
-import bio.singa.features.model.ScalableQuantitativeFeature;
+import bio.singa.features.model.AbstractScalableQuantitativeFeature;
 import bio.singa.features.units.UnitRegistry;
 import tech.units.indriya.unit.ProductUnit;
 
@@ -14,7 +14,7 @@ import static tech.units.indriya.unit.Units.METRE;
 import static tech.units.indriya.unit.Units.SECOND;
 
 
-public class MembranePermeability extends ScalableQuantitativeFeature<MembranePermeability> implements Quantity<MembranePermeability> {
+public class MembranePermeability extends AbstractScalableQuantitativeFeature<MembranePermeability> implements Quantity<MembranePermeability> {
 
     // theoretically it is volume / time * area - volume and area cancel out
     private static Unit<Length> CENTIMETRE = CENTI(METRE);

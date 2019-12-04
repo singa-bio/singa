@@ -1,7 +1,7 @@
 package bio.singa.chemistry.features.permeability;
 
 import bio.singa.features.model.Evidence;
-import bio.singa.features.model.ScalableQuantitativeFeature;
+import bio.singa.features.model.AbstractScalableQuantitativeFeature;
 import tech.units.indriya.quantity.Quantities;
 import tech.units.indriya.unit.ProductUnit;
 
@@ -16,7 +16,7 @@ import static tech.units.indriya.unit.Units.SECOND;
  *
  * @author cl
  */
-public class OsmoticPermeability extends ScalableQuantitativeFeature<OsmoticPermeability> implements Quantity<OsmoticPermeability> {
+public class OsmoticPermeability extends AbstractScalableQuantitativeFeature<OsmoticPermeability> implements Quantity<OsmoticPermeability> {
 
     /**
      * Unit most commonly used to describe osmotic permeability.

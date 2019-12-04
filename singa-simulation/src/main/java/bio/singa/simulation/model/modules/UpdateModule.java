@@ -1,11 +1,13 @@
 package bio.singa.simulation.model.modules;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
+import bio.singa.features.model.Evidence;
 import bio.singa.features.model.Feature;
 import bio.singa.simulation.model.modules.concentration.ModuleState;
 import bio.singa.simulation.model.simulation.Simulation;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -22,6 +24,7 @@ public interface UpdateModule extends Runnable {
     void checkFeatures();
     void setFeature(Feature<?> feature);
     Collection<Feature<?>> getFeatures();
+    List<Evidence> getEvidence();
 
     void initialize();
     void reset();

@@ -1,7 +1,7 @@
 package bio.singa.simulation.features;
 
 import bio.singa.features.model.Evidence;
-import bio.singa.features.model.QuantitativeFeature;
+import bio.singa.features.model.AbstractQuantitativeFeature;
 import tech.units.indriya.quantity.Quantities;
 
 import javax.measure.Quantity;
@@ -14,7 +14,7 @@ import static tech.units.indriya.unit.Units.SECOND;
 /**
  * @author cl
  */
-public class MaturationTime extends QuantitativeFeature<Time> {
+public class MaturationTime extends AbstractQuantitativeFeature<Time> {
 
     /**
      * Average maturation time is 100 seconds.

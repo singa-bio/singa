@@ -9,22 +9,22 @@ import java.util.List;
 /**
  * @author cl
  */
-public abstract class ScalableQuantitativeFeature<FeatureContent extends Quantity<FeatureContent>> extends AbstractFeature<Quantity<FeatureContent>> {
+public abstract class AbstractScalableQuantitativeFeature<FeatureContent extends Quantity<FeatureContent>> extends AbstractFeature<Quantity<FeatureContent>> implements QuantitativeFeature<FeatureContent> {
 
     protected double scaledQuantity;
     protected double halfScaledQuantity;
 
-    public ScalableQuantitativeFeature(Quantity<FeatureContent> quantity, List<Evidence> evidence) {
+    public AbstractScalableQuantitativeFeature(Quantity<FeatureContent> quantity, List<Evidence> evidence) {
         super(quantity, evidence);
         FeatureRegistry.addScalableQuantitativeFeatures(this);
     }
 
-    public ScalableQuantitativeFeature(Quantity<FeatureContent> quantity, Evidence evidence) {
+    public AbstractScalableQuantitativeFeature(Quantity<FeatureContent> quantity, Evidence evidence) {
         super(quantity, evidence);
         FeatureRegistry.addScalableQuantitativeFeatures(this);
     }
 
-    public ScalableQuantitativeFeature(Quantity<FeatureContent> quantity) {
+    public AbstractScalableQuantitativeFeature(Quantity<FeatureContent> quantity) {
         super(quantity);
         FeatureRegistry.addScalableQuantitativeFeatures(this);
     }

@@ -5,7 +5,7 @@ import bio.singa.chemistry.features.reactions.*;
 import bio.singa.chemistry.reactions.ReactionNetworkGenerator;
 import bio.singa.chemistry.reactions.reactors.ReactionChain;
 import bio.singa.features.model.Evidence;
-import bio.singa.features.model.ScalableQuantitativeFeature;
+import bio.singa.features.model.AbstractScalableQuantitativeFeature;
 import bio.singa.simulation.model.modules.concentration.ModuleBuilder;
 import bio.singa.simulation.model.modules.concentration.ModuleFactory;
 import bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.kineticlaws.DynamicKineticLaw;
@@ -150,9 +150,9 @@ public class ReactionBuilder {
 
     public interface ParameterStep extends FinalStep {
 
-        ParameterStep referenceParameter(ScalableQuantitativeFeature<?> scalableFeature);
+        ParameterStep referenceParameter(AbstractScalableQuantitativeFeature<?> scalableFeature);
 
-        ParameterStep referenceParameter(String parameterIdentifier, ScalableQuantitativeFeature<?> scalableFeature);
+        ParameterStep referenceParameter(String parameterIdentifier, AbstractScalableQuantitativeFeature<?> scalableFeature);
 
         ParameterStep referenceParameter(Reactant reactant);
 
@@ -280,13 +280,13 @@ public class ReactionBuilder {
         }
 
         @Override
-        public ParameterStep referenceParameter(ScalableQuantitativeFeature<?> scalableFeature) {
+        public ParameterStep referenceParameter(AbstractScalableQuantitativeFeature<?> scalableFeature) {
             dynamicKineticLaw.referenceFeature(scalableFeature);
             return this;
         }
 
         @Override
-        public ParameterStep referenceParameter(String parameterIdentifier, ScalableQuantitativeFeature<?> scalableFeature) {
+        public ParameterStep referenceParameter(String parameterIdentifier, AbstractScalableQuantitativeFeature<?> scalableFeature) {
             dynamicKineticLaw.referenceFeature(parameterIdentifier, scalableFeature);
             return this;
         }

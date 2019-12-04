@@ -4,7 +4,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import static bio.singa.simulation.export.TeXTableSyntax.COLUMN_END_NON_BREAKING;
+import static bio.singa.simulation.export.TeXFormat.COLUMN_END_NON_BREAKING;
+import static bio.singa.simulation.export.TeXFormat.formatTableMultiColumn;
 
 /**
  * @author cl
@@ -14,7 +15,7 @@ public interface ModuleTableRow {
     String fullSpace = "\\addlinespace[1em]\n";
 
     default String generateHeader(String identifier) {
-        return multiColumnEnvironment("\\textbf{" + identifier + "}", 2) + COLUMN_END_NON_BREAKING;
+        return formatTableMultiColumn("\\textbf{" + identifier + "}", 2) + COLUMN_END_NON_BREAKING;
     }
 
     default String generateFeatureString(Map<String, List<String>> featureMap) {
@@ -52,9 +53,7 @@ public interface ModuleTableRow {
         return parameters.toString();
     }
 
-    default String multiColumnEnvironment(String content, int number) {
-        return "\\multicolumn{" + number + "}{l}{" + content + "}";
-    }
+
 
     String toRow();
 

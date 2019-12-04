@@ -1,7 +1,7 @@
 package bio.singa.simulation.features;
 
 import bio.singa.features.model.Evidence;
-import bio.singa.features.model.QuantitativeFeature;
+import bio.singa.features.model.AbstractQuantitativeFeature;
 import tech.units.indriya.AbstractUnit;
 import tech.units.indriya.quantity.Quantities;
 
@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * @author cl
  */
-public class Ratio extends QuantitativeFeature<Dimensionless> {
+public class Ratio extends AbstractQuantitativeFeature<Dimensionless> {
 
     public Ratio(Quantity<Dimensionless> quantity, List<Evidence> evidence) {
         super(quantity, evidence);

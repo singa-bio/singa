@@ -1,7 +1,7 @@
 package bio.singa.simulation.features;
 
 import bio.singa.features.model.Evidence;
-import bio.singa.features.model.QuantitativeFeature;
+import bio.singa.features.model.AbstractQuantitativeFeature;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Time;
@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * @author cl
  */
-public class EndocytosisCheckpointTime extends QuantitativeFeature<Time> {
+public class EndocytosisCheckpointTime extends AbstractQuantitativeFeature<Time> {
 
     public EndocytosisCheckpointTime(Quantity<Time> quantity, List<Evidence> evidence) {
         super(quantity, evidence);

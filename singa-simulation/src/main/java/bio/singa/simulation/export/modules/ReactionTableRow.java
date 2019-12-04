@@ -3,7 +3,7 @@ package bio.singa.simulation.export.modules;
 import java.util.List;
 import java.util.Map;
 
-import static bio.singa.simulation.export.TeXTableSyntax.*;
+import static bio.singa.simulation.export.TeXFormat.*;
 
 /**
  * @author cl

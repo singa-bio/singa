@@ -3,7 +3,7 @@ package bio.singa.simulation.export.modules;
 import bio.singa.simulation.export.format.FormatFeature;
 import bio.singa.simulation.model.modules.UpdateModule;
 
-import static bio.singa.simulation.export.TeXTableSyntax.*;
+import static bio.singa.simulation.export.TeXFormat.*;
 
 /**
  * @author cl

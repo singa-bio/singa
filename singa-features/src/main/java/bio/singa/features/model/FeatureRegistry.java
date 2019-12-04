@@ -13,8 +13,8 @@ public class FeatureRegistry {
 
     private AtomicInteger identifierGenerator;
     private List<QualitativeFeature<?>> qualitativeFeatures;
-    private List<QuantitativeFeature<?>> quantitativeFeatures;
-    private List<ScalableQuantitativeFeature<?>> scalableQuantitativeFeatures;
+    private List<AbstractQuantitativeFeature<?>> quantitativeFeatures;
+    private List<AbstractScalableQuantitativeFeature<?>> scalableQuantitativeFeatures;
 
     private static FeatureRegistry getInstance() {
         if (instance == null) {
@@ -36,7 +36,7 @@ public class FeatureRegistry {
         scalableQuantitativeFeatures = new ArrayList<>();
     }
 
-    public static void addQuantitativeFeature(QuantitativeFeature<?> quantitativeFeature) {
+    public static void addQuantitativeFeature(AbstractQuantitativeFeature<?> quantitativeFeature) {
         quantitativeFeature.setIdentifier(getInstance().identifierGenerator.getAndIncrement());
         getInstance().quantitativeFeatures.add(quantitativeFeature);
     }
@@ -46,19 +46,19 @@ public class FeatureRegistry {
         getInstance().qualitativeFeatures.add(qualitativeFeature);
     }
 
-    public static void addScalableQuantitativeFeatures(ScalableQuantitativeFeature<?> scalableQuantitativeFeature) {
+    public static void addScalableQuantitativeFeatures(AbstractScalableQuantitativeFeature<?> scalableQuantitativeFeature) {
         scalableQuantitativeFeature.setIdentifier(getInstance().identifierGenerator.getAndIncrement());
         scalableQuantitativeFeature.scale();
         getInstance().scalableQuantitativeFeatures.add(scalableQuantitativeFeature);
     }
 
     public static Feature<?> get(int identifier) {
-        for (ScalableQuantitativeFeature<?> scalableQuantitativeFeature : getScalableQuantitativeFeatures()) {
+        for (AbstractScalableQuantitativeFeature<?> scalableQuantitativeFeature : getScalableQuantitativeFeatures()) {
             if (scalableQuantitativeFeature.getIdentifier() == identifier) {
                 return scalableQuantitativeFeature;
             }
         }
-        for (QuantitativeFeature<?> quantitativeFeature : getQuantitativeFeatures()) {
+        for (AbstractQuantitativeFeature<?> quantitativeFeature : getQuantitativeFeatures()) {
             if (quantitativeFeature.getIdentifier() == identifier) {
                 return quantitativeFeature;
             }
@@ -72,18 +72,18 @@ public class FeatureRegistry {
     }
 
     public static  void scale() {
-        for (ScalableQuantitativeFeature<?> feature : getInstance().scalableQuantitativeFeatures) {
+        for (AbstractScalableQuantitativeFeature<?> feature : getInstance().scalableQuantitativeFeatures) {
             feature.scale();
         }
     }
 
     public static void scale(double factor) {
-        for (ScalableQuantitativeFeature<?> feature : getInstance().scalableQuantitativeFeatures) {
+        for (AbstractScalableQuantitativeFeature<?> feature : getInstance().scalableQuantitativeFeatures) {
             feature.scale(factor);
         }
     }
 
-    public static List<QuantitativeFeature<?>> getQuantitativeFeatures() {
+    public static List<AbstractQuantitativeFeature<?>> getQuantitativeFeatures() {
         return getInstance().quantitativeFeatures;
     }
 
@@ -91,7 +91,7 @@ public class FeatureRegistry {
         return getInstance().qualitativeFeatures;
     }
 
-    public static List<ScalableQuantitativeFeature<?>> getScalableQuantitativeFeatures() {
+    public static List<AbstractScalableQuantitativeFeature<?>> getScalableQuantitativeFeatures() {
         return getInstance().scalableQuantitativeFeatures;
     }
 

@@ -1,7 +1,7 @@
 package bio.singa.chemistry.features.reactions;
 
 import bio.singa.features.model.Evidence;
-import bio.singa.features.model.ScalableQuantitativeFeature;
+import bio.singa.features.model.AbstractScalableQuantitativeFeature;
 import bio.singa.features.quantities.MolarConcentration;
 import tech.units.indriya.quantity.Quantities;
 import tech.units.indriya.unit.ProductUnit;
@@ -21,7 +21,7 @@ import static tech.units.indriya.AbstractUnit.ONE;
 /**
  * @author cl
  */
-public abstract class RateConstant<ReactionRateType extends ReactionRate<ReactionRateType>> extends ScalableQuantitativeFeature<ReactionRateType> {
+public abstract class RateConstant<ReactionRateType extends ReactionRate<ReactionRateType>> extends AbstractScalableQuantitativeFeature<ReactionRateType> {
 
     public static DirectionStep create(double value) {
         return new RateBuilder(value);
@@ -112,6 +112,7 @@ public abstract class RateConstant<ReactionRateType extends ReactionRate<Reactio
     }
 
     public interface BuilderStep {
+        BuilderStep comment(String string);
         RateConstant build();
     }
 
@@ -123,6 +124,7 @@ public abstract class RateConstant<ReactionRateType extends ReactionRate<Reactio
         private List<Evidence> evidence;
         private Unit<Time> timeUnit;
         private Unit<MolarConcentration> concentrationUnit;
+        private String comment;
 
         public RateBuilder(double value) {
             this.value = value;
@@ -184,6 +186,12 @@ public abstract class RateConstant<ReactionRateType extends ReactionRate<Reactio
         }
 
         @Override
+        public BuilderStep comment(String comment) {
+            this.comment = comment;
+            return this;
+        }
+
+        @Override
         public RateConstant build() {
             RateConstant<?> rateConstant = null;
             if (direction == FORWARDS && order == ZERO) {
@@ -215,6 +223,7 @@ public abstract class RateConstant<ReactionRateType extends ReactionRate<Reactio
                 throw new IllegalStateException("Reaction Rate cannot be created with the given parameters.");
             }
             evidence.forEach(rateConstant::addEvidence);
+            rateConstant.setComment(comment);
             return rateConstant;
         }
     }

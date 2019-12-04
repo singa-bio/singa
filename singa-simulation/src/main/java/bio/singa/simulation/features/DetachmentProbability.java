@@ -1,7 +1,7 @@
 package bio.singa.simulation.features;
 
 import bio.singa.features.model.Evidence;
-import bio.singa.features.model.ScalableQuantitativeFeature;
+import bio.singa.features.model.AbstractScalableQuantitativeFeature;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Frequency;
@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * @author cl
  */
-public class DetachmentProbability extends ScalableQuantitativeFeature<Frequency> {
+public class DetachmentProbability extends AbstractScalableQuantitativeFeature<Frequency> {
 
     public DetachmentProbability(Quantity<Frequency> quantity, List<Evidence> evidence) {
         super(quantity, evidence);

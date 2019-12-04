@@ -43,20 +43,21 @@ public class UnitRegistry {
 
     public static final Unit<Temperature> DEFAULT_TEMPERATURE_UNIT = KELVIN;
     public static final Unit<Mass> DEFAULT_MASS_UNIT = GRAM;
-    public static final Unit<MolarConcentration> DEFAULT_DISPLAY_CONCENTRATION_UNIT = MICRO_MOLE_PER_LITRE;
 
+    public static final Unit<Time> DISPLAY_TIME = SECOND;
+    public static final Unit<Volume> DISPLAY_VOLUME = LITRE;
+    public static final Unit<AmountOfSubstance> DISPLAY_AMOUNT = MICRO(MOLE);
+    public static final Unit<MolarConcentration> DISPLAY_CONCENTRATION = MICRO_MOLE_PER_LITRE;
+    public static final Unit<Length> DISPLAY_LENGTH = MICRO(METRE);
+    private static UnitRegistry instance = getInstance();
     private Quantity<Length> space;
     private Quantity<Time> time;
-
     private Map<Dimension, Unit> defaultUnits;
-    private Unit<MolarConcentration> concentrationDisplayUnit;
-
-    private static UnitRegistry instance = getInstance();
+    private Map<Dimension, Unit> displayUnits;
 
     private UnitRegistry() {
         space = DEFAULT_SPACE;
         time = DEFAULT_TIME;
-        concentrationDisplayUnit = DEFAULT_DISPLAY_CONCENTRATION_UNIT;
 
         defaultUnits = new HashMap<>();
         defaultUnits.put(LENGTH, space.getUnit());
@@ -64,6 +65,15 @@ public class UnitRegistry {
         defaultUnits.put(AMOUNT_OF_SUBSTANCE, DEFAULT_AMOUNT_OF_SUBSTANCE.getUnit());
         defaultUnits.put(MASS, DEFAULT_MASS_UNIT);
         defaultUnits.put(TEMPERATURE, DEFAULT_TEMPERATURE_UNIT);
+
+        displayUnits = new HashMap<>();
+        displayUnits.put(LENGTH, DISPLAY_LENGTH);
+        displayUnits.put(TIME, DISPLAY_TIME);
+        displayUnits.put(AMOUNT_OF_SUBSTANCE, DISPLAY_AMOUNT);
+        displayUnits.put(MASS, DEFAULT_MASS_UNIT);
+        displayUnits.put(TEMPERATURE, DEFAULT_TEMPERATURE_UNIT);
+        displayUnits.put(LITRE.getDimension(), DISPLAY_VOLUME);
+        displayUnits.put(MOLE_PER_LITRE.getDimension(), DISPLAY_CONCENTRATION);
     }
 
     private static UnitRegistry getInstance() {
@@ -79,14 +89,14 @@ public class UnitRegistry {
         }
     }
 
+    public static Quantity<Length> getSpace() {
+        return getInstance().space;
+    }
+
     public static void setSpace(Quantity<Length> space) {
         setSpaceScale(space.getValue().doubleValue());
         setSpaceUnit(space.getUnit());
         FeatureRegistry.scale();
-    }
-
-    public static Quantity<Length> getSpace() {
-        return getInstance().space;
     }
 
     public static double getSpaceScale() {
@@ -113,6 +123,10 @@ public class UnitRegistry {
         setSpaceUnit(DEFAULT_SPACE.getUnit());
     }
 
+    public static Quantity<Time> getTime() {
+        return getInstance().time;
+    }
+
     public static void setTime(Quantity<Time> time) {
         double previousTime = getTime().getValue().doubleValue();
         setTimeScale(time.getValue().doubleValue());
@@ -120,10 +134,6 @@ public class UnitRegistry {
         double currentTime = getTime().getValue().doubleValue();
         double scalingFactor = currentTime / previousTime;
         FeatureRegistry.scale(scalingFactor);
-    }
-
-    public static Quantity<Time> getTime() {
-        return getInstance().time;
     }
 
     public static double getTimeScale() {
@@ -183,16 +193,17 @@ public class UnitRegistry {
         return Quantities.getQuantity(value, unit).to(getConcentrationUnit());
     }
 
-    public static void setDisplayConcentrationUnit(Unit<MolarConcentration> concentrationUnit) {
-        getInstance().concentrationDisplayUnit = concentrationUnit;
-    }
-
-    public static Quantity<MolarConcentration> humanReadable(Quantity<MolarConcentration> concentration) {
-        return concentration.to(getInstance().concentrationDisplayUnit);
+    public static <QuantityType extends Quantity<QuantityType>> Quantity<QuantityType> humanReadable(Quantity<QuantityType> quantity) {
+        Dimension dimension = quantity.getUnit().getDimension();
+        if (!getInstance().displayUnits.containsKey(dimension)) {
+            // not base unit and not registered
+            addUnitForDimension(dimension, getInstance().displayUnits);
+        }
+        return quantity.to(getInstance().displayUnits.get(dimension));
     }
 
     public static Quantity<MolarConcentration> humanReadable(double concentration) {
-        return concentration(concentration).to(getInstance().concentrationDisplayUnit);
+        return humanReadable(concentration(concentration));
     }
 
     public static <QuantityType extends Quantity<QuantityType>> Quantity<QuantityType> scale(Quantity<QuantityType> quantity) {
@@ -236,7 +247,7 @@ public class UnitRegistry {
         Dimension dimension = quantity.getUnit().getDimension();
         if (!getInstance().defaultUnits.containsKey(dimension)) {
             // not base unit and not registered
-            addUnitForDimension(dimension);
+            addUnitForDimension(dimension, getInstance().defaultUnits);
         }
         return quantity.to(getInstance().defaultUnits.get(dimension));
     }
@@ -244,7 +255,7 @@ public class UnitRegistry {
     private static void rescaleRegisteredUnits() {
         for (Dimension next : getInstance().defaultUnits.keySet()) {
             if (next.getBaseDimensions() != null) {
-                addUnitForDimension(next);
+                addUnitForDimension(next, getInstance().defaultUnits);
             }
         }
     }
@@ -253,36 +264,34 @@ public class UnitRegistry {
         Dimension dimension = unit.getDimension();
         if (!getInstance().defaultUnits.containsKey(dimension)) {
             // not base unit and not registered
-            addUnitForDimension(dimension);
+            addUnitForDimension(dimension, getInstance().defaultUnits);
         }
         return getInstance().defaultUnits.get(dimension);
     }
 
-    private static void addUnitForDimension(Dimension dimension) {
+    private static void addUnitForDimension(Dimension dimension, Map<Dimension, Unit> unitMap) {
         Unit unit = ONE;
         for (Map.Entry<? extends Dimension, Integer> entry : dimension.getBaseDimensions().entrySet()) {
-            unit = unit.multiply(getPreferredUnit(entry.getKey()).pow(entry.getValue()));
+            unit = unit.multiply(getPreferredUnit(entry.getKey(), entry.getValue(), unitMap));
         }
-        getInstance().defaultUnits.put(dimension, unit);
+        unitMap.put(dimension, unit);
     }
 
-    private static Unit getPreferredUnit(Quantity<?> quantity) {
-        if (getInstance().defaultUnits.containsKey(quantity.getUnit().getDimension())) {
+    private static Unit getPreferredUnit(Dimension baseDimension, int exponent, Map<Dimension, Unit> unitMap) {
+        if (unitMap.containsKey(baseDimension.pow(Math.abs(exponent)))) {
+            // if there is a  defined complex unit (such as concentration)
+            if (exponent < 0) {
+                Unit unit = unitMap.get(baseDimension.pow(Math.abs(exponent)));
+                return ONE.divide(unit);
+            } else {
+                return unitMap.get(baseDimension.pow(exponent));
+            }
+        } else if (unitMap.containsKey(baseDimension)) {
             // if time or space use system scale
-            return getInstance().defaultUnits.get(quantity.getUnit().getDimension());
+            return unitMap.get(baseDimension).pow(exponent);
         } else {
             // else use si units
-            return Units.getInstance().getUnits(quantity.getUnit().getDimension()).iterator().next();
-        }
-    }
-
-    private static Unit getPreferredUnit(Dimension dimension) {
-        if (getInstance().defaultUnits.containsKey(dimension)) {
-            // if time or space use system scale
-            return getInstance().defaultUnits.get(dimension);
-        } else {
-            // else use si units
-            return Units.getInstance().getUnits(dimension).iterator().next();
+            return Units.getInstance().getUnits(baseDimension).iterator().next().pow(exponent);
         }
     }
 

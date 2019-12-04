@@ -3,7 +3,7 @@ package bio.singa.simulation.model.modules;
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.features.model.Evidence;
 import bio.singa.features.model.Feature;
-import bio.singa.features.model.ScalableQuantitativeFeature;
+import bio.singa.features.model.AbstractScalableQuantitativeFeature;
 import bio.singa.simulation.model.modules.concentration.ModuleState;
 import bio.singa.simulation.model.parameters.FeatureManager;
 import bio.singa.simulation.model.simulation.Simulation;
@@ -103,7 +103,7 @@ public abstract class AbstractUpdateModule implements UpdateModule {
         return featureManager.getFeature(featureTypeClass);
     }
 
-    public double getScaledFeature(Class<? extends ScalableQuantitativeFeature<?>> featureClass) {
+    public double getScaledFeature(Class<? extends AbstractScalableQuantitativeFeature<?>> featureClass) {
         return featureManager.getFeature(featureClass).getScaledQuantity();
     }
 

@@ -1,7 +1,7 @@
 package bio.singa.simulation.features;
 
 import bio.singa.features.model.Evidence;
-import bio.singa.features.model.ScalableQuantitativeFeature;
+import bio.singa.features.model.AbstractScalableQuantitativeFeature;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.units.UnitRegistry;
 import tech.units.indriya.quantity.Quantities;
@@ -19,7 +19,7 @@ import static tech.units.indriya.unit.Units.SECOND;
 /**
  * @author cl
  */
-public class MotorMovementVelocity extends ScalableQuantitativeFeature<Speed> {
+public class MotorMovementVelocity extends AbstractScalableQuantitativeFeature<Speed> {
 
     private static final Unit<Speed> NANOMETRE_PER_SECOND = new ProductUnit<>(NANO(METRE).divide(SECOND));
 

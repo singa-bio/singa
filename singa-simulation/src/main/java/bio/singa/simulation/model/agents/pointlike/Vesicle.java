@@ -17,8 +17,12 @@ import bio.singa.simulation.model.modules.concentration.ConcentrationDeltaManage
 import bio.singa.simulation.model.modules.displacement.DisplacementBasedModule;
 import bio.singa.simulation.model.modules.displacement.DisplacementDelta;
 import bio.singa.simulation.model.modules.displacement.DisplacementDeltaManager;
-import bio.singa.simulation.model.sections.*;
+import bio.singa.simulation.model.sections.CellRegion;
+import bio.singa.simulation.model.sections.CellSubsection;
+import bio.singa.simulation.model.sections.CellTopology;
+import bio.singa.simulation.model.sections.ConcentrationContainer;
 import bio.singa.simulation.model.simulation.Updatable;
+import tech.units.indriya.quantity.Quantities;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Area;
@@ -27,7 +31,10 @@ import javax.measure.quantity.Volume;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static bio.singa.simulation.model.sections.CellRegions.*;
+import static bio.singa.chemistry.features.diffusivity.Diffusivity.SQUARE_MICROMETRE_PER_SECOND;
+import static bio.singa.simulation.features.DefaultFeatureSources.HOLT2004;
+import static bio.singa.simulation.features.DefaultFeatureSources.ROTHMAN2016;
+import static bio.singa.simulation.model.sections.CellRegions.VESICLE_REGION;
 
 /**
  * @author cl
@@ -40,6 +47,13 @@ public class Vesicle implements Updatable, Featureable {
 
     static {
         availableFeatures.add(Diffusivity.class);
+    }
+
+    public static Diffusivity DEFAULT_VESICLE_DIFFUSIVITY = new Diffusivity(Quantities.getQuantity(1.5e-2, SQUARE_MICROMETRE_PER_SECOND));
+
+    static {
+        DEFAULT_VESICLE_DIFFUSIVITY.addEvidence(ROTHMAN2016);
+        DEFAULT_VESICLE_DIFFUSIVITY.addEvidence(HOLT2004);
     }
 
     private String identifier;
@@ -60,6 +74,7 @@ public class Vesicle implements Updatable, Featureable {
     private LineLikeAgent attachedFilament;
     private ListIterator<Vector2D> segmentIterator;
 
+
     private static String generateIdentifier() {
         return "v"+vesicleCounter.getAndIncrement();
     }
@@ -73,6 +88,7 @@ public class Vesicle implements Updatable, Featureable {
         displacementManager = new DisplacementDeltaManager(position);
         associatedNodes = new HashMap<>();
         state = VesicleStateRegistry.UNATTACHED;
+        setFeature(DEFAULT_VESICLE_DIFFUSIVITY);
     }
 
     public Vesicle(Vector2D position, Quantity<Length> radius) {
@@ -168,7 +184,6 @@ public class Vesicle implements Updatable, Featureable {
         this.radius = radius.to(UnitRegistry.getSpaceUnit());
         area = Geometry.calculateArea(this.radius);
         volume = Geometry.calculateVolume(this.radius);
-        setFeature(Diffusivity.calculate(this.radius));
     }
 
     public Map<AutomatonNode, Double> getAssociatedNodes() {

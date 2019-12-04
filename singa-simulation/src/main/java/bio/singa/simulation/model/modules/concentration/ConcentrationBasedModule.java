@@ -1,7 +1,7 @@
 package bio.singa.simulation.model.modules.concentration;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
-import bio.singa.features.model.ScalableQuantitativeFeature;
+import bio.singa.features.model.AbstractScalableQuantitativeFeature;
 import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.simulation.exceptions.NumericalInstabilityException;
@@ -371,7 +371,7 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
     }
 
     @Override
-    public double getScaledFeature(Class<? extends ScalableQuantitativeFeature<?>> featureClass) {
+    public double getScaledFeature(Class<? extends AbstractScalableQuantitativeFeature<?>> featureClass) {
         // feature from the module (like reaction rates)
         return choseScaling(getFeature(featureClass));
     }
@@ -384,7 +384,7 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
      * @param featureClass The requested feature.
      * @return The scaled feature.
      */
-    protected double getScaledFeature(ChemicalEntity entity, Class<? extends ScalableQuantitativeFeature<?>> featureClass) {
+    protected double getScaledFeature(ChemicalEntity entity, Class<? extends AbstractScalableQuantitativeFeature<?>> featureClass) {
         // feature from any entity (like molar mass)
         return choseScaling(entity.getFeature(featureClass));
     }
@@ -395,7 +395,7 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
      * @param feature The requested feature.
      * @return The scaled feature.
      */
-    private double choseScaling(ScalableQuantitativeFeature<?> feature) {
+    private double choseScaling(AbstractScalableQuantitativeFeature<?> feature) {
         if (supplier.isStrutCalculation()) {
             return feature.getHalfScaledQuantity();
         }

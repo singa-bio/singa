@@ -1,7 +1,7 @@
 package bio.singa.simulation.features;
 
 import bio.singa.features.model.Evidence;
-import bio.singa.features.model.QuantitativeFeature;
+import bio.singa.features.model.AbstractQuantitativeFeature;
 import tech.units.indriya.quantity.Quantities;
 
 import javax.measure.Quantity;
@@ -13,7 +13,7 @@ import static tech.units.indriya.unit.Units.SECOND;
 /**
  * @author cl
  */
-public class FusionTime extends QuantitativeFeature<Time> {
+public class FusionTime extends AbstractQuantitativeFeature<Time> {
 
     public static final FusionTime DEFAULT_FUSION_TIME = new FusionTime(Quantities.getQuantity(18.0, SECOND), DefaultFeatureSources.DONOVAN2015);
 

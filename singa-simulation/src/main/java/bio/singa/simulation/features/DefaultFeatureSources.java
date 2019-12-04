@@ -16,6 +16,11 @@ public final class DefaultFeatureSources {
     public static final Evidence LANG2000 = new Evidence(LITERATURE, "Lang 2000", "Lang, Thorsten, et al. \"Role of actin cortex in the subplasmalemmal transport of secretory granules in PC-12 cells.\" Biophysical journal 78.6 (2000): 2863-2877.");
     public static final Evidence DONOVAN2015 = new Evidence(LITERATURE, "Donovan 2015", "Donovan, Kirk W., and Anthony Bretscher. \"Tracking individual secretory vesicles during exocytosis reveals an ordered and regulated process.\" J Cell Biol (2015): jcb-201501118.");
 
+    public static final Evidence ROTHMAN2016 = new Evidence(LITERATURE, "Rothman 2016 ", "Rothman, Jason Seth, et al. \"Physical determinants of vesicle mobility and supply at a central synapse.\" Elife 5 (2016): e15133.");
+    public static final Evidence HOLT2004 = new Evidence(LITERATURE, "Holt 2004", "Holt, Matthew, et al. \"High mobility of vesicles supports continuous exocytosis at a ribbon synapse.\" Current Biology 14.3 (2004): 173-183.");
+
+
+
     private DefaultFeatureSources() {
 
     }

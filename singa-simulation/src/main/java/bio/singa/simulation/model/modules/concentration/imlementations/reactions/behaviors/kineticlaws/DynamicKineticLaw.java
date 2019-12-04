@@ -1,7 +1,7 @@
 package bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.kineticlaws;
 
 import bio.singa.features.model.Evidence;
-import bio.singa.features.model.ScalableQuantitativeFeature;
+import bio.singa.features.model.AbstractScalableQuantitativeFeature;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.simulation.exceptions.ModuleCalculationException;
 import bio.singa.simulation.model.modules.concentration.imlementations.reactions.Reaction;
@@ -39,7 +39,7 @@ public class DynamicKineticLaw implements KineticLaw {
     /**
      * The features influencing the reaction.
      */
-    private Map<String, ScalableQuantitativeFeature> featureMap;
+    private Map<String, AbstractScalableQuantitativeFeature> featureMap;
 
     /**
      * The parameters remaining constant in the course of the simulation.
@@ -68,11 +68,11 @@ public class DynamicKineticLaw implements KineticLaw {
         concentrationMap.put(reactant.getEntity().getIdentifier().toString(), reactant);
     }
 
-    public void referenceFeature(String parameterIdentifier, ScalableQuantitativeFeature feature) {
+    public void referenceFeature(String parameterIdentifier, AbstractScalableQuantitativeFeature feature) {
         featureMap.put(parameterIdentifier, feature);
     }
 
-    public void referenceFeature(ScalableQuantitativeFeature feature) {
+    public void referenceFeature(AbstractScalableQuantitativeFeature feature) {
         featureMap.put(feature.getDescriptor(), feature);
     }
 
@@ -90,11 +90,11 @@ public class DynamicKineticLaw implements KineticLaw {
         parameterMap.put(parameter.getIdentifier(), parameter);
     }
 
-    public Map<String, ScalableQuantitativeFeature> getFeatureMap() {
+    public Map<String, AbstractScalableQuantitativeFeature> getFeatureMap() {
         return featureMap;
     }
 
-    public void setFeatureMap(Map<String, ScalableQuantitativeFeature> featureMap) {
+    public void setFeatureMap(Map<String, AbstractScalableQuantitativeFeature> featureMap) {
         this.featureMap = featureMap;
     }
 
@@ -121,7 +121,7 @@ public class DynamicKineticLaw implements KineticLaw {
     @Override
     public double determineVelocity(ReactionEvent reactionEvent) {
         // set features
-        for (Map.Entry<String, ScalableQuantitativeFeature> entry : featureMap.entrySet()) {
+        for (Map.Entry<String, AbstractScalableQuantitativeFeature> entry : featureMap.entrySet()) {
             double value;
             if (reaction.getSupplier().isStrutCalculation()) {
                 value = entry.getValue().getHalfScaledQuantity();

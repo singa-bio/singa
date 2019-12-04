@@ -3,7 +3,7 @@ package bio.singa.simulation.model.concentrations;
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.features.model.Evidence;
 import bio.singa.features.model.FeatureRegistry;
-import bio.singa.features.model.QuantitativeFeature;
+import bio.singa.features.model.AbstractQuantitativeFeature;
 import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.simulation.model.sections.CellSubsection;
@@ -25,7 +25,7 @@ import static tech.units.indriya.unit.Units.SECOND;
 /**
  * @author cl
  */
-public class InitialConcentration extends QuantitativeFeature<MolarConcentration> {
+public class InitialConcentration extends AbstractQuantitativeFeature<MolarConcentration> {
 
     private static final Logger logger = LoggerFactory.getLogger(InitialConcentration.class);
 
@@ -77,6 +77,10 @@ public class InitialConcentration extends QuantitativeFeature<MolarConcentration
 
     public void setTopology(CellTopology topology) {
         this.topology = topology;
+    }
+
+    public String getLocation() {
+        return topology != null ? topology.toString() : subsection.getIdentifier();
     }
 
     public TreeMap<Integer, ConcentrationCondition> getConditions() {
@@ -167,7 +171,7 @@ public class InitialConcentration extends QuantitativeFeature<MolarConcentration
     public String toString() {
         String fixed = isFix() ? " [fixed] " : "";
         String timed = time.isGreaterThan(Quantities.getQuantity(0, SECOND)) ? " [" + time.toString() + "] " : "";
-        String location = topology != null ? topology.toString() : subsection.getIdentifier();
+        String location = getLocation();
         return "concentration" + timed + fixed + ": location = " + location + ", entity = " + entity.getIdentifier() + ", value = " + UnitRegistry.humanReadable(getConcentration());
     }
 }

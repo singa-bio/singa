@@ -1,7 +1,7 @@
 package bio.singa.chemistry.features.reactions;
 
 import bio.singa.features.model.Evidence;
-import bio.singa.features.model.QuantitativeFeature;
+import bio.singa.features.model.AbstractQuantitativeFeature;
 import bio.singa.features.quantities.MolarConcentration;
 
 import javax.measure.Quantity;
@@ -11,7 +11,7 @@ import javax.measure.Quantity;
  *
  * @author cl
  */
-public class MichaelisConstant extends QuantitativeFeature<MolarConcentration> {
+public class MichaelisConstant extends AbstractQuantitativeFeature<MolarConcentration> {
 
     public MichaelisConstant(Quantity<MolarConcentration> molarConcentration, Evidence evidence) {
         super(molarConcentration, evidence);

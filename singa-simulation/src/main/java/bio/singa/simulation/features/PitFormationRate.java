@@ -1,7 +1,7 @@
 package bio.singa.simulation.features;
 
 import bio.singa.features.model.Evidence;
-import bio.singa.features.model.ScalableQuantitativeFeature;
+import bio.singa.features.model.AbstractScalableQuantitativeFeature;
 import tech.units.indriya.quantity.Quantities;
 
 import javax.measure.Quantity;
@@ -12,7 +12,7 @@ import static bio.singa.simulation.features.SpawnRate.PER_SQUARE_NANOMETRE_PER_S
 /**
  * @author cl
  */
-public class PitFormationRate extends ScalableQuantitativeFeature<SpawnRate> {
+public class PitFormationRate extends AbstractScalableQuantitativeFeature<SpawnRate> {
 
     /**
      * About three events per 10^8 nm^2 s^-1, developing into actual vesicles.

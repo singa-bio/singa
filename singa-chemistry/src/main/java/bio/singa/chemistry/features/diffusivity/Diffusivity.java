@@ -3,7 +3,7 @@ package bio.singa.chemistry.features.diffusivity;
 import bio.singa.chemistry.features.FeatureProviderRegistry;
 import bio.singa.features.model.Evidence;
 import bio.singa.features.model.FeatureRegistry;
-import bio.singa.features.model.ScalableQuantitativeFeature;
+import bio.singa.features.model.AbstractScalableQuantitativeFeature;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.quantities.NaturalConstants;
 import bio.singa.features.units.UnitRegistry;
@@ -17,8 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static tech.units.indriya.unit.MetricPrefix.CENTI;
-import static tech.units.indriya.unit.MetricPrefix.MICRO;
+import static tech.units.indriya.unit.MetricPrefix.*;
 import static tech.units.indriya.unit.Units.METRE;
 import static tech.units.indriya.unit.Units.SECOND;
 
@@ -29,7 +28,7 @@ import static tech.units.indriya.unit.Units.SECOND;
  *
  * @author cl
  */
-public class Diffusivity extends ScalableQuantitativeFeature<Diffusivity> implements Quantity<Diffusivity> {
+public class Diffusivity extends AbstractScalableQuantitativeFeature<Diffusivity> implements Quantity<Diffusivity> {
 
     public static final Unit<Diffusivity> SQUARE_MICROMETRE_PER_SECOND = new ProductUnit<>(MICRO(METRE).pow(2).divide(SECOND));
     public static final Unit<Diffusivity> SQUARE_CENTIMETRE_PER_SECOND = new ProductUnit<>(CENTI(METRE).pow(2).divide(SECOND));

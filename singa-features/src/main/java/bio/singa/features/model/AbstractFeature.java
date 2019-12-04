@@ -15,6 +15,8 @@ public abstract class AbstractFeature<FeatureContent> implements Feature<Feature
     private List<FeatureContent> alternativeContents;
     private List<Evidence> evidence;
 
+    private String comment;
+
     public AbstractFeature(FeatureContent featureContent, List<Evidence> evidence) {
         this.featureContent = featureContent;
         baseContent = featureContent;
@@ -68,6 +70,14 @@ public abstract class AbstractFeature<FeatureContent> implements Feature<Feature
     @Override
     public void addEvidence(Evidence evidence) {
         this.evidence.add(evidence);
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
     }
 
     @Override
