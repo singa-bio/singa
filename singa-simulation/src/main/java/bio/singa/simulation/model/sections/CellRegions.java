@@ -28,6 +28,7 @@ public class CellRegions {
 
         VESICLE_REGION.addSubsection(CellTopology.MEMBRANE, CellSubsections.VESICLE_MEMBRANE);
         VESICLE_REGION.addSubsection(CellTopology.OUTER, CellSubsections.VESICLE_LUMEN);
+
     }
 
 }

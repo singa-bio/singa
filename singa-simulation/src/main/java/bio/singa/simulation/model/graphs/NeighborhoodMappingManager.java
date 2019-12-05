@@ -54,7 +54,7 @@ public class NeighborhoodMappingManager {
                         continue;
                     }
                     Polygon neighborPolygon = neighborSubsectionEntry.getValue();
-                    // the first element of the pair is the frist argument entering the getTouchingLineSegments method
+                    // the first element of the pair is the first argument entering the getTouchingLineSegments method
                     Map<Pair<LineSegment>, LineSegment> touchingLineSegments = Polygons.getTouchingLineSegments(currentPolygon, neighborPolygon);
                     // skip subsection that dont overlap
                     if (touchingLineSegments.isEmpty()) {

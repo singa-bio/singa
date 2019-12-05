@@ -512,7 +512,6 @@ public class MembraneFactory {
                     .map(Node::getPosition)
                     .collect(Collectors.toList());
             node.addSubsectionRepresentation(membrane.getMembraneRegion().getOuterSubsection(), new ComplexPolygon(outerVectors));
-
         }
     }
 

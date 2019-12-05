@@ -64,8 +64,6 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
         subsectionAdjacency.get(subsection).add(mapping);
     }
 
-
-
     public Map<CellSubsection, List<AreaMapping>> getSubsectionAdjacency() {
         return subsectionAdjacency;
     }

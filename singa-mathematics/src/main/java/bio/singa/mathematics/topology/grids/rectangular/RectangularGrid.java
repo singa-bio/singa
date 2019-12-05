@@ -2,18 +2,16 @@ package bio.singa.mathematics.topology.grids.rectangular;
 
 import bio.singa.mathematics.topology.model.DiscreteGrid;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author cl
  */
 public class RectangularGrid<ValueType> implements DiscreteGrid<ValueType, NeumannRectangularDirection, RectangularCoordinate> {
 
+    final ValueType[][] values;
     private final int width;
     private final int height;
-    final ValueType[][] values;
 
     public RectangularGrid(int width, int height) {
         this.width = width;
@@ -36,6 +34,17 @@ public class RectangularGrid<ValueType> implements DiscreteGrid<ValueType, Neuma
     @Override
     public ValueType getValue(RectangularCoordinate coordinate) {
         return getValue(coordinate.getColumn(), coordinate.getRow());
+    }
+
+    public Map<NeumannRectangularDirection, ValueType> getValueMap(RectangularCoordinate coordinate) {
+        HashMap<NeumannRectangularDirection, ValueType> resultMap = new HashMap<>();
+        for (NeumannRectangularDirection direction : NeumannRectangularDirection.values()) {
+            RectangularCoordinate neighbour = coordinate.getNeighbour(direction);
+            if (isInRange(neighbour)) {
+                resultMap.put(direction, getValue(neighbour));
+            }
+        }
+        return resultMap;
     }
 
     public ValueType removeValue(RectangularCoordinate coordinate) {

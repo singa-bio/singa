@@ -57,4 +57,11 @@ public class MembraneSegment implements LineSegment {
         segment.setEndingPoint(endingPoint);
     }
 
+    @Override
+    public String toString() {
+        return "MembraneSegment{" +
+                "node=" + node +
+                ", segment=" + segment +
+                '}';
+    }
 }
