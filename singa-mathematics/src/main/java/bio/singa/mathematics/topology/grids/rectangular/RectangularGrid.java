@@ -19,6 +19,22 @@ public class RectangularGrid<ValueType> implements DiscreteGrid<ValueType, Neuma
         values = (ValueType[][]) new Object[width][height];
     }
 
+    public static <SValueType> RectangularGrid<SValueType> fromArray(SValueType[][] array) {
+        int cols = array.length;
+        int rows = array[0].length;
+        RectangularGrid<SValueType> originalGrid = new RectangularGrid<>(cols, rows);
+        int currentRow = 0;
+        for (SValueType[] row : array) {
+            int currentColumn = 0;
+            for (SValueType cell : row) {
+                originalGrid.setValue(currentRow, currentColumn, cell);
+                currentColumn++;
+            }
+            currentRow++;
+        }
+        return originalGrid;
+    }
+
     public void setValue(int column, int row, ValueType value) {
         values[column][row] = value;
     }

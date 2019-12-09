@@ -62,9 +62,9 @@ public class ReactionNetworkGenerator {
                 if (updatedNumberOfReactions != previousNumberOfReactions) {
                     reactionsUnstable = true;
                 }
+                debugLogCreatedReaction(reactionChain);
             }
             if (reactionsUnstable) {
-                debugLogCreatedReactions();
                 logger.debug("repeating since reactions were unstable");
             }
         } while (reactionsUnstable);
@@ -99,9 +99,9 @@ public class ReactionNetworkGenerator {
                 if (updatedNumberOfReactions != previousNumberOfReactions) {
                     reactionsUnstable = true;
                 }
+                debugLogCreatedReaction(reactionChain);
             }
             if (reactionsUnstable) {
-                debugLogCreatedReactions();
                 logger.debug("repeating since reactions were unstable");
             }
         } while (reactionsUnstable);
@@ -110,7 +110,7 @@ public class ReactionNetworkGenerator {
     }
 
     private void registerEntities() {
-            possibleEntities.forEach(EntityRegistry::put);
+        possibleEntities.forEach(EntityRegistry::put);
     }
 
     private void logBindingSites() {
@@ -122,12 +122,10 @@ public class ReactionNetworkGenerator {
         }
     }
 
-    private void debugLogCreatedReactions() {
-        for (ReactionChain reactionChain : reactionChains) {
-            logger.debug("rule {} produced the following reactions: ", reactionChain.getIdentifier());
-            for (ReactionElement reactantElement : reactionChain.getReactantElements()) {
-                logger.debug("  {}", reactantElement);
-            }
+    private void debugLogCreatedReaction(ReactionChain reactionChain) {
+        logger.debug("rule {} produced the following reactions: ", reactionChain.getIdentifier());
+        for (ReactionElement reactantElement : reactionChain.getReactantElements()) {
+            logger.debug("  {}", reactantElement);
         }
     }
 

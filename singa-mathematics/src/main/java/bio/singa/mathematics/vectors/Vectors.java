@@ -1,9 +1,11 @@
 package bio.singa.mathematics.vectors;
 
+import bio.singa.mathematics.algorithms.graphs.ShortestPathFinder;
 import bio.singa.mathematics.concepts.Addable;
 import bio.singa.mathematics.geometry.edges.LineSegment;
 import bio.singa.mathematics.geometry.edges.SimpleLineSegment;
 import bio.singa.mathematics.geometry.faces.Rectangle;
+import bio.singa.mathematics.graphs.model.*;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
@@ -466,4 +468,40 @@ public class Vectors {
             return angle;
         }
     }
+
+    /**
+     * Returns all vectors from the starting/end positions from the segments in order of their connection.
+     *
+     * @param segments The segments
+     * @return An ordered list of segments
+     */
+    public static List<Vector2D> getVectorsInOrder(List<? extends LineSegment> segments) {
+        UndirectedGraph graph = new UndirectedGraph();
+        for (LineSegment segment : segments) {
+            RegularNode start = graph.snapNode(segment.getStartingPoint());
+            RegularNode end = graph.snapNode(segment.getEndingPoint());
+            graph.addEdgeBetween(start, end);
+        }
+
+        Optional<RegularNode> pathStartOptional = graph.getNode(GraphPredicates::isLeafNode);
+        if (!pathStartOptional.isPresent()) {
+            return Collections.emptyList();
+        }
+        RegularNode pathStart = pathStartOptional.get();
+
+        Optional<RegularNode> pathEndOptional = graph.getNode(node -> GraphPredicates.isLeafNode(node) && !GraphPredicates.haveSameIdentifiers(node, pathStart));
+        if (!pathEndOptional.isPresent()) {
+            return Collections.emptyList();
+        }
+        RegularNode pathEnd = pathEndOptional.get();
+
+        GraphPath<RegularNode, UndirectedEdge> path = ShortestPathFinder.findBasedOnPredicate(graph, pathStart, node -> GraphPredicates.haveSameIdentifiers(node, pathEnd));
+        List<Vector2D> vectors = new ArrayList<>();
+        for (RegularNode node : path.getNodes()) {
+            vectors.add(node.getPosition());
+        }
+        return vectors;
+    }
+
+
 }

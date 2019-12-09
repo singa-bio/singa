@@ -9,6 +9,7 @@ import bio.singa.mathematics.topology.grids.rectangular.NeumannRectangularDirect
 import bio.singa.mathematics.topology.grids.rectangular.RectangularCoordinate;
 import bio.singa.mathematics.topology.grids.rectangular.RectangularGrid;
 import bio.singa.mathematics.vectors.Vector2D;
+import bio.singa.mathematics.vectors.Vectors;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.graphs.AutomatonNode;
@@ -30,10 +31,26 @@ public class GridMembraneBuilder {
 
     private AutomatonGraph graph;
     private Map<CellRegion, Membrane> membranes;
-    private int[][] sectionArray;
+
+    private RectangularGrid<CellRegion> regionGrid;
+    private final RectangularGrid<Integer> originalGrid;
 
     public GridMembraneBuilder(int[][] sectionArray) {
-        this.sectionArray = sectionArray;
+        int cols = sectionArray.length;
+        int rows = sectionArray[0].length;
+        graph = AutomatonGraphs.createRectangularAutomatonGraph(cols, rows);
+        // fill grid
+        Integer[][] boxed = new Integer[cols][rows];
+        int currentColumn = 0;
+        for (int[] row : sectionArray) {
+            int currentRow = 0;
+            for (int cell : row) {
+                boxed[currentColumn][currentRow] = sectionArray[currentColumn][currentRow];
+                currentRow++;
+            }
+            currentColumn++;
+        }
+        originalGrid = RectangularGrid.fromArray(boxed);
         subsectionMap = new HashMap<>();
         subsectionMap.put(0, CellRegions.CYTOPLASM_REGION);
         subsectionMap.put(1, CellRegions.EXTRACELLULAR_REGION);
@@ -74,58 +91,11 @@ public class GridMembraneBuilder {
     }
 
     public void createTopology() {
-        int cols = sectionArray.length;
-        int rows = sectionArray[0].length;
+        mapRegionGrid(originalGrid);
 
-        graph = AutomatonGraphs.createRectangularAutomatonGraph(cols, rows);
-        // fill grid
-        RectangularGrid<Integer> originalGrid = new RectangularGrid<>(cols, rows);
-        int currentRow = 0;
-        for (int[] row : sectionArray) {
-            int currentColumn = 0;
-            for (int cell : row) {
-                originalGrid.setValue(currentRow, currentColumn, cell);
-                currentColumn++;
-            }
-            currentRow++;
-        }
-        System.out.println(originalGrid);
-
-        // create membrane grid
-        RectangularGrid<CellRegion> regionGrid = new RectangularGrid<>(cols, rows);
-        for (int column = 0; column < cols; column++) {
-            for (int row = 0; row < rows; row++) {
-                RectangularCoordinate coordinate = new RectangularCoordinate(column, row);
-                int center = originalGrid.getValue(coordinate);
-                List<Integer> neighbours = originalGrid.getNeighboursOf(coordinate);
-                boolean border = false;
-                int other = center;
-                for (Integer neighbour : neighbours) {
-                    other = neighbour;
-                    // is border
-                    if (neighbour != center) {
-                        border = true;
-                        break;
-                    }
-                }
-                // define region
-                CellRegion region;
-                if (border) {
-                    Pair<Integer> pair = new Pair<>(center, other);
-                    region = membraneMap.get(pair);
-                } else {
-                    region = subsectionMap.get(center);
-                }
-                regionGrid.setValue(column, row, region);
-
-
-            }
-        }
-        System.out.println(regionGrid);
-
-        // associate regions and subsections
-        for (int column = 0; column < cols; column++) {
-            for (int row = 0; row < rows; row++) {
+        // associate nodes with regions
+        for (int column = 0; column < originalGrid.getWidth(); column++) {
+            for (int row = 0; row < originalGrid.getHeight(); row++) {
                 AutomatonNode node = graph.getNode(column, row);
                 node.setCellRegion(regionGrid.getValue(column, row));
             }
@@ -143,8 +113,8 @@ public class GridMembraneBuilder {
 
         // setup membrane and subsections
         membranes = new HashMap<>();
-        for (int column = 0; column < cols; column++) {
-            for (int row = 0; row < rows; row++) {
+        for (int column = 0; column < originalGrid.getWidth(); column++) {
+            for (int row = 0; row < originalGrid.getHeight(); row++) {
                 Integer centerValue = originalGrid.getValue(column, row);
                 RectangularCoordinate coordinate = new RectangularCoordinate(column, row);
                 Map<NeumannRectangularDirection, Integer> valueMap = originalGrid.getValueMap(coordinate);
@@ -178,6 +148,49 @@ public class GridMembraneBuilder {
                     CellSubsection subsection = subsectionMap.get(centerValue).getInnerSubsection();
                     node.addSubsectionRepresentation(subsection, node.getSpatialRepresentation());
                 }
+            }
+        }
+
+        // assign region maps
+        for (Map.Entry<CellRegion, Membrane> entry : membranes.entrySet()) {
+            CellRegion region = entry.getKey();
+            Membrane membrane = entry.getValue();
+            List<Vector2D> orderedVectors = Vectors.getVectorsInOrder(membrane.getSegments());
+            Map<CellRegion, List<Vector2D>> regionMap = new HashMap<>();
+            regionMap.put(region, orderedVectors);
+            membrane.setRegionMap(regionMap);
+        }
+
+    }
+
+    public void mapRegionGrid(RectangularGrid<Integer> originalGrid) {
+        int cols = originalGrid.getWidth();
+        int rows = originalGrid.getHeight();
+        regionGrid = new RectangularGrid<>(cols, rows);
+        for (int column = 0; column < cols; column++) {
+            for (int row = 0; row < rows; row++) {
+                RectangularCoordinate coordinate = new RectangularCoordinate(column, row);
+                int center = originalGrid.getValue(coordinate);
+                List<Integer> neighbours = originalGrid.getNeighboursOf(coordinate);
+                boolean border = false;
+                int other = center;
+                for (Integer neighbour : neighbours) {
+                    other = neighbour;
+                    // is border
+                    if (neighbour != center) {
+                        border = true;
+                        break;
+                    }
+                }
+                // define region
+                CellRegion region;
+                if (border) {
+                    Pair<Integer> pair = new Pair<>(center, other);
+                    region = membraneMap.get(pair);
+                } else {
+                    region = subsectionMap.get(center);
+                }
+                regionGrid.setValue(column, row, region);
             }
         }
     }
