@@ -6,6 +6,7 @@ import bio.singa.mathematics.geometry.bodies.Spheres;
 import bio.singa.mathematics.geometry.edges.LineSegment;
 import bio.singa.mathematics.geometry.edges.SimpleLineSegment;
 import bio.singa.mathematics.geometry.faces.Circle;
+import bio.singa.mathematics.geometry.faces.Circles;
 import bio.singa.mathematics.geometry.faces.Rectangle;
 import bio.singa.mathematics.geometry.model.Polygon;
 import bio.singa.mathematics.matrices.LabeledSymmetricMatrix;
@@ -109,12 +110,10 @@ public class VesicleLayer {
             if (simulation.getMembraneLayer() != null) {
                 for (Membrane macroscopicMembrane : simulation.getMembraneLayer().getMembranes()) {
                     for (MembraneSegment membraneSegment : macroscopicMembrane.getSegments()) {
-                        if (!vesicle1.getPosition().equals(vesicle1.getNextPosition())) {
-                            SimpleLineSegment displacementVector = new SimpleLineSegment(vesicle1.getPosition(), vesicle1.getNextPosition());
-                            if (displacementVector.getIntersectionWith(membraneSegment).isPresent()) {
-                                vesicle1.resetNextPosition();
-                                continue vesicleLoop;
-                            }
+                        Circle nextRepresentation = new Circle(vesicle1.getNextPosition(), firstRadius+1);
+                        if (Circles.intersect(nextRepresentation, membraneSegment)) {
+                            vesicle1.resetNextPosition();
+                            continue vesicleLoop;
                         }
                     }
                 }

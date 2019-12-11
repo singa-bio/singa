@@ -72,6 +72,8 @@ public class ClathrinMediatedEndocytosis extends QualitativeModule {
         getRequiredFeatures().add(Cargoes.class);
         getRequiredFeatures().add(MaturationTime.class);
         getRequiredFeatures().add(InitialConcentrations.class);
+
+        getRequiredFeatures().add(ScalingEntities.class);
     }
 
     void limitPitsToOneAtATime() {
@@ -291,9 +293,17 @@ public class ClathrinMediatedEndocytosis extends QualitativeModule {
 
     private void collectCargoes() {
         double additionRate = getScaledFeature(CargoAdditionRate.class);
+        ScalingEntities scalingEntities = getFeature(ScalingEntities.class);
+        ChemicalEntity catalyzingEntity = scalingEntities.getContent().get(0);
+        ChemicalEntity inhibitingEntity = scalingEntities.getContent().get(1);
+
         List<ChemicalEntity> cargoes = getFeature(Cargoes.class).getContent();
         for (Pit aspiringPit : aspiringPits) {
-            aspiringPit.addDeltas(determineCollectedCargo(aspiringPit, additionRate, cargoes));
+            double catalyzingConcentration = aspiringPit.getAssociatedNode().getConcentrationContainer().get(MEMBRANE, catalyzingEntity);
+            double inhibitingConcentration = aspiringPit.getAssociatedNode().getConcentrationContainer().get(MEMBRANE, inhibitingEntity);
+            // if everything is catalyzing use maximal rate, else scale linear with added inhibition and reduced catalysis
+            double rateModifier = catalyzingConcentration / (catalyzingConcentration + inhibitingConcentration);
+            aspiringPit.addDeltas(determineCollectedCargo(aspiringPit, rateModifier * additionRate, cargoes));
         }
     }
 

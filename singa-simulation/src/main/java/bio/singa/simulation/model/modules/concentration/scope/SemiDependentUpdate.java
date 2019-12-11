@@ -88,8 +88,7 @@ public class SemiDependentUpdate implements UpdateScope {
             // set largest local error
             supply().setLargestLocalError(module.determineLargestLocalError());
             // clear used deltas
-            supply().getCurrentFullDeltas().clear();
-            supply().getCurrentHalfDeltas().clear();
+            supply().clearDeltas();
         }
     }
 

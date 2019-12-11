@@ -13,7 +13,10 @@ import tech.units.indriya.quantity.Quantities;
 import javax.measure.Quantity;
 import javax.measure.quantity.Frequency;
 import javax.measure.quantity.Time;
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -31,13 +34,12 @@ public class UpdateScheduler {
      * The default value where errors are considered too large and the time step is reduced.
      */
     private static final double DEFAULT_RECALCULATION_CUTOFF = 0.01;
-
+    private final Deque<UpdateModule> modules;
+    private final double moleculeFraction;
     private Simulation simulation;
     private List<Updatable> updatables;
-
     private Iterator<UpdateModule> moduleIterator;
     private double recalculationCutoff = DEFAULT_RECALCULATION_CUTOFF;
-
     private boolean timeStepRescaled;
     private boolean timeStepAlteredInThisEpoch;
     private long timestepsDecreased = 0;
@@ -45,29 +47,22 @@ public class UpdateScheduler {
     private NumericalError largestLocalError;
     private UpdateModule localErrorModule;
     private double localErrorUpdate;
-
     private NumericalError largestGlobalError;
-
     private CountDownLatch countDownLatch;
-
-    private final Deque<UpdateModule> modules;
-
     private double previousError;
     private Quantity<Time> previousTimeStep;
     private Quantity<Frequency> accuracyGain;
-
     private volatile boolean interrupted;
     private boolean globalErrorAcceptable;
     private boolean calculateGlobalError;
     private ThreadPoolExecutor executor;
-    private final double moleculeFraction;
 
     public UpdateScheduler(Simulation simulation) {
         this.simulation = simulation;
         modules = new ArrayDeque<>(simulation.getModules());
         largestLocalError = NumericalError.MINIMAL_EMPTY_ERROR;
         largestGlobalError = NumericalError.MINIMAL_EMPTY_ERROR;
-        moleculeFraction = MolarConcentration.moleculesToConcentration(1.0/10000.0);
+        moleculeFraction = MolarConcentration.moleculesToConcentration(1.0 / 10000.0);
     }
 
     public void initializeThreadPool() {
@@ -199,7 +194,7 @@ public class UpdateScheduler {
             // set interim check false if global error is to large and true if you can continue
             if (largestGlobalError.getValue() > recalculationCutoff) {
                 // System.out.println("rejected global error: "+largestGlobalError+" @ "+TimeFormatter.formatTime(UnitRegistry.getTime()));
-                simulation.getScheduler().decreaseTimeStep();
+                simulation.getScheduler().decreaseTimeStep("global error above recalculation cutoff");
                 globalErrorAcceptable = false;
                 calculateGlobalError = true;
             } else {
@@ -271,19 +266,21 @@ public class UpdateScheduler {
         return accuracyGain;
     }
 
-    public void increaseTimeStep() {
-        UnitRegistry.setTime(UnitRegistry.getTime().multiply(1.1));
+    public void increaseTimeStep(String reason) {
+//        System.out.println(simulation.getEpoch() + ":" + TimeFormatter.formatTime(UnitRegistry.getTime()) + " + " + reason);
+        UnitRegistry.setTime(UnitRegistry.getTime().multiply(1.7));
         logger.debug("Increasing time step to {}.", TimeFormatter.formatTime(UnitRegistry.getTime()));
         timestepsIncreased++;
     }
 
-    public synchronized void decreaseTimeStep() {
+    public synchronized void decreaseTimeStep(String reason) {
         // if time step is rescaled for the very fist time this epoch remember the initial error and time step
         if (!timeStepWasAlteredInThisEpoch()) {
             previousError = largestLocalError.getValue();
             previousTimeStep = UnitRegistry.getTime();
         }
-        UnitRegistry.setTime(UnitRegistry.getTime().multiply(0.9));
+//        System.out.println(simulation.getEpoch() + ":" + TimeFormatter.formatTime(UnitRegistry.getTime()) + " - " + reason);
+        UnitRegistry.setTime(UnitRegistry.getTime().multiply(0.7));
         logger.debug("Decreasing time step to {}.", TimeFormatter.formatTime(UnitRegistry.getTime()));
         timestepsDecreased++;
         timeStepRescaled = true;
@@ -358,7 +355,7 @@ public class UpdateScheduler {
             return;
         }
         if (!simulation.getVesicleLayer().deltasAreBelowDisplacementCutoff()) {
-            decreaseTimeStep();
+            decreaseTimeStep("vesicle deltas below displacement cutoff");
             simulation.getVesicleLayer().clearUpdates();
             modules.forEach(UpdateModule::reset);
         }

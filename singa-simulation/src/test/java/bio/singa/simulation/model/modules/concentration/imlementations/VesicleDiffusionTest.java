@@ -18,6 +18,8 @@ import bio.singa.simulation.model.modules.concentration.imlementations.transport
 import bio.singa.simulation.model.modules.displacement.implementations.VesicleCytoplasmDiffusion;
 import bio.singa.simulation.model.sections.CellRegions;
 import bio.singa.simulation.model.simulation.Simulation;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import tech.units.indriya.ComparableQuantity;
 import tech.units.indriya.quantity.Quantities;
@@ -43,6 +45,18 @@ class VesicleDiffusionTest {
 
     private static final ChemicalEntity water = SmallMolecule.create("water").build();
 
+    @BeforeAll
+    static void initialize() {
+        UnitRegistry.reinitialize();
+        Environment.reset();
+    }
+
+    @AfterEach
+    void cleanUp() {
+        UnitRegistry.reinitialize();
+        Environment.reset();
+    }
+
     @Test
     void shouldTransformConcentration() {
         Environment.setSystemExtend(Quantities.getQuantity(20, MICRO(METRE)));
@@ -62,8 +76,9 @@ class VesicleDiffusionTest {
 
     @Test
     void shouldRescaleDiffusivity() {
-        Environment.setSystemExtend(Quantities.getQuantity(20, MICRO(METRE)));
-        Environment.setSimulationExtend(500);
+        Environment.setSystemExtend(Quantities.getQuantity(10, MICRO(METRE)));
+        Environment.setSimulationExtend(100);
+        Environment.setNodeSpacingToDiameter(Quantities.getQuantity(10, MICRO(METRE)), 10);
 
         Vesicle vesicle = new Vesicle(new Vector2D(50, 50), Quantities.getQuantity(100, NANO(METRE)));
 

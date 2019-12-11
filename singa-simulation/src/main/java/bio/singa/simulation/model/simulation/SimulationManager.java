@@ -51,48 +51,36 @@ public class SimulationManager implements Runnable {
      * The simulation.
      */
     private final Simulation simulation;
-
+    private final SimulationStatus simulationStatus;
     /**
      * The condition determining when the simulation should be terminated.
      */
     private Predicate<Simulation> terminationCondition;
-
     /**
      * The condition determining when events should be emitted.
      */
     private Predicate<Simulation> emitCondition;
-
     /**
      * The emitter for node events.
      */
     private NodeEventEmitter nodeEventEmitter;
-
     /**
      * The emitter for graph events.
      */
     private GraphEventEmitter graphEventEmitter;
-
     /**
      * The time for the next update to be issued. (For FPS based emission).
      */
     private long nextTick = System.currentTimeMillis();
-
     private long previousTimeMillis = 0;
-
     /**
      * The time for the next update to be issued (in simulation time).
      */
     private Quantity<Time> scheduledEmitTime = Quantities.getQuantity(0.0, UnitRegistry.getTimeUnit());
-
     private Quantity<Time> terminationTime;
-
     private boolean keepPlatformOpen = DEFAULT_KEEP_PLATFORM_OPEN;
-
     private Path targetPath;
-
     private CountDownLatch terminationLatch;
-    private final SimulationStatus simulationStatus;
-
     private boolean writeAliveFile = false;
     private Path aliveFile;
 
@@ -319,10 +307,10 @@ public class SimulationManager implements Runnable {
                 // calculate time remaining
                 logger.info("PROGRESS: {} time remaining - {} passed time in simulation",
                         simulationStatus.getEstimatedTimeRemaining(), simulationStatus.getElapsedTime());
-                logger.info("SPEED   : {} ({},{}) epochs (increases, decreases) - {} (simulation time) per s(real time) finish: {}",
-                        simulationStatus.getNumberOfEpochsSinceLastUpdate(), simulationStatus.getNumberOfTimeStepIncreasesSinceLastUpdate(), simulationStatus.getNumberOfTimeStepDecreasesSinceLastUpdate(), simulationStatus.getEstimatedSpeed(), simulationStatus.getEstimatedFinish());
-                logger.info("ERROR L : {} ({}, {}, {})", String.format("%6.3e",simulationStatus.getLargestLocalError().getValue()), simulationStatus.getLargestLocalError().getChemicalEntity(), simulationStatus.getLargestLocalError().getUpdatable().getStringIdentifier(), simulationStatus.getLocalErrorModule());
-                logger.info("ERROR G : {} ({}, {})", String.format("%6.3e",simulationStatus.getLargestGlobalError().getValue()), simulationStatus.getLargestGlobalError().getChemicalEntity(), simulationStatus.getLargestGlobalError().getUpdatable().getStringIdentifier());
+                logger.info("SPEED   : estimated finish: {}", simulationStatus.getEstimatedFinish());
+                logger.info("SPEED   : {} epochs ({},{}) - {} speed, {} time step", simulationStatus.getNumberOfEpochsSinceLastUpdate(), simulationStatus.getNumberOfTimeStepIncreasesSinceLastUpdate(), simulationStatus.getNumberOfTimeStepDecreasesSinceLastUpdate(), simulationStatus.getEstimatedSpeed(), simulationStatus.getMostRecentTimeStep());
+                logger.info("ERROR L : {} ({}, {}, {})", String.format("%6.3e", simulationStatus.getLargestLocalError().getValue()), simulationStatus.getLargestLocalError().getChemicalEntity(), simulationStatus.getLargestLocalError().getUpdatable().getStringIdentifier(), simulationStatus.getLocalErrorModule());
+                logger.info("ERROR G : {} ({}, {})", String.format("%6.3e", simulationStatus.getLargestGlobalError().getValue()), simulationStatus.getLargestGlobalError().getChemicalEntity(), simulationStatus.getLargestGlobalError().getUpdatable().getStringIdentifier());
             }
             previousTimeMillis = currentTimeMillis;
         }

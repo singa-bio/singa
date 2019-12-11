@@ -16,12 +16,12 @@ import bio.singa.mathematics.geometry.faces.Rectangle;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.simulation.model.agents.pointlike.Vesicle;
 import bio.singa.simulation.model.agents.pointlike.VesicleLayer;
+import bio.singa.simulation.model.concentrations.ConcentrationBuilder;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.sections.CellTopology;
 import bio.singa.simulation.model.sections.ConcentrationContainer;
-import bio.singa.simulation.model.concentrations.ConcentrationBuilder;
 import bio.singa.simulation.model.simulation.Simulation;
 import bio.singa.structure.features.molarmass.MolarMass;
 import org.junit.jupiter.api.AfterEach;
@@ -59,11 +59,13 @@ class ReactionTest {
     @BeforeAll
     static void initialize() {
         UnitRegistry.reinitialize();
+        Environment.reset();
     }
 
     @AfterEach
     void cleanUp() {
         UnitRegistry.reinitialize();
+        Environment.reset();
     }
 
     @Test
@@ -383,7 +385,7 @@ class ReactionTest {
         while (simulation.getElapsedTime().isLessThanOrEqualTo(secondCheckpoint)) {
             simulation.nextEpoch();
             if (!firstCheckpointPassed && simulation.getElapsedTime().isGreaterThanOrEqualTo(firstCheckpoint)) {
-                assertEquals(9.445E-7, node.getConcentrationContainer().get(INNER, bindee), 1e-10);
+                assertEquals(9.442E-7, node.getConcentrationContainer().get(INNER, bindee), 1e-10);
                 assertEquals(5.546E-8, vesicle.getConcentrationContainer().get(MEMBRANE, complex), 1e-10);
                 firstCheckpointPassed = true;
             }
@@ -476,7 +478,7 @@ class ReactionTest {
             if (!firstCheckpointPassed && simulation.getElapsedTime().isGreaterThanOrEqualTo(firstCheckpoint)) {
                 assertEquals(9.695E-7, first.getConcentrationContainer().get(INNER, bindee), 1e-10);
                 assertEquals(4.847E-7, second.getConcentrationContainer().get(INNER, bindee), 1e-10);
-                assertEquals(4.561E-8, vesicle.getConcentrationContainer().get(MEMBRANE, complex), 1e-10);
+                assertEquals(4.576E-8, vesicle.getConcentrationContainer().get(MEMBRANE, complex), 1e-10);
                 firstCheckpointPassed = true;
             }
         }

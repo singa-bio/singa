@@ -2,7 +2,6 @@ package bio.singa.simulation.model.modules.concentration.imlementations;
 
 import bio.singa.chemistry.entities.simple.Protein;
 import bio.singa.chemistry.entities.simple.SmallMolecule;
-import bio.singa.chemistry.features.databases.chebi.ChEBIParserService;
 import bio.singa.chemistry.features.reactions.MichaelisConstant;
 import bio.singa.chemistry.features.reactions.TurnoverNumber;
 import bio.singa.features.model.Evidence;
@@ -58,9 +57,9 @@ class MichaelisMentenReactionTest {
         AutomatonGraph graph = AutomatonGraphs.singularGraph();
 
         // get required species
-        SmallMolecule fructosePhosphate = ChEBIParserService.parse("CHEBI:18105");
-        SmallMolecule glyceronePhosphate = ChEBIParserService.parse("CHEBI:16108");
-        SmallMolecule glyceraldehyde = ChEBIParserService.parse("CHEBI:17378");
+        SmallMolecule fructosePhosphate = SmallMolecule.create("FP").build();
+        SmallMolecule glyceronePhosphate = SmallMolecule.create("GP").build();
+        SmallMolecule glyceraldehyde = SmallMolecule.create("GA").build();
         Protein aldolase = Protein.create("P07752").build();
 
         // rates

@@ -108,7 +108,7 @@ public class Diffusion extends ConcentrationBasedModule<EntityDeltaFunction> {
                 } else {
                     otherContainer = other.getConcentrationContainer();
                 }
-                partialDelta = diffusivity * mapping.getRelativeArea() * mapping.getDiffusiveRatio() * (otherContainer.get(mapping.getSubsection(), entity) - currentConcentration);
+                partialDelta = diffusivity * /* mapping.getRelativeArea() * */  mapping.getDiffusiveRatio() * (otherContainer.get(mapping.getSubsection(), entity) - currentConcentration);
             }
             delta += partialDelta;
             mapping.setCache(partialDelta);

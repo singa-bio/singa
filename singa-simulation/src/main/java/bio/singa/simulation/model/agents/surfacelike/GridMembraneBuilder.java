@@ -14,7 +14,6 @@ import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.sections.CellRegion;
-import bio.singa.simulation.model.sections.CellRegions;
 import bio.singa.simulation.model.sections.CellSubsection;
 
 import java.util.HashMap;
@@ -26,11 +25,11 @@ import java.util.Map;
  */
 public class GridMembraneBuilder {
 
-    private Map<Integer, CellRegion> subsectionMap;
-    private Map<Pair<Integer>, CellRegion> membraneMap;
+    private Map<Integer, CellRegion> regionMapping;
+    private Map<Pair<Integer>, CellRegion> membraneMapping;
+    private Map<CellRegion, Membrane> membranes;
 
     private AutomatonGraph graph;
-    private Map<CellRegion, Membrane> membranes;
 
     private RectangularGrid<CellRegion> regionGrid;
     private final RectangularGrid<Integer> originalGrid;
@@ -51,27 +50,24 @@ public class GridMembraneBuilder {
             currentColumn++;
         }
         originalGrid = RectangularGrid.fromArray(boxed);
-        subsectionMap = new HashMap<>();
-        subsectionMap.put(0, CellRegions.CYTOPLASM_REGION);
-        subsectionMap.put(1, CellRegions.EXTRACELLULAR_REGION);
-        membraneMap = new HashMap<>();
-        membraneMap.put(new Pair<>(0, 1), CellRegions.CELL_OUTER_MEMBRANE_REGION);
+        regionMapping = new HashMap<>();
+        membraneMapping = new HashMap<>();
     }
 
-    public Map<Integer, CellRegion> getSubsectionMap() {
-        return subsectionMap;
+    public Map<Integer, CellRegion> getRegionMapping() {
+        return regionMapping;
     }
 
-    public void setSubsectionMap(Map<Integer, CellRegion> subsectionMap) {
-        this.subsectionMap = subsectionMap;
+    public void setRegionMapping(Map<Integer, CellRegion> regionMapping) {
+        this.regionMapping = regionMapping;
     }
 
-    public Map<Pair<Integer>, CellRegion> getMembraneMap() {
-        return membraneMap;
+    public Map<Pair<Integer>, CellRegion> getMembraneMapping() {
+        return membraneMapping;
     }
 
-    public void setMembraneMap(Map<Pair<Integer>, CellRegion> membraneMap) {
-        this.membraneMap = membraneMap;
+    public void setMembraneMapping(Map<Pair<Integer>, CellRegion> membraneMapping) {
+        this.membraneMapping = membraneMapping;
     }
 
     public AutomatonGraph getGraph() {
@@ -141,11 +137,18 @@ public class GridMembraneBuilder {
                                 break;
                         }
                         CellRegion membraneRegion = regionGrid.getValue(column, row);
-                        Membrane membrane = membranes.computeIfAbsent(membraneRegion, k -> new Membrane(membraneRegion.getIdentifier()));
+                        Membrane membrane = membranes.computeIfAbsent(membraneRegion, k -> {
+                            // create new membrane
+                            Membrane initializedMembrane = new Membrane(membraneRegion.getIdentifier());
+                            // assign regions
+                            initializedMembrane.setMembraneRegion(membraneRegion);
+                            initializedMembrane.setInnerRegion(regionMapping.get(centerValue));
+                            return initializedMembrane;
+                        });
                         membrane.addSegment(node, segment);
                     }
                     // setup subsections
-                    CellSubsection subsection = subsectionMap.get(centerValue).getInnerSubsection();
+                    CellSubsection subsection = regionMapping.get(centerValue).getInnerSubsection();
                     node.addSubsectionRepresentation(subsection, node.getSpatialRepresentation());
                 }
             }
@@ -155,6 +158,7 @@ public class GridMembraneBuilder {
         for (Map.Entry<CellRegion, Membrane> entry : membranes.entrySet()) {
             CellRegion region = entry.getKey();
             Membrane membrane = entry.getValue();
+            // setup region map
             List<Vector2D> orderedVectors = Vectors.getVectorsInOrder(membrane.getSegments());
             Map<CellRegion, List<Vector2D>> regionMap = new HashMap<>();
             regionMap.put(region, orderedVectors);
@@ -186,9 +190,9 @@ public class GridMembraneBuilder {
                 CellRegion region;
                 if (border) {
                     Pair<Integer> pair = new Pair<>(center, other);
-                    region = membraneMap.get(pair);
+                    region = membraneMapping.get(pair);
                 } else {
-                    region = subsectionMap.get(center);
+                    region = regionMapping.get(center);
                 }
                 regionGrid.setValue(column, row, region);
             }

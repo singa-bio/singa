@@ -61,6 +61,7 @@ class ClathrinMediatedEndocytosisTest {
 
         ChemicalEntity aqp = Protein.create("AQP").build();
         ChemicalEntity other = Protein.create("OTHER").build();
+        ChemicalEntity inhibitor = Protein.create("INH").build();
         ChemicalEntity clathrin = Protein.create("CLA").build();
 
         Simulation simulation = new Simulation();
@@ -128,6 +129,7 @@ class ClathrinMediatedEndocytosisTest {
         endocytosis.setFeature(new EndocytosisCheckpointConcentration(checkpointConcentration));
         endocytosis.setFeature(new Cargoes(EntityRegistry.matchExactly("AQP")));
         endocytosis.setFeature(new MaturationTime(Quantities.getQuantity(50.0, SECOND)));
+        endocytosis.setFeature(new ScalingEntities(other, inhibitor));
         endocytosis.setFeature(new InitialConcentrations(Collections.singletonList(clathrinConcentration)));
         simulation.addModule(endocytosis);
 

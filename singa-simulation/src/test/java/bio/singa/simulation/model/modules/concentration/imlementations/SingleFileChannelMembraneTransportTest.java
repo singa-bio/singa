@@ -2,8 +2,6 @@ package bio.singa.simulation.model.modules.concentration.imlementations;
 
 import bio.singa.chemistry.entities.simple.Protein;
 import bio.singa.chemistry.entities.simple.SmallMolecule;
-import bio.singa.chemistry.features.databases.chebi.ChEBIParserService;
-import bio.singa.chemistry.features.databases.uniprot.UniProtParserService;
 import bio.singa.chemistry.features.permeability.OsmoticPermeability;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.quantities.MolarConcentration;
@@ -48,13 +46,15 @@ class SingleFileChannelMembraneTransportTest {
         Simulation simulation = new Simulation();
         // setup species
         // water
-        SmallMolecule water = ChEBIParserService.parse("CHEBI:15377", "water");
+        SmallMolecule water = SmallMolecule.create("water")
+                .build();
         // solutes
         SmallMolecule solute = SmallMolecule.create("solutes")
                 .build();
         // aqp2
-        Protein aquaporin2 = UniProtParserService.parse("P41181", "aqp2");
-        aquaporin2.setFeature(new OsmoticPermeability(5.31e-14, BINESH2015));
+        Protein aquaporin2 = Protein.create("aqp2")
+                .assignFeature(new OsmoticPermeability(5.31e-14, BINESH2015))
+                .build();
         // graph
         AutomatonGraph graph = AutomatonGraphs.singularGraph();
         simulation.setGraph(graph);

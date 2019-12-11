@@ -87,7 +87,7 @@ public class DisplacementBasedModule extends AbstractUpdateModule {
     public void optimizeTimeStep() {
         while (getState() == REQUIRING_RECALCULATION) {
             getSimulation().getVesicleLayer().clearUpdates();
-            getSimulation().getScheduler().decreaseTimeStep();
+            getSimulation().getScheduler().decreaseTimeStep("request by displacement based module");
             calculateUpdates();
         }
     }

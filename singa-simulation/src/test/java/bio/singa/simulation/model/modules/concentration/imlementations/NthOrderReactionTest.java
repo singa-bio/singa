@@ -167,6 +167,7 @@ class NthOrderReactionTest {
         assertEquals(60, molecules.getValue().intValue());
         while (simulation.getElapsedTime().isLessThanOrEqualTo(Quantities.getQuantity(13, SECOND))) {
             simulation.nextEpoch();
+            System.out.println(UnitRegistry.getTime());
             molecules = MolarConcentration.concentrationToMolecules(vesicle.getConcentrationContainer().get(MEMBRANE, sm));
         }
         assertEquals(0.0, molecules.getValue().doubleValue());

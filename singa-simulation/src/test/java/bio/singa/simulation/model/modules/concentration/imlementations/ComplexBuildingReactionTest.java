@@ -480,7 +480,7 @@ class ComplexBuildingReactionTest {
             if (!firstCheckpointPassed && simulation.getElapsedTime().isGreaterThanOrEqualTo(firstCheckpoint)) {
                 assertEquals(9.695E-7, first.getConcentrationContainer().get(INNER, bindee), 1e-10);
                 assertEquals(4.847E-7, second.getConcentrationContainer().get(INNER, bindee), 1e-10);
-                assertEquals(4.561E-8, vesicle.getConcentrationContainer().get(MEMBRANE, complex), 1e-10);
+                assertEquals(4.576E-8, vesicle.getConcentrationContainer().get(MEMBRANE, complex), 1e-10);
                 firstCheckpointPassed = true;
             }
         }

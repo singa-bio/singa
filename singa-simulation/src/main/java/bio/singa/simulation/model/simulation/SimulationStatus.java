@@ -167,4 +167,8 @@ public class SimulationStatus implements UpdateEventListener<GraphUpdatedEvent> 
         return "";
     }
 
+    public String getMostRecentTimeStep() {
+        return TimeFormatter.formatTime(UnitRegistry.getTime());
+    }
+
 }

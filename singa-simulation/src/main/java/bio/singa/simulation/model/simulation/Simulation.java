@@ -172,11 +172,6 @@ public class Simulation {
         for (Updatable updatable : updatables) {
             if (updatable.getConcentrationManager().hasDeltas()) {
                 logger.trace("Deltas in {}:", updatable.getStringIdentifier());
-//                if (updatable.getStringIdentifier().equals("n(19,4)")) {
-//                    for (ConcentrationDelta finalDelta : updatable.getConcentrationManager().getFinalDeltas()) {
-//                        System.out.println(finalDelta);
-//                    }
-//                }
                 updatable.getConcentrationManager().applyDeltas();
             }
         }
@@ -193,7 +188,7 @@ public class Simulation {
         updateEpoch();
         // if time step did not change it can possibly be increased
         if (timeStepShouldIncrease()) {
-            scheduler.increaseTimeStep();
+            scheduler.increaseTimeStep("previous error was very small");
         }
 
     }
@@ -223,11 +218,11 @@ public class Simulation {
         // if the the error that was computed previously is very small
         final double recalculationCutoff = scheduler.getRecalculationCutoff();
         final NumericalError latestGlobalError = scheduler.getLargestGlobalError();
-        if (recalculationCutoff - latestGlobalError.getValue() > 0.1 * recalculationCutoff) {
+        if (recalculationCutoff - latestGlobalError.getValue() > 0.3 * recalculationCutoff) {
             // System.out.println("global error "+ latestGlobalError);
             final double latestLocalError = scheduler.getLargestLocalError().getValue();
             // System.out.println("local error "+ latestLocalError);
-            if (recalculationCutoff - latestLocalError > 0.1 * recalculationCutoff) {
+            if (recalculationCutoff - latestLocalError > 0.3 * recalculationCutoff) {
                 // try larger time step
                 return true;
             }

@@ -42,22 +42,18 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
      * The default value where numerical errors to be considered irretrievably unstable.
      */
     private static final double DEFAULT_ERROR_CUTOFF = 100;
-
-    /**
-     * The cutoff where deltas are validated to be effectively zero.
-     */
-    private double deltaCutoff = DEFAULT_NUMERICAL_CUTOFF;
-
-    /**
-     * The cutoff where numerical errors to be considered irretrievably unstable.
-     */
-    private double errorCutoff = DEFAULT_ERROR_CUTOFF;
-
     /**
      * Frequently required fields.
      */
     protected FieldSupplier supplier;
-
+    /**
+     * The cutoff where deltas are validated to be effectively zero.
+     */
+    private double deltaCutoff = DEFAULT_NUMERICAL_CUTOFF;
+    /**
+     * The cutoff where numerical errors to be considered irretrievably unstable.
+     */
+    private double errorCutoff = DEFAULT_ERROR_CUTOFF;
     /**
      * The scope of this module.
      */
@@ -92,16 +88,6 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
     }
 
     /**
-     * Sets the application condition for this module. The module is only evaluated if the updatable fulfills the given
-     * predicate.
-     *
-     * @param applicationCondition The application condition.
-     */
-    protected void setApplicationCondition(Predicate<Updatable> applicationCondition) {
-        this.applicationCondition = applicationCondition;
-    }
-
-    /**
      * Returns the application condition for this module.The module is only evaluated if the updatable fulfills the
      * given predicate.
      *
@@ -111,7 +97,15 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
         return applicationCondition;
     }
 
-
+    /**
+     * Sets the application condition for this module. The module is only evaluated if the updatable fulfills the given
+     * predicate.
+     *
+     * @param applicationCondition The application condition.
+     */
+    protected void setApplicationCondition(Predicate<Updatable> applicationCondition) {
+        this.applicationCondition = applicationCondition;
+    }
 
     /**
      * Returns the cutoff where deltas are validated to be effectively zero.
@@ -205,7 +199,15 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
         if (supplier.isStrutCalculation()) {
             delta = delta.multiply(2.0);
             supplier.getCurrentHalfDeltas().put(deltaIdentifier, delta);
-            deltaIdentifier.getUpdatable().addPotentialDelta(delta);
+            // calculate actual applied delta
+            ConcentrationDelta fullDelta = supplier.getCurrentFullDeltas().get(deltaIdentifier);
+            ConcentrationDelta applied;
+            if (fullDelta == null) {
+                applied = new ConcentrationDelta(delta.getModule(), delta.getCellSubsection(), delta.getChemicalEntity(), delta.getValue());
+            } else {
+                applied = new ConcentrationDelta(delta.getModule(), delta.getCellSubsection(), delta.getChemicalEntity(), (fullDelta.getValue() + delta.getValue()) * 0.5);
+            }
+            deltaIdentifier.getUpdatable().addPotentialDelta(applied);
         } else {
             supplier.getCurrentFullDeltas().put(deltaIdentifier, delta);
         }
@@ -337,7 +339,7 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
             // reset previous error
             supplier.resetError();
             // determine new local error with decreased time step
-            getSimulation().getScheduler().decreaseTimeStep();
+            getSimulation().getScheduler().decreaseTimeStep("request by concentration based module "+getIdentifier());
             scope.processUpdatable(updatable);
             // evaluate module state by error
             evaluateModuleState();
@@ -391,7 +393,8 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
      * @param featureClass The requested feature.
      * @return The scaled feature.
      */
-    protected double getScaledFeature(ChemicalEntity entity, Class<? extends AbstractScalableQuantitativeFeature<?>> featureClass) {
+    protected double getScaledFeature(ChemicalEntity entity, Class<? extends
+            AbstractScalableQuantitativeFeature<?>> featureClass) {
         // feature from any entity (like molar mass)
         return choseScaling(entity.getFeature(featureClass));
     }
