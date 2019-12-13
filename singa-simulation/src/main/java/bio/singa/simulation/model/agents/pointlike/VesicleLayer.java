@@ -110,6 +110,16 @@ public class VesicleLayer {
             if (simulation.getMembraneLayer() != null) {
                 for (Membrane macroscopicMembrane : simulation.getMembraneLayer().getMembranes()) {
                     for (MembraneSegment membraneSegment : macroscopicMembrane.getSegments()) {
+                        // do not check attached vesicles
+                        // otherwise there is a problem when they are very close to membranes,
+                        // resulting in them getting stuck
+                        // they are considered "squeezed" by the membrane
+                        if (vesicle1.getState().equals(VesicleStateRegistry.ACTIN_ATTACHED) ||
+                                vesicle1.getState().equals(VesicleStateRegistry.MICROTUBULE_ATTACHED)) {
+                            continue ;
+                        }
+                        // check if the circle representation with slightly bigger radius for numerical reasons
+                        // of the next position intersects with any membrane segment
                         Circle nextRepresentation = new Circle(vesicle1.getNextPosition(), firstRadius+1);
                         if (Circles.intersect(nextRepresentation, membraneSegment)) {
                             vesicle1.resetNextPosition();

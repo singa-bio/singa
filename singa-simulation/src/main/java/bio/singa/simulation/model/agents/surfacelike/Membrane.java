@@ -5,7 +5,10 @@ import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.sections.CellRegion;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author cl
@@ -29,7 +32,10 @@ public class Membrane {
     }
 
     public void addSegment(AutomatonNode node, LineSegment segment) {
-        MembraneSegment membraneSegment = new MembraneSegment(node, segment);
+        addSegment(new MembraneSegment(node, segment));
+    }
+
+    public void addSegment(MembraneSegment membraneSegment) {
         segments.add(membraneSegment);
     }
 

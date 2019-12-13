@@ -1,6 +1,5 @@
 package bio.singa.simulation.model.simulation;
 
-import bio.singa.features.formatter.TimeFormatter;
 import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.simulation.model.modules.UpdateModule;
@@ -62,7 +61,7 @@ public class UpdateScheduler {
         modules = new ArrayDeque<>(simulation.getModules());
         largestLocalError = NumericalError.MINIMAL_EMPTY_ERROR;
         largestGlobalError = NumericalError.MINIMAL_EMPTY_ERROR;
-        moleculeFraction = MolarConcentration.moleculesToConcentration(1.0 / 10000.0);
+        moleculeFraction = MolarConcentration.moleculesToConcentration(1.0 / 50000.0);
     }
 
     public void initializeThreadPool() {
@@ -194,7 +193,7 @@ public class UpdateScheduler {
             // set interim check false if global error is to large and true if you can continue
             if (largestGlobalError.getValue() > recalculationCutoff) {
                 // System.out.println("rejected global error: "+largestGlobalError+" @ "+TimeFormatter.formatTime(UnitRegistry.getTime()));
-                simulation.getScheduler().decreaseTimeStep("global error above recalculation cutoff");
+                decreaseTimeStepStatic();
                 globalErrorAcceptable = false;
                 calculateGlobalError = true;
             } else {
@@ -268,23 +267,71 @@ public class UpdateScheduler {
 
     public void increaseTimeStep(String reason) {
 //        System.out.println(simulation.getEpoch() + ":" + TimeFormatter.formatTime(UnitRegistry.getTime()) + " + " + reason);
-        UnitRegistry.setTime(UnitRegistry.getTime().multiply(1.7));
-        logger.debug("Increasing time step to {}.", TimeFormatter.formatTime(UnitRegistry.getTime()));
+        // change timestep in accordance to error
+
+        Quantity<Time> original = UnitRegistry.getTime();
+
+        double multiplier = estimateIncrease();
+        Quantity<Time> estimate = original.multiply(multiplier);
+
+//        System.out.println("+ " + simulation.getEpoch() + " : " + original.getValue().doubleValue() + " -> " + estimate.getValue().doubleValue() + " (" + multiplier + ")");
+
+        UnitRegistry.setTime(estimate);
+
         timestepsIncreased++;
     }
 
     public synchronized void decreaseTimeStep(String reason) {
         // if time step is rescaled for the very fist time this epoch remember the initial error and time step
+        Quantity<Time> original = UnitRegistry.getTime();
         if (!timeStepWasAlteredInThisEpoch()) {
             previousError = largestLocalError.getValue();
-            previousTimeStep = UnitRegistry.getTime();
+            previousTimeStep = original;
         }
-//        System.out.println(simulation.getEpoch() + ":" + TimeFormatter.formatTime(UnitRegistry.getTime()) + " - " + reason);
-        UnitRegistry.setTime(UnitRegistry.getTime().multiply(0.7));
-        logger.debug("Decreasing time step to {}.", TimeFormatter.formatTime(UnitRegistry.getTime()));
+
+        double multiplier = estimateDecrease();
+        Quantity<Time> estimate = original.multiply(multiplier);
+
+//        System.out.println("- " + simulation.getEpoch() + " : " + original.getValue().doubleValue() + " -> " + estimate.getValue().doubleValue() + " (" + multiplier + ")");
+
+        UnitRegistry.setTime(estimate);
+
         timestepsDecreased++;
         timeStepRescaled = true;
         timeStepAlteredInThisEpoch = true;
+    }
+
+    public void decreaseTimeStepStatic() {
+        Quantity<Time> original = UnitRegistry.getTime();
+        if (!timeStepWasAlteredInThisEpoch()) {
+            previousError = largestLocalError.getValue();
+            previousTimeStep = original;
+        }
+
+        Quantity<Time> estimate = original.multiply(0.7);
+
+//        System.out.println("- " + simulation.getEpoch() + " : " + original.getValue().doubleValue() + " -> " + estimate.getValue().doubleValue() + " (" + 0.7 + ")");
+
+        UnitRegistry.setTime(estimate);
+
+        timestepsDecreased++;
+        timeStepRescaled = true;
+        timeStepAlteredInThisEpoch = true;
+    }
+
+    private double estimateIncrease() {
+//        double upperLimit = 1.6;
+//        double lowerLimit = 1.1;
+//        double estimate = recalculationCutoff / getLargestLocalError().getValue();
+//        return Math.max(Math.min(upperLimit, estimate), lowerLimit);
+        return 1.3;
+    }
+
+    private double estimateDecrease() {
+//        double lowerLimit = 0.6;
+//        double estimate = recalculationCutoff / getLargestLocalError().getValue();
+//        return Math.max(lowerLimit, estimate);
+        return 0.7;
     }
 
     private void finalizeDeltas() {

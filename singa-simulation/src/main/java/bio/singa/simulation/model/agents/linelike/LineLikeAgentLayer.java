@@ -1,5 +1,6 @@
 package bio.singa.simulation.model.agents.linelike;
 
+import bio.singa.core.utility.Pair;
 import bio.singa.mathematics.geometry.edges.LineSegment;
 import bio.singa.mathematics.geometry.faces.Rectangle;
 import bio.singa.mathematics.metrics.model.VectorMetricProvider;
@@ -58,15 +59,36 @@ public class LineLikeAgentLayer {
         this.targetMembrane = targetMembrane;
     }
 
-    public void spawnFilament(Membrane sourceMembrane, Membrane targetMembrane) {
+    public void initializeMembraneToMembraneMicrotubules(Membrane sourceMembrane, Membrane targetedMembrane, int numberOfFilaments) {
+        setTargetedGrowth(true);
+        setTargetMembrane(targetedMembrane.getMembraneRegion());
+        // initialize filaments
+        int currentFilaments = 0;
+        while (currentFilaments != numberOfFilaments) {
+            Pair<Vector2D> spawnPosition = determineSpawnPosition(sourceMembrane, targetedMembrane);
+            addMicrotubule(spawnPosition.getFirst(), spawnPosition.getSecond());
+            // increment filaments
+            currentFilaments++;
+        }
+        // grow filaments
+        while (hasGrowingFilaments()) {
+            nextEpoch();
+            int removedFilaments = clearMisguidedFilamens();
+            for (int i = 0; i < removedFilaments; i++) {
+                Pair<Vector2D> spawnPosition = determineSpawnPosition(sourceMembrane, targetedMembrane);
+                addMicrotubule(spawnPosition.getFirst(), spawnPosition.getSecond());
+            }
+        }
+    }
+
+    public Pair<Vector2D> determineSpawnPosition(Membrane sourceMembrane, Membrane targetMembrane) {
         List<MembraneSegment> segments = new ArrayList<>(sourceMembrane.getSegments());
         // choose random line segment from the given membrane
-        // TODO should not choose first but specified region
-        List<Vector2D> targetPoints = targetMembrane.getSegments().stream()
+        List<Vector2D> sourcePoints = sourceMembrane.getSegments().stream()
                 .map(MembraneSegment::getStartingPoint)
                 .collect(Collectors.toList());
 
-        List<Vector2D> sourcePoints = sourceMembrane.getSegments().stream()
+        List<Vector2D> targetPoints = targetMembrane.getSegments().stream()
                 .map(MembraneSegment::getStartingPoint)
                 .collect(Collectors.toList());
 
@@ -79,7 +101,7 @@ public class LineLikeAgentLayer {
         }
 
         Map.Entry<Vector2D, Double> entry = VectorMetricProvider.EUCLIDEAN_METRIC.calculateClosestDistance(targetPoints, initialPosition);
-        addMicrotubule(initialPosition, initialPosition.subtract(entry.getKey()).normalize());
+        return new Pair<>(initialPosition, initialPosition.subtract(entry.getKey()).normalize());
     }
 
     public void spawnActinFilament(Membrane cellMembrane) {
@@ -161,7 +183,7 @@ public class LineLikeAgentLayer {
         // check border interactions
         for (LineLikeAgent filament : filaments) {
             Vector2D head = filament.getPlusEnd();
-            // TODO collisions with simulation borders
+            // check membrane
             if (filament.getPlusEndBehaviour() != STAGNANT) {
                 for (Membrane membrane : membraneLayer.getMembranes()) {
                     for (MembraneSegment membraneSegment : membrane.getSegments()) {
@@ -239,16 +261,29 @@ public class LineLikeAgentLayer {
         misguidedFilaments.clear();
     }
 
+    public int clearMisguidedFilamens() {
+        int removedFilaments = 0;
+        for (LineLikeAgent misguidedFilament : misguidedFilaments) {
+            filaments.remove(misguidedFilament);
+            for (AutomatonNode node : simulation.getGraph().getNodes()) {
+                node.getAssociatedLineLikeAgents().remove(misguidedFilament);
+            }
+            removedFilaments++;
+        }
+        misguidedFilaments.clear();
+        return removedFilaments;
+    }
+
     public List<LineLikeAgent> getFilaments() {
         return filaments;
+    }
+
+    public void setFilaments(List<LineLikeAgent> filaments) {
+        this.filaments = filaments;
     }
 
     public void addFilament(LineLikeAgent filament) {
         filament.associateInGraph(simulation.getGraph());
         filaments.add(filament);
-    }
-
-    public void setFilaments(List<LineLikeAgent> filaments) {
-        this.filaments = filaments;
     }
 }

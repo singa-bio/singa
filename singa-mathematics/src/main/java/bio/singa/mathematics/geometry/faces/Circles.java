@@ -103,7 +103,6 @@ public class Circles {
     }
 
     public static boolean intersect(Circle circle, LineSegment lineSegment) {
-        // parameters: ax ay bx by cx cy r
         double ax = lineSegment.getStartingPoint().getX() - circle.getMidpoint().getX();
         double ay = lineSegment.getStartingPoint().getY() - circle.getMidpoint().getY();
         double bx = lineSegment.getEndingPoint().getX() - circle.getMidpoint().getX();

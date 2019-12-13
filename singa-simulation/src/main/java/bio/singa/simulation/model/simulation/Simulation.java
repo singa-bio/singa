@@ -218,11 +218,11 @@ public class Simulation {
         // if the the error that was computed previously is very small
         final double recalculationCutoff = scheduler.getRecalculationCutoff();
         final NumericalError latestGlobalError = scheduler.getLargestGlobalError();
-        if (recalculationCutoff - latestGlobalError.getValue() > 0.3 * recalculationCutoff) {
+        if (recalculationCutoff - latestGlobalError.getValue() > 0.2 * recalculationCutoff) {
             // System.out.println("global error "+ latestGlobalError);
             final double latestLocalError = scheduler.getLargestLocalError().getValue();
             // System.out.println("local error "+ latestLocalError);
-            if (recalculationCutoff - latestLocalError > 0.3 * recalculationCutoff) {
+            if (recalculationCutoff - latestLocalError > 0.2 * recalculationCutoff) {
                 // try larger time step
                 return true;
             }

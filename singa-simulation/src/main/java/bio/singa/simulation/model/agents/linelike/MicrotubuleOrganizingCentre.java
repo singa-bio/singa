@@ -33,7 +33,6 @@ public class MicrotubuleOrganizingCentre {
         }
         // initialize filaments
         int currentFilaments = 0;
-        Vector2D centre = circleRepresentation.getMidpoint();
         while (currentFilaments != numberOfFilaments) {
             spawnMicrotubule(layer);
             // increment filaments
@@ -57,7 +56,6 @@ public class MicrotubuleOrganizingCentre {
         }
         // initialize filaments
         int currentFilaments = 0;
-        Vector2D centre = circleRepresentation.getMidpoint();
         while (currentFilaments != numberOfFilaments) {
             spawnActin(layer);
             // increment filaments
