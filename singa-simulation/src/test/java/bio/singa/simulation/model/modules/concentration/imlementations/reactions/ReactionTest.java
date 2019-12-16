@@ -385,8 +385,8 @@ class ReactionTest {
         while (simulation.getElapsedTime().isLessThanOrEqualTo(secondCheckpoint)) {
             simulation.nextEpoch();
             if (!firstCheckpointPassed && simulation.getElapsedTime().isGreaterThanOrEqualTo(firstCheckpoint)) {
-                assertEquals(9.442E-7, node.getConcentrationContainer().get(INNER, bindee), 1e-10);
-                assertEquals(5.546E-8, vesicle.getConcentrationContainer().get(MEMBRANE, complex), 1e-10);
+                assertEquals(9.447E-7, node.getConcentrationContainer().get(INNER, bindee), 1e-10);
+                assertEquals(5.522E-8, vesicle.getConcentrationContainer().get(MEMBRANE, complex), 1e-10);
                 firstCheckpointPassed = true;
             }
         }
@@ -476,9 +476,9 @@ class ReactionTest {
         while (simulation.getElapsedTime().isLessThanOrEqualTo(secondCheckpoint)) {
             simulation.nextEpoch();
             if (!firstCheckpointPassed && simulation.getElapsedTime().isGreaterThanOrEqualTo(firstCheckpoint)) {
-                assertEquals(9.695E-7, first.getConcentrationContainer().get(INNER, bindee), 1e-10);
+                assertEquals(9.693E-7, first.getConcentrationContainer().get(INNER, bindee), 1e-10);
                 assertEquals(4.847E-7, second.getConcentrationContainer().get(INNER, bindee), 1e-10);
-                assertEquals(4.576E-8, vesicle.getConcentrationContainer().get(MEMBRANE, complex), 1e-10);
+                assertEquals(4.602E-8, vesicle.getConcentrationContainer().get(MEMBRANE, complex), 1e-10);
                 firstCheckpointPassed = true;
             }
         }

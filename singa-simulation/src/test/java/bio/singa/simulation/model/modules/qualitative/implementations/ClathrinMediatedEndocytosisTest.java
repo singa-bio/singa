@@ -25,7 +25,6 @@ import bio.singa.simulation.model.concentrations.InitialConcentration;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.graphs.AutomatonNode;
-import bio.singa.simulation.model.modules.concentration.ModuleFactory;
 import bio.singa.simulation.model.modules.concentration.imlementations.reactions.ReactionBuilder;
 import bio.singa.simulation.model.modules.concentration.imlementations.transport.EndocytoticPitAbsorption;
 import bio.singa.simulation.model.sections.CellRegions;
@@ -134,7 +133,7 @@ class ClathrinMediatedEndocytosisTest {
         ConcentrationBuilder.create(simulation)
                 .entity(inhibitor)
                 .topology(MEMBRANE)
-                .concentrationValue(0.1)
+                .concentrationValue(0.05)
                 .microMolar()
                 .onlyNodes()
                 .build();
@@ -226,18 +225,12 @@ class ClathrinMediatedEndocytosisTest {
         simulation.addModule(endocytosis);
 
         // pit addition
-        // TODO add builder
-        EndocytoticPitAbsorption absorption = ModuleFactory.setupModule(EndocytoticPitAbsorption.class,
-                ModuleFactory.Scope.SEMI_NEIGHBOURHOOD_DEPENDENT,
-                ModuleFactory.Specificity.UPDATABLE_SPECIFIC);
-        absorption.setSimulation(simulation);
-
-        absorption.setFeature(new CargoAdditionRate(kf_endoAddition));
-        absorption.setFeature(cargoes);
-        absorption.setFeature(new ScalingEntities(otherCargo, inhibitor));
-
-        absorption.postConstruct();
-        simulation.addModule(absorption);
+        EndocytoticPitAbsorption.inSimulation(simulation)
+                .forAllEntities(cargoes.getContent())
+                .acceleratingEntity(accelerator)
+                .inhibitingEntity(inhibitor)
+                .rate(kf_endoAddition)
+                .build();
 
         ConcentrationBuilder.create(simulation)
                 .entity(EntityRegistry.matchExactly("SUBSTRATE"))

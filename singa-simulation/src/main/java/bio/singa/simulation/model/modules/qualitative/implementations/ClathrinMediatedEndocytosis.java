@@ -62,14 +62,12 @@ public class ClathrinMediatedEndocytosis extends QualitativeModule {
         getRequiredFeatures().add(PitFormationRate.class);
         getRequiredFeatures().add(AffectedRegion.class);
         getRequiredFeatures().add(VesicleRadius.class);
-
         getRequiredFeatures().add(EndocytosisCheckpointTime.class);
         getRequiredFeatures().add(EndocytosisCheckpointConcentration.class);
         getRequiredFeatures().add(Cargo.class);
         getRequiredFeatures().add(Cargoes.class);
         getRequiredFeatures().add(MaturationTime.class);
         getRequiredFeatures().add(InitialConcentrations.class);
-        getRequiredFeatures().add(ScalingEntities.class);
 
     }
 

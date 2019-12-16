@@ -49,6 +49,7 @@ public class VesicleFusion extends QualitativeModule {
     // temporary variables for #onCompletion
     private List<Vesicle> fusingVesicles;
     private Map<Vesicle, TetheringSnares> tetheringVesicles;
+    private boolean noSnares;
 
     public VesicleFusion() {
         // initialize
@@ -64,12 +65,17 @@ public class VesicleFusion extends QualitativeModule {
         getRequiredFeatures().add(MatchingQSnares.class);
         getRequiredFeatures().add(MatchingRSnares.class);
         getRequiredFeatures().add(SNAREFusionPairs.class);
+        getRequiredFeatures().add(AppliedVesicleState.class);
     }
 
     @Override
     public void initialize() {
         MatchingQSnares qSnares = getFeature(MatchingQSnares.class);
         MatchingRSnares rSnares = getFeature(MatchingRSnares.class);
+        if (qSnares == null || rSnares == null) {
+            noSnares = true;
+            return;
+        }
         for (ChemicalEntity qSnare : qSnares.getContent()) {
             for (ChemicalEntity rSnare : rSnares.getContent()) {
                 Pair<ChemicalEntity> pair = new Pair<>(qSnare, rSnare);
@@ -127,6 +133,9 @@ public class VesicleFusion extends QualitativeModule {
         for (Map.Entry<ChemicalEntity, Double> entry : vesicleContainer.getPool(CellTopology.OUTER).getValue().getConcentrations().entrySet()) {
             node.addPotentialDelta(new ConcentrationDelta(this, node.getCellRegion().getInnerSubsection(), entry.getKey(), entry.getValue()));
         }
+        if (noSnares) {
+            return;
+        }
         // add occupied snares
         ConcentrationPool concentrationPool = occupiedSnares.get(tetheredVesicle);
         for (Map.Entry<ChemicalEntity, Double> entry : concentrationPool.getConcentrations().entrySet()) {
@@ -143,7 +152,9 @@ public class VesicleFusion extends QualitativeModule {
         // set target
         tetheredNodes.put(vesicle, tetheringSnares.getTetheringTarget());
         // set reserved snares
-        reserveSnares(vesicle, tetheringSnares);
+        if (!noSnares) {
+            reserveSnares(vesicle, tetheringSnares);
+        }
     }
 
     private void checkTetheringTime() {
@@ -166,6 +177,12 @@ public class VesicleFusion extends QualitativeModule {
                     vesicle.getState().equals(VesicleStateRegistry.MEMBRANE_TETHERED)) {
                 continue;
             }
+            if (noSnares) {
+                String state = getFeature(AppliedVesicleState.class).getContent();
+                if (!vesicle.getState().equals(state)) {
+                    continue;
+                }
+            }
             Vector2D currentPosition = vesicle.getPosition();
             // for each associated node
             nodesLoop:
@@ -180,6 +197,10 @@ public class VesicleFusion extends QualitativeModule {
                         ComparableQuantity<Length> threshold = (ComparableQuantity<Length>) getFeature(AttachmentDistance.class).getContent().add(vesicle.getRadius());
                         Quantity<Length> distance = Environment.convertSimulationToSystemScale(currentDistance);
                         if (threshold.isGreaterThanOrEqualTo(distance)) {
+                            if (noSnares) {
+                                tetheringVesicles.put(vesicle, new TetheringSnares(null, null, node));
+                                break nodesLoop;
+                            }
                             TetheringSnares tetheringSnares = prepareTethering(node, vesicle);
                             if (snaresMatch(tetheringSnares)) {
                                 tetheringVesicles.put(vesicle, tetheringSnares);

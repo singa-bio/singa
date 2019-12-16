@@ -1,20 +1,19 @@
 package bio.singa.simulation.model.modules.concentration.imlementations.transport;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
+import bio.singa.chemistry.features.reactions.FirstOrderRate;
 import bio.singa.simulation.features.CargoAdditionRate;
 import bio.singa.simulation.features.Cargoes;
 import bio.singa.simulation.features.ScalingEntities;
-import bio.singa.simulation.model.modules.concentration.ConcentrationBasedModule;
-import bio.singa.simulation.model.modules.concentration.ConcentrationDelta;
-import bio.singa.simulation.model.modules.concentration.ConcentrationDeltaIdentifier;
+import bio.singa.simulation.model.modules.concentration.*;
 import bio.singa.simulation.model.modules.concentration.functions.UpdatableDeltaFunction;
 import bio.singa.simulation.model.modules.qualitative.implementations.EndocytoticPit;
 import bio.singa.simulation.model.sections.ConcentrationContainer;
+import bio.singa.simulation.model.simulation.Simulation;
 import bio.singa.simulation.model.simulation.Updatable;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import javax.measure.Quantity;
+import java.util.*;
 
 import static bio.singa.simulation.model.sections.CellTopology.MEMBRANE;
 
@@ -22,6 +21,10 @@ import static bio.singa.simulation.model.sections.CellTopology.MEMBRANE;
  * @author cl
  */
 public class EndocytoticPitAbsorption extends ConcentrationBasedModule<UpdatableDeltaFunction> {
+
+    public static EntityStep inSimulation(Simulation simulation) {
+        return new EndocytoticPitAbsorptionBuilder(simulation);
+    }
 
     private static boolean isCollectingEndocytoticPit(Updatable updatable) {
         return updatable instanceof EndocytoticPit && ((EndocytoticPit) updatable).isCollecting();
@@ -67,5 +70,132 @@ public class EndocytoticPitAbsorption extends ConcentrationBasedModule<Updatable
         return deltas;
     }
 
+    public static ModuleBuilder getBuilder(Simulation simulation) {
+        return new EndocytoticPitAbsorptionBuilder(simulation);
+    }
+
+    public interface EntityStep {
+        EntityStep identifier(String identifier);
+
+        AccelerationStep forEntity(ChemicalEntity chemicalEntity);
+
+        AccelerationStep forAllEntities(ChemicalEntity... chemicalEntities);
+
+        AccelerationStep forAllEntities(Collection<ChemicalEntity> chemicalEntities);
+
+        AccelerationStep cargo(Cargoes cargoes);
+
+    }
+
+    public interface AccelerationStep {
+
+        InhibitionStep acceleratingEntity(ChemicalEntity entity);
+
+        RateStep scalingEntities(ScalingEntities scalingEntities);
+
+    }
+
+    public interface InhibitionStep {
+
+        RateStep inhibitingEntity(ChemicalEntity entity);
+
+    }
+
+    public interface RateStep {
+
+        BuildStep rate(Quantity<FirstOrderRate> rate);
+
+        BuildStep cargoAdditionRate(CargoAdditionRate rate);
+
+    }
+
+    public interface BuildStep {
+        EndocytoticPitAbsorption build();
+    }
+
+    public static class EndocytoticPitAbsorptionBuilder implements EntityStep, AccelerationStep, InhibitionStep, RateStep, BuildStep, ModuleBuilder<EndocytoticPitAbsorption> {
+
+        EndocytoticPitAbsorption module;
+        private Simulation simulation;
+        private ChemicalEntity acceleratingEntity;
+
+
+        public EndocytoticPitAbsorptionBuilder(Simulation simulation) {
+            this.simulation = simulation;
+            createModule(simulation);
+        }
+
+        @Override
+        public EndocytoticPitAbsorption getModule() {
+            return module;
+        }
+
+
+        @Override
+        public EndocytoticPitAbsorption createModule(Simulation simulation) {
+            module = ModuleFactory.setupModule(EndocytoticPitAbsorption.class,
+                    ModuleFactory.Scope.SEMI_NEIGHBOURHOOD_DEPENDENT,
+                    ModuleFactory.Specificity.UPDATABLE_SPECIFIC);
+            return module;
+        }
+
+        public EntityStep identifier(String identifier) {
+            module.setIdentifier(identifier);
+            return this;
+        }
+
+        public AccelerationStep forEntity(ChemicalEntity chemicalEntity) {
+            return forAllEntities(Collections.singletonList(chemicalEntity));
+        }
+
+        public AccelerationStep forAllEntities(ChemicalEntity... chemicalEntities) {
+            return forAllEntities(Arrays.asList(chemicalEntities));
+        }
+
+        public AccelerationStep forAllEntities(Collection<ChemicalEntity> chemicalEntities) {
+            return cargo(new Cargoes(new ArrayList<>(chemicalEntities)));
+        }
+
+        @Override
+        public InhibitionStep acceleratingEntity(ChemicalEntity acceleratingEntity) {
+            this.acceleratingEntity = acceleratingEntity;
+            return this;
+        }
+
+        @Override
+        public RateStep inhibitingEntity(ChemicalEntity inhibitingEntity) {
+            return scalingEntities(new ScalingEntities(acceleratingEntity, inhibitingEntity));
+        }
+
+        @Override
+        public BuildStep rate(Quantity<FirstOrderRate> rate) {
+            return cargoAdditionRate(new CargoAdditionRate(rate));
+        }
+
+        @Override
+        public AccelerationStep cargo(Cargoes cargoes) {
+            module.setFeature(cargoes);
+            return this;
+        }
+
+        @Override
+        public RateStep scalingEntities(ScalingEntities scalingEntities) {
+            module.setFeature(scalingEntities);
+            return this;
+        }
+
+        @Override
+        public BuildStep cargoAdditionRate(CargoAdditionRate rate) {
+            module.setFeature(rate);
+            return this;
+        }
+
+        public EndocytoticPitAbsorption build() {
+            module.postConstruct();
+            simulation.addModule(module);
+            return module;
+        }
+
+    }
 
 }
