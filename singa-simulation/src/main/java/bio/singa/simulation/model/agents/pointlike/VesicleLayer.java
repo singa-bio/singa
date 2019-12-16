@@ -21,6 +21,7 @@ import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.modules.displacement.DisplacementBasedModule;
 import bio.singa.simulation.model.modules.displacement.implementations.VesicleConfinedDiffusion;
+import bio.singa.simulation.model.modules.qualitative.implementations.EndocytoticPit;
 import bio.singa.simulation.model.simulation.Simulation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,15 +43,20 @@ public class VesicleLayer {
      */
     private static final Logger logger = LoggerFactory.getLogger(DisplacementBasedModule.class);
 
-    private List<Vesicle> vesicles;
+    private Simulation simulation;
     private Rectangle simulationRegion;
     private final Quantity<Length> displacementEpsilon;
-    private Simulation simulation;
+
+    private List<Vesicle> vesicles;
+    private List<EndocytoticPit> collectingPits;
+    private List<EndocytoticPit> maturingPits;
 
     public VesicleLayer(Simulation simulation) {
         setSimulation(simulation);
-        vesicles = new ArrayList<>();
         displacementEpsilon = UnitRegistry.getSpace().divide(10);
+        vesicles = new ArrayList<>();
+        collectingPits = new ArrayList<>();
+        maturingPits = new ArrayList<>();
     }
 
     public Rectangle getSimulationRegion() {
@@ -84,6 +90,14 @@ public class VesicleLayer {
 
     public List<Vesicle> getVesicles() {
         return vesicles;
+    }
+
+    public List<EndocytoticPit> getAspiringPits() {
+        return collectingPits;
+    }
+
+    public List<EndocytoticPit> getMaturingPits() {
+        return maturingPits;
     }
 
     private void checkForCollisions() {

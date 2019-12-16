@@ -4,6 +4,10 @@ import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.chemistry.entities.EntityRegistry;
 import bio.singa.chemistry.entities.simple.Protein;
 import bio.singa.chemistry.features.reactions.FirstOrderRate;
+import bio.singa.chemistry.features.reactions.RateConstant;
+import bio.singa.chemistry.reactions.conditions.CandidateConditionBuilder;
+import bio.singa.chemistry.reactions.reactors.ReactionChainBuilder;
+import bio.singa.features.formatter.TimeFormatter;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.features.units.UnitRegistry;
@@ -16,13 +20,20 @@ import bio.singa.simulation.model.agents.pointlike.VesicleLayer;
 import bio.singa.simulation.model.agents.surfacelike.Membrane;
 import bio.singa.simulation.model.agents.surfacelike.MembraneLayer;
 import bio.singa.simulation.model.agents.surfacelike.MembraneTracer;
+import bio.singa.simulation.model.concentrations.ConcentrationBuilder;
+import bio.singa.simulation.model.concentrations.InitialConcentration;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.graphs.AutomatonNode;
+import bio.singa.simulation.model.modules.concentration.ModuleFactory;
+import bio.singa.simulation.model.modules.concentration.imlementations.reactions.ReactionBuilder;
+import bio.singa.simulation.model.modules.concentration.imlementations.transport.EndocytoticPitAbsorption;
 import bio.singa.simulation.model.sections.CellRegions;
-import bio.singa.simulation.model.concentrations.ConcentrationBuilder;
-import bio.singa.simulation.model.concentrations.InitialConcentration;
+import bio.singa.simulation.model.sections.CellSubsection;
+import bio.singa.simulation.model.sections.CellTopology;
+import bio.singa.simulation.model.sections.ConcentrationPool;
 import bio.singa.simulation.model.simulation.Simulation;
+import bio.singa.simulation.model.simulation.Updatable;
 import org.junit.jupiter.api.Test;
 import tech.units.indriya.ComparableQuantity;
 import tech.units.indriya.quantity.Quantities;
@@ -32,9 +43,11 @@ import javax.measure.quantity.Length;
 import javax.measure.quantity.Time;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import static bio.singa.features.units.UnitProvider.MICRO_MOLE_PER_LITRE;
 import static bio.singa.simulation.features.SpawnRate.PER_SQUARE_NANOMETRE_PER_SECOND;
+import static bio.singa.simulation.model.sections.CellTopology.INNER;
 import static bio.singa.simulation.model.sections.CellTopology.MEMBRANE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -59,10 +72,30 @@ class ClathrinMediatedEndocytosisTest {
         ComparableQuantity<Time> timeStep = Quantities.getQuantity(1, MILLI(SECOND));
         UnitRegistry.setTime(timeStep);
 
-        ChemicalEntity aqp = Protein.create("AQP").build();
-        ChemicalEntity other = Protein.create("OTHER").build();
-        ChemicalEntity inhibitor = Protein.create("INH").build();
-        ChemicalEntity clathrin = Protein.create("CLA").build();
+        ChemicalEntity primaryCargo = Protein.create("PRIMARY_CARGO")
+                .membraneBound()
+                .build();
+
+        ChemicalEntity otherCargo = Protein.create("OTHER_CARGO")
+                .membraneBound()
+                .build();
+
+        ChemicalEntity inhibitor = Protein.create("INHIBITOR")
+                .membraneBound()
+                .build();
+        ChemicalEntity accelerator = Protein.create("ACCELERATOR")
+                .membraneBound()
+                .build();
+
+        ChemicalEntity initializedCargo = Protein.create("INITIALIZED_CARGO")
+                .membraneBound()
+                .build();
+
+        ChemicalEntity substrate = Protein.create("SUBSTRATE").build();
+        ChemicalEntity product = Protein.create("PRODUCT").build();
+        ChemicalEntity enzyme = Protein.create("ENZYME")
+                .membraneBound()
+                .build();
 
         Simulation simulation = new Simulation();
         simulation.setMaximalTimeStep(Quantities.getQuantity(5, MILLI(SECOND)));
@@ -75,7 +108,7 @@ class ClathrinMediatedEndocytosisTest {
         simulation.setGraph(graph);
 
         ConcentrationBuilder.create(simulation)
-                .entity(aqp)
+                .entity(primaryCargo)
                 .topology(MEMBRANE)
                 .concentrationValue(10)
                 .microMolar()
@@ -83,11 +116,34 @@ class ClathrinMediatedEndocytosisTest {
                 .build();
 
         ConcentrationBuilder.create(simulation)
-                .entity(other)
+                .entity(otherCargo)
+                .topology(MEMBRANE)
+                .concentrationValue(1)
+                .microMolar()
+                .onlyNodes()
+                .build();
+
+        ConcentrationBuilder.create(simulation)
+                .entity(accelerator)
+                .topology(MEMBRANE)
+                .concentrationValue(1)
+                .microMolar()
+                .onlyNodes()
+                .build();
+
+        ConcentrationBuilder.create(simulation)
+                .entity(inhibitor)
+                .topology(MEMBRANE)
+                .concentrationValue(0.1)
+                .microMolar()
+                .onlyNodes()
+                .build();
+
+        InitialConcentration initializedConcentration = ConcentrationBuilder.create()
+                .entity(initializedCargo)
                 .topology(MEMBRANE)
                 .concentrationValue(10)
                 .microMolar()
-                .onlyNodes()
                 .build();
 
         // add vesicle layer
@@ -108,51 +164,118 @@ class ClathrinMediatedEndocytosisTest {
         ComparableQuantity<FirstOrderRate> kf_endoAddition = Quantities.getQuantity(0.03, ONE.divide(SECOND)
                 .asType(FirstOrderRate.class));
 
-        InitialConcentration clathrinConcentration = ConcentrationBuilder.create()
-                .entity(clathrin)
-                .topology(MEMBRANE)
+        Quantity<MolarConcentration> checkpointConcentration = UnitRegistry.concentration(MolarConcentration.moleculesToConcentration(400));
+
+        RateConstant k_on = RateConstant.create(0.1)
+                .forward().secondOrder()
+                .concentrationUnit(MICRO_MOLE_PER_LITRE)
+                .timeUnit(SECOND)
+                .build();
+
+        RateConstant k_off = RateConstant.create(1)
+                .backward().firstOrder()
+                .timeUnit(SECOND)
+                .build();
+
+        RateConstant k_cat = RateConstant.create(1)
+                .forward().firstOrder()
+                .timeUnit(SECOND)
+                .build();
+
+        ReactionBuilder.FinalStep binding = ReactionBuilder.ruleBased(simulation)
+                .rule(ReactionChainBuilder.bind(substrate)
+                        .to(enzyme)
+                        .considerInversion()
+                        .identifier("binding")
+                        .build())
+                .reversible()
+                .forwardReactionRate(k_on)
+                .backwardReactionRate(k_off);
+
+        ReactionBuilder.FinalStep catalysis = ReactionBuilder.ruleBased(simulation)
+                .rule(ReactionChainBuilder.add(product)
+                        .to(enzyme)
+                        .condition(CandidateConditionBuilder.hasOneOfEntity(substrate))
+                        .and()
+                        .remove(substrate)
+                        .from(enzyme)
+                        .and()
+                        .release(product)
+                        .from(enzyme)
+                        .identifier("catalysis")
+                        .build())
+                .irreversible()
+                .rate(k_cat);
+
+        ReactionBuilder.generateNetwork();
+
+        // clathrin mediated endocytosis
+        ClathrinMediatedEndocytosis endocytosis = new ClathrinMediatedEndocytosis(vesicleLayer);
+        endocytosis.limitPitsToOneAtATime();
+        endocytosis.setIdentifier("endocytosis");
+        endocytosis.setFeature(new AffectedRegion(CellRegions.CELL_OUTER_MEMBRANE_REGION));
+        endocytosis.setFeature(new PitFormationRate(Quantities.getQuantity(4, PER_SQUARE_NANOMETRE_PER_SECOND)));
+        endocytosis.setFeature(VesicleRadius.DEFAULT_VESICLE_RADIUS);
+        endocytosis.setFeature(new EndocytosisCheckpointTime(Quantities.getQuantity(30.0, SECOND)));
+        endocytosis.setFeature(new EndocytosisCheckpointConcentration(checkpointConcentration));
+        endocytosis.setFeature(new Cargo(primaryCargo));
+        Cargoes cargoes = new Cargoes(primaryCargo, otherCargo, EntityRegistry.matchExactly("ENZYME"));
+        endocytosis.setFeature(cargoes);
+        endocytosis.setFeature(new MaturationTime(Quantities.getQuantity(50.0, SECOND)));
+        endocytosis.setFeature(new InitialConcentrations(Collections.singletonList(initializedConcentration)));
+        simulation.addModule(endocytosis);
+
+        // pit addition
+        // TODO add builder
+        EndocytoticPitAbsorption absorption = ModuleFactory.setupModule(EndocytoticPitAbsorption.class,
+                ModuleFactory.Scope.SEMI_NEIGHBOURHOOD_DEPENDENT,
+                ModuleFactory.Specificity.UPDATABLE_SPECIFIC);
+        absorption.setSimulation(simulation);
+
+        absorption.setFeature(new CargoAdditionRate(kf_endoAddition));
+        absorption.setFeature(cargoes);
+        absorption.setFeature(new ScalingEntities(otherCargo, inhibitor));
+
+        absorption.postConstruct();
+        simulation.addModule(absorption);
+
+        ConcentrationBuilder.create(simulation)
+                .entity(EntityRegistry.matchExactly("SUBSTRATE"))
+                .topology(INNER)
                 .concentrationValue(10)
                 .microMolar()
                 .build();
 
-        Quantity<MolarConcentration> checkpointConcentration = UnitRegistry.concentration(MolarConcentration.moleculesToConcentration(400));
+        ConcentrationBuilder.create(simulation)
+                .entity(EntityRegistry.matchExactly("ENZYME"))
+                .topology(MEMBRANE)
+                .concentrationValue(1)
+                .microMolar()
+                .build();
 
-        // clathrin mediated endocytosis
-        ClathrinMediatedEndocytosis endocytosis = new ClathrinMediatedEndocytosis();
-        endocytosis.limitPitsToOneAtATime();
-        endocytosis.setIdentifier("endocytosis: aqp2 vesicle endocytosis");
-        endocytosis.setFeature(new AffectedRegion(CellRegions.CELL_OUTER_MEMBRANE_REGION));
-        endocytosis.setFeature(new PitFormationRate(Quantities.getQuantity(4, PER_SQUARE_NANOMETRE_PER_SECOND)));
-        endocytosis.setFeature(VesicleRadius.DEFAULT_VESICLE_RADIUS);
-        endocytosis.setFeature(new CargoAdditionRate(kf_endoAddition));
-        endocytosis.setFeature(new EndocytosisCheckpointTime(Quantities.getQuantity(30.0, SECOND)));
-        endocytosis.setFeature(new EndocytosisCheckpointConcentration(checkpointConcentration));
-        endocytosis.setFeature(new Cargoes(EntityRegistry.matchExactly("AQP")));
-        endocytosis.setFeature(new MaturationTime(Quantities.getQuantity(50.0, SECOND)));
-        endocytosis.setFeature(new ScalingEntities(other, inhibitor));
-        endocytosis.setFeature(new InitialConcentrations(Collections.singletonList(clathrinConcentration)));
-        simulation.addModule(endocytosis);
+        binding.build();
+        catalysis.build();
 
         simulation.nextEpoch();
-        ClathrinMediatedEndocytosis clathrinMediatedEndocytosis = simulation.getModules().stream()
-                .filter(module -> (module instanceof ClathrinMediatedEndocytosis))
-                .findAny()
-                .map(ClathrinMediatedEndocytosis.class::cast)
-                .orElseThrow(IllegalStateException::new);
 
-        ClathrinMediatedEndocytosis.Pit pit = clathrinMediatedEndocytosis.getAspiringPits().get(0);
-//        System.out.println("initial concentration: " + MolarConcentration.concentrationToMolecules(pit.getConcentrationDeltaManager().getConcentrationContainer()
-//                .get(CellRegions.VESICLE_REGION.getMembraneSubsection(), EntityRegistry.matchExactly("AQP"))));
+        EndocytoticPit pit = vesicleLayer.getAspiringPits().get(0);
+        System.out.println("initialized concentrations");
+        printConcentrations(pit);
+        System.out.println();
+        printConcentrations(node);
 
         while (simulation.getElapsedTime().isLessThanOrEqualTo(Quantities.getQuantity(31, SECOND))) {
             simulation.nextEpoch();
-//            System.out.println("concentration: " + MolarConcentration.concentrationToMolecules(pit.getConcentrationDeltaManager().getConcentrationContainer()
-//                    .get(CellRegions.VESICLE_REGION.getMembraneSubsection(), EntityRegistry.matchExactly("AQP"))));
+//            System.out.println(TimeFormatter.formatTime(simulation.getElapsedTime()));
+//            printConcentrations(pit);
+//            System.out.println();
+//            printConcentrations(node);
         }
 
         // check if threshold has been reached
-        assertTrue(UnitRegistry.concentration(pit.getConcentrationDeltaManager().getConcentrationContainer()
-                .get(MEMBRANE, EntityRegistry.matchExactly("AQP"))).getValue().doubleValue() >= checkpointConcentration.getValue().doubleValue());
+        System.out.println(MolarConcentration.concentrationToMolecules(pit.getConcentrationContainer().get(MEMBRANE, primaryCargo)));
+        assertTrue(UnitRegistry.concentration(pit.getConcentrationContainer()
+                .get(MEMBRANE, primaryCargo)).getValue().doubleValue() >= checkpointConcentration.getValue().doubleValue());
 
         while (simulation.getElapsedTime().isLessThanOrEqualTo(Quantities.getQuantity(85, SECOND))) {
             simulation.nextEpoch();
@@ -162,8 +285,28 @@ class ClathrinMediatedEndocytosisTest {
         assertEquals(1, vesicles.size());
 
         Vesicle vesicle = vesicles.get(0);
+        System.out.println(TimeFormatter.formatTime(simulation.getElapsedTime()));
+        printConcentrations(vesicle);
+        System.out.println();
+        printConcentrations(node);
+
         assertTrue(400 < MolarConcentration.concentrationToMolecules(vesicle.getConcentrationContainer()
-                    .get(CellRegions.VESICLE_REGION.getMembraneSubsection(), EntityRegistry.matchExactly("AQP"))).getValue().intValue());
-        assertEquals(10, UnitRegistry.concentration(vesicle.getConcentrationContainer().get(MEMBRANE, clathrin)).to(MICRO_MOLE_PER_LITRE).getValue().doubleValue());
+                .get(CellRegions.VESICLE_REGION.getMembraneSubsection(), initializedCargo)).getValue().intValue());
+
+        assertEquals(10, UnitRegistry.concentration(vesicle.getConcentrationContainer()
+                .get(MEMBRANE, initializedCargo)).to(MICRO_MOLE_PER_LITRE).getValue().doubleValue());
     }
+
+    private void printConcentrations(Updatable updatable) {
+        for (CellSubsection referencedSubsection : updatable.getConcentrationContainer().getReferencedSubsections()) {
+            Map.Entry<CellTopology, ConcentrationPool> pool = updatable.getConcentrationContainer().getPool(referencedSubsection);
+            Map<ChemicalEntity, Double> concentrations = pool.getValue().getConcentrations();
+            System.out.println(pool.getKey());
+            for (Map.Entry<ChemicalEntity, Double> entry : concentrations.entrySet()) {
+                System.out.println("  " + entry.getKey() + " : " + UnitRegistry.humanReadable(entry.getValue()));
+            }
+        }
+        System.out.println();
+    }
+
 }

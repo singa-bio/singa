@@ -373,6 +373,8 @@ public class Simulation {
     public void collectUpdatables() {
         updatables = new ArrayList<>(graph.getNodes());
         updatables.addAll(vesicleLayer.getVesicles());
+        updatables.addAll(vesicleLayer.getAspiringPits());
+        updatables.addAll(vesicleLayer.getMaturingPits());
     }
 
     /**
@@ -468,11 +470,6 @@ public class Simulation {
 
     public void addReferencedEntity(ChemicalEntity chemicalEntity) {
         chemicalEntities.put(chemicalEntity.getIdentifier(), chemicalEntity);
-    }
-
-    public void observe(Updatable updatable) {
-        observedUpdatables.add(updatable);
-        updatable.setObserved(true);
     }
 
     public Set<Updatable> getObservedUpdatables() {

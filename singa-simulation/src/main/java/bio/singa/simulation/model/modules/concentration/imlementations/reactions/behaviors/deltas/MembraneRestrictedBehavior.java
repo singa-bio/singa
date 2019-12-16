@@ -14,11 +14,11 @@ import static bio.singa.simulation.model.sections.CellTopology.MEMBRANE;
 /**
  * @author cl
  */
-public class VesicleBehavior implements DeltaBehavior {
+public class MembraneRestrictedBehavior implements DeltaBehavior {
 
     private ReactionEvent event;
 
-    public VesicleBehavior(ReactionEvent event) {
+    public MembraneRestrictedBehavior(ReactionEvent event) {
         this.event = event;
     }
 
@@ -42,7 +42,7 @@ public class VesicleBehavior implements DeltaBehavior {
         List<ReactantConcentration> concentrations = new ArrayList<>();
         for (Reactant reactant : reactants) {
             if (reactant.getPreferredTopology().equals(MEMBRANE)) {
-                concentrations.add(new ReactantConcentration(reactant, event.getCurrentVesicleContainer().get(MEMBRANE, reactant.getEntity())));
+                concentrations.add(new ReactantConcentration(reactant, event.getMembraneRestrictedContainer().get(MEMBRANE, reactant.getEntity())));
             } else {
                 concentrations.add(new ReactantConcentration(reactant, event.getCurrentNodeContainer().get(reactant.getPreferredTopology(), reactant.getEntity())));
             }
@@ -56,8 +56,8 @@ public class VesicleBehavior implements DeltaBehavior {
         for (Reactant reactant : reactants) {
             CellSubsection subsection;
             if (reactant.getPreferredTopology().equals(MEMBRANE)) {
-                subsection = event.getCurrentVesicleContainer().getMembraneSubsection();
-                deltas.add(new ReactantDelta(new ConcentrationDeltaIdentifier(event.getCurrentVesicle(), subsection, reactant.getEntity()), velocity * reactant.getStoichiometricNumber()));
+                subsection = event.getMembraneRestrictedContainer().getMembraneSubsection();
+                deltas.add(new ReactantDelta(new ConcentrationDeltaIdentifier(event.getCurrentMembraneRestrictedUpdatable(), subsection, reactant.getEntity()), velocity * reactant.getStoichiometricNumber()));
             } else {
                 subsection = event.getCurrentNodeContainer().getSubsection(reactant.getPreferredTopology());
                 deltas.add(new ReactantDelta(new ConcentrationDeltaIdentifier(event.getCurrentNode(), subsection, reactant.getEntity()), velocity * reactant.getStoichiometricNumber()));

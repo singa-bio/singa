@@ -14,7 +14,7 @@ public class NumericalError {
     /**
      * The minimal possible error not assigned to any node or chemical entity.
      */
-    public static final NumericalError MINIMAL_EMPTY_ERROR = new NumericalError(null, null, -Double.MAX_VALUE);
+    public static final NumericalError MINIMAL_EMPTY_ERROR = new NumericalError(null, null, 0.0);
 
     /**
      * The node where the error occurred.

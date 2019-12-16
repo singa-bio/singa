@@ -274,7 +274,7 @@ public class UpdateScheduler {
         double multiplier = estimateIncrease();
         Quantity<Time> estimate = original.multiply(multiplier);
 
-//        System.out.println("+ " + simulation.getEpoch() + " : " + original.getValue().doubleValue() + " -> " + estimate.getValue().doubleValue() + " (" + multiplier + ")");
+        logger.debug("increasing time step: " + simulation.getEpoch() + " : " + original.getValue().doubleValue() + " -> " + estimate.getValue().doubleValue() + " (" + multiplier + ")");
 
         UnitRegistry.setTime(estimate);
 
@@ -292,7 +292,7 @@ public class UpdateScheduler {
         double multiplier = estimateDecrease();
         Quantity<Time> estimate = original.multiply(multiplier);
 
-//        System.out.println("- " + simulation.getEpoch() + " : " + original.getValue().doubleValue() + " -> " + estimate.getValue().doubleValue() + " (" + multiplier + ")");
+        logger.debug("decreasing time step: " + simulation.getEpoch() + " : " + original.getValue().doubleValue() + " -> " + estimate.getValue().doubleValue() + " (" + multiplier + ")");
 
         UnitRegistry.setTime(estimate);
 
@@ -310,7 +310,7 @@ public class UpdateScheduler {
 
         Quantity<Time> estimate = original.multiply(0.7);
 
-//        System.out.println("- " + simulation.getEpoch() + " : " + original.getValue().doubleValue() + " -> " + estimate.getValue().doubleValue() + " (" + 0.7 + ")");
+        logger.debug("decreasing time step: " + simulation.getEpoch() + " : " + original.getValue().doubleValue() + " -> " + estimate.getValue().doubleValue() + " (" + 0.7 + ")");
 
         UnitRegistry.setTime(estimate);
 
