@@ -167,6 +167,7 @@ public class Simulation {
 
         // apply all modules
         scheduler.nextEpoch();
+
         // apply generated deltas
         logger.debug("Applying deltas.");
         for (Updatable updatable : updatables) {

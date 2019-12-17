@@ -67,12 +67,12 @@ public abstract class AbstractUpdateModule implements UpdateModule {
             switch (state) {
                 case PENDING:
                     // calculate update
-                    logger.debug("calculating updates for {}.", Thread.currentThread().getName());
+                    logger.debug("calculating updates for {} ({}).", Thread.currentThread().getName(), identifier);
                     calculateUpdates();
                     break;
                 case REQUIRING_RECALCULATION:
                     // optimize time step
-                    logger.debug("{} requires recalculation.", Thread.currentThread().getName());
+                    logger.debug("{} ({}) requires recalculation.", Thread.currentThread().getName(), identifier);
                     boolean prioritizedModule = scheduler.interrupt();
                     if (prioritizedModule) {
                         optimizeTimeStep();

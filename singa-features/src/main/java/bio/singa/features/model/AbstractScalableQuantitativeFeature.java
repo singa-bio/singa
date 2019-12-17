@@ -49,7 +49,7 @@ public abstract class AbstractScalableQuantitativeFeature<FeatureContent extends
     }
 
     public void scale() {
-        scaledQuantity = UnitRegistry.scaleTime(getContent()).getValue().doubleValue();
+        scaledQuantity = UnitRegistry.scale(getContent()).getValue().doubleValue();
         halfScaledQuantity = scaledQuantity * 0.5;
     }
 

@@ -1,6 +1,7 @@
 package bio.singa.features.units;
 
 import bio.singa.features.model.FeatureRegistry;
+import bio.singa.features.parameters.Environment;
 import bio.singa.features.quantities.MolarConcentration;
 import tech.units.indriya.quantity.Quantities;
 import tech.units.indriya.unit.TransformedUnit;
@@ -115,6 +116,7 @@ public class UnitRegistry {
         // only rescale if unit was updated
         getInstance().space = Quantities.getQuantity(getInstance().space.getValue().doubleValue(), unit);
         getInstance().defaultUnits.put(LENGTH, unit);
+        Environment.setSystemAndSimulationScales();
         rescaleRegisteredUnits();
     }
 

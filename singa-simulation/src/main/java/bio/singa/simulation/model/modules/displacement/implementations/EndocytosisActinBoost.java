@@ -33,7 +33,7 @@ public class EndocytosisActinBoost extends DisplacementBasedModule {
 
     @Override
     public void calculateUpdates() {
-        scaledVelocity = getScaledFeature(ActinBoostVelocity.class) * 2.0 / 60.0;
+        scaledVelocity = getScaledFeature(ActinBoostVelocity.class) /* * 2.0 / 60.0*/;
         super.calculateUpdates();
     }
 

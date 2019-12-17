@@ -274,22 +274,25 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
         if (supplier.getCurrentFullDeltas().isEmpty()) {
             return NumericalError.MINIMAL_EMPTY_ERROR;
         }
-        if (supplier.getCurrentFullDeltas().size() != supplier.getCurrentHalfDeltas().size()) {
-            logger.trace("The deltas that should be applied have fallen below " +
-                    "the threshold of " + deltaCutoff + ". (Module: " + getIdentifier() + ")");
-            return NumericalError.MINIMAL_EMPTY_ERROR;
-        }
 
         // compare full and half deltas
         double largestLocalError = -Double.MAX_VALUE;
         ConcentrationDeltaIdentifier largestIdentifier = null;
         double associatedDelta = 0.0;
         for (ConcentrationDeltaIdentifier identifier : supplier.getCurrentFullDeltas().keySet()) {
-            double halfDelta = supplier.getCurrentHalfDeltas().get(identifier).getValue();
+            ConcentrationDelta halfDeltaObject = supplier.getCurrentHalfDeltas().get(identifier);
+            if (halfDeltaObject == null) {
+                continue;
+            }
+            double halfDelta = halfDeltaObject.getValue();
             if (halfDelta < getSimulation().getScheduler().getMoleculeFraction()) {
                 continue;
             }
-            double fullDelta = supplier.getCurrentFullDeltas().get(identifier).getValue();
+            ConcentrationDelta fullDeltaObject = supplier.getCurrentFullDeltas().get(identifier);
+            if (fullDeltaObject == null) {
+                continue;
+            }
+            double fullDelta = fullDeltaObject.getValue();
             // calculate error
             double localError = Math.abs(1 - (fullDelta / halfDelta));
             // determine the largest error in the current deltas

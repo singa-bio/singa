@@ -113,7 +113,6 @@ public class Environment extends Observable {
         macroViscosity = DEFAULT_MACRO_VISCOSITY;
         matrixViscosity = DEFAULT_MATRIX_VISCOSITY;
         emptyConcentration = UnitRegistry.concentration(0.0);
-        setSystemAndSimulationScales();
         setChanged();
         notifyObservers();
     }
@@ -125,7 +124,6 @@ public class Environment extends Observable {
         getInstance().macroViscosity = DEFAULT_MACRO_VISCOSITY;
         getInstance().matrixViscosity = DEFAULT_MATRIX_VISCOSITY;
         getInstance().emptyConcentration = UnitRegistry.concentration(0.0);
-        getInstance().setSystemAndSimulationScales();
         getInstance().setChanged();
         getInstance().notifyObservers();
     }
@@ -192,9 +190,9 @@ public class Environment extends Observable {
         return getInstance().simulationScale;
     }
 
-    private void setSystemAndSimulationScales() {
-        simulationScale = simulationExtend / systemExtend.getValue().doubleValue();
-        systemScale = systemExtend.divide(simulationExtend);
+    public static void setSystemAndSimulationScales() {
+        getInstance().simulationScale = getInstance().simulationExtend / getInstance().systemExtend.to(UnitRegistry.getSpaceUnit()).getValue().doubleValue();
+        getInstance().systemScale = getInstance().systemExtend.divide(getInstance().simulationExtend);
     }
 
     public static Quantity<Length> convertSimulationToSystemScale(double simulationDistance) {

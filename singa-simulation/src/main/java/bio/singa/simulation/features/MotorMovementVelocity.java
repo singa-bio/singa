@@ -42,8 +42,7 @@ public class MotorMovementVelocity extends AbstractScalableQuantitativeFeature<S
 
     @Override
     public void scale() {
-        scaledQuantity = UnitRegistry.scaleTime(getContent()).getValue().doubleValue()* Environment.getSimulationScale();
-//        scaledQuantity = UnitRegistry.scaleTime(getContent()).getValue().doubleValue();
+        scaledQuantity = UnitRegistry.scaleTime(getContent()).getValue().doubleValue() * Environment.getSimulationScale();
         halfScaledQuantity = scaledQuantity * 0.5;
     }
 

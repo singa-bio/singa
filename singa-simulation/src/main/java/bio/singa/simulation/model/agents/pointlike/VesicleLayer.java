@@ -177,8 +177,7 @@ public class VesicleLayer {
         for (Vesicle vesicle : vesicles) {
             Vector2D totalDisplacement = vesicle.calculateTotalDisplacement();
             Quantity<Length> lengthQuantity = Environment.convertSimulationToSystemScale(totalDisplacement.getMagnitude());
-            lengthQuantity.to(displacementEpsilon.getUnit());
-            if (lengthQuantity.getValue().doubleValue() > displacementEpsilon.getValue().doubleValue()) {
+            if (lengthQuantity.to(displacementEpsilon.getUnit()).getValue().doubleValue() > displacementEpsilon.getValue().doubleValue()) {
                 logger.info("The magnitude of the spatial displacement of {} is {}, higher than the allowed {}.", vesicle.getStringIdentifier(), lengthQuantity, displacementEpsilon);
                 return false;
             }

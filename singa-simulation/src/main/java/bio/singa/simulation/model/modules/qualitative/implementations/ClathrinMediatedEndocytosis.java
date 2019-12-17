@@ -201,9 +201,9 @@ public class ClathrinMediatedEndocytosis extends QualitativeModule {
             List<ChemicalEntity> entities = getFeature(Cargoes.class).getContent();
             preAspiringPit.initializeConcentrations(entities, this);
             preAspiringPit.getConcentrationManager().backupConcentrations();
-            // add to pit and updatables
+            // add to pit
             vesicleLayer.getAspiringPits().add(preAspiringPit);
-            vesicleLayer.getSimulation().getUpdatables().add(preAspiringPit);
+//            vesicleLayer.getSimulation().getUpdatables().add(preAspiringPit);
             logger.debug("Clathrin-coated pit formed at {}.", preAspiringPit.getSpawnSite());
         }
         preAspiringPits.clear();
