@@ -306,9 +306,9 @@ public class ConcentrationDeltaManager {
         currentConcentrations = originalConcentrations;
         interimConcentrations = originalConcentrations;
         for (ConcentrationDelta delta : finalDeltas) {
-            if (fixedEntities.contains(delta.getChemicalEntity())) {
-                continue;
-            }
+//            if (fixedEntities.contains(delta.getChemicalEntity())) {
+//                continue;
+//            }
             // it may happen that concentrations are calculated as strut points that have no representations in the
             // original concentrations and therefore non existent entities would be removed
             double previousConcentration = currentConcentrations.get(delta.getCellSubsection(), delta.getChemicalEntity());

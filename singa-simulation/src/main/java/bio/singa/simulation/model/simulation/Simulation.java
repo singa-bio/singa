@@ -14,6 +14,7 @@ import bio.singa.simulation.model.agents.pointlike.VesicleLayer;
 import bio.singa.simulation.model.agents.surfacelike.MembraneLayer;
 import bio.singa.simulation.model.agents.volumelike.VolumeLayer;
 import bio.singa.simulation.model.agents.volumelike.VolumeLikeAgent;
+import bio.singa.simulation.model.concentrations.InitialConcentration;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.graphs.NeighborhoodMappingManager;
@@ -24,7 +25,6 @@ import bio.singa.simulation.model.modules.concentration.imlementations.transport
 import bio.singa.simulation.model.modules.displacement.DisplacementBasedModule;
 import bio.singa.simulation.model.rules.AssignmentRule;
 import bio.singa.simulation.model.rules.AssignmentRules;
-import bio.singa.simulation.model.concentrations.InitialConcentration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tech.units.indriya.ComparableQuantity;
@@ -263,9 +263,11 @@ public class Simulation {
         while (iterator.hasNext()) {
             InitialConcentration concentration = iterator.next();
             if (concentration.getTime().isLessThanOrEqualTo(elapsedTime)) {
-                logger.info("Initialized concentration {}.", concentration);
+//                logger.info("Initialized concentration {}.", concentration);
                 concentration.apply(this);
-                iterator.remove();
+                if (!concentration.isFix()) {
+                    iterator.remove();
+                }
             }
         }
     }
