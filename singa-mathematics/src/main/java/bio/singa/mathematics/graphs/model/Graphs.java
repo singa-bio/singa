@@ -337,6 +337,7 @@ public class Graphs {
             for (int j = 0; j < nodes2.size(); j++) {
                 Pair<NodeType> nodePair = new Pair<>(nodes1.get(i), nodes2.get(j));
                 nodePairs.add(nodePair);
+                // TODO add node conditions here
             }
         }
         GenericGraph<Pair<NodeType>> modularProduct = new GenericGraph<>();
@@ -348,6 +349,7 @@ public class Graphs {
                 // pairs (u,v) and (u',v') are connected iff:
                 // u is adjacent with u' and v is adjacent with v' , or
                 // u is not adjacent with u' and v is not adjacent with v'
+                // TODO add edge conditions here
                 Pair<NodeType> pair2 = nodePairs.get(j);
                 if (pair1.getFirst().equals(pair2.getFirst()) || pair1.getSecond().equals(pair2.getSecond())) {
                     continue;
