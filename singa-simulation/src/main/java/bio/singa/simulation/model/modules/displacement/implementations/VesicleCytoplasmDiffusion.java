@@ -2,6 +2,7 @@ package bio.singa.simulation.model.modules.displacement.implementations;
 
 import bio.singa.chemistry.features.diffusivity.Diffusivity;
 import bio.singa.features.parameters.Environment;
+import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.mathematics.vectors.Vectors;
 import bio.singa.simulation.model.agents.pointlike.Vesicle;
@@ -33,7 +34,7 @@ public class VesicleCytoplasmDiffusion extends DisplacementBasedModule {
     }
 
     public DisplacementDelta calculateDisplacement(Vesicle vesicle) {
-        double scaling = SQRT2 * Math.sqrt(vesicle.getFeature(Diffusivity.class).getScaledQuantity())*Environment.getSimulationScale();
+        double scaling = SQRT2 * Math.sqrt(vesicle.getFeature(Diffusivity.class).getScaledQuantity())*Environment.getSimulationScale()* UnitRegistry.getSpaceScale();
         Vector2D gaussian = Vectors.generateStandardGaussian2DVector();
         return new DisplacementDelta(this, gaussian.multiply(scaling));
     }

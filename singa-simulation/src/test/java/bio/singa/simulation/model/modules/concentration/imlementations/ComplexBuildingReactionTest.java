@@ -7,12 +7,7 @@ import bio.singa.chemistry.entities.simple.SmallMolecule;
 import bio.singa.chemistry.features.reactions.RateConstant;
 import bio.singa.features.identifiers.ChEBIIdentifier;
 import bio.singa.features.identifiers.UniProtIdentifier;
-import bio.singa.features.parameters.Environment;
 import bio.singa.features.units.UnitRegistry;
-import bio.singa.mathematics.geometry.faces.Rectangle;
-import bio.singa.mathematics.vectors.Vector2D;
-import bio.singa.simulation.model.agents.pointlike.Vesicle;
-import bio.singa.simulation.model.agents.pointlike.VesicleLayer;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.graphs.AutomatonNode;
@@ -25,18 +20,16 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import tech.units.indriya.ComparableQuantity;
 import tech.units.indriya.quantity.Quantities;
 
 import javax.measure.Quantity;
-import javax.measure.quantity.Length;
 import javax.measure.quantity.Time;
 
 import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static bio.singa.simulation.model.sections.CellTopology.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static tech.units.indriya.unit.MetricPrefix.*;
+import static tech.units.indriya.unit.MetricPrefix.MILLI;
 import static tech.units.indriya.unit.Units.*;
 
 /**
@@ -326,169 +319,6 @@ class ComplexBuildingReactionTest {
             assertTrue(currentOuterConcentration > previousOuterConcentration);
             previousOuterConcentration = currentOuterConcentration;
         }
-    }
-
-    @Test
-    @DisplayName("complex building reaction - section changing binding with fully contained vesicle")
-    void testComplexBuildingWithVesicle() {
-        double simulationExtend = 150;
-        int nodesHorizontal = 3;
-        int nodesVertical = 3;
-
-        Rectangle rectangle = new Rectangle(simulationExtend, simulationExtend);
-        Simulation simulation = new Simulation();
-        simulation.setSimulationRegion(rectangle);
-
-        // setup scaling
-        ComparableQuantity<Length> systemExtend = Quantities.getQuantity(1, MICRO(METRE));
-        Environment.setSystemExtend(systemExtend);
-        Environment.setSimulationExtend(simulationExtend);
-        Environment.setNodeSpacingToDiameter(systemExtend, nodesHorizontal);
-
-        // setup graph and assign regions
-        AutomatonGraph graph = AutomatonGraphs.createRectangularAutomatonGraph(nodesHorizontal, nodesVertical);
-        simulation.setGraph(graph);
-
-        // rate constants
-        RateConstant forwardRate = RateConstant.create(1.0e6)
-                .forward().secondOrder()
-                .concentrationUnit(MOLE_PER_LITRE)
-                .timeUnit(MINUTE)
-                .build();
-
-        RateConstant backwardRate = RateConstant.create(0.01)
-                .backward().firstOrder()
-                .timeUnit(MINUTE)
-                .build();
-
-        // reactants
-        ChemicalEntity bindee = SmallMolecule.create("bindee").build();
-        Protein binder = new Protein.Builder("binder").build();
-        ComplexEntity complex = ComplexEntity.from(binder, bindee);
-
-        // create and add module
-        ReactionBuilder.staticReactants(simulation)
-                .addSubstrate(binder, MEMBRANE)
-                .addSubstrate(bindee, INNER)
-                .addProduct(complex, MEMBRANE)
-                .complexBuilding()
-                .associationRate(forwardRate)
-                .dissociationRate(backwardRate)
-                .build();
-
-        // initialize vesicle layer
-        VesicleLayer vesicleLayer = new VesicleLayer(simulation);
-        simulation.setVesicleLayer(vesicleLayer);
-
-        // vesicle contained
-        Vesicle vesicle = new Vesicle(new Vector2D(25.0, 25.0), Quantities.getQuantity(20, NANO(METRE)));
-        vesicle.getConcentrationContainer().initialize(MEMBRANE, binder, Quantities.getQuantity(0.1, MOLE_PER_LITRE));
-        vesicle.getConcentrationContainer().initialize(MEMBRANE, complex, Quantities.getQuantity(0.0, MOLE_PER_LITRE));
-        vesicleLayer.addVesicle(vesicle);
-
-        // concentrations
-        AutomatonNode node = graph.getNode(0, 0);
-        node.getConcentrationContainer().initialize(INNER, bindee, Quantities.getQuantity(1.0, MOLE_PER_LITRE));
-
-        double previousNodeConcentration = 1.0;
-        double previousVesicleConcentration = 0.0;
-        for (int i = 0; i < 10; i++) {
-            simulation.nextEpoch();
-            // node assertion
-            double currentNodeConcentration = node.getConcentrationContainer().get(INNER, bindee);
-            assertTrue(currentNodeConcentration < previousNodeConcentration);
-            previousNodeConcentration = currentNodeConcentration;
-            // vesicle assertion
-            double currentVesicleConcentration = vesicle.getConcentrationContainer().get(MEMBRANE, complex);
-            assertTrue(currentVesicleConcentration > previousVesicleConcentration);
-            previousVesicleConcentration = currentVesicleConcentration;
-        }
-    }
-
-
-    @Test
-    @DisplayName("complex building reaction - section changing binding with partially contained vesicle")
-    void testComplexBuildingWithPartialVesicle() {
-        double simulationExtend = 150;
-        int nodesHorizontal = 3;
-        int nodesVertical = 3;
-
-        Rectangle rectangle = new Rectangle(simulationExtend, simulationExtend);
-        Simulation simulation = new Simulation();
-        simulation.setSimulationRegion(rectangle);
-
-        // setup scaling
-        ComparableQuantity<Length> systemExtend = Quantities.getQuantity(1, MICRO(METRE));
-        Environment.setSystemExtend(systemExtend);
-        Environment.setSimulationExtend(simulationExtend);
-        Environment.setNodeSpacingToDiameter(systemExtend, nodesHorizontal);
-
-        // setup graph and assign regions
-        AutomatonGraph graph = AutomatonGraphs.createRectangularAutomatonGraph(nodesHorizontal, nodesVertical);
-        simulation.setGraph(graph);
-
-        // rate constants
-        RateConstant forwardRate = RateConstant.create(1.0e6)
-                .forward().secondOrder()
-                .concentrationUnit(MOLE_PER_LITRE)
-                .timeUnit(MINUTE)
-                .build();
-
-        RateConstant backwardRate = RateConstant.create(0.01)
-                .backward().firstOrder()
-                .timeUnit(MINUTE)
-                .build();
-
-        // reactants
-        ChemicalEntity bindee = SmallMolecule.create("bindee").build();
-        Protein binder = Protein.create("binder").build();
-        ComplexEntity complex = ComplexEntity.from(binder, bindee);
-
-        // create and add module
-        ReactionBuilder.staticReactants(simulation)
-                .addSubstrate(binder, MEMBRANE)
-                .addSubstrate(bindee, INNER)
-                .addProduct(complex, MEMBRANE)
-                .complexBuilding()
-                .associationRate(forwardRate)
-                .dissociationRate(backwardRate)
-                .build();
-
-        // initialize vesicle layer
-        VesicleLayer vesicleLayer = new VesicleLayer(simulation);
-        simulation.setVesicleLayer(vesicleLayer);
-
-        // vesicle contained
-        Vesicle vesicle = new Vesicle(new Vector2D(25.0, 50.0), Quantities.getQuantity(20, NANO(METRE)));
-        vesicle.getConcentrationContainer().initialize(MEMBRANE, binder, Quantities.getQuantity(0.1, MOLE_PER_LITRE));
-        vesicle.getConcentrationContainer().initialize(MEMBRANE, complex, Quantities.getQuantity(0.0, MOLE_PER_LITRE));
-        vesicleLayer.addVesicle(vesicle);
-
-        // concentrations
-        AutomatonNode first = graph.getNode(0, 0);
-        first.getConcentrationContainer().initialize(INNER, bindee, Quantities.getQuantity(1.0, MOLE_PER_LITRE));
-        AutomatonNode second = graph.getNode(0, 1);
-        second.getConcentrationContainer().initialize(INNER, bindee, Quantities.getQuantity(0.5, MOLE_PER_LITRE));
-
-        // checkpoints
-        Quantity<Time> firstCheckpoint = Quantities.getQuantity(50, MICRO(SECOND));
-        boolean firstCheckpointPassed = false;
-        Quantity<Time> secondCheckpoint = Quantities.getQuantity(500, MICRO(SECOND));
-        // run simulation
-        while (simulation.getElapsedTime().isLessThanOrEqualTo(secondCheckpoint)) {
-            simulation.nextEpoch();
-            if (!firstCheckpointPassed && simulation.getElapsedTime().isGreaterThanOrEqualTo(firstCheckpoint)) {
-                assertEquals(9.693E-7, first.getConcentrationContainer().get(INNER, bindee), 1e-10);
-                assertEquals(4.847E-7, second.getConcentrationContainer().get(INNER, bindee), 1e-10);
-                assertEquals(4.602E-8, vesicle.getConcentrationContainer().get(MEMBRANE, complex), 1e-10);
-                firstCheckpointPassed = true;
-            }
-        }
-
-        // check final values
-        assertEquals(9.335E-7, first.getConcentrationContainer().get(INNER, bindee), 1e-10);
-        assertEquals(4.667E-7, second.getConcentrationContainer().get(INNER, bindee), 1e-10);
-        assertEquals(9.972E-8, vesicle.getConcentrationContainer().get(MEMBRANE, complex), 1e-10);
     }
 
 }

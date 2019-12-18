@@ -114,12 +114,28 @@ public class FieldSupplier {
         return fullDeltas;
     }
 
+    public void addFullDelta(ConcentrationDeltaIdentifier deltaIdentifier, ConcentrationDelta delta) {
+        if (fullDeltas.containsKey(deltaIdentifier)) {
+            fullDeltas.put(deltaIdentifier, fullDeltas.get(deltaIdentifier).add(delta.getValue()));
+        } else {
+            fullDeltas.put(deltaIdentifier, delta);
+        }
+    }
+
     /**
      * Returns all currently available half deltas.
      * @return All currently available half deltas.
      */
     public Map<ConcentrationDeltaIdentifier, ConcentrationDelta> getCurrentHalfDeltas() {
         return halfDeltas;
+    }
+
+    public void addHalfDelta(ConcentrationDeltaIdentifier deltaIdentifier, ConcentrationDelta delta) {
+        if (halfDeltas.containsKey(deltaIdentifier)) {
+            halfDeltas.put(deltaIdentifier, halfDeltas.get(deltaIdentifier).add(delta.getValue()));
+        } else {
+            halfDeltas.put(deltaIdentifier, delta);
+        }
     }
 
     /**

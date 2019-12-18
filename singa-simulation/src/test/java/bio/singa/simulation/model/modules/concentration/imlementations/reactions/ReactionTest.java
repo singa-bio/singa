@@ -330,12 +330,10 @@ class ReactionTest {
 
         // the ligand
         ChemicalEntity bindee = SmallMolecule.create("bindee")
-                .assignFeature(new MolarMass(10))
                 .build();
 
         // the receptor
         Protein binder = new Protein.Builder("binder")
-                .assignFeature(new MolarMass(100))
                 .build();
 
         ComplexEntity complex = ComplexEntity.from(binder, bindee);
@@ -396,6 +394,89 @@ class ReactionTest {
         assertEquals(1.000E-7, vesicle.getConcentrationContainer().get(MEMBRANE, complex), 1e-10);
     }
 
+    @Test
+    @DisplayName("reaction - membrane and vesicle should give the same results")
+    void reversibleReactionMembraneVesicle() {
+        // create simulation
+        Simulation simulation = new Simulation();
+
+        // setup scaling
+        ComparableQuantity<Length> systemExtend = Quantities.getQuantity(1, MICRO(METRE));
+        Environment.setSystemExtend(systemExtend);
+
+        // setup graph
+        final AutomatonGraph graph = AutomatonGraphs.singularGraph();
+        simulation.setGraph(graph);
+
+        // concentrations
+        AutomatonNode node = graph.getNode(0, 0);
+        node.setCellRegion(CELL_OUTER_MEMBRANE_REGION);
+
+        // the rate constants
+        RateConstant forwardRate = RateConstant.create(1.0e6)
+                .forward().secondOrder()
+                .concentrationUnit(MOLE_PER_LITRE)
+                .timeUnit(MINUTE)
+                .build();
+
+        RateConstant backwardRate = RateConstant.create(0.01)
+                .backward().firstOrder()
+                .timeUnit(MINUTE)
+                .build();
+
+        // the ligand
+        ChemicalEntity bindee = SmallMolecule.create("bindee")
+                .build();
+
+        // the receptor
+        Protein binder = new Protein.Builder("binder")
+                .build();
+
+        ComplexEntity complex = ComplexEntity.from(binder, bindee);
+
+        // create and add module
+        ReactionBuilder.staticReactants(simulation)
+                .addSubstrate(bindee)
+                .addSubstrate(binder, CellTopology.MEMBRANE)
+                .addProduct(complex, CellTopology.MEMBRANE)
+                .reversible()
+                .forwardReactionRate(forwardRate)
+                .backwardReactionRate(backwardRate)
+                .build();
+
+        // concentrations
+        ConcentrationBuilder.create(simulation)
+                .entity(binder)
+                .topology(MEMBRANE)
+                .concentrationValue(0.1)
+                .unit(MOLE_PER_LITRE)
+                .build();
+
+        ConcentrationBuilder.create(simulation)
+                .entity(bindee)
+                .topology(INNER)
+                .concentrationValue(1.0)
+                .unit(MOLE_PER_LITRE)
+                .build();
+
+        // checkpoints
+        Quantity<Time> firstCheckpoint = Quantities.getQuantity(50, MICRO(SECOND));
+        boolean firstCheckpointPassed = false;
+        Quantity<Time> secondCheckpoint = Quantities.getQuantity(500, MICRO(SECOND));
+        // run simulation
+        while (simulation.getElapsedTime().isLessThanOrEqualTo(secondCheckpoint)) {
+            simulation.nextEpoch();
+            if (!firstCheckpointPassed && simulation.getElapsedTime().isGreaterThanOrEqualTo(firstCheckpoint)) {
+                assertEquals(9.447E-7, node.getConcentrationContainer().get(INNER, bindee), 1e-10);
+                assertEquals(5.522E-8, node.getConcentrationContainer().get(MEMBRANE, complex), 1e-10);
+                firstCheckpointPassed = true;
+            }
+        }
+
+        // check final values
+        assertEquals(9.000E-7, node.getConcentrationContainer().get(INNER, bindee), 1e-10);
+        assertEquals(1.000E-7, node.getConcentrationContainer().get(MEMBRANE, complex), 1e-10);
+    }
 
     @Test
     @DisplayName("complex building reaction - section changing binding with partially contained vesicle")

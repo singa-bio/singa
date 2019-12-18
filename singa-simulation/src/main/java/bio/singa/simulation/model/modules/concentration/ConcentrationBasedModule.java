@@ -198,7 +198,7 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
         logDelta(deltaIdentifier, delta);
         if (supplier.isStrutCalculation()) {
             delta = delta.multiply(2.0);
-            supplier.getCurrentHalfDeltas().put(deltaIdentifier, delta);
+            supplier.addHalfDelta(deltaIdentifier, delta);
             // calculate actual applied delta
             ConcentrationDelta fullDelta = supplier.getCurrentFullDeltas().get(deltaIdentifier);
             ConcentrationDelta applied;
@@ -209,7 +209,7 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
             }
             deltaIdentifier.getUpdatable().addPotentialDelta(applied);
         } else {
-            supplier.getCurrentFullDeltas().put(deltaIdentifier, delta);
+            supplier.addFullDelta(deltaIdentifier, delta);
         }
     }
 
@@ -279,6 +279,7 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
         double largestLocalError = -Double.MAX_VALUE;
         ConcentrationDeltaIdentifier largestIdentifier = null;
         double associatedDelta = 0.0;
+
         for (ConcentrationDeltaIdentifier identifier : supplier.getCurrentFullDeltas().keySet()) {
             ConcentrationDelta halfDeltaObject = supplier.getCurrentHalfDeltas().get(identifier);
             if (halfDeltaObject == null) {
@@ -290,6 +291,9 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
             }
             ConcentrationDelta fullDeltaObject = supplier.getCurrentFullDeltas().get(identifier);
             if (fullDeltaObject == null) {
+                System.out.println(getIdentifier());
+                System.out.println(getSupplier().getCurrentFullDeltas());
+                System.out.println(getSupplier().getCurrentHalfDeltas());
                 continue;
             }
             double fullDelta = fullDeltaObject.getValue();
@@ -304,6 +308,7 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
                 associatedDelta = fullDelta;
             }
         }
+
         if (largestIdentifier == null) {
             return NumericalError.MINIMAL_EMPTY_ERROR;
         }
@@ -342,7 +347,7 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
             // reset previous error
             supplier.resetError();
             // determine new local error with decreased time step
-            getSimulation().getScheduler().decreaseTimeStep("request by concentration based module "+getIdentifier());
+            getSimulation().getScheduler().decreaseTimeStep("request by concentration based module " + getIdentifier());
             scope.processUpdatable(updatable);
             // evaluate module state by error
             evaluateModuleState();
@@ -361,7 +366,6 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
         } else {
             logger.trace("Recalculation required for error {}.", supplier.getLargestLocalError().getValue());
             setState(REQUIRING_RECALCULATION);
-            supplier.clearDeltas();
             scope.clearPotentialDeltas();
         }
     }
@@ -396,8 +400,7 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
      * @param featureClass The requested feature.
      * @return The scaled feature.
      */
-    protected double getScaledFeature(ChemicalEntity entity, Class<? extends
-            AbstractScalableQuantitativeFeature<?>> featureClass) {
+    protected double getScaledFeature(ChemicalEntity entity, Class<? extends AbstractScalableQuantitativeFeature<?>> featureClass) {
         // feature from any entity (like molar mass)
         return choseScaling(entity.getFeature(featureClass));
     }
@@ -422,6 +425,7 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
 
     @Override
     public void onReset() {
+        supplier.clearDeltas();
         supplier.resetError();
     }
 

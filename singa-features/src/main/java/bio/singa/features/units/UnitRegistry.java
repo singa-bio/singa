@@ -116,7 +116,7 @@ public class UnitRegistry {
         // only rescale if unit was updated
         getInstance().space = Quantities.getQuantity(getInstance().space.getValue().doubleValue(), unit);
         getInstance().defaultUnits.put(LENGTH, unit);
-        Environment.setSystemAndSimulationScales();
+        Environment.updateScales();
         rescaleRegisteredUnits();
     }
 

@@ -54,18 +54,21 @@ class MembraneDiffusionTest {
 
     @BeforeAll
     static void initialize() {
+        Environment.reset();
         UnitRegistry.reinitialize();
     }
 
     @AfterEach
     void cleanUp() {
+        Environment.reset();
         UnitRegistry.reinitialize();
     }
 
     @Test
     void shouldSimulateMembraneDiffusion() {
-        Environment.reset();
+
         Simulation simulation = new Simulation();
+        Environment.setSystemExtend(Quantities.getQuantity(1, MICRO(METRE)));
 
         final AutomatonGraph automatonGraph = AutomatonGraphs.singularGraph();
         simulation.setGraph(automatonGraph);

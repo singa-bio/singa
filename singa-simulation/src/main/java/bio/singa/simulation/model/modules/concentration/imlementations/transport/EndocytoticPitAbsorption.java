@@ -22,6 +22,9 @@ import static bio.singa.simulation.model.sections.CellTopology.MEMBRANE;
  */
 public class EndocytoticPitAbsorption extends ConcentrationBasedModule<UpdatableDeltaFunction> {
 
+    public EndocytoticPitAbsorption() {
+    }
+
     public static EntityStep inSimulation(Simulation simulation) {
         return new EndocytoticPitAbsorptionBuilder(simulation);
     }

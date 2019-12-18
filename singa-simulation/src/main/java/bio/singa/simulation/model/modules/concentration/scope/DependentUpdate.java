@@ -57,6 +57,8 @@ public class DependentUpdate implements UpdateScope {
 
     @Override
     public void processAllUpdatables(Collection<Updatable> updatables) {
+        // clear used deltas
+        supply().clearDeltas();
         // calculate all full updates first
         supply().setStrutCalculation(false);
         for (Updatable updatable : updatables) {
@@ -76,8 +78,6 @@ public class DependentUpdate implements UpdateScope {
         module.inBetweenHalfSteps();
         // set largest local error
         supply().setLargestLocalError(module.determineLargestLocalError());
-        // clear used deltas
-        supply().clearDeltas();
     }
 
     @Override

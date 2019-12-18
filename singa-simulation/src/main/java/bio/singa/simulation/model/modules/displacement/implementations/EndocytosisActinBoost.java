@@ -50,7 +50,7 @@ public class EndocytosisActinBoost extends DisplacementBasedModule {
         Vector2D centre = getSimulation().getMembraneLayer().getMicrotubuleOrganizingCentre().getCircleRepresentation().getMidpoint();
         Vector2D direction = centre.subtract(vesicle.getPosition()).normalize();
         // determine delta
-        Vector2D delta = direction.multiply(Environment.convertSystemToSimulationScale(distance));
+        Vector2D delta = direction.multiply(Environment.scaleSystemToSimulationScale(distance));
         return new DisplacementDelta(this, delta);
     }
 

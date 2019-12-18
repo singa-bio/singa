@@ -71,6 +71,8 @@ public class IndependentUpdate implements UpdateScope {
 
     @Override
     public void processUpdatable(Updatable updatable) {
+        // clear used deltas
+        supply().clearDeltas();
         // calculate full step deltas
         supply().setStrutCalculation(false);
         specify().processContainer(updatable.getConcentrationContainer());
@@ -81,8 +83,6 @@ public class IndependentUpdate implements UpdateScope {
         specify().processContainer(getHalfStepConcentration(updatable));
         // set largest local error
         supply().setLargestLocalError(module.determineLargestLocalError());
-        // clear used deltas
-        supply().clearDeltas();
     }
 
     @Override

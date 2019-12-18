@@ -37,6 +37,7 @@ public class SemiDependentUpdate implements UpdateScope {
 
     /**
      * Initializes the update scope for the corresponding module.
+     *
      * @param module The module.
      */
     public SemiDependentUpdate(ConcentrationBasedModule module) {
@@ -64,6 +65,8 @@ public class SemiDependentUpdate implements UpdateScope {
 
     @Override
     public void processAllUpdatables(Collection<Updatable> updatables) {
+        // clear used deltas
+        supply().clearDeltas();
         // for each updatable
         for (Updatable updatable : updatables) {
             if (module.getApplicationCondition().test(updatable)) {
@@ -71,6 +74,8 @@ public class SemiDependentUpdate implements UpdateScope {
                 processUpdatable(updatable);
             }
         }
+        // set largest local error
+        supply().setLargestLocalError(module.determineLargestLocalError());
     }
 
     @Override
@@ -85,10 +90,6 @@ public class SemiDependentUpdate implements UpdateScope {
             // calculate half step deltas
             supply().setStrutCalculation(true);
             specify().processContainer(getHalfStepConcentration(updatable));
-            // set largest local error
-            supply().setLargestLocalError(module.determineLargestLocalError());
-            // clear used deltas
-            supply().clearDeltas();
         }
     }
 

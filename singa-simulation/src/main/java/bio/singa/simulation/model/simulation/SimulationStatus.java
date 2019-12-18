@@ -44,6 +44,7 @@ public class SimulationStatus implements UpdateEventListener<GraphUpdatedEvent> 
     private Quantity<Time> estimatedTimeRemaining;
     private Quantity<Time> estimatedSpeed;
     private final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+    private double epochsPerSecond;
 
     public SimulationStatus(Simulation simulation) {
         this.simulation = simulation;
@@ -87,11 +88,14 @@ public class SimulationStatus implements UpdateEventListener<GraphUpdatedEvent> 
         long estimatedMillisRemaining = (long) (timeRequired / fractionDone) - timeRequired;
         estimatedTimeRemaining = Quantities.getQuantity(estimatedMillisRemaining, MILLI(SECOND));
         // calculate speed
-        double speedInMicroSecondsPerSecond = currentTimeSimulation.subtract(previousTimeSimulation).getValue().doubleValue() / Quantities.getQuantity(currentTimeMillis - previousTimeMillis, MILLI(SECOND)).to(SECOND).getValue().doubleValue();
+        double deltaTime = Quantities.getQuantity(currentTimeMillis - previousTimeMillis, MILLI(SECOND)).to(SECOND).getValue().doubleValue();
+        double speedInMicroSecondsPerSecond = currentTimeSimulation.subtract(previousTimeSimulation).getValue().doubleValue() / deltaTime;
         estimatedSpeed = Quantities.getQuantity(speedInMicroSecondsPerSecond, MICRO(SECOND));
         // update previous values
         previousTimeMillis = currentTimeMillis;
         previousTimeSimulation = currentTimeSimulation;
+
+        epochsPerSecond = deltaEpochs / deltaTime;
     }
 
     public NumericalError getLargestLocalError() {
@@ -165,6 +169,10 @@ public class SimulationStatus implements UpdateEventListener<GraphUpdatedEvent> 
             return simulation.getScheduler().getAccuracyGain().toString();
         }
         return "";
+    }
+
+    public double getEpochsPerSecond() {
+        return epochsPerSecond;
     }
 
     public String getMostRecentTimeStep() {
