@@ -58,7 +58,7 @@ class MaximumCommonSubgraphFinderTest {
     @Test
     void findMaximumCommonSubgraph() {
         MaximumCommonSubgraphFinder<GenericNode<Integer>, GenericEdge<Integer>, Vector2D, Integer, GenericGraph<Integer>>
-                mcs = new MaximumCommonSubgraphFinder<>(testGraph1, testGraph2);
+                mcs = new MaximumCommonSubgraphFinder<>(testGraph1, testGraph2, (n1, n2) -> true, (e1, e2) -> true);
         List<GenericGraph<Integer>> cliqueGraphs = mcs.getMaximumCliquesAsGraphs();
         assertEquals(2, cliqueGraphs.size());
     }

@@ -341,7 +341,7 @@ public class RISubgraphFinder<NodeType extends Node<NodeType, VectorType, Identi
 //                                }
                             }
                         } else {
-                            logger.debug("(4) Edge Condition failed: edge condition for pattern node {} and target node {} did not match", edgeConditionExtractor, patternNode, candidateTargetNode);
+                            logger.debug("(4) Edge Condition failed: edge condition {} for pattern node {} and target node {} did not match", edgeConditionExtractor, patternNode, candidateTargetNode);
                         }
                     } else {
                         logger.debug("(3) Connectivity Condition: target node neighbors {} are less than pattern node neighbors {}", candidateTargetNode.getNeighbours(), patternNode.getNeighbours());

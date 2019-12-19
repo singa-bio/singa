@@ -14,11 +14,11 @@ import java.util.*;
  * a convenience method to return the maximum clique (or multiple if of same size).
  * <b>Note: Not tested for directed graphs.</b>
  *
- * @param <NodeType> The type of the nodes.
- * @param <EdgeType> The type of the edges.
- * @param <VectorType> The position type.
+ * @param <NodeType>       The type of the nodes.
+ * @param <EdgeType>       The type of the edges.
+ * @param <VectorType>     The position type.
  * @param <IdentifierType> The type of the identifier.
- * @param <GraphType> The type of the graph.
+ * @param <GraphType>      The type of the graph.
  */
 public class BronKerbosch<NodeType extends Node<NodeType, VectorType, IdentifierType>,
         EdgeType extends Edge<NodeType>, VectorType extends Vector, IdentifierType,
@@ -41,7 +41,7 @@ public class BronKerbosch<NodeType extends Node<NodeType, VectorType, Identifier
 
     private void findCliques() {
         bronKerbosch(new HashSet<>(), new HashSet<>(graph.getNodes()), new HashSet<>());
-        logger.info("found {} maximum cliques", cliques.size());
+        logger.info("found {} cliques in the graph", cliques.size());
     }
 
     /**
