@@ -9,7 +9,6 @@ import bio.singa.mathematics.topology.grids.rectangular.NeumannRectangularDirect
 import bio.singa.mathematics.topology.grids.rectangular.RectangularCoordinate;
 import bio.singa.mathematics.topology.grids.rectangular.RectangularGrid;
 import bio.singa.mathematics.vectors.Vector2D;
-import bio.singa.mathematics.vectors.Vectors;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.graphs.AutomatonNode;
@@ -156,13 +155,7 @@ public class GridMembraneBuilder {
 
         // assign region maps
         for (Map.Entry<CellRegion, Membrane> entry : membranes.entrySet()) {
-            CellRegion region = entry.getKey();
-            Membrane membrane = entry.getValue();
-            // setup region map
-            List<Vector2D> orderedVectors = Vectors.getVectorsInOrder(membrane.getSegments());
-            Map<CellRegion, List<Vector2D>> regionMap = new HashMap<>();
-            regionMap.put(region, orderedVectors);
-            membrane.setRegionMap(regionMap);
+            entry.getValue().generateRegionMap();
         }
 
     }

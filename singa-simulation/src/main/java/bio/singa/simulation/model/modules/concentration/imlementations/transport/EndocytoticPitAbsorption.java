@@ -33,6 +33,10 @@ public class EndocytoticPitAbsorption extends ConcentrationBasedModule<Updatable
         return updatable instanceof EndocytoticPit && ((EndocytoticPit) updatable).isCollecting();
     }
 
+    public static ModuleBuilder getBuilder(Simulation simulation) {
+        return new EndocytoticPitAbsorptionBuilder(simulation);
+    }
+
     public void postConstruct() {
         setApplicationCondition(EndocytoticPitAbsorption::isCollectingEndocytoticPit);
         UpdatableDeltaFunction function = new UpdatableDeltaFunction(this::calculateDeltas, container -> true);
@@ -51,17 +55,24 @@ public class EndocytoticPitAbsorption extends ConcentrationBasedModule<Updatable
         double additionRate = getScaledFeature(CargoAdditionRate.class);
         // get entities that scale cargo addition
         ScalingEntities scalingEntities = getFeature(ScalingEntities.class);
-        ChemicalEntity catalyzingEntity = scalingEntities.getContent().get(0);
-        ChemicalEntity inhibitingEntity = scalingEntities.getContent().get(1);
-        // determine rate modifier
-        double catalyzingConcentration = currentPit.getAssociatedNode().getConcentrationContainer().get(MEMBRANE, catalyzingEntity);
-        double inhibitingConcentration = currentPit.getAssociatedNode().getConcentrationContainer().get(MEMBRANE, inhibitingEntity);
-        // if everything is catalyzing use maximal rate, else scale linear with added inhibition and reduced catalysis
-        double rateModifier = catalyzingConcentration / (catalyzingConcentration + inhibitingConcentration);
+        double rateModifier;
+        // no scaling entities no rate scaling
+        if (scalingEntities != null) {
+            ChemicalEntity catalyzingEntity = scalingEntities.getContent().get(0);
+            ChemicalEntity inhibitingEntity = scalingEntities.getContent().get(1);
+            // determine rate modifier
+            double catalyzingConcentration = currentPit.getAssociatedNode().getConcentrationContainer().get(MEMBRANE, catalyzingEntity);
+            double inhibitingConcentration = currentPit.getAssociatedNode().getConcentrationContainer().get(MEMBRANE, inhibitingEntity);
+            // if everything is catalyzing use maximal rate, else scale linear with added inhibition and reduced catalysis
+            rateModifier = catalyzingConcentration / (catalyzingConcentration + inhibitingConcentration);
+        } else {
+            rateModifier = 1;
+        }
+
         double appliedRate = rateModifier * additionRate;
         // apply for all cargoes
         for (ChemicalEntity cargo : cargoes) {
-            double concentration =  currentPit.getAssociatedNode().getConcentrationContainer().get(MEMBRANE, cargo);
+            double concentration = currentPit.getAssociatedNode().getConcentrationContainer().get(MEMBRANE, cargo);
             double concentrationDelta = appliedRate * concentration;
             // add to pit
             deltas.put(new ConcentrationDeltaIdentifier(currentPit, currentPit.getCellRegion().getMembraneSubsection(), cargo),
@@ -71,10 +82,6 @@ public class EndocytoticPitAbsorption extends ConcentrationBasedModule<Updatable
                     new ConcentrationDelta(this, currentPit.getAssociatedNode().getCellRegion().getMembraneSubsection(), cargo, -concentrationDelta));
         }
         return deltas;
-    }
-
-    public static ModuleBuilder getBuilder(Simulation simulation) {
-        return new EndocytoticPitAbsorptionBuilder(simulation);
     }
 
     public interface EntityStep {
@@ -183,6 +190,9 @@ public class EndocytoticPitAbsorption extends ConcentrationBasedModule<Updatable
 
         @Override
         public RateStep scalingEntities(ScalingEntities scalingEntities) {
+            if (scalingEntities == null) {
+                return this;
+            }
             module.setFeature(scalingEntities);
             return this;
         }
