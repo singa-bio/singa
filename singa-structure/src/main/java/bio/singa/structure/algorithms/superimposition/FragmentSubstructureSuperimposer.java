@@ -73,6 +73,7 @@ public class FragmentSubstructureSuperimposer extends SubstructureSuperimposer {
                     subGraphFinder = new RISubgraphFinder<>(candidateGraph, referenceGraph, atomCondition, bondCondition);
                 }
                 if (subGraphFinder.getFullMatches().size() > 1) {
+                    // TODO add option to consider all isomorphisms
                     logger.warn("ambiguous solution found, choosing first one");
                 } else if (subGraphFinder.getFullMatches().isEmpty()) {
                     logger.error("reference {} against candidate {} has no common subgraph", reference, candidate);
