@@ -19,6 +19,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.BiFunction;
 
+/**
+ * The most flexible {@link SubstructureSuperimposer} that uses maximum subgraph isomorphism detection to align two
+ * structures. As long as there is a shared maximum common subgraph of at least three atoms a meaningful alignment will
+ * be produced.
+ *
+ * @author fk
+ */
 public class MaximumCommonSubgraphSuperimposer extends SubstructureSuperimposer {
 
     private static final Logger logger = LoggerFactory.getLogger(MaximumCommonSubgraphSuperimposer.class);
@@ -29,10 +36,22 @@ public class MaximumCommonSubgraphSuperimposer extends SubstructureSuperimposer 
     private final BiFunction<MoleculeAtom, MoleculeAtom, Boolean> atomCondition;
     private final BiFunction<MoleculeBond, MoleculeBond, Boolean> bondCondition;
 
-    public MaximumCommonSubgraphSuperimposer(List<LeafSubstructure<?>> reference, List<LeafSubstructure<?>> candidate, BiFunction<MoleculeAtom, MoleculeAtom, Boolean> atomCondition, BiFunction<MoleculeBond, MoleculeBond, Boolean> bondCondition) {
+    private MaximumCommonSubgraphSuperimposer(List<LeafSubstructure<?>> reference, List<LeafSubstructure<?>> candidate, BiFunction<MoleculeAtom, MoleculeAtom, Boolean> atomCondition, BiFunction<MoleculeBond, MoleculeBond, Boolean> bondCondition) {
         super(reference, candidate);
         this.atomCondition = atomCondition;
         this.bondCondition = bondCondition;
+    }
+
+    public static SubstructureSuperimposition calculateSubstructureSuperimposition(List<LeafSubstructure<?>> reference,
+                                                                                   List<LeafSubstructure<?>> candidate) throws SubstructureSuperimpositionException {
+        return new MaximumCommonSubgraphSuperimposer(reference, candidate, DEFAULT_ATOM_CONDITION, DEFAULT_BOND_CONDITION).calculateSuperimposition();
+    }
+
+    public static SubstructureSuperimposition calculateSubstructureSuperimposition(List<LeafSubstructure<?>> reference,
+                                                                                   List<LeafSubstructure<?>> candidate,
+                                                                                   BiFunction<MoleculeAtom, MoleculeAtom, Boolean> atomCondition,
+                                                                                   BiFunction<MoleculeBond, MoleculeBond, Boolean> bondCondition) throws SubstructureSuperimpositionException {
+        return new MaximumCommonSubgraphSuperimposer(reference, candidate, atomCondition, bondCondition).calculateSuperimposition();
     }
 
     @Override
@@ -48,7 +67,7 @@ public class MaximumCommonSubgraphSuperimposer extends SubstructureSuperimposer 
                 MoleculeGraph referenceGraph = MoleculeGraphs.createMoleculeGraphFromStructure((OakLeafSubstructure<?>) referenceLeafSubstructure);
                 MoleculeGraph candidateGraph = MoleculeGraphs.createMoleculeGraphFromStructure((OakLeafSubstructure<?>) candidateLeafSubstructure);
 
-                MaximumCommonSubgraphFinder<MoleculeAtom, MoleculeBond, Vector2D, Integer, MoleculeGraph> mcs = new MaximumCommonSubgraphFinder<>(referenceGraph, candidateGraph, (n1, n2) -> true, (e1, e2) -> true);
+                MaximumCommonSubgraphFinder<MoleculeAtom, MoleculeBond, Vector2D, Integer, MoleculeGraph> mcs = new MaximumCommonSubgraphFinder<>(referenceGraph, candidateGraph, atomCondition, bondCondition);
                 List<Set<GenericNode<Pair<MoleculeAtom>>>> maximumCliques = mcs.getMaximumCliques();
 
                 if (maximumCliques.isEmpty()) {
@@ -63,8 +82,8 @@ public class MaximumCommonSubgraphSuperimposer extends SubstructureSuperimposer 
 
                 Set<GenericNode<Pair<MoleculeAtom>>> maximumClique = maximumCliques.get(0);
                 for (GenericNode<Pair<MoleculeAtom>> nodePair : maximumClique) {
-                    referenceAtoms.add((Atom) nodePair.getContent().getFirst());
-                    candidateAtoms.add((Atom) nodePair.getContent().getSecond());
+                    referenceAtoms.add(referenceLeafSubstructure.getAtom(nodePair.getContent().getFirst().getIdentifier()).orElseThrow(() -> new SubstructureSuperimpositionException("failed to get atoms")));
+                    candidateAtoms.add(candidateLeafSubstructure.getAtom(nodePair.getContent().getSecond().getIdentifier()).orElseThrow(() -> new SubstructureSuperimpositionException("failed to get atoms")));
                 }
             }
         }

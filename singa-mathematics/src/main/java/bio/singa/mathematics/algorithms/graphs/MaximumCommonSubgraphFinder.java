@@ -19,11 +19,11 @@ import java.util.stream.Collectors;
  * detection with Bron-Kerbosch algorithm on a modular product graph P=(GxG'). Node and edge conditions can be defined
  * to restrict matching to these isomorphism conditions.
  *
- * @param <NodeType>       The type of nodes.
- * @param <EdgeType>       The type of edges.
- * @param <VectorType>     The type of vector.
+ * @param <NodeType> The type of nodes.
+ * @param <EdgeType> The type of edges.
+ * @param <VectorType> The type of vector.
  * @param <IdentifierType> The type of identifier.
- * @param <GraphType>      The type of graph.
+ * @param <GraphType> The type of graph.
  */
 public class MaximumCommonSubgraphFinder<NodeType extends Node<NodeType, VectorType, IdentifierType>,
         EdgeType extends Edge<NodeType>, VectorType extends Vector, IdentifierType,
@@ -37,8 +37,8 @@ public class MaximumCommonSubgraphFinder<NodeType extends Node<NodeType, VectorT
     private List<Set<GenericNode<Pair<NodeType>>>> maximumCliques;
 
     /**
-     * @param graph1        First graph.
-     * @param graph2        Second graph.
+     * @param graph1 First graph.
+     * @param graph2 Second graph.
      * @param nodeCondition BiFunction defining isomorphism condidtions on node level.
      * @param edgeCondition BiFunction defining isomorphism conditions on edge level.
      */
@@ -58,7 +58,8 @@ public class MaximumCommonSubgraphFinder<NodeType extends Node<NodeType, VectorT
     }
 
     private void detectMaximumCliques(GraphType graph1, GraphType graph2) {
-        GenericGraph<Pair<NodeType>> modularProduct = Graphs.modularProduct(graph1, graph2, this.nodeCondition, this.edgeCondition);
+        GenericGraph<Pair<NodeType>> modularProduct = Graphs.modularProduct(graph1, graph2, nodeCondition, edgeCondition);
+        logger.info("modular product graph contains {} nodes", modularProduct.getNodes().size());
         // detect maximum cliques
         BronKerbosch<GenericNode<Pair<NodeType>>, GenericEdge<Pair<NodeType>>, Vector2D, Integer, GenericGraph<Pair<NodeType>>> bronKerbosch = new BronKerbosch<>(modularProduct);
         maximumCliques = bronKerbosch.getMaximumCliques();
