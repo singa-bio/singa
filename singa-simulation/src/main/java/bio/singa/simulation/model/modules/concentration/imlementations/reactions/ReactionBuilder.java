@@ -442,7 +442,6 @@ public class ReactionBuilder {
         public Reaction build() {
             super.build();
             ((RuleBasedReactantBehavior) reaction.getReactantBehavior()).prepareReactionSets();
-            reaction.postConstruct();
             return reaction;
         }
     }

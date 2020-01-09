@@ -83,7 +83,7 @@ public abstract class AbstractUpdateModule implements UpdateModule {
             }
         }
         scheduler.getCountDownLatch().countDown();
-        logger.debug("Module finished {}, latch at {}.", Thread.currentThread().getName(), scheduler.getCountDownLatch().getCount());
+        logger.debug("Module {} finished in thread {}, latch at {}.", getIdentifier(),  Thread.currentThread().getName(), scheduler.getCountDownLatch().getCount());
     }
 
     protected abstract void calculateUpdates();
