@@ -25,6 +25,7 @@ import bio.singa.simulation.model.modules.concentration.imlementations.transport
 import bio.singa.simulation.model.modules.displacement.DisplacementBasedModule;
 import bio.singa.simulation.model.rules.AssignmentRule;
 import bio.singa.simulation.model.rules.AssignmentRules;
+import bio.singa.simulation.trajectories.errors.DebugRecorder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tech.units.indriya.ComparableQuantity;
@@ -112,6 +113,9 @@ public class Simulation {
 
     private boolean vesiclesWillMove;
 
+    private boolean debug;
+    private DebugRecorder debugRecorder;
+
     /**
      * Creates a new plain simulation.
      */
@@ -124,6 +128,7 @@ public class Simulation {
         epoch = 0;
         initializationDone = false;
         vesiclesWillMove = false;
+        debug = false;
         observedUpdatables = new HashSet<>();
         vesicleLayer = new VesicleLayer(this);
         scheduler = new UpdateScheduler(this);
@@ -182,7 +187,6 @@ public class Simulation {
             vesicleLayer.applyDeltas();
             // associate nodes
             vesicleLayer.associateVesicles();
-
         }
 
         // update epoch and elapsed time
@@ -485,6 +489,22 @@ public class Simulation {
 
     public void clearPreviouslyObservedDeltas() {
         observedDeltas.clear();
+    }
+
+    public boolean isDebug() {
+        return debug;
+    }
+
+    public void setDebug(boolean debug) {
+        this.debug = debug;
+    }
+
+    public DebugRecorder getDebugRecorder() {
+        return debugRecorder;
+    }
+
+    public void setDebugRecorder(DebugRecorder debugRecorder) {
+        this.debugRecorder = debugRecorder;
     }
 
 }

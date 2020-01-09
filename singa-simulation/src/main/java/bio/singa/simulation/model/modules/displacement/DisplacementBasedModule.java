@@ -27,16 +27,15 @@ public class DisplacementBasedModule extends AbstractUpdateModule {
      */
     private static final Logger logger = LoggerFactory.getLogger(DisplacementBasedModule.class);
 
-    private static final double DEFAULT_DISPLACEMENT_CUTOFF_FACTOR = 1.0/10.0;
-
-    private double displacementCutoffFactor = DEFAULT_DISPLACEMENT_CUTOFF_FACTOR;
-
+    private static final double DEFAULT_DISPLACEMENT_CUTOFF_FACTOR = 1.0 / 10.0;
     /**
      * The functions that are applied with each epoch.
      */
     private final Map<Function<Vesicle, DisplacementDelta>, Predicate<Vesicle>> deltaFunctions;
-
+    private double displacementCutoffFactor = DEFAULT_DISPLACEMENT_CUTOFF_FACTOR;
     private double displacementCutoff;
+
+    private double error = 0.0;
 
     public DisplacementBasedModule() {
         deltaFunctions = new HashMap<>();
@@ -73,6 +72,7 @@ public class DisplacementBasedModule extends AbstractUpdateModule {
             if (vesicle.getSpatialDelta(this) != null) {
                 Vector2D displacement = vesicle.getSpatialDelta(this).getDeltaVector();
                 double length = displacement.getMagnitude();
+                error = length / displacementCutoff;
                 if (length > displacementCutoff) {
                     logger.trace("Recalculation required for module {} displacement magnitude {} exceeding threshold {}.", this, length, displacementCutoff);
                     setState(REQUIRING_RECALCULATION);
@@ -87,7 +87,7 @@ public class DisplacementBasedModule extends AbstractUpdateModule {
     public void optimizeTimeStep() {
         while (getState() == REQUIRING_RECALCULATION) {
             getSimulation().getVesicleLayer().clearUpdates();
-            getSimulation().getScheduler().decreaseTimeStep("request by "+getIdentifier());
+            getSimulation().getScheduler().decreaseTimeStep(String.format("as requested by %s E(%6.3e))",getIdentifier(), error));
             calculateUpdates();
         }
     }

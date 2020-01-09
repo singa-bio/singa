@@ -9,6 +9,7 @@ import bio.singa.simulation.events.NodeEventEmitter;
 import bio.singa.simulation.events.UpdatableUpdatedEvent;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonNode;
+import bio.singa.simulation.trajectories.errors.DebugRecorder;
 import bio.singa.simulation.trajectories.flat.FlatUpdateRecorder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -259,6 +260,7 @@ public class SimulationManager implements Runnable {
         if (writeAliveFile) {
             aliveFile = targetPath.resolve("alive");
         }
+        handleDebugging();
         try {
             while (terminationCondition.test(simulation)) {
                 if (emitCondition.test(simulation)) {
@@ -292,6 +294,17 @@ public class SimulationManager implements Runnable {
         }
         if (terminationLatch != null) {
             terminationLatch.countDown();
+        }
+    }
+
+    private void handleDebugging() {
+        for (UpdateEventListener<GraphUpdatedEvent> graphListener : getGraphListeners()) {
+            if (graphListener instanceof DebugRecorder) {
+                DebugRecorder debugRecorder = (DebugRecorder) graphListener;
+                debugRecorder.prepare();
+                simulation.setDebugRecorder(debugRecorder);
+                simulation.setDebug(true);
+            }
         }
     }
 

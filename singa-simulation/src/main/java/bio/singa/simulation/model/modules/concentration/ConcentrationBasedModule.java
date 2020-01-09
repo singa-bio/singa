@@ -344,10 +344,11 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
     public void optimizeTimeStep() {
         Updatable updatable = supplier.getLargestLocalError().getUpdatable();
         while (getState() == REQUIRING_RECALCULATION) {
+            NumericalError error = supplier.getLargestLocalError();
             // reset previous error
             supplier.resetError();
             // determine new local error with decreased time step
-            getSimulation().getScheduler().decreaseTimeStep("request by concentration based module " + getIdentifier());
+            getSimulation().getScheduler().decreaseTimeStep(String.format("as requested by %s %s)",getIdentifier(), error.toString()));
             scope.processUpdatable(updatable);
             // evaluate module state by error
             evaluateModuleState();

@@ -51,6 +51,8 @@ public class VesicleLayer {
     private List<EndocytoticPit> collectingPits;
     private List<EndocytoticPit> maturingPits;
 
+    private double error = 0.0;
+
     public VesicleLayer(Simulation simulation) {
         setSimulation(simulation);
         displacementEpsilon = UnitRegistry.getSpace().divide(10);
@@ -178,11 +180,16 @@ public class VesicleLayer {
             Vector2D totalDisplacement = vesicle.calculateTotalDisplacement();
             Quantity<Length> lengthQuantity = Environment.convertSimulationToSystemScale(totalDisplacement.getMagnitude());
             if (lengthQuantity.to(displacementEpsilon.getUnit()).getValue().doubleValue() > displacementEpsilon.getValue().doubleValue()) {
+                error = totalDisplacement.getMagnitude() / lengthQuantity.to(displacementEpsilon.getUnit()).getValue().doubleValue();
                 logger.info("The magnitude of the spatial displacement of {} is {}, higher than the allowed {}.", vesicle.getStringIdentifier(), lengthQuantity, displacementEpsilon);
                 return false;
             }
         }
         return true;
+    }
+
+    public double getError() {
+        return error;
     }
 
     public void associateVesicles() {

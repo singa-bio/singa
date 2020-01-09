@@ -15,21 +15,18 @@ public class NumericalError {
      * The minimal possible error not assigned to any node or chemical entity.
      */
     public static final NumericalError MINIMAL_EMPTY_ERROR = new NumericalError(null, null, 0.0);
-
-    /**
-     * The node where the error occurred.
-     */
-    private Updatable updatable;
-
     /**
      * The chemical entity where the error occurred.
      */
     private final ChemicalEntity entity;
-
     /**
      * The actual value of the error.
      */
     private final double value;
+    /**
+     * The node where the error occurred.
+     */
+    private Updatable updatable;
 
     /**
      * Creates a new LocalError.
@@ -44,10 +41,6 @@ public class NumericalError {
         this.value = value;
     }
 
-    public void setUpdatable(Updatable updatable) {
-        this.updatable = updatable;
-    }
-
     /**
      * Returns the node where the error occurred.
      *
@@ -55,6 +48,10 @@ public class NumericalError {
      */
     public Updatable getUpdatable() {
         return updatable;
+    }
+
+    public void setUpdatable(Updatable updatable) {
+        this.updatable = updatable;
     }
 
     /**
@@ -85,6 +82,6 @@ public class NumericalError {
 
     @Override
     public String toString() {
-        return equals(MINIMAL_EMPTY_ERROR) ? "Minimal" : "E(" + updatable.getStringIdentifier() + "," + entity.getIdentifier() + ") = " + value;
+        return equals(MINIMAL_EMPTY_ERROR) ? "Minimal" : String.format("E(%s, %s, %6.3e)", updatable.getStringIdentifier(), entity.getIdentifier(), value);
     }
 }

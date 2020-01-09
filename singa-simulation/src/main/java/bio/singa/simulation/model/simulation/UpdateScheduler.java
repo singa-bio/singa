@@ -1,5 +1,6 @@
 package bio.singa.simulation.model.simulation;
 
+import bio.singa.features.formatter.TimeFormatter;
 import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.simulation.model.modules.UpdateModule;
@@ -193,7 +194,7 @@ public class UpdateScheduler {
             // set interim check false if global error is to large and true if you can continue
             if (largestGlobalError.getValue() > recalculationCutoff) {
                 // System.out.println("rejected global error: "+largestGlobalError+" @ "+TimeFormatter.formatTime(UnitRegistry.getTime()));
-                decreaseTimeStepStatic();
+                decreaseTimeStep(String.format("global error exceeded %s", largestGlobalError.toString()));
                 globalErrorAcceptable = false;
                 calculateGlobalError = true;
             } else {
@@ -266,15 +267,14 @@ public class UpdateScheduler {
     }
 
     public void increaseTimeStep(String reason) {
-//        System.out.println(simulation.getEpoch() + ":" + TimeFormatter.formatTime(UnitRegistry.getTime()) + " + " + reason);
         // change timestep in accordance to error
-
         Quantity<Time> original = UnitRegistry.getTime();
-
         double multiplier = estimateIncrease();
         Quantity<Time> estimate = original.multiply(multiplier);
 
-//        System.out.println("increasing time step: " + simulation.getEpoch() + " : " + original.getValue().doubleValue() + " -> " + estimate.getValue().doubleValue() + " (" + multiplier + ") - " + reason);
+        if (simulation.isDebug()) {
+            simulation.getDebugRecorder().addInformation(simulation.getEpoch(), String.format("increasing time step %s -> %s %s", TimeFormatter.formatTime(original), TimeFormatter.formatTime(estimate), reason));
+        }
 
         UnitRegistry.setTime(estimate);
 
@@ -292,25 +292,9 @@ public class UpdateScheduler {
         double multiplier = estimateDecrease();
         Quantity<Time> estimate = original.multiply(multiplier);
 
-//        System.out.println("decreasing time step: " + simulation.getEpoch() + " : " + original.getValue().doubleValue() + " -> " + estimate.getValue().doubleValue() + " (" + multiplier + ")" + reason);
-
-        UnitRegistry.setTime(estimate);
-
-        timestepsDecreased++;
-        timeStepRescaled = true;
-        timeStepAlteredInThisEpoch = true;
-    }
-
-    public void decreaseTimeStepStatic() {
-        Quantity<Time> original = UnitRegistry.getTime();
-        if (!timeStepWasAlteredInThisEpoch()) {
-            previousError = largestLocalError.getValue();
-            previousTimeStep = original;
+        if (simulation.isDebug()) {
+            simulation.getDebugRecorder().addInformation(simulation.getEpoch(), String.format("decreasing time step %s -> %s %s", TimeFormatter.formatTime(original), TimeFormatter.formatTime(estimate), reason));
         }
-
-        Quantity<Time> estimate = original.multiply(0.7);
-
-//        System.out.println("decreasing time step: " + simulation.getEpoch() + " : " + original.getValue().doubleValue() + " -> " + estimate.getValue().doubleValue() + " (" + 0.7 + ")");
 
         UnitRegistry.setTime(estimate);
 
@@ -402,7 +386,7 @@ public class UpdateScheduler {
             return;
         }
         if (!simulation.getVesicleLayer().deltasAreBelowDisplacementCutoff()) {
-            decreaseTimeStep("vesicle deltas below displacement cutoff");
+            decreaseTimeStep("total displacement exceeded E(%6.3e)");
             simulation.getVesicleLayer().clearUpdates();
             modules.forEach(UpdateModule::reset);
         }
