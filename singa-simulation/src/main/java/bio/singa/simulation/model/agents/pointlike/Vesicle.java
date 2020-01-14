@@ -1,7 +1,7 @@
 package bio.singa.simulation.model.agents.pointlike;
 
 import bio.singa.chemistry.features.ChemistryFeatureContainer;
-import bio.singa.chemistry.features.diffusivity.Diffusivity;
+import bio.singa.chemistry.features.diffusivity.PixelDiffusivity;
 import bio.singa.features.model.Feature;
 import bio.singa.features.model.FeatureContainer;
 import bio.singa.features.model.Featureable;
@@ -46,10 +46,10 @@ public class Vesicle implements Updatable, Featureable {
     protected static final Set<Class<? extends Feature>> availableFeatures = new HashSet<>();
 
     static {
-        availableFeatures.add(Diffusivity.class);
+        availableFeatures.add(PixelDiffusivity.class);
     }
 
-    public static Diffusivity DEFAULT_VESICLE_DIFFUSIVITY = new Diffusivity(Quantities.getQuantity(1.5e-2, SQUARE_MICROMETRE_PER_SECOND));
+    public static PixelDiffusivity DEFAULT_VESICLE_DIFFUSIVITY = new PixelDiffusivity(Quantities.getQuantity(1.5e-2, SQUARE_MICROMETRE_PER_SECOND));
 
     static {
         DEFAULT_VESICLE_DIFFUSIVITY.addEvidence(ROTHMAN2016);

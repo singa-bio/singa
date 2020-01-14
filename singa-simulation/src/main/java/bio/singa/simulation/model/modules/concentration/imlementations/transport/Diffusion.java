@@ -1,6 +1,7 @@
 package bio.singa.simulation.model.modules.concentration.imlementations.transport;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
+import bio.singa.chemistry.features.diffusivity.ConcentrationDiffusivity;
 import bio.singa.chemistry.features.diffusivity.Diffusivity;
 import bio.singa.features.model.Feature;
 import bio.singa.features.model.FeatureProvider;
@@ -81,7 +82,7 @@ public class Diffusion extends ConcentrationBasedModule<EntityDeltaFunction> {
         }
         addDeltaFunction(function);
         // feature
-        getRequiredFeatures().add(Diffusivity.class);
+        getRequiredFeatures().add(ConcentrationDiffusivity.class);
         getRequiredFeatures().add(Ratio.class);
         List<ChemicalEntity> cargoes = getFeature(Cargoes.class).getContent();
         addReferencedEntities(cargoes);
@@ -92,7 +93,7 @@ public class Diffusion extends ConcentrationBasedModule<EntityDeltaFunction> {
         ChemicalEntity entity = supplier.getCurrentEntity();
         CellSubsection subsection = supplier.getCurrentSubsection();
         final double currentConcentration = concentrationContainer.get(subsection, entity);
-        final double diffusivity = getScaledFeature(entity, Diffusivity.class);
+        final double diffusivity = getScaledFeature(entity, ConcentrationDiffusivity.class);
         // traverse each neighbouring subsection
         List<AutomatonNode.AreaMapping> areaMappings = node.getSubsectionAdjacency().get(subsection);
         double delta = 0.0;

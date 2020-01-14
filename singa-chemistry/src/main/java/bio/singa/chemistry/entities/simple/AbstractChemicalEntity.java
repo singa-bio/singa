@@ -4,7 +4,6 @@ import bio.singa.chemistry.annotations.Annotation;
 import bio.singa.chemistry.annotations.AnnotationType;
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.chemistry.features.ChemistryFeatureContainer;
-import bio.singa.chemistry.features.diffusivity.Diffusivity;
 import bio.singa.chemistry.features.permeability.MembranePermeability;
 import bio.singa.chemistry.features.structure3d.Structure3D;
 import bio.singa.features.identifiers.*;
@@ -28,7 +27,6 @@ public abstract class AbstractChemicalEntity implements ChemicalEntity {
         availableFeatures.add(ChEBIIdentifier.class);
         availableFeatures.add(PubChemIdentifier.class);
         availableFeatures.add(PDBLigandIdentifier.class);
-        availableFeatures.add(Diffusivity.class);
         availableFeatures.add(MembranePermeability.class);
         availableFeatures.add(MolarMass.class);
         availableFeatures.add(MolarVolume.class);

@@ -372,8 +372,10 @@ public class UpdateScheduler {
         }
         // clear deltas that have previously been calculated
         updatables.forEach(updatable -> updatable.getConcentrationManager().clearPotentialDeltas());
-        // rest vesicle position
-        simulation.getVesicleLayer().clearUpdates();
+        // rest vesicle position, but only if time step changes
+        if (timeStepRescaled) {
+            simulation.getVesicleLayer().clearUpdates();
+        }
         if (calculateGlobalError) {
             updatables.forEach(updatable -> updatable.getConcentrationManager().revertToOriginalConcentrations());
         }

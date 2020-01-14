@@ -1,7 +1,7 @@
 package bio.singa.simulation.model.modules.concentration.imlementations.transport;
 
 import bio.singa.chemistry.entities.simple.SmallMolecule;
-import bio.singa.chemistry.features.diffusivity.Diffusivity;
+import bio.singa.chemistry.features.diffusivity.ConcentrationDiffusivity;
 import bio.singa.features.model.Evidence;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.units.UnitRegistry;
@@ -11,11 +11,11 @@ import bio.singa.mathematics.graphs.model.Graphs;
 import bio.singa.mathematics.topology.grids.rectangular.RectangularCoordinate;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.simulation.model.agents.surfacelike.MembraneBuilder;
+import bio.singa.simulation.model.concentrations.ConcentrationBuilder;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.sections.CellSubsections;
-import bio.singa.simulation.model.concentrations.ConcentrationBuilder;
 import bio.singa.simulation.model.simulation.Simulation;
 import org.junit.jupiter.api.*;
 import org.slf4j.Logger;
@@ -46,31 +46,30 @@ class DiffusionTest {
 
     private static final Logger logger = LoggerFactory.getLogger(DiffusionTest.class);
 
-    private static final Quantity<Length> systemDiameter = Quantities.getQuantity(2500.0, NANO(METRE));
+    private static final Quantity<Length> systemExtend = Quantities.getQuantity(2500.0, NANO(METRE));
+    private static final double simulationExtend = 2500;
+
+    static {
+        Environment.reset();
+    }
 
     // required species
     private static final SmallMolecule hydrogen = SmallMolecule.create("h2")
-            .assignFeature(new Diffusivity(Quantities.getQuantity(4.40E-05, SQUARE_CENTIMETRE_PER_SECOND), Evidence.NO_EVIDENCE))
+            .assignFeature(new ConcentrationDiffusivity(Quantities.getQuantity(4.40E-05, SQUARE_CENTIMETRE_PER_SECOND), Evidence.NO_EVIDENCE))
             .build();
 
     private static final SmallMolecule ammonia = SmallMolecule.create("ammonia")
-            .assignFeature(new Diffusivity(Quantities.getQuantity(2.28E-05, SQUARE_CENTIMETRE_PER_SECOND), Evidence.NO_EVIDENCE))
+            .assignFeature(new ConcentrationDiffusivity(Quantities.getQuantity(2.28E-05, SQUARE_CENTIMETRE_PER_SECOND), Evidence.NO_EVIDENCE))
             .build();
 
     private static final SmallMolecule benzene = SmallMolecule.create("benzene")
-            .assignFeature(new Diffusivity(Quantities.getQuantity(1.09E-05, SQUARE_CENTIMETRE_PER_SECOND), Evidence.NO_EVIDENCE))
+            .assignFeature(new ConcentrationDiffusivity(Quantities.getQuantity(1.09E-05, SQUARE_CENTIMETRE_PER_SECOND), Evidence.NO_EVIDENCE))
             .build();
 
     @BeforeAll
     static void initialize() {
         UnitRegistry.reinitialize();
         Environment.reset();
-    }
-
-    @BeforeEach
-    void initializeEach() {
-        Environment.setSimulationExtend(2500);
-        Environment.setSystemExtend(systemDiameter);
     }
 
     @AfterEach
@@ -132,7 +131,7 @@ class DiffusionTest {
         // create simulation
         Simulation simulation = new Simulation();
         // set node distance to diameter
-        Environment.setNodeSpacingToDiameter(systemDiameter, 25);
+        Environment.setNodeSpacingToDiameter(systemExtend, 25);
         // create grid graph 11x11
         AutomatonGraph graph = AutomatonGraphs.createRectangularAutomatonGraph(25, 25);
         // set graph
@@ -185,8 +184,10 @@ class DiffusionTest {
     }
 
     private Simulation setUpSimulation(int numberOfNodes, SmallMolecule species) {
+        Environment.setSystemExtend(systemExtend);
+        Environment.setSimulationExtend(simulationExtend);
         // setup node distance to diameter
-        Environment.setNodeSpacingToDiameter(systemDiameter, numberOfNodes);
+        Environment.setNodeSpacingToDiameter(systemExtend, numberOfNodes);
         // setup rectangular graph with number of nodes
         Rectangle boundingBox = new Rectangle(Environment.getSimulationExtend(), Environment.getSimulationExtend());
         AutomatonGraph graph = AutomatonGraphs.useStructureFrom(Graphs.buildGridGraph(numberOfNodes, numberOfNodes, boundingBox));

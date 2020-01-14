@@ -96,6 +96,8 @@ public class Environment {
         macroViscosity = DEFAULT_MACRO_VISCOSITY;
         matrixViscosity = DEFAULT_MATRIX_VISCOSITY;
         emptyConcentration = UnitRegistry.concentration(0.0);
+        simulationScale = simulationExtend / systemExtend.getValue().doubleValue();
+        systemScale = systemExtend.divide(simulationExtend);
     }
 
     private static Environment getInstance() {
@@ -108,12 +110,7 @@ public class Environment {
     }
 
     public static void reset() {
-        getInstance().systemExtend = DEFAULT_SYSTEM_EXTEND;
-        getInstance().simulationExtend = DEFAULT_SIMULATION_EXTEND;
-        getInstance().systemTemperature = DEFAULT_SYSTEM_TEMPERATURE;
-        getInstance().macroViscosity = DEFAULT_MACRO_VISCOSITY;
-        getInstance().matrixViscosity = DEFAULT_MATRIX_VISCOSITY;
-        getInstance().emptyConcentration = UnitRegistry.concentration(0.0);
+        instance = new Environment();
     }
 
     public static Quantity<MolarConcentration> emptyConcentration() {

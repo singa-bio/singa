@@ -1,17 +1,19 @@
 package bio.singa.simulation.model.parameters;
 
-import bio.singa.chemistry.features.diffusivity.Diffusivity;
+import bio.singa.chemistry.features.diffusivity.PixelDiffusivity;
 import bio.singa.features.model.Evidence;
+import bio.singa.features.parameters.Environment;
 import bio.singa.features.units.UnitRegistry;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import tech.units.indriya.quantity.Quantities;
 
 import javax.measure.Quantity;
 import javax.measure.Unit;
 
-import static bio.singa.chemistry.features.diffusivity.Diffusivity.*;
+import static bio.singa.chemistry.features.diffusivity.Diffusivity.SQUARE_CENTIMETRE_PER_SECOND;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static tech.units.indriya.AbstractUnit.ONE;
 import static tech.units.indriya.unit.MetricPrefix.*;
@@ -82,18 +84,20 @@ public class FeatureManagerTest {
     }
 
     @Test
+    @DisplayName("scaling - displacement-based scaling")
     public void shouldScaleToEnvironment() {
-        Diffusivity diffusivity = new Diffusivity(Quantities.getQuantity(1, SQUARE_CENTIMETRE_PER_SECOND), Evidence.NO_EVIDENCE);
-        Quantity<?> first = UnitRegistry.scale(diffusivity);
-        assertEquals(100.0, first.getValue().doubleValue());
+        Environment.setSimulationExtend(100);
+        Environment.setSystemExtend(Quantities.getQuantity(100, CENTI(METRE)));
+        UnitRegistry.setSpace(Quantities.getQuantity(1, CENTI(METRE)));
+        UnitRegistry.setTime(Quantities.getQuantity(1, SECOND));
+        PixelDiffusivity diffusivity = new PixelDiffusivity(Quantities.getQuantity(1, SQUARE_CENTIMETRE_PER_SECOND), Evidence.NO_EVIDENCE);
+        assertEquals(1.0, diffusivity.getScaledQuantity());
 
         UnitRegistry.setTime(Quantities.getQuantity(0.5, MILLI(SECOND)));
-        Quantity<?> second = UnitRegistry.scale(diffusivity);
-        assertEquals(50000.0, second.getValue().doubleValue());
+        assertEquals(50000.0, diffusivity.getScaledQuantity());
 
         UnitRegistry.setSpace(Quantities.getQuantity(2, MILLI(METRE)));
-        Quantity<?> third = UnitRegistry.scale(diffusivity);
-        assertEquals(0.0125, third.getValue().doubleValue());
+        assertEquals(0.0125, diffusivity.getScaledQuantity());
     }
 
 }

@@ -1,6 +1,5 @@
-package bio.singa.simulation.features;
+package bio.singa.chemistry.features.diffusivity;
 
-import bio.singa.chemistry.features.diffusivity.Diffusivity;
 import bio.singa.features.model.Evidence;
 
 import javax.measure.Quantity;
@@ -9,7 +8,7 @@ import java.util.List;
 /**
  * @author cl
  */
-public class ModifiedDiffusivity extends Diffusivity {
+public class ModifiedDiffusivity extends PixelDiffusivity {
 
     public ModifiedDiffusivity(Quantity<Diffusivity> quantity, List<Evidence> evidence) {
         super(quantity, evidence);

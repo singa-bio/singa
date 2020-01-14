@@ -1,7 +1,6 @@
 package bio.singa.simulation.model.modules.displacement.implementations;
 
-import bio.singa.chemistry.features.diffusivity.Diffusivity;
-import bio.singa.features.parameters.Environment;
+import bio.singa.chemistry.features.diffusivity.PixelDiffusivity;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.mathematics.vectors.Vectors;
@@ -30,13 +29,13 @@ public class VesicleConfinedDiffusion extends DisplacementBasedModule {
         // delta function
         addDeltaFunction(this::calculateDisplacement, vesicle -> vesicle.getState().equals(getConfiningState()));
         // feature
-        getRequiredFeatures().add(Diffusivity.class);
+        getRequiredFeatures().add(PixelDiffusivity.class);
         getRequiredFeatures().add(AppliedVesicleState.class);
         getRequiredFeatures().add(ContainmentRegion.class);
     }
 
     public DisplacementDelta calculateDisplacement(Vesicle vesicle) {
-        double scaling = SQRT2 * Math.sqrt(vesicle.getFeature(Diffusivity.class).getScaledQuantity()) * Environment.getSimulationScale() * UnitRegistry.getSpaceScale();
+        double scaling = SQRT2 * Math.sqrt(vesicle.getFeature(PixelDiffusivity.class).getScaledQuantity() * UnitRegistry.getTimeScale());
         Vector2D gaussian = Vectors.generateStandardGaussian2DVector();
         return new DisplacementDelta(this, gaussian.multiply(scaling));
     }

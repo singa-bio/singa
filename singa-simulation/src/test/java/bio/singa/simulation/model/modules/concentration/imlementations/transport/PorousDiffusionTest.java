@@ -2,6 +2,7 @@ package bio.singa.simulation.model.modules.concentration.imlementations.transpor
 
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.chemistry.entities.simple.SmallMolecule;
+import bio.singa.chemistry.features.diffusivity.ConcentrationDiffusivity;
 import bio.singa.chemistry.features.diffusivity.Diffusivity;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.units.UnitRegistry;
@@ -71,7 +72,7 @@ class PorousDiffusionTest {
         simulation.setGraph(graph);
 
         ChemicalEntity camp = SmallMolecule.create("CAMP")
-                .assignFeature(new Diffusivity(Quantities.getQuantity(32, new ProductUnit<>(MICRO(METRE).pow(2).divide(SECOND)).asType(Diffusivity.class))))
+                .assignFeature(new ConcentrationDiffusivity(Quantities.getQuantity(32, new ProductUnit<>(MICRO(METRE).pow(2).divide(SECOND)).asType(Diffusivity.class))))
                 .build();
 
         PorousDiffusion.inSimulation(simulation)

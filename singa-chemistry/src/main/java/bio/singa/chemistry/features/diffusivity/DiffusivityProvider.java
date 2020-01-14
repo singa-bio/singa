@@ -14,7 +14,7 @@ import static tech.units.indriya.AbstractUnit.ONE;
 /**
  * @author cl
  */
-public class DiffusivityProvider extends FeatureProvider<Diffusivity> {
+public class DiffusivityProvider extends FeatureProvider<ConcentrationDiffusivity> {
 
     /**
      * Solute transitional diffusion coefficient. Describes the ratio of D in cells to D in water.
@@ -32,12 +32,12 @@ public class DiffusivityProvider extends FeatureProvider<Diffusivity> {
     private final YoungDiffusivityCorrelation youngCorrelation = new YoungDiffusivityCorrelation();
 
     public DiffusivityProvider() {
-        setProvidedFeature(Diffusivity.class);
+        setProvidedFeature(ConcentrationDiffusivity.class);
         addRequirement(MolarMass.class);
     }
 
     @Override
-    public <FeatureableType extends Featureable> Diffusivity provide(FeatureableType featureable) {
+    public <FeatureableType extends Featureable> ConcentrationDiffusivity provide(FeatureableType featureable) {
         MolarMass molarMass = featureable.getFeature(MolarMass.class);
         // choose which correlation to take
         if (molarMass.getValue().doubleValue() < CORRELATION_THRESHOLD.getValue().doubleValue()) {

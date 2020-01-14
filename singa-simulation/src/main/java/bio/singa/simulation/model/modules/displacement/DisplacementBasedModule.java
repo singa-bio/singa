@@ -14,8 +14,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import static bio.singa.simulation.model.modules.concentration.ModuleState.REQUIRING_RECALCULATION;
-import static bio.singa.simulation.model.modules.concentration.ModuleState.SUCCEEDED;
+import static bio.singa.simulation.model.modules.concentration.ModuleState.*;
 
 /**
  * @author cl
@@ -80,7 +79,7 @@ public class DisplacementBasedModule extends AbstractUpdateModule {
                 }
             }
         }
-        setState(SUCCEEDED);
+        setState(SUCCEEDED_WITH_PENDING_CHANGES);
     }
 
     @Override

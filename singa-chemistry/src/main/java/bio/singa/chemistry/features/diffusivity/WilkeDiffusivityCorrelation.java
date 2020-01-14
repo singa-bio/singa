@@ -15,7 +15,7 @@ import static tech.units.indriya.AbstractUnit.ONE;
 /**
  * @author cl
  */
-public class WilkeDiffusivityCorrelation implements Correlation<Diffusivity> {
+public class WilkeDiffusivityCorrelation implements Correlation<ConcentrationDiffusivity> {
 
     private static final Evidence evidence = new Evidence(Evidence.SourceType.LITERATURE,
             "Wilke 1955",
@@ -56,7 +56,7 @@ public class WilkeDiffusivityCorrelation implements Correlation<Diffusivity> {
      * @return The Diffusivity of the entity in cm^2/s.
      */
     @Override
-    public <FeaturableType extends Featureable> Diffusivity predict(FeaturableType featureable) {
+    public <FeaturableType extends Featureable> ConcentrationDiffusivity predict(FeaturableType featureable) {
         final double molarMass = featureable.getFeature(MolarMass.class).getValue().doubleValue();
         // a = coefficient * (x * M(H2O))^0.5 * T
         final double dividend = WILKE_COEFFICIENT.getValue().doubleValue()
@@ -67,6 +67,6 @@ public class WilkeDiffusivityCorrelation implements Correlation<Diffusivity> {
                 * Math.pow(estimateMolarVolume(molarMass), 0.6);
         // D = a / b
         final Quantity<Diffusivity> quantity = Quantities.getQuantity(dividend / divisor, Diffusivity.SQUARE_CENTIMETRE_PER_SECOND);
-        return new Diffusivity(quantity, evidence);
+        return new ConcentrationDiffusivity(quantity, evidence);
     }
 }

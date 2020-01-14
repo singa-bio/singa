@@ -17,11 +17,11 @@ class DiffusivityTest {
         SmallMolecule testSpecies = SmallMolecule.create("dnp")
                 .additionalIdentifier(new ChEBIIdentifier("CHEBI:29802"))
                 .build();
-        Diffusivity diffusivity = testSpecies.getFeature(Diffusivity.class);
+        ConcentrationDiffusivity diffusivity = testSpecies.getFeature(ConcentrationDiffusivity.class);
         // this also needs to resolve the molar mass feature
         MolarMass molarMass = testSpecies.getFeature(MolarMass.class);
         assertEquals(108.0104, molarMass.getValue().doubleValue());
-        assertEquals(7.889770977995664E-6, diffusivity.getValue().doubleValue());
+        assertEquals(7.889770977995664E-6, diffusivity.getContent().getValue().doubleValue());
     }
 
     @Test
@@ -30,11 +30,11 @@ class DiffusivityTest {
                 .assignFeature(new MolarMass(100))
                 .build();
         // get feature
-        Diffusivity feature = testSpecies.getFeature(Diffusivity.class);
+        ConcentrationDiffusivity feature = testSpecies.getFeature(ConcentrationDiffusivity.class);
         // assert attributes and values
         assertEquals("Wilke 1955", feature.getPrimaryEvidence().getIdentifier());
-        assertEquals(8.217150338823197E-6, feature.getValue().doubleValue());
-        assertEquals(Diffusivity.SQUARE_CENTIMETRE_PER_SECOND, feature.getUnit());
+        assertEquals(8.217150338823197E-6, feature.getContent().getValue().doubleValue());
+        assertEquals(Diffusivity.SQUARE_CENTIMETRE_PER_SECOND, feature.getContent().getUnit());
     }
 
     @Test
@@ -43,11 +43,11 @@ class DiffusivityTest {
                 .assignFeature(new MolarMass(10000))
                 .build();
         // get feature
-        Diffusivity feature = testSpecies.getFeature(Diffusivity.class);
+        ConcentrationDiffusivity feature = testSpecies.getFeature(ConcentrationDiffusivity.class);
         // assert attributes and values
         assertEquals("Young 1980", feature.getPrimaryEvidence().getIdentifier());
-        assertEquals(Diffusivity.SQUARE_CENTIMETRE_PER_SECOND, feature.getUnit());
-        assertEquals(1.134227930559286E-6, feature.getValue().doubleValue());
+        assertEquals(Diffusivity.SQUARE_CENTIMETRE_PER_SECOND, feature.getContent().getUnit());
+        assertEquals(1.134227930559286E-6, feature.getContent().getValue().doubleValue());
     }
 
 }

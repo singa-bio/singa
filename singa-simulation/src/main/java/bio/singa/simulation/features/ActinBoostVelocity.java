@@ -1,7 +1,8 @@
 package bio.singa.simulation.features;
 
-import bio.singa.features.model.Evidence;
 import bio.singa.features.model.AbstractScalableQuantitativeFeature;
+import bio.singa.features.model.Evidence;
+import bio.singa.features.units.UnitRegistry;
 import tech.units.indriya.unit.ProductUnit;
 
 import javax.measure.Quantity;
@@ -32,4 +33,9 @@ public class ActinBoostVelocity extends AbstractScalableQuantitativeFeature<Spee
         super(quantity);
     }
 
+    @Override
+    public void scale() {
+        scaledQuantity = UnitRegistry.scaleForPixel(getContent()).getValue().doubleValue();
+        halfScaledQuantity = scaledQuantity * 0.5;
+    }
 }

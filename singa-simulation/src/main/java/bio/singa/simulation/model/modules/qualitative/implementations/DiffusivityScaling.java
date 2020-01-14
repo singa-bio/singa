@@ -1,8 +1,9 @@
 package bio.singa.simulation.model.modules.qualitative.implementations;
 
 import bio.singa.chemistry.features.diffusivity.Diffusivity;
+import bio.singa.chemistry.features.diffusivity.PixelDiffusivity;
 import bio.singa.simulation.features.AppliedVesicleState;
-import bio.singa.simulation.features.ModifiedDiffusivity;
+import bio.singa.chemistry.features.diffusivity.ModifiedDiffusivity;
 import bio.singa.simulation.model.agents.pointlike.Vesicle;
 import bio.singa.simulation.model.modules.qualitative.QualitativeModule;
 
@@ -32,7 +33,7 @@ public class DiffusivityScaling extends QualitativeModule {
         double scaledDiffusivity = getScaledFeature(ModifiedDiffusivity.class);
         for (Vesicle vesicle : getSimulation().getVesicleLayer().getVesicles()) {
             if (vesicle.getState().equals(vesicleState)) {
-                if (scaledDiffusivity != vesicle.getFeature(Diffusivity.class).getScaledQuantity()) {
+                if (scaledDiffusivity != vesicle.getFeature(PixelDiffusivity.class).getScaledQuantity()) {
                     storedVesicles.add(vesicle);
                 }
             }
@@ -54,7 +55,7 @@ public class DiffusivityScaling extends QualitativeModule {
     public void onCompletion() {
         Quantity<Diffusivity> diffusivity = getFeature(ModifiedDiffusivity.class).getContent();
         for (Vesicle storedVesicle : storedVesicles) {
-            storedVesicle.getFeature(Diffusivity.class).setContent(diffusivity);
+            storedVesicle.getFeature(PixelDiffusivity.class).setContent(diffusivity);
         }
     }
 }

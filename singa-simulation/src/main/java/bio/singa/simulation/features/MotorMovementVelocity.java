@@ -1,8 +1,7 @@
 package bio.singa.simulation.features;
 
-import bio.singa.features.model.Evidence;
 import bio.singa.features.model.AbstractScalableQuantitativeFeature;
-import bio.singa.features.parameters.Environment;
+import bio.singa.features.model.Evidence;
 import bio.singa.features.units.UnitRegistry;
 import tech.units.indriya.quantity.Quantities;
 import tech.units.indriya.unit.ProductUnit;
@@ -42,7 +41,7 @@ public class MotorMovementVelocity extends AbstractScalableQuantitativeFeature<S
 
     @Override
     public void scale() {
-        scaledQuantity = UnitRegistry.scaleTime(getContent()).getValue().doubleValue() * Environment.getSimulationScale();
+        scaledQuantity = UnitRegistry.scaleForPixel(getContent()).getValue().doubleValue();
         halfScaledQuantity = scaledQuantity * 0.5;
     }
 

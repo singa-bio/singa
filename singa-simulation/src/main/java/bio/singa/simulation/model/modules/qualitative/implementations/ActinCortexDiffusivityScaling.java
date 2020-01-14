@@ -2,11 +2,12 @@ package bio.singa.simulation.model.modules.qualitative.implementations;
 
 import bio.singa.chemistry.entities.simple.Protein;
 import bio.singa.chemistry.features.diffusivity.Diffusivity;
+import bio.singa.chemistry.features.diffusivity.PixelDiffusivity;
 import bio.singa.features.identifiers.UniProtIdentifier;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.simulation.features.MaximalConcentration;
-import bio.singa.simulation.features.ModifiedDiffusivity;
-import bio.singa.simulation.features.OriginalDiffusivity;
+import bio.singa.chemistry.features.diffusivity.ModifiedDiffusivity;
+import bio.singa.chemistry.features.diffusivity.OriginalDiffusivity;
 import bio.singa.simulation.model.agents.pointlike.Vesicle;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.modules.qualitative.QualitativeModule;
@@ -30,8 +31,8 @@ import static tech.units.indriya.unit.Units.SECOND;
  */
 public class ActinCortexDiffusivityScaling extends QualitativeModule {
 
-    public static final Diffusivity DEFAULT_CORTEX_DIFFUSIVITY = new Diffusivity(Quantities.getQuantity(2.45E-4, MICRO(METRE).pow(2).divide(SECOND)).asType(Diffusivity.class), LANG2000);
-    public static final Diffusivity DEFAULT_CYTOPLASM_DIFFUSIVITY = Diffusivity.calculate(Quantities.getQuantity(50.0, NANO(METRE)));
+    public static final PixelDiffusivity DEFAULT_CORTEX_DIFFUSIVITY = new PixelDiffusivity(Quantities.getQuantity(2.45E-4, MICRO(METRE).pow(2).divide(SECOND)).asType(Diffusivity.class), LANG2000);
+    public static final PixelDiffusivity DEFAULT_CYTOPLASM_DIFFUSIVITY = PixelDiffusivity.calculate(Quantities.getQuantity(50.0, NANO(METRE)));
 
     private Protein tropomyosin = new Protein.Builder("TRP")
             .additionalIdentifier(new UniProtIdentifier("P09493"))
@@ -94,7 +95,7 @@ public class ActinCortexDiffusivityScaling extends QualitativeModule {
     public void onCompletion() {
         for (Map.Entry<Vesicle, Quantity<Diffusivity>> entry : diffusivity.entrySet()) {
             // set diffusivity
-            Diffusivity diffusivity = entry.getKey().getFeature(Diffusivity.class);
+            PixelDiffusivity diffusivity = entry.getKey().getFeature(PixelDiffusivity.class);
             diffusivity.setContent(entry.getValue());
         }
     }

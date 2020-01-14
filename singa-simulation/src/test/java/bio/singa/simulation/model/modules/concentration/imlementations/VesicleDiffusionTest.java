@@ -2,9 +2,7 @@ package bio.singa.simulation.model.modules.concentration.imlementations;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.chemistry.entities.simple.SmallMolecule;
-import bio.singa.chemistry.features.diffusivity.Diffusivity;
-import bio.singa.chemistry.features.permeability.MembranePermeability;
-import bio.singa.features.model.Evidence;
+import bio.singa.chemistry.features.diffusivity.PixelDiffusivity;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.features.units.UnitRegistry;
@@ -13,10 +11,7 @@ import bio.singa.simulation.model.agents.pointlike.Vesicle;
 import bio.singa.simulation.model.agents.pointlike.VesicleLayer;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
-import bio.singa.simulation.model.graphs.AutomatonNode;
-import bio.singa.simulation.model.modules.concentration.imlementations.transport.MembraneDiffusion;
 import bio.singa.simulation.model.modules.displacement.implementations.VesicleCytoplasmDiffusion;
-import bio.singa.simulation.model.sections.CellRegions;
 import bio.singa.simulation.model.simulation.Simulation;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -25,12 +20,11 @@ import tech.units.indriya.ComparableQuantity;
 import tech.units.indriya.quantity.Quantities;
 
 import javax.measure.quantity.Length;
+import javax.measure.quantity.Time;
 import java.util.concurrent.ThreadLocalRandom;
 
-import static bio.singa.chemistry.features.diffusivity.Diffusivity.SQUARE_CENTIMETRE_PER_SECOND;
-import static bio.singa.chemistry.features.permeability.MembranePermeability.CENTIMETRE_PER_SECOND;
+import static bio.singa.chemistry.features.diffusivity.Diffusivity.SQUARE_MICROMETRE_PER_SECOND;
 import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
-import static bio.singa.simulation.model.sections.CellTopology.INNER;
 import static bio.singa.simulation.model.sections.CellTopology.OUTER;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static tech.units.indriya.unit.MetricPrefix.MICRO;
@@ -82,27 +76,31 @@ class VesicleDiffusionTest {
 
         Vesicle vesicle = new Vesicle(new Vector2D(50, 50), Quantities.getQuantity(100, NANO(METRE)));
 
-        assertEquals(0.015, vesicle.getFeature(Diffusivity.class).getValue().doubleValue());
+        assertEquals(0.015, vesicle.getFeature(PixelDiffusivity.class).getContent().getValue().doubleValue());
         UnitRegistry.setTime(Quantities.getQuantity(1, MICRO(SECOND)));
-        assertEquals(1.5e-8, vesicle.getFeature(Diffusivity.class).getScaledQuantity());
+        assertEquals(1.5e-8, vesicle.getFeature(PixelDiffusivity.class).getScaledQuantity());
         UnitRegistry.setTime(Quantities.getQuantity(2, MICRO(SECOND)));
-        assertEquals(3.0e-8, vesicle.getFeature(Diffusivity.class).getScaledQuantity());
+        assertEquals(3.0e-8, vesicle.getFeature(PixelDiffusivity.class).getScaledQuantity());
     }
 
     @Test
     void shouldMembraneDiffusionWithVesicles() {
 
-        ComparableQuantity<Length> systemExtend = Quantities.getQuantity(20, MICRO(METRE));
+        // setup space
+        ComparableQuantity<Length> systemExtend = Quantities.getQuantity(10, MICRO(METRE));
         Environment.setSystemExtend(systemExtend);
-        Environment.setSimulationExtend(500);
+        double simulationExtend = 1000;
+        Environment.setSimulationExtend(simulationExtend);
         Environment.setNodeSpacingToDiameter(systemExtend, 10);
-        UnitRegistry.setTime(Quantities.getQuantity(1, MICRO(SECOND)));
+        UnitRegistry.setTime(Quantities.getQuantity(1, SECOND));
 
+        // setup simulation
         Simulation simulation = new Simulation();
 
-        Vesicle vesicle = new Vesicle(new Vector2D(220, 220), Quantities.getQuantity(150, NANO(METRE)));
-
-        vesicle.getConcentrationContainer().set(OUTER, water, 50.0);
+        // create vesicle
+        Vector2D initialPosition = new Vector2D(simulationExtend / 2.0, simulationExtend / 2.0);
+        Vesicle vesicle = new Vesicle(initialPosition, Quantities.getQuantity(50, NANO(METRE)));
+        vesicle.setFeature(new PixelDiffusivity(Quantities.getQuantity(1, SQUARE_MICROMETRE_PER_SECOND)));
 
         // add vesicle transport layer
         VesicleLayer layer = new VesicleLayer(simulation);
@@ -113,28 +111,24 @@ class VesicleDiffusionTest {
         AutomatonGraph graph = AutomatonGraphs.createRectangularAutomatonGraph(10, 10);
         simulation.setGraph(graph);
 
-        for (AutomatonNode node : graph.getNodes()) {
-            node.setCellRegion(CellRegions.CYTOPLASM_REGION);
-            node.getConcentrationContainer().set(INNER, water, 40.0);
-        }
-
-        // setup species
-        SmallMolecule water = SmallMolecule.create("water")
-                .assignFeature(new MembranePermeability(Quantities.getQuantity(1.75e-3, CENTIMETRE_PER_SECOND), Evidence.NO_EVIDENCE))
-                .assignFeature(new Diffusivity(Quantities.getQuantity(2.6e-6, SQUARE_CENTIMETRE_PER_SECOND), Evidence.NO_EVIDENCE))
-                .build();
-
-        // add diffusion
-        MembraneDiffusion.inSimulation(simulation)
-                .cargo(water)
-                .build();
-
+        // add vesicle diffusion
         VesicleCytoplasmDiffusion vesicleDiffusion = new VesicleCytoplasmDiffusion();
         vesicleDiffusion.setSimulation(simulation);
         simulation.getModules().add(vesicleDiffusion);
 
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 10; i++) {
+            System.out.println(i);
+            ComparableQuantity<Time> previousTime = simulation.getElapsedTime();
             simulation.nextEpoch();
+            ComparableQuantity<Time> currentTime = simulation.getElapsedTime();
+            Vector2D currentPosition = simulation.getVesicleLayer().getVesicles().iterator().next().getPosition();
+            double timeInSeconds = currentTime.subtract(previousTime).to(SECOND).getValue().doubleValue();
+            double distanceInMicroMetre = UnitRegistry.scalePixelToSpace(initialPosition.subtract(currentPosition).getMagnitude()).to(MICRO(METRE)).getValue().doubleValue();
+            // System.out.println(distanceInMicroMetre + " um in" + timeInSeconds + " s");
+            System.out.println(distanceInMicroMetre/timeInSeconds+" um/s");
+            // variance is high because of random gaussian
+            // assertEquals(50, distancePerSecond, 1e-5);
+            initialPosition = currentPosition;
         }
 
     }
