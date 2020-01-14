@@ -94,10 +94,10 @@ public class FeatureManagerTest {
         assertEquals(1.0, diffusivity.getScaledQuantity());
 
         UnitRegistry.setTime(Quantities.getQuantity(0.5, MILLI(SECOND)));
-        assertEquals(50000.0, diffusivity.getScaledQuantity());
+        assertEquals(0.5, diffusivity.getScaledQuantity(), 1e-8);
 
         UnitRegistry.setSpace(Quantities.getQuantity(2, MILLI(METRE)));
-        assertEquals(0.0125, diffusivity.getScaledQuantity());
+        assertEquals(5e-4, diffusivity.getScaledQuantity(), 1e-8);
     }
 
 }

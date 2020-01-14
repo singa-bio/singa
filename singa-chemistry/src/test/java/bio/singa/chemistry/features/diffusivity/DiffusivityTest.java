@@ -1,8 +1,10 @@
 package bio.singa.chemistry.features.diffusivity;
 
 import bio.singa.chemistry.entities.simple.SmallMolecule;
+import bio.singa.chemistry.features.FeatureProviderRegistry;
 import bio.singa.features.identifiers.ChEBIIdentifier;
 import bio.singa.structure.features.molarmass.MolarMass;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -11,6 +13,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * @author cl
  */
 class DiffusivityTest {
+
+    @BeforeAll
+    static void initialize() {
+        FeatureProviderRegistry.addProviderForFeature(ConcentrationDiffusivity.class, DiffusivityProvider.class);
+    }
 
     @Test
     void shouldResolveRequiredFeature() {

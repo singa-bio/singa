@@ -61,6 +61,7 @@ class VesicleConfinedDiffusionTest {
         ComparableQuantity<Length> systemExtend = Quantities.getQuantity(10, MICRO(METRE));
         Environment.setSystemExtend(systemExtend);
         Environment.setSimulationExtend(simulationExtend);
+        UnitRegistry.setSpace(systemExtend);
         UnitRegistry.setTime(Quantities.getQuantity(100, MILLI(SECOND)));
         simulation.setMaximalTimeStep(Quantities.getQuantity(100, MILLI(SECOND)));
 
