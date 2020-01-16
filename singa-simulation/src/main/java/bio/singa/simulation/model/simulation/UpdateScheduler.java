@@ -336,7 +336,8 @@ public class UpdateScheduler {
         if (simulation.getVesicleLayer().getVesicles().isEmpty()) {
             return;
         }
-        if (!simulation.getVesicleLayer().deltasAreBelowDisplacementCutoff()) {
+        DisplacementDeviation globalDeviation = simulation.getVesicleLayer().determineGlobalDeviation();
+        if (globalDeviation.getValue() < 0) {
             decreaseTimeStep("total displacement exceeded E(%6.3e)");
             simulation.getVesicleLayer().clearUpdates();
             modules.forEach(UpdateModule::reset);

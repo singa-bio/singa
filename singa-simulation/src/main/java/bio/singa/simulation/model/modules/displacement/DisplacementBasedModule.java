@@ -1,7 +1,5 @@
 package bio.singa.simulation.model.modules.displacement;
 
-import bio.singa.features.parameters.Environment;
-import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.simulation.model.agents.pointlike.Vesicle;
 import bio.singa.simulation.model.modules.AbstractUpdateModule;
@@ -12,12 +10,14 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
 import static bio.singa.simulation.model.modules.concentration.ModuleState.REQUIRING_RECALCULATION;
 import static bio.singa.simulation.model.modules.concentration.ModuleState.SUCCEEDED_WITH_PENDING_CHANGES;
-import static bio.singa.simulation.model.simulation.error.DisplacementDeviation.*;
+import static bio.singa.simulation.model.simulation.error.DisplacementDeviation.MAXIMAL_POSITIVE_DEVIATION;
+import static bio.singa.simulation.model.simulation.error.DisplacementDeviation.MINIMAL_DEVIATION;
 
 /**
  * @author cl
@@ -29,19 +29,15 @@ public class DisplacementBasedModule extends AbstractUpdateModule {
      */
     private static final Logger logger = LoggerFactory.getLogger(DisplacementBasedModule.class);
 
-    private static final double DEFAULT_DISPLACEMENT_CUTOFF_FACTOR = 1.0 / 10.0;
     /**
      * The functions that are applied with each epoch.
      */
     private final Map<Function<Vesicle, DisplacementDelta>, Predicate<Vesicle>> deltaFunctions;
-    private double displacementCutoffFactor = DEFAULT_DISPLACEMENT_CUTOFF_FACTOR;
-    private double displacementCutoff;
 
     private DisplacementDeviation largestLocalDeviation;
 
     public DisplacementBasedModule() {
         deltaFunctions = new HashMap<>();
-        displacementCutoff = Environment.convertSystemToSimulationScale(UnitRegistry.getSpace().multiply(displacementCutoffFactor));
         largestLocalDeviation = MINIMAL_DEVIATION;
     }
 
@@ -83,14 +79,17 @@ public class DisplacementBasedModule extends AbstractUpdateModule {
     public DisplacementDeviation determineLocalDeviation() {
         DisplacementDeviation largestDeviation = MAXIMAL_POSITIVE_DEVIATION;
         for (Vesicle vesicle : getSimulation().getVesicleLayer().getVesicles()) {
-            if (vesicle.getSpatialDelta(this) != null) {
-                Vector2D displacement = vesicle.getSpatialDelta(this).getDeltaVector();
-                double length = displacement.getMagnitude();
-                // determine fraction of maximal allowed error
-                double deviation = 1 - (length / displacementCutoff);
-                if (deviation < largestDeviation.getValue()) {
-                    largestDeviation = new DisplacementDeviation(vesicle, deviation);
-                }
+            // skip if no displacements where applied by this module
+            Optional<DisplacementDelta> optionalDisplacementDelta = vesicle.getSpatialDelta(this);
+            if (!optionalDisplacementDelta.isPresent()) {
+                continue;
+            }
+            Vector2D displacement = optionalDisplacementDelta.get().getDeltaVector();
+            double length = displacement.getMagnitude();
+            // determine fraction of maximal allowed error
+            double deviation = 1 - (length / getSimulation().getScheduler().getErrorManager().getDisplacementCutoff());
+            if (deviation < largestDeviation.getValue()) {
+                largestDeviation = new DisplacementDeviation(vesicle, deviation);
             }
         }
         return largestDeviation;
@@ -130,15 +129,6 @@ public class DisplacementBasedModule extends AbstractUpdateModule {
                 vesicle.getStringIdentifier(),
                 vesicle.getPosition(),
                 delta.getDeltaVector());
-    }
-
-    public double getDisplacementCutoffFactor() {
-        return displacementCutoffFactor;
-    }
-
-    public void setDisplacementCutoffFactor(double displacementCutoffFactor) {
-        this.displacementCutoffFactor = displacementCutoffFactor;
-        displacementCutoff = Environment.convertSystemToSimulationScale(UnitRegistry.getSpace().multiply(displacementCutoffFactor));
     }
 
     @Override

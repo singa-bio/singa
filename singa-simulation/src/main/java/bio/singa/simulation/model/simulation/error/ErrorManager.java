@@ -1,5 +1,7 @@
 package bio.singa.simulation.model.simulation.error;
 
+import bio.singa.features.parameters.Environment;
+import bio.singa.features.units.UnitRegistry;
 import bio.singa.simulation.model.modules.UpdateModule;
 
 /**
@@ -9,9 +11,13 @@ public class ErrorManager {
 
     private static final double DEFAULT_LOCAL_NUMERICAL_TOLERANCE = 0.01;
     private static final double DEFAULT_GLOBAL_NUMERICAL_TOLERANCE = 0.01;
-    private static final double DEFAULT_LOCAL_DEVIATION_TOLERANCE = 0.8;
+
     private static final double DEFAULT_NUMERICAL_NEGLIGENCE_CUTOFF = 1e-100;
     private static final double DEFAULT_NUMERICAL_INSTABILITY_CUTOFF = 100;
+
+    private static final double DEFAULT_DISPLACEMENT_CUTOFF_FACTOR = 1.0 / 10.0;
+    private static final double DEFAULT_LOCAL_DEVIATION_TOLERANCE = 0.8;
+    private static final double DEFAULT_GLOBAL_DEVIATION_TOLERANCE = 0.8;
 
     private double localNumericalTolerance = DEFAULT_LOCAL_NUMERICAL_TOLERANCE;
     private NumericalError localNumericalError;
@@ -21,17 +27,25 @@ public class ErrorManager {
     private double globalNumericalTolerance = DEFAULT_GLOBAL_NUMERICAL_TOLERANCE;
     private NumericalError globalNumericalError;
 
+    private double numericalNegligenceCutoff = DEFAULT_NUMERICAL_NEGLIGENCE_CUTOFF;
+    private double numericalInstabilityCutoff = DEFAULT_NUMERICAL_INSTABILITY_CUTOFF;
+
     private double localDisplacementTolerance = DEFAULT_LOCAL_DEVIATION_TOLERANCE;
     private DisplacementDeviation localDisplacementDeviation;
     private UpdateModule localDisplacementDeviationModule;
 
-    private double numericalNegligenceCutoff = DEFAULT_NUMERICAL_NEGLIGENCE_CUTOFF;
-    private double numericalInstabilityCutoff = DEFAULT_NUMERICAL_INSTABILITY_CUTOFF;
+    private double globalDisplacementTolerance = DEFAULT_GLOBAL_DEVIATION_TOLERANCE;
+    private DisplacementDeviation globalDisplacementDeviation;
+
+    private double displacementCutoffFactor = DEFAULT_DISPLACEMENT_CUTOFF_FACTOR;
+    private double displacementCutoff;
 
     public ErrorManager() {
         localNumericalError = NumericalError.MINIMAL_EMPTY_ERROR;
         globalNumericalError = NumericalError.MINIMAL_EMPTY_ERROR;
         localDisplacementDeviation = DisplacementDeviation.MINIMAL_DEVIATION;
+        globalDisplacementDeviation = DisplacementDeviation.MINIMAL_DEVIATION;
+        displacementCutoff = Environment.convertSystemToSimulationScale(UnitRegistry.getSpace().multiply(displacementCutoffFactor));
     }
 
     public void setLargestLocalNumericalError(NumericalError localError, UpdateModule associatedModule, double associatedConcentration) {
@@ -69,6 +83,22 @@ public class ErrorManager {
         this.localDisplacementDeviation = largestDisplacementDeviation;
     }
 
+    public DisplacementDeviation getGlobalDisplacementDeviation() {
+        return globalDisplacementDeviation;
+    }
+
+    public void setGlobalDisplacementDeviation(DisplacementDeviation globalDisplacementDeviation) {
+        this.globalDisplacementDeviation = globalDisplacementDeviation;
+    }
+
+    public double getDisplacementCutoff() {
+        return displacementCutoff;
+    }
+
+    public void setDisplacementCutoff(double displacementCutoff) {
+        this.displacementCutoff = displacementCutoff;
+    }
+
     public UpdateModule getLocalNumericalErrorModule() {
         return localNumericalErrorModule;
     }
@@ -85,6 +115,10 @@ public class ErrorManager {
         this.localNumericalErrorUpdate = localErrorUpdate;
     }
 
+    public UpdateModule getLocalDisplacementDeviationModule() {
+        return localDisplacementDeviationModule;
+    }
+
     public void resetAllErrors() {
         resetNumericalErrors();
         resetDisplacementDeviations();
@@ -97,6 +131,7 @@ public class ErrorManager {
 
     public void resetDisplacementDeviations() {
         resetLocalDisplacementDeviation();
+        resetGlobalDisplacementDeviation();
     }
 
     public void resetLocalErrors() {
@@ -114,6 +149,10 @@ public class ErrorManager {
 
     public void resetLocalDisplacementDeviation() {
         localDisplacementDeviation = DisplacementDeviation.MINIMAL_DEVIATION;
+    }
+
+    public void resetGlobalDisplacementDeviation() {
+        globalDisplacementDeviation = DisplacementDeviation.MINIMAL_DEVIATION;
     }
 
     public double getLocalDisplacementTolerance() {

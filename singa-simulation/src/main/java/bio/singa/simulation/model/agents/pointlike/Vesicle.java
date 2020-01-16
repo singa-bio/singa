@@ -176,7 +176,7 @@ public class Vesicle implements Updatable, Featureable {
         displacementManager.addPotentialDisplacementDelta(spatialDelta);
     }
 
-    public DisplacementDelta getSpatialDelta(DisplacementBasedModule module) {
+    public Optional<DisplacementDelta> getSpatialDelta(DisplacementBasedModule module) {
         return displacementManager.getPotentialDisplacementDelta(module);
     }
 

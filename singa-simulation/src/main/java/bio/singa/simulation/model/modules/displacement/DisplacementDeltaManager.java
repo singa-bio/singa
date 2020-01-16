@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * The DisplacementDeltaManager handles the current position an updatable amd the updates to this position during
@@ -71,15 +72,15 @@ public class DisplacementDeltaManager {
      * @param module The module.
      * @return The displacement delta.
      */
-    public DisplacementDelta getPotentialDisplacementDelta(DisplacementBasedModule module) {
+    public Optional<DisplacementDelta> getPotentialDisplacementDelta(DisplacementBasedModule module) {
         synchronized (potentialSpatialDeltas) {
             for (DisplacementDelta potentialSpatialDelta : potentialSpatialDeltas) {
                 if (potentialSpatialDelta.getModule().equals(module)) {
-                    return potentialSpatialDelta;
+                    return Optional.of(potentialSpatialDelta);
                 }
             }
         }
-        return null;
+        return Optional.empty();
     }
 
     /**
