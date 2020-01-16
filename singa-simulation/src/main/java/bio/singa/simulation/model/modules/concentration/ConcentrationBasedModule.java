@@ -2,7 +2,6 @@ package bio.singa.simulation.model.modules.concentration;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.features.model.AbstractScalableQuantitativeFeature;
-import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.simulation.exceptions.NumericalInstabilityException;
 import bio.singa.simulation.model.modules.AbstractUpdateModule;
@@ -35,11 +34,6 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
     private static final Logger logger = LoggerFactory.getLogger(ConcentrationBasedModule.class);
 
     /**
-     * The default value where deltas validated to be effectively zero.
-     */
-    private static final double DEFAULT_NUMERICAL_CUTOFF = 1e-100;
-
-    /**
      * The default value where numerical errors to be considered irretrievably unstable.
      */
     private static final double DEFAULT_ERROR_CUTOFF = 100;
@@ -47,10 +41,7 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
      * Frequently required fields.
      */
     protected FieldSupplier supplier;
-    /**
-     * The cutoff where deltas are validated to be effectively zero.
-     */
-    private double deltaCutoff = DEFAULT_NUMERICAL_CUTOFF;
+
     /**
      * The cutoff where numerical errors to be considered irretrievably unstable.
      */
@@ -106,24 +97,6 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
      */
     protected void setApplicationCondition(Predicate<Updatable> applicationCondition) {
         this.applicationCondition = applicationCondition;
-    }
-
-    /**
-     * Returns the cutoff where deltas are validated to be effectively zero.
-     *
-     * @return The delta cutoff.
-     */
-    public double getDeltaCutoff() {
-        return deltaCutoff;
-    }
-
-    /**
-     * Sets the cutoff where deltas are validated to be effectively zero.
-     *
-     * @param deltaCutoff The delta cutoff.
-     */
-    public void setDeltaCutoff(double deltaCutoff) {
-        this.deltaCutoff = deltaCutoff;
     }
 
     /**
@@ -256,7 +229,7 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
      * @return true if the delta is above the numerical cutoff (not effectively zero).
      */
     private boolean deltaIsAboveNumericCutoff(ConcentrationDelta delta) {
-        return Math.abs(delta.getValue()) > deltaCutoff;
+        return Math.abs(delta.getValue()) > getSimulation().getScheduler().getErrorManager().getNumericalCutoff();
     }
 
     /**
@@ -327,7 +300,7 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
      * @param error The error.
      */
     private void checkErrorStability(double fullDelta, double halfDelta, double error) {
-        if (error > errorCutoff && MolarConcentration.concentrationToMolecules(fullDelta).getValue().doubleValue() > getSimulation().getScheduler().getRecalculationCutoff()) {
+        if (error > errorCutoff) {
             throw new NumericalInstabilityException("The module " + toString() + " experiences numerical instabilities. " +
                     "The local error between the full step delta (" + fullDelta + ") and half step delta (" + halfDelta +
                     ") is " + error + ". This can be an result of time steps that have been initially chosen too large" +
@@ -384,7 +357,7 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
             errorRatioIsValid = errorRatio > 100000;
         }
         // use threshold
-        boolean thresholdIsValid = supplier.getLargestLocalError().getValue() < getSimulation().getScheduler().getRecalculationCutoff();
+        boolean thresholdIsValid = supplier.getLargestLocalError().getValue() < getSimulation().getScheduler().getErrorManager().getLocalNumericalTolerance();
         return errorRatioIsValid || thresholdIsValid;
     }
 

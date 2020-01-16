@@ -29,16 +29,13 @@ public class UpdateScheduler {
 
     private static final Logger logger = LoggerFactory.getLogger(UpdateScheduler.class);
 
-    /**
-     * The default value where errors are considered too large and the time step is reduced.
-     */
-    private static final double DEFAULT_RECALCULATION_CUTOFF = 0.01;
     private final Deque<UpdateModule> modules;
+
     private final double moleculeFraction;
+
     private Simulation simulation;
     private List<Updatable> updatables;
     private Iterator<UpdateModule> moduleIterator;
-    private double recalculationCutoff = DEFAULT_RECALCULATION_CUTOFF;
 
     private boolean timeStepRescaled;
 
@@ -66,14 +63,6 @@ public class UpdateScheduler {
             return;
         }
         executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(modules.size());
-    }
-
-    public double getRecalculationCutoff() {
-        return recalculationCutoff;
-    }
-
-    public void setRecalculationCutoff(double recalculationCutoff) {
-        this.recalculationCutoff = recalculationCutoff;
     }
 
     public long getTimestepsDecreased() {
@@ -183,7 +172,7 @@ public class UpdateScheduler {
                 }
             }
             // set interim check false if global error is to large and true if you can continue
-            if (largestGlobalError.getValue() > recalculationCutoff) {
+            if (largestGlobalError.getValue() > getErrorManager().getGlobalNumericalTolerance()) {
                 // System.out.println("rejected global error: "+largestGlobalError+" @ "+TimeFormatter.formatTime(UnitRegistry.getTime()));
                 decreaseTimeStep(String.format("global error exceeded %s", largestGlobalError.toString()));
                 globalErrorAcceptable = false;

@@ -28,19 +28,19 @@ public class NumericalApproximationTest {
 
         double rate = 1.0;
 
-        List<Double> cutoffs = new ArrayList<>();
-        cutoffs.add(0.1);
-        cutoffs.add(0.05);
-        cutoffs.add(0.025);
-        cutoffs.add(0.01);
-        cutoffs.add(0.005);
-        cutoffs.add(0.0025);
-        cutoffs.add(0.001);
+        List<Double> tolerances = new ArrayList<>();
+        tolerances.add(0.1);
+        tolerances.add(0.05);
+        tolerances.add(0.025);
+        tolerances.add(0.01);
+        tolerances.add(0.005);
+        tolerances.add(0.0025);
+        tolerances.add(0.001);
 
-        for (Double cutoff : cutoffs) {
+        for (Double tolerance : tolerances) {
 
             Simulation simulation = new Simulation();
-            simulation.getScheduler().setRecalculationCutoff(cutoff);
+            simulation.getScheduler().getErrorManager().setLocalNumericalTolerance(tolerance);
 
             AutomatonGraph automatonGraph = AutomatonGraphs.singularGraph();
             simulation.setGraph(automatonGraph);
