@@ -199,10 +199,7 @@ public class Simulation {
     }
 
     private boolean timeStepShouldIncrease() {
-        // if time step was reduced in this epoch there is no need to test if it should increase
-        if (scheduler.timeStepWasAlteredInThisEpoch()) {
-            return false;
-        }
+
         // if a maximal time step is set
         if (maximalTimeStep != null) {
             final double currentTimeStep = UnitRegistry.getTime().to(maximalTimeStep.getUnit()).getValue().doubleValue();
@@ -212,13 +209,6 @@ public class Simulation {
                 return false;
             }
         }
-
-//        // if the ratio between local and global error (local/global) is large (local error has little influence on
-//        // global error)
-//        double errorRatio = scheduler.getLargestLocalError().getValue() / scheduler.getLargestGlobalError();
-//        if (errorRatio > 100000) {
-//            return true;
-//        }
 
         // if the the error that was computed previously is very small
         final double recalculationCutoff = scheduler.getRecalculationCutoff();

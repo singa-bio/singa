@@ -3,17 +3,14 @@ package bio.singa.simulation.model.simulation;
 import bio.singa.features.formatter.TimeFormatter;
 import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.features.units.UnitRegistry;
-import bio.singa.simulation.model.simulation.error.DisplacementDeviation;
 import bio.singa.simulation.model.modules.UpdateModule;
+import bio.singa.simulation.model.simulation.error.DisplacementDeviation;
 import bio.singa.simulation.model.simulation.error.ErrorManager;
 import bio.singa.simulation.model.simulation.error.NumericalError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tech.units.indriya.AbstractUnit;
-import tech.units.indriya.quantity.Quantities;
 
 import javax.measure.Quantity;
-import javax.measure.quantity.Frequency;
 import javax.measure.quantity.Time;
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -42,17 +39,16 @@ public class UpdateScheduler {
     private List<Updatable> updatables;
     private Iterator<UpdateModule> moduleIterator;
     private double recalculationCutoff = DEFAULT_RECALCULATION_CUTOFF;
+
     private boolean timeStepRescaled;
-    private boolean timeStepAlteredInThisEpoch;
+
     private long timestepsDecreased = 0;
     private long timestepsIncreased = 0;
 
     private ErrorManager errorManager;
 
     private CountDownLatch countDownLatch;
-    private double previousError;
-    private Quantity<Time> previousTimeStep;
-    private Quantity<Frequency> accuracyGain;
+
     private volatile boolean interrupted;
     private boolean globalErrorAcceptable;
     private boolean calculateGlobalError;
@@ -94,10 +90,8 @@ public class UpdateScheduler {
 
     public void nextEpoch() {
         // initialize fields
-        timeStepAlteredInThisEpoch = false;
-        previousError = 0;
+
         errorManager.resetLocalNumericalError();
-        previousTimeStep = UnitRegistry.getTime();
         updatables = simulation.getUpdatables();
         moduleIterator = modules.iterator();
         globalErrorAcceptable = true;
@@ -157,9 +151,6 @@ public class UpdateScheduler {
         }
 
         logger.debug("Finished processing modules for epoch {}.", simulation.getEpoch());
-
-        // wrap up
-        determineAccuracyGain();
 
         finalizeDeltas();
         modules.forEach(UpdateModule::reset);
@@ -226,20 +217,8 @@ public class UpdateScheduler {
         return timeStepRescaled || interrupted || !globalErrorAcceptable;
     }
 
-    public boolean timeStepWasRescaled() {
-        return timeStepRescaled;
-    }
-
     public void shutdownExecutorService() {
         executor.shutdown();
-    }
-
-    public boolean timeStepWasAlteredInThisEpoch() {
-        return timeStepAlteredInThisEpoch;
-    }
-
-    public Quantity<Frequency> getAccuracyGain() {
-        return accuracyGain;
     }
 
     public void increaseTimeStep(String reason) {
@@ -260,11 +239,6 @@ public class UpdateScheduler {
     public synchronized void decreaseTimeStep(String reason) {
         // if time step is rescaled for the very fist time this epoch remember the initial error and time step
         Quantity<Time> original = UnitRegistry.getTime();
-        if (!timeStepWasAlteredInThisEpoch()) {
-            previousError = errorManager.getLocalNumericalError().getValue();
-            previousTimeStep = original;
-        }
-
         double multiplier = estimateDecrease();
         Quantity<Time> estimate = original.multiply(multiplier);
 
@@ -276,17 +250,11 @@ public class UpdateScheduler {
 
         timestepsDecreased++;
         timeStepRescaled = true;
-        timeStepAlteredInThisEpoch = true;
     }
 
     public synchronized void decreaseTimestep(DisplacementDeviation deviation) {
         // if time step is rescaled for the very fist time this epoch remember the initial error and time step
         Quantity<Time> original = UnitRegistry.getTime();
-        if (!timeStepWasAlteredInThisEpoch()) {
-            previousError = errorManager.getLocalNumericalError().getValue();
-            previousTimeStep = original;
-        }
-
         double multiplier = estimateDecrease();
         Quantity<Time> estimate = original.multiply(multiplier);
 
@@ -298,7 +266,6 @@ public class UpdateScheduler {
 
         timestepsDecreased++;
         timeStepRescaled = true;
-        timeStepAlteredInThisEpoch = true;
     }
 
     private double estimateIncrease() {
@@ -321,14 +288,6 @@ public class UpdateScheduler {
             updatable.getConcentrationManager().shiftDeltas();
         }
         // potential updates for vesicles are already set during displacement evaluation
-    }
-
-    private void determineAccuracyGain() {
-        if (timeStepWasAlteredInThisEpoch()) {
-            final double errorDelta = previousError - errorManager.getLocalNumericalError().getValue();
-            final Quantity<Time> timeDelta = previousTimeStep.subtract(UnitRegistry.getTime());
-            accuracyGain = Quantities.getQuantity(errorDelta, AbstractUnit.ONE).divide(timeDelta).asType(Frequency.class);
-        }
     }
 
     public CountDownLatch getCountDownLatch() {

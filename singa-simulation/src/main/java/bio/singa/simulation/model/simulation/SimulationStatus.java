@@ -164,13 +164,6 @@ public class SimulationStatus implements UpdateEventListener<GraphUpdatedEvent> 
         return TimeFormatter.formatTime(simulation.getElapsedTime());
     }
 
-    public String getAccuracyGain() {
-        if (simulation.getScheduler().getAccuracyGain() != null) {
-            return simulation.getScheduler().getAccuracyGain().toString();
-        }
-        return "";
-    }
-
     public double getEpochsPerSecond() {
         return epochsPerSecond;
     }
