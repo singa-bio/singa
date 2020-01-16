@@ -10,7 +10,8 @@ public class ErrorManager {
     private static final double DEFAULT_LOCAL_NUMERICAL_TOLERANCE = 0.01;
     private static final double DEFAULT_GLOBAL_NUMERICAL_TOLERANCE = 0.01;
     private static final double DEFAULT_LOCAL_DEVIATION_TOLERANCE = 0.2;
-    private static final double DEFAULT_NUMERICAL_CUTOFF = 1e-100;
+    private static final double DEFAULT_NUMERICAL_NEGLIGENCE_CUTOFF = 1e-100;
+    private static final double DEFAULT_NUMERICAL_INSTABILITY_CUTOFF = 100;
 
     private NumericalError largestNumericalLocalError;
     private double localNumericalTolerance = DEFAULT_LOCAL_NUMERICAL_TOLERANCE;
@@ -24,7 +25,8 @@ public class ErrorManager {
     private UpdateModule localErrorModule;
     private double localErrorUpdate;
 
-    private double numericalCutoff = DEFAULT_NUMERICAL_CUTOFF;
+    private double numericalNegligenceCutoff = DEFAULT_NUMERICAL_NEGLIGENCE_CUTOFF;
+    private double numericalInstabilityCutoff= DEFAULT_NUMERICAL_INSTABILITY_CUTOFF;
 
     public ErrorManager() {
         largestNumericalLocalError = NumericalError.MINIMAL_EMPTY_ERROR;
@@ -126,11 +128,19 @@ public class ErrorManager {
         this.globalNumericalTolerance = globalNumericalTolerance;
     }
 
-    public double getNumericalCutoff() {
-        return numericalCutoff;
+    public double getNumericalNegligenceCutoff() {
+        return numericalNegligenceCutoff;
     }
 
-    public void setNumericalCutoff(double numericalCutoff) {
-        this.numericalCutoff = numericalCutoff;
+    public void setNumericalNegligenceCutoff(double numericalNegligenceCutoff) {
+        this.numericalNegligenceCutoff = numericalNegligenceCutoff;
+    }
+
+    public double getNumericalInstabilityCutoff() {
+        return numericalInstabilityCutoff;
+    }
+
+    public void setNumericalInstabilityCutoff(double numericalInstabilityCutoff) {
+        this.numericalInstabilityCutoff = numericalInstabilityCutoff;
     }
 }

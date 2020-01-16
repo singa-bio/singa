@@ -34,18 +34,10 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
     private static final Logger logger = LoggerFactory.getLogger(ConcentrationBasedModule.class);
 
     /**
-     * The default value where numerical errors to be considered irretrievably unstable.
-     */
-    private static final double DEFAULT_ERROR_CUTOFF = 100;
-    /**
      * Frequently required fields.
      */
     protected FieldSupplier supplier;
 
-    /**
-     * The cutoff where numerical errors to be considered irretrievably unstable.
-     */
-    private double errorCutoff = DEFAULT_ERROR_CUTOFF;
     /**
      * The scope of this module.
      */
@@ -97,24 +89,6 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
      */
     protected void setApplicationCondition(Predicate<Updatable> applicationCondition) {
         this.applicationCondition = applicationCondition;
-    }
-
-    /**
-     * Returns the cutoff where numerical errors to be considered irretrievably unstable.
-     *
-     * @return The error cutoff.
-     */
-    public double getErrorCutoff() {
-        return errorCutoff;
-    }
-
-    /**
-     * Sets the cutoff where numerical errors to be considered irretrievably unstable.
-     *
-     * @param errorCutoff The error cutoff.
-     */
-    public void setErrorCutoff(double errorCutoff) {
-        this.errorCutoff = errorCutoff;
     }
 
     /**
@@ -229,7 +203,7 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
      * @return true if the delta is above the numerical cutoff (not effectively zero).
      */
     private boolean deltaIsAboveNumericCutoff(ConcentrationDelta delta) {
-        return Math.abs(delta.getValue()) > getSimulation().getScheduler().getErrorManager().getNumericalCutoff();
+        return Math.abs(delta.getValue()) > getSimulation().getScheduler().getErrorManager().getNumericalNegligenceCutoff();
     }
 
     /**
@@ -300,7 +274,7 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
      * @param error The error.
      */
     private void checkErrorStability(double fullDelta, double halfDelta, double error) {
-        if (error > errorCutoff) {
+        if (error > getSimulation().getScheduler().getErrorManager().getNumericalInstabilityCutoff()) {
             throw new NumericalInstabilityException("The module " + toString() + " experiences numerical instabilities. " +
                     "The local error between the full step delta (" + fullDelta + ") and half step delta (" + halfDelta +
                     ") is " + error + ". This can be an result of time steps that have been initially chosen too large" +
