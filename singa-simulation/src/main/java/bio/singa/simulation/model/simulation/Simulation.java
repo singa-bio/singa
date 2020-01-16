@@ -20,7 +20,6 @@ import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.graphs.NeighborhoodMappingManager;
 import bio.singa.simulation.model.modules.UpdateModule;
 import bio.singa.simulation.model.modules.concentration.ConcentrationDelta;
-import bio.singa.simulation.model.simulation.error.NumericalError;
 import bio.singa.simulation.model.modules.concentration.imlementations.transport.Diffusion;
 import bio.singa.simulation.model.modules.displacement.DisplacementBasedModule;
 import bio.singa.simulation.model.rules.AssignmentRule;
@@ -211,20 +210,7 @@ public class Simulation {
         }
 
         // if the the error that was computed previously is very small
-        final double globalTolerance = scheduler.getErrorManager().getGlobalNumericalTolerance();
-        final NumericalError latestGlobalError = scheduler.getErrorManager().getGlobalNumericalError();
-        if (globalTolerance - latestGlobalError.getValue() > 0.2 * globalTolerance) {
-            // System.out.println("global error "+ latestGlobalError);
-            final double latestLocalError = scheduler.getErrorManager().getLocalNumericalError().getValue();
-            double localNumericalTolerance = scheduler.getErrorManager().getLocalNumericalTolerance();
-            // System.out.println("local error "+ latestLocalError);
-            if (localNumericalTolerance - latestLocalError > 0.2 * localNumericalTolerance) {
-                // try larger time step
-                return true;
-            }
-        }
-
-        return false;
+        return getScheduler().getErrorManager().allErrorsAreSmall();
     }
 
     private void initializeModules() {

@@ -13,10 +13,10 @@ public class ErrorManager {
     private static final double DEFAULT_NUMERICAL_NEGLIGENCE_CUTOFF = 1e-100;
     private static final double DEFAULT_NUMERICAL_INSTABILITY_CUTOFF = 100;
 
-    private NumericalError largestNumericalLocalError;
+    private NumericalError localNumericalError;
     private double localNumericalTolerance = DEFAULT_LOCAL_NUMERICAL_TOLERANCE;
 
-    private NumericalError largestNumericalGlobalError;
+    private NumericalError globalNumericalError;
     private double globalNumericalTolerance = DEFAULT_GLOBAL_NUMERICAL_TOLERANCE;
 
     private DisplacementDeviation largestLocalDeviation;
@@ -29,33 +29,33 @@ public class ErrorManager {
     private double numericalInstabilityCutoff= DEFAULT_NUMERICAL_INSTABILITY_CUTOFF;
 
     public ErrorManager() {
-        largestNumericalLocalError = NumericalError.MINIMAL_EMPTY_ERROR;
-        largestNumericalGlobalError = NumericalError.MINIMAL_EMPTY_ERROR;
+        localNumericalError = NumericalError.MINIMAL_EMPTY_ERROR;
+        globalNumericalError = NumericalError.MINIMAL_EMPTY_ERROR;
         largestLocalDeviation = DisplacementDeviation.MINIMAL_DEVIATION;
     }
 
     public void setLargestLocalError(NumericalError localError, UpdateModule associatedModule, double associatedConcentration) {
-        if (localError.getValue() > largestNumericalLocalError.getValue()) {
-            largestNumericalLocalError = localError;
+        if (localError.getValue() > localNumericalError.getValue()) {
+            localNumericalError = localError;
             localErrorModule = associatedModule;
             localErrorUpdate = associatedConcentration;
         }
     }
 
     public NumericalError getLocalNumericalError() {
-        return largestNumericalLocalError;
+        return localNumericalError;
     }
 
     public void setLocalNumericalError(NumericalError largestNumericalLocalError) {
-        this.largestNumericalLocalError = largestNumericalLocalError;
+        this.localNumericalError = largestNumericalLocalError;
     }
 
     public NumericalError getGlobalNumericalError() {
-        return largestNumericalGlobalError;
+        return globalNumericalError;
     }
 
     public void setGlobalNumericalError(NumericalError largestNumericalGlobalError) {
-        this.largestNumericalGlobalError = largestNumericalGlobalError;
+        this.globalNumericalError = largestNumericalGlobalError;
     }
 
     public void setLocalDisplacementDeviation(DisplacementDeviation largestDisplacementLocalError) {
@@ -89,11 +89,11 @@ public class ErrorManager {
     }
 
     public void resetLocalNumericalError() {
-        largestNumericalLocalError = NumericalError.MINIMAL_EMPTY_ERROR;
+        localNumericalError = NumericalError.MINIMAL_EMPTY_ERROR;
     }
 
     public void resetGlobalNumericalError() {
-        largestNumericalGlobalError = NumericalError.MINIMAL_EMPTY_ERROR;
+        globalNumericalError = NumericalError.MINIMAL_EMPTY_ERROR;
     }
 
     public void resetDisplacementDeviations() {
@@ -143,4 +143,30 @@ public class ErrorManager {
     public void setNumericalInstabilityCutoff(double numericalInstabilityCutoff) {
         this.numericalInstabilityCutoff = numericalInstabilityCutoff;
     }
+
+    public boolean localErrorIsAcceptable(NumericalError localNumericalError) {
+        boolean errorRatioIsValid = false;
+        if (globalNumericalError.getValue() != 0.0) {
+            // calculate ratio of local and global error
+            double errorRatio = localNumericalError.getValue() / globalNumericalError.getValue();
+            errorRatioIsValid = errorRatio > 100000;
+        }
+        // use threshold
+        boolean thresholdIsValid = localNumericalError.getValue() < localNumericalTolerance;
+        return errorRatioIsValid || thresholdIsValid;
+    }
+
+    public boolean allErrorsAreSmall() {
+        // global error was close to tolerance
+        if (globalNumericalTolerance - globalNumericalError.getValue() <= 0.2 * globalNumericalTolerance) {
+            return false;
+        }
+        // local error was close to tolerance
+        if (localNumericalTolerance - localNumericalError.getValue() <= 0.2 * localNumericalTolerance) {
+            return false;
+        }
+        // all error where small
+        return true;
+    }
+
 }

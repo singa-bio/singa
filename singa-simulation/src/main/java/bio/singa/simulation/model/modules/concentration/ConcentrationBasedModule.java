@@ -310,7 +310,7 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
      */
     private void evaluateModuleState() {
         // calculate ration of local and global error
-        if (localErrorIsAcceptable()) {
+        if (getSimulation().getScheduler().getErrorManager().localErrorIsAcceptable(supplier.getLargestLocalError())) {
             setState(SUCCEEDED);
         } else {
             logger.trace("Recalculation required for error {}.", supplier.getLargestLocalError().getValue());
@@ -321,18 +321,6 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
 
     public void inBetweenHalfSteps() {
 
-    }
-
-    private boolean localErrorIsAcceptable() {
-        boolean errorRatioIsValid = false;
-        if (getSimulation().getScheduler().getErrorManager().getGlobalNumericalError().getValue() != 0.0) {
-            // calculate ratio of local and global error
-            double errorRatio = supplier.getLargestLocalError().getValue() / getSimulation().getScheduler().getErrorManager().getGlobalNumericalError().getValue();
-            errorRatioIsValid = errorRatio > 100000;
-        }
-        // use threshold
-        boolean thresholdIsValid = supplier.getLargestLocalError().getValue() < getSimulation().getScheduler().getErrorManager().getLocalNumericalTolerance();
-        return errorRatioIsValid || thresholdIsValid;
     }
 
     @Override
