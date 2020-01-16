@@ -39,6 +39,9 @@ public class DisplacementDeviation {
         if (value == MAXIMAL_NEGATIVE_DEVIATION.getValue()) {
             return "Maximal Negative";
         }
+        if (value == MINIMAL_DEVIATION.getValue()) {
+            return "Minimal Deviation";
+        }
         return String.format("D(%s, %6.3e)", vesicle.getStringIdentifier(), value);
     }
 

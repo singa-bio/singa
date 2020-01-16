@@ -79,8 +79,8 @@ public class UpdateScheduler {
 
     public void nextEpoch() {
         // initialize fields
-
         errorManager.resetLocalNumericalError();
+        errorManager.resetLocalDisplacementDeviation();
         updatables = simulation.getUpdatables();
         moduleIterator = modules.iterator();
         globalErrorAcceptable = true;
@@ -94,6 +94,9 @@ public class UpdateScheduler {
         do {
             if (timeStepRescaled || interrupted || !globalErrorAcceptable) {
                 errorManager.resetLocalNumericalError();
+                if (timeStepRescaled) {
+                    errorManager.resetLocalDisplacementDeviation();
+                }
                 resetCalculation();
             }
             timeStepRescaled = false;
@@ -182,7 +185,7 @@ public class UpdateScheduler {
                 globalErrorAcceptable = true;
             }
             if (errorManager.getLocalNumericalError().getValue() != NumericalError.MINIMAL_EMPTY_ERROR.getValue()) {
-                logger.debug("Largest local error : {} ({}, {}, {})", errorManager.getLocalNumericalError().getValue(), errorManager.getLocalNumericalError().getChemicalEntity(), errorManager.getLocalNumericalError().getUpdatable().getStringIdentifier(), errorManager.getLocalErrorModule());
+                logger.debug("Largest local error : {} ({}, {}, {})", errorManager.getLocalNumericalError().getValue(), errorManager.getLocalNumericalError().getChemicalEntity(), errorManager.getLocalNumericalError().getUpdatable().getStringIdentifier(), errorManager.getLocalNumericalErrorModule());
             } else {
                 logger.debug("Largest local error : minimal");
             }

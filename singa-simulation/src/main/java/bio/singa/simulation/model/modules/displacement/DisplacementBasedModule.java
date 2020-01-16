@@ -75,6 +75,7 @@ public class DisplacementBasedModule extends AbstractUpdateModule {
         if (largestLocalDeviation.getValue() < 0) {
             setState(REQUIRING_RECALCULATION);
         } else {
+            getSimulation().getScheduler().getErrorManager().setLargestLocalDisplacementDeviation(largestLocalDeviation, this);
             setState(SUCCEEDED_WITH_PENDING_CHANGES);
         }
     }

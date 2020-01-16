@@ -262,7 +262,7 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
         }
         NumericalError localError = new NumericalError(largestIdentifier.getUpdatable(), largestIdentifier.getEntity(), largestLocalError);
         // set local error and return local error
-        getSimulation().getScheduler().getErrorManager().setLargestLocalError(localError, this, associatedDelta);
+        getSimulation().getScheduler().getErrorManager().setLargestLocalNumericalError(localError, this, associatedDelta);
         return localError;
     }
 

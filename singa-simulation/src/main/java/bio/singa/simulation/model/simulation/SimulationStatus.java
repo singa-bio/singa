@@ -111,11 +111,11 @@ public class SimulationStatus implements UpdateEventListener<GraphUpdatedEvent> 
     }
 
     public UpdateModule getLocalErrorModule() {
-        return simulation.getScheduler().getErrorManager().getLocalErrorModule();
+        return simulation.getScheduler().getErrorManager().getLocalNumericalErrorModule();
     }
 
     public String getLargestLocalErrorUpdate() {
-        return String.valueOf(simulation.getScheduler().getErrorManager().getLocalErrorUpdate());
+        return String.valueOf(simulation.getScheduler().getErrorManager().getLocalNumericalErrorUpdate());
     }
 
     public NumericalError getLargestGlobalError() {

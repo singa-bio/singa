@@ -9,36 +9,43 @@ public class ErrorManager {
 
     private static final double DEFAULT_LOCAL_NUMERICAL_TOLERANCE = 0.01;
     private static final double DEFAULT_GLOBAL_NUMERICAL_TOLERANCE = 0.01;
-    private static final double DEFAULT_LOCAL_DEVIATION_TOLERANCE = 0.2;
+    private static final double DEFAULT_LOCAL_DEVIATION_TOLERANCE = 0.8;
     private static final double DEFAULT_NUMERICAL_NEGLIGENCE_CUTOFF = 1e-100;
     private static final double DEFAULT_NUMERICAL_INSTABILITY_CUTOFF = 100;
 
-    private NumericalError localNumericalError;
     private double localNumericalTolerance = DEFAULT_LOCAL_NUMERICAL_TOLERANCE;
+    private NumericalError localNumericalError;
+    private UpdateModule localNumericalErrorModule;
+    private double localNumericalErrorUpdate;
 
-    private NumericalError globalNumericalError;
     private double globalNumericalTolerance = DEFAULT_GLOBAL_NUMERICAL_TOLERANCE;
+    private NumericalError globalNumericalError;
 
-    private DisplacementDeviation largestLocalDeviation;
     private double localDisplacementTolerance = DEFAULT_LOCAL_DEVIATION_TOLERANCE;
-
-    private UpdateModule localErrorModule;
-    private double localErrorUpdate;
+    private DisplacementDeviation localDisplacementDeviation;
+    private UpdateModule localDisplacementDeviationModule;
 
     private double numericalNegligenceCutoff = DEFAULT_NUMERICAL_NEGLIGENCE_CUTOFF;
-    private double numericalInstabilityCutoff= DEFAULT_NUMERICAL_INSTABILITY_CUTOFF;
+    private double numericalInstabilityCutoff = DEFAULT_NUMERICAL_INSTABILITY_CUTOFF;
 
     public ErrorManager() {
         localNumericalError = NumericalError.MINIMAL_EMPTY_ERROR;
         globalNumericalError = NumericalError.MINIMAL_EMPTY_ERROR;
-        largestLocalDeviation = DisplacementDeviation.MINIMAL_DEVIATION;
+        localDisplacementDeviation = DisplacementDeviation.MINIMAL_DEVIATION;
     }
 
-    public void setLargestLocalError(NumericalError localError, UpdateModule associatedModule, double associatedConcentration) {
+    public void setLargestLocalNumericalError(NumericalError localError, UpdateModule associatedModule, double associatedConcentration) {
         if (localError.getValue() > localNumericalError.getValue()) {
             localNumericalError = localError;
-            localErrorModule = associatedModule;
-            localErrorUpdate = associatedConcentration;
+            localNumericalErrorModule = associatedModule;
+            localNumericalErrorUpdate = associatedConcentration;
+        }
+    }
+
+    public void setLargestLocalDisplacementDeviation(DisplacementDeviation localDeviation, UpdateModule associatedModule) {
+        if (localDisplacementDeviation.getValue() < localDeviation.getValue()) {
+            localDisplacementDeviation = localDeviation;
+            localDisplacementDeviationModule = associatedModule;
         }
     }
 
@@ -46,36 +53,36 @@ public class ErrorManager {
         return localNumericalError;
     }
 
-    public void setLocalNumericalError(NumericalError largestNumericalLocalError) {
-        this.localNumericalError = largestNumericalLocalError;
+    public void setLocalNumericalError(NumericalError largestLocalNumericalError) {
+        this.localNumericalError = largestLocalNumericalError;
     }
 
     public NumericalError getGlobalNumericalError() {
         return globalNumericalError;
     }
 
-    public void setGlobalNumericalError(NumericalError largestNumericalGlobalError) {
-        this.globalNumericalError = largestNumericalGlobalError;
+    public void setGlobalNumericalError(NumericalError largestGlobalNumericalError) {
+        this.globalNumericalError = largestGlobalNumericalError;
     }
 
-    public void setLocalDisplacementDeviation(DisplacementDeviation largestDisplacementLocalError) {
-        this.largestLocalDeviation = largestDisplacementLocalError;
+    public void setLocalDisplacementDeviation(DisplacementDeviation largestDisplacementDeviation) {
+        this.localDisplacementDeviation = largestDisplacementDeviation;
     }
 
-    public UpdateModule getLocalErrorModule() {
-        return localErrorModule;
+    public UpdateModule getLocalNumericalErrorModule() {
+        return localNumericalErrorModule;
     }
 
     public void setLocalErrorModule(UpdateModule localErrorModule) {
-        this.localErrorModule = localErrorModule;
+        this.localNumericalErrorModule = localErrorModule;
     }
 
-    public double getLocalErrorUpdate() {
-        return localErrorUpdate;
+    public double getLocalNumericalErrorUpdate() {
+        return localNumericalErrorUpdate;
     }
 
-    public void setLocalErrorUpdate(double localErrorUpdate) {
-        this.localErrorUpdate = localErrorUpdate;
+    public void setLocalNumericalErrorUpdate(double localErrorUpdate) {
+        this.localNumericalErrorUpdate = localErrorUpdate;
     }
 
     public void resetAllErrors() {
@@ -88,6 +95,15 @@ public class ErrorManager {
         resetGlobalNumericalError();
     }
 
+    public void resetDisplacementDeviations() {
+        resetLocalDisplacementDeviation();
+    }
+
+    public void resetLocalErrors() {
+        resetLocalNumericalError();
+        resetLocalDisplacementDeviation();
+    }
+
     public void resetLocalNumericalError() {
         localNumericalError = NumericalError.MINIMAL_EMPTY_ERROR;
     }
@@ -96,12 +112,8 @@ public class ErrorManager {
         globalNumericalError = NumericalError.MINIMAL_EMPTY_ERROR;
     }
 
-    public void resetDisplacementDeviations() {
-        resetLocalDisplacementDeviation();
-    }
-
     public void resetLocalDisplacementDeviation() {
-        largestLocalDeviation = DisplacementDeviation.MINIMAL_DEVIATION;
+        localDisplacementDeviation = DisplacementDeviation.MINIMAL_DEVIATION;
     }
 
     public double getLocalDisplacementTolerance() {
@@ -157,15 +169,19 @@ public class ErrorManager {
     }
 
     public boolean allErrorsAreSmall() {
-        // global error was close to tolerance
+        // global numerical error was close to tolerance
         if (globalNumericalTolerance - globalNumericalError.getValue() <= 0.2 * globalNumericalTolerance) {
             return false;
         }
-        // local error was close to tolerance
+        // local numerical error was close to tolerance
         if (localNumericalTolerance - localNumericalError.getValue() <= 0.2 * localNumericalTolerance) {
             return false;
         }
-        // all error where small
+        // local displacement deviation was close to tolerance
+        if (localDisplacementDeviation.getValue() >= localDisplacementTolerance) {
+            return false;
+        }
+        // all errors where small
         return true;
     }
 
