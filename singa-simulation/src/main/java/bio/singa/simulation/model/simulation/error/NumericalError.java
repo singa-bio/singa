@@ -1,4 +1,4 @@
-package bio.singa.simulation.model.modules.concentration;
+package bio.singa.simulation.model.simulation.error;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.simulation.model.simulation.Updatable;

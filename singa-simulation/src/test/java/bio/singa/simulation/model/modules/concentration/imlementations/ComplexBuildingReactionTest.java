@@ -196,13 +196,13 @@ class ComplexBuildingReactionTest {
         simulation.setGraph(automatonGraph);
 
         // rate constants
-        RateConstant forwardRate = RateConstant.create(1.0e6)
+        RateConstant<?> forwardRate = RateConstant.create(1.0e6)
                 .forward().secondOrder()
                 .concentrationUnit(MOLE_PER_LITRE)
                 .timeUnit(MINUTE)
                 .build();
 
-        RateConstant backwardRate = RateConstant.create(0.01)
+        RateConstant<?> backwardRate = RateConstant.create(0.01)
                 .backward().firstOrder()
                 .timeUnit(MINUTE)
                 .build();

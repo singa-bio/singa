@@ -54,11 +54,11 @@ class VesicleConfinedDiffusionTest {
     void testModuleInContext() {
 
         Simulation simulation = new Simulation();
-        final double simulationExtend = 100;
-        Vector2D centralPosition = new Vector2D(50.0, 50.0);
+        final double simulationExtend = 1000;
+        Vector2D centralPosition = new Vector2D(simulationExtend/2, simulationExtend/2);
         Rectangle rectangle = new Rectangle(simulationExtend, simulationExtend);
         simulation.setSimulationRegion(rectangle);
-        ComparableQuantity<Length> systemExtend = Quantities.getQuantity(10, MICRO(METRE));
+        ComparableQuantity<Length> systemExtend = Quantities.getQuantity(1, MICRO(METRE));
         Environment.setSystemExtend(systemExtend);
         Environment.setSimulationExtend(simulationExtend);
         UnitRegistry.setSpace(systemExtend);
@@ -73,7 +73,7 @@ class VesicleConfinedDiffusionTest {
         simulation.setGraph(graph);
 
         // setup volume for containment
-        ComplexPolygon confinementArea = new ComplexPolygon(Circles.samplePoints(new Circle(centralPosition, 0.5), 10));
+        ComplexPolygon confinementArea = new ComplexPolygon(Circles.samplePoints(new Circle(centralPosition, 10), 10));
         VolumeLikeAgent containmentRegion = new VolumeLikeAgent(confinementArea, PERINUCLEAR_REGION);
         VolumeLayer volumeLayer = new VolumeLayer();
         volumeLayer.addAgent(containmentRegion);

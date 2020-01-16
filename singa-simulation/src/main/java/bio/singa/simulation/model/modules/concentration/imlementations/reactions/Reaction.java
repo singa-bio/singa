@@ -110,6 +110,9 @@ public class Reaction extends ConcentrationBasedModule<UpdatableDeltaFunction> {
         return conditions;
     }
 
+    public void addCondition(ConcentrationCondition condition) {
+        conditions.put(condition.getPriority(), condition);
+    }
     public void setConditions(TreeMap<Integer, ConcentrationCondition> conditions) {
         this.conditions = conditions;
     }

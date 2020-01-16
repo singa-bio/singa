@@ -6,6 +6,7 @@ import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.simulation.model.modules.UpdateModule;
 import bio.singa.simulation.model.sections.CellSubsection;
 import bio.singa.simulation.model.sections.ConcentrationContainer;
+import bio.singa.simulation.model.simulation.error.NumericalError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

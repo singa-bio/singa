@@ -5,7 +5,7 @@ import bio.singa.features.formatter.TimeFormatter;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.simulation.events.GraphUpdatedEvent;
 import bio.singa.simulation.model.modules.UpdateModule;
-import bio.singa.simulation.model.modules.concentration.NumericalError;
+import bio.singa.simulation.model.simulation.error.NumericalError;
 import tech.units.indriya.ComparableQuantity;
 import tech.units.indriya.quantity.Quantities;
 
@@ -99,7 +99,7 @@ public class SimulationStatus implements UpdateEventListener<GraphUpdatedEvent> 
     }
 
     public NumericalError getLargestLocalError() {
-        return simulation.getScheduler().getLargestLocalError();
+        return simulation.getScheduler().getErrorManager().getLocalNumericalError();
     }
 
     public String getLocalErrorStatus() {
@@ -111,15 +111,15 @@ public class SimulationStatus implements UpdateEventListener<GraphUpdatedEvent> 
     }
 
     public UpdateModule getLocalErrorModule() {
-        return simulation.getScheduler().getLocalErrorModule();
+        return simulation.getScheduler().getErrorManager().getLocalErrorModule();
     }
 
     public String getLargestLocalErrorUpdate() {
-        return String.valueOf(simulation.getScheduler().getLocalErrorUpdate());
+        return String.valueOf(simulation.getScheduler().getErrorManager().getLocalErrorUpdate());
     }
 
     public NumericalError getLargestGlobalError() {
-        return simulation.getScheduler().getLargestGlobalError();
+        return simulation.getScheduler().getErrorManager().getGlobalNumericalError();
     }
 
     public String getNumberOfEpochsSinceLastUpdate() {

@@ -3,8 +3,10 @@ package bio.singa.simulation.model.simulation;
 import bio.singa.features.formatter.TimeFormatter;
 import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.features.units.UnitRegistry;
+import bio.singa.simulation.model.simulation.error.DisplacementDeviation;
 import bio.singa.simulation.model.modules.UpdateModule;
-import bio.singa.simulation.model.modules.concentration.NumericalError;
+import bio.singa.simulation.model.simulation.error.ErrorManager;
+import bio.singa.simulation.model.simulation.error.NumericalError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tech.units.indriya.AbstractUnit;
@@ -44,10 +46,9 @@ public class UpdateScheduler {
     private boolean timeStepAlteredInThisEpoch;
     private long timestepsDecreased = 0;
     private long timestepsIncreased = 0;
-    private NumericalError largestLocalError;
-    private UpdateModule localErrorModule;
-    private double localErrorUpdate;
-    private NumericalError largestGlobalError;
+
+    private ErrorManager errorManager;
+
     private CountDownLatch countDownLatch;
     private double previousError;
     private Quantity<Time> previousTimeStep;
@@ -60,8 +61,7 @@ public class UpdateScheduler {
     public UpdateScheduler(Simulation simulation) {
         this.simulation = simulation;
         modules = new ArrayDeque<>(simulation.getModules());
-        largestLocalError = NumericalError.MINIMAL_EMPTY_ERROR;
-        largestGlobalError = NumericalError.MINIMAL_EMPTY_ERROR;
+        errorManager = new ErrorManager();
         moleculeFraction = MolarConcentration.moleculesToConcentration(1.0 / 50000.0);
     }
 
@@ -96,7 +96,7 @@ public class UpdateScheduler {
         // initialize fields
         timeStepAlteredInThisEpoch = false;
         previousError = 0;
-        largestLocalError = NumericalError.MINIMAL_EMPTY_ERROR;
+        errorManager.resetLocalNumericalError();
         previousTimeStep = UnitRegistry.getTime();
         updatables = simulation.getUpdatables();
         moduleIterator = modules.iterator();
@@ -110,7 +110,7 @@ public class UpdateScheduler {
         // until all models passed
         do {
             if (timeStepRescaled || interrupted || !globalErrorAcceptable) {
-                largestLocalError = NumericalError.MINIMAL_EMPTY_ERROR;
+                errorManager.resetLocalNumericalError();
                 resetCalculation();
             }
             timeStepRescaled = false;
@@ -201,13 +201,13 @@ public class UpdateScheduler {
                 // System.out.println("accepted global error: "+largestGlobalError+ " @ "+TimeFormatter.formatTime(UnitRegistry.getTime()));
                 globalErrorAcceptable = true;
             }
-            if (getLargestLocalError().getValue() != NumericalError.MINIMAL_EMPTY_ERROR.getValue()) {
-                logger.debug("Largest local error : {} ({}, {}, {})", getLargestLocalError().getValue(), getLargestLocalError().getChemicalEntity(), getLargestLocalError().getUpdatable().getStringIdentifier(), getLocalErrorModule());
+            if (errorManager.getLocalNumericalError().getValue() != NumericalError.MINIMAL_EMPTY_ERROR.getValue()) {
+                logger.debug("Largest local error : {} ({}, {}, {})", errorManager.getLocalNumericalError().getValue(), errorManager.getLocalNumericalError().getChemicalEntity(), errorManager.getLocalNumericalError().getUpdatable().getStringIdentifier(), errorManager.getLocalErrorModule());
             } else {
                 logger.debug("Largest local error : minimal");
             }
             logger.debug("Largest global error: {} ({}, {})", largestGlobalError.getValue(), largestGlobalError.getChemicalEntity(), largestGlobalError.getUpdatable().getStringIdentifier());
-            this.largestGlobalError = largestGlobalError;
+            errorManager.setGlobalNumericalError(largestGlobalError);
         }
 
     }
@@ -224,30 +224,6 @@ public class UpdateScheduler {
      */
     public boolean recalculationRequired() {
         return timeStepRescaled || interrupted || !globalErrorAcceptable;
-    }
-
-    public NumericalError getLargestLocalError() {
-        return largestLocalError;
-    }
-
-    public void setLargestLocalError(NumericalError localError, UpdateModule associatedModule, double associatedConcentration) {
-        if (localError.getValue() > largestLocalError.getValue()) {
-            largestLocalError = localError;
-            localErrorModule = associatedModule;
-            localErrorUpdate = associatedConcentration;
-        }
-    }
-
-    public UpdateModule getLocalErrorModule() {
-        return localErrorModule;
-    }
-
-    public double getLocalErrorUpdate() {
-        return MolarConcentration.concentrationToMolecules(localErrorUpdate).getValue().doubleValue();
-    }
-
-    public NumericalError getLargestGlobalError() {
-        return largestGlobalError;
     }
 
     public boolean timeStepWasRescaled() {
@@ -285,7 +261,7 @@ public class UpdateScheduler {
         // if time step is rescaled for the very fist time this epoch remember the initial error and time step
         Quantity<Time> original = UnitRegistry.getTime();
         if (!timeStepWasAlteredInThisEpoch()) {
-            previousError = largestLocalError.getValue();
+            previousError = errorManager.getLocalNumericalError().getValue();
             previousTimeStep = original;
         }
 
@@ -294,6 +270,28 @@ public class UpdateScheduler {
 
         if (simulation.isDebug()) {
             simulation.getDebugRecorder().addInformation(simulation.getEpoch(), String.format("decreasing time step %s -> %s %s", TimeFormatter.formatTime(original), TimeFormatter.formatTime(estimate), reason));
+        }
+
+        UnitRegistry.setTime(estimate);
+
+        timestepsDecreased++;
+        timeStepRescaled = true;
+        timeStepAlteredInThisEpoch = true;
+    }
+
+    public synchronized void decreaseTimestep(DisplacementDeviation deviation) {
+        // if time step is rescaled for the very fist time this epoch remember the initial error and time step
+        Quantity<Time> original = UnitRegistry.getTime();
+        if (!timeStepWasAlteredInThisEpoch()) {
+            previousError = errorManager.getLocalNumericalError().getValue();
+            previousTimeStep = original;
+        }
+
+        double multiplier = estimateDecrease();
+        Quantity<Time> estimate = original.multiply(multiplier);
+
+        if (simulation.isDebug()) {
+            simulation.getDebugRecorder().addInformation(simulation.getEpoch(), String.format("decreasing time step %s -> %s %s", TimeFormatter.formatTime(original), TimeFormatter.formatTime(estimate)));
         }
 
         UnitRegistry.setTime(estimate);
@@ -327,7 +325,7 @@ public class UpdateScheduler {
 
     private void determineAccuracyGain() {
         if (timeStepWasAlteredInThisEpoch()) {
-            final double errorDelta = previousError - largestLocalError.getValue();
+            final double errorDelta = previousError - errorManager.getLocalNumericalError().getValue();
             final Quantity<Time> timeDelta = previousTimeStep.subtract(UnitRegistry.getTime());
             accuracyGain = Quantities.getQuantity(errorDelta, AbstractUnit.ONE).divide(timeDelta).asType(Frequency.class);
         }
@@ -394,4 +392,7 @@ public class UpdateScheduler {
         }
     }
 
+    public ErrorManager getErrorManager() {
+        return errorManager;
+    }
 }

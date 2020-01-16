@@ -3,9 +3,12 @@ package bio.singa.simulation.model.modules.concentration;
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.simulation.model.sections.CellSubsection;
 import bio.singa.simulation.model.simulation.Updatable;
+import bio.singa.simulation.model.simulation.error.NumericalError;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static bio.singa.simulation.model.simulation.error.NumericalError.*;
 
 /**
  * The field supplier manages all files required for different behaviours of a module.
@@ -55,7 +58,7 @@ public class FieldSupplier {
     FieldSupplier() {
         fullDeltas = new HashMap<>();
         halfDeltas = new HashMap<>();
-        largestLocalError = NumericalError.MINIMAL_EMPTY_ERROR;
+        largestLocalError = MINIMAL_EMPTY_ERROR;
     }
 
     /**
@@ -158,7 +161,7 @@ public class FieldSupplier {
      * Resets the error to the minimal error.
      */
     public void resetError() {
-        largestLocalError = NumericalError.MINIMAL_EMPTY_ERROR;
+        largestLocalError = MINIMAL_EMPTY_ERROR;
     }
 
     /**

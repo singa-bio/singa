@@ -5,6 +5,7 @@ import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.simulation.model.agents.pointlike.Vesicle;
 import bio.singa.simulation.model.modules.AbstractUpdateModule;
+import bio.singa.simulation.model.simulation.error.DisplacementDeviation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,7 +15,9 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import static bio.singa.simulation.model.modules.concentration.ModuleState.*;
+import static bio.singa.simulation.model.modules.concentration.ModuleState.REQUIRING_RECALCULATION;
+import static bio.singa.simulation.model.modules.concentration.ModuleState.SUCCEEDED_WITH_PENDING_CHANGES;
+import static bio.singa.simulation.model.simulation.error.DisplacementDeviation.*;
 
 /**
  * @author cl
@@ -34,11 +37,12 @@ public class DisplacementBasedModule extends AbstractUpdateModule {
     private double displacementCutoffFactor = DEFAULT_DISPLACEMENT_CUTOFF_FACTOR;
     private double displacementCutoff;
 
-    private double error = 0.0;
+    private DisplacementDeviation largestLocalDeviation;
 
     public DisplacementBasedModule() {
         deltaFunctions = new HashMap<>();
         displacementCutoff = Environment.convertSystemToSimulationScale(UnitRegistry.getSpace().multiply(displacementCutoffFactor));
+        largestLocalDeviation = MINIMAL_DEVIATION;
     }
 
     public void addDeltaFunction(Function<Vesicle, DisplacementDelta> deltaFunction, Predicate<Vesicle> predicate) {
@@ -52,7 +56,7 @@ public class DisplacementBasedModule extends AbstractUpdateModule {
 
     @Override
     public void onReset() {
-
+        largestLocalDeviation = MINIMAL_DEVIATION;
     }
 
     @Override
@@ -67,26 +71,36 @@ public class DisplacementBasedModule extends AbstractUpdateModule {
     }
 
     private void evaluateModuleState() {
+        largestLocalDeviation = determineLocalDeviation();
+        if (largestLocalDeviation.getValue() < 0) {
+            setState(REQUIRING_RECALCULATION);
+        } else {
+            setState(SUCCEEDED_WITH_PENDING_CHANGES);
+        }
+    }
+
+    public DisplacementDeviation determineLocalDeviation() {
+        DisplacementDeviation largestDeviation = MAXIMAL_POSITIVE_DEVIATION;
         for (Vesicle vesicle : getSimulation().getVesicleLayer().getVesicles()) {
             if (vesicle.getSpatialDelta(this) != null) {
                 Vector2D displacement = vesicle.getSpatialDelta(this).getDeltaVector();
                 double length = displacement.getMagnitude();
-                error = length / displacementCutoff;
-                if (length > displacementCutoff) {
-                    logger.trace("Recalculation required for module {} displacement magnitude {} exceeding threshold {}.", this, length, displacementCutoff);
-                    setState(REQUIRING_RECALCULATION);
-                    return;
+                // determine fraction of maximal allowed error
+                double deviation = 1 - (length / displacementCutoff);
+                if (deviation < largestDeviation.getValue()) {
+                    largestDeviation = new DisplacementDeviation(vesicle, deviation);
                 }
             }
         }
-        setState(SUCCEEDED_WITH_PENDING_CHANGES);
+        return largestDeviation;
     }
 
     @Override
     public void optimizeTimeStep() {
         while (getState() == REQUIRING_RECALCULATION) {
             getSimulation().getVesicleLayer().clearUpdates();
-            getSimulation().getScheduler().decreaseTimeStep(String.format("as requested by %s E(%6.3e))",getIdentifier(), error));
+            getSimulation().getScheduler().decreaseTimeStep(String.format("as requested by %s %s", getIdentifier(), largestLocalDeviation.toString()));
+            largestLocalDeviation = MINIMAL_DEVIATION;
             calculateUpdates();
         }
     }

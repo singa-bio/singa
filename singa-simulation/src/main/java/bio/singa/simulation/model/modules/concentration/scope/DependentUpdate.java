@@ -5,6 +5,7 @@ import bio.singa.simulation.model.modules.concentration.imlementations.transport
 import bio.singa.simulation.model.modules.concentration.specifity.UpdateSpecificity;
 import bio.singa.simulation.model.sections.ConcentrationContainer;
 import bio.singa.simulation.model.simulation.Updatable;
+import bio.singa.simulation.model.simulation.error.NumericalError;
 
 import java.util.Collection;
 import java.util.HashMap;
