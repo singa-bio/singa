@@ -143,7 +143,7 @@ public class Simulation {
             initializeModules();
             initializeVesicleLayer();
             initializeSubsectionAdjacency();
-            scheduler.initializeThreadPool();
+            scheduler.initialize();
             initializationDone = true;
         }
 

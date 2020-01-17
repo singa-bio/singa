@@ -51,12 +51,13 @@ public class UpdateScheduler {
 
     public UpdateScheduler(Simulation simulation) {
         this.simulation = simulation;
-        modules = new ArrayDeque<>(simulation.getModules());
         errorManager = new ErrorManager(this);
+        modules = new ArrayDeque<>(simulation.getModules());
         moleculeFraction = MolarConcentration.moleculesToConcentration(1.0 / 50000.0);
     }
 
-    public void initializeThreadPool() {
+    public void initialize() {
+        errorManager.initialize();
         if (modules.isEmpty()) {
             return;
         }
@@ -142,24 +143,29 @@ public class UpdateScheduler {
 
         errorManager.evaluateGlobalDeviation();
         if (!errorManager.globalDeviationIsAcceptable()) {
-            decreaseTimeStep("total displacement exceeded E(%6.3e)");
-            simulation.getVesicleLayer().clearUpdates();
-            modules.forEach(UpdateModule::reset);
+            errorManager.resolveDeviationProblem();
+            recalculationRequired = true;
+        }
+
+        if (!timeStepRescaled) {
+            errorManager.evaluateGlobalError();
+            if (errorManager.globalErrorIsAcceptable()) {
+                updatables.forEach(updatable -> updatable.getConcentrationManager().revertToOriginalConcentrations());
+            } else {
+                // it is possible that global error evaluation rescales the time step when trying to resolve the problem
+                errorManager.resolveGlobalErrorProblem();
+                recalculationRequired = true;
+            }
         }
 
         if (timeStepRescaled) {
             errorManager.resetLocalDisplacementDeviation();
             simulation.getVesicleLayer().clearUpdates();
+            modules.forEach(UpdateModule::reset);
             recalculationRequired = true;
-        } else {
-            errorManager.evaluateGlobalError();
-            if (!errorManager.globalErrorIsAcceptable()) {
-                recalculationRequired = true;
-            }
         }
 
         if (recalculationRequired) {
-            logger.debug("Resetting calculations.");
             // reset states
             for (UpdateModule module : modules) {
                 // skip modules with pending changes if time step was not rescaled
@@ -170,9 +176,6 @@ public class UpdateScheduler {
             }
             // clear deltas that have previously been calculated
             updatables.forEach(updatable -> updatable.getConcentrationManager().clearPotentialDeltas());
-            if (errorManager.globalErrorIsAcceptable()) {
-                updatables.forEach(updatable -> updatable.getConcentrationManager().revertToOriginalConcentrations());
-            }
             // reset error
             errorManager.resetLocalNumericalError();
             // start from the beginning

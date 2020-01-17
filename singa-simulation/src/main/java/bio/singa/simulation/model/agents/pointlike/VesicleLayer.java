@@ -265,7 +265,6 @@ public class VesicleLayer {
         }
     }
 
-
     public void clearUpdates() {
         for (Vesicle vesicle : vesicles) {
             // vesicle.clearPotentialConcentrationDeltas();

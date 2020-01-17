@@ -37,11 +37,17 @@ public class ErrorManager {
     private double displacementCutoffFactor = DEFAULT_DISPLACEMENT_CUTOFF_FACTOR;
     private double displacementCutoff;
 
+    private UpdateScheduler scheduler;
+
     public ErrorManager(UpdateScheduler scheduler) {
-        globalErrorManager = new GlobalNumericalErrorManager(scheduler);
-        globalDeviationManager = new GlobalDisplacementDeviationManager(scheduler);
+        this.scheduler = scheduler;
         localNumericalError = NumericalError.MINIMAL_EMPTY_ERROR;
         localDisplacementDeviation = DisplacementDeviation.MINIMAL_DEVIATION;
+    }
+
+    public void initialize() {
+        globalErrorManager = new GlobalNumericalErrorManager(scheduler);
+        globalDeviationManager = new GlobalDisplacementDeviationManager(scheduler);
         displacementCutoff = Environment.convertSystemToSimulationScale(UnitRegistry.getSpace().multiply(displacementCutoffFactor));
     }
 
@@ -202,6 +208,14 @@ public class ErrorManager {
 
     public boolean globalDeviationIsAcceptable() {
         return globalDeviationManager.deviationIsAcceptable();
+    }
+
+    public void resolveDeviationProblem() {
+        globalDeviationManager.resolveProblem();
+    }
+
+    public void resolveGlobalErrorProblem() {
+        globalErrorManager.resolveProblem();
     }
 
     public boolean allErrorsAreSafe() {

@@ -33,8 +33,8 @@ public class GlobalDisplacementDeviationManager {
             deviation = MAXIMAL_POSITIVE_DEVIATION;
             return;
         }
-        DisplacementDeviation globalDeviation = determineGlobalDeviation();
-        if (globalDeviation.getValue() < 0) {
+        deviation = determineGlobalDeviation();
+        if (deviation.getValue() < 0) {
             errorAcceptable = false;
         } else {
             errorAcceptable = true;
@@ -57,6 +57,10 @@ public class GlobalDisplacementDeviationManager {
             }
         }
         return largestDeviation;
+    }
+
+    public void resolveProblem() {
+        updateScheduler.decreaseTimeStep("total displacement exceeded");
     }
 
     public DisplacementDeviation getDeviation() {
