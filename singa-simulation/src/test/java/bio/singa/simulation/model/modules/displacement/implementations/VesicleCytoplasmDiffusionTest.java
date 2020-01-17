@@ -75,8 +75,7 @@ class VesicleCytoplasmDiffusionTest {
         vesicleDiffusion.setSimulation(simulation);
         simulation.getModules().add(vesicleDiffusion);
 
-        for (int i = 0; i < 10; i++) {
-            System.out.println(i);
+        for (int i = 0; i < 100; i++) {
             ComparableQuantity<Time> previousTime = simulation.getElapsedTime();
             simulation.nextEpoch();
             ComparableQuantity<Time> currentTime = simulation.getElapsedTime();
@@ -85,8 +84,8 @@ class VesicleCytoplasmDiffusionTest {
             double distanceInMicroMetre = UnitRegistry.scalePixelToSpace(initialPosition.subtract(currentPosition).getMagnitude()).to(MICRO(METRE)).getValue().doubleValue();
             double distancePerTime = distanceInMicroMetre / timeInSeconds;
             // variance is high because of random gaussian
-            // maximal vector is 1,1 whose magnitude is sqrt 2 multiplied by sqrt 2, since diffusivity is 1
-            assertTrue(Math.sqrt(2) * 2 > distancePerTime);
+            // maximal vector is 2,2 multiplied by sqrt 2, since diffusivity is 1
+            assertTrue(5 > distancePerTime);
             assertTrue(distancePerTime > 0);
             initialPosition = currentPosition;
         }
