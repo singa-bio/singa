@@ -5,8 +5,8 @@ import bio.singa.simulation.model.simulation.UpdateScheduler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static bio.singa.simulation.model.simulation.error.GlobalNumericalErrorManager.CalculationStage.FIRST;
-import static bio.singa.simulation.model.simulation.error.GlobalNumericalErrorManager.CalculationStage.SECOND;
+import static bio.singa.simulation.model.simulation.error.GlobalNumericalErrorManager.CalculationStage.SETUP_STAGE;
+import static bio.singa.simulation.model.simulation.error.GlobalNumericalErrorManager.CalculationStage.EVALUATION_STAGE;
 
 /**
  * @author cl
@@ -19,7 +19,7 @@ public class GlobalNumericalErrorManager {
     private CalculationStage currentStage;
     private double tolerance = DEFAULT_GLOBAL_NUMERICAL_TOLERANCE;
     private NumericalError error;
-    private boolean globalErrorAcceptable;
+    private boolean errorAcceptable;
 
     public GlobalNumericalErrorManager(UpdateScheduler updateScheduler) {
         this.updateScheduler = updateScheduler;
@@ -29,16 +29,16 @@ public class GlobalNumericalErrorManager {
 
     public void evaluateError() {
         switch (currentStage) {
-            case FIRST:
-                processFirstStage();
+            case SETUP_STAGE:
+                processSetupStage();
                 break;
-            case SECOND:
-                processSecondStage();
+            case EVALUATION_STAGE:
+                processEvaluationStage();
                 break;
         }
     }
 
-    private void processFirstStage() {
+    private void processSetupStage() {
         // calculate half step concentrations for subsequent evaluation
         // for each node
         for (Updatable updatable : updateScheduler.getUpdatables()) {
@@ -47,11 +47,11 @@ public class GlobalNumericalErrorManager {
             // backup current concentrations and set current concentration to interim concentrations
             updatable.getConcentrationManager().setInterimAndUpdateCurrentConcentrations();
         }
-        globalErrorAcceptable = false;
-        currentStage = SECOND;
+        errorAcceptable = false;
+        currentStage = EVALUATION_STAGE;
     }
 
-    private void processSecondStage() {
+    private void processEvaluationStage() {
         // evaluate global numerical accuracy
         // for each node
         NumericalError largestError = NumericalError.MINIMAL_EMPTY_ERROR;
@@ -68,18 +68,18 @@ public class GlobalNumericalErrorManager {
         // set interim check false if global error is to large and true if you can continue
         if (largestError.getValue() > updateScheduler.getErrorManager().getGlobalNumericalTolerance()) {
             updateScheduler.decreaseTimeStep(String.format("global error exceeded %s", largestError.toString()));
-            globalErrorAcceptable = false;
-            currentStage = FIRST;
+            errorAcceptable = false;
+            currentStage = SETUP_STAGE;
         } else {
-            globalErrorAcceptable = true;
+            errorAcceptable = true;
         }
         logger.debug("Largest global error: {} ({}, {})", largestError.getValue(), largestError.getChemicalEntity(), largestError.getUpdatable().getStringIdentifier());
         error = largestError;
     }
 
     public void reset() {
-        currentStage = FIRST;
-        globalErrorAcceptable = true;
+        currentStage = SETUP_STAGE;
+        errorAcceptable = true;
         error = NumericalError.MINIMAL_EMPTY_ERROR;
     }
 
@@ -101,11 +101,11 @@ public class GlobalNumericalErrorManager {
     }
 
     public boolean errorIsAcceptable() {
-        return globalErrorAcceptable;
+        return errorAcceptable;
     }
 
     public enum CalculationStage {
-        FIRST, SECOND, SKIP;
+        SETUP_STAGE, EVALUATION_STAGE, SKIP;
     }
 
 }

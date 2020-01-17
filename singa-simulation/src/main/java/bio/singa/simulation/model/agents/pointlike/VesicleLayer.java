@@ -22,7 +22,6 @@ import bio.singa.simulation.model.modules.displacement.DisplacementBasedModule;
 import bio.singa.simulation.model.modules.displacement.implementations.VesicleConfinedDiffusion;
 import bio.singa.simulation.model.modules.qualitative.implementations.EndocytoticPit;
 import bio.singa.simulation.model.simulation.Simulation;
-import bio.singa.simulation.model.simulation.error.DisplacementDeviation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,7 +29,6 @@ import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static bio.singa.mathematics.metrics.model.VectorMetricProvider.SQUARED_EUCLIDEAN_METRIC;
-import static bio.singa.simulation.model.simulation.error.DisplacementDeviation.MAXIMAL_POSITIVE_DEVIATION;
 
 /**
  * @author cl
@@ -170,23 +168,7 @@ public class VesicleLayer {
         }
     }
 
-    public DisplacementDeviation determineGlobalDeviation() {
-        DisplacementDeviation largestDeviation = MAXIMAL_POSITIVE_DEVIATION;
-        for (Vesicle vesicle : vesicles) {
-            Vector2D totalDisplacement = vesicle.calculateTotalDisplacement();
-            // skip if total displacement is zero
-            if (totalDisplacement.equals(Vector2D.ZERO)) {
-                continue;
-            }
-            double length = totalDisplacement.getMagnitude();
-            // determine fraction of maximal allowed error
-            double deviation = 1 - (length / getSimulation().getScheduler().getErrorManager().getDisplacementCutoff());
-            if (deviation < largestDeviation.getValue()) {
-                largestDeviation = new DisplacementDeviation(vesicle, deviation);
-            }
-        }
-        return largestDeviation;
-    }
+
 
     public void associateVesicles() {
         // clear previous vesicle associations

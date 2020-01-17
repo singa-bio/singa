@@ -87,15 +87,10 @@ public class UpdateScheduler {
             updatable.getConcentrationManager().backupConcentrations();
         }
 
+        boolean recalculationRequired;
         // until all models passed
         do {
-            if (timeStepRescaled || interrupted || !errorManager.globalErrorIsAcceptable()) {
-                errorManager.resetLocalNumericalError();
-                if (timeStepRescaled) {
-                    errorManager.resetLocalDisplacementDeviation();
-                }
-                resetCalculation();
-            }
+
             timeStepRescaled = false;
             interrupted = false;
 
@@ -121,16 +116,9 @@ public class UpdateScheduler {
                 e.printStackTrace();
             }
 
-            if (!interrupted) {
-                // perform only if every module passed individually
-                // evaluate total concentration change
-                errorManager.evaluateGlobalError();
-            }
+            recalculationRequired = recalculationRequired();
 
-            // evaluate total spatial displacement
-            evaluateSpatialDisplacement();
-
-        } while (recalculationRequired());
+        } while (recalculationRequired);
         // System.out.println("accepted local error: "+largestLocalError.getValue());
         // resolve pending changes
         for (UpdateModule updateModule : modules) {
@@ -145,18 +133,53 @@ public class UpdateScheduler {
         modules.forEach(UpdateModule::reset);
     }
 
-    /**
-     * Recalculations are required if:
-     * <ul>
-     * <li>the time step was rescaled during this calculation</li>
-     * <li>any module was interrupted during this calculation</li>
-     * <li>the global error was larger than the recalculation cutoff</li>
-     * </ul>
-     *
-     * @return true, if a recalculation is required
-     */
-    public boolean recalculationRequired() {
-        return timeStepRescaled || interrupted || !errorManager.globalErrorIsAcceptable();
+    private void handleRecalculation() {
+
+    }
+
+    private boolean recalculationRequired() {
+        boolean recalculationRequired = false;
+
+        errorManager.evaluateGlobalDeviation();
+        if (!errorManager.globalDeviationIsAcceptable()) {
+            decreaseTimeStep("total displacement exceeded E(%6.3e)");
+            simulation.getVesicleLayer().clearUpdates();
+            modules.forEach(UpdateModule::reset);
+        }
+
+        if (timeStepRescaled) {
+            errorManager.resetLocalDisplacementDeviation();
+            simulation.getVesicleLayer().clearUpdates();
+            recalculationRequired = true;
+        } else {
+            errorManager.evaluateGlobalError();
+            if (!errorManager.globalErrorIsAcceptable()) {
+                recalculationRequired = true;
+            }
+        }
+
+        if (recalculationRequired) {
+            logger.debug("Resetting calculations.");
+            // reset states
+            for (UpdateModule module : modules) {
+                // skip modules with pending changes if time step was not rescaled
+                if (module.getState().equals(SUCCEEDED_WITH_PENDING_CHANGES) && !timeStepRescaled) {
+                    continue;
+                }
+                module.reset();
+            }
+            // clear deltas that have previously been calculated
+            updatables.forEach(updatable -> updatable.getConcentrationManager().clearPotentialDeltas());
+            if (errorManager.globalErrorIsAcceptable()) {
+                updatables.forEach(updatable -> updatable.getConcentrationManager().revertToOriginalConcentrations());
+            }
+            // reset error
+            errorManager.resetLocalNumericalError();
+            // start from the beginning
+            moduleIterator = modules.iterator();
+        }
+
+        return recalculationRequired;
     }
 
     public void shutdownExecutorService() {
@@ -236,12 +259,20 @@ public class UpdateScheduler {
         return countDownLatch;
     }
 
+    public Deque<UpdateModule> getModules() {
+        return modules;
+    }
+
     public void addModule(UpdateModule module) {
         modules.add(module);
     }
 
     public int getNumberOfModules() {
         return modules.size();
+    }
+
+    public Simulation getSimulation() {
+        return simulation;
     }
 
     /**
@@ -257,41 +288,6 @@ public class UpdateScheduler {
             return true;
         }
         return false;
-    }
-
-    public void resetCalculation() {
-        logger.debug("Resetting calculations.");
-        // reset states
-        for (UpdateModule module : modules) {
-            // skip modules with pending changes if time step was not rescaled
-            if (module.getState().equals(SUCCEEDED_WITH_PENDING_CHANGES) && !timeStepRescaled) {
-                continue;
-            }
-            module.reset();
-        }
-        // clear deltas that have previously been calculated
-        updatables.forEach(updatable -> updatable.getConcentrationManager().clearPotentialDeltas());
-        // rest vesicle position, but only if time step changes
-        if (timeStepRescaled) {
-            simulation.getVesicleLayer().clearUpdates();
-        }
-        if (errorManager.globalErrorIsAcceptable()) {
-            updatables.forEach(updatable -> updatable.getConcentrationManager().revertToOriginalConcentrations());
-        }
-        // start from the beginning
-        moduleIterator = modules.iterator();
-    }
-
-    private void evaluateSpatialDisplacement() {
-        if (simulation.getVesicleLayer().getVesicles().isEmpty()) {
-            return;
-        }
-        DisplacementDeviation globalDeviation = simulation.getVesicleLayer().determineGlobalDeviation();
-        if (globalDeviation.getValue() < 0) {
-            decreaseTimeStep("total displacement exceeded E(%6.3e)");
-            simulation.getVesicleLayer().clearUpdates();
-            modules.forEach(UpdateModule::reset);
-        }
     }
 
     public ErrorManager getErrorManager() {
