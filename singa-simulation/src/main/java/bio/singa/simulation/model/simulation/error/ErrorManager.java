@@ -3,6 +3,7 @@ package bio.singa.simulation.model.simulation.error;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.simulation.model.modules.UpdateModule;
+import bio.singa.simulation.model.simulation.UpdateScheduler;
 
 /**
  * @author cl
@@ -10,7 +11,6 @@ import bio.singa.simulation.model.modules.UpdateModule;
 public class ErrorManager {
 
     private static final double DEFAULT_LOCAL_NUMERICAL_TOLERANCE = 0.01;
-    private static final double DEFAULT_GLOBAL_NUMERICAL_TOLERANCE = 0.01;
 
     private static final double DEFAULT_NUMERICAL_NEGLIGENCE_CUTOFF = 1e-100;
     private static final double DEFAULT_NUMERICAL_INSTABILITY_CUTOFF = 100;
@@ -19,13 +19,12 @@ public class ErrorManager {
     private static final double DEFAULT_LOCAL_DEVIATION_TOLERANCE = 0.8;
     private static final double DEFAULT_GLOBAL_DEVIATION_TOLERANCE = 0.8;
 
+    private GlobalNumericalErrorManager globalNumericalErrorManager;
+
     private double localNumericalTolerance = DEFAULT_LOCAL_NUMERICAL_TOLERANCE;
     private NumericalError localNumericalError;
     private UpdateModule localNumericalErrorModule;
     private double localNumericalErrorUpdate;
-
-    private double globalNumericalTolerance = DEFAULT_GLOBAL_NUMERICAL_TOLERANCE;
-    private NumericalError globalNumericalError;
 
     private double numericalNegligenceCutoff = DEFAULT_NUMERICAL_NEGLIGENCE_CUTOFF;
     private double numericalInstabilityCutoff = DEFAULT_NUMERICAL_INSTABILITY_CUTOFF;
@@ -40,9 +39,9 @@ public class ErrorManager {
     private double displacementCutoffFactor = DEFAULT_DISPLACEMENT_CUTOFF_FACTOR;
     private double displacementCutoff;
 
-    public ErrorManager() {
+    public ErrorManager(UpdateScheduler scheduler) {
+        globalNumericalErrorManager = new GlobalNumericalErrorManager(scheduler);
         localNumericalError = NumericalError.MINIMAL_EMPTY_ERROR;
-        globalNumericalError = NumericalError.MINIMAL_EMPTY_ERROR;
         localDisplacementDeviation = DisplacementDeviation.MINIMAL_DEVIATION;
         globalDisplacementDeviation = DisplacementDeviation.MINIMAL_DEVIATION;
         displacementCutoff = Environment.convertSystemToSimulationScale(UnitRegistry.getSpace().multiply(displacementCutoffFactor));
@@ -67,20 +66,8 @@ public class ErrorManager {
         return localNumericalError;
     }
 
-    public void setLocalNumericalError(NumericalError largestLocalNumericalError) {
-        this.localNumericalError = largestLocalNumericalError;
-    }
-
     public NumericalError getGlobalNumericalError() {
-        return globalNumericalError;
-    }
-
-    public void setGlobalNumericalError(NumericalError largestGlobalNumericalError) {
-        this.globalNumericalError = largestGlobalNumericalError;
-    }
-
-    public void setLocalDisplacementDeviation(DisplacementDeviation largestDisplacementDeviation) {
-        this.localDisplacementDeviation = largestDisplacementDeviation;
+        return globalNumericalErrorManager.getError();
     }
 
     public DisplacementDeviation getGlobalDisplacementDeviation() {
@@ -144,7 +131,7 @@ public class ErrorManager {
     }
 
     public void resetGlobalNumericalError() {
-        globalNumericalError = NumericalError.MINIMAL_EMPTY_ERROR;
+        globalNumericalErrorManager.reset();
     }
 
     public void resetLocalDisplacementDeviation() {
@@ -172,11 +159,11 @@ public class ErrorManager {
     }
 
     public double getGlobalNumericalTolerance() {
-        return globalNumericalTolerance;
+        return globalNumericalErrorManager.getTolerance();
     }
 
     public void setGlobalNumericalTolerance(double globalNumericalTolerance) {
-        this.globalNumericalTolerance = globalNumericalTolerance;
+        globalNumericalErrorManager.setTolerance(globalNumericalTolerance);
     }
 
     public double getNumericalNegligenceCutoff() {
@@ -197,9 +184,9 @@ public class ErrorManager {
 
     public boolean localErrorIsAcceptable(NumericalError localNumericalError) {
         boolean errorRatioIsValid = false;
-        if (globalNumericalError.getValue() != 0.0) {
+        if (globalNumericalErrorManager.getError().getValue() != 0.0) {
             // calculate ratio of local and global error
-            double errorRatio = localNumericalError.getValue() / globalNumericalError.getValue();
+            double errorRatio = localNumericalError.getValue() / globalNumericalErrorManager.getError().getValue();
             errorRatioIsValid = errorRatio > 100000;
         }
         // use threshold
@@ -207,9 +194,16 @@ public class ErrorManager {
         return errorRatioIsValid || thresholdIsValid;
     }
 
-    public boolean allErrorsAreSmall() {
-        // global numerical error was close to tolerance
-        if (globalNumericalTolerance - globalNumericalError.getValue() <= 0.2 * globalNumericalTolerance) {
+    public boolean globalErrorIsAcceptable() {
+        return globalNumericalErrorManager.errorIsAcceptable();
+    }
+
+    public void evaluateGlobalError() {
+        globalNumericalErrorManager.evaluateError();
+    }
+
+    public boolean allErrorsAreSafe() {
+        if (globalNumericalErrorManager.errorIsCritical()) {
             return false;
         }
         // local numerical error was close to tolerance

@@ -67,8 +67,8 @@ public class SimulationStatus implements UpdateEventListener<GraphUpdatedEvent> 
     private void calculateEpochBasedStatus() {
         // update variables
         long currentEpochs = simulation.getEpoch();
-        long currentIncreases = simulation.getScheduler().getTimestepsIncreased();
-        long currentDecreases = simulation.getScheduler().getTimestepsDecreased();
+        long currentIncreases = simulation.getScheduler().getTimeStepsIncreased();
+        long currentDecreases = simulation.getScheduler().getTimeStepsDecreased();
         // determine change in epochs
         deltaEpochs = currentEpochs - previousEpochs;
         deltaIncreases = currentIncreases - previousIncreases;

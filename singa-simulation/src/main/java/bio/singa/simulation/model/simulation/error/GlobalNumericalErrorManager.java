@@ -5,89 +5,107 @@ import bio.singa.simulation.model.simulation.UpdateScheduler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static bio.singa.simulation.model.simulation.error.GlobalNumericalErrorManager.CalculationStage.FIRST;
+import static bio.singa.simulation.model.simulation.error.GlobalNumericalErrorManager.CalculationStage.SECOND;
+
 /**
  * @author cl
  */
 public class GlobalNumericalErrorManager {
 
     private static final Logger logger = LoggerFactory.getLogger(UpdateScheduler.class);
-
+    private static final double DEFAULT_GLOBAL_NUMERICAL_TOLERANCE = 0.01;
     private UpdateScheduler updateScheduler;
     private CalculationStage currentStage;
-
-    private boolean calculateGlobalError;
+    private double tolerance = DEFAULT_GLOBAL_NUMERICAL_TOLERANCE;
+    private NumericalError error;
     private boolean globalErrorAcceptable;
 
     public GlobalNumericalErrorManager(UpdateScheduler updateScheduler) {
         this.updateScheduler = updateScheduler;
+        error = NumericalError.MINIMAL_EMPTY_ERROR;
+        reset();
     }
 
-    public void evaluateGlobalNumericalAccuracy() {
-        if (calculateGlobalError) {
-            // calculate half step concentrations for subsequent evaluation
-            // for each node
-            for (Updatable updatable : updateScheduler.getUpdatables()) {
-                // calculate interim container (added current updates with checked local error)
-                // set half step concentrations y(t+1/2dt) for interim containers
-                // backup current concentrations and set current concentration to interim concentrations
-                updatable.getConcentrationManager().setInterimAndUpdateCurrentConcentrations();
-            }
-            globalErrorAcceptable = false;
-            calculateGlobalError = false;
-        } else {
-            // evaluate global numerical accuracy
-            // for each node
-            NumericalError largestGlobalError = NumericalError.MINIMAL_EMPTY_ERROR;
-            for (Updatable updatable : updateScheduler.getUpdatables()) {
-                // determine full concentrations with full update and 2 * half update
-                updatable.getConcentrationManager().determineComparisionConcentrations();
-                // determine error between both
-                NumericalError globalError = updatable.getConcentrationManager().determineGlobalNumericalError();
-                if (largestGlobalError.isSmallerThan(globalError)) {
-                    globalError.setUpdatable(updatable);
-                    largestGlobalError = globalError;
-                }
-            }
-            // set interim check false if global error is to large and true if you can continue
-            if (largestGlobalError.getValue() > updateScheduler.getErrorManager().getGlobalNumericalTolerance()) {
-                // System.out.println("rejected global error: "+largestGlobalError+" @ "+TimeFormatter.formatTime(UnitRegistry.getTime()));
-                updateScheduler.decreaseTimeStep(String.format("global error exceeded %s", largestGlobalError.toString()));
-                globalErrorAcceptable = false;
-                calculateGlobalError = true;
-            } else {
-                // System.out.println("accepted global error: "+largestGlobalError+ " @ "+TimeFormatter.formatTime(UnitRegistry.getTime()));
-                globalErrorAcceptable = true;
-            }
-            if (updateScheduler.getErrorManager().getLocalNumericalError().getValue() != NumericalError.MINIMAL_EMPTY_ERROR.getValue()) {
-                logger.debug("Largest local error : {} ({}, {}, {})", updateScheduler.getErrorManager().getLocalNumericalError().getValue(), updateScheduler.getErrorManager().getLocalNumericalError().getChemicalEntity(), updateScheduler.getErrorManager().getLocalNumericalError().getUpdatable().getStringIdentifier(), updateScheduler.getErrorManager().getLocalNumericalErrorModule());
-            } else {
-                logger.debug("Largest local error : minimal");
-            }
-            logger.debug("Largest global error: {} ({}, {})", largestGlobalError.getValue(), largestGlobalError.getChemicalEntity(), largestGlobalError.getUpdatable().getStringIdentifier());
-            updateScheduler.getErrorManager().setGlobalNumericalError(largestGlobalError);
+    public void evaluateError() {
+        switch (currentStage) {
+            case FIRST:
+                processFirstStage();
+                break;
+            case SECOND:
+                processSecondStage();
+                break;
         }
-
     }
 
-    public enum CalculationStage {
-
-        FIRST, SECOND;
-
+    private void processFirstStage() {
+        // calculate half step concentrations for subsequent evaluation
+        // for each node
+        for (Updatable updatable : updateScheduler.getUpdatables()) {
+            // calculate interim container (added current updates with checked local error)
+            // set half step concentrations y(t+1/2dt) for interim containers
+            // backup current concentrations and set current concentration to interim concentrations
+            updatable.getConcentrationManager().setInterimAndUpdateCurrentConcentrations();
+        }
+        globalErrorAcceptable = false;
+        currentStage = SECOND;
     }
 
-    public boolean isCalculateGlobalError() {
-        return calculateGlobalError;
+    private void processSecondStage() {
+        // evaluate global numerical accuracy
+        // for each node
+        NumericalError largestError = NumericalError.MINIMAL_EMPTY_ERROR;
+        for (Updatable updatable : updateScheduler.getUpdatables()) {
+            // determine full concentrations with full update and 2 * half update
+            updatable.getConcentrationManager().determineComparisionConcentrations();
+            // determine error between both
+            NumericalError currentError = updatable.getConcentrationManager().determineGlobalNumericalError();
+            if (largestError.isSmallerThan(currentError)) {
+                currentError.setUpdatable(updatable);
+                largestError = currentError;
+            }
+        }
+        // set interim check false if global error is to large and true if you can continue
+        if (largestError.getValue() > updateScheduler.getErrorManager().getGlobalNumericalTolerance()) {
+            updateScheduler.decreaseTimeStep(String.format("global error exceeded %s", largestError.toString()));
+            globalErrorAcceptable = false;
+            currentStage = FIRST;
+        } else {
+            globalErrorAcceptable = true;
+        }
+        logger.debug("Largest global error: {} ({}, {})", largestError.getValue(), largestError.getChemicalEntity(), largestError.getUpdatable().getStringIdentifier());
+        error = largestError;
     }
 
-    public void setCalculateGlobalError(boolean calculateGlobalError) {
-        this.calculateGlobalError = calculateGlobalError;
+    public void reset() {
+        currentStage = FIRST;
+        globalErrorAcceptable = true;
+        error = NumericalError.MINIMAL_EMPTY_ERROR;
     }
 
-    public boolean isGlobalErrorAcceptable() {
+    public NumericalError getError() {
+        return error;
+    }
+
+    public double getTolerance() {
+        return tolerance;
+    }
+
+    public void setTolerance(double tolerance) {
+        this.tolerance = tolerance;
+    }
+
+    public boolean errorIsCritical() {
+        // global numerical error was not close to tolerance but sufficiently small
+        return tolerance - error.getValue() <= 0.2 * tolerance;
+    }
+
+    public boolean errorIsAcceptable() {
         return globalErrorAcceptable;
     }
 
-    public void setGlobalErrorAcceptable(boolean globalErrorAcceptable) {
-        this.globalErrorAcceptable = globalErrorAcceptable;
+    public enum CalculationStage {
+        FIRST, SECOND, SKIP;
     }
+
 }

@@ -210,7 +210,7 @@ public class Simulation {
         }
 
         // if the the error that was computed previously is very small
-        return getScheduler().getErrorManager().allErrorsAreSmall();
+        return getScheduler().getErrorManager().allErrorsAreSafe();
     }
 
     private void initializeModules() {

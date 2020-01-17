@@ -6,7 +6,6 @@ import bio.singa.features.units.UnitRegistry;
 import bio.singa.simulation.model.modules.UpdateModule;
 import bio.singa.simulation.model.simulation.error.DisplacementDeviation;
 import bio.singa.simulation.model.simulation.error.ErrorManager;
-import bio.singa.simulation.model.simulation.error.GlobalNumericalErrorManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,11 +38,10 @@ public class UpdateScheduler {
 
     private boolean timeStepRescaled;
 
-    private long timestepsDecreased = 0;
-    private long timestepsIncreased = 0;
+    private long timeStepsDecreased = 0;
+    private long timeStepsIncreased = 0;
 
     private ErrorManager errorManager;
-    private GlobalNumericalErrorManager globalErrorManager;
 
     private CountDownLatch countDownLatch;
 
@@ -54,8 +52,7 @@ public class UpdateScheduler {
     public UpdateScheduler(Simulation simulation) {
         this.simulation = simulation;
         modules = new ArrayDeque<>(simulation.getModules());
-        errorManager = new ErrorManager();
-        globalErrorManager = new GlobalNumericalErrorManager(this);
+        errorManager = new ErrorManager(this);
         moleculeFraction = MolarConcentration.moleculesToConcentration(1.0 / 50000.0);
     }
 
@@ -66,12 +63,12 @@ public class UpdateScheduler {
         executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(modules.size());
     }
 
-    public long getTimestepsDecreased() {
-        return timestepsDecreased;
+    public long getTimeStepsDecreased() {
+        return timeStepsDecreased;
     }
 
-    public long getTimestepsIncreased() {
-        return timestepsIncreased;
+    public long getTimeStepsIncreased() {
+        return timeStepsIncreased;
     }
 
     public double getMoleculeFraction() {
@@ -79,14 +76,12 @@ public class UpdateScheduler {
     }
 
     public void nextEpoch() {
-        // initialize fields
+        // initialize
         errorManager.resetLocalNumericalError();
+        errorManager.resetGlobalNumericalError();
         errorManager.resetLocalDisplacementDeviation();
         updatables = simulation.getUpdatables();
         moduleIterator = modules.iterator();
-
-        globalErrorManager.setGlobalErrorAcceptable(true);
-        globalErrorManager.setCalculateGlobalError(true);
 
         for (Updatable updatable : updatables) {
             updatable.getConcentrationManager().backupConcentrations();
@@ -94,7 +89,7 @@ public class UpdateScheduler {
 
         // until all models passed
         do {
-            if (timeStepRescaled || interrupted || !globalErrorManager.isGlobalErrorAcceptable()) {
+            if (timeStepRescaled || interrupted || !errorManager.globalErrorIsAcceptable()) {
                 errorManager.resetLocalNumericalError();
                 if (timeStepRescaled) {
                     errorManager.resetLocalDisplacementDeviation();
@@ -129,7 +124,7 @@ public class UpdateScheduler {
             if (!interrupted) {
                 // perform only if every module passed individually
                 // evaluate total concentration change
-                globalErrorManager.evaluateGlobalNumericalAccuracy();
+                errorManager.evaluateGlobalError();
             }
 
             // evaluate total spatial displacement
@@ -150,8 +145,6 @@ public class UpdateScheduler {
         modules.forEach(UpdateModule::reset);
     }
 
-
-
     /**
      * Recalculations are required if:
      * <ul>
@@ -163,7 +156,7 @@ public class UpdateScheduler {
      * @return true, if a recalculation is required
      */
     public boolean recalculationRequired() {
-        return timeStepRescaled || interrupted || !globalErrorManager.isGlobalErrorAcceptable();
+        return timeStepRescaled || interrupted || !errorManager.globalErrorIsAcceptable();
     }
 
     public void shutdownExecutorService() {
@@ -182,7 +175,7 @@ public class UpdateScheduler {
 
         UnitRegistry.setTime(estimate);
 
-        timestepsIncreased++;
+        timeStepsIncreased++;
     }
 
     public synchronized void decreaseTimeStep(String reason) {
@@ -197,11 +190,11 @@ public class UpdateScheduler {
 
         UnitRegistry.setTime(estimate);
 
-        timestepsDecreased++;
+        timeStepsDecreased++;
         timeStepRescaled = true;
     }
 
-    public synchronized void decreaseTimestep(DisplacementDeviation deviation) {
+    public synchronized void decreaseTimeStep(DisplacementDeviation deviation) {
         // if time step is rescaled for the very fist time this epoch remember the initial error and time step
         Quantity<Time> original = UnitRegistry.getTime();
         double multiplier = estimateDecrease();
@@ -213,7 +206,7 @@ public class UpdateScheduler {
 
         UnitRegistry.setTime(estimate);
 
-        timestepsDecreased++;
+        timeStepsDecreased++;
         timeStepRescaled = true;
     }
 
@@ -282,7 +275,7 @@ public class UpdateScheduler {
         if (timeStepRescaled) {
             simulation.getVesicleLayer().clearUpdates();
         }
-        if (globalErrorManager.isGlobalErrorAcceptable()) {
+        if (errorManager.globalErrorIsAcceptable()) {
             updatables.forEach(updatable -> updatable.getConcentrationManager().revertToOriginalConcentrations());
         }
         // start from the beginning
