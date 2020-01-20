@@ -73,7 +73,7 @@ public class MaximumCommonSubgraphFinder<NodeType extends Node<NodeType, VectorT
      */
     public List<GraphType> getMaximumCliquesAsGraphs() {
         if (maximumCliques.isEmpty()) {
-            throw new NoSuchElementException("no maximum cliques found betwene graphs " + graph1 + " and " + graph2);
+            throw new NoSuchElementException("no maximum cliques found between graphs " + graph1 + " and " + graph2);
         } else {
             ArrayList<GraphType> cliqueGraphs = new ArrayList<>();
             for (Set<GenericNode<Pair<NodeType>>> maximumClique : maximumCliques) {
