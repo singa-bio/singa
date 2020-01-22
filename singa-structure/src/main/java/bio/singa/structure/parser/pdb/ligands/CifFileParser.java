@@ -115,7 +115,7 @@ public class CifFileParser {
             /// 1 = atom name, 3 = element, 9 = x coordinate, 10 = y coordinate, 11 = z coordinates, 17 = identifer
             int identifier = Integer.valueOf(splitLine[17]);
             Element element = ElementProvider.getElementBySymbol(splitLine[3]).orElse(ElementProvider.UNKOWN);
-            String atomName = splitLine[1];
+            String atomName = splitLine[1].replace("\"", "");
             Vector3D coordinates = new Vector3D(Double.valueOf(splitLine[9]), Double.valueOf(splitLine[10]), Double.valueOf(splitLine[11]));
             OakAtom atom = new OakAtom(identifier, element, atomName, coordinates);
             atoms.put(atomName, atom);
