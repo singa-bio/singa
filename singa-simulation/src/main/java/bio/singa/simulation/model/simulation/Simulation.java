@@ -192,7 +192,7 @@ public class Simulation {
         updateEpoch();
         // if time step did not change it can possibly be increased
         if (timeStepShouldIncrease()) {
-            scheduler.increaseTimeStep("previous error was very small");
+            scheduler.getTimeStepManager().increaseTimeStep();
         }
 
     }

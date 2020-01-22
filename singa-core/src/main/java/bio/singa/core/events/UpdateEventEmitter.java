@@ -1,6 +1,7 @@
 package bio.singa.core.events;
 
 
+import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -29,7 +30,7 @@ public interface UpdateEventEmitter<EventType> {
      *
      * @return The listeners.
      */
-    CopyOnWriteArrayList<UpdateEventListener<EventType>> getListeners();
+    List<UpdateEventListener<EventType>> getListeners();
 
     /**
      * Adds a listener.

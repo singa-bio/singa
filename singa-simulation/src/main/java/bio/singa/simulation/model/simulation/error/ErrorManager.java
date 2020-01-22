@@ -17,7 +17,6 @@ public class ErrorManager {
 
     private static final double DEFAULT_DISPLACEMENT_CUTOFF_FACTOR = 1.0 / 10.0;
     private static final double DEFAULT_LOCAL_DEVIATION_TOLERANCE = 0.8;
-    private static final double DEFAULT_GLOBAL_DEVIATION_TOLERANCE = 0.8;
 
     private GlobalNumericalErrorManager globalErrorManager;
     private GlobalDisplacementDeviationManager globalDeviationManager;
@@ -49,6 +48,9 @@ public class ErrorManager {
         globalErrorManager = new GlobalNumericalErrorManager(scheduler);
         globalDeviationManager = new GlobalDisplacementDeviationManager(scheduler);
         displacementCutoff = Environment.convertSystemToSimulationScale(UnitRegistry.getSpace().multiply(displacementCutoffFactor));
+        // register error manager that are interested time step changes
+        scheduler.getTimeStepManager().addEventListener(globalErrorManager);
+        scheduler.getTimeStepManager().addEventListener(globalDeviationManager);
     }
 
     public void setLargestLocalNumericalError(NumericalError localError, UpdateModule associatedModule, double associatedConcentration) {
@@ -220,7 +222,7 @@ public class ErrorManager {
         return globalDeviationManager.deviationIsAcceptable();
     }
 
-    public void resolveDeviationProblem() {
+    public void resolveGlobalDeviationProblem() {
         globalDeviationManager.resolveProblem();
     }
 
@@ -245,6 +247,14 @@ public class ErrorManager {
         }
         // all errors where small
         return true;
+    }
+
+    public enum CalculationStage {
+        SETUP_STAGE, EVALUATION_STAGE, TIME_STEP_RESCALED, SKIP;
+    }
+
+    public enum Reason {
+        LOCAL_ERROR, GLOBAL_ERROR, LOCAL_DEVIATION, GLOBAL_DEVIATION, INCREASE;
     }
 
 }

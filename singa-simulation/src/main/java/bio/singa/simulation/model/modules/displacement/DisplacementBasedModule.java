@@ -18,6 +18,7 @@ import static bio.singa.simulation.model.modules.concentration.ModuleState.REQUI
 import static bio.singa.simulation.model.modules.concentration.ModuleState.SUCCEEDED_WITH_PENDING_CHANGES;
 import static bio.singa.simulation.model.simulation.error.DisplacementDeviation.MAXIMAL_POSITIVE_DEVIATION;
 import static bio.singa.simulation.model.simulation.error.DisplacementDeviation.MINIMAL_DEVIATION;
+import static bio.singa.simulation.model.simulation.error.ErrorManager.Reason.LOCAL_DEVIATION;
 
 /**
  * @author cl
@@ -102,7 +103,7 @@ public class DisplacementBasedModule extends AbstractUpdateModule {
     public void optimizeTimeStep() {
         while (getState() == REQUIRING_RECALCULATION) {
             getSimulation().getVesicleLayer().clearUpdates();
-            getSimulation().getScheduler().decreaseTimeStep(String.format("as requested by %s %s", getIdentifier(), largestLocalDeviation.toString()));
+            getSimulation().getScheduler().getTimeStepManager().decreaseTimeStep(LOCAL_DEVIATION);
             largestLocalDeviation = MINIMAL_DEVIATION;
             calculateUpdates();
         }

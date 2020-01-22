@@ -17,6 +17,7 @@ import java.util.function.Predicate;
 
 import static bio.singa.simulation.model.modules.concentration.ModuleState.REQUIRING_RECALCULATION;
 import static bio.singa.simulation.model.modules.concentration.ModuleState.SUCCEEDED;
+import static bio.singa.simulation.model.simulation.error.ErrorManager.Reason.LOCAL_ERROR;
 
 /**
  * Concentration based modules handle updates that are applied to the concentrations in {@link Updatable}s during a
@@ -296,7 +297,7 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
             // reset previous error
             supplier.resetError();
             // determine new local error with decreased time step
-            getSimulation().getScheduler().decreaseTimeStep(String.format("as requested by %s %s",getIdentifier(), error.toString()));
+            getSimulation().getScheduler().getTimeStepManager().decreaseTimeStep(LOCAL_ERROR);
             scope.processUpdatable(updatable);
             // evaluate module state by error
             evaluateModuleState();

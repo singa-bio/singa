@@ -1,20 +1,24 @@
 package bio.singa.simulation.model.simulation.error;
 
+import bio.singa.core.events.UpdateEventListener;
 import bio.singa.simulation.model.simulation.Updatable;
 import bio.singa.simulation.model.simulation.UpdateScheduler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static bio.singa.simulation.model.simulation.error.GlobalNumericalErrorManager.CalculationStage.SETUP_STAGE;
-import static bio.singa.simulation.model.simulation.error.GlobalNumericalErrorManager.CalculationStage.EVALUATION_STAGE;
+import static bio.singa.simulation.model.simulation.error.ErrorManager.*;
+import static bio.singa.simulation.model.simulation.error.ErrorManager.CalculationStage;
+import static bio.singa.simulation.model.simulation.error.ErrorManager.CalculationStage.*;
 
 /**
  * @author cl
  */
-public class GlobalNumericalErrorManager {
+public class GlobalNumericalErrorManager implements UpdateEventListener<Reason> {
 
-    private static final Logger logger = LoggerFactory.getLogger(UpdateScheduler.class);
-    private static final double DEFAULT_GLOBAL_NUMERICAL_TOLERANCE = 0.01;
+    private static final Logger logger = LoggerFactory.getLogger(GlobalNumericalErrorManager.class);
+    private static final double DEFAULT_GLOBAL_NUMERICAL_TOLERANCE = 1e-2;
+    private static final double DEFAULT_GLOBAL_NEGLIGIBILITY_THRESHOLD = 1e-5;
+
     private UpdateScheduler updateScheduler;
     private CalculationStage currentStage;
     private double tolerance = DEFAULT_GLOBAL_NUMERICAL_TOLERANCE;
@@ -34,6 +38,28 @@ public class GlobalNumericalErrorManager {
                 break;
             case EVALUATION_STAGE:
                 processEvaluationStage();
+                break;
+            case TIME_STEP_RESCALED:
+                errorAcceptable = false;
+                break;
+            case SKIP:
+                errorAcceptable = true;
+        }
+    }
+
+    public void resolveProblem() {
+        switch (currentStage) {
+            case SETUP_STAGE:
+                currentStage = EVALUATION_STAGE;
+                break;
+            case EVALUATION_STAGE:
+                updateScheduler.getTimeStepManager().decreaseTimeStep(Reason.GLOBAL_ERROR);
+                currentStage = SETUP_STAGE;
+                break;
+            case TIME_STEP_RESCALED:
+                currentStage = SETUP_STAGE;
+                break;
+            case SKIP:
                 break;
         }
     }
@@ -56,6 +82,7 @@ public class GlobalNumericalErrorManager {
             errorAcceptable = false;
         } else {
             errorAcceptable = true;
+            updateScheduler.getUpdatables().forEach(updatable -> updatable.getConcentrationManager().revertToOriginalConcentrations());
         }
     }
 
@@ -75,16 +102,9 @@ public class GlobalNumericalErrorManager {
         return largestError;
     }
 
-    public void resolveProblem() {
-        switch (currentStage) {
-            case SETUP_STAGE:
-                currentStage = EVALUATION_STAGE;
-                break;
-            case EVALUATION_STAGE:
-                updateScheduler.decreaseTimeStep("global error exceeded ");
-                currentStage = SETUP_STAGE;
-                break;
-        }
+    @Override
+    public void onEventReceived(Reason reason) {
+        currentStage = TIME_STEP_RESCALED;
     }
 
     public void reset() {
@@ -114,8 +134,8 @@ public class GlobalNumericalErrorManager {
         return errorAcceptable;
     }
 
-    public enum CalculationStage {
-        SETUP_STAGE, EVALUATION_STAGE, SKIP;
+    public boolean globalErrorIsNegligible() {
+        return false;
     }
 
 }

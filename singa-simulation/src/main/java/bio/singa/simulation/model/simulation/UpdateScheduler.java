@@ -1,16 +1,12 @@
 package bio.singa.simulation.model.simulation;
 
-import bio.singa.features.formatter.TimeFormatter;
 import bio.singa.features.quantities.MolarConcentration;
-import bio.singa.features.units.UnitRegistry;
 import bio.singa.simulation.model.modules.UpdateModule;
-import bio.singa.simulation.model.simulation.error.DisplacementDeviation;
 import bio.singa.simulation.model.simulation.error.ErrorManager;
+import bio.singa.simulation.model.simulation.error.TimeStepManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.measure.Quantity;
-import javax.measure.quantity.Time;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Iterator;
@@ -27,21 +23,14 @@ import static bio.singa.simulation.model.modules.concentration.ModuleState.SUCCE
 public class UpdateScheduler {
 
     private static final Logger logger = LoggerFactory.getLogger(UpdateScheduler.class);
-
     private final Deque<UpdateModule> modules;
-
     private final double moleculeFraction;
-
+    private ErrorManager errorManager;
+    private TimeStepManager timeStepManager;
     private Simulation simulation;
     private List<Updatable> updatables;
     private Iterator<UpdateModule> moduleIterator;
 
-    private boolean timeStepRescaled;
-
-    private long timeStepsDecreased = 0;
-    private long timeStepsIncreased = 0;
-
-    private ErrorManager errorManager;
 
     private CountDownLatch countDownLatch;
 
@@ -52,6 +41,7 @@ public class UpdateScheduler {
     public UpdateScheduler(Simulation simulation) {
         this.simulation = simulation;
         errorManager = new ErrorManager(this);
+        timeStepManager = new TimeStepManager(this);
         modules = new ArrayDeque<>(simulation.getModules());
         moleculeFraction = MolarConcentration.moleculesToConcentration(1.0 / 50000.0);
     }
@@ -62,14 +52,6 @@ public class UpdateScheduler {
             return;
         }
         executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(modules.size());
-    }
-
-    public long getTimeStepsDecreased() {
-        return timeStepsDecreased;
-    }
-
-    public long getTimeStepsIncreased() {
-        return timeStepsIncreased;
     }
 
     public double getMoleculeFraction() {
@@ -92,7 +74,7 @@ public class UpdateScheduler {
         // until all models passed
         do {
 
-            timeStepRescaled = false;
+            timeStepManager.setTimeStepRescaled(false);
             interrupted = false;
 
             countDownLatch = new CountDownLatch(getNumberOfModules());
@@ -143,22 +125,17 @@ public class UpdateScheduler {
 
         errorManager.evaluateGlobalDeviation();
         if (!errorManager.globalDeviationIsAcceptable()) {
-            errorManager.resolveDeviationProblem();
+            errorManager.resolveGlobalDeviationProblem();
             recalculationRequired = true;
         }
 
-        if (!timeStepRescaled) {
-            errorManager.evaluateGlobalError();
-            if (errorManager.globalErrorIsAcceptable()) {
-                updatables.forEach(updatable -> updatable.getConcentrationManager().revertToOriginalConcentrations());
-            } else {
-                // it is possible that global error evaluation rescales the time step when trying to resolve the problem
-                errorManager.resolveGlobalErrorProblem();
-                recalculationRequired = true;
-            }
+        errorManager.evaluateGlobalError();
+        if (!errorManager.globalErrorIsAcceptable()) {
+            errorManager.resolveGlobalErrorProblem();
+            recalculationRequired = true;
         }
 
-        if (timeStepRescaled) {
+        if (timeStepManager.isTimeStepRescaled()) {
             errorManager.resetLocalDisplacementDeviation();
             simulation.getVesicleLayer().clearUpdates();
             modules.forEach(UpdateModule::reset);
@@ -169,7 +146,7 @@ public class UpdateScheduler {
             // reset states
             for (UpdateModule module : modules) {
                 // skip modules with pending changes if time step was not rescaled
-                if (module.getState().equals(SUCCEEDED_WITH_PENDING_CHANGES) && !timeStepRescaled) {
+                if (module.getState().equals(SUCCEEDED_WITH_PENDING_CHANGES) && !timeStepManager.isTimeStepRescaled()) {
                     continue;
                 }
                 module.reset();
@@ -187,68 +164,6 @@ public class UpdateScheduler {
 
     public void shutdownExecutorService() {
         executor.shutdown();
-    }
-
-    public void increaseTimeStep(String reason) {
-        // change timestep in accordance to error
-        Quantity<Time> original = UnitRegistry.getTime();
-        double multiplier = estimateIncrease();
-        Quantity<Time> estimate = original.multiply(multiplier);
-
-        if (simulation.isDebug()) {
-            simulation.getDebugRecorder().addInformation(simulation.getEpoch(), String.format("increasing time step %s -> %s %s", TimeFormatter.formatTime(original), TimeFormatter.formatTime(estimate), reason));
-        }
-
-        UnitRegistry.setTime(estimate);
-
-        timeStepsIncreased++;
-    }
-
-    public synchronized void decreaseTimeStep(String reason) {
-        // if time step is rescaled for the very fist time this epoch remember the initial error and time step
-        Quantity<Time> original = UnitRegistry.getTime();
-        double multiplier = estimateDecrease();
-        Quantity<Time> estimate = original.multiply(multiplier);
-
-        if (simulation.isDebug()) {
-            simulation.getDebugRecorder().addInformation(simulation.getEpoch(), String.format("decreasing time step %s -> %s %s", TimeFormatter.formatTime(original), TimeFormatter.formatTime(estimate), reason));
-        }
-
-        UnitRegistry.setTime(estimate);
-
-        timeStepsDecreased++;
-        timeStepRescaled = true;
-    }
-
-    public synchronized void decreaseTimeStep(DisplacementDeviation deviation) {
-        // if time step is rescaled for the very fist time this epoch remember the initial error and time step
-        Quantity<Time> original = UnitRegistry.getTime();
-        double multiplier = estimateDecrease();
-        Quantity<Time> estimate = original.multiply(multiplier);
-
-        if (simulation.isDebug()) {
-            simulation.getDebugRecorder().addInformation(simulation.getEpoch(), String.format("decreasing time step %s -> %s %s", TimeFormatter.formatTime(original), TimeFormatter.formatTime(estimate)));
-        }
-
-        UnitRegistry.setTime(estimate);
-
-        timeStepsDecreased++;
-        timeStepRescaled = true;
-    }
-
-    private double estimateIncrease() {
-//        double upperLimit = 1.6;
-//        double lowerLimit = 1.1;
-//        double estimate = recalculationCutoff / getLargestLocalError().getValue();
-//        return Math.max(Math.min(upperLimit, estimate), lowerLimit);
-        return 1.3;
-    }
-
-    private double estimateDecrease() {
-//        double lowerLimit = 0.6;
-//        double estimate = recalculationCutoff / getLargestLocalError().getValue();
-//        return Math.max(lowerLimit, estimate);
-        return 0.7;
     }
 
     private void finalizeDeltas() {
@@ -295,6 +210,10 @@ public class UpdateScheduler {
 
     public ErrorManager getErrorManager() {
         return errorManager;
+    }
+
+    public TimeStepManager getTimeStepManager() {
+        return timeStepManager;
     }
 
     public List<Updatable> getUpdatables() {
