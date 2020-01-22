@@ -23,8 +23,6 @@ public class VesicleCytoplasmDiffusion extends DisplacementBasedModule {
      */
     private static final Logger logger = LoggerFactory.getLogger(VesicleCytoplasmDiffusion.class);
 
-    private static final double SQRT2 = Math.sqrt(2.0);
-
     public VesicleCytoplasmDiffusion() {
         // delta function
         addDeltaFunction(this::calculateDisplacement, vesicle -> vesicle.getState().equals(VesicleStateRegistry.UNATTACHED) || vesicle.getState().equals(TAGGED_FOR_EXOCYTOSIS));
@@ -33,7 +31,7 @@ public class VesicleCytoplasmDiffusion extends DisplacementBasedModule {
     }
 
     public DisplacementDelta calculateDisplacement(Vesicle vesicle) {
-        double scaling = SQRT2 * Math.sqrt(vesicle.getFeature(PixelDiffusivity.class).getScaledQuantity() * UnitRegistry.getTimeScale());
+        double scaling = Math.sqrt(2 * vesicle.getFeature(PixelDiffusivity.class).getScaledQuantity() * UnitRegistry.getTimeScale());
         Vector2D gaussian = Vectors.generateStandardGaussian2DVector();
         return new DisplacementDelta(this, gaussian.multiply(scaling));
     }

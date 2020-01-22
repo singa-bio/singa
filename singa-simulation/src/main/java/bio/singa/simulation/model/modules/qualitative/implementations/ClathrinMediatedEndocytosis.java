@@ -173,19 +173,23 @@ public class ClathrinMediatedEndocytosis extends QualitativeModule {
         pit.setCellRegion(pitRegion);
         pit.setCollecting(true);
 
+        // vesicle radius
+        Quantity<Length> spawnRadius = getFeature(VesicleRadius.class).getContent().to(UnitRegistry.getSpaceUnit());
+        pit.setRadius(spawnRadius);
+
         // choose random point on that site
         Vector2D spawnSite = segment.getSegment().getRandomPoint();
         // move a tiny bit towards the center of the cell
-        spawnSite = spawnSite.add(getSimulation().getMembraneLayer().getMicrotubuleOrganizingCentre().getCircleRepresentation().getMidpoint().subtract(spawnSite).normalize());
+        spawnSite = spawnSite.add(getSimulation().getMembraneLayer().getMicrotubuleOrganizingCentre().getCircleRepresentation().getMidpoint()
+                .subtract(spawnSite)
+                .normalize()
+                .multiply(UnitRegistry.scaleSpaceToPixel(spawnRadius)*2));
         pit.setSpawnSite(spawnSite);
 
         // checkpoint time
         Quantity<Time> checkpointTime = getSimulation().getElapsedTime().add(FeatureRandomizer.varyTime(getFeature(EndocytosisCheckpointTime.class).getContent()));
         pit.setCheckpointTime(checkpointTime);
 
-        // vesicle radius
-        Quantity<Length> spawnRadius = getFeature(VesicleRadius.class).getContent().to(UnitRegistry.getSpaceUnit());
-        pit.setRadius(spawnRadius);
 
         // add pit
         preAspiringPits.add(pit);

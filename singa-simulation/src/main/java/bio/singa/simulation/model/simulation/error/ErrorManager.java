@@ -86,6 +86,16 @@ public class ErrorManager {
         this.displacementCutoff = displacementCutoff;
     }
 
+    public double getDisplacementCutoffFactor() {
+        return displacementCutoffFactor;
+    }
+
+    public void setDisplacementCutoffFactor(double displacementCutoffFactor) {
+        displacementCutoff = Environment.convertSystemToSimulationScale(UnitRegistry.getSpace().multiply(displacementCutoffFactor));
+        this.displacementCutoffFactor = displacementCutoffFactor;
+
+    }
+
     public UpdateModule getLocalNumericalErrorModule() {
         return localNumericalErrorModule;
     }

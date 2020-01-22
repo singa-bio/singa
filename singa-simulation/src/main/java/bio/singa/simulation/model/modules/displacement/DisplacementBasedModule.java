@@ -92,6 +92,9 @@ public class DisplacementBasedModule extends AbstractUpdateModule {
                 largestDeviation = new DisplacementDeviation(vesicle, deviation);
             }
         }
+        if (largestDeviation.equals(MAXIMAL_POSITIVE_DEVIATION)) {
+            return MINIMAL_DEVIATION;
+        }
         return largestDeviation;
     }
 

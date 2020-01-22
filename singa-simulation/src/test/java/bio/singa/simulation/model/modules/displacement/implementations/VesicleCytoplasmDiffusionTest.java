@@ -59,7 +59,7 @@ class VesicleCytoplasmDiffusionTest {
         // create vesicle
         Vector2D initialPosition = new Vector2D(simulationExtend / 2.0, simulationExtend / 2.0);
         Vesicle vesicle = new Vesicle(initialPosition, Quantities.getQuantity(50, NANO(METRE)));
-        vesicle.setFeature(new PixelDiffusivity(Quantities.getQuantity(1, SQUARE_MICROMETRE_PER_SECOND)));
+        vesicle.setFeature(new PixelDiffusivity(Quantities.getQuantity(0.1, SQUARE_MICROMETRE_PER_SECOND)));
 
         // add vesicle transport layer
         VesicleLayer layer = new VesicleLayer(simulation);
