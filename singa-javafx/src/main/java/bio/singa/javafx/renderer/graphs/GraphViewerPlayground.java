@@ -2,7 +2,6 @@ package bio.singa.javafx.renderer.graphs;
 
 
 import bio.singa.chemistry.features.smiles.SmilesParser;
-import bio.singa.javafx.renderer.molecules.MoleculeGraphRenderer;
 import bio.singa.mathematics.algorithms.graphs.NeighbourhoodExtractor;
 import bio.singa.mathematics.graphs.model.GenericGraph;
 import bio.singa.mathematics.graphs.model.GenericNode;
@@ -16,7 +15,6 @@ import bio.singa.structure.parser.plip.InteractionContainer;
 import bio.singa.structure.parser.plip.PlipParser;
 import bio.singa.structure.parser.plip.PlipShellGenerator;
 import javafx.application.Application;
-import javafx.scene.paint.Color;
 
 import java.util.List;
 
@@ -53,25 +51,30 @@ public class GraphViewerPlayground {
         List<GenericNode<LeafSubstructure<?>>> thirdShell = NeighbourhoodExtractor.extractShell(graph, referenceNode, 3);
         String originalSmiles = "C1:C1C1:C1";
         MoleculeGraph moleculeGraph = SmilesParser.parse(originalSmiles);
-        GraphDisplayApplication.graph = moleculeGraph;
-        LeafShellRenderer renderer = new LeafShellRenderer();
-        GraphDisplayApplication.renderer = new MoleculeGraphRenderer();
 
-        renderer.setRenderBefore((currentGraph) -> {
-            renderer.getGraphicsContext().setStroke(Color.DARKBLUE);
-            for (GenericNode<LeafSubstructure<?>> shellNode : firstShell) {
-                renderer.strokeCircle(currentGraph.getNode(shellNode.getIdentifier()).getPosition(), renderer.getRenderingOptions().getNodeDiameter() + 2);
-            }
-            renderer.getGraphicsContext().setStroke(Color.RED);
-            for (GenericNode<LeafSubstructure<?>> shellNode : secondShell) {
-                renderer.strokeCircle(currentGraph.getNode(shellNode.getIdentifier()).getPosition(), renderer.getRenderingOptions().getNodeDiameter() + 2);
-            }
-            renderer.getGraphicsContext().setStroke(Color.YELLOW);
-            for (GenericNode<LeafSubstructure<?>> shellNode : thirdShell) {
-                renderer.strokeCircle(currentGraph.getNode(shellNode.getIdentifier()).getPosition(), renderer.getRenderingOptions().getNodeDiameter() + 2);
-            }
-            return null;
-        });
+        GenericGraph<Integer> testGraph = new GenericGraph<>();
+        testGraph.addNode(1);
+        testGraph.addNode(2);
+        testGraph.addNode(3);
+        testGraph.addNode(4);
+        testGraph.addNode(5);
+        testGraph.addNode(6);
+        testGraph.addEdgeBetween(1, 2);
+        testGraph.addEdgeBetween(1, 5);
+        testGraph.addEdgeBetween(2, 5);
+        testGraph.addEdgeBetween(2, 3);
+        testGraph.addEdgeBetween(3, 4);
+        testGraph.addEdgeBetween(4, 5);
+        testGraph.addEdgeBetween(6, 4);
+
+
+
+        GraphDisplayApplication.graph = testGraph;
+        GraphRenderer renderer = new GraphRenderer();
+        GraphRenderOptions<?> objectGraphRenderOptions = new GraphRenderOptions<>();
+        objectGraphRenderOptions.setDisplayText(true);
+        renderer.setRenderingOptions(objectGraphRenderOptions);
+        GraphDisplayApplication.renderer = renderer;
 
         Application.launch(GraphDisplayApplication.class);
     }

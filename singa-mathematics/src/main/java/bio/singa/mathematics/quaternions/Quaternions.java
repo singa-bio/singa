@@ -39,7 +39,7 @@ public class Quaternions {
      * <b>WARNING:</b> The point clouds should be centered at the origin.
      *
      * @param reference The reference point cloud.
-     * @param candidate The candidate point vloud.
+     * @param candidate The candidate point cloud.
      * @return A {@link Quaternion} representing the orientations between the point clouds.
      */
     public static Quaternion relativeOrientation(List<Vector3D> reference, List<Vector3D> candidate) {
