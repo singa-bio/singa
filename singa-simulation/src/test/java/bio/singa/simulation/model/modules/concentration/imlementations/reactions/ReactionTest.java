@@ -557,9 +557,9 @@ class ReactionTest {
         while (simulation.getElapsedTime().isLessThanOrEqualTo(secondCheckpoint)) {
             simulation.nextEpoch();
             if (!firstCheckpointPassed && simulation.getElapsedTime().isGreaterThanOrEqualTo(firstCheckpoint)) {
-                assertEquals(9.693E-7, first.getConcentrationContainer().get(INNER, bindee), 1e-10);
-                assertEquals(4.847E-7, second.getConcentrationContainer().get(INNER, bindee), 1e-10);
-                assertEquals(4.602E-8, vesicle.getConcentrationContainer().get(MEMBRANE, complex), 1e-10);
+                assertEquals(9.691E-7, first.getConcentrationContainer().get(INNER, bindee), 1e-10);
+                assertEquals(4.845E-7, second.getConcentrationContainer().get(INNER, bindee), 1e-10);
+                assertEquals(4.630E-8, vesicle.getConcentrationContainer().get(MEMBRANE, complex), 1e-10);
                 firstCheckpointPassed = true;
             }
         }

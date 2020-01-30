@@ -21,7 +21,6 @@ import bio.singa.simulation.model.graphs.NeighborhoodMappingManager;
 import bio.singa.simulation.model.modules.UpdateModule;
 import bio.singa.simulation.model.modules.concentration.ConcentrationDelta;
 import bio.singa.simulation.model.modules.concentration.imlementations.transport.Diffusion;
-import bio.singa.simulation.model.modules.displacement.DisplacementBasedModule;
 import bio.singa.simulation.model.rules.AssignmentRule;
 import bio.singa.simulation.model.rules.AssignmentRules;
 import bio.singa.simulation.trajectories.errors.DebugRecorder;
@@ -110,10 +109,10 @@ public class Simulation {
 
     private boolean initializationDone;
 
-    private boolean vesiclesWillMove;
-
     private boolean debug;
     private DebugRecorder debugRecorder;
+
+    private long epochWithRescaledTimeStep = 0;
 
     /**
      * Creates a new plain simulation.
@@ -126,7 +125,6 @@ public class Simulation {
         elapsedTime = Quantities.getQuantity(0.0, UnitRegistry.getTimeUnit());
         epoch = 0;
         initializationDone = false;
-        vesiclesWillMove = false;
         debug = false;
         observedUpdatables = new HashSet<>();
         vesicleLayer = new VesicleLayer(this);
@@ -169,6 +167,7 @@ public class Simulation {
         // apply concentrations
         applyConcentrations();
 
+        //System.out.println("epoch "+epoch);
         // apply all modules
         scheduler.nextEpoch();
 
@@ -181,7 +180,7 @@ public class Simulation {
             }
         }
 
-        if (vesicleLayer != null && vesiclesWillMove) {
+        if (vesicleLayer != null) {
             // move vesicles
             vesicleLayer.applyDeltas();
             // associate nodes
@@ -209,6 +208,12 @@ public class Simulation {
             }
         }
 
+        // if the time step was decreased in the last n epochs do not consider it
+        if(epoch-epochWithRescaledTimeStep < 10) {
+            return false;
+        }
+
+
         // if the the error that was computed previously is very small
         return getScheduler().getErrorManager().allErrorsAreSafe();
     }
@@ -221,12 +226,6 @@ public class Simulation {
             logger.info("Module {}", module.getIdentifier());
             for (Feature<?> feature : module.getFeatures()) {
                 logger.info("  Feature {} = {}", feature.getClass().getSimpleName(), feature.getContent());
-            }
-            // save some computation time in case vesicles will not move; this effects:
-            // associations between nodes and vesicles are only calculated once
-            // no collisions are checked
-            if (module instanceof DisplacementBasedModule) {
-                vesiclesWillMove = true;
             }
         }
     }
@@ -265,7 +264,7 @@ public class Simulation {
     public void initializeSpatialRepresentations() {
         logger.info("Initializing spatial representations of automaton nodes.");
         // TODO initialize via voronoi diagrams
-        // or rectangles
+        // or rectangle
         for (AutomatonNode node : graph.getNodes()) {
             // create rectangles centered on the nodes with side length of node distance
             Vector2D position = node.getPosition();
@@ -484,4 +483,11 @@ public class Simulation {
         this.debugRecorder = debugRecorder;
     }
 
+    public long getEpochWithRescaledTimeStep() {
+        return epochWithRescaledTimeStep;
+    }
+
+    public void setEpochWithRescaledTimeStep(long epochWithRescaledTimeStep) {
+        this.epochWithRescaledTimeStep = epochWithRescaledTimeStep;
+    }
 }

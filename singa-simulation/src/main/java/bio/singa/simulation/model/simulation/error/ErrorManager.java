@@ -238,7 +238,7 @@ public class ErrorManager {
             return false;
         }
         // local numerical error was close to tolerance
-        if (localNumericalTolerance - localNumericalError.getValue() <= 0.2 * localNumericalTolerance) {
+        if (localNumericalTolerance - localNumericalError.getValue() <= 0.25 * localNumericalTolerance) {
             return false;
         }
         // local displacement deviation was close to tolerance

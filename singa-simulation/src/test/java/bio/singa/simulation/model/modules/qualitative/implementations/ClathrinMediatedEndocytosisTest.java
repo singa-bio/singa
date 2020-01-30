@@ -209,7 +209,7 @@ class ClathrinMediatedEndocytosisTest {
         ReactionBuilder.generateNetwork();
 
         // clathrin mediated endocytosis
-        ClathrinMediatedEndocytosis endocytosis = new ClathrinMediatedEndocytosis(vesicleLayer);
+        ClathrinMediatedEndocytosis endocytosis = new ClathrinMediatedEndocytosis();
         endocytosis.limitPitsToOneAtATime();
         endocytosis.setIdentifier("endocytosis");
         endocytosis.setFeature(new AffectedRegion(CellRegions.CELL_OUTER_MEMBRANE_REGION));

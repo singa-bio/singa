@@ -150,8 +150,8 @@ public class ConcentrationDeltaManager {
                 }
                 double updatedHalfConcentration = currentConcentrations.get(delta.getCellSubsection(), delta.getChemicalEntity()) + delta.getValue() * 0.5;
                 double updatedFullConcentration = interimConcentrations.get(delta.getCellSubsection(), delta.getChemicalEntity()) + delta.getValue();
-                if (updatedFullConcentration < 0.0) {
-                    capDeltas(delta.getModule(), delta);
+                if (updatedHalfConcentration < 0.0) {
+                    capDeltas(potentialDeltas, currentConcentrations, delta.getModule(), delta);
                     repeat = true;
                     break;
                 }
@@ -172,7 +172,7 @@ public class ConcentrationDeltaManager {
                 double updatedConcentration = currentConcentrations.get(delta.getCellSubsection(), delta.getChemicalEntity()) + delta.getValue();
                 if (updatedConcentration < 0.0) {
                     // cap deltas such that the minimal value of the delta can be zero
-                    capDeltas(delta.getModule(), delta);
+                    capDeltas(potentialDeltas, currentConcentrations, delta.getModule(), delta);
                     repeat = true;
                     break;
                 }
@@ -185,12 +185,13 @@ public class ConcentrationDeltaManager {
      * If deltas would result in negative concentrations (negative delta value is higher than concentration in updatable)
      * the affected deltas are scaled accordingly to the remaining concentration.
      *
+     * @param deltas the deltas to be capped
      * @param module The module that generated the delta.
      * @param delta The delta that was too large.
      */
-    private void capDeltas(UpdateModule module, ConcentrationDelta delta) {
-        double remainingConcentration = currentConcentrations.get(delta.getCellSubsection(), delta.getChemicalEntity());
-        List<ConcentrationDelta> affectedDeltas = potentialDeltas.stream()
+    private void capDeltas(List<ConcentrationDelta> deltas, ConcentrationContainer container, UpdateModule module, ConcentrationDelta delta) {
+        double remainingConcentration = container.get(delta.getCellSubsection(), delta.getChemicalEntity());
+        List<ConcentrationDelta> affectedDeltas = deltas.stream()
                 .filter(element -> element.getModule().equals(module))
                 .collect(Collectors.toList());
         double deltaValue = delta.getValue();
@@ -198,8 +199,11 @@ public class ConcentrationDeltaManager {
             if (affectedDelta.getValue() == deltaValue) {
                 delta.setValue(-remainingConcentration);
             } else {
-                // determine relationship
-                double factor = affectedDelta.getValue() / deltaValue;
+                // determine relationship current delta / capped delta
+                // if delta was capped to half of its actual value the other deltas need to be scaled with the same factor
+                // e.g. if there where 10 molecule left to process, but 20 would have been processed,
+                // set the capped deltas to 10 molecules, and only create 10 molecules as well
+                double factor = Math.abs(affectedDelta.getValue() / deltaValue);
                 affectedDelta.setValue(Math.signum(affectedDelta.getValue()) * remainingConcentration * factor);
             }
         }
@@ -304,25 +308,33 @@ public class ConcentrationDeltaManager {
      * Applies all final deltas and clears the delta list.
      */
     public void applyDeltas() {
-        currentConcentrations = originalConcentrations;
-        interimConcentrations = originalConcentrations;
-        for (ConcentrationDelta delta : finalDeltas) {
+        boolean repeat;
+        do {
+            repeat = false;
+            currentConcentrations = originalConcentrations;
+            interimConcentrations = originalConcentrations;
+            for (ConcentrationDelta delta : finalDeltas) {
 //            if (fixedEntities.contains(delta.getChemicalEntity())) {
 //                continue;
 //            }
-            // it may happen that concentrations are calculated as strut points that have no representations in the
-            // original concentrations and therefore non existent entities would be removed
-            double previousConcentration = currentConcentrations.get(delta.getCellSubsection(), delta.getChemicalEntity());
-            double updatedConcentration = previousConcentration + delta.getValue();
-            if (updatedConcentration < 0.0) {
-                if (MolarConcentration.concentrationToMolecules(Math.abs(delta.getValue())).getValue().doubleValue() < 0.1) {
-                    logger.warn("Updates for {} have reached a cutoff value where less than a 1/10 of a molecule would remain, setting concentration to 0.", delta.getChemicalEntity());
-                    updatedConcentration = 0.0;
+                // it may happen that concentrations are calculated as strut points that have no representations in the
+                // original concentrations and therefore non existent entities would be removed
+                double previousConcentration = currentConcentrations.get(delta.getCellSubsection(), delta.getChemicalEntity());
+                double updatedConcentration = previousConcentration + delta.getValue();
+                if (updatedConcentration < 0.0) {
+                    if (MolarConcentration.concentrationToMolecules(Math.abs(delta.getValue())).getValue().doubleValue() < 0.1) {
+                        logger.warn("Updates for {} have reached a cutoff value where less than a 1/10 of a molecule would remain, setting concentration to 0.", delta.getChemicalEntity());
+                        updatedConcentration = 0.0;
+                    } else {
+                        capDeltas(finalDeltas, currentConcentrations, delta.getModule(), delta);
+                        repeat = true;
+                        break;
+                    }
                 }
+                logger.trace("Setting {} in {} from {} to {} ", delta.getChemicalEntity(), delta.getCellSubsection().getIdentifier(), previousConcentration, updatedConcentration);
+                currentConcentrations.set(delta.getCellSubsection(), delta.getChemicalEntity(), updatedConcentration);
             }
-            logger.trace("Setting {} in {} from {} to {} ", delta.getChemicalEntity(), delta.getCellSubsection().getIdentifier(), previousConcentration, updatedConcentration);
-            currentConcentrations.set(delta.getCellSubsection(), delta.getChemicalEntity(), updatedConcentration);
-        }
+        } while (repeat);
         finalDeltas.clear();
     }
 

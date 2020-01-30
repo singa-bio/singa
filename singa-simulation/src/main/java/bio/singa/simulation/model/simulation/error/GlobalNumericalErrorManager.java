@@ -6,9 +6,9 @@ import bio.singa.simulation.model.simulation.UpdateScheduler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static bio.singa.simulation.model.simulation.error.ErrorManager.*;
 import static bio.singa.simulation.model.simulation.error.ErrorManager.CalculationStage;
 import static bio.singa.simulation.model.simulation.error.ErrorManager.CalculationStage.*;
+import static bio.singa.simulation.model.simulation.error.ErrorManager.Reason;
 
 /**
  * @author cl
@@ -17,37 +17,51 @@ public class GlobalNumericalErrorManager implements UpdateEventListener<Reason> 
 
     private static final Logger logger = LoggerFactory.getLogger(GlobalNumericalErrorManager.class);
     private static final double DEFAULT_GLOBAL_NUMERICAL_TOLERANCE = 1e-2;
-    private static final double DEFAULT_GLOBAL_NEGLIGIBILITY_THRESHOLD = 1e-5;
+    private static final double DEFAULT_GLOBAL_NEGLIGIBILITY_THRESHOLD = 1e-6;
 
     private UpdateScheduler updateScheduler;
     private CalculationStage currentStage;
     private double tolerance = DEFAULT_GLOBAL_NUMERICAL_TOLERANCE;
+    private double negligibility = DEFAULT_GLOBAL_NEGLIGIBILITY_THRESHOLD;
     private NumericalError error;
     private boolean errorAcceptable;
 
+    private int skips = 0;
+
     public GlobalNumericalErrorManager(UpdateScheduler updateScheduler) {
         this.updateScheduler = updateScheduler;
-        error = NumericalError.MINIMAL_EMPTY_ERROR;
+        currentStage = SETUP_STAGE;
         reset();
     }
 
     public void evaluateError() {
+        // check skipping
+        if (currentStage.equals(SKIP)) {
+            // if number of updatables increased or more than 100 skips occured
+            if (skips >= 100) {
+                currentStage = SETUP_STAGE;
+                skips = 0;
+            } else {
+                skips++;
+            }
+        }
         switch (currentStage) {
             case SETUP_STAGE:
                 processSetupStage();
                 break;
             case EVALUATION_STAGE:
                 processEvaluationStage();
+                checkSkipping();
                 break;
             case TIME_STEP_RESCALED:
                 errorAcceptable = false;
                 break;
             case SKIP:
-                errorAcceptable = true;
         }
     }
 
     public void resolveProblem() {
+        //System.out.println(" resolve " + currentStage);
         switch (currentStage) {
             case SETUP_STAGE:
                 currentStage = EVALUATION_STAGE;
@@ -59,9 +73,11 @@ public class GlobalNumericalErrorManager implements UpdateEventListener<Reason> 
             case TIME_STEP_RESCALED:
                 currentStage = SETUP_STAGE;
                 break;
-            case SKIP:
+            default:
+                currentStage = SETUP_STAGE;
                 break;
         }
+
     }
 
     private void processSetupStage() {
@@ -104,11 +120,21 @@ public class GlobalNumericalErrorManager implements UpdateEventListener<Reason> 
 
     @Override
     public void onEventReceived(Reason reason) {
+        // if we are currently skipping
+        if (currentStage.equals(SKIP)) {
+            // and this was not an time step increase
+            if (!reason.equals(Reason.INCREASE)) {
+                // keep skipping
+                return;
+            }
+        }
         currentStage = TIME_STEP_RESCALED;
     }
 
     public void reset() {
-        currentStage = SETUP_STAGE;
+        if (!currentStage.equals(SKIP)) {
+            currentStage = SETUP_STAGE;
+        }
         errorAcceptable = true;
         error = NumericalError.MINIMAL_EMPTY_ERROR;
     }
@@ -125,17 +151,34 @@ public class GlobalNumericalErrorManager implements UpdateEventListener<Reason> 
         this.tolerance = tolerance;
     }
 
+    public double getNegligibility() {
+        return negligibility;
+    }
+
+    public void setNegligibility(double negligibility) {
+        this.negligibility = negligibility;
+    }
+
     public boolean errorIsCritical() {
         // global numerical error was not close to tolerance but sufficiently small
         return tolerance - error.getValue() <= 0.2 * tolerance;
+    }
+
+    public void checkSkipping() {
+        //System.out.println(" global error " + error.getValue());
+        if (errorIsNegligible()) {
+            currentStage = SKIP;
+        } else {
+            currentStage = EVALUATION_STAGE;
+        }
     }
 
     public boolean errorIsAcceptable() {
         return errorAcceptable;
     }
 
-    public boolean globalErrorIsNegligible() {
-        return false;
+    public boolean errorIsNegligible() {
+        return error.getValue() < negligibility;
     }
 
 }

@@ -54,13 +54,14 @@ public class TimeStepManager implements UpdateEventEmitter<Reason> {
         Quantity<Time> estimate = original.multiply(multiplier);
 
         if (scheduler.getSimulation().isDebug()) {
-            scheduler.getSimulation().getDebugRecorder().addInformation(scheduler.getSimulation().getEpoch(), String.format("decreasing time step %s -> %s", TimeFormatter.formatTime(original), TimeFormatter.formatTime(estimate)));
+            scheduler.getSimulation().getDebugRecorder().addInformation(scheduler.getSimulation().getEpoch(), String.format("decreasing time step (%s, %s) %s -> %s", reason, scheduler.getErrorManager().getGlobalNumericalError(), TimeFormatter.formatTime(original), TimeFormatter.formatTime(estimate)));
         }
 
         UnitRegistry.setTime(estimate);
 
         timeStepsDecreased++;
         timeStepRescaled = true;
+        scheduler.getSimulation().setEpochWithRescaledTimeStep(scheduler.getSimulation().getEpoch());
         emitEvent(reason);
     }
 
@@ -69,14 +70,14 @@ public class TimeStepManager implements UpdateEventEmitter<Reason> {
 //        double lowerLimit = 1.1;
 //        double estimate = recalculationCutoff / getLargestLocalError().getValue();
 //        return Math.max(Math.min(upperLimit, estimate), lowerLimit);
-        return 1.3;
+        return 1.2;
     }
 
     private double estimateDecrease() {
 //        double lowerLimit = 0.6;
 //        double estimate = recalculationCutoff / getLargestLocalError().getValue();
 //        return Math.max(lowerLimit, estimate);
-        return 0.7;
+        return 0.8;
     }
 
     @Override

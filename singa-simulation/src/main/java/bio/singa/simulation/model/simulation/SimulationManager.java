@@ -9,6 +9,7 @@ import bio.singa.simulation.events.NodeEventEmitter;
 import bio.singa.simulation.events.UpdatableUpdatedEvent;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonNode;
+import bio.singa.simulation.model.simulation.error.NumericalError;
 import bio.singa.simulation.trajectories.errors.DebugRecorder;
 import bio.singa.simulation.trajectories.flat.FlatUpdateRecorder;
 import org.slf4j.Logger;
@@ -321,9 +322,13 @@ public class SimulationManager implements Runnable {
                 logger.info("PROGRESS: {} time remaining - {} passed time in simulation",
                         simulationStatus.getEstimatedTimeRemaining(), simulationStatus.getElapsedTime());
                 logger.info("SPEED   : estimated finish: {}", simulationStatus.getEstimatedFinish());
-                logger.info("SPEED   : {} epochs ({},{}) {} eps - {} speed, {} time step", simulationStatus.getNumberOfEpochsSinceLastUpdate(), simulationStatus.getNumberOfTimeStepIncreasesSinceLastUpdate(), simulationStatus.getNumberOfTimeStepDecreasesSinceLastUpdate(), String.format("%6.3e",simulationStatus.getEpochsPerSecond()),  simulationStatus.getEstimatedSpeed(), simulationStatus.getMostRecentTimeStep());
+                logger.info("SPEED   : {} epochs ({},{}) {} eps - {} speed, {} time step", simulationStatus.getNumberOfEpochsSinceLastUpdate(), simulationStatus.getNumberOfTimeStepIncreasesSinceLastUpdate(), simulationStatus.getNumberOfTimeStepDecreasesSinceLastUpdate(), String.format("%6.3e", simulationStatus.getEpochsPerSecond()), simulationStatus.getEstimatedSpeed(), simulationStatus.getMostRecentTimeStep());
                 logger.info("ERROR L : {} ({}, {}, {})", String.format("%6.3e", simulationStatus.getLargestLocalError().getValue()), simulationStatus.getLargestLocalError().getChemicalEntity(), simulationStatus.getLargestLocalError().getUpdatable().getStringIdentifier(), simulationStatus.getLocalErrorModule());
-                logger.info("ERROR G : {} ({}, {})", String.format("%6.3e", simulationStatus.getLargestGlobalError().getValue()), simulationStatus.getLargestGlobalError().getChemicalEntity(), simulationStatus.getLargestGlobalError().getUpdatable().getStringIdentifier());
+                if (simulationStatus.getLargestGlobalError().equals(NumericalError.MINIMAL_EMPTY_ERROR)) {
+                    logger.info("ERROR G : skipping");
+                } else {
+                    logger.info("ERROR G : {} ({}, {})", String.format("%6.3e", simulationStatus.getLargestGlobalError().getValue()), simulationStatus.getLargestGlobalError().getChemicalEntity(), simulationStatus.getLargestGlobalError().getUpdatable().getStringIdentifier());
+                }
             }
             previousTimeMillis = currentTimeMillis;
         }

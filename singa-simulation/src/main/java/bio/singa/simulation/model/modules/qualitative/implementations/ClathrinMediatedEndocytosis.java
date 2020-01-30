@@ -50,8 +50,7 @@ public class ClathrinMediatedEndocytosis extends QualitativeModule {
 
     private boolean limitPits = false;
 
-    public ClathrinMediatedEndocytosis(VesicleLayer vesicleLayer) {
-        this.vesicleLayer = vesicleLayer;
+    public ClathrinMediatedEndocytosis() {
         segments = new ArrayList<>();
         // pits
         preAspiringPits = new ArrayList<>();
@@ -77,6 +76,7 @@ public class ClathrinMediatedEndocytosis extends QualitativeModule {
 
     @Override
     public void initialize() {
+        vesicleLayer = getSimulation().getVesicleLayer();
         CellRegion region = getFeature(AffectedRegion.class).getContent();
         initializeMembraneRegion(region);
         initializePitRegion(region);

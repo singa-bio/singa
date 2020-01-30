@@ -278,8 +278,7 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
         if (error > getSimulation().getScheduler().getErrorManager().getNumericalInstabilityCutoff()) {
             throw new NumericalInstabilityException("The module " + toString() + " experiences numerical instabilities. " +
                     "The local error between the full step delta (" + fullDelta + ") and half step delta (" + halfDelta +
-                    ") is " + error + ". This can be an result of time steps that have been initially chosen too large" +
-                    " or an implementation error in module that calculated the delta.");
+                    ") is " + error + " at a time step of "+ UnitRegistry.getTime());
         }
     }
 

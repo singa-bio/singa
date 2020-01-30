@@ -38,6 +38,9 @@ public class UpdateScheduler {
 
     private ThreadPoolExecutor executor;
 
+    int recalculations = 0;
+
+
     public UpdateScheduler(Simulation simulation) {
         this.simulation = simulation;
         errorManager = new ErrorManager(this);
@@ -70,6 +73,7 @@ public class UpdateScheduler {
             updatable.getConcentrationManager().backupConcentrations();
         }
 
+        recalculations = 0;
         boolean recalculationRequired;
         // until all models passed
         do {
@@ -93,15 +97,18 @@ public class UpdateScheduler {
                 }
             }
 
+
             try {
                 countDownLatch.await();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
 
+//            System.out.println(errorManager.getLocalNumericalError()+" "+errorManager.getLocalNumericalErrorModule()+ " " + errorManager.getLocalNumericalErrorUpdate() + " " + UnitRegistry.getTime());
             recalculationRequired = recalculationRequired();
-
+            recalculations++;
         } while (recalculationRequired);
+//        System.out.println("epoch accepted");
         // System.out.println("accepted local error: "+largestLocalError.getValue());
         // resolve pending changes
         for (UpdateModule updateModule : modules) {
@@ -122,19 +129,16 @@ public class UpdateScheduler {
 
     private boolean recalculationRequired() {
         boolean recalculationRequired = false;
-
         errorManager.evaluateGlobalDeviation();
         if (!errorManager.globalDeviationIsAcceptable()) {
             errorManager.resolveGlobalDeviationProblem();
             recalculationRequired = true;
         }
-
         errorManager.evaluateGlobalError();
         if (!errorManager.globalErrorIsAcceptable()) {
             errorManager.resolveGlobalErrorProblem();
             recalculationRequired = true;
         }
-
         if (timeStepManager.isTimeStepRescaled()) {
             errorManager.resetLocalDisplacementDeviation();
             simulation.getVesicleLayer().clearUpdates();
@@ -157,6 +161,7 @@ public class UpdateScheduler {
             errorManager.resetLocalNumericalError();
             // start from the beginning
             moduleIterator = modules.iterator();
+//            System.out.println("recalculation required");
         }
 
         return recalculationRequired;
