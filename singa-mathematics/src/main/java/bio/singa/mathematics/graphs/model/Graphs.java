@@ -373,8 +373,8 @@ public class Graphs {
             for (int j = i + 1; j < nodePairs.size(); j++) {
                 // pairs (u,v) and (u',v') are connected iff:
                 // u is adjacent with u' and v is adjacent with v' , or
-                // u is not adjacent with u' and v is not adjacent with v'
-                // TODO add edge conditions here
+                // u is not adjacent with u' and v is not adjacent with v', and
+                // edge condition between edge connecting u and u' and edge connecting v and v' is met
                 Pair<NodeType> pair2 = nodePairs.get(j);
                 if (pair1.getFirst().equals(pair2.getFirst()) || pair1.getSecond().equals(pair2.getSecond())) {
                     continue;
