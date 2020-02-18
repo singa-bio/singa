@@ -4,6 +4,7 @@ import bio.singa.simulation.model.modules.concentration.ConcentrationDeltaIdenti
 import bio.singa.simulation.model.modules.concentration.imlementations.reactions.ReactionEvent;
 import bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.reactants.Reactant;
 import bio.singa.simulation.model.sections.CellSubsection;
+import bio.singa.simulation.model.simulation.Updatable;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -57,10 +58,13 @@ public class MembraneRestrictedBehavior implements DeltaBehavior {
             CellSubsection subsection;
             if (reactant.getPreferredTopology().equals(MEMBRANE)) {
                 subsection = event.getMembraneRestrictedContainer().getMembraneSubsection();
-                deltas.add(new ReactantDelta(new ConcentrationDeltaIdentifier(event.getCurrentMembraneRestrictedUpdatable(), subsection, reactant.getEntity()), velocity * reactant.getStoichiometricNumber()));
+                ConcentrationDeltaIdentifier identifier = new ConcentrationDeltaIdentifier(event.getCurrentMembraneRestrictedUpdatable(), subsection, reactant.getEntity());
+                deltas.add(new ReactantDelta(identifier, velocity * reactant.getStoichiometricNumber()));
             } else {
                 subsection = event.getCurrentNodeContainer().getSubsection(reactant.getPreferredTopology());
-                deltas.add(new ReactantDelta(new ConcentrationDeltaIdentifier(event.getCurrentNode(), subsection, reactant.getEntity()), velocity * reactant.getStoichiometricNumber()));
+                Updatable referenceUpdatable = event.getCurrentMembraneRestrictedUpdatable();
+                ConcentrationDeltaIdentifier identifier = new ConcentrationDeltaIdentifier(event.getCurrentNode(), subsection, referenceUpdatable.getStringIdentifier(), reactant.getEntity());
+                deltas.add(new ReactantDelta(identifier, velocity * reactant.getStoichiometricNumber()));
             }
         }
         return deltas;

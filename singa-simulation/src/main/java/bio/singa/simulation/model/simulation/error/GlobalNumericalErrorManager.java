@@ -57,27 +57,8 @@ public class GlobalNumericalErrorManager implements UpdateEventListener<Reason> 
                 errorAcceptable = false;
                 break;
             case SKIP:
-        }
-    }
-
-    public void resolveProblem() {
-        //System.out.println(" resolve " + currentStage);
-        switch (currentStage) {
-            case SETUP_STAGE:
-                currentStage = EVALUATION_STAGE;
-                break;
-            case EVALUATION_STAGE:
-                updateScheduler.getTimeStepManager().decreaseTimeStep(Reason.GLOBAL_ERROR);
-                currentStage = SETUP_STAGE;
-                break;
-            case TIME_STEP_RESCALED:
-                currentStage = SETUP_STAGE;
-                break;
-            default:
-                currentStage = SETUP_STAGE;
                 break;
         }
-
     }
 
     private void processSetupStage() {
@@ -99,6 +80,34 @@ public class GlobalNumericalErrorManager implements UpdateEventListener<Reason> 
         } else {
             errorAcceptable = true;
             updateScheduler.getUpdatables().forEach(updatable -> updatable.getConcentrationManager().revertToOriginalConcentrations());
+        }
+    }
+
+    public void checkSkipping() {
+        //System.out.println(" global error " + error.getValue());
+        if (errorIsNegligible()) {
+            currentStage = SKIP;
+        } else {
+            currentStage = EVALUATION_STAGE;
+        }
+    }
+
+    public void resolveProblem() {
+        //System.out.println(" resolve " + currentStage);
+        switch (currentStage) {
+            case SETUP_STAGE:
+                currentStage = EVALUATION_STAGE;
+                break;
+            case EVALUATION_STAGE:
+                TimeStepManager.decreaseTimeStep(Reason.GLOBAL_ERROR);
+                currentStage = SETUP_STAGE;
+                break;
+            case TIME_STEP_RESCALED:
+                currentStage = SETUP_STAGE;
+                break;
+            default:
+                currentStage = SETUP_STAGE;
+                break;
         }
     }
 
@@ -162,15 +171,6 @@ public class GlobalNumericalErrorManager implements UpdateEventListener<Reason> 
     public boolean errorIsCritical() {
         // global numerical error was not close to tolerance but sufficiently small
         return tolerance - error.getValue() <= 0.2 * tolerance;
-    }
-
-    public void checkSkipping() {
-        //System.out.println(" global error " + error.getValue());
-        if (errorIsNegligible()) {
-            currentStage = SKIP;
-        } else {
-            currentStage = EVALUATION_STAGE;
-        }
     }
 
     public boolean errorIsAcceptable() {

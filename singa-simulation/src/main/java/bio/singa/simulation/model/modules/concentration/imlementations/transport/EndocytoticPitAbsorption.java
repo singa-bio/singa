@@ -23,6 +23,7 @@ import static bio.singa.simulation.model.sections.CellTopology.MEMBRANE;
 public class EndocytoticPitAbsorption extends ConcentrationBasedModule<UpdatableDeltaFunction> {
 
     public EndocytoticPitAbsorption() {
+
     }
 
     public static EntityStep inSimulation(Simulation simulation) {
@@ -53,9 +54,10 @@ public class EndocytoticPitAbsorption extends ConcentrationBasedModule<Updatable
         List<ChemicalEntity> cargoes = getFeature(Cargoes.class).getContent();
         // get base addition rate
         double additionRate = getScaledFeature(CargoAdditionRate.class);
-        // get entities that scale cargo addition
+        // apply for all cargoes
+        // inhibiting entities
         ScalingEntities scalingEntities = getFeature(ScalingEntities.class);
-        double rateModifier;
+        double modifier = 1;
         // no scaling entities no rate scaling
         if (scalingEntities != null) {
             ChemicalEntity catalyzingEntity = scalingEntities.getContent().get(0);
@@ -63,25 +65,32 @@ public class EndocytoticPitAbsorption extends ConcentrationBasedModule<Updatable
             // determine rate modifier
             double catalyzingConcentration = currentPit.getAssociatedNode().getConcentrationContainer().get(MEMBRANE, catalyzingEntity);
             double inhibitingConcentration = currentPit.getAssociatedNode().getConcentrationContainer().get(MEMBRANE, inhibitingEntity);
-            // if everything is catalyzing use maximal rate, else scale linear with added inhibition and reduced catalysis
-            rateModifier = catalyzingConcentration / (catalyzingConcentration + inhibitingConcentration);
-        } else {
-            rateModifier = 1;
+            // scale linear
+            modifier = catalyzingConcentration / (catalyzingConcentration + inhibitingConcentration);
         }
 
-        double appliedRate = rateModifier * additionRate;
-        // apply for all cargoes
         for (ChemicalEntity cargo : cargoes) {
             double concentration = currentPit.getAssociatedNode().getConcentrationContainer().get(MEMBRANE, cargo);
-            double concentrationDelta = appliedRate * concentration;
+            if (concentration == 0.0) {
+                continue;
+            }
+            double concentrationDelta = additionRate * modifier * concentration;
             // add to pit
-            deltas.put(new ConcentrationDeltaIdentifier(currentPit, currentPit.getCellRegion().getMembraneSubsection(), cargo),
-                    new ConcentrationDelta(this, currentPit.getCellRegion().getMembraneSubsection(), cargo, concentrationDelta));
+            addDelta(deltas, new ConcentrationDeltaIdentifier(currentPit, currentPit.getCellRegion().getMembraneSubsection(), currentPit.getStringIdentifier(), cargo),
+                    concentrationDelta);
             // remove from associated membrane
-            deltas.put(new ConcentrationDeltaIdentifier(currentPit.getAssociatedNode(), currentPit.getAssociatedNode().getCellRegion().getMembraneSubsection(), cargo),
-                    new ConcentrationDelta(this, currentPit.getAssociatedNode().getCellRegion().getMembraneSubsection(), cargo, -concentrationDelta));
+            addDelta(deltas, new ConcentrationDeltaIdentifier(currentPit.getAssociatedNode(), currentPit.getAssociatedNode().getCellRegion().getMembraneSubsection(), currentPit.getStringIdentifier(), cargo),
+                    -concentrationDelta);
         }
         return deltas;
+    }
+
+    private void addDelta(Map<ConcentrationDeltaIdentifier, ConcentrationDelta> deltas, ConcentrationDeltaIdentifier identifier, double concentrationDelta) {
+        if (deltas.containsKey(identifier)) {
+            deltas.put(identifier, deltas.get(identifier).add(concentrationDelta));
+        } else {
+            deltas.put(identifier, new ConcentrationDelta(this, identifier.getSubsection(), identifier.getEntity(), concentrationDelta));
+        }
     }
 
     public interface EntityStep {

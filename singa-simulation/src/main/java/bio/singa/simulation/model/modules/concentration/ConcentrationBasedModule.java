@@ -10,6 +10,7 @@ import bio.singa.simulation.model.modules.concentration.scope.UpdateScope;
 import bio.singa.simulation.model.modules.concentration.specifity.UpdateSpecificity;
 import bio.singa.simulation.model.simulation.Updatable;
 import bio.singa.simulation.model.simulation.error.NumericalError;
+import bio.singa.simulation.model.simulation.error.TimeStepManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -165,7 +166,7 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
     /**
      * Produces a log massage for the given update.
      *
-     * @param deltaIdentifier THe delta identifier.
+     * @param deltaIdentifier The delta identifier.
      * @param delta The delta.
      */
     private void logDelta(ConcentrationDeltaIdentifier deltaIdentifier, ConcentrationDelta delta) {
@@ -209,10 +210,8 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
 
     /**
      * The local error is calculated and the largest local error of the current epoch resulting from the executing
-     * module is returned. The local error is calculated according to the midpoint method E = abs(1 - (fullDelta / 2.0 *
-     * halfDelta)). Intuitively, applying the the delta for the current time step once results in the same result as if
-     * the delta for half the time step would be applied twice. This method calculates the difference between the full
-     * delta and twice the half delta. If the difference is large the error is large and vice versa.
+     * module is returned. The local error is calculated according to the midpoint method E = abs(1 - (fullDelta /
+     * halfDelta)). If the difference is large the error is large and vice versa.
      *
      * @return The calculated local error.
      * @throws NumericalInstabilityException if any of the encountered errors is the result of an numerical
@@ -296,7 +295,7 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
             // reset previous error
             supplier.resetError();
             // determine new local error with decreased time step
-            getSimulation().getScheduler().getTimeStepManager().decreaseTimeStep(LOCAL_ERROR);
+            TimeStepManager.decreaseTimeStep(LOCAL_ERROR);
             scope.processUpdatable(updatable);
             // evaluate module state by error
             evaluateModuleState();

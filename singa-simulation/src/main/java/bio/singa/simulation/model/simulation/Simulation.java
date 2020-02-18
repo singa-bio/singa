@@ -23,6 +23,7 @@ import bio.singa.simulation.model.modules.concentration.ConcentrationDelta;
 import bio.singa.simulation.model.modules.concentration.imlementations.transport.Diffusion;
 import bio.singa.simulation.model.rules.AssignmentRule;
 import bio.singa.simulation.model.rules.AssignmentRules;
+import bio.singa.simulation.model.simulation.error.TimeStepManager;
 import bio.singa.simulation.trajectories.errors.DebugRecorder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -191,7 +192,7 @@ public class Simulation {
         updateEpoch();
         // if time step did not change it can possibly be increased
         if (timeStepShouldIncrease()) {
-            scheduler.getTimeStepManager().increaseTimeStep();
+            TimeStepManager.increaseTimeStep();
         }
 
     }

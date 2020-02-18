@@ -49,8 +49,8 @@ public class ErrorManager {
         globalDeviationManager = new GlobalDisplacementDeviationManager(scheduler);
         displacementCutoff = Environment.convertSystemToSimulationScale(UnitRegistry.getSpace().multiply(displacementCutoffFactor));
         // register error manager that are interested time step changes
-        scheduler.getTimeStepManager().addEventListener(globalErrorManager);
-        scheduler.getTimeStepManager().addEventListener(globalDeviationManager);
+        TimeStepManager.addListener(globalErrorManager);
+        TimeStepManager.addListener(globalDeviationManager);
     }
 
     public void setLargestLocalNumericalError(NumericalError localError, UpdateModule associatedModule, double associatedConcentration) {
@@ -254,7 +254,7 @@ public class ErrorManager {
     }
 
     public enum Reason {
-        LOCAL_ERROR, GLOBAL_ERROR, LOCAL_DEVIATION, GLOBAL_DEVIATION, INCREASE;
+        LOCAL_ERROR, NEGATIVE_CONCENTRATIONS, GLOBAL_ERROR, LOCAL_DEVIATION, GLOBAL_DEVIATION, INCREASE;
     }
 
 }

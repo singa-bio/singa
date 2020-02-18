@@ -16,6 +16,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import static bio.singa.simulation.model.modules.concentration.ModuleState.SUCCEEDED_WITH_PENDING_CHANGES;
+import static bio.singa.simulation.model.simulation.error.ErrorManager.Reason.NEGATIVE_CONCENTRATIONS;
 
 /**
  * @author cl
@@ -26,7 +27,7 @@ public class UpdateScheduler {
     private final Deque<UpdateModule> modules;
     private final double moleculeFraction;
     private ErrorManager errorManager;
-    private TimeStepManager timeStepManager;
+
     private Simulation simulation;
     private List<Updatable> updatables;
     private Iterator<UpdateModule> moduleIterator;
@@ -44,7 +45,7 @@ public class UpdateScheduler {
     public UpdateScheduler(Simulation simulation) {
         this.simulation = simulation;
         errorManager = new ErrorManager(this);
-        timeStepManager = new TimeStepManager(this);
+        TimeStepManager.initialize(this);
         modules = new ArrayDeque<>(simulation.getModules());
         moleculeFraction = MolarConcentration.moleculesToConcentration(1.0 / 50000.0);
     }
@@ -78,7 +79,7 @@ public class UpdateScheduler {
         // until all models passed
         do {
 
-            timeStepManager.setTimeStepRescaled(false);
+            TimeStepManager.setTimeStepRescaled(false);
             interrupted = false;
 
             countDownLatch = new CountDownLatch(getNumberOfModules());
@@ -123,23 +124,24 @@ public class UpdateScheduler {
         modules.forEach(UpdateModule::reset);
     }
 
-    private void handleRecalculation() {
-
-    }
-
     private boolean recalculationRequired() {
         boolean recalculationRequired = false;
+        // global displacement based error
         errorManager.evaluateGlobalDeviation();
         if (!errorManager.globalDeviationIsAcceptable()) {
             errorManager.resolveGlobalDeviationProblem();
             recalculationRequired = true;
         }
+        // global capping
+        evaluateCapping();
+        // global numerical error
         errorManager.evaluateGlobalError();
         if (!errorManager.globalErrorIsAcceptable()) {
             errorManager.resolveGlobalErrorProblem();
             recalculationRequired = true;
         }
-        if (timeStepManager.isTimeStepRescaled()) {
+        // time step rescaling
+        if (TimeStepManager.isTimeStepRescaled()) {
             errorManager.resetLocalDisplacementDeviation();
             simulation.getVesicleLayer().clearUpdates();
             modules.forEach(UpdateModule::reset);
@@ -150,7 +152,7 @@ public class UpdateScheduler {
             // reset states
             for (UpdateModule module : modules) {
                 // skip modules with pending changes if time step was not rescaled
-                if (module.getState().equals(SUCCEEDED_WITH_PENDING_CHANGES) && !timeStepManager.isTimeStepRescaled()) {
+                if (module.getState().equals(SUCCEEDED_WITH_PENDING_CHANGES) && !TimeStepManager.isTimeStepRescaled()) {
                     continue;
                 }
                 module.reset();
@@ -165,6 +167,15 @@ public class UpdateScheduler {
         }
 
         return recalculationRequired;
+    }
+
+    private void evaluateCapping() {
+        for (Updatable updatable : updatables) {
+            if (updatable.getConcentrationManager().concentrationIsAtCap()) {
+                TimeStepManager.decreaseTimeStep(NEGATIVE_CONCENTRATIONS);
+                return;
+            }
+        }
     }
 
     public void shutdownExecutorService() {
@@ -215,10 +226,6 @@ public class UpdateScheduler {
 
     public ErrorManager getErrorManager() {
         return errorManager;
-    }
-
-    public TimeStepManager getTimeStepManager() {
-        return timeStepManager;
     }
 
     public List<Updatable> getUpdatables() {

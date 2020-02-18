@@ -53,7 +53,7 @@ public class GlobalDisplacementDeviationManager implements UpdateEventListener<R
     public void resolveProblem() {
         switch (currentStage) {
             case EVALUATION_STAGE:
-                updateScheduler.getTimeStepManager().decreaseTimeStep(GLOBAL_DEVIATION);
+                TimeStepManager.decreaseTimeStep(GLOBAL_DEVIATION);
                 break;
             case TIME_STEP_RESCALED:
                 currentStage = EVALUATION_STAGE;

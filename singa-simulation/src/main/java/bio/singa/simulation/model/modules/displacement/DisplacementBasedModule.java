@@ -4,6 +4,7 @@ import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.simulation.model.agents.pointlike.Vesicle;
 import bio.singa.simulation.model.modules.AbstractUpdateModule;
 import bio.singa.simulation.model.simulation.error.DisplacementDeviation;
+import bio.singa.simulation.model.simulation.error.TimeStepManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -103,7 +104,7 @@ public class DisplacementBasedModule extends AbstractUpdateModule {
     public void optimizeTimeStep() {
         while (getState() == REQUIRING_RECALCULATION) {
             getSimulation().getVesicleLayer().clearUpdates();
-            getSimulation().getScheduler().getTimeStepManager().decreaseTimeStep(LOCAL_DEVIATION);
+            TimeStepManager.decreaseTimeStep(LOCAL_DEVIATION);
             largestLocalDeviation = MINIMAL_DEVIATION;
             calculateUpdates();
         }

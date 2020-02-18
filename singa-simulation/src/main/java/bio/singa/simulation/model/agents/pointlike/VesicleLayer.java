@@ -168,8 +168,6 @@ public class VesicleLayer {
         }
     }
 
-
-
     public void associateVesicles() {
         // clear previous vesicle associations
         vesicles.forEach(Vesicle::clearAssociatedNodes);

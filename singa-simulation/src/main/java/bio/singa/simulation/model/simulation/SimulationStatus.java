@@ -6,6 +6,7 @@ import bio.singa.features.units.UnitRegistry;
 import bio.singa.simulation.events.GraphUpdatedEvent;
 import bio.singa.simulation.model.modules.UpdateModule;
 import bio.singa.simulation.model.simulation.error.NumericalError;
+import bio.singa.simulation.model.simulation.error.TimeStepManager;
 import tech.units.indriya.ComparableQuantity;
 import tech.units.indriya.quantity.Quantities;
 
@@ -67,8 +68,8 @@ public class SimulationStatus implements UpdateEventListener<GraphUpdatedEvent> 
     private void calculateEpochBasedStatus() {
         // update variables
         long currentEpochs = simulation.getEpoch();
-        long currentIncreases = simulation.getScheduler().getTimeStepManager().getTimeStepsIncreased();
-        long currentDecreases = simulation.getScheduler().getTimeStepManager().getTimeStepsDecreased();
+        long currentIncreases = TimeStepManager.getTimeStepsIncreased();
+        long currentDecreases = TimeStepManager.getTimeStepsDecreased();
         // determine change in epochs
         deltaEpochs = currentEpochs - previousEpochs;
         deltaIncreases = currentIncreases - previousIncreases;

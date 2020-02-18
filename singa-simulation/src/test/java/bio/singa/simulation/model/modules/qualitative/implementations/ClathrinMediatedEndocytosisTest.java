@@ -257,12 +257,9 @@ class ClathrinMediatedEndocytosisTest {
         System.out.println();
         printConcentrations(node);
 
-        while (simulation.getElapsedTime().isLessThanOrEqualTo(Quantities.getQuantity(31, SECOND))) {
+        while (simulation.getElapsedTime().isLessThanOrEqualTo(Quantities.getQuantity(32, SECOND))) {
             simulation.nextEpoch();
-//            System.out.println(TimeFormatter.formatTime(simulation.getElapsedTime()));
-//            printConcentrations(pit);
-//            System.out.println();
-//            printConcentrations(node);
+            // System.out.println(TimeFormatter.formatTime(simulation.getElapsedTime()) + " " + MolarConcentration.concentrationToMolecules(pit.getConcentrationContainer().get(MEMBRANE, primaryCargo)));
         }
 
         // check if threshold has been reached
