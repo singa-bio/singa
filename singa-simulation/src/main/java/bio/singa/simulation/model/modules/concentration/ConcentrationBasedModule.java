@@ -4,16 +4,20 @@ import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.features.model.AbstractScalableQuantitativeFeature;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.simulation.exceptions.NumericalInstabilityException;
+import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.modules.AbstractUpdateModule;
 import bio.singa.simulation.model.modules.concentration.functions.AbstractDeltaFunction;
 import bio.singa.simulation.model.modules.concentration.scope.UpdateScope;
 import bio.singa.simulation.model.modules.concentration.specifity.UpdateSpecificity;
+import bio.singa.simulation.model.sections.CellSubsection;
 import bio.singa.simulation.model.simulation.Updatable;
 import bio.singa.simulation.model.simulation.error.NumericalError;
 import bio.singa.simulation.model.simulation.error.TimeStepManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Predicate;
 
 import static bio.singa.simulation.model.modules.concentration.ModuleState.REQUIRING_RECALCULATION;
@@ -54,6 +58,8 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
      * Evaluated every time the module is applied to any updatable.
      */
     private Predicate<Updatable> applicationCondition;
+    private CellSubsection restrictedSubsection;
+    private List<AutomatonNode> relevantNodes;
 
     /**
      * Creates a new concentration based module.
@@ -277,13 +283,17 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
         if (error > getSimulation().getScheduler().getErrorManager().getNumericalInstabilityCutoff()) {
             throw new NumericalInstabilityException("The module " + toString() + " experiences numerical instabilities. " +
                     "The local error between the full step delta (" + fullDelta + ") and half step delta (" + halfDelta +
-                    ") is " + error + " at a time step of "+ UnitRegistry.getTime());
+                    ") is " + error + " at a time step of " + UnitRegistry.getTime());
         }
     }
 
     @Override
     public void calculateUpdates() {
-        scope.processAllUpdatables(getSimulation().getUpdatables());
+        if (relevantNodes != null) {
+            scope.processAllUpdatables(relevantNodes);
+        } else {
+            scope.processAllUpdatables(getSimulation().getUpdatables());
+        }
         evaluateModuleState();
     }
 
@@ -356,7 +366,27 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
 
     @Override
     public void initialize() {
+        if (restrictedSubsection != null) {
+            restrictApplication();
+        }
+    }
 
+    public void restrictApplication() {
+        // carefull this is currently only for functions that effect only grid nodes
+        relevantNodes = new ArrayList<>();
+        for (AutomatonNode node : getSimulation().getGraph().getNodes()) {
+            if (node.getConcentrationContainer().getReferencedSubsections().contains(restrictedSubsection)) {
+                relevantNodes.add(node);
+            }
+        }
+    }
+
+    public CellSubsection getRestrictedSubsection() {
+        return restrictedSubsection;
+    }
+
+    public void setRestrictedSubsection(CellSubsection restrictedSubsection) {
+        this.restrictedSubsection = restrictedSubsection;
     }
 
     @Override

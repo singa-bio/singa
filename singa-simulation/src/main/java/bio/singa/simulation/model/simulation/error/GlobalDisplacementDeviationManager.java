@@ -9,7 +9,6 @@ import bio.singa.simulation.model.simulation.UpdateScheduler;
 import static bio.singa.simulation.model.simulation.error.DisplacementDeviation.MAXIMAL_POSITIVE_DEVIATION;
 import static bio.singa.simulation.model.simulation.error.ErrorManager.CalculationStage;
 import static bio.singa.simulation.model.simulation.error.ErrorManager.CalculationStage.EVALUATION_STAGE;
-import static bio.singa.simulation.model.simulation.error.ErrorManager.CalculationStage.TIME_STEP_RESCALED;
 import static bio.singa.simulation.model.simulation.error.ErrorManager.Reason;
 import static bio.singa.simulation.model.simulation.error.ErrorManager.Reason.GLOBAL_DEVIATION;
 
@@ -98,18 +97,6 @@ public class GlobalDisplacementDeviationManager implements UpdateEventListener<R
 
     @Override
     public void onEventReceived(Reason reason) {
-        switch (reason) {
-            case LOCAL_ERROR:
-            case LOCAL_DEVIATION:
-                currentStage = TIME_STEP_RESCALED;
-                break;
-            case GLOBAL_DEVIATION:
-            case GLOBAL_ERROR:
-            case INCREASE:
-                currentStage = EVALUATION_STAGE;
-                break;
-        }
-
     }
 
     public DisplacementDeviation getDeviation() {

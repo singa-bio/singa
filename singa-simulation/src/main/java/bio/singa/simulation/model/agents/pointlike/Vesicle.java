@@ -50,7 +50,7 @@ public class Vesicle implements Updatable, Featureable {
     }
 
     // Originally 1.5e-2
-    public static PixelDiffusivity DEFAULT_VESICLE_DIFFUSIVITY = new PixelDiffusivity(Quantities.getQuantity(1.5e-7, SQUARE_MICROMETRE_PER_SECOND));
+    public static PixelDiffusivity DEFAULT_VESICLE_DIFFUSIVITY = new PixelDiffusivity(Quantities.getQuantity(1.5e-6, SQUARE_MICROMETRE_PER_SECOND));
 
     static {
         DEFAULT_VESICLE_DIFFUSIVITY.addEvidence(ROTHMAN2016);

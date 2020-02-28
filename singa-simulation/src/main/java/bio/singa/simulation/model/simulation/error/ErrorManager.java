@@ -50,7 +50,7 @@ public class ErrorManager {
         displacementCutoff = Environment.convertSystemToSimulationScale(UnitRegistry.getSpace().multiply(displacementCutoffFactor));
         // register error manager that are interested time step changes
         TimeStepManager.addListener(globalErrorManager);
-        TimeStepManager.addListener(globalDeviationManager);
+//        TimeStepManager.addListener(globalDeviationManager);
     }
 
     public void setLargestLocalNumericalError(NumericalError localError, UpdateModule associatedModule, double associatedConcentration) {
@@ -242,7 +242,7 @@ public class ErrorManager {
             return false;
         }
         // local displacement deviation was close to tolerance
-        if (localDisplacementDeviation.getValue() >= localDisplacementTolerance) {
+        if (localDisplacementDeviation.getValue() < localDisplacementTolerance) {
             return false;
         }
         // all errors where small

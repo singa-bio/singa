@@ -59,7 +59,7 @@ public class IndependentUpdate implements UpdateScope {
     }
 
     @Override
-    public void processAllUpdatables(Collection<Updatable> updatables) {
+    public void processAllUpdatables(Collection<? extends Updatable> updatables) {
         // for each updatable
         for (Updatable updatable : updatables) {
             if (module.getApplicationCondition().test(updatable)) {

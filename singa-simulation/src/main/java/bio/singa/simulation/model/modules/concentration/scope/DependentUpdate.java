@@ -57,7 +57,7 @@ public class DependentUpdate implements UpdateScope {
     }
 
     @Override
-    public void processAllUpdatables(Collection<Updatable> updatables) {
+    public void processAllUpdatables(Collection<? extends Updatable> updatables) {
         // clear used deltas
         supply().clearDeltas();
         // calculate all full updates first

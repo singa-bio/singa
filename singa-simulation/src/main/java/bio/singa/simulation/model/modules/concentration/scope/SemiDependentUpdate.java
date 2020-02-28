@@ -64,7 +64,7 @@ public class SemiDependentUpdate implements UpdateScope {
     }
 
     @Override
-    public void processAllUpdatables(Collection<Updatable> updatables) {
+    public void processAllUpdatables(Collection<? extends Updatable> updatables) {
         // clear used deltas
         supply().clearDeltas();
         // for each updatable

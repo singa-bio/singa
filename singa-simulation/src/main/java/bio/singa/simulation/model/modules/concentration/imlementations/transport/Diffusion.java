@@ -54,8 +54,6 @@ public class Diffusion extends ConcentrationBasedModule<EntityDeltaFunction> {
      */
     private static final Logger logger = LoggerFactory.getLogger(Diffusion.class);
 
-    private CellSubsection restrictedSubsection;
-
     public Diffusion() {
 
     }
@@ -77,7 +75,7 @@ public class Diffusion extends ConcentrationBasedModule<EntityDeltaFunction> {
         if (affectedSection == null) {
             function = new EntityDeltaFunction(this::calculateDelta, this::unrestrictedApplication);
         } else {
-            restrictedSubsection = affectedSection.getContent();
+            setRestrictedSubsection(affectedSection.getContent());
             function = new EntityDeltaFunction(this::calculateDelta, this::restrictedApplication);
         }
         addDeltaFunction(function);
@@ -123,7 +121,7 @@ public class Diffusion extends ConcentrationBasedModule<EntityDeltaFunction> {
     }
 
     private boolean restrictedApplication(ConcentrationContainer container) {
-        return supplier.getCurrentSubsection().equals(restrictedSubsection);
+        return supplier.getCurrentSubsection().equals(getRestrictedSubsection());
     }
 
     @Override
