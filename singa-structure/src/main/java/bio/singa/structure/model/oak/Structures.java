@@ -5,7 +5,7 @@ import bio.singa.mathematics.geometry.bodies.Sphere;
 import bio.singa.mathematics.matrices.LabeledSymmetricMatrix;
 import bio.singa.mathematics.matrices.Matrices;
 import bio.singa.mathematics.metrics.model.VectorMetricProvider;
-import bio.singa.mathematics.vectors.Vectors;
+import bio.singa.mathematics.vectors.Vectors3D;
 import bio.singa.structure.model.identifiers.LeafIdentifier;
 import bio.singa.structure.model.interfaces.*;
 
@@ -141,7 +141,7 @@ public class Structures {
      * @return The torsion angle in degrees.
      */
     public static double calculateTorsionAngle(Atom a, Atom b, Atom c, Atom d) {
-        return Vectors.dihedralAngle(a.getPosition(), b.getPosition(), c.getPosition(), d.getPosition());
+        return Vectors3D.dihedralAngle(a.getPosition(), b.getPosition(), c.getPosition(), d.getPosition());
     }
 
     /**

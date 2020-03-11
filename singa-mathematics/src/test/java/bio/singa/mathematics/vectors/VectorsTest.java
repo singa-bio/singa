@@ -136,12 +136,12 @@ class VectorsTest {
         Vector3D b = new Vector3D(-55.462, 184.385, -25.856);
         Vector3D c = new Vector3D(-54.869, 185.861, -25.805);
         Vector3D d = new Vector3D(-54.120, 186.257, -26.904);
-        assertEquals(46.828, Vectors.dihedralAngle(a, b, c, d), 1E-3);
+        assertEquals(46.828, Vectors3D.dihedralAngle(a, b, c, d), 1E-3);
 
         Vector3D a1 = new Vector3D(0,0,0);
         Vector3D b1 = new Vector3D(1,0,0);
         Vector3D c1 = new Vector3D(2,0,0);
         Vector3D d1 = new Vector3D(3,0,0);
-        assertTrue(Double.isNaN(Vectors.dihedralAngle(a1, b1, c1, d1)));
+        assertTrue(Double.isNaN(Vectors3D.dihedralAngle(a1, b1, c1, d1)));
     }
 }

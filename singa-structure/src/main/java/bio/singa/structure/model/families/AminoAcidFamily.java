@@ -5,6 +5,7 @@ import bio.singa.structure.model.interfaces.AminoAcid;
 import bio.singa.structure.model.interfaces.Atom;
 import bio.singa.structure.model.oak.AtomName;
 import bio.singa.structure.parser.pdb.structures.StructureParser;
+import bio.singa.structure.parser.pdb.structures.StructureParserOptions;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -116,6 +117,9 @@ public enum AminoAcidFamily implements StructuralFamily<AminoAcidFamily> {
         // potentially replace with (AminoAcid) LigandParserService.parseLeafSubstructureById(getThreeLetterCode());
         return StructureParser.local()
                 .inputStream(Resources.getResourceAsStream(RESIDUE_PROTOTYPES_BASE_DIR + getName().replaceAll(" ", "_").toLowerCase() + ".pdb"))
+                .allModels()
+                .allChains()
+                .setOptions(StructureParserOptions.withSettings(StructureParserOptions.Setting.OMIT_HYDROGENS))
                 .parse()
                 .getAllAminoAcids()
                 .get(0);

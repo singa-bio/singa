@@ -13,7 +13,7 @@ import bio.singa.mathematics.geometry.model.Polygon;
 import bio.singa.mathematics.geometry.model.Polygon.IntersectionFragment;
 import bio.singa.mathematics.graphs.model.*;
 import bio.singa.mathematics.vectors.Vector2D;
-import bio.singa.mathematics.vectors.Vectors;
+import bio.singa.mathematics.vectors.Vectors2D;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.sections.CellRegion;
@@ -55,7 +55,7 @@ public class MembraneFactory {
         MembraneFactory factory = new MembraneFactory(graph, regions);
         factory.innerPoint = innerPoint;
         factory.initializeMembrane(innerRegion, membraneRegion);
-        List<LineSegment> segments = Vectors.connectToSegments(vectors);
+        List<LineSegment> segments = Vectors2D.connectToSegments(vectors);
         factory.associateToGraph(segments);
         factory.setupSubsectionRepresentations();
         factory.membrane.setRegionMap(factory.reconstructRegionMap());

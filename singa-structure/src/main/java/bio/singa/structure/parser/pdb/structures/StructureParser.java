@@ -776,24 +776,28 @@ public class StructureParser {
 
         @Override
         public SingleBranchStep file(File file) {
+            sourceLocation = SourceLocation.OFFLINE_PDB;
             contentIterator = new StructureContentIterator(file);
             return new SingleReducingSelector(this);
         }
 
         @Override
         public MultiBranchStep files(List<File> files) {
+            sourceLocation = SourceLocation.OFFLINE_PDB;
             contentIterator = new StructureContentIterator(File.class, files, SourceLocation.OFFLINE_PDB);
             return new MultiReducingSelector(this);
         }
 
         @Override
         public SingleBranchStep path(Path path) {
+            sourceLocation = SourceLocation.OFFLINE_PDB;
             contentIterator = new StructureContentIterator(path);
             return new SingleReducingSelector(this);
         }
 
         @Override
         public MultiBranchStep paths(List<Path> paths) {
+            sourceLocation = SourceLocation.OFFLINE_PDB;
             contentIterator = new StructureContentIterator(Path.class, paths, SourceLocation.OFFLINE_PDB);
             return new MultiReducingSelector(this);
         }
@@ -829,19 +833,21 @@ public class StructureParser {
 
         @Override
         public SingleBranchStep localPDB(LocalPDB localPDB, String pdbIdentifier) {
-            sourceLocation = localPDB.sourceLocation;
+            sourceLocation = SourceLocation.OFFLINE_PDB;
             contentIterator = new StructureContentIterator(localPDB, pdbIdentifier);
             return new SingleReducingSelector(this);
         }
 
         @Override
         public SingleBranchStep fileLocation(String location) {
+            sourceLocation = SourceLocation.OFFLINE_PDB;
             contentIterator = new StructureContentIterator(Paths.get(location));
             return new SingleReducingSelector(this);
         }
 
         @Override
         public MultiBranchStep fileLocations(List<String> locations) {
+            sourceLocation = SourceLocation.OFFLINE_PDB;
             List<Path> paths = locations.stream()
                     .map(Paths::get)
                     .collect(Collectors.toList());

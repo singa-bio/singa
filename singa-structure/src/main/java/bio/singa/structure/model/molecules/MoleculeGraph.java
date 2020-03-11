@@ -4,7 +4,7 @@ import bio.singa.mathematics.geometry.faces.Rectangle;
 import bio.singa.mathematics.graphs.model.AbstractMapGraph;
 import bio.singa.mathematics.graphs.model.Graph;
 import bio.singa.mathematics.vectors.Vector2D;
-import bio.singa.mathematics.vectors.Vectors;
+import bio.singa.mathematics.vectors.Vectors2D;
 import bio.singa.structure.elements.Element;
 import bio.singa.structure.elements.ElementProvider;
 import bio.singa.structure.model.oak.BondType;
@@ -30,7 +30,7 @@ public class MoleculeGraph extends AbstractMapGraph<MoleculeAtom, MoleculeBond, 
 
     public int addNextAtom(Element element) {
         MoleculeAtom atom = new MoleculeAtom(nextNodeIdentifier(),
-                Vectors.generateRandom2DVector(new Rectangle(100, 100)), element);
+                Vectors2D.generateRandom2DVector(new Rectangle(100, 100)), element);
         addNode(atom);
         return atom.getIdentifier();
     }

@@ -3,7 +3,7 @@ package bio.singa.sequence.algorithms.alignment;
 import bio.singa.mathematics.geometry.faces.Rectangle;
 import bio.singa.mathematics.graphs.model.AbstractNode;
 import bio.singa.mathematics.vectors.Vector2D;
-import bio.singa.mathematics.vectors.Vectors;
+import bio.singa.mathematics.vectors.Vectors2D;
 
 /**
  * @author cl
@@ -13,7 +13,7 @@ public class DynamicProgrammingNode extends AbstractNode<DynamicProgrammingNode,
     private double score;
 
     public DynamicProgrammingNode(Integer identifier) {
-        super(identifier, Vectors.generateRandom2DVector(new Rectangle(200, 200)));
+        super(identifier, Vectors2D.generateRandom2DVector(new Rectangle(200, 200)));
     }
 
     public double getScore() {

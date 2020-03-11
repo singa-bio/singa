@@ -8,7 +8,7 @@ import bio.singa.mathematics.matrices.Matrices;
 import bio.singa.mathematics.matrices.SymmetricMatrix;
 import bio.singa.mathematics.topology.grids.rectangular.NeumannRectangularDirection;
 import bio.singa.mathematics.vectors.Vector2D;
-import bio.singa.mathematics.vectors.Vectors;
+import bio.singa.mathematics.vectors.Vectors2D;
 import bio.singa.simulation.model.agents.linelike.LineLikeAgent;
 import bio.singa.simulation.model.agents.linelike.LineLikeAgentTemplate;
 import tech.units.indriya.quantity.Quantities;
@@ -104,7 +104,7 @@ public class OrganelleImageParser {
                 scale = parser.scale;
             }
             // sort and connect
-            List<Vector2D> vectors = Vectors.sortByCloseness(parser.groups.values().iterator().next());
+            List<Vector2D> vectors = Vectors2D.sortByCloseness(parser.groups.values().iterator().next());
             filaments.add(new LineLikeAgent(LineLikeAgent.MICROTUBULE, vectors, plusDirection));
         }
         return new LineLikeAgentTemplate(filaments, scale);

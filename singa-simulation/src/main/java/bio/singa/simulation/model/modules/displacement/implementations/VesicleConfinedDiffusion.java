@@ -3,7 +3,7 @@ package bio.singa.simulation.model.modules.displacement.implementations;
 import bio.singa.chemistry.features.diffusivity.PixelDiffusivity;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.vectors.Vector2D;
-import bio.singa.mathematics.vectors.Vectors;
+import bio.singa.mathematics.vectors.Vectors2D;
 import bio.singa.simulation.features.AppliedVesicleState;
 import bio.singa.simulation.features.ContainmentRegion;
 import bio.singa.simulation.model.agents.pointlike.Vesicle;
@@ -36,7 +36,7 @@ public class VesicleConfinedDiffusion extends DisplacementBasedModule {
 
     public DisplacementDelta calculateDisplacement(Vesicle vesicle) {
         double scaling = SQRT2 * Math.sqrt(vesicle.getFeature(PixelDiffusivity.class).getScaledQuantity() * UnitRegistry.getTimeScale());
-        Vector2D gaussian = Vectors.generateStandardGaussian2DVector();
+        Vector2D gaussian = Vectors2D.generateStandardGaussian2DVector();
         return new DisplacementDelta(this, gaussian.multiply(scaling));
     }
 

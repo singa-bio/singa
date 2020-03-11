@@ -10,7 +10,7 @@ import bio.singa.mathematics.topology.grids.rectangular.NeumannRectangularDirect
 import bio.singa.mathematics.topology.grids.rectangular.RectangularCoordinate;
 import bio.singa.mathematics.vectors.Vector;
 import bio.singa.mathematics.vectors.Vector2D;
-import bio.singa.mathematics.vectors.Vectors;
+import bio.singa.mathematics.vectors.Vectors2D;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -295,7 +295,7 @@ public class Graphs {
     private static <ContentType> GenericNode<ContentType> convertNode(BinaryTreeNode<ContentType> treeNode,
                                                                       GenericGraph<ContentType> graph) {
         GenericNode<ContentType> result = new GenericNode<>(graph.nextNodeIdentifier(), treeNode.getData());
-        result.setPosition(Vectors.generateRandom2DVector(new Rectangle(200, 200)));
+        result.setPosition(Vectors2D.generateRandom2DVector(new Rectangle(200, 200)));
         return result;
     }
 

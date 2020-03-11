@@ -4,7 +4,7 @@ import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.mathematics.geometry.faces.Rectangle;
 import bio.singa.mathematics.graphs.model.AbstractNode;
 import bio.singa.mathematics.vectors.Vector2D;
-import bio.singa.mathematics.vectors.Vectors;
+import bio.singa.mathematics.vectors.Vectors2D;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +20,7 @@ public class GraphComplexNode extends AbstractNode<GraphComplexNode, Vector2D, I
     private List<BindingSite> bindingSites;
 
     public GraphComplexNode(Integer identifier) {
-        super(identifier, Vectors.generateRandom2DVector(rectange));
+        super(identifier, Vectors2D.generateRandom2DVector(rectange));
         bindingSites = new ArrayList<>();
     }
 

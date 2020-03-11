@@ -5,7 +5,7 @@ import bio.singa.mathematics.matrices.SquareMatrix;
 import bio.singa.mathematics.quaternions.Quaternion;
 import bio.singa.mathematics.quaternions.Quaternions;
 import bio.singa.mathematics.vectors.Vector3D;
-import bio.singa.mathematics.vectors.Vectors;
+import bio.singa.mathematics.vectors.Vectors3D;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -35,11 +35,11 @@ public class VectorQuaternionSuperimposer extends AbstractSuperimposer<Vector3D>
 
     @Override
     protected void center() {
-        referenceCentroid = Vectors.get3DCentroid(reference);
+        referenceCentroid = Vectors3D.get3DCentroid(reference);
         shiftedReference = reference.stream()
                 .map(vector -> vector.subtract(referenceCentroid))
                 .collect(Collectors.toList());
-        candidateCentroid = Vectors.get3DCentroid(candidate);
+        candidateCentroid = Vectors3D.get3DCentroid(candidate);
         shiftedCandidate = candidate.stream()
                 .map(vector -> vector.subtract(candidateCentroid))
                 .collect(Collectors.toList());

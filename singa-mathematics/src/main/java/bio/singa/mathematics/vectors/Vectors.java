@@ -3,14 +3,10 @@ package bio.singa.mathematics.vectors;
 import bio.singa.mathematics.algorithms.graphs.ShortestPathFinder;
 import bio.singa.mathematics.concepts.Addable;
 import bio.singa.mathematics.geometry.edges.LineSegment;
-import bio.singa.mathematics.geometry.edges.SimpleLineSegment;
-import bio.singa.mathematics.geometry.faces.Rectangle;
 import bio.singa.mathematics.graphs.model.*;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
-
-import static bio.singa.mathematics.metrics.model.VectorMetricProvider.EUCLIDEAN_METRIC;
 
 /**
  * This class contains only static utility methods to create and handle different Vectors.
@@ -40,82 +36,6 @@ public class Vectors {
             }
         }
         return true;
-    }
-
-    public static List<Vector2D> generateMultipleRandom2DVectors(int numberOfVectors, Rectangle rectangle) {
-        ArrayList<Vector2D> vectors = new ArrayList<>(numberOfVectors);
-        for (int i = 0; i < numberOfVectors; i++) {
-            vectors.add(generateRandom2DVector(rectangle));
-        }
-        return vectors;
-    }
-
-    /**
-     * Generates a random Vector2D that is contained in the given {@link Rectangle}. The random values is inclusive the
-     * left and bottom boundary and exclusive the right and top boundary.
-     *
-     * @param rectangle The rectangle in which the vectors should be included.
-     * @return A randomly placed vector.
-     */
-    public static Vector2D generateRandom2DVector(Rectangle rectangle) {
-        double x = ThreadLocalRandom.current().nextDouble(rectangle.getLeftMostXPosition(),
-                rectangle.getRightMostXPosition());
-        double y = ThreadLocalRandom.current().nextDouble(rectangle.getTopMostYPosition(),
-                rectangle.getBottomMostYPosition());
-        return new Vector2D(x, y);
-    }
-
-    public static Vector2D generateStandardGaussian2DVector() {
-        double x = ThreadLocalRandom.current().nextGaussian();
-        double y = ThreadLocalRandom.current().nextGaussian();
-        return new Vector2D(x, y);
-    }
-
-    public static Vector2D generateRandomUnit2DVector() {
-        double x = ThreadLocalRandom.current().nextDouble(-1.0, 1.0);
-        double y = ThreadLocalRandom.current().nextDouble(-1.0, 1.0);
-        return new Vector2D(x, y).normalize();
-    }
-
-
-    public static Vector3D generateRandomVector3D() {
-        double x = ThreadLocalRandom.current().nextDouble();
-        double y = ThreadLocalRandom.current().nextDouble();
-        double z = ThreadLocalRandom.current().nextDouble();
-        return new Vector3D(x, y, z);
-    }
-
-
-    public static List<Vector2D> sortByCloseness(Collection<Vector2D> vectors) {
-        final Vector2D first = vectors.iterator().next();
-        List<Vector2D> copy = new ArrayList<>(vectors);
-        List<Vector2D> result = new ArrayList<>();
-        result.add(first);
-        copy.remove(first);
-        Vector2D previous = first;
-        // for each vector (and omit last connection)
-        while (copy.size() > 0) {
-            // determine closest neighbour
-            Map.Entry<Vector2D, Double> entry = EUCLIDEAN_METRIC.calculateClosestDistance(copy, previous);
-            // add line segment
-            Vector2D next = entry.getKey();
-            result.add(next);
-            copy.remove(next);
-            previous = next;
-        }
-        return result;
-    }
-
-    public static List<LineSegment> connectToSegments(List<Vector2D> vectors) {
-        Iterator<Vector2D> iterator = vectors.iterator();
-        Vector2D previous = iterator.next();
-        List<LineSegment> lineSegments = new ArrayList<>();
-        while (iterator.hasNext()) {
-            Vector2D next = iterator.next();
-            lineSegments.add(new SimpleLineSegment(previous, next));
-            previous = next;
-        }
-        return lineSegments;
     }
 
     /**
@@ -164,7 +84,6 @@ public class Vectors {
         }
         return dv / (vector.getDimension() - 1);
     }
-
 
     /**
      * Returns the standard deviation of an {@link Vector}s elements.
@@ -318,41 +237,6 @@ public class Vectors {
     }
 
     /**
-     * Computes the centroid of all vectors in the collection by summing them and dividing by the number of vectors in
-     * the collection. This is faster than using the general implementation from the {@link Vectors} class.
-     *
-     * @param vectors The vectors to calculate the centroid from.
-     * @return The centroid.
-     */
-    public static Vector3D get3DCentroid(Collection<Vector3D> vectors) {
-        int vectorCount = vectors.size();
-        double[] sum = new double[3];
-        for (Vector3D vector : vectors) {
-            sum[0] += vector.getX();
-            sum[1] += vector.getY();
-            sum[2] += vector.getZ();
-        }
-        return new Vector3D(sum[0] / vectorCount, sum[1] / vectorCount, sum[2] / vectorCount);
-    }
-
-    /**
-     * Computes the centroid of all vectors in the collection by summing them and dividing by the number of vectors in
-     * the collection. This is faster than using the general implementation from the {@link Vectors} class.
-     *
-     * @param vectors The vectors to calculate the centroid from.
-     * @return The centroid.
-     */
-    public static Vector2D get2DCentroid(Collection<Vector2D> vectors) {
-        int vectorCount = vectors.size();
-        double[] sum = new double[3];
-        for (Vector2D vector : vectors) {
-            sum[0] += vector.getX();
-            sum[1] += vector.getY();
-        }
-        return new Vector2D(sum[0] / vectorCount, sum[1] / vectorCount);
-    }
-
-    /**
      * This method creates an orthonormalized set of vectors in an inner product space, in this case the Euclidean space
      * R^n equipped with the standard inner product ({@link Vector#dotProduct(Vector)}). The Gram-Schmidt process takes
      * a finite, linearly independent list S = {v1, ..., vk} for k ≤ n and generates an orthogonal list S′ = {u1, ...,
@@ -438,36 +322,6 @@ public class Vectors {
         return projectionSum;
     }
 
-
-    /**
-     * Calculates the dihedral angle between the two planes defined by (a,b,c) and (b,c,d)
-     *
-     * @param a Point of plane 1.
-     * @param b Point of plane 1 and 2.
-     * @param c Point of plane 1 and 2.
-     * @param d Point of plane 2.
-     * @return The dihedral angle in degrees.
-     */
-    public static double dihedralAngle(Vector3D a, Vector3D b, Vector3D c, Vector3D d) {
-
-        Vector3D ab = a.subtract(b);
-        Vector3D cb = c.subtract(b);
-        Vector3D bc = b.subtract(c);
-        Vector3D dc = d.subtract(c);
-
-        Vector3D abc = ab.crossProduct(cb);
-        Vector3D bcd = bc.crossProduct(dc);
-
-        double angle = abc.angleToInDegrees(bcd);
-
-        Vector vector = abc.crossProduct(bcd);
-        double v = cb.dotProduct(vector);
-        if (v < 0.0) {
-            return -angle;
-        } else {
-            return angle;
-        }
-    }
 
     /**
      * Returns all vectors from the starting/end positions from the segments in order of their connection.

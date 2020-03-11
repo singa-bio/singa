@@ -2,7 +2,7 @@ package bio.singa.structure.model.molecules;
 
 import bio.singa.mathematics.geometry.faces.Rectangle;
 import bio.singa.mathematics.vectors.Vector2D;
-import bio.singa.mathematics.vectors.Vectors;
+import bio.singa.mathematics.vectors.Vectors2D;
 import bio.singa.structure.algorithms.molecules.MoleculePathFinder;
 import bio.singa.structure.elements.Element;
 import bio.singa.structure.model.interfaces.Atom;
@@ -32,7 +32,7 @@ public class MoleculeGraphs {
             if (atom.getPosition() != null) {
                 position = new Vector2D(atom.getPosition().getX(), atom.getPosition().getY()).multiply(100);
             } else {
-                position = Vectors.generateRandom2DVector(defaultBoundingBox);
+                position = Vectors2D.generateRandom2DVector(defaultBoundingBox);
             }
             graph.addNode(new MoleculeAtom(atom.getAtomIdentifier(), position, atom.getElement()));
         }
