@@ -140,7 +140,7 @@ class VesicleFusionTest {
         fusion.setFeature(rSnares);
         fusion.setFeature(new SNAREFusionPairs(Quantities.getQuantity(3, ONE)));
         fusion.setFeature(FusionTime.DEFAULT_FUSION_TIME);
-        fusion.setFeature(AttachmentDistance.DEFAULT_DYNEIN_ATTACHMENT_DISTANCE);
+        fusion.setFeature(new AttachmentDistance(Quantities.getQuantity(61, NANO(METRE)), DefaultFeatureSources.JHA2015));
         simulation.addModule(fusion);
 
         while (simulation.getElapsedTime().isLessThanOrEqualTo(Quantities.getQuantity(20.0, SECOND))) {
@@ -201,7 +201,7 @@ class VesicleFusionTest {
         VesicleFusion fusion = new VesicleFusion();
         fusion.setFeature(new AppliedVesicleState(VesicleStateRegistry.MICROTUBULE_ATTACHED));
         fusion.setFeature(FusionTime.DEFAULT_FUSION_TIME);
-        fusion.setFeature(AttachmentDistance.DEFAULT_DYNEIN_ATTACHMENT_DISTANCE);
+        fusion.setFeature(new AttachmentDistance(Quantities.getQuantity(61, NANO(METRE)), DefaultFeatureSources.JHA2015));
         simulation.addModule(fusion);
 
         while (simulation.getElapsedTime().isLessThanOrEqualTo(Quantities.getQuantity(20.0, SECOND))) {

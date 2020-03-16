@@ -35,8 +35,7 @@ import javax.measure.Quantity;
 import javax.measure.quantity.Length;
 import javax.measure.quantity.Time;
 
-import static bio.singa.chemistry.reactions.conditions.CandidateConditionBuilder.hasOneOfEntity;
-import static bio.singa.chemistry.reactions.conditions.CandidateConditionBuilder.hasUnoccupiedBindingSite;
+import static bio.singa.chemistry.reactions.conditions.CandidateConditionBuilder.*;
 import static bio.singa.chemistry.reactions.reactors.ReactionChainBuilder.add;
 import static bio.singa.chemistry.reactions.reactors.ReactionChainBuilder.bind;
 import static bio.singa.features.units.UnitProvider.MICRO_MOLE_PER_LITRE;
@@ -687,4 +686,75 @@ class ReactionTest {
         assertEquals(3.144E-13, container.get(MEMBRANE, EntityRegistry.matchExactly("AQP2", "P")), 1E-6);
     }
 
+    @Test
+    void testKinase() {
+
+        Simulation simulation = new Simulation();
+        AutomatonGraph automatonGraph = AutomatonGraphs.singularGraph(CELL_OUTER_MEMBRANE_REGION);
+        simulation.setGraph(automatonGraph);
+
+        Protein enzyme = Protein.create("Enzyme")
+                .membraneBound()
+                .build();
+
+        SmallMolecule ligand = SmallMolecule.create("Ligand").build();
+        Protein kinase = Protein.create("Kinase").build();
+        SmallMolecule phosphate = SmallMolecule.create("P").build();
+
+        RateConstant kFE = RateConstant.create(0.5)
+                .forward().secondOrder()
+                .concentrationUnit(MICRO_MOLE_PER_LITRE)
+                .timeUnit(MINUTE)
+                .build();
+
+        RateConstant kBE = RateConstant.create(0.01)
+                .backward().firstOrder()
+                .timeUnit(SECOND)
+                .build();
+
+        ReactionBuilder.ruleBased(simulation)
+                .rule(add(ligand).to(enzyme)
+                        .build())
+                .reversible()
+                .forwardReactionRate(kFE)
+                .backwardReactionRate(kBE)
+                .build();
+
+
+        RateConstant kFB = RateConstant.create(0.2)
+                .forward().secondOrder()
+                .concentrationUnit(MICRO_MOLE_PER_LITRE)
+                .timeUnit(SECOND)
+                .build();
+
+        RateConstant kBB = RateConstant.create(0.1)
+                .backward().firstOrder()
+                .timeUnit(SECOND)
+                .build();
+
+        ReactionBuilder.ruleBased(simulation)
+                .rule(bind(kinase).to(enzyme)
+                        .secondaryCondition(hasOneOfEntity(ligand))
+                        .secondaryCondition(hasNoneOfEntity(phosphate))
+                        .build())
+                .reversible()
+                .forwardReactionRate(kFB)
+                .backwardReactionRate(kBB)
+                .build();
+
+        ReactionBuilder.ruleBased(simulation)
+                .rule(add(phosphate).to(enzyme)
+                        .condition(hasOneOfEntity(kinase))
+                        .and()
+                        .release(kinase).from(enzyme)
+                        .build())
+                .reversible()
+                .forwardReactionRate(kFB)
+                .backwardReactionRate(kBB)
+                .build();
+
+        ReactionBuilder.generateNetwork();
+
+
+    }
 }
