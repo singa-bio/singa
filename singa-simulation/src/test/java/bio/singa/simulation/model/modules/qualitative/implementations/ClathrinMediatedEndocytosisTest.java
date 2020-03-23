@@ -214,11 +214,11 @@ class ClathrinMediatedEndocytosisTest {
         endocytosis.setIdentifier("endocytosis");
         endocytosis.setFeature(new AffectedRegion(CellRegions.CELL_OUTER_MEMBRANE_REGION));
         endocytosis.setFeature(new PitFormationRate(Quantities.getQuantity(4, PER_SQUARE_NANOMETRE_PER_SECOND)));
-        endocytosis.setFeature(VesicleRadius.DEFAULT_VESICLE_RADIUS);
+        endocytosis.setFeature(new VesicleRadius(Quantities.getQuantity(50.0, NANO(METRE))));
         endocytosis.setFeature(new EndocytosisCheckpointTime(Quantities.getQuantity(30.0, SECOND)));
         endocytosis.setFeature(new EndocytosisCheckpointConcentration(checkpointConcentration));
-        endocytosis.setFeature(new Cargo(primaryCargo));
-        Cargoes cargoes = new Cargoes(primaryCargo, otherCargo, EntityRegistry.matchExactly("ENZYME"));
+        endocytosis.setFeature(PrimaryCargoes.of(primaryCargo).build());
+        Cargoes cargoes = Cargoes.of(primaryCargo, otherCargo, EntityRegistry.matchExactly("ENZYME")).build();
         endocytosis.setFeature(cargoes);
         endocytosis.setFeature(new MaturationTime(Quantities.getQuantity(50.0, SECOND)));
         endocytosis.setFeature(new InitialConcentrations(Collections.singletonList(initializedConcentration)));

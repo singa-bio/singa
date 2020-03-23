@@ -1,4 +1,4 @@
-package bio.singa.simulation.features;
+package bio.singa.simulation.features.model;
 
 import bio.singa.features.model.Evidence;
 import bio.singa.features.model.QualitativeFeature;

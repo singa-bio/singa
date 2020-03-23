@@ -81,7 +81,7 @@ class ConcentrationStateChangeTest {
         stateChange.setIdentifier("vesicle state change");
         stateChange.setFeature(new RequiredVesicleState(IN_PERINUCLEAR_STORAGE));
         stateChange.setFeature(new AppliedVesicleState(UNATTACHED));
-        stateChange.setFeature(new Cargoes(aqp2p, aqp2));
+        stateChange.setFeature(Cargoes.of(aqp2p, aqp2).build());
         stateChange.setFeature(new Ratio(3.0/4.0));
 
         // setup reaction to introduce entity change

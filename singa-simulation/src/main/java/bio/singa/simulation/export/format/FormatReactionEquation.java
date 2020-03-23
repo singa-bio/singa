@@ -53,7 +53,7 @@ public class FormatReactionEquation {
     private static String formatReactantSet(List<Reactant> substrates, List<Reactant> products, List<Reactant> catalysts, boolean isReversible) {
         String substratesString = formatReactantsTex(substrates, " +");
         String productsString = formatReactantsTex(products, " +");
-        String catalystsString = " ";
+        String catalystsString = "";
         if (catalysts.size() > 0) {
             catalystsString = String.format(caralystFormatting, formatReactantsTex(catalysts, ","));
         }
@@ -69,12 +69,11 @@ public class FormatReactionEquation {
     }
 
     private static String formatReactantTex(Reactant reactant) {
-        String topology = mapTopologyToString(reactant.getPreferredTopology());
         String stoichiometicNumber = reactant.getStoichiometricNumber() > 1
                 ? " " + (int) reactant.getStoichiometricNumber() + " "
                 : "";
-        String entity = reactant.getEntity().getIdentifier();
-        return stoichiometicNumber + "!(" + topology + ")(" + entity + ")";
+        String entity = reactant.getEntity().getIdentifier().replaceAll("(\\d)", " $1 ");
+        return stoichiometicNumber +  entity ;
     }
 
     private static String mapTopologyToString(CellTopology topology) {

@@ -19,7 +19,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tech.units.indriya.quantity.Quantities;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import static bio.singa.simulation.model.sections.CellTopology.MEMBRANE;
 import static tech.units.indriya.unit.MetricPrefix.NANO;
@@ -179,7 +182,9 @@ public class LateralMembraneDiffusion extends ConcentrationBasedModule<EntityDel
             for (ChemicalEntity chemicalEntity : chemicalEntities) {
                 setDefaultFeatureIfNecessary(chemicalEntity);
             }
-            module.setFeature(new Cargoes(new ArrayList<>(chemicalEntities)));
+            module.setFeature(Cargoes.of(chemicalEntities)
+                    .comment("entities affected by lateral membrane diffusion")
+                    .build());
             return this;
         }
 
@@ -188,7 +193,9 @@ public class LateralMembraneDiffusion extends ConcentrationBasedModule<EntityDel
             if (region.hasMembrane()) {
                 logger.warn("The supplied region {} has no membrane assigned subsection", region.getIdentifier());
             }
-            module.setFeature(new AffectedRegion(region));
+            module.setFeature(AffectedRegion.of(region)
+                    .comment("region affected by lateral membrane diffusion")
+                    .build());
             return this;
         }
 

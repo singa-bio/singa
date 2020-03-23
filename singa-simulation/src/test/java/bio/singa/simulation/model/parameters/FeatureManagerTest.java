@@ -1,7 +1,6 @@
 package bio.singa.simulation.model.parameters;
 
 import bio.singa.chemistry.features.diffusivity.PixelDiffusivity;
-import bio.singa.features.model.Evidence;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.units.UnitRegistry;
 import org.junit.jupiter.api.AfterEach;
@@ -90,7 +89,7 @@ public class FeatureManagerTest {
         Environment.setSystemExtend(Quantities.getQuantity(100, CENTI(METRE)));
         UnitRegistry.setSpace(Quantities.getQuantity(1, CENTI(METRE)));
         UnitRegistry.setTime(Quantities.getQuantity(1, SECOND));
-        PixelDiffusivity diffusivity = new PixelDiffusivity(Quantities.getQuantity(1, SQUARE_CENTIMETRE_PER_SECOND), Evidence.NO_EVIDENCE);
+        PixelDiffusivity diffusivity = PixelDiffusivity.of(Quantities.getQuantity(1, SQUARE_CENTIMETRE_PER_SECOND)).build();
         assertEquals(1.0, diffusivity.getScaledQuantity());
 
         UnitRegistry.setTime(Quantities.getQuantity(0.5, MILLI(SECOND)));

@@ -1,14 +1,15 @@
 package bio.singa.chemistry.features.diffusivity;
 
+import bio.singa.features.model.AbstractFeature;
 import bio.singa.features.model.AbstractScalableQuantitativeFeature;
-import bio.singa.features.model.Evidence;
 import bio.singa.features.model.FeatureRegistry;
 import bio.singa.features.units.UnitRegistry;
+import tech.units.indriya.quantity.Quantities;
 
 import javax.measure.Quantity;
+import javax.measure.Unit;
 import javax.measure.quantity.Length;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -17,6 +18,10 @@ import java.util.Map;
 public class ConcentrationDiffusivity extends AbstractScalableQuantitativeFeature<Diffusivity> {
 
     private static Map<Quantity<Length>, Diffusivity> cache;
+
+    public ConcentrationDiffusivity(Quantity<Diffusivity> quantity) {
+        super(quantity);
+    }
 
     private static Map<Quantity<Length>, Diffusivity> getCache() {
         if (cache == null) {
@@ -27,16 +32,12 @@ public class ConcentrationDiffusivity extends AbstractScalableQuantitativeFeatur
         return cache;
     }
 
-    public ConcentrationDiffusivity(Quantity<Diffusivity> quantity, List<Evidence> evidence) {
-        super(quantity, evidence);
+    public static Builder of(Quantity<Diffusivity> quantity) {
+        return new Builder(quantity);
     }
 
-    public ConcentrationDiffusivity(Quantity<Diffusivity> quantity, Evidence evidence) {
-        super(quantity, evidence);
-    }
-
-    public ConcentrationDiffusivity(Quantity<Diffusivity> quantity) {
-        super(quantity);
+    public static Builder of(double value, Unit<Diffusivity> unit) {
+        return new Builder(Quantities.getQuantity(value, unit));
     }
 
     @Override
@@ -44,5 +45,23 @@ public class ConcentrationDiffusivity extends AbstractScalableQuantitativeFeatur
         scaledQuantity = UnitRegistry.scale(getContent()).getValue().doubleValue();
         halfScaledQuantity = scaledQuantity * 0.5;
     }
+
+    public static class Builder extends AbstractFeature.Builder<Quantity<Diffusivity>, ConcentrationDiffusivity, Builder> {
+
+        public Builder(Quantity<Diffusivity> quantity) {
+            super(quantity);
+        }
+
+        @Override
+        protected ConcentrationDiffusivity createObject(Quantity<Diffusivity> quantity) {
+            return new ConcentrationDiffusivity(quantity);
+        }
+
+        @Override
+        protected Builder getBuilder() {
+            return this;
+        }
+    }
+
 
 }

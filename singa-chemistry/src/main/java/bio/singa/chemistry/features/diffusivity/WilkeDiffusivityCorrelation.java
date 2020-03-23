@@ -67,6 +67,6 @@ public class WilkeDiffusivityCorrelation implements Correlation<ConcentrationDif
                 * Math.pow(estimateMolarVolume(molarMass), 0.6);
         // D = a / b
         final Quantity<Diffusivity> quantity = Quantities.getQuantity(dividend / divisor, Diffusivity.SQUARE_CENTIMETRE_PER_SECOND);
-        return new ConcentrationDiffusivity(quantity, evidence);
+        return ConcentrationDiffusivity.of(quantity).evidence(evidence).build();
     }
 }

@@ -2,7 +2,6 @@ package bio.singa.simulation.model.modules.concentration.imlementations.transpor
 
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.chemistry.features.permeability.OsmoticPermeability;
-import bio.singa.features.model.Evidence;
 import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.simulation.features.Cargo;
 import bio.singa.simulation.features.Solutes;
@@ -15,7 +14,9 @@ import bio.singa.simulation.model.sections.CellTopology;
 import bio.singa.simulation.model.sections.ConcentrationContainer;
 import bio.singa.simulation.model.simulation.Simulation;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * The single file channel transport describes the movement of cargo molecules through {@link Transporter} proteins, so
@@ -134,7 +135,7 @@ public class SingleFileChannelMembraneTransport extends ConcentrationBasedModule
 
         BuildStep forSolutes(ChemicalEntity... chemicalEntities);
 
-        BuildStep forSolutes(Collection<ChemicalEntity> chemicalEntities);
+        BuildStep forSolutes(List<ChemicalEntity> chemicalEntities);
     }
 
     public interface BuildStep {
@@ -168,31 +169,31 @@ public class SingleFileChannelMembraneTransport extends ConcentrationBasedModule
 
         @Override
         public CargoStep transporter(ChemicalEntity transporter) {
-            module.setFeature(new Transporter(transporter, Evidence.NO_EVIDENCE));
+            module.setFeature(Transporter.of(transporter).build());
             return this;
         }
 
         @Override
         public SolutesStep cargo(ChemicalEntity cargo) {
-            module.setFeature(new Cargo(cargo, Evidence.NO_EVIDENCE));
+            module.setFeature(Cargo.of(cargo).build());
             return this;
         }
 
         @Override
         public BuildStep forSolute(ChemicalEntity solute) {
-            module.setFeature(new Solutes(Collections.singletonList(solute), Evidence.NO_EVIDENCE));
+            module.setFeature(Solutes.of(solute).build());
             return this;
         }
 
         @Override
         public BuildStep forSolutes(ChemicalEntity... solutes) {
-            module.setFeature(new Solutes(Arrays.asList(solutes), Evidence.NO_EVIDENCE));
+            module.setFeature(Solutes.of(solutes).build());
             return this;
         }
 
         @Override
-        public BuildStep forSolutes(Collection<ChemicalEntity> solutes) {
-            module.setFeature(new Solutes(new ArrayList<>(solutes), Evidence.NO_EVIDENCE));
+        public BuildStep forSolutes(List<ChemicalEntity> solutes) {
+            module.setFeature(Solutes.of(solutes).build());
             return this;
         }
 

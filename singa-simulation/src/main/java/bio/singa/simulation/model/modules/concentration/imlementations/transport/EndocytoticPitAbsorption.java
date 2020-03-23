@@ -172,7 +172,10 @@ public class EndocytoticPitAbsorption extends ConcentrationBasedModule<Updatable
         }
 
         public AccelerationStep forAllEntities(Collection<ChemicalEntity> chemicalEntities) {
-            return cargo(new Cargoes(new ArrayList<>(chemicalEntities)));
+            Cargoes cargoes = Cargoes.of(chemicalEntities)
+                    .comment("cargoes added to the endocytotic pit during collection phase")
+                    .build();
+            return cargo(cargoes);
         }
 
         @Override
@@ -183,7 +186,7 @@ public class EndocytoticPitAbsorption extends ConcentrationBasedModule<Updatable
 
         @Override
         public RateStep inhibitingEntity(ChemicalEntity inhibitingEntity) {
-            return scalingEntities(new ScalingEntities(acceleratingEntity, inhibitingEntity));
+            return scalingEntities(ScalingEntities.of(acceleratingEntity, inhibitingEntity).build());
         }
 
         @Override

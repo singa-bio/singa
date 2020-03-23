@@ -59,17 +59,15 @@ public class SaffmanDelbrueckDiffusivityCorrelation implements Correlation<Membr
         double uf = bulkViscosity.getValue().doubleValue();
         double h = membraneThickness.to(METRE).getValue().doubleValue();
         // somewhere this is a factor 1000 astray
-
         double a = radius.to(KILO(METRE)).getValue().doubleValue();
-
         double lsd = log((h * um) / (a * uf));
         double blzTerm = (kb * t) / (4 * PI * um * h);
         double dsd = blzTerm * (lsd - em);
 
-        MembraneDiffusivity diffusivity = new MembraneDiffusivity(Quantities.getQuantity(dsd, Diffusivity.SQUARE_METRE_PER_SECOND));
-        diffusivity.addEvidence(parameters);
-        diffusivity.addEvidence(method);
-        return diffusivity;
+        return MembraneDiffusivity.of(dsd, Diffusivity.SQUARE_METRE_PER_SECOND)
+                .comment("lateral diffusivity of membrane bound entities")
+                .evidence(method, parameters)
+                .build();
     }
 
 }

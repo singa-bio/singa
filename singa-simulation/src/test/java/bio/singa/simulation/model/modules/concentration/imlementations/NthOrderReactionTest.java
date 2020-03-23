@@ -8,7 +8,6 @@ import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.geometry.faces.Rectangle;
 import bio.singa.mathematics.vectors.Vector2D;
-import bio.singa.simulation.features.DefaultFeatureSources;
 import bio.singa.simulation.model.agents.pointlike.Vesicle;
 import bio.singa.simulation.model.agents.pointlike.VesicleLayer;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
@@ -154,7 +153,6 @@ class NthOrderReactionTest {
                 .forward().zeroOrder()
                 .concentrationUnit(UnitRegistry.getConcentrationUnit())
                 .timeUnit(SECOND)
-                .evidence(DefaultFeatureSources.EHRLICH2004)
                 .build();
 
         ReactionBuilder.staticReactants(simulation)

@@ -16,6 +16,8 @@ import static tech.units.indriya.unit.Units.SECOND;
  */
 class FormatFeatureTest {
 
+
+
     @Test
     void formatRates() {
 

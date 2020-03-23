@@ -197,13 +197,17 @@ public class Diffusion extends ConcentrationBasedModule<EntityDeltaFunction> {
         }
 
         public SectionLimitationStep forAllEntities(Collection<ChemicalEntity> chemicalEntities) {
-            module.setFeature(new Cargoes(new ArrayList<>(chemicalEntities)));
+            module.setFeature(Cargoes.of(new ArrayList<>(chemicalEntities))
+                    .comment("entities that are subject to diffusion")
+                    .build());
             return this;
         }
 
         @Override
         public BuildStep forSection(CellSubsection subsection) {
-            module.setFeature(new AffectedSection(subsection));
+            module.setFeature(AffectedSection.of(subsection)
+                    .comment("section that is affected by diffusion")
+                    .build());
             return this;
         }
 

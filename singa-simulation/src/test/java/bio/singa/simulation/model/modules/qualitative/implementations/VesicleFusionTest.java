@@ -33,11 +33,9 @@ import tech.units.indriya.ComparableQuantity;
 import tech.units.indriya.quantity.Quantities;
 
 import javax.measure.quantity.Length;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static tech.units.indriya.AbstractUnit.ONE;
 import static tech.units.indriya.unit.MetricPrefix.MICRO;
 import static tech.units.indriya.unit.MetricPrefix.NANO;
 import static tech.units.indriya.unit.Units.METRE;
@@ -127,20 +125,11 @@ class VesicleFusionTest {
 
         // setup fusion module
         VesicleFusion fusion = new VesicleFusion();
-        List<ChemicalEntity> qSnareEntities = new ArrayList<>();
-        qSnareEntities.add(snareComplex1);
-        qSnareEntities.add(snareComplex2);
-        MatchingQSnares qSnares = new MatchingQSnares(qSnareEntities);
-        fusion.setFeature(qSnares);
-
-        List<ChemicalEntity> rSnareEntities = new ArrayList<>();
-        rSnareEntities.add(vamp2);
-        rSnareEntities.add(vamp3);
-        MatchingRSnares rSnares = new MatchingRSnares(rSnareEntities);
-        fusion.setFeature(rSnares);
-        fusion.setFeature(new SNAREFusionPairs(Quantities.getQuantity(3, ONE)));
-        fusion.setFeature(FusionTime.DEFAULT_FUSION_TIME);
-        fusion.setFeature(new AttachmentDistance(Quantities.getQuantity(61, NANO(METRE)), DefaultFeatureSources.JHA2015));
+        fusion.setFeature(MatchingQSnares.of(snareComplex1, snareComplex2).build());
+        fusion.setFeature(MatchingRSnares.of(vamp2, vamp3).build());
+        fusion.setFeature(SNAREFusionPairs.of(3).build());
+        fusion.setFeature(FusionTime.of(18.0, SECOND).build());
+        fusion.setFeature(AttachmentDistance.of(61, NANO(METRE)).build());
         simulation.addModule(fusion);
 
         while (simulation.getElapsedTime().isLessThanOrEqualTo(Quantities.getQuantity(20.0, SECOND))) {
@@ -200,8 +189,8 @@ class VesicleFusionTest {
         // setup fusion module
         VesicleFusion fusion = new VesicleFusion();
         fusion.setFeature(new AppliedVesicleState(VesicleStateRegistry.MICROTUBULE_ATTACHED));
-        fusion.setFeature(FusionTime.DEFAULT_FUSION_TIME);
-        fusion.setFeature(new AttachmentDistance(Quantities.getQuantity(61, NANO(METRE)), DefaultFeatureSources.JHA2015));
+        fusion.setFeature(FusionTime.of(18, SECOND).build());
+        fusion.setFeature(new AttachmentDistance(Quantities.getQuantity(61, NANO(METRE))));
         simulation.addModule(fusion);
 
         while (simulation.getElapsedTime().isLessThanOrEqualTo(Quantities.getQuantity(20.0, SECOND))) {

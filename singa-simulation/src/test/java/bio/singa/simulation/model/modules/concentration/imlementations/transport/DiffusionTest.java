@@ -2,7 +2,6 @@ package bio.singa.simulation.model.modules.concentration.imlementations.transpor
 
 import bio.singa.chemistry.entities.simple.SmallMolecule;
 import bio.singa.chemistry.features.diffusivity.ConcentrationDiffusivity;
-import bio.singa.features.model.Evidence;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.algorithms.topology.FloodFill;
@@ -55,15 +54,15 @@ class DiffusionTest {
 
     // required species
     private static final SmallMolecule hydrogen = SmallMolecule.create("h2")
-            .assignFeature(new ConcentrationDiffusivity(Quantities.getQuantity(4.40E-05, SQUARE_CENTIMETRE_PER_SECOND), Evidence.NO_EVIDENCE))
+            .assignFeature(ConcentrationDiffusivity.of(4.40E-05, SQUARE_CENTIMETRE_PER_SECOND).build())
             .build();
 
     private static final SmallMolecule ammonia = SmallMolecule.create("ammonia")
-            .assignFeature(new ConcentrationDiffusivity(Quantities.getQuantity(2.28E-05, SQUARE_CENTIMETRE_PER_SECOND), Evidence.NO_EVIDENCE))
+            .assignFeature(ConcentrationDiffusivity.of(2.28E-05, SQUARE_CENTIMETRE_PER_SECOND).build())
             .build();
 
     private static final SmallMolecule benzene = SmallMolecule.create("benzene")
-            .assignFeature(new ConcentrationDiffusivity(Quantities.getQuantity(1.09E-05, SQUARE_CENTIMETRE_PER_SECOND), Evidence.NO_EVIDENCE))
+            .assignFeature(ConcentrationDiffusivity.of(1.09E-05, SQUARE_CENTIMETRE_PER_SECOND).build())
             .build();
 
     @BeforeAll

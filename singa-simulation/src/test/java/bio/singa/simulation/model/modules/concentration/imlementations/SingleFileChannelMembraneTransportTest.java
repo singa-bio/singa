@@ -18,8 +18,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import tech.units.indriya.quantity.Quantities;
 
+import static bio.singa.chemistry.features.permeability.OsmoticPermeability.CUBIC_CENTIMETRE_PER_SECOND;
 import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
-import static bio.singa.simulation.features.DefaultFeatureSources.BINESH2015;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static tech.units.indriya.unit.MetricPrefix.MICRO;
 import static tech.units.indriya.unit.Units.METRE;
@@ -53,7 +53,7 @@ class SingleFileChannelMembraneTransportTest {
                 .build();
         // aqp2
         Protein aquaporin2 = Protein.create("aqp2")
-                .assignFeature(new OsmoticPermeability(5.31e-14, BINESH2015))
+                .assignFeature(new OsmoticPermeability(Quantities.getQuantity(5.31e-14, CUBIC_CENTIMETRE_PER_SECOND)))
                 .build();
         // graph
         AutomatonGraph graph = AutomatonGraphs.singularGraph();

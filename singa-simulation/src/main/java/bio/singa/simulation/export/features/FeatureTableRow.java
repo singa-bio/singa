@@ -92,11 +92,22 @@ public class FeatureTableRow {
 
     public static String formatEvidence(List<Evidence> evidences) {
         if (evidences.isEmpty()) {
-            return "";
+            return "estimation";
         }
         return evidences.stream()
-                .map(e -> e.getIdentifier().replace(" ", ""))
-                .collect(Collectors.joining(",", "\\cite{", "}"));
+                .map(e -> {
+                    switch (e.getType()) {
+                        case PREDICTION:
+                            return "predicted by \\cite{" + e.getIdentifier() + "}";
+                        case DATABASE:
+                            return "database by \\cite{" + e.getIdentifier() + "}";
+                        case LITERATURE:
+                            return "\\cite{" + e.getIdentifier().replace(" ", "") + "}";
+                        default:
+                            return "estimation";
+                    }
+                })
+                .collect(Collectors.joining(","));
     }
 
     public static String formatStates(String string) {

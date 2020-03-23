@@ -86,8 +86,8 @@ public class FeatureTable {
                 features.add(concentration);
             }
         }
-        int featureCounter = 1;
 
+        int featureCounter = 1;
         String formatString = "F%0" + (int) (Math.log10(features.size()) + 1) + "d";
         for (Feature<?> feature : features) {
             if (!featureIdentifierMap.containsKey(feature)) {
