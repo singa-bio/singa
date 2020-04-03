@@ -38,8 +38,7 @@ import static bio.singa.features.units.UnitProvider.MICRO_MOLE_PER_LITRE;
 import static bio.singa.simulation.features.ActinBoostVelocity.NANOMETRE_PER_SECOND;
 import static bio.singa.simulation.features.MotorPullDirection.PLUS;
 import static bio.singa.simulation.model.agents.linelike.LineLikeAgent.ACTIN;
-import static bio.singa.simulation.model.agents.pointlike.VesicleStateRegistry.ACTIN_ATTACHED;
-import static bio.singa.simulation.model.agents.pointlike.VesicleStateRegistry.UNATTACHED;
+import static bio.singa.simulation.model.agents.pointlike.VesicleStateRegistry.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static tech.units.indriya.unit.MetricPrefix.*;
@@ -82,7 +81,7 @@ class VesicleTransportTest {
 
         Vector2D initialVesiclePosition = new Vector2D(50, 30);
         Vesicle vesicle = new Vesicle(initialVesiclePosition, Quantities.getQuantity(150, NANO(METRE)));
-        vesicle.setState(UNATTACHED);
+        vesicle.setState(TAGGED_FOR_EXOCYTOSIS);
         vesicle.getConcentrationContainer().initialize(CellTopology.MEMBRANE,
                 EntityRegistry.matchExactly("MYO"),
                 Quantities.getQuantity(1, MICRO_MOLE_PER_LITRE));

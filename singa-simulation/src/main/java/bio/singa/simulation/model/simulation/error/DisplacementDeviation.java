@@ -7,11 +7,19 @@ import bio.singa.simulation.model.agents.pointlike.Vesicle;
  */
 public class DisplacementDeviation {
 
-
+    /**
+     * If reference value is smaller then current displacement, the deviation is large (above zero).
+     */
     public static final DisplacementDeviation MAXIMAL_POSITIVE_DEVIATION = new DisplacementDeviation(null, Double.MAX_VALUE);
 
+    /**
+     * If reference value is equal to the current displacement, the deviation is zero.
+     */
     public static final DisplacementDeviation MINIMAL_DEVIATION = new DisplacementDeviation(null, 0);
 
+    /**
+     * If reference value is large then current displacement, the deviation is small (below zero).
+     */
     public static final DisplacementDeviation MAXIMAL_NEGATIVE_DEVIATION = new DisplacementDeviation(null, -Double.MAX_VALUE);
 
     private final Vesicle vesicle;

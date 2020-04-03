@@ -80,7 +80,7 @@ class FormatReactionEquationTest {
                 .rate(k)
                 .build();
 
-        assertEquals("\\ch{ 2 !(inner)(A) + !(inner)(B) ->  !(inner)(C) + !(inner)(D)}", FormatReactionEquation.formatTex(reaction).get(0));
+        assertEquals("\\ch{ 2 A + B -> C + D}", FormatReactionEquation.formatTex(reaction).get(0));
     }
 
     @Test
@@ -108,7 +108,7 @@ class FormatReactionEquationTest {
                 .backwardReactionRate(kb)
                 .build();
 
-        assertEquals("\\ch{!(membrane)(A) <=>  !(outer)(B)}", FormatReactionEquation.formatTex(reaction).get(0));
+        assertEquals("\\ch{A <=> B}", FormatReactionEquation.formatTex(reaction).get(0));
 
     }
 
@@ -143,7 +143,7 @@ class FormatReactionEquationTest {
                 .identifier("Adenylate Cyclase Reaction")
                 .build();
 
-        assertEquals("\\ch{!(inner)(ATP) -> [ !(inner)(ATP), !(inner)(GAT), !(membrane)(AC6) ] !(inner)(CAMP)}", FormatReactionEquation.formatTex(reaction).get(0));
+        assertEquals("\\ch{ATP -> [ ATP, GAT, AC 6  ] CAMP}", FormatReactionEquation.formatTex(reaction).get(0));
     }
 
 }

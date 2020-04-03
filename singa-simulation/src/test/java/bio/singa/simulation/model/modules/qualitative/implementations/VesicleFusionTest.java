@@ -134,7 +134,6 @@ class VesicleFusionTest {
         simulation.addModule(fusion);
 
         while (TimeStepManager.getElapsedTime().isLessThanOrEqualTo(Quantities.getQuantity(20.0, SECOND))) {
-            System.out.println(UnitRegistry.humanReadable(TimeStepManager.getElapsedTime()));
             simulation.nextEpoch();
         }
 

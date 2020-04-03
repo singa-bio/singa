@@ -6,7 +6,7 @@ import bio.singa.simulation.model.agents.pointlike.Vesicle;
 import bio.singa.simulation.model.agents.pointlike.VesicleLayer;
 import bio.singa.simulation.model.simulation.UpdateScheduler;
 
-import static bio.singa.simulation.model.simulation.error.DisplacementDeviation.MAXIMAL_POSITIVE_DEVIATION;
+import static bio.singa.simulation.model.simulation.error.DisplacementDeviation.MAXIMAL_NEGATIVE_DEVIATION;
 import static bio.singa.simulation.model.simulation.error.ErrorManager.CalculationStage;
 import static bio.singa.simulation.model.simulation.error.ErrorManager.CalculationStage.EVALUATION_STAGE;
 import static bio.singa.simulation.model.simulation.error.ErrorManager.Reason;
@@ -17,11 +17,8 @@ import static bio.singa.simulation.model.simulation.error.ErrorManager.Reason.GL
  */
 public class GlobalDisplacementDeviationManager implements UpdateEventListener<Reason> {
 
-    private static final double DEFAULT_GLOBAL_DEVIATION_TOLERANCE = 0.8;
-
     private UpdateScheduler updateScheduler;
     private CalculationStage currentStage;
-    private double tolerance = DEFAULT_GLOBAL_DEVIATION_TOLERANCE;
     private DisplacementDeviation deviation;
     private boolean errorAcceptable;
     private VesicleLayer vesicleLayer;
@@ -66,19 +63,15 @@ public class GlobalDisplacementDeviationManager implements UpdateEventListener<R
     private void processEvaluationStage() {
         if (vesicleLayer.getVesicles().isEmpty()) {
             errorAcceptable = true;
-            deviation = MAXIMAL_POSITIVE_DEVIATION;
+            deviation = MAXIMAL_NEGATIVE_DEVIATION;
             return;
         }
         deviation = determineGlobalDeviation();
-        if (deviation.getValue() < 0) {
-            errorAcceptable = false;
-        } else {
-            errorAcceptable = true;
-        }
+        errorAcceptable = deviation.getValue() < updateScheduler.getErrorManager().getDisplacementUpperThreshold();
     }
 
     private DisplacementDeviation determineGlobalDeviation() {
-        DisplacementDeviation largestDeviation = MAXIMAL_POSITIVE_DEVIATION;
+        DisplacementDeviation largestDeviation = MAXIMAL_NEGATIVE_DEVIATION;
         for (Vesicle vesicle : vesicleLayer.getVesicles()) {
             Vector2D totalDisplacement = vesicle.calculateTotalDisplacement();
             // skip if total displacement is zero
@@ -87,8 +80,8 @@ public class GlobalDisplacementDeviationManager implements UpdateEventListener<R
             }
             double length = totalDisplacement.getMagnitude();
             // determine fraction of maximal allowed error
-            double deviation = 1 - (length / updateScheduler.getErrorManager().getDisplacementCutoff());
-            if (deviation < largestDeviation.getValue()) {
+            double deviation = Math.log10(totalDisplacement.getMagnitude() /  updateScheduler.getErrorManager().getDisplacementReferenceLength());
+            if (deviation > largestDeviation.getValue()) {
                 largestDeviation = new DisplacementDeviation(vesicle, deviation);
             }
         }
@@ -103,16 +96,8 @@ public class GlobalDisplacementDeviationManager implements UpdateEventListener<R
         return deviation;
     }
 
-    public double getTolerance() {
-        return tolerance;
-    }
-
-    public void setTolerance(double tolerance) {
-        this.tolerance = tolerance;
-    }
-
     public boolean deviationIsCritical() {
-        return deviation.getValue() < tolerance;
+        return deviation.getValue() > updateScheduler.getErrorManager().getDisplacementLowerThreshold();
     }
 
     public boolean deviationIsAcceptable() {

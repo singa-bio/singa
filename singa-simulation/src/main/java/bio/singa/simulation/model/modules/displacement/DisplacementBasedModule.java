@@ -17,8 +17,7 @@ import java.util.function.Predicate;
 
 import static bio.singa.simulation.model.modules.concentration.ModuleState.REQUIRING_RECALCULATION;
 import static bio.singa.simulation.model.modules.concentration.ModuleState.SUCCEEDED_WITH_PENDING_CHANGES;
-import static bio.singa.simulation.model.simulation.error.DisplacementDeviation.MAXIMAL_POSITIVE_DEVIATION;
-import static bio.singa.simulation.model.simulation.error.DisplacementDeviation.MINIMAL_DEVIATION;
+import static bio.singa.simulation.model.simulation.error.DisplacementDeviation.*;
 import static bio.singa.simulation.model.simulation.error.ErrorManager.Reason.LOCAL_DEVIATION;
 
 /**
@@ -70,7 +69,7 @@ public class DisplacementBasedModule extends AbstractUpdateModule {
 
     private void evaluateModuleState() {
         largestLocalDeviation = determineLocalDeviation();
-        if (largestLocalDeviation.getValue() < 0) {
+        if (largestLocalDeviation.getValue() > getSimulation().getScheduler().getErrorManager().getDisplacementUpperThreshold()) {
             setState(REQUIRING_RECALCULATION);
         } else {
             getSimulation().getScheduler().getErrorManager().setLargestLocalDisplacementDeviation(largestLocalDeviation, this);
@@ -79,7 +78,7 @@ public class DisplacementBasedModule extends AbstractUpdateModule {
     }
 
     public DisplacementDeviation determineLocalDeviation() {
-        DisplacementDeviation largestDeviation = MAXIMAL_POSITIVE_DEVIATION;
+        DisplacementDeviation largestDeviation = MAXIMAL_NEGATIVE_DEVIATION;
         for (Vesicle vesicle : getSimulation().getVesicleLayer().getVesicles()) {
             // skip if no displacements where applied by this module
             Optional<DisplacementDelta> optionalDisplacementDelta = vesicle.getSpatialDelta(this);
@@ -87,15 +86,11 @@ public class DisplacementBasedModule extends AbstractUpdateModule {
                 continue;
             }
             Vector2D displacement = optionalDisplacementDelta.get().getDeltaVector();
-            double length = displacement.getMagnitude();
             // determine fraction of maximal allowed error
-            double deviation = 1 - (length / getSimulation().getScheduler().getErrorManager().getDisplacementCutoff());
-            if (deviation < largestDeviation.getValue()) {
+            double deviation = Math.log10(displacement.getMagnitude() / getSimulation().getScheduler().getErrorManager().getDisplacementReferenceLength());
+            if (deviation > largestDeviation.getValue()) {
                 largestDeviation = new DisplacementDeviation(vesicle, deviation);
             }
-        }
-        if (largestDeviation.equals(MAXIMAL_POSITIVE_DEVIATION)) {
-            return MINIMAL_DEVIATION;
         }
         return largestDeviation;
     }
@@ -105,7 +100,7 @@ public class DisplacementBasedModule extends AbstractUpdateModule {
         while (getState() == REQUIRING_RECALCULATION) {
             getSimulation().getVesicleLayer().clearUpdates();
             TimeStepManager.decreaseTimeStep(LOCAL_DEVIATION);
-            largestLocalDeviation = MINIMAL_DEVIATION;
+            largestLocalDeviation = MAXIMAL_NEGATIVE_DEVIATION;
             calculateUpdates();
         }
     }

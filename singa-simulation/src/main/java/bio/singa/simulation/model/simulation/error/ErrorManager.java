@@ -15,8 +15,19 @@ public class ErrorManager {
     private static final double DEFAULT_NUMERICAL_NEGLIGENCE_CUTOFF = 1e-100;
     private static final double DEFAULT_NUMERICAL_INSTABILITY_CUTOFF = 100;
 
-    private static final double DEFAULT_DISPLACEMENT_CUTOFF_FACTOR = 1.0 / 10.0;
-    private static final double DEFAULT_LOCAL_DEVIATION_TOLERANCE = 0.8;
+    private static final double DEFAULT_DISPLACEMENT_REFERENCE_FACTOR = 1.0 / 10.0;
+
+    /**
+     * If the current displacement is equal to the displacement reference length the deviation is zero.
+     * Deviations above the threshold will result in recalculation.
+     */
+    private static final double DEFAULT_DISPLACEMENT_UPPER_THRESHOLD = 0;
+
+    /**
+     * If the current displacement is half of the displacement reference length the deviation is log(0.5).
+     * Deviations below this threshold might result in time step increases (depending on other errors).
+     */
+    private static final double DEFAULT_DISPLACEMENT_LOWER_THRESHOLD = Math.log10(0.5);
 
     private GlobalNumericalErrorManager globalErrorManager;
     private GlobalDisplacementDeviationManager globalDeviationManager;
@@ -29,25 +40,32 @@ public class ErrorManager {
     private double numericalNegligenceCutoff = DEFAULT_NUMERICAL_NEGLIGENCE_CUTOFF;
     private double numericalInstabilityCutoff = DEFAULT_NUMERICAL_INSTABILITY_CUTOFF;
 
-    private double localDisplacementTolerance = DEFAULT_LOCAL_DEVIATION_TOLERANCE;
+    /**
+     * Deviations above the threshold will result in recalculation.
+     */
+    private double displacementUpperThreshold = DEFAULT_DISPLACEMENT_UPPER_THRESHOLD;
+    /**
+     * Deviations below this threshold might result in time step increases (depending on other errors).
+     */
+    private double displacementLowerThreshold = DEFAULT_DISPLACEMENT_LOWER_THRESHOLD;
     private DisplacementDeviation localDisplacementDeviation;
     private UpdateModule localDisplacementDeviationModule;
 
-    private double displacementCutoffFactor = DEFAULT_DISPLACEMENT_CUTOFF_FACTOR;
-    private double displacementCutoff;
+    private double displacementReferenceFactor = DEFAULT_DISPLACEMENT_REFERENCE_FACTOR;
+    private double displacementReferenceLength;
 
     private UpdateScheduler scheduler;
 
     public ErrorManager(UpdateScheduler scheduler) {
         this.scheduler = scheduler;
         localNumericalError = NumericalError.MINIMAL_EMPTY_ERROR;
-        localDisplacementDeviation = DisplacementDeviation.MINIMAL_DEVIATION;
+        localDisplacementDeviation = DisplacementDeviation.MAXIMAL_NEGATIVE_DEVIATION;
     }
 
     public void initialize() {
         globalErrorManager = new GlobalNumericalErrorManager(scheduler);
         globalDeviationManager = new GlobalDisplacementDeviationManager(scheduler);
-        displacementCutoff = Environment.convertSystemToSimulationScale(UnitRegistry.getSpace().multiply(displacementCutoffFactor));
+        displacementReferenceLength = Environment.convertSystemToSimulationScale(UnitRegistry.getSpace().multiply(displacementReferenceFactor));
         // register error manager that are interested time step changes
         TimeStepManager.addListener(globalErrorManager);
 //        TimeStepManager.addListener(globalDeviationManager);
@@ -80,22 +98,37 @@ public class ErrorManager {
         return globalDeviationManager.getDeviation();
     }
 
-    public double getDisplacementCutoff() {
-        return displacementCutoff;
+    public double getDisplacementReferenceLength() {
+        return displacementReferenceLength;
     }
 
-    public void setDisplacementCutoff(double displacementCutoff) {
-        this.displacementCutoff = displacementCutoff;
+    public double getDisplacementUpperThreshold() {
+        return displacementUpperThreshold;
     }
 
-    public double getDisplacementCutoffFactor() {
-        return displacementCutoffFactor;
+    public void setDisplacementUpperThreshold(double displacementUpperThreshold) {
+        this.displacementUpperThreshold = displacementUpperThreshold;
     }
 
-    public void setDisplacementCutoffFactor(double displacementCutoffFactor) {
-        displacementCutoff = Environment.convertSystemToSimulationScale(UnitRegistry.getSpace().multiply(displacementCutoffFactor));
-        this.displacementCutoffFactor = displacementCutoffFactor;
+    public double getDisplacementLowerThreshold() {
+        return displacementLowerThreshold;
+    }
 
+    public void setDisplacementLowerThreshold(double displacementLowerThreshold) {
+        this.displacementLowerThreshold = displacementLowerThreshold;
+    }
+
+    public void setDisplacementReferenceLength(double displacementReferenceLength) {
+        this.displacementReferenceLength = displacementReferenceLength;
+    }
+
+    public double getDisplacementReferenceFactor() {
+        return displacementReferenceFactor;
+    }
+
+    public void setDisplacementReferenceFactor(double displacementReferenceFactor) {
+        displacementReferenceLength = Environment.convertSystemToSimulationScale(UnitRegistry.getSpace().multiply(displacementReferenceFactor));
+        this.displacementReferenceFactor = displacementReferenceFactor;
     }
 
     public UpdateModule getLocalNumericalErrorModule() {
@@ -147,19 +180,11 @@ public class ErrorManager {
     }
 
     public void resetLocalDisplacementDeviation() {
-        localDisplacementDeviation = DisplacementDeviation.MINIMAL_DEVIATION;
+        localDisplacementDeviation = DisplacementDeviation.MAXIMAL_NEGATIVE_DEVIATION;
     }
 
     public void resetGlobalDisplacementDeviation() {
         globalDeviationManager.reset();
-    }
-
-    public double getLocalDisplacementTolerance() {
-        return localDisplacementTolerance;
-    }
-
-    public void setLocalDisplacementTolerance(double localDisplacementTolerance) {
-        this.localDisplacementTolerance = localDisplacementTolerance;
     }
 
     public double getLocalNumericalTolerance() {
@@ -241,8 +266,8 @@ public class ErrorManager {
         if (localNumericalTolerance - localNumericalError.getValue() <= 0.25 * localNumericalTolerance) {
             return false;
         }
-        // local displacement deviation was close to tolerance
-        if (localDisplacementDeviation.getValue() < localDisplacementTolerance) {
+        // local displacement deviation above lower threshold
+        if (localDisplacementDeviation.getValue() > displacementLowerThreshold) {
             return false;
         }
         // all errors where small
