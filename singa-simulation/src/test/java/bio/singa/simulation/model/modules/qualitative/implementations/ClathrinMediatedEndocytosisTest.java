@@ -33,6 +33,7 @@ import bio.singa.simulation.model.sections.CellTopology;
 import bio.singa.simulation.model.sections.ConcentrationPool;
 import bio.singa.simulation.model.simulation.Simulation;
 import bio.singa.simulation.model.simulation.Updatable;
+import bio.singa.simulation.model.simulation.error.TimeStepManager;
 import org.junit.jupiter.api.Test;
 import tech.units.indriya.ComparableQuantity;
 import tech.units.indriya.quantity.Quantities;
@@ -257,7 +258,7 @@ class ClathrinMediatedEndocytosisTest {
         System.out.println();
         printConcentrations(node);
 
-        while (simulation.getElapsedTime().isLessThanOrEqualTo(Quantities.getQuantity(32, SECOND))) {
+        while (TimeStepManager.getElapsedTime().isLessThanOrEqualTo(Quantities.getQuantity(32, SECOND))) {
             simulation.nextEpoch();
             // System.out.println(TimeFormatter.formatTime(simulation.getElapsedTime()) + " " + MolarConcentration.concentrationToMolecules(pit.getConcentrationContainer().get(MEMBRANE, primaryCargo)));
         }
@@ -266,7 +267,7 @@ class ClathrinMediatedEndocytosisTest {
         System.out.println(MolarConcentration.concentrationToMolecules(pit.getConcentrationContainer().get(MEMBRANE, primaryCargo)));
         assertTrue(UnitRegistry.concentration(pit.getConcentrationContainer().get(MEMBRANE, primaryCargo)).getValue().doubleValue() >= checkpointConcentration.getValue().doubleValue());
 
-        while (simulation.getElapsedTime().isLessThanOrEqualTo(Quantities.getQuantity(85, SECOND))) {
+        while (TimeStepManager.getElapsedTime().isLessThanOrEqualTo(Quantities.getQuantity(85, SECOND))) {
             simulation.nextEpoch();
         }
 
@@ -274,7 +275,7 @@ class ClathrinMediatedEndocytosisTest {
         assertEquals(1, vesicles.size());
 
         Vesicle vesicle = vesicles.get(0);
-        System.out.println(TimeFormatter.formatTime(simulation.getElapsedTime()));
+        System.out.println(TimeFormatter.formatTime(TimeStepManager.getElapsedTime()));
         printConcentrations(vesicle);
         System.out.println();
         printConcentrations(node);

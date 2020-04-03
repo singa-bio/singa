@@ -17,6 +17,7 @@ import bio.singa.simulation.model.concentrations.ConcentrationBuilder;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.simulation.Simulation;
+import bio.singa.simulation.model.simulation.error.TimeStepManager;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import tech.units.indriya.ComparableQuantity;
@@ -92,9 +93,9 @@ class EndocytosisActinBoostTest {
 
         for (int i = 0; i < 10; i++) {
             System.out.println(i);
-            ComparableQuantity<Time> previousTime = simulation.getElapsedTime();
+            ComparableQuantity<Time> previousTime = TimeStepManager.getElapsedTime();
             simulation.nextEpoch();
-            ComparableQuantity<Time> currentTime = simulation.getElapsedTime();
+            ComparableQuantity<Time> currentTime = TimeStepManager.getElapsedTime();
             Vector2D currentPosition = simulation.getVesicleLayer().getVesicles().iterator().next().getPosition();
             double distancePerSecond = UnitRegistry.scalePixelToSpace(initialPosition.subtract(currentPosition).getMagnitude()).to(NANO(METRE)).getValue().doubleValue() / currentTime.subtract(previousTime).to(SECOND).getValue().doubleValue();
             // variance is high because of random gaussian

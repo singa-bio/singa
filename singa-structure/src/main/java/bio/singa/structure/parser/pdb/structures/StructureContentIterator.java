@@ -226,7 +226,6 @@ class StructureContentIterator implements Iterator<List<String>> {
     private void prepareOfflinePaths(List<Path> paths) {
         this.paths = paths;
         currentPath = this.paths.iterator();
-        location = OFFLINE_PDB;
     }
 
     /**
@@ -239,7 +238,6 @@ class StructureContentIterator implements Iterator<List<String>> {
             paths.add(file.toPath());
         }
         currentPath = paths.iterator();
-        location = OFFLINE_PDB;
     }
 
     /**
@@ -254,7 +252,6 @@ class StructureContentIterator implements Iterator<List<String>> {
         }
         currentPath = paths.iterator();
         pdbIdentifierIterator = pdbIdentifiers.iterator();
-        location = OFFLINE_PDB;
     }
 
     /**
@@ -271,7 +268,6 @@ class StructureContentIterator implements Iterator<List<String>> {
         currentPath = paths.iterator();
         pdbIdentifierIterator = pdbIdentifiers.iterator();
         chainIdentifierIterator = chains.iterator();
-        location = OFFLINE_PDB;
     }
 
     /**
@@ -411,6 +407,7 @@ class StructureContentIterator implements Iterator<List<String>> {
                     if (path.toString().endsWith(".ent.gz")) {
                         return fetchLines(readPacked(path));
                     } else if (path.toString().endsWith(".mmtf.gz")) {
+                        location = OFFLINE_MMTF;
                         return Collections.singletonList(path.toString());
                     } else {
                         return fetchLines(Files.newInputStream(path));

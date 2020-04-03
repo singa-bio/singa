@@ -20,6 +20,7 @@ import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.modules.qualitative.implementations.LineLikeAgentAttachment;
 import bio.singa.simulation.model.sections.CellTopology;
 import bio.singa.simulation.model.simulation.Simulation;
+import bio.singa.simulation.model.simulation.error.TimeStepManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -133,9 +134,9 @@ class VesicleTransportTest {
         assertTrue(ListHelper.haveSameElements(Arrays.asList(graph.getNode(0, 0), graph.getNode(1, 0)),
                 vesicle.getAssociatedNodes().keySet()));
 
-        Quantity<Time> timeBefore = simulation.getElapsedTime();
+        Quantity<Time> timeBefore = TimeStepManager.getElapsedTime();
         simulation.nextEpoch();
-        Quantity<Time> timeAfter = simulation.getElapsedTime();
+        Quantity<Time> timeAfter = TimeStepManager.getElapsedTime();
 
         // check distance travelled should be 600 nm/s
         Quantity<Length> distance = Environment.convertSimulationToSystemScale(vesicle.getPosition().subtract(initialVesiclePosition).getMagnitude()).to(NANO(METRE));

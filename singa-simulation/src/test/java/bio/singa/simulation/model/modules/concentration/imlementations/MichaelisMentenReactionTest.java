@@ -12,6 +12,7 @@ import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.modules.concentration.imlementations.reactions.ReactionBuilder;
 import bio.singa.simulation.model.sections.CellSubsection;
 import bio.singa.simulation.model.simulation.Simulation;
+import bio.singa.simulation.model.simulation.error.TimeStepManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -94,7 +95,7 @@ class MichaelisMentenReactionTest {
         boolean firstCheckpointPassed = false;
         Quantity<Time> secondCheckpoint = Quantities.getQuantity(90, SECOND);
         // run simulation
-        while ((currentTime = simulation.getElapsedTime().to(SECOND)).getValue().doubleValue() < secondCheckpoint.getValue().doubleValue()) {
+        while ((currentTime = TimeStepManager.getElapsedTime().to(SECOND)).getValue().doubleValue() < secondCheckpoint.getValue().doubleValue()) {
             simulation.nextEpoch();
             if (!firstCheckpointPassed && currentTime.getValue().doubleValue() > firstCheckpoint.getValue().doubleValue()) {
                 assertEquals(0.50, UnitRegistry.concentration(node.getConcentrationContainer().get(subsection, fructosePhosphate)).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-2);

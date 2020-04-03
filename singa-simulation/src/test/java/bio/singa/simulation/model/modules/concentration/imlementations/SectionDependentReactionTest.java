@@ -15,6 +15,7 @@ import bio.singa.simulation.model.modules.concentration.imlementations.reactions
 import bio.singa.simulation.model.sections.CellRegions;
 import bio.singa.simulation.model.sections.CellSubsections;
 import bio.singa.simulation.model.simulation.Simulation;
+import bio.singa.simulation.model.simulation.error.TimeStepManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -103,7 +104,7 @@ class SectionDependentReactionTest {
         boolean firstCheckpointPassed = false;
         Quantity<Time> secondCheckpoint = Quantities.getQuantity(2.0, MILLI(SECOND));
         // run simulation
-        while ((currentTime = simulation.getElapsedTime().to(MILLI(SECOND))).getValue().doubleValue() < secondCheckpoint.getValue().doubleValue()) {
+        while ((currentTime = TimeStepManager.getElapsedTime().to(MILLI(SECOND))).getValue().doubleValue() < secondCheckpoint.getValue().doubleValue()) {
             simulation.nextEpoch();
             if (!firstCheckpointPassed && currentTime.getValue().doubleValue() > firstCheckpoint.getValue().doubleValue()) {
                 assertEquals(0.00476, UnitRegistry.concentration(membraneNode.getConcentrationContainer().get(CELL_OUTER_MEMBRANE, receptor)).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);

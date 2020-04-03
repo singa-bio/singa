@@ -18,6 +18,7 @@ import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.sections.CellRegions;
 import bio.singa.simulation.model.simulation.Simulation;
+import bio.singa.simulation.model.simulation.error.TimeStepManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -94,7 +95,7 @@ class VesicleConfinedDiffusionTest {
         simulation.addModule(confinedDiffusion);
 
         // if vesicle leaves region at any point, fail
-        while (simulation.getElapsedTime().isLessThanOrEqualTo(Quantities.getQuantity(100.0, SECOND))) {
+        while (TimeStepManager.getElapsedTime().isLessThanOrEqualTo(Quantities.getQuantity(100.0, SECOND))) {
             simulation.nextEpoch();
             assertTrue(containedVesicle.getPosition().isInside(confinementArea));
         }

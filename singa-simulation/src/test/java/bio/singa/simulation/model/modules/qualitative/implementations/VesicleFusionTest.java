@@ -25,6 +25,7 @@ import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.sections.CellRegions;
 import bio.singa.simulation.model.sections.CellTopology;
 import bio.singa.simulation.model.simulation.Simulation;
+import bio.singa.simulation.model.simulation.error.TimeStepManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -132,7 +133,8 @@ class VesicleFusionTest {
         fusion.setFeature(AttachmentDistance.of(61, NANO(METRE)).build());
         simulation.addModule(fusion);
 
-        while (simulation.getElapsedTime().isLessThanOrEqualTo(Quantities.getQuantity(20.0, SECOND))) {
+        while (TimeStepManager.getElapsedTime().isLessThanOrEqualTo(Quantities.getQuantity(20.0, SECOND))) {
+            System.out.println(UnitRegistry.humanReadable(TimeStepManager.getElapsedTime()));
             simulation.nextEpoch();
         }
 
@@ -193,7 +195,7 @@ class VesicleFusionTest {
         fusion.setFeature(new AttachmentDistance(Quantities.getQuantity(61, NANO(METRE))));
         simulation.addModule(fusion);
 
-        while (simulation.getElapsedTime().isLessThanOrEqualTo(Quantities.getQuantity(20.0, SECOND))) {
+        while (TimeStepManager.getElapsedTime().isLessThanOrEqualTo(Quantities.getQuantity(20.0, SECOND))) {
             simulation.nextEpoch();
         }
 

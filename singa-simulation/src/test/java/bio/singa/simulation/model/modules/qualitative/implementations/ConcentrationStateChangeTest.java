@@ -22,6 +22,7 @@ import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.modules.concentration.imlementations.reactions.ReactionBuilder;
 import bio.singa.simulation.model.sections.CellRegions;
 import bio.singa.simulation.model.simulation.Simulation;
+import bio.singa.simulation.model.simulation.error.TimeStepManager;
 import org.junit.jupiter.api.Test;
 import tech.units.indriya.ComparableQuantity;
 import tech.units.indriya.quantity.Quantities;
@@ -98,7 +99,7 @@ class ConcentrationStateChangeTest {
 
         simulation.addModule(stateChange);
 
-        while (simulation.getElapsedTime().isLessThanOrEqualTo(Quantities.getQuantity(200, MICRO(SECOND)))) {
+        while (TimeStepManager.getElapsedTime().isLessThanOrEqualTo(Quantities.getQuantity(200, MICRO(SECOND)))) {
             simulation.nextEpoch();
         }
 

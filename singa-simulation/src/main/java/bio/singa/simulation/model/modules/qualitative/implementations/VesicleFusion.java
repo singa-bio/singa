@@ -18,6 +18,7 @@ import bio.singa.simulation.model.sections.CellTopology;
 import bio.singa.simulation.model.sections.ConcentrationContainer;
 import bio.singa.simulation.model.sections.ConcentrationPool;
 import bio.singa.simulation.model.simulation.Updatable;
+import bio.singa.simulation.model.simulation.error.TimeStepManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tech.units.indriya.ComparableQuantity;
@@ -145,7 +146,7 @@ public class VesicleFusion extends QualitativeModule {
 
     private void tetherVesicle(Vesicle vesicle, TetheringSnares tetheringSnares) {
         // add tethering time to current time
-        ComparableQuantity<Time> tetheringTime = getSimulation().getElapsedTime().add(getFeature(FusionTime.class).getContent());
+        ComparableQuantity<Time> tetheringTime = TimeStepManager.getElapsedTime().add(getFeature(FusionTime.class).getContent());
         vesicle.setState(VesicleStateRegistry.MEMBRANE_TETHERED);
         // set time
         tetheredVesicles.put(vesicle, tetheringTime);
@@ -162,7 +163,7 @@ public class VesicleFusion extends QualitativeModule {
             Vesicle tetheredVesicle = entry.getKey();
             Quantity<Time> fusionTime = entry.getValue();
             // if tethered time is reached
-            if (getSimulation().getElapsedTime().isGreaterThanOrEqualTo(fusionTime)) {
+            if (TimeStepManager.getElapsedTime().isGreaterThanOrEqualTo(fusionTime)) {
                 // add vesicle to vesicle layer
                 fusingVesicles.add(tetheredVesicle);
             }

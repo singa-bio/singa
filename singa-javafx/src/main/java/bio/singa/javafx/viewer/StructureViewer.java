@@ -2,7 +2,7 @@ package bio.singa.javafx.viewer;
 
 import bio.singa.mathematics.geometry.bodies.Cube;
 import bio.singa.mathematics.vectors.Vector3D;
-import bio.singa.mathematics.vectors.Vectors;
+import bio.singa.mathematics.vectors.Vectors3D;
 import bio.singa.structure.model.interfaces.Atom;
 import bio.singa.structure.model.interfaces.Chain;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
@@ -103,7 +103,7 @@ public class StructureViewer extends Application {
         }
         buildCamera();
 
-        SubScene structureScene = new SubScene(displayGroup, 800, 600, true, SceneAntialiasing.BALANCED);
+        SubScene structureScene = new SubScene(displayGroup, 1500, 1500, true, SceneAntialiasing.BALANCED);
         handleKeyboard(structureScene);
         handleMouse(structureScene);
         structureScene.setFill(Color.WHITE);
@@ -144,7 +144,7 @@ public class StructureViewer extends Application {
     private void translateToCentre() {
         List<Atom> allAtoms = structure.getAllAtoms();
 
-        centroid = Vectors.get3DCentroid(allAtoms.stream()
+        centroid = Vectors3D.get3DCentroid(allAtoms.stream()
                 .map(Atom::getPosition)
                 .collect(Collectors.toList()))
                 .multiply(3.0);

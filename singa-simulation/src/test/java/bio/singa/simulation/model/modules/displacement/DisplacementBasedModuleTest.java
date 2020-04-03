@@ -10,6 +10,7 @@ import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.modules.displacement.implementations.VesicleCytoplasmDiffusion;
 import bio.singa.simulation.model.simulation.Simulation;
+import bio.singa.simulation.model.simulation.error.TimeStepManager;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import tech.units.indriya.ComparableQuantity;
@@ -19,7 +20,6 @@ import javax.measure.quantity.Length;
 import javax.measure.quantity.Time;
 
 import static bio.singa.chemistry.features.diffusivity.Diffusivity.SQUARE_MICROMETRE_PER_SECOND;
-import static org.junit.jupiter.api.Assertions.*;
 import static tech.units.indriya.unit.MetricPrefix.MICRO;
 import static tech.units.indriya.unit.MetricPrefix.NANO;
 import static tech.units.indriya.unit.Units.METRE;
@@ -64,9 +64,9 @@ class DisplacementBasedModuleTest {
         simulation.getModules().add(vesicleDiffusion);
 
         for (int i = 0; i < 10; i++) {
-            ComparableQuantity<Time> previousTime = simulation.getElapsedTime();
+            ComparableQuantity<Time> previousTime = TimeStepManager.getElapsedTime();
             simulation.nextEpoch();
-            ComparableQuantity<Time> currentTime = simulation.getElapsedTime();
+            ComparableQuantity<Time> currentTime = TimeStepManager.getElapsedTime();
             Vector2D currentPosition = simulation.getVesicleLayer().getVesicles().iterator().next().getPosition();
             double timeInSeconds = currentTime.subtract(previousTime).to(SECOND).getValue().doubleValue();
             double distanceInMicroMetre = UnitRegistry.scalePixelToSpace(initialPosition.subtract(currentPosition).getMagnitude()).to(MICRO(METRE)).getValue().doubleValue();

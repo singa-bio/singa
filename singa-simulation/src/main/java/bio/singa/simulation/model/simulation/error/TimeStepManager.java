@@ -7,6 +7,8 @@ import bio.singa.features.units.UnitRegistry;
 import bio.singa.simulation.model.simulation.UpdateScheduler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import tech.units.indriya.ComparableQuantity;
+import tech.units.indriya.quantity.Quantities;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Time;
@@ -27,12 +29,18 @@ public class TimeStepManager implements UpdateEventEmitter<Reason> {
     private UpdateScheduler scheduler;
     private List<UpdateEventListener<Reason>> listeners;
 
+    /**
+     * The currently elapsed time.
+     */
+    private ComparableQuantity<Time> elapsedTime;
+
     private boolean timeStepRescaled;
     private long timeStepsDecreased = 0;
     private long timeStepsIncreased = 0;
 
     public TimeStepManager(UpdateScheduler scheduler) {
         this.scheduler = scheduler;
+        elapsedTime = Quantities.getQuantity(0.0, UnitRegistry.getTimeUnit());
         listeners = new ArrayList<>();
     }
 
@@ -47,6 +55,14 @@ public class TimeStepManager implements UpdateEventEmitter<Reason> {
         synchronized (TimeStepManager.class) {
             instance = new TimeStepManager(scheduler);
         }
+    }
+
+    public static void updateTime() {
+        getInstance().elapsedTime = getInstance().elapsedTime.add(UnitRegistry.getTime());
+    }
+
+    public static ComparableQuantity<Time> getElapsedTime() {
+        return getInstance().elapsedTime;
     }
 
     public static void increaseTimeStep() {

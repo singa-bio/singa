@@ -23,6 +23,7 @@ import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.sections.CellTopology;
 import bio.singa.simulation.model.sections.ConcentrationContainer;
 import bio.singa.simulation.model.simulation.Simulation;
+import bio.singa.simulation.model.simulation.error.TimeStepManager;
 import bio.singa.structure.features.molarmass.MolarMass;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -278,7 +279,7 @@ class ReactionTest {
         boolean firstCheckpointPassed = false;
         Quantity<Time> secondCheckpoint = Quantities.getQuantity(2.0, MILLI(SECOND));
         // run simulation
-        while ((currentTime = simulation.getElapsedTime().to(MILLI(SECOND))).getValue().doubleValue() < secondCheckpoint.getValue().doubleValue()) {
+        while ((currentTime = TimeStepManager.getElapsedTime().to(MILLI(SECOND))).getValue().doubleValue() < secondCheckpoint.getValue().doubleValue()) {
             simulation.nextEpoch();
             if (!firstCheckpointPassed && currentTime.getValue().doubleValue() > firstCheckpoint.getValue().doubleValue()) {
                 assertEquals(0.00476, UnitRegistry.concentration(membraneNode.getConcentrationContainer().get(CELL_OUTER_MEMBRANE, receptor)).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
@@ -379,9 +380,9 @@ class ReactionTest {
         boolean firstCheckpointPassed = false;
         Quantity<Time> secondCheckpoint = Quantities.getQuantity(500, MICRO(SECOND));
         // run simulation
-        while (simulation.getElapsedTime().isLessThanOrEqualTo(secondCheckpoint)) {
+        while (TimeStepManager.getElapsedTime().isLessThanOrEqualTo(secondCheckpoint)) {
             simulation.nextEpoch();
-            if (!firstCheckpointPassed && simulation.getElapsedTime().isGreaterThanOrEqualTo(firstCheckpoint)) {
+            if (!firstCheckpointPassed && TimeStepManager.getElapsedTime().isGreaterThanOrEqualTo(firstCheckpoint)) {
                 assertEquals(9.447E-7, node.getConcentrationContainer().get(INNER, bindee), 1e-10);
                 assertEquals(5.522E-8, vesicle.getConcentrationContainer().get(MEMBRANE, complex), 1e-10);
                 firstCheckpointPassed = true;
@@ -463,9 +464,9 @@ class ReactionTest {
         boolean firstCheckpointPassed = false;
         Quantity<Time> secondCheckpoint = Quantities.getQuantity(500, MICRO(SECOND));
         // run simulation
-        while (simulation.getElapsedTime().isLessThanOrEqualTo(secondCheckpoint)) {
+        while (TimeStepManager.getElapsedTime().isLessThanOrEqualTo(secondCheckpoint)) {
             simulation.nextEpoch();
-            if (!firstCheckpointPassed && simulation.getElapsedTime().isGreaterThanOrEqualTo(firstCheckpoint)) {
+            if (!firstCheckpointPassed && TimeStepManager.getElapsedTime().isGreaterThanOrEqualTo(firstCheckpoint)) {
                 assertEquals(9.447E-7, node.getConcentrationContainer().get(INNER, bindee), 1e-10);
                 assertEquals(5.522E-8, node.getConcentrationContainer().get(MEMBRANE, complex), 1e-10);
                 firstCheckpointPassed = true;
@@ -553,9 +554,9 @@ class ReactionTest {
         boolean firstCheckpointPassed = false;
         Quantity<Time> secondCheckpoint = Quantities.getQuantity(500, MICRO(SECOND));
         // run simulation
-        while (simulation.getElapsedTime().isLessThanOrEqualTo(secondCheckpoint)) {
+        while (TimeStepManager.getElapsedTime().isLessThanOrEqualTo(secondCheckpoint)) {
             simulation.nextEpoch();
-            if (!firstCheckpointPassed && simulation.getElapsedTime().isGreaterThanOrEqualTo(firstCheckpoint)) {
+            if (!firstCheckpointPassed && TimeStepManager.getElapsedTime().isGreaterThanOrEqualTo(firstCheckpoint)) {
                 assertEquals(9.691E-7, first.getConcentrationContainer().get(INNER, bindee), 1e-10);
                 assertEquals(4.845E-7, second.getConcentrationContainer().get(INNER, bindee), 1e-10);
                 assertEquals(4.630E-8, vesicle.getConcentrationContainer().get(MEMBRANE, complex), 1e-10);
@@ -676,7 +677,7 @@ class ReactionTest {
                 .microMolar()
                 .build();
 
-        while (simulation.getElapsedTime().isLessThan(Quantities.getQuantity(0.1, SECOND))) {
+        while (TimeStepManager.getElapsedTime().isLessThan(Quantities.getQuantity(0.1, SECOND))) {
             simulation.nextEpoch();
         }
 

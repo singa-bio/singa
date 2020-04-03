@@ -8,6 +8,7 @@ import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.modules.concentration.imlementations.reactions.Reaction;
 import bio.singa.simulation.model.modules.concentration.imlementations.reactions.ReactionBuilder;
+import bio.singa.simulation.model.simulation.error.TimeStepManager;
 import org.junit.jupiter.api.Test;
 import tech.units.indriya.quantity.Quantities;
 
@@ -60,11 +61,11 @@ public class NumericalApproximationTest {
                     .rate(RateConstant.create(rate).forward().firstOrder().timeUnit(SECOND).build())
                     .build();
 
-            while (simulation.getElapsedTime().isLessThanOrEqualTo(Quantities.getQuantity(10, SECOND))) {
+            while (TimeStepManager.getElapsedTime().isLessThanOrEqualTo(Quantities.getQuantity(10, SECOND))) {
                 simulation.nextEpoch();
 
                 double concentrationNumerical = UnitRegistry.concentration(automatonGraph.getNodes().iterator().next().getConcentrationManager().getConcentrationContainer().get(INNER, entityP)).to(MICRO_MOLE_PER_LITRE).getValue().doubleValue();
-                double time = simulation.getElapsedTime().to(SECOND).getValue().doubleValue();
+                double time = TimeStepManager.getElapsedTime().to(SECOND).getValue().doubleValue();
                 double concentrationAnalytical = 1.0 * (1.0 - Math.exp(-rate * time));
                 double localError = simulation.getScheduler().getErrorManager().getGlobalNumericalError().getValue();
 //                System.out.println(cutoff + ", " + time + ", " + concentrationNumerical + ", " + concentrationAnalytical + ", " + localError);

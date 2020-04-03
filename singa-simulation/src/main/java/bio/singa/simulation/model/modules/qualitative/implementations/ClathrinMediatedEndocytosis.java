@@ -14,6 +14,7 @@ import bio.singa.simulation.model.modules.concentration.ConcentrationDelta;
 import bio.singa.simulation.model.modules.concentration.ModuleState;
 import bio.singa.simulation.model.modules.qualitative.QualitativeModule;
 import bio.singa.simulation.model.sections.*;
+import bio.singa.simulation.model.simulation.error.TimeStepManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -185,7 +186,7 @@ public class ClathrinMediatedEndocytosis extends QualitativeModule {
         pit.setSpawnSite(spawnSite);
 
         // checkpoint time
-        Quantity<Time> checkpointTime = getSimulation().getElapsedTime().add(FeatureRandomizer.varyTime(getFeature(EndocytosisCheckpointTime.class).getContent()));
+        Quantity<Time> checkpointTime = TimeStepManager.getElapsedTime().add(FeatureRandomizer.varyTime(getFeature(EndocytosisCheckpointTime.class).getContent()));
         pit.setCheckpointTime(checkpointTime);
 
         // add pit
@@ -213,7 +214,7 @@ public class ClathrinMediatedEndocytosis extends QualitativeModule {
     private void prepareMaturePits() {
         for (EndocytoticPit maturingPit : vesicleLayer.getMaturingPits()) {
             // check each event if it should spawn
-            if (getSimulation().getElapsedTime().isGreaterThanOrEqualTo(maturingPit.getCheckpointTime())) {
+            if (TimeStepManager.getElapsedTime().isGreaterThanOrEqualTo(maturingPit.getCheckpointTime())) {
                 // move to completing events
                 maturedPits.add(maturingPit);
             }
@@ -228,7 +229,7 @@ public class ClathrinMediatedEndocytosis extends QualitativeModule {
         for (EndocytoticPit preMaturingPit : preMaturingPits) {
             logger.debug("Clathrin-coated pit at {} entered maturation stage.", preMaturingPit.getSpawnSite());
             // determine new checkpoint
-            preMaturingPit.setCheckpointTime(getSimulation().getElapsedTime().add(FeatureRandomizer.varyTime(getFeature(MaturationTime.class).getContent())));
+            preMaturingPit.setCheckpointTime(TimeStepManager.getElapsedTime().add(FeatureRandomizer.varyTime(getFeature(MaturationTime.class).getContent())));
             preMaturingPit.setCollecting(false);
             vesicleLayer.getMaturingPits().add(preMaturingPit);
             vesicleLayer.getAspiringPits().remove(preMaturingPit);
@@ -296,7 +297,7 @@ public class ClathrinMediatedEndocytosis extends QualitativeModule {
                 continue;
             }
             // check it maximal aspiration time has been reached
-            if (getSimulation().getElapsedTime().isGreaterThanOrEqualTo(aspiringPit.getCheckpointTime())) {
+            if (TimeStepManager.getElapsedTime().isGreaterThanOrEqualTo(aspiringPit.getCheckpointTime())) {
                 // move to aborting pits
                 abortedPits.add(aspiringPit);
             }

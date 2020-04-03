@@ -16,6 +16,7 @@ import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.modules.concentration.imlementations.reactions.ReactionBuilder;
 import bio.singa.simulation.model.sections.CellSubsection;
 import bio.singa.simulation.model.simulation.Simulation;
+import bio.singa.simulation.model.simulation.error.TimeStepManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -101,7 +102,7 @@ class NthOrderReactionTest {
         boolean firstCheckpointPassed = false;
         Quantity<Time> secondCheckpoint = Quantities.getQuantity(7000.0, MILLI(SECOND));
         // run simulation
-        while ((currentTime = simulation.getElapsedTime().to(MILLI(SECOND))).getValue().doubleValue() < secondCheckpoint.getValue().doubleValue()) {
+        while ((currentTime = TimeStepManager.getElapsedTime().to(MILLI(SECOND))).getValue().doubleValue() < secondCheckpoint.getValue().doubleValue()) {
             simulation.nextEpoch();
             if (!firstCheckpointPassed && currentTime.getValue().doubleValue() > firstCheckpoint.getValue().doubleValue()) {
                 assertEquals(9E-4, UnitRegistry.concentration(node.getConcentrationContainer().get(subsection, oxygen)).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
@@ -163,7 +164,7 @@ class NthOrderReactionTest {
 
         Quantity<Dimensionless> molecules = MolarConcentration.concentrationToMolecules(vesicle.getConcentrationContainer().get(MEMBRANE, sm));
         assertEquals(60, molecules.getValue().intValue());
-        while (simulation.getElapsedTime().isLessThanOrEqualTo(Quantities.getQuantity(13, SECOND))) {
+        while (TimeStepManager.getElapsedTime().isLessThanOrEqualTo(Quantities.getQuantity(13, SECOND))) {
             simulation.nextEpoch();
             System.out.println(UnitRegistry.getTime());
             molecules = MolarConcentration.concentrationToMolecules(vesicle.getConcentrationContainer().get(MEMBRANE, sm));

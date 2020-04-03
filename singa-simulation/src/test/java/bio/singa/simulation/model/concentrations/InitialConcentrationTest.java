@@ -11,6 +11,7 @@ import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.simulation.Simulation;
+import bio.singa.simulation.model.simulation.error.TimeStepManager;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -183,7 +184,7 @@ class InitialConcentrationTest {
 
         assertEquals(0.0, UnitRegistry.concentration(simulation.getGraph().getNode(0, 0).getConcentrationContainer().get(INNER, entity)).to(NANO_MOLE_PER_LITRE).getValue().doubleValue());
 
-        while (simulation.getElapsedTime().isLessThanOrEqualTo(Quantities.getQuantity(11, SECOND))) {
+        while (TimeStepManager.getElapsedTime().isLessThanOrEqualTo(Quantities.getQuantity(11, SECOND))) {
             simulation.nextEpoch();
         }
 

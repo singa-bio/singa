@@ -16,6 +16,7 @@ import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.sections.CellSubsections;
 import bio.singa.simulation.model.simulation.Simulation;
+import bio.singa.simulation.model.simulation.error.TimeStepManager;
 import org.junit.jupiter.api.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -221,8 +222,8 @@ class DiffusionTest {
             simulation.nextEpoch();
             currentConcentration = UnitRegistry.concentration(simulation.getGraph().getNode(coordinate).getConcentrationContainer().get(EXTRACELLULAR_REGION, species)).to(MOLE_PER_LITRE).getValue().doubleValue();
         }
-        logger.info("Half life time of {} reached at {}.", species.getIdentifier(), simulation.getElapsedTime().to(MICRO(SECOND)));
-        return simulation.getElapsedTime().to(MICRO(SECOND));
+        logger.info("Half life time of {} reached at {}.", species.getIdentifier(), TimeStepManager.getElapsedTime().to(MICRO(SECOND)));
+        return TimeStepManager.getElapsedTime().to(MICRO(SECOND));
     }
 
 }

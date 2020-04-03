@@ -7,8 +7,11 @@ import bio.singa.simulation.model.agents.pointlike.Vesicle;
  */
 public class DisplacementDeviation {
 
+
     public static final DisplacementDeviation MAXIMAL_POSITIVE_DEVIATION = new DisplacementDeviation(null, Double.MAX_VALUE);
+
     public static final DisplacementDeviation MINIMAL_DEVIATION = new DisplacementDeviation(null, 0);
+
     public static final DisplacementDeviation MAXIMAL_NEGATIVE_DEVIATION = new DisplacementDeviation(null, -Double.MAX_VALUE);
 
     private final Vesicle vesicle;

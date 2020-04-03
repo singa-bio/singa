@@ -83,7 +83,7 @@ public class SimulationStatus implements UpdateEventListener<GraphUpdatedEvent> 
     private void calculateTimeBasedStatus() {
         // calculate time remaining
         long currentTimeMillis = System.currentTimeMillis();
-        ComparableQuantity<Time> currentTimeSimulation = simulation.getElapsedTime().to(MICRO(SECOND));
+        ComparableQuantity<Time> currentTimeSimulation = TimeStepManager.getElapsedTime().to(MICRO(SECOND));
         double fractionDone = currentTimeSimulation.getValue().doubleValue() / terminationTime.getValue().doubleValue();
         long timeRequired = System.currentTimeMillis() - startingTime;
         long estimatedMillisRemaining = (long) (timeRequired / fractionDone) - timeRequired;
@@ -136,7 +136,7 @@ public class SimulationStatus implements UpdateEventListener<GraphUpdatedEvent> 
     }
 
     public long getProgressInMilliSeconds() {
-        return simulation.getElapsedTime().to(MILLI(SECOND)).getValue().longValue();
+        return TimeStepManager.getElapsedTime().to(MILLI(SECOND)).getValue().longValue();
     }
 
     public String getEstimatedTimeRemaining() {
@@ -162,7 +162,7 @@ public class SimulationStatus implements UpdateEventListener<GraphUpdatedEvent> 
     }
 
     public String getElapsedTime() {
-        return TimeFormatter.formatTime(simulation.getElapsedTime());
+        return TimeFormatter.formatTime(TimeStepManager.getElapsedTime());
     }
 
     public double getEpochsPerSecond() {

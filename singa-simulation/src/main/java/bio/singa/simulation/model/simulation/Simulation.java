@@ -27,8 +27,6 @@ import bio.singa.simulation.model.simulation.error.TimeStepManager;
 import bio.singa.simulation.trajectories.errors.DebugRecorder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tech.units.indriya.ComparableQuantity;
-import tech.units.indriya.quantity.Quantities;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Time;
@@ -84,11 +82,6 @@ public class Simulation {
     private long epoch;
 
     /**
-     * The currently elapsed time.
-     */
-    private ComparableQuantity<Time> elapsedTime;
-
-    /**
      * The sections top be updated
      */
     private List<Updatable> updatables;
@@ -123,7 +116,6 @@ public class Simulation {
         assignmentRules = new ArrayList<>();
         concentrations = new ArrayList<>();
         chemicalEntities = new HashMap<>();
-        elapsedTime = Quantities.getQuantity(0.0, UnitRegistry.getTimeUnit());
         epoch = 0;
         initializationDone = false;
         debug = false;
@@ -137,7 +129,7 @@ public class Simulation {
      * Calculates the next epoch.
      */
     public void nextEpoch() {
-        logger.debug("Starting epoch {} ({}).", epoch, elapsedTime);
+        logger.debug("Starting epoch {} ({}).", epoch, TimeStepManager.getElapsedTime());
         if (!initializationDone) {
             initializeModules();
             initializeVesicleLayer();
@@ -244,8 +236,7 @@ public class Simulation {
         ListIterator<InitialConcentration> iterator = concentrations.listIterator();
         while (iterator.hasNext()) {
             InitialConcentration concentration = iterator.next();
-            if (concentration.getTime().isLessThanOrEqualTo(elapsedTime)) {
-//                logger.info("Initialized concentration {}.", concentration);
+            if (concentration.getTime().isLessThanOrEqualTo(TimeStepManager.getElapsedTime())) {
                 concentration.apply(this);
                 if (!concentration.isFix()) {
                     iterator.remove();
@@ -418,11 +409,7 @@ public class Simulation {
      */
     private void updateEpoch() {
         epoch++;
-        elapsedTime = elapsedTime.add(UnitRegistry.getTime());
-    }
-
-    public ComparableQuantity<Time> getElapsedTime() {
-        return elapsedTime;
+        TimeStepManager.updateTime();
     }
 
     public AutomatonGraph getGraph() {

@@ -10,6 +10,7 @@ import bio.singa.simulation.events.UpdatableUpdatedEvent;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.simulation.error.NumericalError;
+import bio.singa.simulation.model.simulation.error.TimeStepManager;
 import bio.singa.simulation.trajectories.errors.DebugRecorder;
 import bio.singa.simulation.trajectories.flat.FlatUpdateRecorder;
 import org.slf4j.Logger;
@@ -152,7 +153,7 @@ public class SimulationManager implements Runnable {
     public void setSimulationTerminationToTime(Quantity<Time> time) {
         terminationTime = time.to(MICRO(SECOND));
         simulationStatus.setTerminationTime(terminationTime);
-        setTerminationCondition(s -> s.getElapsedTime().isLessThan(time));
+        setTerminationCondition(s -> TimeStepManager.getElapsedTime().isLessThan(time));
     }
 
     /**
@@ -198,7 +199,7 @@ public class SimulationManager implements Runnable {
      */
     public void setUpdateEmissionToTimePassed(Quantity<Time> timePassed) {
         emitCondition = s -> {
-            ComparableQuantity<Time> currentTime = s.getElapsedTime();
+            ComparableQuantity<Time> currentTime = TimeStepManager.getElapsedTime();
             if (currentTime.isGreaterThan(scheduledEmitTime)) {
                 scheduledEmitTime = currentTime.add(timePassed);
                 return true;
@@ -216,11 +217,11 @@ public class SimulationManager implements Runnable {
     }
 
     public void emitGraphEvent(Simulation simulation) {
-        graphEventEmitter.emitEvent(new GraphUpdatedEvent(simulation.getGraph(), simulation.getElapsedTime()));
+        graphEventEmitter.emitEvent(new GraphUpdatedEvent(simulation.getGraph(), TimeStepManager.getElapsedTime()));
     }
 
     public void emitNodeEvent(Simulation simulation, Updatable updatable) {
-        nodeEventEmitter.emitEvent(new UpdatableUpdatedEvent(simulation.getElapsedTime(), updatable));
+        nodeEventEmitter.emitEvent(new UpdatableUpdatedEvent(TimeStepManager.getElapsedTime(), updatable));
     }
 
     public boolean keepPlatformOpen() {
@@ -268,7 +269,7 @@ public class SimulationManager implements Runnable {
                     if (writeAliveFile) {
                         updateAliveFile();
                     }
-                    logger.debug("Emitting event after {} (epoch {}).", TimeFormatter.formatTime(simulation.getElapsedTime()), simulation.getEpoch());
+                    logger.debug("Emitting event after {} (epoch {}).", TimeFormatter.formatTime(TimeStepManager.getElapsedTime()), simulation.getEpoch());
                     emitGraphEvent(simulation);
                     for (Updatable updatable : simulation.getObservedUpdatables()) {
                         emitNodeEvent(simulation, updatable);
