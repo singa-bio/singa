@@ -6,6 +6,7 @@ import bio.singa.chemistry.annotations.taxonomy.Organism;
 import bio.singa.chemistry.entities.simple.Protein;
 import bio.singa.chemistry.features.variants.SequenceVariant;
 import bio.singa.chemistry.features.variants.SequenceVariants;
+import bio.singa.core.utility.Range;
 import bio.singa.features.identifiers.ENAAccessionNumber;
 import bio.singa.features.identifiers.GoTerm;
 import bio.singa.features.identifiers.UniProtIdentifier;
@@ -33,6 +34,7 @@ class UniProtParserTest {
     private static Protein aars;
     private static Protein transthyretin;
     private static Protein aarsByName;
+    private static Protein sirt;
 
     @BeforeAll
     static void initialize() {
@@ -40,6 +42,7 @@ class UniProtParserTest {
         aars = UniProtParserService.parse("P21889");
         transthyretin = UniProtParserService.parse("P02766");
         aarsByName = UniProtParserService.parse("SYD_ECOLI");
+        sirt = UniProtParserService.parse("Q96EB6");
     }
 
     @Test
@@ -143,5 +146,16 @@ class UniProtParserTest {
         assertEquals("1C0A", ((PDBIdentifier) annotations.get(0).getContent()).getContent());
         assertEquals("1EQR", ((PDBIdentifier) annotations.get(1).getContent()).getContent());
         assertEquals("1IL2", ((PDBIdentifier) annotations.get(2).getContent()).getContent());
+    }
+
+    @Test
+    void parseUniProtRange() {
+        List<Annotation> annotations = sirt.getAnnotationsOfType(AnnotationType.PDB_RANGE);
+        // simple format: A/B=241-516
+        assertEquals("4i5i-1-A-241", ((Range<?>) annotations.get(0).getContent()).getLowerBound().toString());
+        assertEquals("4i5i-1-A-516", ((Range<?>) annotations.get(0).getContent()).getUpperBound().toString());
+        // concatenated format A=234-510, B=641-663
+        assertEquals("4kxq-1-A-234", ((Range<?>) annotations.get(5).getContent()).getLowerBound().toString());
+        assertEquals("4kxq-1-A-510", ((Range<?>) annotations.get(5).getContent()).getUpperBound().toString());
     }
 }

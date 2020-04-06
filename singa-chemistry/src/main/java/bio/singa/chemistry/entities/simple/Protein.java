@@ -4,8 +4,10 @@ import bio.singa.chemistry.annotations.Annotation;
 import bio.singa.chemistry.annotations.AnnotationType;
 import bio.singa.chemistry.annotations.taxonomy.Organism;
 import bio.singa.chemistry.entities.EntityRegistry;
+import bio.singa.core.utility.Range;
 import bio.singa.features.identifiers.GoTerm;
 import bio.singa.features.model.Feature;
+import bio.singa.structure.model.identifiers.LeafIdentifier;
 import bio.singa.structure.model.identifiers.PDBIdentifier;
 
 import java.util.HashSet;
@@ -18,10 +20,6 @@ import java.util.Set;
 public class Protein extends AbstractChemicalEntity {
 
     private static final Set<Class<? extends Feature>> availableFeatures = new HashSet<>();
-
-    public static Builder create(String identifier) {
-        return new Builder(identifier);
-    }
 
     static {
         Protein.availableFeatures.addAll(AbstractChemicalEntity.availableFeatures);
@@ -39,6 +37,10 @@ public class Protein extends AbstractChemicalEntity {
         EntityRegistry.put(identifier, this);
     }
 
+    public static Builder create(String identifier) {
+        return new Builder(identifier);
+    }
+
     /**
      * Adds an organism as an annotation.
      *
@@ -51,7 +53,7 @@ public class Protein extends AbstractChemicalEntity {
     /**
      * Adds an organism with a description as an annotation to
      *
-     * @param organism The organism.
+     * @param organism    The organism.
      * @param description The description.
      */
     public void addOrganism(Organism organism, String description) {
@@ -142,6 +144,30 @@ public class Protein extends AbstractChemicalEntity {
      */
     public void addPdbIdentifier(PDBIdentifier pdbIdentifier) {
         addAnnotation(new Annotation<>(AnnotationType.PDB_STRUCTURE, pdbIdentifier));
+    }
+
+    /**
+     * Adds a new PDB structure range to the protein.
+     *
+     * @param pdbIdentifier      The PDB identifier of the structure.
+     * @param rangeSpecification The range specification according to UniProt format (e.g. A/B=1-590).
+     */
+    public void addPdbRange(PDBIdentifier pdbIdentifier, String rangeSpecification) {
+        // parse range specification
+        String[] specifications = rangeSpecification.split(",");
+        for (String specification : specifications) {
+            specification = specification.trim();
+            String[] ranges = specification.split("=");
+            String[] chains = ranges[0].split("/");
+            String[] range = ranges[1].split("-");
+            for (String chain : chains) {
+                String start = range[0];
+                String end = range[1];
+                LeafIdentifier startingLeaf = LeafIdentifier.fromString(pdbIdentifier + "-1-" + chain + "-" + start);
+                LeafIdentifier endingLeaf = LeafIdentifier.fromString(pdbIdentifier + "-1-" + chain + "-" + end);
+                addAnnotation(new Annotation<>(AnnotationType.PDB_RANGE, new Range<>(startingLeaf, endingLeaf)));
+            }
+        }
     }
 
     public static class Builder extends AbstractChemicalEntity.Builder<Protein, Builder> {

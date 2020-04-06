@@ -1,5 +1,6 @@
 package bio.singa.mathematics.graphs.model;
 
+import bio.singa.core.utility.Pair;
 import bio.singa.mathematics.algorithms.graphs.DisconnectedSubgraphFinder;
 import bio.singa.mathematics.geometry.faces.Rectangle;
 import bio.singa.mathematics.graphs.grid.GridGraph;
@@ -15,10 +16,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
+import java.util.function.BiFunction;
 
 /**
  * A factory class used to create graphs and convert other things to graphs.
@@ -27,9 +26,8 @@ import java.util.Objects;
  */
 public class Graphs {
 
-    private static final Logger logger = LoggerFactory.getLogger(Graphs.class);
-
     public static final Rectangle DEFAULT_BOUNDING_BOX = new Rectangle(400, 400);
+    private static final Logger logger = LoggerFactory.getLogger(Graphs.class);
 
     /**
      * Generates a linear graph with the given number of nodes. Each node will be connected to its predecessor.
@@ -45,7 +43,7 @@ public class Graphs {
      * Generates a linear graph with the given number of nodes. Each node will be connected to its predecessor.
      *
      * @param numberOfNodes The number of nodes the graph should contain.
-     * @param boundingBox A bounding box where the nodes should be positioned.
+     * @param boundingBox   A bounding box where the nodes should be positioned.
      * @return A linear Graph
      */
     public static UndirectedGraph buildLinearGraph(int numberOfNodes, Rectangle boundingBox) {
@@ -76,7 +74,7 @@ public class Graphs {
      * successor.
      *
      * @param numberOfNodes The number of nodes the circle should contain.
-     * @param boundingBox A bounding box where the nodes should be positioned.
+     * @param boundingBox   A bounding box where the nodes should be positioned.
      * @return A circular graph.
      */
     public static UndirectedGraph buildCircularGraph(int numberOfNodes, Rectangle boundingBox) {
@@ -101,7 +99,7 @@ public class Graphs {
      * Generates a graph with a tree-like structure, where every node is connected to one predecessor and two
      * successors, thus forming a fractal structure.
      *
-     * @param depth The depth of the tree.
+     * @param depth       The depth of the tree.
      * @param boundingBox A bounding box where the nodes should be positioned.
      * @return A tree-like graph.
      */
@@ -120,8 +118,8 @@ public class Graphs {
     /**
      * A private method used to grow the tree-like graph structure. The given graph will be modified!
      *
-     * @param depth The current depth.
-     * @param graph The graph to add the new node.
+     * @param depth       The current depth.
+     * @param graph       The graph to add the new node.
      * @param predecessor The previously added node.
      * @param boundingBox A bounding box where the nodes should be positioned.
      */
@@ -138,7 +136,7 @@ public class Graphs {
     /**
      * Generates a randomised graph based on the Erdös - Renyi model.
      *
-     * @param numberOfNodes The number of nodes the graph should contain.
+     * @param numberOfNodes   The number of nodes the graph should contain.
      * @param edgeProbability The probability, that two nodes will be connected.
      * @return A randomized graph.
      */
@@ -149,9 +147,10 @@ public class Graphs {
     /**
      * Generates a randomised graph based on the Erdös - Renyi model.
      *
-     * @param numberOfNodes The number of nodes the graph should contain.
-     * @param edgeProbability The probability, that two nodes will be connected (must be between 0.0 (no nodes are connected) and 1.0 (every node is connected))
-     * @param boundingBox A bounding box where the nodes should be positioned.
+     * @param numberOfNodes   The number of nodes the graph should contain.
+     * @param edgeProbability The probability, that two nodes will be connected (must be between 0.0 (no nodes are
+     *                        connected) and 1.0 (every node is connected))
+     * @param boundingBox     A bounding box where the nodes should be positioned.
      * @return A randomized graph.
      */
     public static UndirectedGraph buildRandomGraph(int numberOfNodes, double edgeProbability, Rectangle boundingBox) {
@@ -181,7 +180,7 @@ public class Graphs {
      * Generates a grid graph with columns and rows.
      *
      * @param columns The Number of columns
-     * @param rows The Number of rows
+     * @param rows    The Number of rows
      * @return A rectangular grid graph.
      */
     public static GridGraph buildGridGraph(int columns, int rows) {
@@ -192,8 +191,8 @@ public class Graphs {
      * Generates a grid graph with columns and rows.
      *
      * @param boundingBox Rectangle where the Graph is positioned.
-     * @param columns The Number of columns
-     * @param rows The Number of rows
+     * @param columns     The Number of columns
+     * @param rows        The Number of rows
      * @return A rectangular grid graph.
      */
     public static GridGraph buildGridGraph(int columns, int rows, Rectangle boundingBox) {
@@ -244,7 +243,7 @@ public class Graphs {
     /**
      * Converts a {@link BinaryTree} to a {@link GenericGraph}.
      *
-     * @param tree The tree.
+     * @param tree          The tree.
      * @param <ContentType> The content of the resulting generic graph.
      * @return The generic graph.
      */
@@ -263,9 +262,9 @@ public class Graphs {
      * Converts a {@link BinaryTreeNode} to a {@link GenericNode} and connects it in the given graph to the source node.
      * Recursively traverses all child nodes.
      *
-     * @param graph The graph where the node is added.
-     * @param source The node to connect to.
-     * @param treeNode The node to convert.
+     * @param graph         The graph where the node is added.
+     * @param source        The node to connect to.
+     * @param treeNode      The node to convert.
      * @param <ContentType> The content type of the node.
      */
     private static <ContentType> void traverseNode(GenericGraph<ContentType> graph,
@@ -287,8 +286,8 @@ public class Graphs {
      * Converts a {@link BinaryTreeNode} to a {@link GenericNode} with the next free node identifer from the graph.
      * Places the node randomly in a 200 x 200 rectangle.
      *
-     * @param treeNode The node to convert.
-     * @param graph The graph to take the index from.
+     * @param treeNode      The node to convert.
+     * @param graph         The graph to take the index from.
      * @param <ContentType> The content type of the node.
      * @return The converted {@link GenericNode}.
      */
@@ -301,13 +300,14 @@ public class Graphs {
 
     /**
      * Given a graph, this method returns a list of all disconnected subgraphs. The subgraphs are copies and changes are
-     * not reflected back into the original graph, but node and edge identifiers, as well as attached data is conserved.
+     * not reflected back into the original graph, but node and edge identifiers, as well as attached data is
+     * conserved.
      *
-     * @param graph The graph to decompose.
-     * @param <NodeType> The type of the nodes.
-     * @param <EdgeType> The type of the edges.
-     * @param <GraphType> The type of the graph.
-     * @param <VectorType> The position type.
+     * @param graph            The graph to decompose.
+     * @param <NodeType>       The type of the nodes.
+     * @param <EdgeType>       The type of the edges.
+     * @param <GraphType>      The type of the graph.
+     * @param <VectorType>     The position type.
      * @param <IdentifierType> The type of the identifier.
      * @return A list of all disconnected subgraphs.
      */
@@ -315,6 +315,85 @@ public class Graphs {
             EdgeType extends Edge<NodeType>, VectorType extends Vector, IdentifierType,
             GraphType extends Graph<NodeType, EdgeType, IdentifierType>> List<GraphType> findDisconnectedSubgraphs(GraphType graph) {
         return DisconnectedSubgraphFinder.findDisconnectedSubgraphs(graph);
+    }
+
+    /**
+     * Returns a modular product graph of the graphs G and G'.
+     *
+     * @param graph1 The first graph (G).
+     * @param graph2 The second graph (G').
+     * @return A modular graph with nodes containing pairs of nodes u and u' from G and G'.
+     */
+    public static <NodeType extends Node<NodeType, VectorType, IdentifierType>,
+            EdgeType extends Edge<NodeType>, VectorType extends Vector, IdentifierType,
+            GraphType extends Graph<NodeType, EdgeType, IdentifierType>> GenericGraph<Pair<NodeType>> modularProduct(
+            GraphType graph1, GraphType graph2) {
+        return modularProduct(graph1, graph2, (n1, n2) -> true, (e1, e2) -> true);
+    }
+
+    /**
+     * Returns a modular product graph of the graphs G and G'.
+     *
+     * @param graph1           The first graph (G).
+     * @param graph2           The second graph (G').
+     * @param nodeCondition    A bifunction that defines which nodes to be paired
+     * @param <NodeType>       The type of the nodes.
+     * @param <EdgeType>       The type of the edges.
+     * @param <GraphType>      The type of the graph.
+     * @param <VectorType>     The position type.
+     * @param <IdentifierType> The type of the identifier.
+     * @return A modular graph with nodes containing pairs of nodes u and u' from G and G'.
+     */
+    public static <NodeType extends Node<NodeType, VectorType, IdentifierType>,
+            EdgeType extends Edge<NodeType>, VectorType extends Vector, IdentifierType,
+            GraphType extends Graph<NodeType, EdgeType, IdentifierType>> GenericGraph<Pair<NodeType>> modularProduct(
+            GraphType graph1, GraphType graph2, BiFunction<NodeType, NodeType, Boolean> nodeCondition,
+            BiFunction<EdgeType, EdgeType, Boolean> edgeCondition) {
+        List<NodeType> nodes1 = new ArrayList<>(graph1.getNodes());
+        List<NodeType> nodes2 = new ArrayList<>(graph2.getNodes());
+        List<Pair<NodeType>> nodePairs = new ArrayList<>();
+        // generate node pairs
+        for (int i = 0; i < nodes1.size(); i++) {
+            for (int j = 0; j < nodes2.size(); j++) {
+                NodeType node1 = nodes1.get(i);
+                NodeType node2 = nodes2.get(j);
+                if (!nodeCondition.apply(node1, node2)) {
+                    logger.debug("node condition does not apply for nodes {}-{}", node1, node2);
+                    continue;
+                }
+                Pair<NodeType> nodePair = new Pair<>(node1, node2);
+                nodePairs.add(nodePair);
+            }
+        }
+        GenericGraph<Pair<NodeType>> modularProduct = new GenericGraph<>();
+        nodePairs.forEach(modularProduct::addNode);
+        // check for connectivity of product nodes
+        for (int i = 0; i < nodePairs.size(); i++) {
+            Pair<NodeType> pair1 = nodePairs.get(i);
+            for (int j = i + 1; j < nodePairs.size(); j++) {
+                // pairs (u,v) and (u',v') are connected iff:
+                // u is adjacent with u' and v is adjacent with v' , or
+                // u is not adjacent with u' and v is not adjacent with v', and
+                // edge condition between edge connecting u and u' and edge connecting v and v' is met
+                Pair<NodeType> pair2 = nodePairs.get(j);
+                if (pair1.getFirst().equals(pair2.getFirst()) || pair1.getSecond().equals(pair2.getSecond())) {
+                    continue;
+                }
+                boolean uCondition = pair1.getFirst().getNeighbours().contains(pair2.getFirst());
+                boolean vCondition = pair1.getSecond().getNeighbours().contains(pair2.getSecond());
+                boolean edgeMatch = false;
+                if (uCondition && vCondition) {
+                    EdgeType uEdge = graph1.getEdgeBetween(pair1.getFirst(), pair2.getFirst()).orElseThrow(NoSuchElementException::new);
+                    EdgeType vEdge = graph2.getEdgeBetween(pair1.getSecond(), pair2.getSecond()).orElseThrow(NoSuchElementException::new);
+                    edgeMatch = edgeCondition.apply(uEdge, vEdge);
+                }
+                if ((uCondition && vCondition && edgeMatch) || (!uCondition && !vCondition)) {
+                    // connect pair nodes
+                    modularProduct.addEdgeBetween(pair1, pair2);
+                }
+            }
+        }
+        return modularProduct;
     }
 
     public static <NodeType extends Node<NodeType, VectorType, IdentifierType>,

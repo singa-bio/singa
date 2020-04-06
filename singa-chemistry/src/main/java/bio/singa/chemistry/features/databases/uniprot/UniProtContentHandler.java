@@ -52,6 +52,7 @@ public class UniProtContentHandler implements ContentHandler {
     private List<SequenceVariant> sequenceVariants;
     private List<GoTerm> goTerms;
     private List<PDBIdentifier> pdbIdentifiers;
+    private Map<PDBIdentifier, String> pdbRanges;
     private SequenceVariant currentSequenceVariant;
     private String primaryGeneName;
 
@@ -88,6 +89,7 @@ public class UniProtContentHandler implements ContentHandler {
     private String currentGoEvidence;
     private String currentGoProject;
     private String currentPdbIdentifier;
+    private String currentPdbChainMapping;
 
     public UniProtContentHandler() {
         names = new ArrayList<>();
@@ -98,6 +100,7 @@ public class UniProtContentHandler implements ContentHandler {
         evidenceMap = new HashMap<>();
         goTerms = new ArrayList<>();
         pdbIdentifiers = new ArrayList<>();
+        pdbRanges = new HashMap<>();
     }
 
     public UniProtContentHandler(String primaryIdentifier) {
@@ -134,6 +137,8 @@ public class UniProtContentHandler implements ContentHandler {
         goTerms.forEach(protein::addGoTerm);
         // add PDB identifiers
         pdbIdentifiers.forEach(protein::addPdbIdentifier);
+        // add PDB ranges
+        pdbRanges.forEach(protein::addPdbRange);
         // add variants
         protein.setFeature(new SequenceVariants(sequenceVariants, UniProtDatabase.evidence));
         // add gene name
@@ -342,6 +347,11 @@ public class UniProtContentHandler implements ContentHandler {
                         currentGoProject = atts.getValue("value");
                     }
                 }
+                if (inPdbReference) {
+                    if (atts.getValue("type").equals("chains")) {
+                        currentPdbChainMapping = atts.getValue("value");
+                    }
+                }
                 break;
             }
             case "sequence": {
@@ -417,7 +427,9 @@ public class UniProtContentHandler implements ContentHandler {
                     inGoReference = false;
                 }
                 if (inPdbReference) {
-                    pdbIdentifiers.add(new PDBIdentifier(currentPdbIdentifier));
+                    PDBIdentifier pdbIdentifier = new PDBIdentifier(currentPdbIdentifier);
+                    pdbIdentifiers.add(pdbIdentifier);
+                    pdbRanges.put(pdbIdentifier, currentPdbChainMapping);
                     inPdbReference = false;
                 }
                 inEMBLReference = false;
