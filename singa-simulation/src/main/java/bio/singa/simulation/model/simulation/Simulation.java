@@ -202,7 +202,7 @@ public class Simulation {
         }
 
         // if the time step was decreased in the last n epochs do not consider it
-        if(epoch-epochWithRescaledTimeStep < 10) {
+        if (epoch - epochWithRescaledTimeStep < 10) {
             return false;
         }
 
@@ -236,11 +236,9 @@ public class Simulation {
         ListIterator<InitialConcentration> iterator = concentrations.listIterator();
         while (iterator.hasNext()) {
             InitialConcentration concentration = iterator.next();
-            if (concentration.getTime().isLessThanOrEqualTo(TimeStepManager.getElapsedTime())) {
-                concentration.apply(this);
-                if (!concentration.isFix()) {
-                    iterator.remove();
-                }
+            concentration.apply(this);
+            if (!concentration.isFix()) {
+                iterator.remove();
             }
         }
     }

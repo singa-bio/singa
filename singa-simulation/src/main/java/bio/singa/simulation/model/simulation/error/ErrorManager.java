@@ -86,6 +86,10 @@ public class ErrorManager {
         }
     }
 
+    public DisplacementDeviation getLocalDisplacementDeviation() {
+        return localDisplacementDeviation;
+    }
+
     public NumericalError getLocalNumericalError() {
         return localNumericalError;
     }
@@ -263,7 +267,7 @@ public class ErrorManager {
             return false;
         }
         // local numerical error was close to tolerance
-        if (localNumericalTolerance - localNumericalError.getValue() <= 0.25 * localNumericalTolerance) {
+        if (localNumericalErrorIsCritical()) {
             return false;
         }
         // local displacement deviation above lower threshold
@@ -272,6 +276,22 @@ public class ErrorManager {
         }
         // all errors where small
         return true;
+    }
+
+    public boolean localNumericalErrorIsCritical() {
+        return localNumericalTolerance - localNumericalError.getValue() <= 0.25 * localNumericalTolerance;
+    }
+
+    public boolean localDisplacementDeviationIsCritical() {
+        return localDisplacementDeviation.getValue() > displacementLowerThreshold;
+    }
+
+    public boolean globalNumericalErrorIsCritical() {
+        return globalErrorManager.errorIsCritical();
+    }
+
+    public boolean globalDeviationIsCritical() {
+        return globalDeviationManager.deviationIsCritical();
     }
 
     public enum CalculationStage {

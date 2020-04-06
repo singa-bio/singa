@@ -17,6 +17,7 @@ import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.simulation.model.agents.pointlike.Vesicle;
 import bio.singa.simulation.model.agents.pointlike.VesicleLayer;
 import bio.singa.simulation.model.concentrations.ConcentrationBuilder;
+import bio.singa.simulation.model.concentrations.TimedCondition;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.graphs.AutomatonNode;
@@ -39,8 +40,7 @@ import javax.measure.quantity.Time;
 import static bio.singa.chemistry.reactions.conditions.CandidateConditionBuilder.*;
 import static bio.singa.chemistry.reactions.reactors.ReactionChainBuilder.add;
 import static bio.singa.chemistry.reactions.reactors.ReactionChainBuilder.bind;
-import static bio.singa.features.units.UnitProvider.MICRO_MOLE_PER_LITRE;
-import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
+import static bio.singa.features.units.UnitProvider.*;
 import static bio.singa.simulation.model.sections.CellRegions.CELL_OUTER_MEMBRANE_REGION;
 import static bio.singa.simulation.model.sections.CellRegions.CYTOPLASM_REGION;
 import static bio.singa.simulation.model.sections.CellSubsections.CELL_OUTER_MEMBRANE;
@@ -48,6 +48,7 @@ import static bio.singa.simulation.model.sections.CellSubsections.CYTOPLASM;
 import static bio.singa.simulation.model.sections.CellTopology.INNER;
 import static bio.singa.simulation.model.sections.CellTopology.MEMBRANE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static tech.units.indriya.unit.MetricPrefix.*;
 import static tech.units.indriya.unit.Units.*;
 
@@ -756,6 +757,44 @@ class ReactionTest {
 
         ReactionBuilder.generateNetwork();
 
+    }
+
+    @Test
+    void timedReactions() {
+
+        Simulation simulation = new Simulation();
+        simulation.setMaximalTimeStep(Quantities.getQuantity(0.1, SECOND));
+        AutomatonGraph automatonGraph = AutomatonGraphs.singularGraph(CYTOPLASM_REGION);
+        simulation.setGraph(automatonGraph);
+
+        SmallMolecule camp = SmallMolecule.create("camp").build();
+
+        RateConstant<?> camp_influx = RateConstant.create(10)
+                .forward().zeroOrder()
+                .concentrationUnit(NANO_MOLE_PER_LITRE)
+                .timeUnit(SECOND)
+                .build();
+
+        ReactionBuilder.staticReactants(simulation)
+                .addProduct(camp, INNER)
+                .irreversible()
+                .rate(camp_influx)
+                .condition(TimedCondition.of(TimedCondition.Relation.LESS, Quantities.getQuantity(5, SECOND)))
+                .build();
+
+        double previous = 0.0;
+        while (TimeStepManager.getElapsedTime().isLessThan(Quantities.getQuantity(10, SECOND))) {
+            simulation.nextEpoch();
+            double current = automatonGraph.getNode(0, 0).getConcentrationContainer().get(INNER, camp);
+            if (TimeStepManager.getElapsedTime().isLessThan(Quantities.getQuantity(5, SECOND))) {
+                assertTrue(current > previous);
+            }
+            if (TimeStepManager.getElapsedTime().isGreaterThan(Quantities.getQuantity(5.1, SECOND))) {
+                assertEquals(current, previous);
+            }
+            System.out.println(UnitRegistry.humanReadable(TimeStepManager.getElapsedTime())+" : "+UnitRegistry.concentration(current).to(NANO_MOLE_PER_LITRE));
+            previous= current;
+        }
 
     }
 }

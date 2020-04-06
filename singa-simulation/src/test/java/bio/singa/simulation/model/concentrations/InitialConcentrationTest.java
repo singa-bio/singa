@@ -12,12 +12,14 @@ import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.simulation.Simulation;
 import bio.singa.simulation.model.simulation.error.TimeStepManager;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import tech.units.indriya.quantity.Quantities;
 
 import static bio.singa.features.units.UnitProvider.NANO_MOLE_PER_LITRE;
+import static bio.singa.simulation.model.concentrations.TimedCondition.Relation.GREATER;
 import static bio.singa.simulation.model.sections.CellRegions.CELL_OUTER_MEMBRANE_REGION;
 import static bio.singa.simulation.model.sections.CellSubsections.*;
 import static bio.singa.simulation.model.sections.CellTopology.INNER;
@@ -37,8 +39,16 @@ class InitialConcentrationTest {
 
     @BeforeAll
     static void initialize() {
+        UnitRegistry.reinitialize();
+        Environment.reset();
         // entity
         entity = SmallMolecule.create("entity").build();
+    }
+
+    @AfterEach
+    void cleanUp() {
+        UnitRegistry.reinitialize();
+        Environment.reset();
     }
 
     @Test
@@ -178,7 +188,7 @@ class InitialConcentrationTest {
                 .subsection(CYTOPLASM)
                 .concentrationValue(10)
                 .nanoMolar()
-                .atTimeValue(10)
+                .timed(GREATER, 10)
                 .seconds()
                 .build();
 

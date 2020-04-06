@@ -173,4 +173,12 @@ public class SimulationStatus implements UpdateEventListener<GraphUpdatedEvent> 
         return TimeFormatter.formatTime(UnitRegistry.getTime());
     }
 
+    public double getGlobalDeviation() {
+        return simulation.getScheduler().getErrorManager().getGlobalDisplacementDeviation().getValue();
+    }
+
+    public double getLocalDeviation() {
+        return simulation.getScheduler().getErrorManager().getLocalDisplacementDeviation().getValue();
+    }
+
 }
