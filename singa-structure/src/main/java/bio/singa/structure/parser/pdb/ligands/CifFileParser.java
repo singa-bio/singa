@@ -33,6 +33,7 @@ public class CifFileParser {
     private String oneLetterCode;
     private String threeLetterCode;
     private String parent;
+    private String inchi;
 
     private CifFileParser(List<String> lines) {
         this.lines = lines;
@@ -60,7 +61,14 @@ public class CifFileParser {
      * @return The extracted value.
      */
     private static String extractValue(String line) {
-        return line.substring(DEFAULT_VALUE_SPACING).replace("\"", "").trim();
+        // assumes key-value pair per line, separated by white space characters
+        // FIXME errors occurring because CIF files have been apparently been reformatted by RCSB, multi line entries might occur, see e.g. _chem_comp.name in http://files.rcsb.org/ligands/view/5MU.cif
+        // FIXME DEFAULT_VALUE_SPACING concept does not work anymore
+        String[] split = line.split("\\s+");
+        if (split.length < 2) {
+            return "";
+        }
+        return split[1];
     }
 
     /**
@@ -71,9 +79,11 @@ public class CifFileParser {
     private void collectLines(boolean skipAtoms) {
         boolean bondSection = false;
         boolean atomSection = false;
+        boolean descriptorSection = false;
 
         // extract information
-        for (String line : lines) {
+        for (int i = 0; i < lines.size(); i++) {
+            String line = lines.get(i);
             // extract information
             extractInformation(line);
             // signifies start of bond section
@@ -103,6 +113,46 @@ public class CifFileParser {
                     atomLines.add(line);
                 }
             }
+            // chemical identifier section
+            if (line.startsWith("_pdbx_chem_comp_descriptor.descriptor")) {
+                descriptorSection = true;
+            } else if (descriptorSection) {
+                if (line.startsWith("#")) {
+                    descriptorSection = false;
+                    continue;
+                }
+                String[] splitLine = line.split("\\s+");
+                if (splitLine.length == 1) {
+                    continue;
+                }
+                if (splitLine[1].equals("InChI")) {
+                    // multi line InChI detected
+                    if (splitLine.length == 4) {
+                        List<String> multiLineInchi = lines.subList(i + 1, lines.size());
+                        Iterator<String> iterator = multiLineInchi.iterator();
+                        StringJoiner assembledInchi = new StringJoiner("");
+                        while (iterator.hasNext()) {
+                            String inchiLine = iterator.next().trim();
+                            if (inchiLine.startsWith("\"")) {
+                                // 1 line complete InChI read
+                                if (inchiLine.endsWith("\"")) {
+                                    inchi = inchiLine.replace("\"", "");
+                                    break;
+                                } else {
+                                    // TODO check whether this occurs at any point in the whole PDB
+                                    // start of multiline InChI
+                                    assembledInchi.add(inchiLine.replace("\"", ""));
+                                }
+                            } else if (inchiLine.endsWith("\"")) {
+                                inchi = assembledInchi.toString();
+                            }
+                        }
+                    } else {
+                        // single line InChI detected
+                        inchi = splitLine[4].replace("\"", "");
+                    }
+                }
+            }
         }
     }
 
@@ -113,10 +163,10 @@ public class CifFileParser {
         for (String line : atomLines) {
             String[] splitLine = line.split("\\s+");
             /// 1 = atom name, 3 = element, 9 = x coordinate, 10 = y coordinate, 11 = z coordinates, 17 = identifer
-            int identifier = Integer.valueOf(splitLine[17]);
+            int identifier = Integer.parseInt(splitLine[17]);
             Element element = ElementProvider.getElementBySymbol(splitLine[3]).orElse(ElementProvider.UNKOWN);
             String atomName = splitLine[1].replace("\"", "");
-            Vector3D coordinates = new Vector3D(Double.valueOf(splitLine[9]), Double.valueOf(splitLine[10]), Double.valueOf(splitLine[11]));
+            Vector3D coordinates = new Vector3D(Double.parseDouble(splitLine[9]), Double.parseDouble(splitLine[10]), Double.parseDouble(splitLine[11]));
             OakAtom atom = new OakAtom(identifier, element, atomName, coordinates);
             atoms.put(atomName, atom);
         }
@@ -240,7 +290,9 @@ public class CifFileParser {
             // else this is a ligand
             assignedFamily = LeafSkeleton.AssignedFamily.LIGAND;
         }
-        return new LeafSkeleton(threeLetterCode, parent, assignedFamily, bonds);
+        LeafSkeleton leafSkeleton = new LeafSkeleton(threeLetterCode, parent, assignedFamily, bonds);
+        leafSkeleton.setInchi(inchi);
+        return leafSkeleton;
     }
 
     /**

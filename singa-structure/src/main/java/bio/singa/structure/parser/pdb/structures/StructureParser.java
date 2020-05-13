@@ -337,6 +337,10 @@ public class StructureParser {
             return this;
         }
 
+        public Map<String, LeafSkeleton> getSkeletons() {
+            return selector.getSkeletons();
+        }
+
         /**
          * Parses the structure as specifies during teh selection process and returns is,
          *
@@ -420,6 +424,10 @@ public class StructureParser {
          */
         public String getCurrentChainIdentifier() {
             return selector.sourceSelector.contentIterator.getCurrentChainIdentifier();
+        }
+
+        public Map<String, LeafSkeleton> getSkeletons() {
+            return selector.getSkeletons();
         }
 
         /**
@@ -736,6 +744,9 @@ public class StructureParser {
                     '}';
         }
 
+        public Map<String, LeafSkeleton> getSkeletons() {
+            return skeletons;
+        }
     }
 
     /**
