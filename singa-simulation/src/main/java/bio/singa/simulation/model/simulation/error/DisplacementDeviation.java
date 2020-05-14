@@ -18,7 +18,7 @@ public class DisplacementDeviation {
     public static final DisplacementDeviation MINIMAL_DEVIATION = new DisplacementDeviation(null, 0);
 
     /**
-     * If reference value is large then current displacement, the deviation is small (below zero).
+     * If reference value is larger then current displacement, the deviation is small (below zero).
      */
     public static final DisplacementDeviation MAXIMAL_NEGATIVE_DEVIATION = new DisplacementDeviation(null, -Double.MAX_VALUE);
 

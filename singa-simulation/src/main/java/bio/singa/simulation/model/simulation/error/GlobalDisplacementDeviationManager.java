@@ -26,7 +26,7 @@ public class GlobalDisplacementDeviationManager implements UpdateEventListener<R
     public GlobalDisplacementDeviationManager(UpdateScheduler updateScheduler) {
         this.updateScheduler = updateScheduler;
         vesicleLayer = updateScheduler.getSimulation().getVesicleLayer();
-        deviation = DisplacementDeviation.MINIMAL_DEVIATION;
+        deviation = MAXIMAL_NEGATIVE_DEVIATION;
         currentStage = EVALUATION_STAGE;
         reset();
     }

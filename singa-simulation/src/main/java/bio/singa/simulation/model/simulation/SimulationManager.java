@@ -330,7 +330,9 @@ public class SimulationManager implements Runnable {
                 } else {
                     logger.info("ERROR T   : {} ({}, {})", String.format("%6.3e", simulationStatus.getLargestGlobalError().getValue()), simulationStatus.getLargestGlobalError().getChemicalEntity(), simulationStatus.getLargestGlobalError().getUpdatable().getStringIdentifier());
                 }
-                logger.info("DEVIATION : {} global {} local", String.format("%.2f", simulationStatus.getGlobalDeviation()), String.format("%.2f",simulationStatus.getLocalDeviation()));
+                String deviationGlobal = simulationStatus.getGlobalDeviation() == -Double.MAX_VALUE ? "minimal" : String.format("%.2f", simulationStatus.getGlobalDeviation());
+                String deviationLocal = simulationStatus.getLocalDeviation() == -Double.MAX_VALUE ? "minimal" : String.format("%.2f", simulationStatus.getLocalDeviation());
+                logger.info("DEVIATION : {} total {} local", deviationGlobal, deviationLocal);
             }
             previousTimeMillis = currentTimeMillis;
         }

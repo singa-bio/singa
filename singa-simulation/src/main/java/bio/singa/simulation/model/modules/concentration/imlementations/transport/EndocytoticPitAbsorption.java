@@ -66,7 +66,7 @@ public class EndocytoticPitAbsorption extends ConcentrationBasedModule<Updatable
             double catalyzingConcentration = currentPit.getAssociatedNode().getConcentrationContainer().get(MEMBRANE, catalyzingEntity);
             double inhibitingConcentration = currentPit.getAssociatedNode().getConcentrationContainer().get(MEMBRANE, inhibitingEntity);
             // scale linear
-            modifier = catalyzingConcentration / (catalyzingConcentration + inhibitingConcentration);
+            modifier = (catalyzingConcentration / (catalyzingConcentration + inhibitingConcentration)) * 1.4;
         }
 
         for (ChemicalEntity cargo : cargoes) {

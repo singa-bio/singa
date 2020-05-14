@@ -10,7 +10,6 @@ import bio.singa.simulation.features.AttachmentDistance;
 import bio.singa.simulation.features.MotorPullDirection;
 import bio.singa.simulation.model.agents.linelike.LineLikeAgent;
 import bio.singa.simulation.model.agents.pointlike.Vesicle;
-import bio.singa.simulation.model.agents.pointlike.VesicleStateRegistry;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.modules.qualitative.QualitativeModule;
 import bio.singa.simulation.model.sections.CellTopology;
@@ -22,8 +21,7 @@ import java.util.*;
 
 import static bio.singa.simulation.model.agents.linelike.LineLikeAgent.ACTIN;
 import static bio.singa.simulation.model.agents.linelike.LineLikeAgent.MICROTUBULE;
-import static bio.singa.simulation.model.agents.pointlike.VesicleStateRegistry.TAGGED_FOR_EXOCYTOSIS;
-import static bio.singa.simulation.model.agents.pointlike.VesicleStateRegistry.UNATTACHED;
+import static bio.singa.simulation.model.agents.pointlike.VesicleStateRegistry.*;
 import static bio.singa.simulation.model.modules.concentration.ModuleState.SUCCEEDED_WITH_PENDING_CHANGES;
 
 /**
@@ -66,7 +64,7 @@ public class LineLikeAgentAttachment extends QualitativeModule {
             if (vesicle.getState().equals(TAGGED_FOR_EXOCYTOSIS) && filamentType.equals(ACTIN)) {
                 // attach if this is tagged for exocytosis and the filament is actin
                 attach(vesicle);
-            } else if (vesicle.getState().equals(UNATTACHED) && filamentType.equals(MICROTUBULE)) {
+            } else if ((vesicle.getState().equals(UNATTACHED) || vesicle.getState().equals(ACTIN_PROPELLED) || vesicle.getState().equals(TETHERED)) && filamentType.equals(MICROTUBULE)) {
                 // attach if this is unattached and the filament is microtubule
                 attach(vesicle);
             }
@@ -138,9 +136,9 @@ public class LineLikeAgentAttachment extends QualitativeModule {
     private void attachVesicle(Vesicle vesicle, AttachmentInformation attachmentInformation) {
         String filamentType = getFeature(AttachedFilament.class).getContent();
         if (filamentType.equals(MICROTUBULE)) {
-            vesicle.setState(VesicleStateRegistry.MICROTUBULE_ATTACHED);
+            vesicle.setState(MICROTUBULE_ATTACHED);
         } else {
-            vesicle.setState(VesicleStateRegistry.ACTIN_ATTACHED);
+            vesicle.setState(ACTIN_ATTACHED);
         }
         vesicle.setTargetDirection(getFeature(MotorPullDirection.class).getContent());
         vesicle.setAttachedFilament(attachmentInformation.getClosestFilament());

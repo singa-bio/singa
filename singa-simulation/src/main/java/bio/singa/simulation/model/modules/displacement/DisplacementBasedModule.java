@@ -17,7 +17,8 @@ import java.util.function.Predicate;
 
 import static bio.singa.simulation.model.modules.concentration.ModuleState.REQUIRING_RECALCULATION;
 import static bio.singa.simulation.model.modules.concentration.ModuleState.SUCCEEDED_WITH_PENDING_CHANGES;
-import static bio.singa.simulation.model.simulation.error.DisplacementDeviation.*;
+import static bio.singa.simulation.model.simulation.error.DisplacementDeviation.MAXIMAL_NEGATIVE_DEVIATION;
+import static bio.singa.simulation.model.simulation.error.DisplacementDeviation.MINIMAL_DEVIATION;
 import static bio.singa.simulation.model.simulation.error.ErrorManager.Reason.LOCAL_DEVIATION;
 
 /**
@@ -64,7 +65,11 @@ public class DisplacementBasedModule extends AbstractUpdateModule {
     @Override
     public void calculateUpdates() {
         processAllVesicles(getSimulation().getVesicleLayer().getVesicles());
-        evaluateModuleState();
+        if (!getSimulation().getScheduler().isSkipDisplacementChecks()) {
+            evaluateModuleState();
+        } else {
+            setState(SUCCEEDED_WITH_PENDING_CHANGES);
+        }
     }
 
     private void evaluateModuleState() {

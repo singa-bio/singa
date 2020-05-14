@@ -1,6 +1,7 @@
 package bio.singa.simulation.model.simulation;
 
 import bio.singa.features.quantities.MolarConcentration;
+import bio.singa.simulation.model.agents.pointlike.Vesicle;
 import bio.singa.simulation.model.modules.UpdateModule;
 import bio.singa.simulation.model.simulation.error.ErrorManager;
 import bio.singa.simulation.model.simulation.error.TimeStepManager;
@@ -32,7 +33,6 @@ public class UpdateScheduler {
     private List<Updatable> updatables;
     private Iterator<UpdateModule> moduleIterator;
 
-
     private CountDownLatch countDownLatch;
 
     private volatile boolean interrupted;
@@ -40,6 +40,8 @@ public class UpdateScheduler {
     private ThreadPoolExecutor executor;
 
     int recalculations = 0;
+
+    private boolean skipDisplacementChecks = false;
 
 
     public UpdateScheduler(Simulation simulation) {
@@ -127,10 +129,16 @@ public class UpdateScheduler {
     private boolean recalculationRequired() {
         boolean recalculationRequired = false;
         // global displacement based error
-        errorManager.evaluateGlobalDeviation();
-        if (!errorManager.globalDeviationIsAcceptable()) {
-            errorManager.resolveGlobalDeviationProblem();
-            recalculationRequired = true;
+        if (!skipDisplacementChecks) {
+            errorManager.evaluateGlobalDeviation();
+            if (!errorManager.globalDeviationIsAcceptable()) {
+                errorManager.resolveGlobalDeviationProblem();
+                recalculationRequired = true;
+            }
+        } else {
+            for (Vesicle vesicle : simulation.getVesicleLayer().getVesicles()) {
+                vesicle.calculateTotalDisplacement();
+            }
         }
         // global capping
         evaluateCapping();
@@ -231,4 +239,13 @@ public class UpdateScheduler {
     public List<Updatable> getUpdatables() {
         return updatables;
     }
+
+    public boolean isSkipDisplacementChecks() {
+        return skipDisplacementChecks;
+    }
+
+    public void setSkipDisplacementChecks(boolean skipDisplacementChecks) {
+        this.skipDisplacementChecks = skipDisplacementChecks;
+    }
+
 }
