@@ -15,13 +15,15 @@ import bio.singa.structure.model.oak.*;
 import bio.singa.structure.parser.pdb.structures.tokens.LeafSkeleton;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author cl
  */
 public class CifFileParser {
 
-    private static final int DEFAULT_VALUE_SPACING = 49;
+    private static final Pattern DEFAULT_VALUE_PATTERN = Pattern.compile("([\\w.]+)\\s+(.+)");
 
     private final List<String> lines;
     private final List<String> atomLines;
@@ -64,11 +66,12 @@ public class CifFileParser {
         // assumes key-value pair per line, separated by white space characters
         // FIXME errors occurring because CIF files have been apparently been reformatted by RCSB, multi line entries might occur, see e.g. _chem_comp.name in http://files.rcsb.org/ligands/view/5MU.cif
         // FIXME DEFAULT_VALUE_SPACING concept does not work anymore
-        String[] split = line.split("\\s+");
-        if (split.length < 2) {
-            return "";
+        Matcher matcher = DEFAULT_VALUE_PATTERN.matcher(line);
+        if (matcher.matches()) {
+            String valueMatch = matcher.group(2);
+            return valueMatch.replace("\"", "").trim();
         }
-        return split[1];
+        return "";
     }
 
     /**

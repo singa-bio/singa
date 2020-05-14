@@ -20,7 +20,6 @@ public class OakLigand extends OakLeafSubstructure<LigandFamily> implements Liga
     }
 
     public String getName() {
-
         return name;
     }
 
