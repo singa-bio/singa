@@ -16,6 +16,7 @@ public class LeafSkeleton {
 
     private String threeLetterCode;
     private String parent;
+    private String inchi;
     private AssignedFamily assignedFamily;
     private Map<Pair<String>, BondType> bonds;
 
@@ -24,6 +25,14 @@ public class LeafSkeleton {
         this.parent = parent;
         this.assignedFamily = assignedFamily;
         this.bonds = bonds;
+    }
+
+    public String getInchi() {
+        return inchi;
+    }
+
+    public void setInchi(String inchi) {
+        this.inchi = inchi;
     }
 
     public String getThreeLetterCode() {
