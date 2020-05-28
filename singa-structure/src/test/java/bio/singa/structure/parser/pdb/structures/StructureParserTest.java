@@ -4,6 +4,8 @@ package bio.singa.structure.parser.pdb.structures;
 import bio.singa.core.utility.Resources;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.interfaces.Structure;
+import bio.singa.structure.parser.pdb.ligands.LigandParserService;
+import bio.singa.structure.parser.pdb.structures.tokens.LeafSkeleton;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -226,11 +228,11 @@ class StructureParserTest {
 
     @Test
     void shouldThrowErrorWhenFileDoesNotExist() {
-        assertThrows( UncheckedIOException.class,
+        assertThrows(UncheckedIOException.class,
                 () -> StructureParser.pdb()
-                .pdbIdentifier("schalalala")
-                .everything()
-                .parse());
+                        .pdbIdentifier("schalalala")
+                        .everything()
+                        .parse());
     }
 
     @Test
@@ -239,6 +241,31 @@ class StructureParserTest {
                 .fileLocation(Resources.getResourceAsFileLocation("1GL0_HDS_intra_E-H57_E-D102_E-S195.pdb"))
                 .allChains()
                 .parse();
+    }
+
+    @Test
+    void shouldParsallPdbFiles() {
+        // FIXMEuse correct path in production
+        StructureParser.LocalPDB localPDB = new StructureParser.LocalPDB("/tmp/pdb", SourceLocation.OFFLINE_PDB);
+//        StructureParser.MultiParser multiParser = StructureParser.local()
+//                .localPDB(localPDB)
+//                .all();
+//        int numberOfQueuedStructures = multiParser.getNumberOfQueuedStructures();
+//        Structure next = multiParser.next();
+    }
+
+    @Test
+    void shouldParseMultilineInChi() {
+        // ;
+        LeafSkeleton fad = LigandParserService.parseLeafSkeleton("FAD");
+        System.out.println(fad.getInchi());
+        // "
+        LeafSkeleton lop = LigandParserService.parseLeafSkeleton("LOP");
+        System.out.println(lop.getInchi());
+        // trailing ;
+        LeafSkeleton mnh = LigandParserService.parseLeafSkeleton("MNH");
+        // InChI=1S/C34H34N4O4.Mn/c1-7-21-17(3)25-13-26-19(5)23(9-11-33(39)40)31(37-26)16-32-24(10-12-34(41)42)20(6)28(38-32)15-30-22(8-2)18(4)27(36-30)14-29(21)35-25;/h7-8,13-16H,1-2,9-12H2,3-6H3,(H4,35,36,37,38,39,40,41,42);/q;+6/p-2/b25-13-,26-13-,27-14-,28-15-,29-14-,30-15-,31-16-,32-16-;
+        System.out.println(mnh.getInchi());
     }
 
 }

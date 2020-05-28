@@ -15,6 +15,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Parses structures in pdb format.
@@ -123,7 +124,7 @@ public class StructureParser {
         /**
          * The location of a local PDB installation in addition to the structure, that is to be parsed.
          *
-         * @param localPDB      The local pdb.
+         * @param localPDB The local pdb.
          * @param pdbIdentifier The PDB identifier.
          * @return Branch selection
          */
@@ -132,7 +133,7 @@ public class StructureParser {
         /**
          * The location of a local PDB installation in addition to a list of structures, that are to be parsed.
          *
-         * @param localPDB       The local pdb.
+         * @param localPDB The local pdb.
          * @param pdbIdentifiers The PDB identifiers.
          * @return Branch selection
          */
@@ -183,11 +184,13 @@ public class StructureParser {
          * Reads the provided chainIdentifier list from a file. Each line in the file should have the format:
          * <pre>[PDBId][separator][ChainId] </pre>
          *
-         * @param path      The path of the chainIdentifier list file
+         * @param path The path of the chainIdentifier list file
          * @param separator The separator between the PDBId and the ChainId
          * @return The MultiParser.
          */
         MultiParser chainList(Path path, String separator);
+
+        MultiParser all();
 
     }
 
@@ -424,6 +427,10 @@ public class StructureParser {
          */
         public String getCurrentChainIdentifier() {
             return selector.sourceSelector.contentIterator.getCurrentChainIdentifier();
+        }
+
+        public String getCurrentSource() {
+            return selector.sourceSelector.contentIterator.getCurrentSource();
         }
 
         public Map<String, LeafSkeleton> getSkeletons() {
@@ -879,11 +886,52 @@ public class StructureParser {
             return chainList(path, "\t");
         }
 
+        @Override
+        public MultiParser all() {
+            if (localPDB != null) {
+                List<Path> paths = new ArrayList<>();
+                Path localPdbPath = localPDB.getLocalPdbPath();
+                try (Stream<Path> splitDirectories = Files.list(localPdbPath)) {
+                    int i = 0;
+                    for (Path splitDirectory : splitDirectories.collect(Collectors.toList())) {
+                        logger.info("processing {}", splitDirectory);
+                        try (Stream<Path> files = Files.walk(splitDirectory)) {
+                            for (Path xmlFilePath : files.collect(Collectors.toList())) {
+                                String fileName = xmlFilePath.getFileName().toString().toLowerCase();
+                                // skip non .xml.gz files
+                                if (!fileName.endsWith(".ent.gz")) {
+                                    continue;
+                                }
+                                paths.add(xmlFilePath);
+
+                            }
+                        } catch (IOException e) {
+                            throw new UncheckedIOException("unable to read files from " + splitDirectory, e);
+                        }
+                        i++;
+                        if (i > 10) {
+                            break;
+                        }
+                    }
+                } catch (IOException e) {
+                    throw new UncheckedIOException("unable to read files from " + localPdbPath, e);
+                }
+                contentIterator = new StructureContentIterator(Path.class, paths, SourceLocation.OFFLINE_PDB);
+            } else {
+                contentIterator = null; //new StructureContentIterator(readMappingFile(path, separator), sourceLocation);
+            }
+//            } catch (IOException e) {
+//                throw new UncheckedIOException("Could not open input stream for chain list file.", e);
+//            }
+            return new MultiReducingSelector(this).everything();
+            // return null;
+        }
+
         /**
          * Reads a pdb identifier chain identifier mapping file.
          *
          * @param mappingPath The path to the mapping file.
-         * @param separator   The String separating both.
+         * @param separator The String separating both.
          * @return A list of pdb identifier chain paris.
          * @throws IOException if the file could not be read.
          */
@@ -900,7 +948,7 @@ public class StructureParser {
          * Reads a file of pdb identifier chain identifier paris and converts them to be read by the {@link
          * StructureContentIterator}.
          *
-         * @param lines     The lines that should be parsed.
+         * @param lines The lines that should be parsed.
          * @param separator The String separating the pairs.
          * @return A list of pdb identifier chain paris.
          */
@@ -938,8 +986,8 @@ public class StructureParser {
          * Creates a new reference for a local pdb installation.
          *
          * @param localPdbLocation The location of the local PDB installation.
-         * @param sourceLocation   The type of file used (either {@link SourceLocation#OFFLINE_MMTF} or {@link
-         *                         SourceLocation#OFFLINE_PDB}).
+         * @param sourceLocation The type of file used (either {@link SourceLocation#OFFLINE_MMTF} or {@link
+         * SourceLocation#OFFLINE_PDB}).
          */
         public LocalPDB(String localPdbLocation, SourceLocation sourceLocation) {
             this(localPdbLocation, sourceLocation, BASE_PATH_PDB);
@@ -949,9 +997,9 @@ public class StructureParser {
          * Creates a new reference for a local pdb installation.
          *
          * @param localPdbLocation The location of the local PDB installation.
-         * @param sourceLocation   The type of file used (either {@link SourceLocation#OFFLINE_MMTF} or {@link
-         *                         SourceLocation#OFFLINE_PDB}).
-         * @param basePathPdb      The base PDB path if different from data/structures/divided/
+         * @param sourceLocation The type of file used (either {@link SourceLocation#OFFLINE_MMTF} or {@link
+         * SourceLocation#OFFLINE_PDB}).
+         * @param basePathPdb The base PDB path if different from data/structures/divided/
          */
         public LocalPDB(String localPdbLocation, SourceLocation sourceLocation, Path basePathPdb) {
             this.sourceLocation = sourceLocation;

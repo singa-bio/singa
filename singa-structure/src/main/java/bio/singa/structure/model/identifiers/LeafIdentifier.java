@@ -65,16 +65,20 @@ public class LeafIdentifier implements Comparable<LeafIdentifier> {
     public static LeafIdentifier fromString(String string) {
         String[] split = string.split("-");
         String pdbIdentifier = split[0];
-        int modelIdentifier = Integer.valueOf(split[1]);
+        int modelIdentifier = Integer.parseInt(split[1]);
         String chainIdentifier = split[2];
         // decide whether insertion code was used
         String serialPart = split[3];
+        // negative serials
+        if (serialPart.isEmpty()) {
+            serialPart = "-"+split[4];
+        }
         if (serialPart.substring(serialPart.length() - 1).matches("[A-Z]")) {
             char insertionCode = serialPart.charAt(serialPart.length() - 1);
-            int serial = Integer.valueOf(serialPart.substring(0, serialPart.length() - 1));
+            int serial = Integer.parseInt(serialPart.substring(0, serialPart.length() - 1));
             return new LeafIdentifier(pdbIdentifier, modelIdentifier, chainIdentifier, serial, insertionCode);
         } else {
-            int serial = Integer.valueOf(serialPart);
+            int serial = Integer.parseInt(serialPart);
             return new LeafIdentifier(pdbIdentifier, modelIdentifier, chainIdentifier, serial);
         }
     }

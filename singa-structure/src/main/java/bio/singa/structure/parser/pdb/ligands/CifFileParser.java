@@ -136,18 +136,23 @@ public class CifFileParser {
                         StringJoiner assembledInchi = new StringJoiner("");
                         while (iterator.hasNext()) {
                             String inchiLine = iterator.next().trim();
-                            if (inchiLine.startsWith("\"")) {
-                                // 1 line complete InChI read
-                                if (inchiLine.endsWith("\"")) {
-                                    inchi = inchiLine.replace("\"", "");
+                            if (inchiLine.startsWith(";")) {
+                                if (inchiLine.length() == 1) {
+                                    // last line is empty
+                                    inchi = assembledInchi.toString();
                                     break;
-                                } else {
-                                    // TODO check whether this occurs at any point in the whole PDB
-                                    // start of multiline InChI
-                                    assembledInchi.add(inchiLine.replace("\"", ""));
                                 }
-                            } else if (inchiLine.endsWith("\"")) {
-                                inchi = assembledInchi.toString();
+                                // start of multiline InChI
+                                assembledInchi.add(inchiLine.replaceAll("\"", "").replaceFirst(";", ""));
+                            }
+                            if (inchiLine.startsWith("\"")) {
+                                // start of multiline InChI
+                                assembledInchi.add(inchiLine.replaceAll("\"", ""));
+                                if (inchiLine.endsWith("\"")) {
+                                    // last line is empty
+                                    inchi = assembledInchi.toString();
+                                    break;
+                                }
                             }
                         }
                     } else {
@@ -157,6 +162,7 @@ public class CifFileParser {
                 }
             }
         }
+
     }
 
     /**
