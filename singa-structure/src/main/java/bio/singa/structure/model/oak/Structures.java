@@ -4,12 +4,15 @@ import bio.singa.core.utility.Pair;
 import bio.singa.mathematics.geometry.bodies.Sphere;
 import bio.singa.mathematics.matrices.LabeledSymmetricMatrix;
 import bio.singa.mathematics.matrices.Matrices;
+import bio.singa.mathematics.matrices.Matrix;
 import bio.singa.mathematics.metrics.model.VectorMetricProvider;
+import bio.singa.mathematics.vectors.Vector3D;
 import bio.singa.mathematics.vectors.Vectors;
 import bio.singa.structure.model.identifiers.LeafIdentifier;
 import bio.singa.structure.model.interfaces.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static bio.singa.structure.model.oak.LeafSubstructureFactory.createLeafSubstructure;
 
@@ -208,5 +211,25 @@ public class Structures {
             }
         }
         return renumberedStructure;
+    }
+
+    /**
+     * Returns the closest distance between two {@link AtomContainer}s or NaN if computation fails.
+     *
+     * @param atomContainer1 First {@link AtomContainer}.
+     * @param atomContainer2 Second {@link AtomContainer}.
+     * @return The closest distance.
+     */
+    public static double getClosestDistance(AtomContainer atomContainer1, AtomContainer atomContainer2) {
+        List<Vector3D> positions1 = atomContainer1.getAllAtoms().stream()
+                .map(Atom::getPosition)
+                .collect(Collectors.toList());
+        List<Vector3D> positions2 = atomContainer2.getAllAtoms().stream()
+                .map(Atom::getPosition)
+                .collect(Collectors.toList());
+        Matrix distancesPairwise = VectorMetricProvider.EUCLIDEAN_METRIC.calculateDistancesPairwise(positions1, positions2);
+        return Matrices.getPositionOfMinimalElement(distancesPairwise)
+                .map(position -> distancesPairwise.getElements()[position.getFirst()][position.getSecond()])
+                .orElse(Double.NaN);
     }
 }

@@ -1,6 +1,8 @@
 package bio.singa.mathematics.metrics.model;
 
 import bio.singa.mathematics.matrices.LabeledSymmetricMatrix;
+import bio.singa.mathematics.matrices.Matrix;
+import bio.singa.mathematics.matrices.RegularMatrix;
 import bio.singa.mathematics.matrices.SymmetricMatrix;
 
 import java.util.HashMap;
@@ -51,6 +53,25 @@ public interface Metric<MetrizableType> {
             }
         }
         return new SymmetricMatrix(compactValues);
+    }
+
+    /**
+     * Computes pairwise distances for two given lists, resulting in a rectangular, non-symmetric matric.
+     *
+     * @param list1 The firts list.
+     * @param list2 The second list.
+     * @param <SubType>
+     * @return A rectangular matrix with pairwise distances.
+     */
+    default <SubType extends MetrizableType> Matrix calculateDistancesPairwise(List<SubType> list1, List<SubType> list2) {
+        double[][] values = new double[list1.size()][list2.size()];
+        // compute distances
+        for (int rowIndex = 0; rowIndex < values.length; rowIndex++) {
+            for (int columnIndex = 0; columnIndex < values[rowIndex].length; columnIndex++) {
+                values[rowIndex][columnIndex] = calculateDistance(list1.get(rowIndex), list2.get(columnIndex));
+            }
+        }
+        return new RegularMatrix(values);
     }
 
     default <LabelType, SubType extends MetrizableType> LabeledSymmetricMatrix<LabelType> calculateDistancesPairwise(List<LabelType> list, Function<LabelType, SubType> function) {
