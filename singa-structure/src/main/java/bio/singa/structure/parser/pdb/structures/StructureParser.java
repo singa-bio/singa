@@ -433,6 +433,11 @@ public class StructureParser {
             return selector.sourceSelector.contentIterator.getCurrentSource();
         }
 
+        public Path getCurrentPath() {
+            return selector.sourceSelector.contentIterator.getCurrentPath();
+        }
+
+
         public Map<String, LeafSkeleton> getSkeletons() {
             return selector.getSkeletons();
         }
@@ -504,6 +509,10 @@ public class StructureParser {
                 logger.warn("failed to parse structure {}", selector.sourceSelector.contentIterator.next().get(0));
             }
             return StructureCollector.parse(selector.sourceSelector.contentIterator.next(), selector);
+        }
+
+        synchronized public void skip() {
+            selector.sourceSelector.contentIterator.skip();
         }
     }
 
@@ -892,7 +901,6 @@ public class StructureParser {
                 List<Path> paths = new ArrayList<>();
                 Path localPdbPath = localPDB.getLocalPdbPath();
                 try (Stream<Path> splitDirectories = Files.list(localPdbPath)) {
-                    int i = 0;
                     for (Path splitDirectory : splitDirectories.collect(Collectors.toList())) {
                         logger.info("processing {}", splitDirectory);
                         try (Stream<Path> files = Files.walk(splitDirectory)) {
@@ -903,14 +911,9 @@ public class StructureParser {
                                     continue;
                                 }
                                 paths.add(xmlFilePath);
-
                             }
                         } catch (IOException e) {
                             throw new UncheckedIOException("unable to read files from " + splitDirectory, e);
-                        }
-                        i++;
-                        if (i > 10) {
-                            break;
                         }
                     }
                 } catch (IOException e) {

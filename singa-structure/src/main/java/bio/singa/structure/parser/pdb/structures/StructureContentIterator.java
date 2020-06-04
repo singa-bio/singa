@@ -57,7 +57,8 @@ class StructureContentIterator implements Iterator<List<String>> {
     /**
      * The iterator that traverses the paths.
      */
-    private Iterator<Path> currentPath;
+    private Iterator<Path> pathIterator;
+    private Path currentPath;
     /**
      * The iterator that traverses the pdb identifiers.
      */
@@ -225,7 +226,8 @@ class StructureContentIterator implements Iterator<List<String>> {
      */
     private void prepareOfflinePaths(List<Path> paths) {
         this.paths = paths;
-        currentPath = this.paths.iterator();
+        pathIterator = this.paths.iterator();
+        currentPath = pathIterator.next();
         location = OFFLINE_PDB;
     }
 
@@ -238,7 +240,8 @@ class StructureContentIterator implements Iterator<List<String>> {
         for (File file : files) {
             paths.add(file.toPath());
         }
-        currentPath = paths.iterator();
+        pathIterator = paths.iterator();
+        currentPath = pathIterator.next();
         location = OFFLINE_PDB;
     }
 
@@ -252,8 +255,10 @@ class StructureContentIterator implements Iterator<List<String>> {
             paths.add(assemblePath(identifier));
             pdbIdentifiers.add(identifier);
         }
-        currentPath = paths.iterator();
+        pathIterator = paths.iterator();
+        currentPath = pathIterator.next();
         pdbIdentifierIterator = pdbIdentifiers.iterator();
+        currentPdbIdentifier = pdbIdentifierIterator.next();
         location = OFFLINE_PDB;
     }
 
@@ -268,7 +273,7 @@ class StructureContentIterator implements Iterator<List<String>> {
             pdbIdentifiers.add(pair.getFirst());
             chains.add(pair.getSecond());
         }
-        currentPath = paths.iterator();
+        pathIterator = paths.iterator();
         pdbIdentifierIterator = pdbIdentifiers.iterator();
         chainIdentifierIterator = chains.iterator();
         location = OFFLINE_PDB;
@@ -379,6 +384,10 @@ class StructureContentIterator implements Iterator<List<String>> {
         return currentSource;
     }
 
+    Path getCurrentPath() {
+        return currentPath;
+    }
+
     @Override
     public boolean hasNext() {
         switch (location) {
@@ -387,7 +396,7 @@ class StructureContentIterator implements Iterator<List<String>> {
             case ONLINE_MMTF:
                 return pdbIdentifierIterator.hasNext();
             default:
-                return currentPath.hasNext();
+                return pathIterator.hasNext();
         }
     }
 
@@ -405,21 +414,24 @@ class StructureContentIterator implements Iterator<List<String>> {
         switch (location) {
             case OFFLINE_PDB:
                 try {
-                    final Path path = currentPath.next();
                     // remove extension
-                    currentSource = path.getFileName().toString().replaceFirst("[.][^.]+$", "");
-                    if (path.toString().endsWith(".ent.gz")) {
-                        return fetchLines(readPacked(path));
-                    } else if (path.toString().endsWith(".mmtf.gz")) {
-                        return Collections.singletonList(path.toString());
+                    currentSource = currentPath.getFileName().toString().replaceFirst("[.][^.]+$", "");
+                    List<String> strings;
+                    if (currentPath.toString().endsWith(".ent.gz")) {
+                        strings = fetchLines(readPacked(currentPath));
+                    } else if (currentPath.toString().endsWith(".mmtf.gz")) {
+                        strings = Collections.singletonList(currentPath.toString());
                     } else {
-                        return fetchLines(Files.newInputStream(path));
+                        strings = fetchLines(Files.newInputStream(currentPath));
                     }
+                    currentPath = pathIterator.next();
+                    return strings;
                 } catch (IOException e) {
                     throw new UncheckedIOException("Could not open input stream for path.", e);
                 } finally {
                     progressCounter++;
                 }
+
             case ONLINE_PDB:
                 try {
                     URL url = currentURL.next();
@@ -436,6 +448,11 @@ class StructureContentIterator implements Iterator<List<String>> {
                 return Collections.singletonList(currentPdbIdentifier);
         }
 
+    }
+
+    public void skip() {
+        currentPath = pathIterator.next();
+        progressCounter++;
     }
 
     /**
