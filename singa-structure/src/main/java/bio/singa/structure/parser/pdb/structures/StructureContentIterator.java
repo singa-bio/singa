@@ -258,7 +258,6 @@ class StructureContentIterator implements Iterator<List<String>> {
         pathIterator = paths.iterator();
         currentPath = pathIterator.next();
         pdbIdentifierIterator = pdbIdentifiers.iterator();
-        currentPdbIdentifier = pdbIdentifierIterator.next();
         location = OFFLINE_PDB;
     }
 
@@ -395,6 +394,8 @@ class StructureContentIterator implements Iterator<List<String>> {
                 return currentURL.hasNext();
             case ONLINE_MMTF:
                 return pdbIdentifierIterator.hasNext();
+            case OFFLINE_PDB:
+                return currentPath != null;
             default:
                 return pathIterator.hasNext();
         }
@@ -424,7 +425,11 @@ class StructureContentIterator implements Iterator<List<String>> {
                     } else {
                         strings = fetchLines(Files.newInputStream(currentPath));
                     }
-                    currentPath = pathIterator.next();
+                    if (pathIterator.hasNext()) {
+                        currentPath = pathIterator.next();
+                    } else {
+                        currentPath = null;
+                    }
                     return strings;
                 } catch (IOException e) {
                     throw new UncheckedIOException("Could not open input stream for path.", e);
