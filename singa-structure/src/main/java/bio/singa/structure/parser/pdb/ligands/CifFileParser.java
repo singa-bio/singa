@@ -213,7 +213,7 @@ public class CifFileParser {
             oneLetterCode = extractValue(line);
         }
         // extract three letter code
-        if (line.startsWith("_chem_comp.three_letter_code")) {
+        if (line.startsWith("_chem_comp.id")) {
             threeLetterCode = extractValue(line);
         }
         // extract parent
