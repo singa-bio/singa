@@ -2,6 +2,7 @@ package bio.singa.structure.parser.pdb.structures;
 
 
 import bio.singa.core.utility.Resources;
+import bio.singa.structure.model.identifiers.LeafIdentifier;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.interfaces.Structure;
 import bio.singa.structure.parser.pdb.ligands.LigandParserService;
@@ -124,11 +125,26 @@ class StructureParserTest {
     }
 
     @Test
+    void shouldParseStructureWithLowerCaseInsertionCodes() {
+        Structure structure = StructureParser.pdb()
+                .pdbIdentifier("6bb4")
+                .everything()
+                .parse();
+        LeafIdentifier leafIdentifier = LeafIdentifier.fromString("6bb4-1-I-82c");
+        List<LeafSubstructure<?>> leavesWithInsertionCode = structure.getAllLeafSubstructures().stream()
+                .filter(leafSubstructure -> leafSubstructure.getIdentifier().equals(leafIdentifier))
+                .collect(Collectors.toList());
+        assertEquals(1, leavesWithInsertionCode.size());
+    }
+
+    @Test
     void shouldParseFromLocalPDB() {
         StructureParser.LocalPDB localPdb = new StructureParser.LocalPDB(Resources.getResourceAsFileLocation("pdb"), SourceLocation.OFFLINE_PDB);
         Structure structure = StructureParser.local()
                 .localPDB(localPdb, "1C0A")
                 .parse();
+
+        assertNotNull(structure);
     }
 
     @Test

@@ -73,7 +73,7 @@ public class LeafIdentifier implements Comparable<LeafIdentifier> {
         if (serialPart.isEmpty()) {
             serialPart = "-"+split[4];
         }
-        if (serialPart.substring(serialPart.length() - 1).matches("[A-Z]")) {
+        if (serialPart.substring(serialPart.length() - 1).matches("[A-Za-z]")) {
             char insertionCode = serialPart.charAt(serialPart.length() - 1);
             int serial = Integer.parseInt(serialPart.substring(0, serialPart.length() - 1));
             return new LeafIdentifier(pdbIdentifier, modelIdentifier, chainIdentifier, serial, insertionCode);

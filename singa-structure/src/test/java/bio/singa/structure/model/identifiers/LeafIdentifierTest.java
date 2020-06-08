@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class LeafIdentifierTest {
 
@@ -26,6 +27,12 @@ public class LeafIdentifierTest {
     void fromString() {
         LeafIdentifier leafIdentifier = LeafIdentifier.fromString("2w0l-1-A-27A");
         assertEquals(leaf.getIdentifier(), leafIdentifier);
+    }
+
+    @Test
+    void fromStringCharacter() {
+        LeafIdentifier leafIdentifier = LeafIdentifier.fromString("6bb4-1-I-82c");
+        assertNotNull(leafIdentifier);
     }
 
     @Test
