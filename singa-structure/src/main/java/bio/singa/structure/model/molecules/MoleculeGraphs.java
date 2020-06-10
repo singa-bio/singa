@@ -34,7 +34,9 @@ public class MoleculeGraphs {
             } else {
                 position = Vectors.generateRandom2DVector(defaultBoundingBox);
             }
-            graph.addNode(new MoleculeAtom(atom.getAtomIdentifier(), position, atom.getElement()));
+            MoleculeAtom moleculeAtom = new MoleculeAtom(atom.getAtomIdentifier(), position, atom.getElement());
+            moleculeAtom.setSpatialPosition(atom.getPosition());
+            graph.addNode(moleculeAtom);
         }
         // then add bonds
         for (OakBond bond : leafSubstructure.getBonds()) {

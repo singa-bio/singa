@@ -1,9 +1,11 @@
 package bio.singa.mathematics.graphs.model;
 
 import bio.singa.mathematics.vectors.Vector;
+import bio.singa.mathematics.vectors.Vector3D;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * A simple implementation of the node interface. References to neighboring nodes are stored in a list. Every node is
@@ -30,6 +32,11 @@ public abstract class AbstractNode<NodeType extends Node<NodeType, VectorType, I
      * A positional representation.
      */
     private VectorType position;
+
+    /**
+     * Position in 3D space.
+     */
+    private Vector3D spatialPosition;
 
     /**
      * Creates a new node with the given identifier. The position in not initialized.
@@ -144,4 +151,13 @@ public abstract class AbstractNode<NodeType extends Node<NodeType, VectorType, I
         return "Node " + identifier;
     }
 
+    @Override
+    public Optional<Vector3D> getSpatialPosition() {
+        return Optional.ofNullable(spatialPosition);
+    }
+
+    @Override
+    public void setSpatialPosition(Vector3D spatialPosition) {
+        this.spatialPosition = spatialPosition;
+    }
 }
