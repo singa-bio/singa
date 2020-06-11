@@ -92,7 +92,7 @@ public enum AtomToken implements PDBToken {
                     .append("  1.00") // OCCUPANCY not yet implemented
                     .append("  0.00") // TEMPERATURE_FACTOR not yet implemented
                     .append("          ") // 10 spaces
-                    .append(ELEMENT_SYMBOL.createTokenString(atom.getElement().getSymbol()))
+                    .append(ELEMENT_SYMBOL.createTokenString(atom.getElement().getSymbol()).toUpperCase())
                     .append(formatCharge(atom.getElement()));
             lines.add(currentLine.toString());
         }
