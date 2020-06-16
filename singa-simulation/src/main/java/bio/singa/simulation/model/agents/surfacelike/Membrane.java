@@ -18,7 +18,6 @@ public class Membrane {
     private CellRegion innerRegion;
     private CellRegion membraneRegion;
     private Map<CellRegion, List<Vector2D>> regionMap;
-    private Vector2D innerPoint;
 
     public Membrane(String identifier) {
         this.identifier = identifier;
@@ -63,14 +62,6 @@ public class Membrane {
 
     public void setRegionMap(Map<CellRegion, List<Vector2D>> regionMap) {
         this.regionMap = regionMap;
-    }
-
-    public Vector2D getInnerPoint() {
-        return innerPoint;
-    }
-
-    public void setInnerPoint(Vector2D innerPoint) {
-        this.innerPoint = innerPoint;
     }
 
     public void generateRegionMap() {
