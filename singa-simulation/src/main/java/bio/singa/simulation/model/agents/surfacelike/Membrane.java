@@ -56,10 +56,6 @@ public class Membrane {
         this.membraneRegion = membraneRegion;
     }
 
-    public Map<CellRegion, List<Vector2D>> getRegionMap() {
-        return regionMap;
-    }
-
     public void setRegionMap(Map<CellRegion, List<Vector2D>> regionMap) {
         this.regionMap = regionMap;
     }

@@ -15,6 +15,7 @@ import bio.singa.simulation.model.sections.CellTopology;
 import bio.singa.simulation.model.simulation.Simulation;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import tech.units.indriya.quantity.Quantities;
 
@@ -41,6 +42,7 @@ class SingleFileChannelMembraneTransportTest {
     }
 
     @Test
+    @Disabled("migration to two compartment model")
     void shouldSimulateChannelDiffusion() {
         UnitRegistry.setSpace(Quantities.getQuantity(1, MICRO(METRE)));
         Simulation simulation = new Simulation();

@@ -20,6 +20,7 @@ import bio.singa.simulation.model.sections.CellTopology;
 import bio.singa.simulation.model.simulation.Simulation;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import tech.units.indriya.ComparableQuantity;
 import tech.units.indriya.quantity.Quantities;
@@ -65,6 +66,7 @@ class MembraneDiffusionTest {
     }
 
     @Test
+    @Disabled("migration to two compartment model")
     void shouldSimulateMembraneDiffusion() {
 
         Simulation simulation = new Simulation();

@@ -20,6 +20,7 @@ import tech.units.indriya.quantity.Quantities;
 
 import static bio.singa.features.units.UnitProvider.NANO_MOLE_PER_LITRE;
 import static bio.singa.simulation.model.concentrations.TimedCondition.Relation.GREATER;
+import static bio.singa.simulation.model.sections.CellRegions.CELL_INNER_MEMBRANE_REGION;
 import static bio.singa.simulation.model.sections.CellRegions.CELL_OUTER_MEMBRANE_REGION;
 import static bio.singa.simulation.model.sections.CellSubsections.*;
 import static bio.singa.simulation.model.sections.CellTopology.INNER;
@@ -82,7 +83,7 @@ class InitialConcentrationTest {
         // graph
         AutomatonGraph graph = AutomatonGraphs.singularGraph();
         AutomatonNode node = graph.getNode(0, 0);
-        node.setCellRegion(CELL_OUTER_MEMBRANE_REGION);
+        node.setCellRegion(CELL_INNER_MEMBRANE_REGION);
         simulation.setGraph(graph);
 
         ConcentrationBuilder.create(simulation)
@@ -155,7 +156,7 @@ class InitialConcentrationTest {
         // graph
         AutomatonGraph graph = AutomatonGraphs.singularGraph();
         AutomatonNode node = graph.getNode(0, 0);
-        node.setCellRegion(CELL_OUTER_MEMBRANE_REGION);
+        node.setCellRegion(CELL_INNER_MEMBRANE_REGION);
         simulation.setGraph(graph);
 
         ConcentrationBuilder.create(simulation)
@@ -180,7 +181,7 @@ class InitialConcentrationTest {
         // graph
         AutomatonGraph graph = AutomatonGraphs.singularGraph();
         AutomatonNode node = graph.getNode(0, 0);
-        node.setCellRegion(CELL_OUTER_MEMBRANE_REGION);
+        node.setCellRegion(CELL_INNER_MEMBRANE_REGION);
         simulation.setGraph(graph);
 
         ConcentrationBuilder.create(simulation)

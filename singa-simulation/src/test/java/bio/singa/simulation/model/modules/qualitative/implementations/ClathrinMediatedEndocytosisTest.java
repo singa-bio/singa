@@ -156,7 +156,7 @@ class ClathrinMediatedEndocytosisTest {
         membraneLayer.addMembranes(membranes);
         simulation.setMembraneLayer(membraneLayer);
 
-        // microtubule organizing centre
+//         microtubule organizing centre
         MicrotubuleOrganizingCentre moc = new MicrotubuleOrganizingCentre(membraneLayer, new Circle(new Vector2D(50, 90),
                 Environment.convertSystemToSimulationScale(Quantities.getQuantity(50, NANO(METRE)))));
         membraneLayer.setMicrotubuleOrganizingCentre(moc);

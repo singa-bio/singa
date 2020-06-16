@@ -43,8 +43,7 @@ import static bio.singa.chemistry.reactions.reactors.ReactionChainBuilder.bind;
 import static bio.singa.features.units.UnitProvider.*;
 import static bio.singa.simulation.model.sections.CellRegions.CELL_OUTER_MEMBRANE_REGION;
 import static bio.singa.simulation.model.sections.CellRegions.CYTOPLASM_REGION;
-import static bio.singa.simulation.model.sections.CellSubsections.CELL_OUTER_MEMBRANE;
-import static bio.singa.simulation.model.sections.CellSubsections.CYTOPLASM;
+import static bio.singa.simulation.model.sections.CellSubsections.*;
 import static bio.singa.simulation.model.sections.CellTopology.INNER;
 import static bio.singa.simulation.model.sections.CellTopology.MEMBRANE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -212,6 +211,7 @@ class ReactionTest {
     }
 
     @Test
+    @DisplayName("reversible reaction - monovalent receptor binding")
     void reversibleReactionMembrane() {
         UnitRegistry.setSpace(Quantities.getQuantity(1.0, MILLI(METRE)));
 
@@ -240,7 +240,7 @@ class ReactionTest {
 
         ConcentrationBuilder.create(simulation)
                 .entity(ligand)
-                .subsection(CYTOPLASM)
+                .subsection(EXTRACELLULAR_REGION)
                 .concentrationValue(0.1)
                 .unit(MOLE_PER_LITRE)
                 .build();
