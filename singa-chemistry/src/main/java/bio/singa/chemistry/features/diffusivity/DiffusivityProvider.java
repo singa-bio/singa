@@ -2,6 +2,7 @@ package bio.singa.chemistry.features.diffusivity;
 
 import bio.singa.features.model.FeatureProvider;
 import bio.singa.features.model.Featureable;
+import bio.singa.features.quantities.ConcentrationDiffusivity;
 import bio.singa.structure.features.molarmass.MolarMass;
 import tech.units.indriya.quantity.Quantities;
 

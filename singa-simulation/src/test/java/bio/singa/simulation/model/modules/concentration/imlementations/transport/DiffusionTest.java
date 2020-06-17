@@ -1,7 +1,7 @@
 package bio.singa.simulation.model.modules.concentration.imlementations.transport;
 
 import bio.singa.chemistry.entities.simple.SmallMolecule;
-import bio.singa.chemistry.features.diffusivity.ConcentrationDiffusivity;
+import bio.singa.features.quantities.ConcentrationDiffusivity;
 import bio.singa.core.utility.Pair;
 import bio.singa.core.utility.Resources;
 import bio.singa.features.parameters.Environment;
@@ -34,7 +34,7 @@ import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 
-import static bio.singa.chemistry.features.diffusivity.Diffusivity.SQUARE_CENTIMETRE_PER_SECOND;
+import static bio.singa.features.quantities.Diffusivity.SQUARE_CENTIMETRE_PER_SECOND;
 import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static bio.singa.simulation.model.sections.CellRegions.*;
 import static bio.singa.simulation.model.sections.CellSubsections.CYTOPLASM;

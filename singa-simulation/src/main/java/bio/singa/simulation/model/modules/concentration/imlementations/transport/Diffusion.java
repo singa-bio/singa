@@ -1,8 +1,8 @@
 package bio.singa.simulation.model.modules.concentration.imlementations.transport;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
-import bio.singa.chemistry.features.diffusivity.ConcentrationDiffusivity;
-import bio.singa.chemistry.features.diffusivity.Diffusivity;
+import bio.singa.features.quantities.ConcentrationDiffusivity;
+import bio.singa.features.quantities.Diffusivity;
 import bio.singa.features.model.Feature;
 import bio.singa.features.model.FeatureProvider;
 import bio.singa.simulation.features.AffectedSection;

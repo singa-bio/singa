@@ -1,6 +1,8 @@
 package bio.singa.chemistry.features.diffusivity;
 
 import bio.singa.features.model.AbstractFeature;
+import bio.singa.features.quantities.Diffusivity;
+import bio.singa.features.quantities.PixelDiffusivity;
 import tech.units.indriya.quantity.Quantities;
 
 import javax.measure.Quantity;

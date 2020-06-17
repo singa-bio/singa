@@ -1,6 +1,6 @@
 package bio.singa.simulation.model.parameters;
 
-import bio.singa.chemistry.features.diffusivity.PixelDiffusivity;
+import bio.singa.features.quantities.PixelDiffusivity;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.units.UnitRegistry;
 import org.junit.jupiter.api.AfterEach;
@@ -12,7 +12,7 @@ import tech.units.indriya.quantity.Quantities;
 import javax.measure.Quantity;
 import javax.measure.Unit;
 
-import static bio.singa.chemistry.features.diffusivity.Diffusivity.SQUARE_CENTIMETRE_PER_SECOND;
+import static bio.singa.features.quantities.Diffusivity.SQUARE_CENTIMETRE_PER_SECOND;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static tech.units.indriya.AbstractUnit.ONE;
 import static tech.units.indriya.unit.MetricPrefix.*;

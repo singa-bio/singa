@@ -1,7 +1,7 @@
 package bio.singa.simulation.model.agents.pointlike;
 
 import bio.singa.chemistry.features.ChemistryFeatureContainer;
-import bio.singa.chemistry.features.diffusivity.PixelDiffusivity;
+import bio.singa.features.quantities.PixelDiffusivity;
 import bio.singa.features.model.Evidence;
 import bio.singa.features.model.Feature;
 import bio.singa.features.model.FeatureContainer;
@@ -31,7 +31,7 @@ import javax.measure.quantity.Volume;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static bio.singa.chemistry.features.diffusivity.Diffusivity.SQUARE_MICROMETRE_PER_SECOND;
+import static bio.singa.features.quantities.Diffusivity.SQUARE_MICROMETRE_PER_SECOND;
 import static bio.singa.features.model.Evidence.SourceType.LITERATURE;
 import static bio.singa.simulation.model.sections.CellRegions.VESICLE_REGION;
 

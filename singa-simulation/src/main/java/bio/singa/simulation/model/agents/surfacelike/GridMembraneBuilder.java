@@ -153,11 +153,6 @@ public class GridMembraneBuilder {
             }
         }
 
-        // assign region maps
-        for (Map.Entry<CellRegion, Membrane> entry : membranes.entrySet()) {
-            entry.getValue().generateRegionMap();
-        }
-
     }
 
     public void mapRegionGrid(RectangularGrid<Integer> originalGrid) {

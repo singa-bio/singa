@@ -1,7 +1,7 @@
 package bio.singa.simulation.model.modules.qualitative.implementations;
 
-import bio.singa.chemistry.features.diffusivity.Diffusivity;
-import bio.singa.chemistry.features.diffusivity.PixelDiffusivity;
+import bio.singa.features.quantities.Diffusivity;
+import bio.singa.features.quantities.PixelDiffusivity;
 import bio.singa.simulation.features.AppliedVesicleState;
 import bio.singa.chemistry.features.diffusivity.ModifiedDiffusivity;
 import bio.singa.simulation.model.agents.pointlike.Vesicle;

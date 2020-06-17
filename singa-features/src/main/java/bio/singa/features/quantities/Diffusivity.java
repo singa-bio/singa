@@ -1,4 +1,4 @@
-package bio.singa.chemistry.features.diffusivity;
+package bio.singa.features.quantities;
 
 import tech.units.indriya.unit.ProductUnit;
 

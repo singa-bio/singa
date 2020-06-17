@@ -2,8 +2,8 @@ package bio.singa.simulation.model.modules.concentration.imlementations.transpor
 
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.chemistry.entities.simple.SmallMolecule;
-import bio.singa.chemistry.features.diffusivity.ConcentrationDiffusivity;
-import bio.singa.chemistry.features.diffusivity.Diffusivity;
+import bio.singa.features.quantities.ConcentrationDiffusivity;
+import bio.singa.features.quantities.Diffusivity;
 import bio.singa.core.utility.Pair;
 import bio.singa.core.utility.Resources;
 import bio.singa.features.parameters.Environment;

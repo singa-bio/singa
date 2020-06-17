@@ -3,6 +3,8 @@ package bio.singa.chemistry.features.diffusivity;
 import bio.singa.chemistry.entities.simple.SmallMolecule;
 import bio.singa.chemistry.features.FeatureProviderRegistry;
 import bio.singa.features.identifiers.ChEBIIdentifier;
+import bio.singa.features.quantities.ConcentrationDiffusivity;
+import bio.singa.features.quantities.Diffusivity;
 import bio.singa.structure.features.molarmass.MolarMass;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;

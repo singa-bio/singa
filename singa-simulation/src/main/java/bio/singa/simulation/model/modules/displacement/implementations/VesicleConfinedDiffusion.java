@@ -1,6 +1,6 @@
 package bio.singa.simulation.model.modules.displacement.implementations;
 
-import bio.singa.chemistry.features.diffusivity.PixelDiffusivity;
+import bio.singa.features.quantities.PixelDiffusivity;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.mathematics.vectors.Vectors2D;

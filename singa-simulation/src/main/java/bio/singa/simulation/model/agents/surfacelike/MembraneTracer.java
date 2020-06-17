@@ -73,13 +73,6 @@ public class MembraneTracer {
         membrane.setInnerRegion(innerRegion);
         SimpleLineSegment segment = new SimpleLineSegment(start, end);
         membrane.addSegment(node, segment);
-        // construct region map
-        Map<CellRegion, List<Vector2D>> regionMap = new HashMap<>();
-        List<Vector2D> vectors = new ArrayList<>();
-        vectors.add(segment.getStartingPoint());
-        vectors.add(segment.getEndingPoint());
-        regionMap.put(membrane.getMembraneRegion(), vectors);
-        membrane.setRegionMap(regionMap);
         membranes.add(membrane);
     }
 

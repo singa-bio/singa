@@ -4,6 +4,8 @@ import bio.singa.features.model.Correlation;
 import bio.singa.features.model.Evidence;
 import bio.singa.features.model.Featureable;
 import bio.singa.features.parameters.Environment;
+import bio.singa.features.quantities.ConcentrationDiffusivity;
+import bio.singa.features.quantities.Diffusivity;
 import bio.singa.structure.features.molarmass.MolarMass;
 import tech.units.indriya.quantity.Quantities;
 

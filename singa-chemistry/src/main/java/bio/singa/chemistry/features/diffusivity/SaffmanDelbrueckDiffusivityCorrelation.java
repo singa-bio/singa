@@ -1,17 +1,17 @@
 package bio.singa.chemistry.features.diffusivity;
 
 import bio.singa.chemistry.features.structure3d.Radius;
-import bio.singa.features.model.Correlation;
-import bio.singa.features.model.Evidence;
-import bio.singa.features.model.Featureable;
+import bio.singa.features.model.*;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.quantities.DynamicViscosity;
+import bio.singa.features.quantities.MembraneDiffusivity;
 import bio.singa.features.quantities.NaturalConstants;
 import tech.units.indriya.quantity.Quantities;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Length;
 
+import static bio.singa.features.quantities.Diffusivity.*;
 import static java.lang.Math.PI;
 import static java.lang.Math.log;
 import static tech.units.indriya.unit.MetricPrefix.KILO;
@@ -43,6 +43,11 @@ public class SaffmanDelbrueckDiffusivityCorrelation implements Correlation<Membr
     private static Quantity<DynamicViscosity> membraneViscosity = Quantities.getQuantity(0.08, PASCAL.multiply(SECOND).asType(DynamicViscosity.class));
     private static Quantity<DynamicViscosity> bulkViscosity = Quantities.getQuantity(1.003, PASCAL.multiply(SECOND).asType(DynamicViscosity.class));
 
+    public static final MembraneDiffusivity DEFAULT_MEMBRANE_DIFFUSIVITY = MembraneDiffusivity.of(4.27E-12, SQUARE_METRE_PER_SECOND)
+            .comment("lateral diffusivity of membrane bound entities")
+            .evidence(method, parameters)
+            .build();
+
     @Override
     public <FeatureableType extends Featureable> MembraneDiffusivity predict(FeatureableType featureable) {
         Radius radius = featureable.getFeature(Radius.class);
@@ -64,10 +69,11 @@ public class SaffmanDelbrueckDiffusivityCorrelation implements Correlation<Membr
         double blzTerm = (kb * t) / (4 * PI * um * h);
         double dsd = blzTerm * (lsd - em);
 
-        return MembraneDiffusivity.of(dsd, Diffusivity.SQUARE_METRE_PER_SECOND)
+        return MembraneDiffusivity.of(dsd, SQUARE_METRE_PER_SECOND)
                 .comment("lateral diffusivity of membrane bound entities")
                 .evidence(method, parameters)
                 .build();
+
     }
 
 }

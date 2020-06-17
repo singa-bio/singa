@@ -1,4 +1,4 @@
-package bio.singa.chemistry.features.diffusivity;
+package bio.singa.features.quantities;
 
 import bio.singa.features.model.AbstractFeature;
 import bio.singa.features.model.AbstractScalableQuantitativeFeature;

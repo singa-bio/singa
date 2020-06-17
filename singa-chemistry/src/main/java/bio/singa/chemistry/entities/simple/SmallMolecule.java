@@ -3,7 +3,7 @@ package bio.singa.chemistry.entities.simple;
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.chemistry.entities.EntityRegistry;
 import bio.singa.chemistry.features.databases.chebi.ChEBIParserService;
-import bio.singa.chemistry.features.diffusivity.ConcentrationDiffusivity;
+import bio.singa.features.quantities.ConcentrationDiffusivity;
 import bio.singa.chemistry.features.logp.LogP;
 import bio.singa.chemistry.features.smiles.Smiles;
 import bio.singa.features.model.Feature;

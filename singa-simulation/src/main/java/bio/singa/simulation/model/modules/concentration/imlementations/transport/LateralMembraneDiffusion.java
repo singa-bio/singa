@@ -1,8 +1,7 @@
 package bio.singa.simulation.model.modules.concentration.imlementations.transport;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
-import bio.singa.chemistry.features.diffusivity.MembraneDiffusivity;
-import bio.singa.chemistry.features.diffusivity.SaffmanDelbrueckDiffusivityCorrelation;
+import bio.singa.features.quantities.MembraneDiffusivity;
 import bio.singa.simulation.features.AffectedRegion;
 import bio.singa.simulation.features.Cargoes;
 import bio.singa.simulation.model.graphs.AutomatonNode;
@@ -17,16 +16,14 @@ import bio.singa.simulation.model.simulation.Simulation;
 import bio.singa.simulation.model.simulation.Updatable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tech.units.indriya.quantity.Quantities;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import static bio.singa.chemistry.features.diffusivity.SaffmanDelbrueckDiffusivityCorrelation.DEFAULT_MEMBRANE_DIFFUSIVITY;
 import static bio.singa.simulation.model.sections.CellTopology.MEMBRANE;
-import static tech.units.indriya.unit.MetricPrefix.NANO;
-import static tech.units.indriya.unit.Units.METRE;
 
 /**
  * @author cl
@@ -37,7 +34,6 @@ public class LateralMembraneDiffusion extends ConcentrationBasedModule<EntityDel
      * The logger
      */
     private static final Logger logger = LoggerFactory.getLogger(LateralMembraneDiffusion.class);
-    private static final MembraneDiffusivity DEFAULT_MEMBRANE_DIFFUSIVITY = SaffmanDelbrueckDiffusivityCorrelation.predict(Quantities.getQuantity(3.0, NANO(METRE)));
     private CellRegion restrictedRegion;
 
     public LateralMembraneDiffusion() {

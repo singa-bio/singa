@@ -1,6 +1,6 @@
 package bio.singa.simulation.model.modules.displacement.implementations;
 
-import bio.singa.chemistry.features.diffusivity.PixelDiffusivity;
+import bio.singa.features.quantities.PixelDiffusivity;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.vectors.Vector2D;
@@ -20,7 +20,7 @@ import tech.units.indriya.quantity.Quantities;
 import javax.measure.quantity.Length;
 import javax.measure.quantity.Time;
 
-import static bio.singa.chemistry.features.diffusivity.Diffusivity.SQUARE_MICROMETRE_PER_SECOND;
+import static bio.singa.features.quantities.Diffusivity.SQUARE_MICROMETRE_PER_SECOND;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static tech.units.indriya.unit.MetricPrefix.MICRO;
 import static tech.units.indriya.unit.MetricPrefix.NANO;
