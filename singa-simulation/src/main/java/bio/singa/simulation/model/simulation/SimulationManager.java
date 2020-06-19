@@ -13,6 +13,7 @@ import bio.singa.simulation.model.simulation.error.NumericalError;
 import bio.singa.simulation.model.simulation.error.TimeStepManager;
 import bio.singa.simulation.trajectories.errors.DebugRecorder;
 import bio.singa.simulation.trajectories.flat.FlatUpdateRecorder;
+import bio.singa.simulation.trajectories.nested.NestedUpdateRecorder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tech.units.indriya.ComparableQuantity;
@@ -264,6 +265,7 @@ public class SimulationManager implements Runnable {
         }
         handleDebugging();
         try {
+            int lastWrite = 0;
             while (terminationCondition.test(simulation)) {
                 if (emitCondition.test(simulation)) {
                     if (writeAliveFile) {
@@ -271,6 +273,17 @@ public class SimulationManager implements Runnable {
                     }
                     logger.debug("Emitting event after {} (epoch {}).", TimeFormatter.formatTime(TimeStepManager.getElapsedTime()), simulation.getEpoch());
                     emitGraphEvent(simulation);
+                    if (lastWrite > 20) {
+                        // write current status
+                        lastWrite = 0;
+                        for (UpdateEventListener<GraphUpdatedEvent> graphListener : getGraphListeners()) {
+                            if (graphListener instanceof NestedUpdateRecorder) {
+                                ((NestedUpdateRecorder) graphListener).writeStatus();
+                            }
+                        }
+                    } else {
+                        lastWrite++;
+                    }
                     for (Updatable updatable : simulation.getObservedUpdatables()) {
                         emitNodeEvent(simulation, updatable);
                         logger.debug("Emitted next epoch event for node {}.", updatable.getStringIdentifier());
