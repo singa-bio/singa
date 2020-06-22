@@ -1,8 +1,8 @@
 package bio.singa.simulation.model.sections;
 
-import bio.singa.chemistry.entities.ChemicalEntity;
-import bio.singa.chemistry.entities.complex.ComplexEntity;
-import bio.singa.chemistry.entities.complex.GraphComplexNode;
+import bio.singa.simulation.entities.ChemicalEntity;
+import bio.singa.simulation.entities.ComplexEntity;
+import bio.singa.simulation.entities.GraphComplexNode;
 import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.features.units.UnitRegistry;
 

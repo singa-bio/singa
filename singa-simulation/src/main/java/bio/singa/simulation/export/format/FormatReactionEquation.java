@@ -1,10 +1,7 @@
 package bio.singa.simulation.export.format;
 
 import bio.singa.simulation.model.modules.concentration.imlementations.reactions.Reaction;
-import bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.kineticlaws.DynamicKineticLaw;
-import bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.kineticlaws.IrreversibleKineticLaw;
-import bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.kineticlaws.MichaelisMentenKineticLaw;
-import bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.kineticlaws.ReversibleKineticLaw;
+import bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.kineticlaws.*;
 import bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.reactants.Reactant;
 import bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.reactants.ReactantSet;
 import bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.reactants.RuleBasedReactantBehavior;
@@ -56,7 +53,7 @@ public class FormatReactionEquation {
     private static String formatReactantSet(List<Reactant> substrates, List<Reactant> products, List<Reactant> catalysts, boolean isReversible) {
         String substratesString = formatReactantsTex(substrates, " +");
         String productsString = formatReactantsTex(products, " +");
-        String catalystsString = " ";
+        String catalystsString = "";
         if (catalysts.size() > 0) {
             catalystsString = String.format(caralystFormatting, formatReactantsTex(catalysts, ","));
         }
@@ -72,12 +69,11 @@ public class FormatReactionEquation {
     }
 
     private static String formatReactantTex(Reactant reactant) {
-        String topology = mapTopologyToString(reactant.getPreferredTopology());
         String stoichiometicNumber = reactant.getStoichiometricNumber() > 1
                 ? " " + (int) reactant.getStoichiometricNumber() + " "
                 : "";
-        String entity = reactant.getEntity().getIdentifier();
-        return stoichiometicNumber + "!(" + topology + ")(" + entity + ")";
+        String entity = reactant.getEntity().getIdentifier().replaceAll("(\\d)", " $1 ");
+        return stoichiometicNumber +  entity ;
     }
 
     private static String mapTopologyToString(CellTopology topology) {
@@ -91,23 +87,27 @@ public class FormatReactionEquation {
         }
     }
 
-    public static String formatASCII(Reaction reaction) {
+    public static String formatASCII(List<Reactant> substrates, List<Reactant> products, List<Reactant> catalysts, KineticLaw law) {
 
-        String substrates = formatSectionReactantsASCII(reaction.getReactantBehavior().getSubstrates(), " +");
-        String products = formatSectionReactantsASCII(reaction.getReactantBehavior().getProducts(), " +");
-        String catalysts = formatSectionReactantsASCII(reaction.getReactantBehavior().getCatalysts(), ",");
+        String substrateString = formatSectionReactantsASCII(substrates, " +");
+        String productString = formatSectionReactantsASCII(products, " +");
+        String catalystString = formatSectionReactantsASCII(catalysts, ",");
 
-        if (reaction.getKineticLaw() instanceof ReversibleKineticLaw) {
-            return String.format(reversibleASCIITemplate, substrates, products);
-        } else if (reaction.getKineticLaw() instanceof IrreversibleKineticLaw) {
-            return String.format(irreversibleASCIITemplate, substrates, products);
-        } else if (reaction.getKineticLaw() instanceof MichaelisMentenKineticLaw) {
-            return String.format(michaelisMentenASCIITemplate, substrates, catalysts, products);
-        } else if (reaction.getKineticLaw() instanceof DynamicKineticLaw) {
-            return String.format(michaelisMentenASCIITemplate, substrates, catalysts, products);
+        if (law instanceof ReversibleKineticLaw) {
+            return String.format(reversibleASCIITemplate, substrateString, productString);
+        } else if (law instanceof IrreversibleKineticLaw) {
+            return String.format(irreversibleASCIITemplate, substrateString, productString);
+        } else if (law instanceof MichaelisMentenKineticLaw) {
+            return String.format(michaelisMentenASCIITemplate, substrateString, catalystString, productString);
+        } else if (law instanceof DynamicKineticLaw) {
+            return String.format(michaelisMentenASCIITemplate, substrateString, catalystString, productString);
         } else {
-            throw new IllegalArgumentException("The kinetic law " + reaction.getKineticLaw().getClass() + " has no implemented ASCII representation.");
+            throw new IllegalArgumentException("The kinetic law " + law.getClass() + " has no implemented ASCII representation.");
         }
+    }
+
+    public static String formatASCII(Reaction reaction) {
+        return formatASCII(reaction.getReactantBehavior().getSubstrates(), reaction.getReactantBehavior().getProducts(), reaction.getReactantBehavior().getCatalysts(), reaction.getKineticLaw());
     }
 
     private static String formatSectionReactantsASCII(Collection<Reactant> reactants, String delimiter) {

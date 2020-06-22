@@ -6,7 +6,7 @@ import bio.singa.mathematics.geometry.faces.Circle;
 import bio.singa.mathematics.geometry.model.Polygon;
 import bio.singa.mathematics.topology.grids.rectangular.NeumannRectangularDirection;
 import bio.singa.mathematics.vectors.Vector2D;
-import bio.singa.mathematics.vectors.Vectors;
+import bio.singa.mathematics.vectors.Vectors2D;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 
@@ -236,7 +236,7 @@ public class LineLikeAgent {
 
     private Vector2D computeNextSegment(Vector2D head) {
         // r_n+1 = (r_n * (1 - r_d) + r_d * u) / mag(r_n * (1 - r_d) + r_d * u)
-        return head.multiply(1 - rd).add(Vectors.generateRandomUnit2DVector().multiply(rd)).normalize().multiply(2);
+        return head.multiply(1 - rd).add(Vectors2D.generateRandomUnit2DVector().multiply(rd)).normalize().multiply(2);
     }
 
     private void associateNodes(Vector2D segment) {

@@ -1,8 +1,8 @@
 package bio.singa.simulation.model.sections;
 
-import bio.singa.chemistry.entities.ChemicalEntity;
-import bio.singa.chemistry.entities.simple.SmallMolecule;
 import bio.singa.features.units.UnitRegistry;
+import bio.singa.simulation.entities.ChemicalEntity;
+import bio.singa.simulation.entities.SimpleEntity;
 import org.junit.jupiter.api.Test;
 import tech.units.indriya.quantity.Quantities;
 
@@ -16,9 +16,9 @@ import static tech.units.indriya.unit.Units.METRE;
  */
 class CellRegionTest {
 
-    private final ChemicalEntity entityA = SmallMolecule.create("A").build();
-    private final ChemicalEntity entityB = SmallMolecule.create("B").build();
-    private final ChemicalEntity entityC = SmallMolecule.create("C").build();
+    private final ChemicalEntity entityA = SimpleEntity.create("A").build();
+    private final ChemicalEntity entityB = SimpleEntity.create("B").build();
+    private final ChemicalEntity entityC = SimpleEntity.create("C").build();
 
     @Test
     void resembleSingleContainer() {

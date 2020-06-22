@@ -1,7 +1,7 @@
 package bio.singa.structure.algorithms.superimposition.fit3d.representations;
 
 
-import bio.singa.mathematics.vectors.Vectors;
+import bio.singa.mathematics.vectors.Vectors3D;
 import bio.singa.structure.elements.ElementProvider;
 import bio.singa.structure.model.interfaces.Atom;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
@@ -39,7 +39,7 @@ public abstract class AbstractRepresentationScheme implements RepresentationSche
         return new OakAtom(leafSubstructure.getAllAtoms().get(0).getAtomIdentifier(),
                 ElementProvider.UNKOWN,
                 RepresentationSchemeType.CENTROID.getAtomNameString(),
-                Vectors.get3DCentroid(leafSubstructure.getAllAtoms().stream()
+                Vectors3D.get3DCentroid(leafSubstructure.getAllAtoms().stream()
                         .filter(StructuralEntityFilter.AtomFilter.isHydrogen().negate())
                         .map(Atom::getPosition)
                         .collect(Collectors.toList())));

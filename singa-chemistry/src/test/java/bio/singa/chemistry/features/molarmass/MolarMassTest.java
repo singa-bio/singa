@@ -1,7 +1,7 @@
 package bio.singa.chemistry.features.molarmass;
 
-import bio.singa.chemistry.entities.simple.Protein;
-import bio.singa.chemistry.entities.simple.SmallMolecule;
+import bio.singa.chemistry.simple.Protein;
+import bio.singa.chemistry.simple.SmallMolecule;
 import bio.singa.features.identifiers.ChEBIIdentifier;
 import bio.singa.features.identifiers.UniProtIdentifier;
 import bio.singa.structure.features.molarmass.MolarMass;

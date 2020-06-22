@@ -1,10 +1,11 @@
 package bio.singa.chemistry.features.databases.chebi;
 
-import bio.singa.chemistry.entities.simple.SmallMolecule;
+import bio.singa.chemistry.simple.SmallMolecule;
 import bio.singa.structure.features.molarmass.MolarMass;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * @author cl

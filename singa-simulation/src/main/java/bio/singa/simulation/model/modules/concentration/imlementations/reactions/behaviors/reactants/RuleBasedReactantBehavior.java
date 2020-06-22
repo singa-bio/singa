@@ -1,9 +1,9 @@
 package bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.reactants;
 
-import bio.singa.chemistry.entities.ChemicalEntity;
-import bio.singa.chemistry.entities.complex.ComplexEntity;
-import bio.singa.chemistry.reactions.reactors.ReactionChain;
-import bio.singa.chemistry.reactions.reactors.ReactionElement;
+import bio.singa.simulation.entities.ChemicalEntity;
+import bio.singa.simulation.entities.ComplexEntity;
+import bio.singa.simulation.reactions.reactors.ReactionChain;
+import bio.singa.simulation.reactions.reactors.ReactionElement;
 import bio.singa.simulation.model.sections.CellTopology;
 
 import java.util.ArrayList;

@@ -1,8 +1,7 @@
 package bio.singa.simulation.model.modules.concentration.imlementations.transport;
 
-import bio.singa.chemistry.entities.ChemicalEntity;
+import bio.singa.simulation.entities.ChemicalEntity;
 import bio.singa.chemistry.features.permeability.MembranePermeability;
-import bio.singa.features.model.Evidence;
 import bio.singa.simulation.features.Cargo;
 import bio.singa.simulation.model.agents.pointlike.Vesicle;
 import bio.singa.simulation.model.agents.surfacelike.Membrane;
@@ -171,7 +170,7 @@ public class MembraneDiffusion extends ConcentrationBasedModule<UpdatableDeltaFu
 
         @Override
         public BuildStep cargo(ChemicalEntity cargo) {
-            module.setFeature(new Cargo(cargo, Evidence.NO_EVIDENCE));
+            module.setFeature(Cargo.of(cargo).build());
             return this;
         }
 

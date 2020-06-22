@@ -1,6 +1,6 @@
 package bio.singa.simulation.model.modules.concentration.imlementations;
 
-import bio.singa.chemistry.entities.simple.SmallMolecule;
+import bio.singa.simulation.entities.simple.SmallMolecule;
 import bio.singa.chemistry.features.permeability.MembranePermeability;
 import bio.singa.features.model.Evidence;
 import bio.singa.features.parameters.Environment;
@@ -20,6 +20,7 @@ import bio.singa.simulation.model.sections.CellTopology;
 import bio.singa.simulation.model.simulation.Simulation;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import tech.units.indriya.ComparableQuantity;
 import tech.units.indriya.quantity.Quantities;
@@ -54,18 +55,22 @@ class MembraneDiffusionTest {
 
     @BeforeAll
     static void initialize() {
+        Environment.reset();
         UnitRegistry.reinitialize();
     }
 
     @AfterEach
     void cleanUp() {
+        Environment.reset();
         UnitRegistry.reinitialize();
     }
 
     @Test
+    @Disabled("migration to two compartment model")
     void shouldSimulateMembraneDiffusion() {
-        Environment.reset();
+
         Simulation simulation = new Simulation();
+        Environment.setSystemExtend(Quantities.getQuantity(1, MICRO(METRE)));
 
         final AutomatonGraph automatonGraph = AutomatonGraphs.singularGraph();
         simulation.setGraph(automatonGraph);

@@ -1,9 +1,10 @@
 package bio.singa.simulation.features;
 
-import bio.singa.chemistry.entities.ChemicalEntity;
-import bio.singa.features.model.Evidence;
+import bio.singa.simulation.entities.ChemicalEntity;
+import bio.singa.features.model.AbstractFeature;
+import bio.singa.simulation.features.model.MultiEntityFeature;
 
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -11,24 +12,33 @@ import java.util.List;
  */
 public class MatchingQSnares extends MultiEntityFeature {
 
-    public MatchingQSnares(List<ChemicalEntity> chemicalEntities, List<Evidence> evidence) {
-        super(chemicalEntities, evidence);
-    }
-
-    public MatchingQSnares(List<ChemicalEntity> chemicalEntities, Evidence evidence) {
-        super(chemicalEntities, evidence);
-    }
-
     public MatchingQSnares(List<ChemicalEntity> chemicalEntities) {
         super(chemicalEntities);
     }
 
-    public MatchingQSnares(ChemicalEntity chemicalEntity, Evidence evidence) {
-        super(Collections.singletonList(chemicalEntity), evidence);
+    public static Builder of(List<ChemicalEntity> quantity) {
+        return new Builder(quantity);
     }
 
-    public MatchingQSnares(ChemicalEntity chemicalEntity) {
-        super(Collections.singletonList(chemicalEntity));
+    public static Builder of(ChemicalEntity... entities) {
+        return new Builder(Arrays.asList(entities));
+    }
+
+    public static class Builder extends AbstractFeature.Builder<List<ChemicalEntity>, MatchingQSnares, Builder> {
+
+        public Builder(List<ChemicalEntity> quantity) {
+            super(quantity);
+        }
+
+        @Override
+        protected MatchingQSnares createObject(List<ChemicalEntity> quantity) {
+            return new MatchingQSnares(quantity);
+        }
+
+        @Override
+        protected Builder getBuilder() {
+            return this;
+        }
     }
 
 }

@@ -1,7 +1,7 @@
 package bio.singa.simulation.model.modules.qualitative.implementations;
 
-import bio.singa.chemistry.entities.ChemicalEntity;
-import bio.singa.chemistry.entities.complex.ComplexEntity;
+import bio.singa.simulation.entities.ChemicalEntity;
+import bio.singa.simulation.entities.ComplexEntity;
 import bio.singa.core.utility.Pair;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.quantities.MolarConcentration;
@@ -18,6 +18,7 @@ import bio.singa.simulation.model.sections.CellTopology;
 import bio.singa.simulation.model.sections.ConcentrationContainer;
 import bio.singa.simulation.model.sections.ConcentrationPool;
 import bio.singa.simulation.model.simulation.Updatable;
+import bio.singa.simulation.model.simulation.error.TimeStepManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tech.units.indriya.ComparableQuantity;
@@ -49,6 +50,7 @@ public class VesicleFusion extends QualitativeModule {
     // temporary variables for #onCompletion
     private List<Vesicle> fusingVesicles;
     private Map<Vesicle, TetheringSnares> tetheringVesicles;
+    private boolean noSnares;
 
     public VesicleFusion() {
         // initialize
@@ -64,12 +66,17 @@ public class VesicleFusion extends QualitativeModule {
         getRequiredFeatures().add(MatchingQSnares.class);
         getRequiredFeatures().add(MatchingRSnares.class);
         getRequiredFeatures().add(SNAREFusionPairs.class);
+        getRequiredFeatures().add(AppliedVesicleState.class);
     }
 
     @Override
     public void initialize() {
         MatchingQSnares qSnares = getFeature(MatchingQSnares.class);
         MatchingRSnares rSnares = getFeature(MatchingRSnares.class);
+        if (qSnares == null || rSnares == null) {
+            noSnares = true;
+            return;
+        }
         for (ChemicalEntity qSnare : qSnares.getContent()) {
             for (ChemicalEntity rSnare : rSnares.getContent()) {
                 Pair<ChemicalEntity> pair = new Pair<>(qSnare, rSnare);
@@ -127,6 +134,9 @@ public class VesicleFusion extends QualitativeModule {
         for (Map.Entry<ChemicalEntity, Double> entry : vesicleContainer.getPool(CellTopology.OUTER).getValue().getConcentrations().entrySet()) {
             node.addPotentialDelta(new ConcentrationDelta(this, node.getCellRegion().getInnerSubsection(), entry.getKey(), entry.getValue()));
         }
+        if (noSnares) {
+            return;
+        }
         // add occupied snares
         ConcentrationPool concentrationPool = occupiedSnares.get(tetheredVesicle);
         for (Map.Entry<ChemicalEntity, Double> entry : concentrationPool.getConcentrations().entrySet()) {
@@ -136,14 +146,16 @@ public class VesicleFusion extends QualitativeModule {
 
     private void tetherVesicle(Vesicle vesicle, TetheringSnares tetheringSnares) {
         // add tethering time to current time
-        ComparableQuantity<Time> tetheringTime = getSimulation().getElapsedTime().add(getFeature(FusionTime.class).getContent());
+        ComparableQuantity<Time> tetheringTime = TimeStepManager.getElapsedTime().add(getFeature(FusionTime.class).getContent());
         vesicle.setState(VesicleStateRegistry.MEMBRANE_TETHERED);
         // set time
         tetheredVesicles.put(vesicle, tetheringTime);
         // set target
         tetheredNodes.put(vesicle, tetheringSnares.getTetheringTarget());
         // set reserved snares
-        reserveSnares(vesicle, tetheringSnares);
+        if (!noSnares) {
+            reserveSnares(vesicle, tetheringSnares);
+        }
     }
 
     private void checkTetheringTime() {
@@ -151,7 +163,7 @@ public class VesicleFusion extends QualitativeModule {
             Vesicle tetheredVesicle = entry.getKey();
             Quantity<Time> fusionTime = entry.getValue();
             // if tethered time is reached
-            if (getSimulation().getElapsedTime().isGreaterThanOrEqualTo(fusionTime)) {
+            if (TimeStepManager.getElapsedTime().isGreaterThanOrEqualTo(fusionTime)) {
                 // add vesicle to vesicle layer
                 fusingVesicles.add(tetheredVesicle);
             }
@@ -165,6 +177,12 @@ public class VesicleFusion extends QualitativeModule {
             if (vesicle.getState().equals(VesicleStateRegistry.ACTIN_PROPELLED) ||
                     vesicle.getState().equals(VesicleStateRegistry.MEMBRANE_TETHERED)) {
                 continue;
+            }
+            if (noSnares) {
+                String state = getFeature(AppliedVesicleState.class).getContent();
+                if (!vesicle.getState().equals(state)) {
+                    continue;
+                }
             }
             Vector2D currentPosition = vesicle.getPosition();
             // for each associated node
@@ -180,6 +198,10 @@ public class VesicleFusion extends QualitativeModule {
                         ComparableQuantity<Length> threshold = (ComparableQuantity<Length>) getFeature(AttachmentDistance.class).getContent().add(vesicle.getRadius());
                         Quantity<Length> distance = Environment.convertSimulationToSystemScale(currentDistance);
                         if (threshold.isGreaterThanOrEqualTo(distance)) {
+                            if (noSnares) {
+                                tetheringVesicles.put(vesicle, new TetheringSnares(null, null, node));
+                                break nodesLoop;
+                            }
                             TetheringSnares tetheringSnares = prepareTethering(node, vesicle);
                             if (snaresMatch(tetheringSnares)) {
                                 tetheringVesicles.put(vesicle, tetheringSnares);

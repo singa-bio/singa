@@ -856,7 +856,6 @@ public class StructureParser {
 
         @Override
         public SingleBranchStep localPDB(LocalPDB localPDB, String pdbIdentifier) {
-            sourceLocation = localPDB.sourceLocation;
             contentIterator = new StructureContentIterator(localPDB, pdbIdentifier);
             return new SingleReducingSelector(this);
         }

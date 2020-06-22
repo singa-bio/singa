@@ -1,7 +1,7 @@
 package bio.singa.chemistry.features.molarvolume;
 
-import bio.singa.chemistry.entities.simple.SmallMolecule;
 import bio.singa.chemistry.features.databases.chebi.ChEBIParserService;
+import bio.singa.chemistry.simple.SmallMolecule;
 import bio.singa.features.quantities.MolarVolume;
 import org.junit.jupiter.api.Test;
 

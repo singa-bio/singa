@@ -8,6 +8,7 @@ import bio.singa.simulation.model.simulation.Simulation;
 
 import javax.measure.Unit;
 import javax.measure.quantity.Time;
+import java.util.function.Consumer;
 
 /**
  * @author cl
@@ -16,6 +17,7 @@ public class NestedUpdateRecorder implements UpdateEventListener<GraphUpdatedEve
 
     private Trajectories trajectories;
     private Simulation simulation;
+    private Consumer<Trajectories> consumer;
 
     public NestedUpdateRecorder(Simulation simulation) {
         this(simulation, UnitRegistry.getTimeUnit(), UnitRegistry.getConcentrationUnit());
@@ -36,6 +38,16 @@ public class NestedUpdateRecorder implements UpdateEventListener<GraphUpdatedEve
     public void onEventReceived(GraphUpdatedEvent event) {
         trajectories.addTrajectoryData(event.getElapsedTime().to(trajectories.getTimeUnit()).getValue().doubleValue(),
                 TrajectoryData.of(simulation.getUpdatables(), trajectories.getConcentrationUnit()));
+    }
+
+    public void writeStatus() {
+        if (consumer != null) {
+            consumer.accept(trajectories);
+        }
+    }
+
+    public void setOutputFunction(Consumer<Trajectories> consumer) {
+        this.consumer = consumer;
     }
 
 }

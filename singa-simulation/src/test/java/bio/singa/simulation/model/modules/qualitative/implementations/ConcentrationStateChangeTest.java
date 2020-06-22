@@ -1,9 +1,9 @@
 package bio.singa.simulation.model.modules.qualitative.implementations;
 
-import bio.singa.chemistry.entities.ChemicalEntity;
-import bio.singa.chemistry.entities.complex.ComplexEntity;
-import bio.singa.chemistry.entities.simple.Protein;
-import bio.singa.chemistry.entities.simple.SmallMolecule;
+import bio.singa.simulation.entities.ChemicalEntity;
+import bio.singa.simulation.entities.ComplexEntity;
+import bio.singa.simulation.entities.simple.Protein;
+import bio.singa.simulation.entities.simple.SmallMolecule;
 import bio.singa.chemistry.features.reactions.RateConstant;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.quantities.MolarConcentration;
@@ -22,6 +22,7 @@ import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.modules.concentration.imlementations.reactions.ReactionBuilder;
 import bio.singa.simulation.model.sections.CellRegions;
 import bio.singa.simulation.model.simulation.Simulation;
+import bio.singa.simulation.model.simulation.error.TimeStepManager;
 import org.junit.jupiter.api.Test;
 import tech.units.indriya.ComparableQuantity;
 import tech.units.indriya.quantity.Quantities;
@@ -81,7 +82,7 @@ class ConcentrationStateChangeTest {
         stateChange.setIdentifier("vesicle state change");
         stateChange.setFeature(new RequiredVesicleState(IN_PERINUCLEAR_STORAGE));
         stateChange.setFeature(new AppliedVesicleState(UNATTACHED));
-        stateChange.setFeature(new Cargoes(aqp2p, aqp2));
+        stateChange.setFeature(Cargoes.of(aqp2p, aqp2).build());
         stateChange.setFeature(new Ratio(3.0/4.0));
 
         // setup reaction to introduce entity change
@@ -98,7 +99,7 @@ class ConcentrationStateChangeTest {
 
         simulation.addModule(stateChange);
 
-        while (simulation.getElapsedTime().isLessThanOrEqualTo(Quantities.getQuantity(200, MICRO(SECOND)))) {
+        while (TimeStepManager.getElapsedTime().isLessThanOrEqualTo(Quantities.getQuantity(200, MICRO(SECOND)))) {
             simulation.nextEpoch();
         }
 

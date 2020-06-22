@@ -1,6 +1,6 @@
 package bio.singa.simulation.model.simulation;
 
-import bio.singa.chemistry.entities.ChemicalEntity;
+import bio.singa.simulation.entities.ChemicalEntity;
 import bio.singa.features.formatter.TimeFormatter;
 import bio.singa.features.model.Feature;
 import bio.singa.features.parameters.Environment;
@@ -14,21 +14,19 @@ import bio.singa.simulation.model.agents.pointlike.VesicleLayer;
 import bio.singa.simulation.model.agents.surfacelike.MembraneLayer;
 import bio.singa.simulation.model.agents.volumelike.VolumeLayer;
 import bio.singa.simulation.model.agents.volumelike.VolumeLikeAgent;
+import bio.singa.simulation.model.concentrations.InitialConcentration;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.graphs.NeighborhoodMappingManager;
 import bio.singa.simulation.model.modules.UpdateModule;
 import bio.singa.simulation.model.modules.concentration.ConcentrationDelta;
-import bio.singa.simulation.model.modules.concentration.NumericalError;
 import bio.singa.simulation.model.modules.concentration.imlementations.transport.Diffusion;
-import bio.singa.simulation.model.modules.displacement.DisplacementBasedModule;
 import bio.singa.simulation.model.rules.AssignmentRule;
 import bio.singa.simulation.model.rules.AssignmentRules;
-import bio.singa.simulation.model.concentrations.InitialConcentration;
+import bio.singa.simulation.model.simulation.error.TimeStepManager;
+import bio.singa.simulation.trajectories.errors.DebugRecorder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tech.units.indriya.ComparableQuantity;
-import tech.units.indriya.quantity.Quantities;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Time;
@@ -84,11 +82,6 @@ public class Simulation {
     private long epoch;
 
     /**
-     * The currently elapsed time.
-     */
-    private ComparableQuantity<Time> elapsedTime;
-
-    /**
      * The sections top be updated
      */
     private List<Updatable> updatables;
@@ -110,7 +103,10 @@ public class Simulation {
 
     private boolean initializationDone;
 
-    private boolean vesiclesWillMove;
+    private boolean debug;
+    private DebugRecorder debugRecorder;
+
+    private long epochWithRescaledTimeStep = 0;
 
     /**
      * Creates a new plain simulation.
@@ -120,10 +116,9 @@ public class Simulation {
         assignmentRules = new ArrayList<>();
         concentrations = new ArrayList<>();
         chemicalEntities = new HashMap<>();
-        elapsedTime = Quantities.getQuantity(0.0, UnitRegistry.getTimeUnit());
         epoch = 0;
         initializationDone = false;
-        vesiclesWillMove = false;
+        debug = false;
         observedUpdatables = new HashSet<>();
         vesicleLayer = new VesicleLayer(this);
         scheduler = new UpdateScheduler(this);
@@ -134,12 +129,12 @@ public class Simulation {
      * Calculates the next epoch.
      */
     public void nextEpoch() {
-        logger.debug("Starting epoch {} ({}).", epoch, elapsedTime);
+        logger.debug("Starting epoch {} ({}).", epoch, TimeStepManager.getElapsedTime());
         if (!initializationDone) {
             initializeModules();
             initializeVesicleLayer();
             initializeSubsectionAdjacency();
-            scheduler.initializeThreadPool();
+            scheduler.initialize();
             initializationDone = true;
         }
 
@@ -165,44 +160,37 @@ public class Simulation {
         // apply concentrations
         applyConcentrations();
 
+        //System.out.println("epoch "+epoch);
         // apply all modules
         scheduler.nextEpoch();
+
         // apply generated deltas
         logger.debug("Applying deltas.");
         for (Updatable updatable : updatables) {
             if (updatable.getConcentrationManager().hasDeltas()) {
                 logger.trace("Deltas in {}:", updatable.getStringIdentifier());
-//                if (updatable.getStringIdentifier().equals("n(19,4)")) {
-//                    for (ConcentrationDelta finalDelta : updatable.getConcentrationManager().getFinalDeltas()) {
-//                        System.out.println(finalDelta);
-//                    }
-//                }
                 updatable.getConcentrationManager().applyDeltas();
             }
         }
 
-        if (vesicleLayer != null && vesiclesWillMove) {
+        if (vesicleLayer != null) {
             // move vesicles
             vesicleLayer.applyDeltas();
             // associate nodes
             vesicleLayer.associateVesicles();
-
         }
 
         // update epoch and elapsed time
         updateEpoch();
         // if time step did not change it can possibly be increased
         if (timeStepShouldIncrease()) {
-            scheduler.increaseTimeStep();
+            TimeStepManager.increaseTimeStep();
         }
 
     }
 
     private boolean timeStepShouldIncrease() {
-        // if time step was reduced in this epoch there is no need to test if it should increase
-        if (scheduler.timeStepWasAlteredInThisEpoch()) {
-            return false;
-        }
+
         // if a maximal time step is set
         if (maximalTimeStep != null) {
             final double currentTimeStep = UnitRegistry.getTime().to(maximalTimeStep.getUnit()).getValue().doubleValue();
@@ -213,27 +201,14 @@ public class Simulation {
             }
         }
 
-//        // if the ratio between local and global error (local/global) is large (local error has little influence on
-//        // global error)
-//        double errorRatio = scheduler.getLargestLocalError().getValue() / scheduler.getLargestGlobalError();
-//        if (errorRatio > 100000) {
-//            return true;
-//        }
-
-        // if the the error that was computed previously is very small
-        final double recalculationCutoff = scheduler.getRecalculationCutoff();
-        final NumericalError latestGlobalError = scheduler.getLargestGlobalError();
-        if (recalculationCutoff - latestGlobalError.getValue() > 0.1 * recalculationCutoff) {
-            // System.out.println("global error "+ latestGlobalError);
-            final double latestLocalError = scheduler.getLargestLocalError().getValue();
-            // System.out.println("local error "+ latestLocalError);
-            if (recalculationCutoff - latestLocalError > 0.1 * recalculationCutoff) {
-                // try larger time step
-                return true;
-            }
+        // if the time step was decreased in the last n epochs do not consider it
+        if (epoch - epochWithRescaledTimeStep < 10) {
+            return false;
         }
 
-        return false;
+
+        // if the the error that was computed previously is very small
+        return getScheduler().getErrorManager().allErrorsAreSafe();
     }
 
     private void initializeModules() {
@@ -244,12 +219,6 @@ public class Simulation {
             logger.info("Module {}", module.getIdentifier());
             for (Feature<?> feature : module.getFeatures()) {
                 logger.info("  Feature {} = {}", feature.getClass().getSimpleName(), feature.getContent());
-            }
-            // save some computation time in case vesicles will not move; this effects:
-            // associations between nodes and vesicles are only calculated once
-            // no collisions are checked
-            if (module instanceof DisplacementBasedModule) {
-                vesiclesWillMove = true;
             }
         }
     }
@@ -267,9 +236,8 @@ public class Simulation {
         ListIterator<InitialConcentration> iterator = concentrations.listIterator();
         while (iterator.hasNext()) {
             InitialConcentration concentration = iterator.next();
-            if (concentration.getTime().isLessThanOrEqualTo(elapsedTime)) {
-                logger.info("Initialized concentration {}.", concentration);
-                concentration.apply(this);
+            concentration.apply(this);
+            if (!concentration.isFix()) {
                 iterator.remove();
             }
         }
@@ -286,7 +254,7 @@ public class Simulation {
     public void initializeSpatialRepresentations() {
         logger.info("Initializing spatial representations of automaton nodes.");
         // TODO initialize via voronoi diagrams
-        // or rectangles
+        // or rectangle
         for (AutomatonNode node : graph.getNodes()) {
             // create rectangles centered on the nodes with side length of node distance
             Vector2D position = node.getPosition();
@@ -378,6 +346,8 @@ public class Simulation {
     public void collectUpdatables() {
         updatables = new ArrayList<>(graph.getNodes());
         updatables.addAll(vesicleLayer.getVesicles());
+        updatables.addAll(vesicleLayer.getAspiringPits());
+        updatables.addAll(vesicleLayer.getMaturingPits());
     }
 
     /**
@@ -437,11 +407,7 @@ public class Simulation {
      */
     private void updateEpoch() {
         epoch++;
-        elapsedTime = elapsedTime.add(UnitRegistry.getTime());
-    }
-
-    public ComparableQuantity<Time> getElapsedTime() {
-        return elapsedTime;
+        TimeStepManager.updateTime();
     }
 
     public AutomatonGraph getGraph() {
@@ -475,11 +441,6 @@ public class Simulation {
         chemicalEntities.put(chemicalEntity.getIdentifier(), chemicalEntity);
     }
 
-    public void observe(Updatable updatable) {
-        observedUpdatables.add(updatable);
-        updatable.setObserved(true);
-    }
-
     public Set<Updatable> getObservedUpdatables() {
         return observedUpdatables;
     }
@@ -492,4 +453,27 @@ public class Simulation {
         observedDeltas.clear();
     }
 
+    public boolean isDebug() {
+        return debug;
+    }
+
+    public void setDebug(boolean debug) {
+        this.debug = debug;
+    }
+
+    public DebugRecorder getDebugRecorder() {
+        return debugRecorder;
+    }
+
+    public void setDebugRecorder(DebugRecorder debugRecorder) {
+        this.debugRecorder = debugRecorder;
+    }
+
+    public long getEpochWithRescaledTimeStep() {
+        return epochWithRescaledTimeStep;
+    }
+
+    public void setEpochWithRescaledTimeStep(long epochWithRescaledTimeStep) {
+        this.epochWithRescaledTimeStep = epochWithRescaledTimeStep;
+    }
 }

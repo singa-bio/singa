@@ -1,22 +1,28 @@
 package bio.singa.simulation.model.modules.concentration;
 
-import bio.singa.chemistry.entities.ChemicalEntity;
+import bio.singa.simulation.entities.ChemicalEntity;
 import bio.singa.features.model.AbstractScalableQuantitativeFeature;
-import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.simulation.exceptions.NumericalInstabilityException;
+import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.modules.AbstractUpdateModule;
 import bio.singa.simulation.model.modules.concentration.functions.AbstractDeltaFunction;
 import bio.singa.simulation.model.modules.concentration.scope.UpdateScope;
 import bio.singa.simulation.model.modules.concentration.specifity.UpdateSpecificity;
+import bio.singa.simulation.model.sections.CellSubsection;
 import bio.singa.simulation.model.simulation.Updatable;
+import bio.singa.simulation.model.simulation.error.NumericalError;
+import bio.singa.simulation.model.simulation.error.TimeStepManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Predicate;
 
 import static bio.singa.simulation.model.modules.concentration.ModuleState.REQUIRING_RECALCULATION;
 import static bio.singa.simulation.model.modules.concentration.ModuleState.SUCCEEDED;
+import static bio.singa.simulation.model.simulation.error.ErrorManager.Reason.LOCAL_ERROR;
 
 /**
  * Concentration based modules handle updates that are applied to the concentrations in {@link Updatable}s during a
@@ -32,26 +38,6 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
      * The logger
      */
     private static final Logger logger = LoggerFactory.getLogger(ConcentrationBasedModule.class);
-
-    /**
-     * The default value where deltas validated to be effectively zero.
-     */
-    private static final double DEFAULT_NUMERICAL_CUTOFF = 1e-100;
-
-    /**
-     * The default value where numerical errors to be considered irretrievably unstable.
-     */
-    private static final double DEFAULT_ERROR_CUTOFF = 100;
-
-    /**
-     * The cutoff where deltas are validated to be effectively zero.
-     */
-    private double deltaCutoff = DEFAULT_NUMERICAL_CUTOFF;
-
-    /**
-     * The cutoff where numerical errors to be considered irretrievably unstable.
-     */
-    private double errorCutoff = DEFAULT_ERROR_CUTOFF;
 
     /**
      * Frequently required fields.
@@ -72,6 +58,8 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
      * Evaluated every time the module is applied to any updatable.
      */
     private Predicate<Updatable> applicationCondition;
+    private CellSubsection restrictedSubsection;
+    private List<AutomatonNode> relevantNodes;
 
     /**
      * Creates a new concentration based module.
@@ -92,16 +80,6 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
     }
 
     /**
-     * Sets the application condition for this module. The module is only evaluated if the updatable fulfills the given
-     * predicate.
-     *
-     * @param applicationCondition The application condition.
-     */
-    protected void setApplicationCondition(Predicate<Updatable> applicationCondition) {
-        this.applicationCondition = applicationCondition;
-    }
-
-    /**
      * Returns the application condition for this module.The module is only evaluated if the updatable fulfills the
      * given predicate.
      *
@@ -111,42 +89,14 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
         return applicationCondition;
     }
 
-
-
     /**
-     * Returns the cutoff where deltas are validated to be effectively zero.
+     * Sets the application condition for this module. The module is only evaluated if the updatable fulfills the given
+     * predicate.
      *
-     * @return The delta cutoff.
+     * @param applicationCondition The application condition.
      */
-    public double getDeltaCutoff() {
-        return deltaCutoff;
-    }
-
-    /**
-     * Sets the cutoff where deltas are validated to be effectively zero.
-     *
-     * @param deltaCutoff The delta cutoff.
-     */
-    public void setDeltaCutoff(double deltaCutoff) {
-        this.deltaCutoff = deltaCutoff;
-    }
-
-    /**
-     * Returns the cutoff where numerical errors to be considered irretrievably unstable.
-     *
-     * @return The error cutoff.
-     */
-    public double getErrorCutoff() {
-        return errorCutoff;
-    }
-
-    /**
-     * Sets the cutoff where numerical errors to be considered irretrievably unstable.
-     *
-     * @param errorCutoff The error cutoff.
-     */
-    public void setErrorCutoff(double errorCutoff) {
-        this.errorCutoff = errorCutoff;
+    protected void setApplicationCondition(Predicate<Updatable> applicationCondition) {
+        this.applicationCondition = applicationCondition;
     }
 
     /**
@@ -204,17 +154,25 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
         logDelta(deltaIdentifier, delta);
         if (supplier.isStrutCalculation()) {
             delta = delta.multiply(2.0);
-            supplier.getCurrentHalfDeltas().put(deltaIdentifier, delta);
-            deltaIdentifier.getUpdatable().addPotentialDelta(delta);
+            supplier.addHalfDelta(deltaIdentifier, delta);
+            // calculate actual applied delta
+            ConcentrationDelta fullDelta = supplier.getCurrentFullDeltas().get(deltaIdentifier);
+            ConcentrationDelta applied;
+            if (fullDelta == null) {
+                applied = new ConcentrationDelta(delta.getModule(), delta.getCellSubsection(), delta.getChemicalEntity(), delta.getValue());
+            } else {
+                applied = new ConcentrationDelta(delta.getModule(), delta.getCellSubsection(), delta.getChemicalEntity(), (fullDelta.getValue() + delta.getValue()) * 0.5);
+            }
+            deltaIdentifier.getUpdatable().addPotentialDelta(applied);
         } else {
-            supplier.getCurrentFullDeltas().put(deltaIdentifier, delta);
+            supplier.addFullDelta(deltaIdentifier, delta);
         }
     }
 
     /**
      * Produces a log massage for the given update.
      *
-     * @param deltaIdentifier THe delta identifier.
+     * @param deltaIdentifier The delta identifier.
      * @param delta The delta.
      */
     private void logDelta(ConcentrationDeltaIdentifier deltaIdentifier, ConcentrationDelta delta) {
@@ -253,15 +211,13 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
      * @return true if the delta is above the numerical cutoff (not effectively zero).
      */
     private boolean deltaIsAboveNumericCutoff(ConcentrationDelta delta) {
-        return Math.abs(delta.getValue()) > deltaCutoff;
+        return Math.abs(delta.getValue()) > getSimulation().getScheduler().getErrorManager().getNumericalNegligenceCutoff();
     }
 
     /**
      * The local error is calculated and the largest local error of the current epoch resulting from the executing
-     * module is returned. The local error is calculated according to the midpoint method E = abs(1 - (fullDelta / 2.0 *
-     * halfDelta)). Intuitively, applying the the delta for the current time step once results in the same result as if
-     * the delta for half the time step would be applied twice. This method calculates the difference between the full
-     * delta and twice the half delta. If the difference is large the error is large and vice versa.
+     * module is returned. The local error is calculated according to the midpoint method E = abs(1 - (fullDelta /
+     * halfDelta)). If the difference is large the error is large and vice versa.
      *
      * @return The calculated local error.
      * @throws NumericalInstabilityException if any of the encountered errors is the result of an numerical
@@ -272,22 +228,29 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
         if (supplier.getCurrentFullDeltas().isEmpty()) {
             return NumericalError.MINIMAL_EMPTY_ERROR;
         }
-        if (supplier.getCurrentFullDeltas().size() != supplier.getCurrentHalfDeltas().size()) {
-            logger.trace("The deltas that should be applied have fallen below " +
-                    "the threshold of " + deltaCutoff + ". (Module: " + getIdentifier() + ")");
-            return NumericalError.MINIMAL_EMPTY_ERROR;
-        }
 
         // compare full and half deltas
         double largestLocalError = -Double.MAX_VALUE;
         ConcentrationDeltaIdentifier largestIdentifier = null;
         double associatedDelta = 0.0;
+
         for (ConcentrationDeltaIdentifier identifier : supplier.getCurrentFullDeltas().keySet()) {
-            double halfDelta = supplier.getCurrentHalfDeltas().get(identifier).getValue();
+            ConcentrationDelta halfDeltaObject = supplier.getCurrentHalfDeltas().get(identifier);
+            if (halfDeltaObject == null) {
+                continue;
+            }
+            double halfDelta = halfDeltaObject.getValue();
             if (halfDelta < getSimulation().getScheduler().getMoleculeFraction()) {
                 continue;
             }
-            double fullDelta = supplier.getCurrentFullDeltas().get(identifier).getValue();
+            ConcentrationDelta fullDeltaObject = supplier.getCurrentFullDeltas().get(identifier);
+            if (fullDeltaObject == null) {
+                System.out.println(getIdentifier());
+                System.out.println(getSupplier().getCurrentFullDeltas());
+                System.out.println(getSupplier().getCurrentHalfDeltas());
+                continue;
+            }
+            double fullDelta = fullDeltaObject.getValue();
             // calculate error
             double localError = Math.abs(1 - (fullDelta / halfDelta));
             // determine the largest error in the current deltas
@@ -299,12 +262,13 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
                 associatedDelta = fullDelta;
             }
         }
+
         if (largestIdentifier == null) {
             return NumericalError.MINIMAL_EMPTY_ERROR;
         }
         NumericalError localError = new NumericalError(largestIdentifier.getUpdatable(), largestIdentifier.getEntity(), largestLocalError);
         // set local error and return local error
-        getSimulation().getScheduler().setLargestLocalError(localError, this, associatedDelta);
+        getSimulation().getScheduler().getErrorManager().setLargestLocalNumericalError(localError, this, associatedDelta);
         return localError;
     }
 
@@ -316,17 +280,20 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
      * @param error The error.
      */
     private void checkErrorStability(double fullDelta, double halfDelta, double error) {
-        if (error > errorCutoff && MolarConcentration.concentrationToMolecules(fullDelta).getValue().doubleValue() > getSimulation().getScheduler().getRecalculationCutoff()) {
+        if (error > getSimulation().getScheduler().getErrorManager().getNumericalInstabilityCutoff()) {
             throw new NumericalInstabilityException("The module " + toString() + " experiences numerical instabilities. " +
                     "The local error between the full step delta (" + fullDelta + ") and half step delta (" + halfDelta +
-                    ") is " + error + ". This can be an result of time steps that have been initially chosen too large" +
-                    " or an implementation error in module that calculated the delta.");
+                    ") is " + error + " at a time step of " + UnitRegistry.getTime());
         }
     }
 
     @Override
     public void calculateUpdates() {
-        scope.processAllUpdatables(getSimulation().getUpdatables());
+        if (relevantNodes != null) {
+            scope.processAllUpdatables(relevantNodes);
+        } else {
+            scope.processAllUpdatables(getSimulation().getUpdatables());
+        }
         evaluateModuleState();
     }
 
@@ -334,10 +301,11 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
     public void optimizeTimeStep() {
         Updatable updatable = supplier.getLargestLocalError().getUpdatable();
         while (getState() == REQUIRING_RECALCULATION) {
+            NumericalError error = supplier.getLargestLocalError();
             // reset previous error
             supplier.resetError();
             // determine new local error with decreased time step
-            getSimulation().getScheduler().decreaseTimeStep();
+            TimeStepManager.decreaseTimeStep(LOCAL_ERROR);
             scope.processUpdatable(updatable);
             // evaluate module state by error
             evaluateModuleState();
@@ -351,30 +319,17 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
      */
     private void evaluateModuleState() {
         // calculate ration of local and global error
-        if (localErrorIsAcceptable()) {
+        if (getSimulation().getScheduler().getErrorManager().localErrorIsAcceptable(supplier.getLargestLocalError())) {
             setState(SUCCEEDED);
         } else {
             logger.trace("Recalculation required for error {}.", supplier.getLargestLocalError().getValue());
             setState(REQUIRING_RECALCULATION);
-            supplier.clearDeltas();
             scope.clearPotentialDeltas();
         }
     }
 
     public void inBetweenHalfSteps() {
 
-    }
-
-    private boolean localErrorIsAcceptable() {
-        boolean errorRatioIsValid = false;
-        if (getSimulation().getScheduler().getLargestGlobalError().getValue() != 0.0) {
-            // calculate ratio of local and global error
-            double errorRatio = supplier.getLargestLocalError().getValue() / getSimulation().getScheduler().getLargestGlobalError().getValue();
-            errorRatioIsValid = errorRatio > 100000;
-        }
-        // use threshold
-        boolean thresholdIsValid = supplier.getLargestLocalError().getValue() < getSimulation().getScheduler().getRecalculationCutoff();
-        return errorRatioIsValid || thresholdIsValid;
     }
 
     @Override
@@ -411,11 +366,32 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
 
     @Override
     public void initialize() {
+        if (restrictedSubsection != null) {
+            restrictApplication();
+        }
+    }
 
+    public void restrictApplication() {
+        // carefull this is currently only for functions that effect only grid nodes
+        relevantNodes = new ArrayList<>();
+        for (AutomatonNode node : getSimulation().getGraph().getNodes()) {
+            if (node.getConcentrationContainer().getReferencedSubsections().contains(restrictedSubsection)) {
+                relevantNodes.add(node);
+            }
+        }
+    }
+
+    public CellSubsection getRestrictedSubsection() {
+        return restrictedSubsection;
+    }
+
+    public void setRestrictedSubsection(CellSubsection restrictedSubsection) {
+        this.restrictedSubsection = restrictedSubsection;
     }
 
     @Override
     public void onReset() {
+        supplier.clearDeltas();
         supplier.resetError();
     }
 

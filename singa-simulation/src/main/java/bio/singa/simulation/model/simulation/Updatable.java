@@ -28,8 +28,4 @@ public interface Updatable {
 
     Set<CellSubsection> getAllReferencedSections();
 
-    void setObserved(boolean observed);
-
-    boolean isObserved();
-
 }

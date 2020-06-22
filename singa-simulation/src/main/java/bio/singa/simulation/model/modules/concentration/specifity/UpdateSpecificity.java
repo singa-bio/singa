@@ -1,6 +1,6 @@
 package bio.singa.simulation.model.modules.concentration.specifity;
 
-import bio.singa.chemistry.entities.ChemicalEntity;
+import bio.singa.simulation.entities.ChemicalEntity;
 import bio.singa.simulation.model.modules.concentration.functions.AbstractDeltaFunction;
 import bio.singa.simulation.model.sections.CellSubsection;
 import bio.singa.simulation.model.sections.ConcentrationContainer;

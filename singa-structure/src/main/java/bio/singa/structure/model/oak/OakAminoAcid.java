@@ -35,4 +35,5 @@ public class OakAminoAcid extends OakLeafSubstructure<AminoAcidFamily> implement
         Optional<Atom> optionalAlphaCarbon = getAtomByName(AtomName.CA.getName());
         return optionalAlphaCarbon.map(Atom::getPosition).orElseGet(super::getPosition);
     }
+
 }

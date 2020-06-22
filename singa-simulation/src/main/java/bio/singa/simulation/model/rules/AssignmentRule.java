@@ -1,6 +1,6 @@
 package bio.singa.simulation.model.rules;
 
-import bio.singa.chemistry.entities.ChemicalEntity;
+import bio.singa.simulation.entities.ChemicalEntity;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

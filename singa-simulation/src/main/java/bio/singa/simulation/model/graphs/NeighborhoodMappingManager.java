@@ -41,6 +41,58 @@ public class NeighborhoodMappingManager {
         }
     }
 
+    public static void initializeDiffusiveReduction(AutomatonNode node, Polygon area, Ratio reductionRatio) {
+        double cortexRatio = reductionRatio.getContent().getValue().doubleValue();
+        for (Map.Entry<CellSubsection, Polygon> currentSubsectionEntry : node.getSubsectionRepresentations().entrySet()) {
+            CellSubsection currentSubsection = currentSubsectionEntry.getKey();
+            Polygon currentPolygon = currentSubsectionEntry.getValue();
+            Vector2D currentCentroid = currentPolygon.getCentroid();
+            boolean currentIsInArea = currentCentroid.isInside(area);
+            for (AutomatonNode neighbour : node.getNeighbours()) {
+                Map<CellSubsection, Polygon> neighborSubsections = neighbour.getSubsectionRepresentations();
+                for (Map.Entry<CellSubsection, Polygon> neighborSubsectionEntry : neighborSubsections.entrySet()) {
+                    CellSubsection neighborSubsection = neighborSubsectionEntry.getKey();
+                    Polygon neighborPolygon = neighborSubsectionEntry.getValue();
+                    Vector2D neighborCentroid = neighborPolygon.getCentroid();
+                    boolean neighborIsInArea = neighborCentroid.isInside(area);
+                    AutomatonNode.AreaMapping mapping = getCorrectMapping(neighbour, node.getSubsectionAdjacency().get(currentSubsection), neighborSubsection);
+                    // skip non adjacent subsections
+                    if (mapping == null) {
+                        continue;
+                    }
+                    if (currentIsInArea && neighborIsInArea) {
+                        mapping.setDiffusiveRatio(cortexRatio);
+                    } else if (currentIsInArea || neighborIsInArea) {
+                        // determine area that is affected
+                        Set<Vector2D> intersections = area.getIntersections(new SimpleLineSegment(currentCentroid, neighborCentroid));
+                        if (intersections.size() == 1) {
+                            Vector2D intersection = intersections.iterator().next();
+                            double totalDistance = currentCentroid.distanceTo(neighborCentroid);
+                            double distanceToCurrent = intersection.distanceTo(currentCentroid) / totalDistance;
+                            double distanceToNeighbor = intersection.distanceTo(neighborCentroid) / totalDistance;
+                            double diffusiveRatio;
+                            if (currentIsInArea) {
+                                diffusiveRatio = distanceToCurrent * cortexRatio + distanceToNeighbor;
+                            } else {
+                                diffusiveRatio = distanceToNeighbor * cortexRatio + distanceToCurrent;
+                            }
+                            mapping.setDiffusiveRatio(diffusiveRatio);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private static AutomatonNode.AreaMapping getCorrectMapping(AutomatonNode node, List<AutomatonNode.AreaMapping> mappings, CellSubsection subsection) {
+        for (AutomatonNode.AreaMapping mapping : mappings) {
+            if (mapping.getSource().equals(node) && mapping.getSubsection().equals(subsection)) {
+                return mapping;
+            }
+        }
+        return null;
+    }
+
     private void initializeNeighborhoodForNode() {
         for (Map.Entry<CellSubsection, Polygon> currentSubsectionEntry : currentNode.getSubsectionRepresentations().entrySet()) {
             CellSubsection currentSubsection = currentSubsectionEntry.getKey();
@@ -49,12 +101,16 @@ public class NeighborhoodMappingManager {
                 Map<CellSubsection, Polygon> neighborSubsections = neighbour.getSubsectionRepresentations();
                 for (Map.Entry<CellSubsection, Polygon> neighborSubsectionEntry : neighborSubsections.entrySet()) {
                     CellSubsection neighborSubsection = neighborSubsectionEntry.getKey();
+                    // skip other subsections
+                    if (currentSubsection != neighborSubsection) {
+                        continue;
+                    }
                     // skip already initialized sections
                     if (containsMapping(currentSubsection, neighbour)) {
                         continue;
                     }
                     Polygon neighborPolygon = neighborSubsectionEntry.getValue();
-                    // the first element of the pair is the frist argument entering the getTouchingLineSegments method
+                    // the first element of the pair is the first argument entering the getTouchingLineSegments method
                     Map<Pair<LineSegment>, LineSegment> touchingLineSegments = Polygons.getTouchingLineSegments(currentPolygon, neighborPolygon);
                     // skip subsection that dont overlap
                     if (touchingLineSegments.isEmpty()) {
@@ -126,58 +182,6 @@ public class NeighborhoodMappingManager {
             currentNode.getMembraneVectors().add(node.getPosition());
         }
 
-    }
-
-    public static void initializeDiffusiveReduction(AutomatonNode node, Polygon area, Ratio reductionRatio) {
-        double cortexRatio = reductionRatio.getContent().getValue().doubleValue();
-        for (Map.Entry<CellSubsection, Polygon> currentSubsectionEntry : node.getSubsectionRepresentations().entrySet()) {
-            CellSubsection currentSubsection = currentSubsectionEntry.getKey();
-            Polygon currentPolygon = currentSubsectionEntry.getValue();
-            Vector2D currentCentroid = currentPolygon.getCentroid();
-            boolean currentIsInArea = currentCentroid.isInside(area);
-            for (AutomatonNode neighbour : node.getNeighbours()) {
-                Map<CellSubsection, Polygon> neighborSubsections = neighbour.getSubsectionRepresentations();
-                for (Map.Entry<CellSubsection, Polygon> neighborSubsectionEntry : neighborSubsections.entrySet()) {
-                    CellSubsection neighborSubsection = neighborSubsectionEntry.getKey();
-                    Polygon neighborPolygon = neighborSubsectionEntry.getValue();
-                    Vector2D neighborCentroid = neighborPolygon.getCentroid();
-                    boolean neighborIsInArea = neighborCentroid.isInside(area);
-                    AutomatonNode.AreaMapping mapping = getCorrectMapping(neighbour, node.getSubsectionAdjacency().get(currentSubsection), neighborSubsection);
-                    // skip non adjacent subsections
-                    if (mapping == null) {
-                        continue;
-                    }
-                    if (currentIsInArea && neighborIsInArea) {
-                        mapping.setDiffusiveRatio(cortexRatio);
-                    } else if (currentIsInArea || neighborIsInArea) {
-                        // determine area that is affected
-                        Set<Vector2D> intersections = area.getIntersections(new SimpleLineSegment(currentCentroid, neighborCentroid));
-                        if (intersections.size() == 1) {
-                            Vector2D intersection = intersections.iterator().next();
-                            double totalDistance = currentCentroid.distanceTo(neighborCentroid);
-                            double distanceToCurrent = intersection.distanceTo(currentCentroid) / totalDistance;
-                            double distanceToNeighbor = intersection.distanceTo(neighborCentroid) / totalDistance;
-                            double diffusiveRatio;
-                            if (currentIsInArea) {
-                                diffusiveRatio = distanceToCurrent * cortexRatio + distanceToNeighbor;
-                            } else {
-                                diffusiveRatio = distanceToNeighbor * cortexRatio + distanceToCurrent;
-                            }
-                            mapping.setDiffusiveRatio(diffusiveRatio);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    private static AutomatonNode.AreaMapping getCorrectMapping(AutomatonNode node, List<AutomatonNode.AreaMapping> mappings, CellSubsection subsection) {
-        for (AutomatonNode.AreaMapping mapping : mappings) {
-            if (mapping.getSource().equals(node) && mapping.getSubsection().equals(subsection)) {
-                return mapping;
-            }
-        }
-        return null;
     }
 
 }

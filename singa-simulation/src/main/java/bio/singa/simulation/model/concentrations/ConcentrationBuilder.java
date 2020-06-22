@@ -1,6 +1,6 @@
 package bio.singa.simulation.model.concentrations;
 
-import bio.singa.chemistry.entities.ChemicalEntity;
+import bio.singa.simulation.entities.ChemicalEntity;
 import bio.singa.features.model.Evidence;
 import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.features.units.UnitRegistry;
@@ -78,7 +78,7 @@ public class ConcentrationBuilder {
 
         AdditionalConditionsStep inRegionArea(CellRegion region);
 
-        AdditionalConditionsStep atTime(ComparableQuantity<Time> time);
+        AdditionalConditionsStep timed(TimedCondition.Relation realtion, ComparableQuantity<Time> time);
 
         AdditionalConditionsStep fixed();
 
@@ -86,7 +86,7 @@ public class ConcentrationBuilder {
 
         AdditionalConditionsStep onlyVesicles();
 
-        TimedUnitStep atTimeValue(double time);
+        TimedUnitStep timed(TimedCondition.Relation realtion, double time);
 
     }
 
@@ -139,6 +139,7 @@ public class ConcentrationBuilder {
         private Simulation simulation;
         private InitialConcentration initialConcentration;
         private double concentrationValue;
+        private TimedCondition.Relation realtion;
         private double timeValue;
 
         public ConcentrationBuilderImpl() {
@@ -240,8 +241,9 @@ public class ConcentrationBuilder {
         }
 
         @Override
-        public AdditionalConditionsStep atTime(ComparableQuantity<Time> time) {
-            initialConcentration.setTime(time);
+        public AdditionalConditionsStep timed(TimedCondition.Relation realtion, ComparableQuantity<Time> time) {
+            initialConcentration.addCondition(TimedCondition.of(realtion, time));
+            initialConcentration.setFix(true);
             return this;
         }
 
@@ -264,14 +266,15 @@ public class ConcentrationBuilder {
         }
 
         @Override
-        public TimedUnitStep atTimeValue(double time) {
+        public TimedUnitStep timed(TimedCondition.Relation realtion, double time) {
+            this.realtion = realtion;
             timeValue = time;
             return this;
         }
 
         @Override
         public AdditionalConditionsStep timeUnit(Unit<Time> timeUnit) {
-            return atTime(Quantities.getQuantity(timeValue, timeUnit));
+            return timed(realtion, Quantities.getQuantity(timeValue, timeUnit));
         }
 
         @Override

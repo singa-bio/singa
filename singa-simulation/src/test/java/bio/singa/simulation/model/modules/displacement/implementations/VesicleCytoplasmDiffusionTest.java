@@ -1,5 +1,6 @@
 package bio.singa.simulation.model.modules.displacement.implementations;
 
+import bio.singa.features.quantities.PixelDiffusivity;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.vectors.Vector2D;
@@ -8,6 +9,7 @@ import bio.singa.simulation.model.agents.pointlike.VesicleLayer;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.simulation.Simulation;
+import bio.singa.simulation.model.simulation.error.TimeStepManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -16,12 +18,14 @@ import tech.units.indriya.ComparableQuantity;
 import tech.units.indriya.quantity.Quantities;
 
 import javax.measure.quantity.Length;
+import javax.measure.quantity.Time;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static bio.singa.features.quantities.Diffusivity.SQUARE_MICROMETRE_PER_SECOND;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static tech.units.indriya.unit.MetricPrefix.MICRO;
 import static tech.units.indriya.unit.MetricPrefix.NANO;
 import static tech.units.indriya.unit.Units.METRE;
+import static tech.units.indriya.unit.Units.SECOND;
 
 /**
  * @author cl
@@ -40,17 +44,23 @@ class VesicleCytoplasmDiffusionTest {
     }
 
     @Test
-    @DisplayName("vesicle diffusion - should move at all")
-    void testVesicleDiffusion() {
-        ComparableQuantity<Length> systemExtend = Quantities.getQuantity(20, MICRO(METRE));
+    @DisplayName("vesicle diffusion - should move the correct distance")
+    void shouldScaleDisplacementCorrectly() {
+        // setup space
+        ComparableQuantity<Length> systemExtend = Quantities.getQuantity(10, MICRO(METRE));
         Environment.setSystemExtend(systemExtend);
-        Environment.setSimulationExtend(500);
+        double simulationExtend = 1000;
+        Environment.setSimulationExtend(simulationExtend);
         Environment.setNodeSpacingToDiameter(systemExtend, 10);
+        UnitRegistry.setTime(Quantities.getQuantity(1, SECOND));
 
+        // setup simulation
         Simulation simulation = new Simulation();
 
-        Vector2D previousPosition = new Vector2D(220, 220);
-        Vesicle vesicle = new Vesicle(previousPosition, Quantities.getQuantity(150, NANO(METRE)));
+        // create vesicle
+        Vector2D initialPosition = new Vector2D(simulationExtend / 2.0, simulationExtend / 2.0);
+        Vesicle vesicle = new Vesicle(initialPosition, Quantities.getQuantity(50, NANO(METRE)));
+        vesicle.setFeature(new PixelDiffusivity(Quantities.getQuantity(0.1, SQUARE_MICROMETRE_PER_SECOND)));
 
         // add vesicle transport layer
         VesicleLayer layer = new VesicleLayer(simulation);
@@ -61,50 +71,23 @@ class VesicleCytoplasmDiffusionTest {
         AutomatonGraph graph = AutomatonGraphs.createRectangularAutomatonGraph(10, 10);
         simulation.setGraph(graph);
 
-        // diffusion module
+        // add vesicle diffusion
         VesicleCytoplasmDiffusion vesicleDiffusion = new VesicleCytoplasmDiffusion();
         vesicleDiffusion.setSimulation(simulation);
         simulation.getModules().add(vesicleDiffusion);
 
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 100; i++) {
+            ComparableQuantity<Time> previousTime = TimeStepManager.getElapsedTime();
             simulation.nextEpoch();
-            Vector2D currentPosition = simulation.getVesicleLayer().getVesicles().get(0).getPosition();
-            assertNotEquals(currentPosition, previousPosition);
-            previousPosition = currentPosition;
-        }
-    }
-
-    @Test
-    @DisplayName("vesicle diffusion - should move the correct distance")
-    void shouldScaleDisplacementCorrectly() {
-        // new simulation
-        Simulation simulation = new Simulation();
-        // setup environment
-        ComparableQuantity<Length> systemExtend = Quantities.getQuantity(10, MICRO(METRE));
-        Environment.setNodeSpacingToDiameter(systemExtend, 10);
-        Environment.setSystemExtend(systemExtend);
-        Environment.setSimulationExtend(100);
-        // initialize vesicle
-        Vector2D initialPosition = new Vector2D(50, 50);
-        Vesicle vesicle = new Vesicle(initialPosition, Quantities.getQuantity(100, NANO(METRE)));
-        // add vesicle transport layer
-        VesicleLayer layer = new VesicleLayer(simulation);
-        layer.addVesicle(vesicle);
-        simulation.setVesicleLayer(layer);
-        // define graph
-        AutomatonGraph graph = AutomatonGraphs.createRectangularAutomatonGraph(10, 10);
-        simulation.setGraph(graph);
-        // diffusion module
-        VesicleCytoplasmDiffusion vesicleDiffusion = new VesicleCytoplasmDiffusion();
-        vesicleDiffusion.setSimulation(simulation);
-        simulation.getModules().add(vesicleDiffusion);
-        // check distance travelled
-        for (int i = 0; i < 10; i++) {
-            simulation.nextEpoch();
+            ComparableQuantity<Time> currentTime = TimeStepManager.getElapsedTime();
             Vector2D currentPosition = simulation.getVesicleLayer().getVesicles().iterator().next().getPosition();
-            double distance = initialPosition.subtract(currentPosition).getMagnitude()/UnitRegistry.getTimeScale();
+            double timeInSeconds = currentTime.subtract(previousTime).to(SECOND).getValue().doubleValue();
+            double distanceInMicroMetre = UnitRegistry.scalePixelToSpace(initialPosition.subtract(currentPosition).getMagnitude()).to(MICRO(METRE)).getValue().doubleValue();
+            double distancePerTime = distanceInMicroMetre / timeInSeconds;
             // variance is high because of random gaussian
-            assertEquals(0.000346, distance, 8e-3);
+            // maximal vector is 2,2 multiplied by sqrt 2, since diffusivity is 1
+            assertTrue(5 > distancePerTime);
+            assertTrue(distancePerTime > 0);
             initialPosition = currentPosition;
         }
     }

@@ -24,7 +24,7 @@ public interface UpdateScope {
      * calculating the current numerical error and pushing potential Deltas to the updatables, ready to be applied.
      * @param updatables The updatables to be processed.
      */
-    void processAllUpdatables(Collection<Updatable> updatables);
+    void processAllUpdatables(Collection<? extends Updatable> updatables);
 
     /**
      * Calculates the given updatable. If it is required to calculate other updatables to evaluate the state of this

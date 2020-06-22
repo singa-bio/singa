@@ -1,11 +1,11 @@
 package bio.singa.simulation.export.format;
 
-import bio.singa.chemistry.entities.simple.Protein;
-import bio.singa.chemistry.entities.simple.SmallMolecule;
 import bio.singa.chemistry.features.reactions.MichaelisConstant;
 import bio.singa.chemistry.features.reactions.RateConstant;
 import bio.singa.chemistry.features.reactions.TurnoverNumber;
 import bio.singa.features.model.Evidence;
+import bio.singa.simulation.entities.ChemicalEntity;
+import bio.singa.simulation.entities.SimpleEntity;
 import bio.singa.simulation.model.modules.concentration.imlementations.reactions.Reaction;
 import bio.singa.simulation.model.modules.concentration.imlementations.reactions.ReactionBuilder;
 import bio.singa.simulation.model.simulation.Simulation;
@@ -33,10 +33,10 @@ class FormatReactionKineticsTest {
         MichaelisConstant michaelisConstant = new MichaelisConstant(Quantities.getQuantity(9.0e-3, MOLE_PER_LITRE), Evidence.NO_EVIDENCE);
         TurnoverNumber turnoverNumber = new TurnoverNumber(76, new ProductUnit<>(ONE.divide(MINUTE)), Evidence.NO_EVIDENCE);
 
-        SmallMolecule substrate = SmallMolecule.create("A").build();
-        SmallMolecule product1 = SmallMolecule.create("B").build();
-        SmallMolecule product2 = SmallMolecule.create("C").build();
-        Protein enzyme = Protein.create("E").build();
+        ChemicalEntity substrate = SimpleEntity.create("A").build();
+        ChemicalEntity product1 = SimpleEntity.create("B").build();
+        ChemicalEntity product2 = SimpleEntity.create("C").build();
+        ChemicalEntity enzyme = SimpleEntity.create("E").build();
 
         Reaction reaction = ReactionBuilder.staticReactants(simulation)
                 .addSubstrate(substrate)
@@ -55,10 +55,10 @@ class FormatReactionKineticsTest {
     void testNthOrderReactionFormat() {
         Simulation simulation = new Simulation();
 
-        SmallMolecule substrate1 = SmallMolecule.create("A").build();
-        SmallMolecule substrate2 = SmallMolecule.create("B").build();
-        SmallMolecule product1 = SmallMolecule.create("C").build();
-        SmallMolecule product2 = SmallMolecule.create("D").build();
+        ChemicalEntity substrate1 = SimpleEntity.create("A").build();
+        ChemicalEntity substrate2 = SimpleEntity.create("B").build();
+        ChemicalEntity product1 = SimpleEntity.create("C").build();
+        ChemicalEntity product2 = SimpleEntity.create("D").build();
 
         RateConstant k = RateConstant.create(1.0)
                 .forward().secondOrder()
@@ -82,8 +82,8 @@ class FormatReactionKineticsTest {
     void testReversibleReactionFormat() {
         Simulation simulation = new Simulation();
 
-        SmallMolecule substrate = SmallMolecule.create("A").build();
-        SmallMolecule product = SmallMolecule.create("B").build();
+        ChemicalEntity substrate = SimpleEntity.create("A").build();
+        ChemicalEntity product = SimpleEntity.create("B").build();
 
         RateConstant kf = RateConstant.create(2.0)
                 .forward().firstOrder()

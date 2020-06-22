@@ -1,12 +1,13 @@
 package bio.singa.simulation.trajectories.nested;
 
-import bio.singa.chemistry.entities.ChemicalEntity;
+import bio.singa.simulation.entities.ChemicalEntity;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.simulation.model.agents.pointlike.Vesicle;
 import bio.singa.simulation.model.graphs.AutomatonNode;
+import bio.singa.simulation.model.modules.qualitative.implementations.EndocytoticPit;
 import bio.singa.simulation.model.sections.CellSubsection;
 import bio.singa.simulation.model.sections.CellTopology;
 import bio.singa.simulation.model.sections.ConcentrationPool;
@@ -55,7 +56,9 @@ public class TrajectoryDataPoint {
                 } else {
                     positions.add(vesicle.getPosition());
                 }
-
+            } else if (updatable instanceof EndocytoticPit) {
+                EndocytoticPit pit = (EndocytoticPit) updatable;
+                positions.add(pit.getPosition());
             }
             // add to outer map
             data.subsectionData.put(subsection, new SubsectionDataPoint(concentrations, positions));
@@ -66,8 +69,8 @@ public class TrajectoryDataPoint {
         return data;
     }
 
-    public void put(CellSubsection cellSection, SubsectionDataPoint datapoint) {
-        subsectionData.put(cellSection, datapoint);
+    public void put(CellSubsection cellSection, SubsectionDataPoint dataPoint) {
+        subsectionData.put(cellSection, dataPoint);
     }
 
     public String getState() {

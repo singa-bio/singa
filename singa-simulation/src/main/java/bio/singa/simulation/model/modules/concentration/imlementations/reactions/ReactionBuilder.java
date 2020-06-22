@@ -1,11 +1,12 @@
 package bio.singa.simulation.model.modules.concentration.imlementations.reactions;
 
-import bio.singa.chemistry.entities.ChemicalEntity;
+import bio.singa.simulation.entities.ChemicalEntity;
 import bio.singa.chemistry.features.reactions.*;
-import bio.singa.chemistry.reactions.ReactionNetworkGenerator;
-import bio.singa.chemistry.reactions.reactors.ReactionChain;
-import bio.singa.features.model.Evidence;
+import bio.singa.simulation.reactions.ReactionNetworkGenerator;
+import bio.singa.simulation.reactions.reactors.ReactionChain;
 import bio.singa.features.model.AbstractScalableQuantitativeFeature;
+import bio.singa.features.model.Evidence;
+import bio.singa.simulation.model.concentrations.ConcentrationCondition;
 import bio.singa.simulation.model.modules.concentration.ModuleBuilder;
 import bio.singa.simulation.model.modules.concentration.ModuleFactory;
 import bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.kineticlaws.DynamicKineticLaw;
@@ -39,6 +40,10 @@ public class ReactionBuilder {
 
     public static RuleBasedStep ruleBased(Simulation simulation) {
         return new RuleBasedBuilder(simulation);
+    }
+
+    public static void generateNetwork() {
+        RuleBasedBuilder.networkGenerator.generate();
     }
 
     public interface KineticStep {
@@ -102,6 +107,7 @@ public class ReactionBuilder {
     public interface RuleBasedStep {
 
         KineticStep rule(ReactionChain rule);
+
         void preReaction(ReactionChain chain);
 
     }
@@ -142,7 +148,9 @@ public class ReactionBuilder {
 
         FinalStep evidence(Evidence evidence);
 
-        FinalStep evidence(Evidence ... evidence);
+        FinalStep evidence(Evidence... evidence);
+
+        FinalStep condition(ConcentrationCondition condition);
 
         Reaction build();
 
@@ -324,6 +332,12 @@ public class ReactionBuilder {
         }
 
         @Override
+        public FinalStep condition(ConcentrationCondition condition) {
+            reaction.getConditions().put(condition.getPriority(), condition);
+            return this;
+        }
+
+        @Override
         public Reaction build() {
             reaction.postConstruct();
             simulation.addModule(reaction);
@@ -442,13 +456,8 @@ public class ReactionBuilder {
         public Reaction build() {
             super.build();
             ((RuleBasedReactantBehavior) reaction.getReactantBehavior()).prepareReactionSets();
-            reaction.postConstruct();
             return reaction;
         }
-    }
-
-    public static void generateNetwork() {
-        RuleBasedBuilder.networkGenerator.generate();
     }
 
 }

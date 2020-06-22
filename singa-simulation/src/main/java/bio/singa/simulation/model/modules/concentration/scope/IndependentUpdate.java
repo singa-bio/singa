@@ -1,6 +1,6 @@
 package bio.singa.simulation.model.modules.concentration.scope;
 
-import bio.singa.chemistry.entities.ChemicalEntity;
+import bio.singa.simulation.entities.ChemicalEntity;
 import bio.singa.simulation.model.modules.concentration.ConcentrationBasedModule;
 import bio.singa.simulation.model.modules.concentration.ConcentrationDelta;
 import bio.singa.simulation.model.modules.concentration.FieldSupplier;
@@ -59,7 +59,7 @@ public class IndependentUpdate implements UpdateScope {
     }
 
     @Override
-    public void processAllUpdatables(Collection<Updatable> updatables) {
+    public void processAllUpdatables(Collection<? extends Updatable> updatables) {
         // for each updatable
         for (Updatable updatable : updatables) {
             if (module.getApplicationCondition().test(updatable)) {
@@ -71,6 +71,8 @@ public class IndependentUpdate implements UpdateScope {
 
     @Override
     public void processUpdatable(Updatable updatable) {
+        // clear used deltas
+        supply().clearDeltas();
         // calculate full step deltas
         supply().setStrutCalculation(false);
         specify().processContainer(updatable.getConcentrationContainer());
@@ -81,9 +83,6 @@ public class IndependentUpdate implements UpdateScope {
         specify().processContainer(getHalfStepConcentration(updatable));
         // set largest local error
         supply().setLargestLocalError(module.determineLargestLocalError());
-        // clear used deltas
-        supply().getCurrentFullDeltas().clear();
-        supply().getCurrentHalfDeltas().clear();
     }
 
     @Override

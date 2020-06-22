@@ -1,8 +1,8 @@
 package bio.singa.simulation.model.sections;
 
-import bio.singa.chemistry.entities.ChemicalEntity;
-import bio.singa.chemistry.entities.simple.SmallMolecule;
 import bio.singa.features.parameters.Environment;
+import bio.singa.simulation.entities.ChemicalEntity;
+import bio.singa.simulation.entities.SimpleEntity;
 import org.junit.jupiter.api.Test;
 
 import java.util.Set;
@@ -15,8 +15,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 class ConcentrationPoolTest {
 
-    private static final ChemicalEntity entityA = SmallMolecule.create("A").build();
-    private static final ChemicalEntity entityB = SmallMolecule.create("B").build();
+    private static final ChemicalEntity entityA = SimpleEntity.create("A").build();
+    private static final ChemicalEntity entityB = SimpleEntity.create("B").build();
 
     @Test
     void getReferencedEntities() {

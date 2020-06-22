@@ -1,6 +1,6 @@
 package bio.singa.simulation.model.modules.qualitative.implementations;
 
-import bio.singa.chemistry.entities.ChemicalEntity;
+import bio.singa.simulation.entities.ChemicalEntity;
 import bio.singa.simulation.features.AppliedVesicleState;
 import bio.singa.simulation.features.Cargoes;
 import bio.singa.simulation.features.Ratio;

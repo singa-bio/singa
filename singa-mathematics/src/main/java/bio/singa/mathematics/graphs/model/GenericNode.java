@@ -2,7 +2,7 @@ package bio.singa.mathematics.graphs.model;
 
 import bio.singa.mathematics.geometry.faces.Rectangle;
 import bio.singa.mathematics.vectors.Vector2D;
-import bio.singa.mathematics.vectors.Vectors;
+import bio.singa.mathematics.vectors.Vectors2D;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
@@ -37,7 +37,7 @@ public class GenericNode<ContentType> extends AbstractNode<GenericNode<ContentTy
      * @param content The content.
      */
     public GenericNode(int identifier, ContentType content) {
-        super(identifier, Vectors.generateRandom2DVector(new Rectangle(500, 500)));
+        super(identifier, Vectors2D.generateRandom2DVector(new Rectangle(500, 500)));
         this.content = content;
     }
 

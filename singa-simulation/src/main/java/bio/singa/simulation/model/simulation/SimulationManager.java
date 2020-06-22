@@ -9,7 +9,11 @@ import bio.singa.simulation.events.NodeEventEmitter;
 import bio.singa.simulation.events.UpdatableUpdatedEvent;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonNode;
+import bio.singa.simulation.model.simulation.error.NumericalError;
+import bio.singa.simulation.model.simulation.error.TimeStepManager;
+import bio.singa.simulation.trajectories.errors.DebugRecorder;
 import bio.singa.simulation.trajectories.flat.FlatUpdateRecorder;
+import bio.singa.simulation.trajectories.nested.NestedUpdateRecorder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tech.units.indriya.ComparableQuantity;
@@ -51,48 +55,36 @@ public class SimulationManager implements Runnable {
      * The simulation.
      */
     private final Simulation simulation;
-
+    private final SimulationStatus simulationStatus;
     /**
      * The condition determining when the simulation should be terminated.
      */
     private Predicate<Simulation> terminationCondition;
-
     /**
      * The condition determining when events should be emitted.
      */
     private Predicate<Simulation> emitCondition;
-
     /**
      * The emitter for node events.
      */
     private NodeEventEmitter nodeEventEmitter;
-
     /**
      * The emitter for graph events.
      */
     private GraphEventEmitter graphEventEmitter;
-
     /**
      * The time for the next update to be issued. (For FPS based emission).
      */
     private long nextTick = System.currentTimeMillis();
-
     private long previousTimeMillis = 0;
-
     /**
      * The time for the next update to be issued (in simulation time).
      */
     private Quantity<Time> scheduledEmitTime = Quantities.getQuantity(0.0, UnitRegistry.getTimeUnit());
-
     private Quantity<Time> terminationTime;
-
     private boolean keepPlatformOpen = DEFAULT_KEEP_PLATFORM_OPEN;
-
     private Path targetPath;
-
     private CountDownLatch terminationLatch;
-    private final SimulationStatus simulationStatus;
-
     private boolean writeAliveFile = false;
     private Path aliveFile;
 
@@ -162,7 +154,7 @@ public class SimulationManager implements Runnable {
     public void setSimulationTerminationToTime(Quantity<Time> time) {
         terminationTime = time.to(MICRO(SECOND));
         simulationStatus.setTerminationTime(terminationTime);
-        setTerminationCondition(s -> s.getElapsedTime().isLessThan(time));
+        setTerminationCondition(s -> TimeStepManager.getElapsedTime().isLessThan(time));
     }
 
     /**
@@ -208,7 +200,7 @@ public class SimulationManager implements Runnable {
      */
     public void setUpdateEmissionToTimePassed(Quantity<Time> timePassed) {
         emitCondition = s -> {
-            ComparableQuantity<Time> currentTime = s.getElapsedTime();
+            ComparableQuantity<Time> currentTime = TimeStepManager.getElapsedTime();
             if (currentTime.isGreaterThan(scheduledEmitTime)) {
                 scheduledEmitTime = currentTime.add(timePassed);
                 return true;
@@ -226,11 +218,11 @@ public class SimulationManager implements Runnable {
     }
 
     public void emitGraphEvent(Simulation simulation) {
-        graphEventEmitter.emitEvent(new GraphUpdatedEvent(simulation.getGraph(), simulation.getElapsedTime()));
+        graphEventEmitter.emitEvent(new GraphUpdatedEvent(simulation.getGraph(), TimeStepManager.getElapsedTime()));
     }
 
     public void emitNodeEvent(Simulation simulation, Updatable updatable) {
-        nodeEventEmitter.emitEvent(new UpdatableUpdatedEvent(simulation.getElapsedTime(), updatable));
+        nodeEventEmitter.emitEvent(new UpdatableUpdatedEvent(TimeStepManager.getElapsedTime(), updatable));
     }
 
     public boolean keepPlatformOpen() {
@@ -271,14 +263,27 @@ public class SimulationManager implements Runnable {
         if (writeAliveFile) {
             aliveFile = targetPath.resolve("alive");
         }
+        handleDebugging();
         try {
+            int lastWrite = 0;
             while (terminationCondition.test(simulation)) {
                 if (emitCondition.test(simulation)) {
                     if (writeAliveFile) {
                         updateAliveFile();
                     }
-                    logger.debug("Emitting event after {} (epoch {}).", TimeFormatter.formatTime(simulation.getElapsedTime()), simulation.getEpoch());
+                    logger.debug("Emitting event after {} (epoch {}).", TimeFormatter.formatTime(TimeStepManager.getElapsedTime()), simulation.getEpoch());
                     emitGraphEvent(simulation);
+                    if (lastWrite > 20) {
+                        // write current status
+                        lastWrite = 0;
+                        for (UpdateEventListener<GraphUpdatedEvent> graphListener : getGraphListeners()) {
+                            if (graphListener instanceof NestedUpdateRecorder) {
+                                ((NestedUpdateRecorder) graphListener).writeStatus();
+                            }
+                        }
+                    } else {
+                        lastWrite++;
+                    }
                     for (Updatable updatable : simulation.getObservedUpdatables()) {
                         emitNodeEvent(simulation, updatable);
                         logger.debug("Emitted next epoch event for node {}.", updatable.getStringIdentifier());
@@ -307,6 +312,17 @@ public class SimulationManager implements Runnable {
         }
     }
 
+    private void handleDebugging() {
+        for (UpdateEventListener<GraphUpdatedEvent> graphListener : getGraphListeners()) {
+            if (graphListener instanceof DebugRecorder) {
+                DebugRecorder debugRecorder = (DebugRecorder) graphListener;
+                debugRecorder.prepare();
+                simulation.setDebugRecorder(debugRecorder);
+                simulation.setDebug(true);
+            }
+        }
+    }
+
     private void estimateRuntime() {
         // calculate time since last report
         long currentTimeMillis = System.currentTimeMillis();
@@ -319,10 +335,17 @@ public class SimulationManager implements Runnable {
                 // calculate time remaining
                 logger.info("PROGRESS: {} time remaining - {} passed time in simulation",
                         simulationStatus.getEstimatedTimeRemaining(), simulationStatus.getElapsedTime());
-                logger.info("SPEED   : {} ({},{}) epochs (increases, decreases) - {} (simulation time) per s(real time) finish: {}",
-                        simulationStatus.getNumberOfEpochsSinceLastUpdate(), simulationStatus.getNumberOfTimeStepIncreasesSinceLastUpdate(), simulationStatus.getNumberOfTimeStepDecreasesSinceLastUpdate(), simulationStatus.getEstimatedSpeed(), simulationStatus.getEstimatedFinish());
-                logger.info("ERROR L : {} ({}, {}, {})", String.format("%6.3e",simulationStatus.getLargestLocalError().getValue()), simulationStatus.getLargestLocalError().getChemicalEntity(), simulationStatus.getLargestLocalError().getUpdatable().getStringIdentifier(), simulationStatus.getLocalErrorModule());
-                logger.info("ERROR G : {} ({}, {})", String.format("%6.3e",simulationStatus.getLargestGlobalError().getValue()), simulationStatus.getLargestGlobalError().getChemicalEntity(), simulationStatus.getLargestGlobalError().getUpdatable().getStringIdentifier());
+                logger.info("SPEED     : estimated finish: {}", simulationStatus.getEstimatedFinish());
+                logger.info("SPEED     : {} epochs ({},{}) {} eps - {} speed, {} time step", simulationStatus.getNumberOfEpochsSinceLastUpdate(), simulationStatus.getNumberOfTimeStepIncreasesSinceLastUpdate(), simulationStatus.getNumberOfTimeStepDecreasesSinceLastUpdate(), String.format("%6.3e", simulationStatus.getEpochsPerSecond()), simulationStatus.getEstimatedSpeed(), simulationStatus.getMostRecentTimeStep());
+                logger.info("ERROR L   : {} ({}, {}, {})", String.format("%6.3e", simulationStatus.getLargestLocalError().getValue()), simulationStatus.getLargestLocalError().getChemicalEntity(), simulationStatus.getLargestLocalError().getUpdatable().getStringIdentifier(), simulationStatus.getLocalErrorModule());
+                if (simulationStatus.getLargestGlobalError().equals(NumericalError.MINIMAL_EMPTY_ERROR)) {
+                    logger.info("ERROR T   : skipping");
+                } else {
+                    logger.info("ERROR T   : {} ({}, {})", String.format("%6.3e", simulationStatus.getLargestGlobalError().getValue()), simulationStatus.getLargestGlobalError().getChemicalEntity(), simulationStatus.getLargestGlobalError().getUpdatable().getStringIdentifier());
+                }
+                String deviationGlobal = simulationStatus.getGlobalDeviation() == -Double.MAX_VALUE ? "minimal" : String.format("%.2f", simulationStatus.getGlobalDeviation());
+                String deviationLocal = simulationStatus.getLocalDeviation() == -Double.MAX_VALUE ? "minimal" : String.format("%.2f", simulationStatus.getLocalDeviation());
+                logger.info("DEVIATION : {} total {} local", deviationGlobal, deviationLocal);
             }
             previousTimeMillis = currentTimeMillis;
         }

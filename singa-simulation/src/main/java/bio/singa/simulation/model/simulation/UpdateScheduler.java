@@ -1,24 +1,23 @@
 package bio.singa.simulation.model.simulation;
 
-import bio.singa.features.formatter.TimeFormatter;
 import bio.singa.features.quantities.MolarConcentration;
-import bio.singa.features.units.UnitRegistry;
+import bio.singa.simulation.model.agents.pointlike.Vesicle;
 import bio.singa.simulation.model.modules.UpdateModule;
-import bio.singa.simulation.model.modules.concentration.NumericalError;
+import bio.singa.simulation.model.simulation.error.ErrorManager;
+import bio.singa.simulation.model.simulation.error.TimeStepManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tech.units.indriya.AbstractUnit;
-import tech.units.indriya.quantity.Quantities;
 
-import javax.measure.Quantity;
-import javax.measure.quantity.Frequency;
-import javax.measure.quantity.Time;
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import static bio.singa.simulation.model.modules.concentration.ModuleState.SUCCEEDED_WITH_PENDING_CHANGES;
+import static bio.singa.simulation.model.simulation.error.ErrorManager.Reason.NEGATIVE_CONCENTRATIONS;
 
 /**
  * @author cl
@@ -26,71 +25,39 @@ import static bio.singa.simulation.model.modules.concentration.ModuleState.SUCCE
 public class UpdateScheduler {
 
     private static final Logger logger = LoggerFactory.getLogger(UpdateScheduler.class);
-
-    /**
-     * The default value where errors are considered too large and the time step is reduced.
-     */
-    private static final double DEFAULT_RECALCULATION_CUTOFF = 0.01;
+    private final Deque<UpdateModule> modules;
+    private final double moleculeFraction;
+    private ErrorManager errorManager;
 
     private Simulation simulation;
     private List<Updatable> updatables;
-
     private Iterator<UpdateModule> moduleIterator;
-    private double recalculationCutoff = DEFAULT_RECALCULATION_CUTOFF;
-
-    private boolean timeStepRescaled;
-    private boolean timeStepAlteredInThisEpoch;
-    private long timestepsDecreased = 0;
-    private long timestepsIncreased = 0;
-    private NumericalError largestLocalError;
-    private UpdateModule localErrorModule;
-    private double localErrorUpdate;
-
-    private NumericalError largestGlobalError;
 
     private CountDownLatch countDownLatch;
 
-    private final Deque<UpdateModule> modules;
-
-    private double previousError;
-    private Quantity<Time> previousTimeStep;
-    private Quantity<Frequency> accuracyGain;
-
     private volatile boolean interrupted;
-    private boolean globalErrorAcceptable;
-    private boolean calculateGlobalError;
+
     private ThreadPoolExecutor executor;
-    private final double moleculeFraction;
+
+    int recalculations = 0;
+
+    private boolean skipDisplacementChecks = false;
+
 
     public UpdateScheduler(Simulation simulation) {
         this.simulation = simulation;
+        errorManager = new ErrorManager(this);
+        TimeStepManager.initialize(this);
         modules = new ArrayDeque<>(simulation.getModules());
-        largestLocalError = NumericalError.MINIMAL_EMPTY_ERROR;
-        largestGlobalError = NumericalError.MINIMAL_EMPTY_ERROR;
-        moleculeFraction = MolarConcentration.moleculesToConcentration(1.0/10000.0);
+        moleculeFraction = MolarConcentration.moleculesToConcentration(1.0 / 50000.0);
     }
 
-    public void initializeThreadPool() {
+    public void initialize() {
+        errorManager.initialize();
         if (modules.isEmpty()) {
             return;
         }
         executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(modules.size());
-    }
-
-    public double getRecalculationCutoff() {
-        return recalculationCutoff;
-    }
-
-    public void setRecalculationCutoff(double recalculationCutoff) {
-        this.recalculationCutoff = recalculationCutoff;
-    }
-
-    public long getTimestepsDecreased() {
-        return timestepsDecreased;
-    }
-
-    public long getTimestepsIncreased() {
-        return timestepsIncreased;
     }
 
     public double getMoleculeFraction() {
@@ -98,27 +65,23 @@ public class UpdateScheduler {
     }
 
     public void nextEpoch() {
-        // initialize fields
-        timeStepAlteredInThisEpoch = false;
-        previousError = 0;
-        largestLocalError = NumericalError.MINIMAL_EMPTY_ERROR;
-        previousTimeStep = UnitRegistry.getTime();
+        // initialize
+        errorManager.resetLocalNumericalError();
+        errorManager.resetGlobalNumericalError();
+        errorManager.resetLocalDisplacementDeviation();
         updatables = simulation.getUpdatables();
         moduleIterator = modules.iterator();
-        globalErrorAcceptable = true;
-        calculateGlobalError = true;
 
         for (Updatable updatable : updatables) {
             updatable.getConcentrationManager().backupConcentrations();
         }
 
+        recalculations = 0;
+        boolean recalculationRequired;
         // until all models passed
         do {
-            if (timeStepRescaled || interrupted || !globalErrorAcceptable) {
-                largestLocalError = NumericalError.MINIMAL_EMPTY_ERROR;
-                resetCalculation();
-            }
-            timeStepRescaled = false;
+
+            TimeStepManager.setTimeStepRescaled(false);
             interrupted = false;
 
             countDownLatch = new CountDownLatch(getNumberOfModules());
@@ -137,22 +100,18 @@ public class UpdateScheduler {
                 }
             }
 
+
             try {
                 countDownLatch.await();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
 
-            if (!interrupted) {
-                // perform only if every module passed individually
-                // evaluate total concentration change
-                evaluateGlobalNumericalAccuracy();
-            }
-
-            // evaluate total spatial displacement
-            evaluateSpatialDisplacement();
-
-        } while (recalculationRequired());
+//            System.out.println(errorManager.getLocalNumericalError()+" "+errorManager.getLocalNumericalErrorModule()+ " " + errorManager.getLocalNumericalErrorUpdate() + " " + UnitRegistry.getTime());
+            recalculationRequired = recalculationRequired();
+            recalculations++;
+        } while (recalculationRequired);
+//        System.out.println("epoch accepted");
         // System.out.println("accepted local error: "+largestLocalError.getValue());
         // resolve pending changes
         for (UpdateModule updateModule : modules) {
@@ -163,131 +122,72 @@ public class UpdateScheduler {
 
         logger.debug("Finished processing modules for epoch {}.", simulation.getEpoch());
 
-        // wrap up
-        determineAccuracyGain();
-
         finalizeDeltas();
         modules.forEach(UpdateModule::reset);
     }
 
-    public void evaluateGlobalNumericalAccuracy() {
-        if (calculateGlobalError) {
-            // calculate half step concentrations for subsequent evaluation
-            // for each node
-            for (Updatable updatable : updatables) {
-                // calculate interim container (added current updates with checked local error)
-                // set half step concentrations y(t+1/2dt) for interim containers
-                // backup current concentrations and set current concentration to interim concentrations
-                updatable.getConcentrationManager().setInterimAndUpdateCurrentConcentrations();
+    private boolean recalculationRequired() {
+        boolean recalculationRequired = false;
+        // global displacement based error
+        if (!skipDisplacementChecks) {
+            errorManager.evaluateGlobalDeviation();
+            if (!errorManager.globalDeviationIsAcceptable()) {
+                errorManager.resolveGlobalDeviationProblem();
+                recalculationRequired = true;
             }
-            globalErrorAcceptable = false;
-            calculateGlobalError = false;
         } else {
-            // evaluate global numerical accuracy
-            // for each node
-            NumericalError largestGlobalError = NumericalError.MINIMAL_EMPTY_ERROR;
-            for (Updatable updatable : updatables) {
-                // determine full concentrations with full update and 2 * half update
-                updatable.getConcentrationManager().determineComparisionConcentrations();
-                // determine error between both
-                NumericalError globalError = updatable.getConcentrationManager().determineGlobalNumericalError();
-                if (largestGlobalError.isSmallerThan(globalError)) {
-                    globalError.setUpdatable(updatable);
-                    largestGlobalError = globalError;
+            for (Vesicle vesicle : simulation.getVesicleLayer().getVesicles()) {
+                vesicle.calculateTotalDisplacement();
+            }
+        }
+        // global capping
+        evaluateCapping();
+        // global numerical error
+        errorManager.evaluateGlobalError();
+        if (!errorManager.globalErrorIsAcceptable()) {
+            errorManager.resolveGlobalErrorProblem();
+            recalculationRequired = true;
+        }
+        // time step rescaling
+        if (TimeStepManager.isTimeStepRescaled()) {
+            errorManager.resetLocalDisplacementDeviation();
+            simulation.getVesicleLayer().clearUpdates();
+            modules.forEach(UpdateModule::reset);
+            recalculationRequired = true;
+        }
+
+        if (recalculationRequired) {
+            // reset states
+            for (UpdateModule module : modules) {
+                // skip modules with pending changes if time step was not rescaled
+                if (module.getState().equals(SUCCEEDED_WITH_PENDING_CHANGES) && !TimeStepManager.isTimeStepRescaled()) {
+                    continue;
                 }
+                module.reset();
             }
-            // set interim check false if global error is to large and true if you can continue
-            if (largestGlobalError.getValue() > recalculationCutoff) {
-                // System.out.println("rejected global error: "+largestGlobalError+" @ "+TimeFormatter.formatTime(UnitRegistry.getTime()));
-                simulation.getScheduler().decreaseTimeStep();
-                globalErrorAcceptable = false;
-                calculateGlobalError = true;
-            } else {
-                // System.out.println("accepted global error: "+largestGlobalError+ " @ "+TimeFormatter.formatTime(UnitRegistry.getTime()));
-                globalErrorAcceptable = true;
-            }
-            if (getLargestLocalError().getValue() != NumericalError.MINIMAL_EMPTY_ERROR.getValue()) {
-                logger.debug("Largest local error : {} ({}, {}, {})", getLargestLocalError().getValue(), getLargestLocalError().getChemicalEntity(), getLargestLocalError().getUpdatable().getStringIdentifier(), getLocalErrorModule());
-            } else {
-                logger.debug("Largest local error : minimal");
-            }
-            logger.debug("Largest global error: {} ({}, {})", largestGlobalError.getValue(), largestGlobalError.getChemicalEntity(), largestGlobalError.getUpdatable().getStringIdentifier());
-            this.largestGlobalError = largestGlobalError;
+            // clear deltas that have previously been calculated
+            updatables.forEach(updatable -> updatable.getConcentrationManager().clearPotentialDeltas());
+            // reset error
+            errorManager.resetLocalNumericalError();
+            // start from the beginning
+            moduleIterator = modules.iterator();
+//            System.out.println("recalculation required");
         }
 
+        return recalculationRequired;
     }
 
-    /**
-     * Recalculations are required if:
-     * <ul>
-     * <li>the time step was rescaled during this calculation</li>
-     * <li>any module was interrupted during this calculation</li>
-     * <li>the global error was larger than the recalculation cutoff</li>
-     * </ul>
-     *
-     * @return true, if a recalculation is required
-     */
-    public boolean recalculationRequired() {
-        return timeStepRescaled || interrupted || !globalErrorAcceptable;
-    }
-
-    public NumericalError getLargestLocalError() {
-        return largestLocalError;
-    }
-
-    public void setLargestLocalError(NumericalError localError, UpdateModule associatedModule, double associatedConcentration) {
-        if (localError.getValue() > largestLocalError.getValue()) {
-            largestLocalError = localError;
-            localErrorModule = associatedModule;
-            localErrorUpdate = associatedConcentration;
+    private void evaluateCapping() {
+        for (Updatable updatable : updatables) {
+            if (updatable.getConcentrationManager().concentrationIsAtCap()) {
+                TimeStepManager.decreaseTimeStep(NEGATIVE_CONCENTRATIONS);
+                return;
+            }
         }
-    }
-
-    public UpdateModule getLocalErrorModule() {
-        return localErrorModule;
-    }
-
-    public double getLocalErrorUpdate() {
-        return MolarConcentration.concentrationToMolecules(localErrorUpdate).getValue().doubleValue();
-    }
-
-    public NumericalError getLargestGlobalError() {
-        return largestGlobalError;
-    }
-
-    public boolean timeStepWasRescaled() {
-        return timeStepRescaled;
     }
 
     public void shutdownExecutorService() {
         executor.shutdown();
-    }
-
-    public boolean timeStepWasAlteredInThisEpoch() {
-        return timeStepAlteredInThisEpoch;
-    }
-
-    public Quantity<Frequency> getAccuracyGain() {
-        return accuracyGain;
-    }
-
-    public void increaseTimeStep() {
-        UnitRegistry.setTime(UnitRegistry.getTime().multiply(1.1));
-        logger.debug("Increasing time step to {}.", TimeFormatter.formatTime(UnitRegistry.getTime()));
-        timestepsIncreased++;
-    }
-
-    public synchronized void decreaseTimeStep() {
-        // if time step is rescaled for the very fist time this epoch remember the initial error and time step
-        if (!timeStepWasAlteredInThisEpoch()) {
-            previousError = largestLocalError.getValue();
-            previousTimeStep = UnitRegistry.getTime();
-        }
-        UnitRegistry.setTime(UnitRegistry.getTime().multiply(0.9));
-        logger.debug("Decreasing time step to {}.", TimeFormatter.formatTime(UnitRegistry.getTime()));
-        timestepsDecreased++;
-        timeStepRescaled = true;
-        timeStepAlteredInThisEpoch = true;
     }
 
     private void finalizeDeltas() {
@@ -297,16 +197,12 @@ public class UpdateScheduler {
         // potential updates for vesicles are already set during displacement evaluation
     }
 
-    private void determineAccuracyGain() {
-        if (timeStepWasAlteredInThisEpoch()) {
-            final double errorDelta = previousError - largestLocalError.getValue();
-            final Quantity<Time> timeDelta = previousTimeStep.subtract(UnitRegistry.getTime());
-            accuracyGain = Quantities.getQuantity(errorDelta, AbstractUnit.ONE).divide(timeDelta).asType(Frequency.class);
-        }
-    }
-
     public CountDownLatch getCountDownLatch() {
         return countDownLatch;
+    }
+
+    public Deque<UpdateModule> getModules() {
+        return modules;
     }
 
     public void addModule(UpdateModule module) {
@@ -315,6 +211,10 @@ public class UpdateScheduler {
 
     public int getNumberOfModules() {
         return modules.size();
+    }
+
+    public Simulation getSimulation() {
+        return simulation;
     }
 
     /**
@@ -332,36 +232,20 @@ public class UpdateScheduler {
         return false;
     }
 
-    public void resetCalculation() {
-        logger.debug("Resetting calculations.");
-        // reset states
-        for (UpdateModule module : modules) {
-            // skip modules with pending changes if time step was not rescaled
-            if (module.getState().equals(SUCCEEDED_WITH_PENDING_CHANGES) && !timeStepRescaled) {
-                continue;
-            }
-            module.reset();
-        }
-        // clear deltas that have previously been calculated
-        updatables.forEach(updatable -> updatable.getConcentrationManager().clearPotentialDeltas());
-        // rest vesicle position
-        simulation.getVesicleLayer().clearUpdates();
-        if (calculateGlobalError) {
-            updatables.forEach(updatable -> updatable.getConcentrationManager().revertToOriginalConcentrations());
-        }
-        // start from the beginning
-        moduleIterator = modules.iterator();
+    public ErrorManager getErrorManager() {
+        return errorManager;
     }
 
-    private void evaluateSpatialDisplacement() {
-        if (simulation.getVesicleLayer().getVesicles().isEmpty()) {
-            return;
-        }
-        if (!simulation.getVesicleLayer().deltasAreBelowDisplacementCutoff()) {
-            decreaseTimeStep();
-            simulation.getVesicleLayer().clearUpdates();
-            modules.forEach(UpdateModule::reset);
-        }
+    public List<Updatable> getUpdatables() {
+        return updatables;
+    }
+
+    public boolean isSkipDisplacementChecks() {
+        return skipDisplacementChecks;
+    }
+
+    public void setSkipDisplacementChecks(boolean skipDisplacementChecks) {
+        this.skipDisplacementChecks = skipDisplacementChecks;
     }
 
 }

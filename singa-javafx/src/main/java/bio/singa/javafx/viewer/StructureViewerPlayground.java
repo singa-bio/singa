@@ -11,7 +11,6 @@ import javafx.application.Application;
 public class StructureViewerPlayground {
     public static void main(String[] args) {
 
-
         StructureParserOptions options = new StructureParserOptions();
         options.omitHydrogens(true);
 

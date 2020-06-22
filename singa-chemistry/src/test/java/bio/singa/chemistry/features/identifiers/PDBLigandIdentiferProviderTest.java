@@ -1,7 +1,6 @@
 package bio.singa.chemistry.features.identifiers;
 
-import bio.singa.chemistry.entities.ChemicalEntity;
-import bio.singa.chemistry.entities.simple.SmallMolecule;
+import bio.singa.chemistry.simple.SmallMolecule;
 import bio.singa.features.identifiers.ChEBIIdentifier;
 import bio.singa.features.identifiers.InChIKey;
 import bio.singa.features.identifiers.PDBLigandIdentifier;
@@ -16,8 +15,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 class PDBLigandIdentiferProviderTest {
 
-    private static ChemicalEntity chebiEntity;
-    private static ChemicalEntity inchiEntity;
+    private static SmallMolecule chebiEntity;
+    private static SmallMolecule inchiEntity;
 
     @BeforeAll
     static void initialize() {

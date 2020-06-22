@@ -1,6 +1,6 @@
 package bio.singa.simulation.model.modules.concentration;
 
-import bio.singa.chemistry.entities.ChemicalEntity;
+import bio.singa.simulation.entities.ChemicalEntity;
 import bio.singa.simulation.model.modules.UpdateModule;
 import bio.singa.simulation.model.sections.CellSubsection;
 

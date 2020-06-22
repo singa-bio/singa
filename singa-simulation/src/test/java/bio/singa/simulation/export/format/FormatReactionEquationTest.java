@@ -1,12 +1,12 @@
 package bio.singa.simulation.export.format;
 
-import bio.singa.chemistry.entities.simple.Protein;
-import bio.singa.chemistry.entities.simple.SmallMolecule;
 import bio.singa.chemistry.features.reactions.MichaelisConstant;
 import bio.singa.chemistry.features.reactions.RateConstant;
 import bio.singa.chemistry.features.reactions.TurnoverNumber;
 import bio.singa.features.model.Evidence;
 import bio.singa.features.units.UnitRegistry;
+import bio.singa.simulation.entities.ChemicalEntity;
+import bio.singa.simulation.entities.SimpleEntity;
 import bio.singa.simulation.model.modules.concentration.imlementations.reactions.Reaction;
 import bio.singa.simulation.model.modules.concentration.imlementations.reactions.ReactionBuilder;
 import bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.reactants.Reactant;
@@ -38,10 +38,10 @@ class FormatReactionEquationTest {
         MichaelisConstant michaelisConstant = new MichaelisConstant(Quantities.getQuantity(9.0e-3, MOLE_PER_LITRE), Evidence.NO_EVIDENCE);
         TurnoverNumber turnoverNumber = new TurnoverNumber(76, new ProductUnit<>(ONE.divide(MINUTE)), Evidence.NO_EVIDENCE);
 
-        SmallMolecule substrate = SmallMolecule.create("A").build();
-        SmallMolecule product1 = SmallMolecule.create("B").build();
-        SmallMolecule product2 = SmallMolecule.create("C").build();
-        Protein enzyme = Protein.create("E").build();
+        ChemicalEntity substrate = SimpleEntity.create("A").build();
+        ChemicalEntity product1 = SimpleEntity.create("B").build();
+        ChemicalEntity product2 = SimpleEntity.create("C").build();
+        ChemicalEntity enzyme = SimpleEntity.create("E").build();
 
         Reaction reaction = ReactionBuilder.staticReactants(simulation)
                 .addSubstrate(substrate)
@@ -60,10 +60,10 @@ class FormatReactionEquationTest {
     void testNthOrderReactionFormat() {
         Simulation simulation = new Simulation();
 
-        SmallMolecule substrate1 = SmallMolecule.create("A").build();
-        SmallMolecule substrate2 = SmallMolecule.create("B").build();
-        SmallMolecule product1 = SmallMolecule.create("C").build();
-        SmallMolecule product2 = SmallMolecule.create("D").build();
+        ChemicalEntity substrate1 = SimpleEntity.create("A").build();
+        ChemicalEntity substrate2 = SimpleEntity.create("B").build();
+        ChemicalEntity product1 = SimpleEntity.create("C").build();
+        ChemicalEntity product2 = SimpleEntity.create("D").build();
 
         RateConstant k = RateConstant.create(1.0)
                 .forward().secondOrder()
@@ -80,15 +80,15 @@ class FormatReactionEquationTest {
                 .rate(k)
                 .build();
 
-        assertEquals("\\ch{ 2 !(inner)(A) + !(inner)(B) ->  !(inner)(C) + !(inner)(D)}", FormatReactionEquation.formatTex(reaction).get(0));
+        assertEquals("\\ch{ 2 A + B -> C + D}", FormatReactionEquation.formatTex(reaction).get(0));
     }
 
     @Test
     void testReversibleReactionFormat() {
         Simulation simulation = new Simulation();
 
-        SmallMolecule substrate = SmallMolecule.create("A").build();
-        SmallMolecule product = SmallMolecule.create("B").build();
+        ChemicalEntity substrate = SimpleEntity.create("A").build();
+        ChemicalEntity product = SimpleEntity.create("B").build();
 
         RateConstant kf = RateConstant.create(2.0)
                 .forward().firstOrder()
@@ -108,7 +108,7 @@ class FormatReactionEquationTest {
                 .backwardReactionRate(kb)
                 .build();
 
-        assertEquals("\\ch{!(membrane)(A) <=>  !(outer)(B)}", FormatReactionEquation.formatTex(reaction).get(0));
+        assertEquals("\\ch{A <=> B}", FormatReactionEquation.formatTex(reaction).get(0));
 
     }
 
@@ -135,15 +135,15 @@ class FormatReactionEquationTest {
                 .referenceParameter("p04", 1.153)
                 .referenceParameter("us", scaling)
                 .referenceParameter("kM", UnitRegistry.scale(km.getContent()).getValue().doubleValue())
-                .referenceParameter("cATPuM", new Reactant(SmallMolecule.create("ATP").build(), CATALYTIC, MICRO_MOLE_PER_LITRE))
-                .referenceParameter("cGAuM", new Reactant(SmallMolecule.create("GAT").build(), CATALYTIC, MICRO_MOLE_PER_LITRE))
-                .referenceParameter("cAC6", new Reactant(SmallMolecule.create("AC6").build(), CATALYTIC, MEMBRANE))
-                .referenceParameter("cATP", new Reactant(SmallMolecule.create("ATP").build(), SUBSTRATE))
-                .referenceParameter(new Reactant(SmallMolecule.create("CAMP").build(), PRODUCT))
+                .referenceParameter("cATPuM", new Reactant(SimpleEntity.create("ATP").build(), CATALYTIC, MICRO_MOLE_PER_LITRE))
+                .referenceParameter("cGAuM", new Reactant(SimpleEntity.create("GAT").build(), CATALYTIC, MICRO_MOLE_PER_LITRE))
+                .referenceParameter("cAC6", new Reactant(SimpleEntity.create("AC6").build(), CATALYTIC, MEMBRANE))
+                .referenceParameter("cATP", new Reactant(SimpleEntity.create("ATP").build(), SUBSTRATE))
+                .referenceParameter(new Reactant(SimpleEntity.create("CAMP").build(), PRODUCT))
                 .identifier("Adenylate Cyclase Reaction")
                 .build();
 
-        assertEquals("\\ch{!(inner)(ATP) -> [ !(inner)(ATP), !(inner)(GAT), !(membrane)(AC6) ] !(inner)(CAMP)}", FormatReactionEquation.formatTex(reaction).get(0));
+        assertEquals("\\ch{ATP -> [ ATP, GAT, AC 6  ] CAMP}", FormatReactionEquation.formatTex(reaction).get(0));
     }
 
 }

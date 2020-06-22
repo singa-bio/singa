@@ -1,11 +1,11 @@
 package bio.singa.simulation.model.agents.pointlike;
 
 import bio.singa.features.parameters.Environment;
-import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.geometry.bodies.Spheres;
 import bio.singa.mathematics.geometry.edges.LineSegment;
 import bio.singa.mathematics.geometry.edges.SimpleLineSegment;
 import bio.singa.mathematics.geometry.faces.Circle;
+import bio.singa.mathematics.geometry.faces.Circles;
 import bio.singa.mathematics.geometry.faces.Rectangle;
 import bio.singa.mathematics.geometry.model.Polygon;
 import bio.singa.mathematics.matrices.LabeledSymmetricMatrix;
@@ -20,12 +20,11 @@ import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.modules.displacement.DisplacementBasedModule;
 import bio.singa.simulation.model.modules.displacement.implementations.VesicleConfinedDiffusion;
+import bio.singa.simulation.model.modules.qualitative.implementations.EndocytoticPit;
 import bio.singa.simulation.model.simulation.Simulation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.measure.Quantity;
-import javax.measure.quantity.Length;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -41,15 +40,18 @@ public class VesicleLayer {
      */
     private static final Logger logger = LoggerFactory.getLogger(DisplacementBasedModule.class);
 
-    private List<Vesicle> vesicles;
-    private Rectangle simulationRegion;
-    private final Quantity<Length> displacementEpsilon;
     private Simulation simulation;
+    private Rectangle simulationRegion;
+
+    private List<Vesicle> vesicles;
+    private List<EndocytoticPit> collectingPits;
+    private List<EndocytoticPit> maturingPits;
 
     public VesicleLayer(Simulation simulation) {
         setSimulation(simulation);
         vesicles = new ArrayList<>();
-        displacementEpsilon = UnitRegistry.getSpace().divide(10);
+        collectingPits = new ArrayList<>();
+        maturingPits = new ArrayList<>();
     }
 
     public Rectangle getSimulationRegion() {
@@ -85,6 +87,14 @@ public class VesicleLayer {
         return vesicles;
     }
 
+    public List<EndocytoticPit> getAspiringPits() {
+        return collectingPits;
+    }
+
+    public List<EndocytoticPit> getMaturingPits() {
+        return maturingPits;
+    }
+
     private void checkForCollisions() {
         //compare the distance to combined radii
         LabeledSymmetricMatrix<Vesicle> distances = SQUARED_EUCLIDEAN_METRIC.calculateDistancesPairwise(vesicles, Vesicle::getNextPosition);
@@ -93,7 +103,6 @@ public class VesicleLayer {
             // check collisions with other vesicles
             double firstRadius = Environment.convertSystemToSimulationScale(vesicle1.getRadius());
             for (Vesicle vesicle2 : vesicles) {
-                // TODO speed up by comparing only to close vesicles with referenced automaton nodes
                 if (vesicle1 != vesicle2) {
                     double distance = distances.getValueForLabel(vesicle1, vesicle2);
                     double combinedRadii = firstRadius + Environment.convertSystemToSimulationScale(vesicle2.getRadius());
@@ -109,12 +118,20 @@ public class VesicleLayer {
             if (simulation.getMembraneLayer() != null) {
                 for (Membrane macroscopicMembrane : simulation.getMembraneLayer().getMembranes()) {
                     for (MembraneSegment membraneSegment : macroscopicMembrane.getSegments()) {
-                        if (!vesicle1.getPosition().equals(vesicle1.getNextPosition())) {
-                            SimpleLineSegment displacementVector = new SimpleLineSegment(vesicle1.getPosition(), vesicle1.getNextPosition());
-                            if (displacementVector.getIntersectionWith(membraneSegment).isPresent()) {
-                                vesicle1.resetNextPosition();
-                                continue vesicleLoop;
-                            }
+                        // do not check attached vesicles
+                        // otherwise there is a problem when they are very close to membranes,
+                        // resulting in them getting stuck
+                        // they are considered "squeezed" by the membrane
+                        if (vesicle1.getState().equals(VesicleStateRegistry.ACTIN_ATTACHED) ||
+                                vesicle1.getState().equals(VesicleStateRegistry.MICROTUBULE_ATTACHED)) {
+                            continue ;
+                        }
+                        // check if the circle representation with slightly bigger radius for numerical reasons
+                        // of the next position intersects with any membrane segment
+                        Circle nextRepresentation = new Circle(vesicle1.getNextPosition(), firstRadius+1);
+                        if (Circles.intersect(nextRepresentation, membraneSegment)) {
+                            vesicle1.resetNextPosition();
+                            continue vesicleLoop;
                         }
                     }
                 }
@@ -148,19 +165,6 @@ public class VesicleLayer {
                 vesicle1.resetNextPosition();
             }
         }
-    }
-
-    public boolean deltasAreBelowDisplacementCutoff() {
-        for (Vesicle vesicle : vesicles) {
-            Vector2D totalDisplacement = vesicle.calculateTotalDisplacement();
-            Quantity<Length> lengthQuantity = Environment.convertSimulationToSystemScale(totalDisplacement.getMagnitude());
-            lengthQuantity.to(displacementEpsilon.getUnit());
-            if (lengthQuantity.getValue().doubleValue() > displacementEpsilon.getValue().doubleValue()) {
-                logger.info("The magnitude of the spatial displacement of {} is {}, higher than the allowed {}.", vesicle.getStringIdentifier(), lengthQuantity, displacementEpsilon);
-                return false;
-            }
-        }
-        return true;
     }
 
     public void associateVesicles() {
@@ -257,7 +261,6 @@ public class VesicleLayer {
             }
         }
     }
-
 
     public void clearUpdates() {
         for (Vesicle vesicle : vesicles) {

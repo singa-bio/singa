@@ -1,8 +1,10 @@
 package bio.singa.simulation.model.modules.concentration;
 
-import bio.singa.chemistry.entities.ChemicalEntity;
+import bio.singa.simulation.entities.ChemicalEntity;
 import bio.singa.simulation.model.sections.CellSubsection;
 import bio.singa.simulation.model.simulation.Updatable;
+
+import java.util.Objects;
 
 /**
  * Used to identify changes to concentrations ({@link ConcentrationDelta}s) (mostly in maps).
@@ -21,6 +23,8 @@ public class ConcentrationDeltaIdentifier {
      */
     private final CellSubsection section;
 
+    private final String reference;
+
     /**
      * The chemical entity the delta is assigned to.
      */
@@ -34,8 +38,13 @@ public class ConcentrationDeltaIdentifier {
      * @param entity The entity the delta is assigned to.
      */
     public ConcentrationDeltaIdentifier(Updatable updatable, CellSubsection section, ChemicalEntity entity) {
+        this(updatable, section, "", entity);
+    }
+
+    public ConcentrationDeltaIdentifier(Updatable updatable, CellSubsection section, String reference, ChemicalEntity entity) {
         this.updatable = updatable;
         this.section = section;
+        this.reference = reference;
         this.entity = entity;
     }
 
@@ -66,24 +75,24 @@ public class ConcentrationDeltaIdentifier {
         return entity;
     }
 
+    public String getReference() {
+        return reference;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         ConcentrationDeltaIdentifier that = (ConcentrationDeltaIdentifier) o;
-
-        if (updatable != null ? !updatable.equals(that.updatable) : that.updatable != null) return false;
-        if (section != null ? !section.equals(that.section) : that.section != null) return false;
-        return entity != null ? entity.equals(that.entity) : that.entity == null;
+        return Objects.equals(updatable, that.updatable) &&
+                Objects.equals(section, that.section) &&
+                Objects.equals(reference, that.reference) &&
+                Objects.equals(entity, that.entity);
     }
 
     @Override
     public int hashCode() {
-        int result = updatable != null ? updatable.hashCode() : 0;
-        result = 31 * result + (section != null ? section.hashCode() : 0);
-        result = 31 * result + (entity != null ? entity.hashCode() : 0);
-        return result;
+        return Objects.hash(updatable, section, reference, entity);
     }
 
     @Override

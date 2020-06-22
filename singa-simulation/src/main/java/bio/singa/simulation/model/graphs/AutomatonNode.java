@@ -1,6 +1,6 @@
 package bio.singa.simulation.model.graphs;
 
-import bio.singa.chemistry.entities.ChemicalEntity;
+import bio.singa.simulation.entities.ChemicalEntity;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.geometry.model.Polygon;
 import bio.singa.mathematics.graphs.model.AbstractNode;
@@ -63,8 +63,6 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
         }
         subsectionAdjacency.get(subsection).add(mapping);
     }
-
-
 
     public Map<CellSubsection, List<AreaMapping>> getSubsectionAdjacency() {
         return subsectionAdjacency;

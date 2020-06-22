@@ -18,6 +18,9 @@ public class CellSubsections {
     public static final CellSubsection EXTRACELLULAR_REGION = new CellSubsection("extracellular region", new GoTerm("GO:0005576","extracellular region", GOA_DATABASE));
 
     public static final CellSubsection VESICLE_MEMBRANE = new CellSubsection("vesicle membrane", new GoTerm("GO:0012506", "vesicle membrane",GOA_DATABASE), true);
-    public static final CellSubsection VESICLE_LUMEN = new CellSubsection("vesicle lumen", new GoTerm("GO:0031983", "vesicle lumen",GOA_DATABASE));
+    public static final CellSubsection VESICLE_LUMEN = new CellSubsection("vesicle lumen", new GoTerm("GO:0031983", "vesicle lumen", GOA_DATABASE));
+
+    public static final CellSubsection PIT_MEMBRANE = new CellSubsection("pit membrane", new GoTerm("GO:0012506", "vesicle membrane",GOA_DATABASE), true);
+
 
 }

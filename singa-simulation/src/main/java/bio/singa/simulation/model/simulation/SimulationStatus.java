@@ -5,7 +5,8 @@ import bio.singa.features.formatter.TimeFormatter;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.simulation.events.GraphUpdatedEvent;
 import bio.singa.simulation.model.modules.UpdateModule;
-import bio.singa.simulation.model.modules.concentration.NumericalError;
+import bio.singa.simulation.model.simulation.error.NumericalError;
+import bio.singa.simulation.model.simulation.error.TimeStepManager;
 import tech.units.indriya.ComparableQuantity;
 import tech.units.indriya.quantity.Quantities;
 
@@ -44,6 +45,7 @@ public class SimulationStatus implements UpdateEventListener<GraphUpdatedEvent> 
     private Quantity<Time> estimatedTimeRemaining;
     private Quantity<Time> estimatedSpeed;
     private final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+    private double epochsPerSecond;
 
     public SimulationStatus(Simulation simulation) {
         this.simulation = simulation;
@@ -66,8 +68,8 @@ public class SimulationStatus implements UpdateEventListener<GraphUpdatedEvent> 
     private void calculateEpochBasedStatus() {
         // update variables
         long currentEpochs = simulation.getEpoch();
-        long currentIncreases = simulation.getScheduler().getTimestepsIncreased();
-        long currentDecreases = simulation.getScheduler().getTimestepsDecreased();
+        long currentIncreases = TimeStepManager.getTimeStepsIncreased();
+        long currentDecreases = TimeStepManager.getTimeStepsDecreased();
         // determine change in epochs
         deltaEpochs = currentEpochs - previousEpochs;
         deltaIncreases = currentIncreases - previousIncreases;
@@ -81,21 +83,24 @@ public class SimulationStatus implements UpdateEventListener<GraphUpdatedEvent> 
     private void calculateTimeBasedStatus() {
         // calculate time remaining
         long currentTimeMillis = System.currentTimeMillis();
-        ComparableQuantity<Time> currentTimeSimulation = simulation.getElapsedTime().to(MICRO(SECOND));
+        ComparableQuantity<Time> currentTimeSimulation = TimeStepManager.getElapsedTime().to(MICRO(SECOND));
         double fractionDone = currentTimeSimulation.getValue().doubleValue() / terminationTime.getValue().doubleValue();
         long timeRequired = System.currentTimeMillis() - startingTime;
         long estimatedMillisRemaining = (long) (timeRequired / fractionDone) - timeRequired;
         estimatedTimeRemaining = Quantities.getQuantity(estimatedMillisRemaining, MILLI(SECOND));
         // calculate speed
-        double speedInMicroSecondsPerSecond = currentTimeSimulation.subtract(previousTimeSimulation).getValue().doubleValue() / Quantities.getQuantity(currentTimeMillis - previousTimeMillis, MILLI(SECOND)).to(SECOND).getValue().doubleValue();
+        double deltaTime = Quantities.getQuantity(currentTimeMillis - previousTimeMillis, MILLI(SECOND)).to(SECOND).getValue().doubleValue();
+        double speedInMicroSecondsPerSecond = currentTimeSimulation.subtract(previousTimeSimulation).getValue().doubleValue() / deltaTime;
         estimatedSpeed = Quantities.getQuantity(speedInMicroSecondsPerSecond, MICRO(SECOND));
         // update previous values
         previousTimeMillis = currentTimeMillis;
         previousTimeSimulation = currentTimeSimulation;
+
+        epochsPerSecond = deltaEpochs / deltaTime;
     }
 
     public NumericalError getLargestLocalError() {
-        return simulation.getScheduler().getLargestLocalError();
+        return simulation.getScheduler().getErrorManager().getLocalNumericalError();
     }
 
     public String getLocalErrorStatus() {
@@ -107,15 +112,15 @@ public class SimulationStatus implements UpdateEventListener<GraphUpdatedEvent> 
     }
 
     public UpdateModule getLocalErrorModule() {
-        return simulation.getScheduler().getLocalErrorModule();
+        return simulation.getScheduler().getErrorManager().getLocalNumericalErrorModule();
     }
 
     public String getLargestLocalErrorUpdate() {
-        return String.valueOf(simulation.getScheduler().getLocalErrorUpdate());
+        return String.valueOf(simulation.getScheduler().getErrorManager().getLocalNumericalErrorUpdate());
     }
 
     public NumericalError getLargestGlobalError() {
-        return simulation.getScheduler().getLargestGlobalError();
+        return simulation.getScheduler().getErrorManager().getGlobalNumericalError();
     }
 
     public String getNumberOfEpochsSinceLastUpdate() {
@@ -131,7 +136,7 @@ public class SimulationStatus implements UpdateEventListener<GraphUpdatedEvent> 
     }
 
     public long getProgressInMilliSeconds() {
-        return simulation.getElapsedTime().to(MILLI(SECOND)).getValue().longValue();
+        return TimeStepManager.getElapsedTime().to(MILLI(SECOND)).getValue().longValue();
     }
 
     public String getEstimatedTimeRemaining() {
@@ -157,14 +162,23 @@ public class SimulationStatus implements UpdateEventListener<GraphUpdatedEvent> 
     }
 
     public String getElapsedTime() {
-        return TimeFormatter.formatTime(simulation.getElapsedTime());
+        return TimeFormatter.formatTime(TimeStepManager.getElapsedTime());
     }
 
-    public String getAccuracyGain() {
-        if (simulation.getScheduler().getAccuracyGain() != null) {
-            return simulation.getScheduler().getAccuracyGain().toString();
-        }
-        return "";
+    public double getEpochsPerSecond() {
+        return epochsPerSecond;
+    }
+
+    public String getMostRecentTimeStep() {
+        return TimeFormatter.formatTime(UnitRegistry.getTime());
+    }
+
+    public double getGlobalDeviation() {
+        return simulation.getScheduler().getErrorManager().getGlobalDisplacementDeviation().getValue();
+    }
+
+    public double getLocalDeviation() {
+        return simulation.getScheduler().getErrorManager().getLocalDisplacementDeviation().getValue();
     }
 
 }

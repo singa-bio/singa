@@ -1,7 +1,8 @@
 package bio.singa.simulation.model.modules.concentration.imlementations.transport;
 
-import bio.singa.chemistry.entities.ChemicalEntity;
-import bio.singa.chemistry.features.diffusivity.Diffusivity;
+import bio.singa.simulation.entities.ChemicalEntity;
+import bio.singa.features.quantities.ConcentrationDiffusivity;
+import bio.singa.features.quantities.Diffusivity;
 import bio.singa.features.model.Feature;
 import bio.singa.features.model.FeatureProvider;
 import bio.singa.simulation.features.AffectedSection;
@@ -53,8 +54,6 @@ public class Diffusion extends ConcentrationBasedModule<EntityDeltaFunction> {
      */
     private static final Logger logger = LoggerFactory.getLogger(Diffusion.class);
 
-    private CellSubsection restrictedSubsection;
-
     public Diffusion() {
 
     }
@@ -76,12 +75,12 @@ public class Diffusion extends ConcentrationBasedModule<EntityDeltaFunction> {
         if (affectedSection == null) {
             function = new EntityDeltaFunction(this::calculateDelta, this::unrestrictedApplication);
         } else {
-            restrictedSubsection = affectedSection.getContent();
+            setRestrictedSubsection(affectedSection.getContent());
             function = new EntityDeltaFunction(this::calculateDelta, this::restrictedApplication);
         }
         addDeltaFunction(function);
         // feature
-        getRequiredFeatures().add(Diffusivity.class);
+        getRequiredFeatures().add(ConcentrationDiffusivity.class);
         getRequiredFeatures().add(Ratio.class);
         List<ChemicalEntity> cargoes = getFeature(Cargoes.class).getContent();
         addReferencedEntities(cargoes);
@@ -92,7 +91,7 @@ public class Diffusion extends ConcentrationBasedModule<EntityDeltaFunction> {
         ChemicalEntity entity = supplier.getCurrentEntity();
         CellSubsection subsection = supplier.getCurrentSubsection();
         final double currentConcentration = concentrationContainer.get(subsection, entity);
-        final double diffusivity = getScaledFeature(entity, Diffusivity.class);
+        final double diffusivity = getScaledFeature(entity, ConcentrationDiffusivity.class);
         // traverse each neighbouring subsection
         List<AutomatonNode.AreaMapping> areaMappings = node.getSubsectionAdjacency().get(subsection);
         double delta = 0.0;
@@ -108,7 +107,7 @@ public class Diffusion extends ConcentrationBasedModule<EntityDeltaFunction> {
                 } else {
                     otherContainer = other.getConcentrationContainer();
                 }
-                partialDelta = diffusivity * mapping.getRelativeArea() * mapping.getDiffusiveRatio() * (otherContainer.get(mapping.getSubsection(), entity) - currentConcentration);
+                partialDelta = diffusivity * /* mapping.getRelativeArea() * */  mapping.getDiffusiveRatio() * (otherContainer.get(mapping.getSubsection(), entity) - currentConcentration);
             }
             delta += partialDelta;
             mapping.setCache(partialDelta);
@@ -122,7 +121,7 @@ public class Diffusion extends ConcentrationBasedModule<EntityDeltaFunction> {
     }
 
     private boolean restrictedApplication(ConcentrationContainer container) {
-        return supplier.getCurrentSubsection().equals(restrictedSubsection);
+        return supplier.getCurrentSubsection().equals(getRestrictedSubsection());
     }
 
     @Override
@@ -198,13 +197,17 @@ public class Diffusion extends ConcentrationBasedModule<EntityDeltaFunction> {
         }
 
         public SectionLimitationStep forAllEntities(Collection<ChemicalEntity> chemicalEntities) {
-            module.setFeature(new Cargoes(new ArrayList<>(chemicalEntities)));
+            module.setFeature(Cargoes.of(new ArrayList<>(chemicalEntities))
+                    .comment("entities that are subject to diffusion")
+                    .build());
             return this;
         }
 
         @Override
         public BuildStep forSection(CellSubsection subsection) {
-            module.setFeature(new AffectedSection(subsection));
+            module.setFeature(AffectedSection.of(subsection)
+                    .comment("section that is affected by diffusion")
+                    .build());
             return this;
         }
 

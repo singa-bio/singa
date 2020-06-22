@@ -1,7 +1,7 @@
 package bio.singa.simulation.export.features;
 
-import bio.singa.chemistry.entities.ChemicalEntity;
-import bio.singa.chemistry.entities.EntityRegistry;
+import bio.singa.simulation.entities.ChemicalEntity;
+import bio.singa.simulation.entities.EntityRegistry;
 import bio.singa.features.identifiers.model.Identifier;
 import bio.singa.features.model.Feature;
 import bio.singa.features.model.QuantitativeFeature;
@@ -86,8 +86,8 @@ public class FeatureTable {
                 features.add(concentration);
             }
         }
-        int featureCounter = 1;
 
+        int featureCounter = 1;
         String formatString = "F%0" + (int) (Math.log10(features.size()) + 1) + "d";
         for (Feature<?> feature : features) {
             if (!featureIdentifierMap.containsKey(feature)) {

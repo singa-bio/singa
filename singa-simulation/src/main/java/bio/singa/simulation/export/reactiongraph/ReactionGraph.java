@@ -1,6 +1,6 @@
 package bio.singa.simulation.export.reactiongraph;
 
-import bio.singa.chemistry.entities.ChemicalEntity;
+import bio.singa.simulation.entities.ChemicalEntity;
 import bio.singa.mathematics.graphs.model.DirectedWeightedGraph;
 
 import java.util.Optional;

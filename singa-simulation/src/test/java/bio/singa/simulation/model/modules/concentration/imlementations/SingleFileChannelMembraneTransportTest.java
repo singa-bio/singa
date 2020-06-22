@@ -1,9 +1,7 @@
 package bio.singa.simulation.model.modules.concentration.imlementations;
 
-import bio.singa.chemistry.entities.simple.Protein;
-import bio.singa.chemistry.entities.simple.SmallMolecule;
-import bio.singa.chemistry.features.databases.chebi.ChEBIParserService;
-import bio.singa.chemistry.features.databases.uniprot.UniProtParserService;
+import bio.singa.simulation.entities.simple.Protein;
+import bio.singa.simulation.entities.simple.SmallMolecule;
 import bio.singa.chemistry.features.permeability.OsmoticPermeability;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.quantities.MolarConcentration;
@@ -17,11 +15,12 @@ import bio.singa.simulation.model.sections.CellTopology;
 import bio.singa.simulation.model.simulation.Simulation;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import tech.units.indriya.quantity.Quantities;
 
+import static bio.singa.chemistry.features.permeability.OsmoticPermeability.CUBIC_CENTIMETRE_PER_SECOND;
 import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
-import static bio.singa.simulation.features.DefaultFeatureSources.BINESH2015;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static tech.units.indriya.unit.MetricPrefix.MICRO;
 import static tech.units.indriya.unit.Units.METRE;
@@ -43,18 +42,21 @@ class SingleFileChannelMembraneTransportTest {
     }
 
     @Test
+    @Disabled("migration to two compartment model")
     void shouldSimulateChannelDiffusion() {
         UnitRegistry.setSpace(Quantities.getQuantity(1, MICRO(METRE)));
         Simulation simulation = new Simulation();
         // setup species
         // water
-        SmallMolecule water = ChEBIParserService.parse("CHEBI:15377", "water");
+        SmallMolecule water = SmallMolecule.create("water")
+                .build();
         // solutes
         SmallMolecule solute = SmallMolecule.create("solutes")
                 .build();
         // aqp2
-        Protein aquaporin2 = UniProtParserService.parse("P41181", "aqp2");
-        aquaporin2.setFeature(new OsmoticPermeability(5.31e-14, BINESH2015));
+        Protein aquaporin2 = Protein.create("aqp2")
+                .assignFeature(new OsmoticPermeability(Quantities.getQuantity(5.31e-14, CUBIC_CENTIMETRE_PER_SECOND)))
+                .build();
         // graph
         AutomatonGraph graph = AutomatonGraphs.singularGraph();
         simulation.setGraph(graph);

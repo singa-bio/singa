@@ -1,31 +1,33 @@
 package bio.singa.simulation.model.modules.concentration.imlementations.transport;
 
-import bio.singa.chemistry.entities.simple.Protein;
-import bio.singa.chemistry.features.diffusivity.Diffusivity;
-import bio.singa.chemistry.features.diffusivity.MembraneDiffusivity;
-import bio.singa.chemistry.features.diffusivity.SaffmanDelbrueckDiffusivityCorrelation;
+import bio.singa.simulation.entities.simple.Protein;
 import bio.singa.chemistry.features.structure3d.Radius;
+import bio.singa.core.utility.Pair;
+import bio.singa.core.utility.Resources;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.units.UnitRegistry;
-import bio.singa.mathematics.vectors.Vector2D;
-import bio.singa.simulation.model.agents.surfacelike.MembraneBuilder;
+import bio.singa.simulation.model.agents.surfacelike.GridImageReader;
+import bio.singa.simulation.model.agents.surfacelike.GridMembraneBuilder;
+import bio.singa.simulation.model.agents.surfacelike.Membrane;
+import bio.singa.simulation.model.agents.surfacelike.MembraneLayer;
+import bio.singa.simulation.model.concentrations.ConcentrationBuilder;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
-import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.graphs.AutomatonNode;
-import bio.singa.simulation.model.sections.CellTopology;
+import bio.singa.simulation.model.sections.CellRegion;
 import bio.singa.simulation.model.simulation.Simulation;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
+import tech.units.indriya.ComparableQuantity;
 import tech.units.indriya.quantity.Quantities;
 
-import javax.measure.Quantity;
 import javax.measure.quantity.Length;
+import java.awt.*;
+import java.util.HashMap;
+import java.util.Map;
 
 import static bio.singa.features.units.UnitProvider.MICRO_MOLE_PER_LITRE;
-import static bio.singa.simulation.model.sections.CellRegions.CELL_OUTER_MEMBRANE_REGION;
-import static bio.singa.simulation.model.sections.CellRegions.CYTOPLASM_REGION;
+import static bio.singa.simulation.model.sections.CellRegions.*;
+import static bio.singa.simulation.model.sections.CellTopology.MEMBRANE;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static tech.units.indriya.unit.MetricPrefix.NANO;
 import static tech.units.indriya.unit.Units.METRE;
 
@@ -33,8 +35,6 @@ import static tech.units.indriya.unit.Units.METRE;
  * @author cl
  */
 class LateralMembraneDiffusionTest {
-
-    private static final Quantity<Length> systemDiameter = Quantities.getQuantity(2500.0, NANO(METRE));
 
     @BeforeAll
     static void initialize() {
@@ -44,8 +44,8 @@ class LateralMembraneDiffusionTest {
 
     @BeforeEach
     void initializeEach() {
-        Environment.setSimulationExtend(1100);
-        Environment.setSystemExtend(systemDiameter);
+        UnitRegistry.reinitialize();
+        Environment.reset();
     }
 
     @AfterEach
@@ -55,48 +55,71 @@ class LateralMembraneDiffusionTest {
     }
 
     @Test
-    void testInContext() {
+    @DisplayName("lateral diffusion in membranes")
+    void shouldDiffuseInMembrane() {
 
         // create simulation
         Simulation simulation = new Simulation();
-        // set node distance to diameter
-        Environment.setNodeSpacingToDiameter(systemDiameter, 11);
-        // create grid graph 11x11
-        AutomatonGraph graph = AutomatonGraphs.createRectangularAutomatonGraph(11, 1);
-        // set graph
+
+        GridImageReader imageReader = GridImageReader.readTemplate(Resources.getResourceAsFileLocation("grids/membrane_10x2.png"));
+        int[][] sectionArray = imageReader.getGrid();
+
+        Environment.setSimulationExtend(1000);
+        ComparableQuantity<Length> systemExtend = Quantities.getQuantity(1000, NANO(METRE));
+        Environment.setSystemExtend(systemExtend);
+        Environment.setNodeSpacingToDiameter(systemExtend, 10);
+
+        GridMembraneBuilder gmb = new GridMembraneBuilder(sectionArray);
+        int red = Color.RED.getRGB();
+        int blue = Color.BLUE.getRGB();
+        Map<Integer, CellRegion> subsectionMap = new HashMap<>();
+        subsectionMap.put(red, CYTOPLASM_REGION);
+        subsectionMap.put(blue, EXTRACELLULAR_REGION);
+
+        Map<Pair<Integer>, CellRegion> membraneMap = new HashMap<>();
+        membraneMap.put(new Pair<>(blue, red), CELL_OUTER_MEMBRANE_REGION);
+        membraneMap.put(new Pair<>(red, blue), CELL_INNER_MEMBRANE_REGION);
+
+        gmb.setRegionMapping(subsectionMap);
+        gmb.setMembraneMapping(membraneMap);
+        gmb.createTopology();
+
+        AutomatonGraph graph = gmb.getGraph();
+        simulation.setGraph(graph);
+        MembraneLayer membraneLayer = new MembraneLayer();
+        Membrane membrane = gmb.getMembranes().get(CELL_OUTER_MEMBRANE_REGION);
+        membraneLayer.addMembrane(membrane);
+        simulation.setMembraneLayer(membraneLayer);
+
         simulation.setGraph(graph);
 
         Protein lacz = Protein.create("LacZ")
-                .assignFeature(new Radius(Quantities.getQuantity(3, NANO(METRE))))
-                .build();
-
-        // split with membrane
-        MembraneBuilder.linear()
-                .vectors(new Vector2D(0, 50), new Vector2D(1000, 50))
-                .innerPoint(new Vector2D(500, 300))
-                .graph(graph)
-                .membraneRegion(CYTOPLASM_REGION, CELL_OUTER_MEMBRANE_REGION)
+                .assignFeature(Radius
+                        .of(3.0, NANO(METRE))
+                        .build())
                 .build();
 
         // set concentrations
-        AutomatonNode node = graph.getNode(5, 0);
-        node.getConcentrationContainer().initialize(CellTopology.MEMBRANE, lacz, Quantities.getQuantity(1, MICRO_MOLE_PER_LITRE));
-
-        SaffmanDelbrueckDiffusivityCorrelation correlation = new SaffmanDelbrueckDiffusivityCorrelation();
-        MembraneDiffusivity diffusivity = correlation.predict(lacz);
-        System.out.println(diffusivity.getContent().to(Diffusivity.SQUARE_MICROMETRE_PER_SECOND));
-        lacz.setFeature(diffusivity);
+        ConcentrationBuilder.create(simulation)
+                .entity(lacz)
+                .topology(MEMBRANE)
+                .concentrationValue(10)
+                .microMolar()
+                .updatableIdentifier("n(5,1)")
+                .build();
 
         LateralMembraneDiffusion.inSimulation(simulation)
                 .forEntity(lacz)
-                .forAllMembranes()
+                .forMembrane(CELL_OUTER_MEMBRANE_REGION)
                 .build();
 
+        AutomatonNode node = simulation.getGraph().getNode(5, 1);
+        double previousConcentration = UnitRegistry.concentration(10, MICRO_MOLE_PER_LITRE).getValue().doubleValue();
         for (int i = 0; i < 10; i++) {
             simulation.nextEpoch();
+            double currentConcentration = node.getConcentrationContainer().get(MEMBRANE, lacz);
+            assertTrue(currentConcentration < previousConcentration);
         }
-
-        System.out.println(UnitRegistry.humanReadable(node.getConcentrationContainer().get(CellTopology.MEMBRANE, lacz)));
 
     }
 }

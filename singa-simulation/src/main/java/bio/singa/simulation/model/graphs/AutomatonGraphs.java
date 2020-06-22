@@ -1,6 +1,6 @@
 package bio.singa.simulation.model.graphs;
 
-import bio.singa.chemistry.entities.ChemicalEntity;
+import bio.singa.simulation.entities.ChemicalEntity;
 import bio.singa.features.parameters.Environment;
 import bio.singa.mathematics.geometry.faces.Rectangle;
 import bio.singa.mathematics.graphs.grid.GridEdge;
@@ -63,20 +63,20 @@ public class AutomatonGraphs {
      * @return The generated automaton graph.
      */
     public static AutomatonGraph useStructureFrom(GridGraph gridGraph) {
-        AutomatonGraph bioGraph = new AutomatonGraph(gridGraph.getNumberOfColumns(), gridGraph.getNumberOfRows());
+        AutomatonGraph graph = new AutomatonGraph(gridGraph.getNumberOfColumns(), gridGraph.getNumberOfRows());
         // copy nodes
         for (GridNode regularNode : gridGraph.getNodes()) {
             RectangularCoordinate coordinate = regularNode.getIdentifier();
             AutomatonNode node = new AutomatonNode(coordinate);
             node.setPosition(regularNode.getPosition());
-            bioGraph.addNode(node);
+            graph.addNode(node);
         }
         // copy edges
         for (GridEdge undirectedEdge : gridGraph.getEdges()) {
             int identifier = undirectedEdge.getIdentifier();
-            bioGraph.addEdgeBetween(identifier, bioGraph.getNode(undirectedEdge.getSource().getIdentifier()), bioGraph.getNode(undirectedEdge.getTarget().getIdentifier()));
+            graph.addEdgeBetween(identifier, graph.getNode(undirectedEdge.getSource().getIdentifier()), graph.getNode(undirectedEdge.getTarget().getIdentifier()));
         }
-        return bioGraph;
+        return graph;
     }
 
     public static AutomatonGraph singularGraph() {

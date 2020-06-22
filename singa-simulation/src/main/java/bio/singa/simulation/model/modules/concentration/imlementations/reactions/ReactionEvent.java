@@ -5,8 +5,9 @@ import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.deltas.DeltaBehavior;
 import bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.deltas.NodeBehavior;
 import bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.deltas.ReactantDelta;
-import bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.deltas.VesicleBehavior;
+import bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.deltas.MembraneRestrictedBehavior;
 import bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.reactants.ReactantSet;
+import bio.singa.simulation.model.modules.qualitative.implementations.EndocytoticPit;
 import bio.singa.simulation.model.sections.ConcentrationContainer;
 import bio.singa.simulation.model.simulation.Updatable;
 
@@ -23,7 +24,7 @@ public class ReactionEvent {
     private ReactantSet reactants;
 
     private AutomatonNode currentNode;
-    private Vesicle currentVesicle;
+    private Updatable currentMembraneRestrictedUpdatable;
 
     private DeltaBehavior updatableBehavior;
 
@@ -35,9 +36,10 @@ public class ReactionEvent {
     public List<ReactantDelta> collectDeltas(Updatable updatable) {
         List<ReactantDelta> deltas = new ArrayList<>();
         if (updatable instanceof Vesicle) {
-            setCurrentVesicle((Vesicle) updatable);
-            updatableBehavior = new VesicleBehavior(this);
-            Map<AutomatonNode, Double> associatedNodes = currentVesicle.getAssociatedNodes();
+            Vesicle vesicle = (Vesicle) updatable;
+            setCurrentMembraneRestrictedUpdatable(vesicle);
+            updatableBehavior = new MembraneRestrictedBehavior(this);
+            Map<AutomatonNode, Double> associatedNodes = vesicle.getAssociatedNodes();
             for (Map.Entry<AutomatonNode, Double> entry : associatedNodes.entrySet()) {
                 setCurrentNode(entry.getKey());
                 // assuming equal distribution of entities on the membrane surface,
@@ -46,9 +48,21 @@ public class ReactionEvent {
                 deltas.addAll(updatableBehavior.generateSubstrateDeltas(velocity));
                 deltas.addAll(updatableBehavior.generateProductDeltas(velocity));
             }
-        } else {
+        } else if (updatable instanceof AutomatonNode) {
             setCurrentNode((AutomatonNode) updatable);
             updatableBehavior = new NodeBehavior(this);
+            if (updatableBehavior.containsSubstrates(getCurrentNode().getConcentrationContainer())) {
+                double velocity = reaction.getKineticLaw().determineVelocity(this);
+                if (velocity != 0.0) {
+                    deltas.addAll(updatableBehavior.generateSubstrateDeltas(velocity));
+                    deltas.addAll(updatableBehavior.generateProductDeltas(velocity));
+                }
+            }
+        } else {
+            EndocytoticPit pit = (EndocytoticPit) updatable;
+            setCurrentMembraneRestrictedUpdatable(pit);
+            setCurrentNode(pit.getAssociatedNode());
+            updatableBehavior = new MembraneRestrictedBehavior(this);
             if (updatableBehavior.containsSubstrates(getCurrentNode().getConcentrationContainer())) {
                 double velocity = reaction.getKineticLaw().determineVelocity(this);
                 if (velocity != 0.0) {
@@ -68,11 +82,11 @@ public class ReactionEvent {
         }
     }
 
-    public ConcentrationContainer getCurrentVesicleContainer() {
+    public ConcentrationContainer getMembraneRestrictedContainer() {
         if (reaction.getSupplier().isStrutCalculation()) {
-            return reaction.getScope().getHalfStepConcentration(currentVesicle);
+            return reaction.getScope().getHalfStepConcentration(currentMembraneRestrictedUpdatable);
         } else {
-            return currentVesicle.getConcentrationContainer();
+            return currentMembraneRestrictedUpdatable.getConcentrationContainer();
         }
     }
 
@@ -84,12 +98,12 @@ public class ReactionEvent {
         this.currentNode = currentNode;
     }
 
-    public Vesicle getCurrentVesicle() {
-        return currentVesicle;
+    public Updatable getCurrentMembraneRestrictedUpdatable() {
+        return currentMembraneRestrictedUpdatable;
     }
 
-    public void setCurrentVesicle(Vesicle currentVesicle) {
-        this.currentVesicle = currentVesicle;
+    public void setCurrentMembraneRestrictedUpdatable(Updatable currentMembraneRestrictedUpdatable) {
+        this.currentMembraneRestrictedUpdatable = currentMembraneRestrictedUpdatable;
     }
 
     public DeltaBehavior getUpdatableBehavior() {

@@ -1,6 +1,6 @@
 package bio.singa.simulation.model.modules;
 
-import bio.singa.chemistry.entities.ChemicalEntity;
+import bio.singa.simulation.entities.ChemicalEntity;
 import bio.singa.features.model.Evidence;
 import bio.singa.features.model.Feature;
 import bio.singa.features.model.AbstractScalableQuantitativeFeature;
@@ -67,12 +67,12 @@ public abstract class AbstractUpdateModule implements UpdateModule {
             switch (state) {
                 case PENDING:
                     // calculate update
-                    logger.debug("calculating updates for {}.", Thread.currentThread().getName());
+                    logger.debug("calculating updates for {} ({}).", Thread.currentThread().getName(), identifier);
                     calculateUpdates();
                     break;
                 case REQUIRING_RECALCULATION:
                     // optimize time step
-                    logger.debug("{} requires recalculation.", Thread.currentThread().getName());
+                    logger.debug("{} ({}) requires recalculation.", Thread.currentThread().getName(), identifier);
                     boolean prioritizedModule = scheduler.interrupt();
                     if (prioritizedModule) {
                         optimizeTimeStep();
@@ -83,7 +83,7 @@ public abstract class AbstractUpdateModule implements UpdateModule {
             }
         }
         scheduler.getCountDownLatch().countDown();
-        logger.debug("Module finished {}, latch at {}.", Thread.currentThread().getName(), scheduler.getCountDownLatch().getCount());
+        logger.debug("Module {} finished in thread {}, latch at {}.", getIdentifier(),  Thread.currentThread().getName(), scheduler.getCountDownLatch().getCount());
     }
 
     protected abstract void calculateUpdates();

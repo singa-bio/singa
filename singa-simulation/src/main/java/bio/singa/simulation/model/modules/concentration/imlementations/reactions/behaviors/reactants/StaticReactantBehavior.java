@@ -1,6 +1,6 @@
 package bio.singa.simulation.model.modules.concentration.imlementations.reactions.behaviors.reactants;
 
-import bio.singa.chemistry.entities.ChemicalEntity;
+import bio.singa.simulation.entities.ChemicalEntity;
 
 import java.util.ArrayList;
 import java.util.Collections;

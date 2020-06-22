@@ -1,13 +1,13 @@
 package bio.singa.chemistry.features.databases.chebi;
 
-import bio.singa.chemistry.entities.simple.SmallMolecule;
 import bio.singa.chemistry.features.smiles.Smiles;
-import bio.singa.structure.parser.mol.MolParser;
 import bio.singa.chemistry.features.structure3d.Structure3D;
+import bio.singa.chemistry.simple.SmallMolecule;
 import bio.singa.features.identifiers.InChIKey;
 import bio.singa.features.identifiers.SimpleStringIdentifier;
 import bio.singa.structure.features.molarmass.MolarMass;
 import bio.singa.structure.model.interfaces.Ligand;
+import bio.singa.structure.parser.mol.MolParser;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.Locator;

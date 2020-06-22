@@ -1,11 +1,14 @@
 package bio.singa.simulation.model.modules.concentration;
 
-import bio.singa.chemistry.entities.ChemicalEntity;
+import bio.singa.simulation.entities.ChemicalEntity;
 import bio.singa.simulation.model.sections.CellSubsection;
 import bio.singa.simulation.model.simulation.Updatable;
+import bio.singa.simulation.model.simulation.error.NumericalError;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static bio.singa.simulation.model.simulation.error.NumericalError.*;
 
 /**
  * The field supplier manages all files required for different behaviours of a module.
@@ -55,7 +58,7 @@ public class FieldSupplier {
     FieldSupplier() {
         fullDeltas = new HashMap<>();
         halfDeltas = new HashMap<>();
-        largestLocalError = NumericalError.MINIMAL_EMPTY_ERROR;
+        largestLocalError = MINIMAL_EMPTY_ERROR;
     }
 
     /**
@@ -114,12 +117,28 @@ public class FieldSupplier {
         return fullDeltas;
     }
 
+    public void addFullDelta(ConcentrationDeltaIdentifier deltaIdentifier, ConcentrationDelta delta) {
+        if (fullDeltas.containsKey(deltaIdentifier)) {
+            fullDeltas.put(deltaIdentifier, fullDeltas.get(deltaIdentifier).add(delta.getValue()));
+        } else {
+            fullDeltas.put(deltaIdentifier, delta);
+        }
+    }
+
     /**
      * Returns all currently available half deltas.
      * @return All currently available half deltas.
      */
     public Map<ConcentrationDeltaIdentifier, ConcentrationDelta> getCurrentHalfDeltas() {
         return halfDeltas;
+    }
+
+    public void addHalfDelta(ConcentrationDeltaIdentifier deltaIdentifier, ConcentrationDelta delta) {
+        if (halfDeltas.containsKey(deltaIdentifier)) {
+            halfDeltas.put(deltaIdentifier, halfDeltas.get(deltaIdentifier).add(delta.getValue()));
+        } else {
+            halfDeltas.put(deltaIdentifier, delta);
+        }
     }
 
     /**
@@ -142,7 +161,7 @@ public class FieldSupplier {
      * Resets the error to the minimal error.
      */
     public void resetError() {
-        largestLocalError = NumericalError.MINIMAL_EMPTY_ERROR;
+        largestLocalError = MINIMAL_EMPTY_ERROR;
     }
 
     /**

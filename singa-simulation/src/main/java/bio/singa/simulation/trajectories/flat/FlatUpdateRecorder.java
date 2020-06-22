@@ -1,6 +1,6 @@
 package bio.singa.simulation.trajectories.flat;
 
-import bio.singa.chemistry.entities.ChemicalEntity;
+import bio.singa.simulation.entities.ChemicalEntity;
 import bio.singa.core.events.UpdateEventListener;
 import bio.singa.features.formatter.*;
 import bio.singa.features.quantities.MolarConcentration;

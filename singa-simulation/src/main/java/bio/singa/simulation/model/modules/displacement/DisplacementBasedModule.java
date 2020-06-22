@@ -1,21 +1,25 @@
 package bio.singa.simulation.model.modules.displacement;
 
-import bio.singa.features.parameters.Environment;
-import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.simulation.model.agents.pointlike.Vesicle;
 import bio.singa.simulation.model.modules.AbstractUpdateModule;
+import bio.singa.simulation.model.simulation.error.DisplacementDeviation;
+import bio.singa.simulation.model.simulation.error.TimeStepManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
 import static bio.singa.simulation.model.modules.concentration.ModuleState.REQUIRING_RECALCULATION;
-import static bio.singa.simulation.model.modules.concentration.ModuleState.SUCCEEDED;
+import static bio.singa.simulation.model.modules.concentration.ModuleState.SUCCEEDED_WITH_PENDING_CHANGES;
+import static bio.singa.simulation.model.simulation.error.DisplacementDeviation.MAXIMAL_NEGATIVE_DEVIATION;
+import static bio.singa.simulation.model.simulation.error.DisplacementDeviation.MINIMAL_DEVIATION;
+import static bio.singa.simulation.model.simulation.error.ErrorManager.Reason.LOCAL_DEVIATION;
 
 /**
  * @author cl
@@ -27,20 +31,16 @@ public class DisplacementBasedModule extends AbstractUpdateModule {
      */
     private static final Logger logger = LoggerFactory.getLogger(DisplacementBasedModule.class);
 
-    private static final double DEFAULT_DISPLACEMENT_CUTOFF_FACTOR = 1.0/10.0;
-
-    private double displacementCutoffFactor = DEFAULT_DISPLACEMENT_CUTOFF_FACTOR;
-
     /**
      * The functions that are applied with each epoch.
      */
     private final Map<Function<Vesicle, DisplacementDelta>, Predicate<Vesicle>> deltaFunctions;
 
-    private double displacementCutoff;
+    private DisplacementDeviation largestLocalDeviation;
 
     public DisplacementBasedModule() {
         deltaFunctions = new HashMap<>();
-        displacementCutoff = Environment.convertSystemToSimulationScale(UnitRegistry.getSpace().multiply(displacementCutoffFactor));
+        largestLocalDeviation = MINIMAL_DEVIATION;
     }
 
     public void addDeltaFunction(Function<Vesicle, DisplacementDelta> deltaFunction, Predicate<Vesicle> predicate) {
@@ -54,7 +54,7 @@ public class DisplacementBasedModule extends AbstractUpdateModule {
 
     @Override
     public void onReset() {
-
+        largestLocalDeviation = MINIMAL_DEVIATION;
     }
 
     @Override
@@ -65,29 +65,47 @@ public class DisplacementBasedModule extends AbstractUpdateModule {
     @Override
     public void calculateUpdates() {
         processAllVesicles(getSimulation().getVesicleLayer().getVesicles());
-        evaluateModuleState();
+        if (!getSimulation().getScheduler().isSkipDisplacementChecks()) {
+            evaluateModuleState();
+        } else {
+            setState(SUCCEEDED_WITH_PENDING_CHANGES);
+        }
     }
 
     private void evaluateModuleState() {
+        largestLocalDeviation = determineLocalDeviation();
+        if (largestLocalDeviation.getValue() > getSimulation().getScheduler().getErrorManager().getDisplacementUpperThreshold()) {
+            setState(REQUIRING_RECALCULATION);
+        } else {
+            getSimulation().getScheduler().getErrorManager().setLargestLocalDisplacementDeviation(largestLocalDeviation, this);
+            setState(SUCCEEDED_WITH_PENDING_CHANGES);
+        }
+    }
+
+    public DisplacementDeviation determineLocalDeviation() {
+        DisplacementDeviation largestDeviation = MAXIMAL_NEGATIVE_DEVIATION;
         for (Vesicle vesicle : getSimulation().getVesicleLayer().getVesicles()) {
-            if (vesicle.getSpatialDelta(this) != null) {
-                Vector2D displacement = vesicle.getSpatialDelta(this).getDeltaVector();
-                double length = displacement.getMagnitude();
-                if (length > displacementCutoff) {
-                    logger.trace("Recalculation required for module {} displacement magnitude {} exceeding threshold {}.", this, length, displacementCutoff);
-                    setState(REQUIRING_RECALCULATION);
-                    return;
-                }
+            // skip if no displacements where applied by this module
+            Optional<DisplacementDelta> optionalDisplacementDelta = vesicle.getSpatialDelta(this);
+            if (!optionalDisplacementDelta.isPresent()) {
+                continue;
+            }
+            Vector2D displacement = optionalDisplacementDelta.get().getDeltaVector();
+            // determine fraction of maximal allowed error
+            double deviation = Math.log10(displacement.getMagnitude() / getSimulation().getScheduler().getErrorManager().getDisplacementReferenceLength());
+            if (deviation > largestDeviation.getValue()) {
+                largestDeviation = new DisplacementDeviation(vesicle, deviation);
             }
         }
-        setState(SUCCEEDED);
+        return largestDeviation;
     }
 
     @Override
     public void optimizeTimeStep() {
         while (getState() == REQUIRING_RECALCULATION) {
             getSimulation().getVesicleLayer().clearUpdates();
-            getSimulation().getScheduler().decreaseTimeStep();
+            TimeStepManager.decreaseTimeStep(LOCAL_DEVIATION);
+            largestLocalDeviation = MAXIMAL_NEGATIVE_DEVIATION;
             calculateUpdates();
         }
     }
@@ -116,15 +134,6 @@ public class DisplacementBasedModule extends AbstractUpdateModule {
                 vesicle.getStringIdentifier(),
                 vesicle.getPosition(),
                 delta.getDeltaVector());
-    }
-
-    public double getDisplacementCutoffFactor() {
-        return displacementCutoffFactor;
-    }
-
-    public void setDisplacementCutoffFactor(double displacementCutoffFactor) {
-        this.displacementCutoffFactor = displacementCutoffFactor;
-        displacementCutoff = Environment.convertSystemToSimulationScale(UnitRegistry.getSpace().multiply(displacementCutoffFactor));
     }
 
     @Override

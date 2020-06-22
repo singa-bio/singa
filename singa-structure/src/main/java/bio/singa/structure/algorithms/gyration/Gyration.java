@@ -1,7 +1,7 @@
 package bio.singa.structure.algorithms.gyration;
 
 import bio.singa.mathematics.vectors.Vector3D;
-import bio.singa.mathematics.vectors.Vectors;
+import bio.singa.mathematics.vectors.Vectors3D;
 import bio.singa.structure.model.interfaces.Atom;
 import bio.singa.structure.model.interfaces.AtomContainer;
 
@@ -87,7 +87,7 @@ public class Gyration {
         List<Vector3D> positions = atoms.stream()
                 .map(Atom::getPosition)
                 .collect(Collectors.toList());
-        centroid = Vectors.get3DCentroid(positions);
+        centroid = Vectors3D.get3DCentroid(positions);
         double sumOfSquaredDistances = 0.0;
         double sumOfMolecularMass = 0.0;
         for (Atom atom : atoms) {

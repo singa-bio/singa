@@ -1,7 +1,7 @@
 package bio.singa.simulation.model.modules.concentration.imlementations.transport;
 
-import bio.singa.chemistry.entities.ChemicalEntity;
-import bio.singa.chemistry.features.diffusivity.Diffusivity;
+import bio.singa.simulation.entities.ChemicalEntity;
+import bio.singa.features.quantities.ConcentrationDiffusivity;
 import bio.singa.simulation.features.AffectedRegion;
 import bio.singa.simulation.features.Cargo;
 import bio.singa.simulation.features.MembraneTickness;
@@ -104,7 +104,7 @@ public class PorousDiffusion extends ConcentrationBasedModule<UpdatableDeltaFunc
     private double calculateVelocity(ConcentrationContainer container) {
         double cargoDifference = getCargoDifference(container);
         double membraneArea = ((AutomatonNode) supplier.getCurrentUpdatable()).getMembraneArea().getValue().doubleValue();
-        double diffusivity = getScaledFeature(getCargo(), Diffusivity.class);
+        double diffusivity = getScaledFeature(getCargo(), ConcentrationDiffusivity.class);
         return diffusivity * getPoreMembraneRatio() * membraneArea * (cargoDifference / getMembraneThickness());
     }
 

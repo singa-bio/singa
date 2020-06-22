@@ -5,6 +5,7 @@ import bio.singa.simulation.model.modules.concentration.imlementations.transport
 import bio.singa.simulation.model.modules.concentration.specifity.UpdateSpecificity;
 import bio.singa.simulation.model.sections.ConcentrationContainer;
 import bio.singa.simulation.model.simulation.Updatable;
+import bio.singa.simulation.model.simulation.error.NumericalError;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -56,7 +57,9 @@ public class DependentUpdate implements UpdateScope {
     }
 
     @Override
-    public void processAllUpdatables(Collection<Updatable> updatables) {
+    public void processAllUpdatables(Collection<? extends Updatable> updatables) {
+        // clear used deltas
+        supply().clearDeltas();
         // calculate all full updates first
         supply().setStrutCalculation(false);
         for (Updatable updatable : updatables) {
@@ -76,9 +79,6 @@ public class DependentUpdate implements UpdateScope {
         module.inBetweenHalfSteps();
         // set largest local error
         supply().setLargestLocalError(module.determineLargestLocalError());
-        // clear used deltas
-        supply().getCurrentFullDeltas().clear();
-        supply().getCurrentHalfDeltas().clear();
     }
 
     @Override

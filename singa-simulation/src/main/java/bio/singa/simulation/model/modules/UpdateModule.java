@@ -1,6 +1,6 @@
 package bio.singa.simulation.model.modules;
 
-import bio.singa.chemistry.entities.ChemicalEntity;
+import bio.singa.simulation.entities.ChemicalEntity;
 import bio.singa.features.model.Evidence;
 import bio.singa.features.model.Feature;
 import bio.singa.simulation.model.modules.concentration.ModuleState;

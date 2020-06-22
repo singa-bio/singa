@@ -238,8 +238,7 @@ public class Line {
     public Vector2D mirrorVector(Vector2D originalVector) {
         double d = (originalVector.getX() + (originalVector.getY() - getYIntercept()) * getSlope())
                 / (1 + getSlope() * getSlope());
-        return new Vector2D(
-                2 * d - originalVector.getX(), 2 * d * getSlope() - originalVector.getY() + 2 * yIntercept);
+        return new Vector2D(2 * d - originalVector.getX(), 2 * d * getSlope() - originalVector.getY() + 2 * yIntercept);
     }
 
     /**

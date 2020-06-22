@@ -1,10 +1,10 @@
 package bio.singa.simulation.model.modules.qualitative.implementations;
 
-import bio.singa.chemistry.entities.ChemicalEntity;
-import bio.singa.chemistry.entities.EntityRegistry;
-import bio.singa.chemistry.entities.complex.ComplexEntity;
-import bio.singa.chemistry.entities.simple.Protein;
-import bio.singa.chemistry.entities.simple.SmallMolecule;
+import bio.singa.simulation.entities.ChemicalEntity;
+import bio.singa.simulation.entities.EntityRegistry;
+import bio.singa.simulation.entities.ComplexEntity;
+import bio.singa.simulation.entities.simple.Protein;
+import bio.singa.simulation.entities.simple.SmallMolecule;
 import bio.singa.chemistry.features.reactions.RateConstant;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.quantities.MolarConcentration;

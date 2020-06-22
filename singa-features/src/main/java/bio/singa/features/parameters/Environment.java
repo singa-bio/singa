@@ -10,23 +10,18 @@ import tech.units.indriya.quantity.Quantities;
 import javax.measure.Quantity;
 import javax.measure.quantity.Length;
 import javax.measure.quantity.Temperature;
-import java.util.Observable;
-import java.util.Observer;
 
 import static bio.singa.features.units.UnitProvider.PASCAL_SECOND;
 import static tech.units.indriya.unit.MetricPrefix.MICRO;
 import static tech.units.indriya.unit.MetricPrefix.MILLI;
 import static tech.units.indriya.unit.Units.*;
 
-public class Environment extends Observable {
-
-    private static final Logger logger = LoggerFactory.getLogger(Environment.class);
+public class Environment {
 
     /**
      * Standard system temperature [temperature] (293 K = 20 C)
      */
     public static final Quantity<Temperature> DEFAULT_SYSTEM_TEMPERATURE = Quantities.getQuantity(293.0, KELVIN);
-
     /**
      * Standard system macro viscosity [pressure per time] (1 mPa*s = 1cP = Viscosity of Water at 20 C)
      * as determined by Kalwarczyk, Tomasz, et al. "Comparative analysis of viscosity of complex liquids and cytoplasm
@@ -34,24 +29,21 @@ public class Environment extends Observable {
      * Average of both cell types.
      */
     public static final Quantity<DynamicViscosity> DEFAULT_MACRO_VISCOSITY = Quantities.getQuantity(34.0, MILLI(PASCAL).multiply(SECOND).asType(DynamicViscosity.class));
-
     /**
      * Standard system matrix viscosity [pressure per time] (1 mPa*s = 1cP = Viscosity of Water at 20 C)
      * as determined by Kalwarczyk, Tomasz, et al. "Comparative analysis of viscosity of complex liquids and cytoplasm
      * of mammalian cells at the nanoscale." Nano letters 11.5 (2011): 2157-2163.
      */
-    public static final Quantity<DynamicViscosity> DEFAULT_MATRIX_VISCOSITY = Quantities.getQuantity(1.0,  MILLI(PASCAL).multiply(SECOND).asType(DynamicViscosity.class));
-
+    public static final Quantity<DynamicViscosity> DEFAULT_MATRIX_VISCOSITY = Quantities.getQuantity(1.0, MILLI(PASCAL).multiply(SECOND).asType(DynamicViscosity.class));
     /**
      * Standard system extend [length] (5 um)
      */
     public static final Quantity<Length> DEFAULT_SYSTEM_EXTEND = Quantities.getQuantity(1.0, MICRO(METRE));
-
     /**
      * Standard simulation extend [pseudo length] 500
      */
     public static final double DEFAULT_SIMULATION_EXTEND = 100;
-
+    private static final Logger logger = LoggerFactory.getLogger(Environment.class);
     /**
      * The singleton instance.
      */
@@ -97,6 +89,17 @@ public class Environment extends Observable {
      */
     private double simulationScale;
 
+    private Environment() {
+        systemExtend = DEFAULT_SYSTEM_EXTEND;
+        simulationExtend = DEFAULT_SIMULATION_EXTEND;
+        systemTemperature = DEFAULT_SYSTEM_TEMPERATURE;
+        macroViscosity = DEFAULT_MACRO_VISCOSITY;
+        matrixViscosity = DEFAULT_MATRIX_VISCOSITY;
+        emptyConcentration = UnitRegistry.concentration(0.0);
+        simulationScale = simulationExtend / systemExtend.getValue().doubleValue();
+        systemScale = systemExtend.divide(simulationExtend);
+    }
+
     private static Environment getInstance() {
         if (instance == null) {
             synchronized (Environment.class) {
@@ -106,28 +109,8 @@ public class Environment extends Observable {
         return instance;
     }
 
-    private Environment() {
-        systemExtend = DEFAULT_SYSTEM_EXTEND;
-        simulationExtend = DEFAULT_SIMULATION_EXTEND;
-        systemTemperature = DEFAULT_SYSTEM_TEMPERATURE;
-        macroViscosity = DEFAULT_MACRO_VISCOSITY;
-        matrixViscosity = DEFAULT_MATRIX_VISCOSITY;
-        emptyConcentration = UnitRegistry.concentration(0.0);
-        setSystemAndSimulationScales();
-        setChanged();
-        notifyObservers();
-    }
-
     public static void reset() {
-        getInstance().systemExtend = DEFAULT_SYSTEM_EXTEND;
-        getInstance().simulationExtend = DEFAULT_SIMULATION_EXTEND;
-        getInstance().systemTemperature = DEFAULT_SYSTEM_TEMPERATURE;
-        getInstance().macroViscosity = DEFAULT_MACRO_VISCOSITY;
-        getInstance().matrixViscosity = DEFAULT_MATRIX_VISCOSITY;
-        getInstance().emptyConcentration = UnitRegistry.concentration(0.0);
-        getInstance().setSystemAndSimulationScales();
-        getInstance().setChanged();
-        getInstance().notifyObservers();
+        instance = new Environment();
     }
 
     public static Quantity<MolarConcentration> emptyConcentration() {
@@ -192,21 +175,31 @@ public class Environment extends Observable {
         return getInstance().simulationScale;
     }
 
-    private void setSystemAndSimulationScales() {
-        simulationScale = simulationExtend / systemExtend.getValue().doubleValue();
-        systemScale = systemExtend.divide(simulationExtend);
+    public static void updateScales() {
+        getInstance().systemExtend = getInstance().systemExtend.to(UnitRegistry.getSpaceUnit());
+        getInstance().setSystemAndSimulationScales();
     }
 
     public static Quantity<Length> convertSimulationToSystemScale(double simulationDistance) {
+        if (getSystemScale() == null) {
+            getInstance().setSystemAndSimulationScales();
+        }
         return getInstance().systemScale.multiply(simulationDistance);
     }
 
-    public static double convertSystemToSimulationScale(Quantity<Length> realDistance) {
-        return realDistance.to(getInstance().systemExtend.getUnit()).getValue().doubleValue() * getInstance().simulationScale;
+    public static Quantity<Length> scaleSimulationToSystemScale(double simulationDistance) {
+        return getInstance().systemScale.multiply(simulationDistance / UnitRegistry.getSpaceScale());
     }
 
-    public static void attachObserver(Observer observer) {
-        getInstance().addObserver(observer);
+    public static double convertSystemToSimulationScale(Quantity<Length> realDistance) {
+        if (getInstance().simulationScale == 0.0) {
+            getInstance().setSystemAndSimulationScales();
+        }
+        return realDistance.to(UnitRegistry.getSpaceUnit()).getValue().doubleValue() * getInstance().simulationScale;
+    }
+
+    public static double scaleSystemToSimulationScale(Quantity<Length> realDistance) {
+        return realDistance.to(UnitRegistry.getSpaceUnit()).getValue().doubleValue() * getInstance().simulationScale * UnitRegistry.getSpaceScale();
     }
 
     public static String report() {
@@ -215,6 +208,11 @@ public class Environment extends Observable {
                 "simulation extend = " + getInstance().simulationExtend + "\n" +
                 "system temperature = " + getInstance().systemTemperature + "\n" +
                 "system viscosity = " + getInstance().macroViscosity + "\n";
+    }
+
+    private void setSystemAndSimulationScales() {
+        getInstance().simulationScale = getInstance().simulationExtend / getInstance().systemExtend.getValue().doubleValue();
+        getInstance().systemScale = getInstance().systemExtend.divide(getInstance().simulationExtend);
     }
 
 }

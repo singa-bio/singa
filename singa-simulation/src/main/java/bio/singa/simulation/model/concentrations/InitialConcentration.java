@@ -1,9 +1,9 @@
 package bio.singa.simulation.model.concentrations;
 
-import bio.singa.chemistry.entities.ChemicalEntity;
+import bio.singa.simulation.entities.ChemicalEntity;
+import bio.singa.features.model.AbstractQuantitativeFeature;
 import bio.singa.features.model.Evidence;
 import bio.singa.features.model.FeatureRegistry;
-import bio.singa.features.model.AbstractQuantitativeFeature;
 import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.simulation.model.sections.CellSubsection;
@@ -12,15 +12,10 @@ import bio.singa.simulation.model.simulation.Simulation;
 import bio.singa.simulation.model.simulation.Updatable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tech.units.indriya.ComparableQuantity;
-import tech.units.indriya.quantity.Quantities;
 
 import javax.measure.Quantity;
-import javax.measure.quantity.Time;
 import java.util.List;
 import java.util.TreeMap;
-
-import static tech.units.indriya.unit.Units.SECOND;
 
 /**
  * @author cl
@@ -33,7 +28,6 @@ public class InitialConcentration extends AbstractQuantitativeFeature<MolarConce
     private CellSubsection subsection;
     private CellTopology topology;
     private ChemicalEntity entity;
-    private ComparableQuantity<Time> time;
     private boolean fix;
 
     public InitialConcentration(Quantity<MolarConcentration> quantity, List<Evidence> evidence) {
@@ -59,7 +53,6 @@ public class InitialConcentration extends AbstractQuantitativeFeature<MolarConce
     private void initialize() {
         FeatureRegistry.addQuantitativeFeature(this);
         conditions = new TreeMap<>();
-        time = Quantities.getQuantity(0, SECOND);
         fix = false;
     }
 
@@ -108,14 +101,6 @@ public class InitialConcentration extends AbstractQuantitativeFeature<MolarConce
         baseContent = concentration;
     }
 
-    public ComparableQuantity<Time> getTime() {
-        return time;
-    }
-
-    public void setTime(ComparableQuantity<Time> time) {
-        this.time = time;
-    }
-
     public boolean isFix() {
         return fix;
     }
@@ -146,6 +131,9 @@ public class InitialConcentration extends AbstractQuantitativeFeature<MolarConce
             if (!condition.test(updatable)) {
                 return false;
             }
+            if (condition instanceof TimedCondition) {
+                setFix(false);
+            }
         }
         return true;
     }
@@ -170,8 +158,7 @@ public class InitialConcentration extends AbstractQuantitativeFeature<MolarConce
     @Override
     public String toString() {
         String fixed = isFix() ? " [fixed] " : "";
-        String timed = time.isGreaterThan(Quantities.getQuantity(0, SECOND)) ? " [" + time.toString() + "] " : "";
         String location = getLocation();
-        return "concentration" + timed + fixed + ": location = " + location + ", entity = " + entity.getIdentifier() + ", value = " + UnitRegistry.humanReadable(getConcentration());
+        return "concentration" + fixed + ": location = " + location + ", entity = " + entity.getIdentifier() + ", value = " + UnitRegistry.humanReadable(getConcentration());
     }
 }

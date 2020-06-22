@@ -1,9 +1,8 @@
 package bio.singa.simulation.model.modules.concentration.imlementations.transport;
 
-import bio.singa.chemistry.entities.ChemicalEntity;
-import bio.singa.chemistry.features.diffusivity.MembraneDiffusivity;
-import bio.singa.chemistry.features.diffusivity.SaffmanDelbrueckDiffusivityCorrelation;
-import bio.singa.simulation.features.AffectedSection;
+import bio.singa.simulation.entities.ChemicalEntity;
+import bio.singa.features.quantities.MembraneDiffusivity;
+import bio.singa.simulation.features.AffectedRegion;
 import bio.singa.simulation.features.Cargoes;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.modules.concentration.ConcentrationBasedModule;
@@ -11,19 +10,20 @@ import bio.singa.simulation.model.modules.concentration.ConcentrationDelta;
 import bio.singa.simulation.model.modules.concentration.ModuleBuilder;
 import bio.singa.simulation.model.modules.concentration.ModuleFactory;
 import bio.singa.simulation.model.modules.concentration.functions.EntityDeltaFunction;
-import bio.singa.simulation.model.sections.CellSubsection;
+import bio.singa.simulation.model.sections.CellRegion;
 import bio.singa.simulation.model.sections.ConcentrationContainer;
 import bio.singa.simulation.model.simulation.Simulation;
 import bio.singa.simulation.model.simulation.Updatable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tech.units.indriya.quantity.Quantities;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
+import static bio.singa.chemistry.features.diffusivity.SaffmanDelbrueckDiffusivityCorrelation.DEFAULT_MEMBRANE_DIFFUSIVITY;
 import static bio.singa.simulation.model.sections.CellTopology.MEMBRANE;
-import static tech.units.indriya.unit.MetricPrefix.NANO;
-import static tech.units.indriya.unit.Units.METRE;
 
 /**
  * @author cl
@@ -34,27 +34,30 @@ public class LateralMembraneDiffusion extends ConcentrationBasedModule<EntityDel
      * The logger
      */
     private static final Logger logger = LoggerFactory.getLogger(LateralMembraneDiffusion.class);
-    private static final MembraneDiffusivity DEFAULT_MEMBRANE_DIFFUSIVITY = SaffmanDelbrueckDiffusivityCorrelation.predict(Quantities.getQuantity(3.0, NANO(METRE)));
-    private CellSubsection restrictedSubsection;
+    private CellRegion restrictedRegion;
+
+    public LateralMembraneDiffusion() {
+
+    }
 
     public static EntityLimitationStep inSimulation(Simulation simulation) {
         return new LateralMembraneDiffusionBuilder(simulation);
     }
 
-    public LateralMembraneDiffusion() {
-
+    public static ModuleBuilder getBuilder(Simulation simulation) {
+        return new LateralMembraneDiffusionBuilder(simulation);
     }
 
     private void postConstruct() {
         // apply
         setApplicationCondition(this::hasMembrane);
         // function
-        AffectedSection affectedSection = getFeature(AffectedSection.class);
+        AffectedRegion affectedRegion = getFeature(AffectedRegion.class);
         EntityDeltaFunction function;
-        if (affectedSection == null) {
+        if (affectedRegion == null) {
             function = new EntityDeltaFunction(this::calculateDelta, this::unrestrictedApplication);
         } else {
-            restrictedSubsection = affectedSection.getContent();
+            restrictedRegion = affectedRegion.getContent();
             function = new EntityDeltaFunction(this::calculateDelta, this::restrictedApplication);
         }
         addDeltaFunction(function);
@@ -80,7 +83,7 @@ public class LateralMembraneDiffusion extends ConcentrationBasedModule<EntityDel
     }
 
     private boolean restrictedApplication(ConcentrationContainer container) {
-        return supplier.getCurrentSubsection().equals(restrictedSubsection);
+        return supplier.getCurrentUpdatable().getCellRegion().equals(restrictedRegion) && supplier.getCurrentSubsection().isMembrane();
     }
 
     private ConcentrationDelta calculateDelta(ConcentrationContainer concentrationContainer) {
@@ -91,9 +94,10 @@ public class LateralMembraneDiffusion extends ConcentrationBasedModule<EntityDel
         // traverse each neighbouring subsection
         double delta = 0.0;
         for (AutomatonNode neighbour : node.getNeighbours()) {
-            if (neighbour.getCellRegion().hasMembrane()) {
-                delta += diffusivity * (neighbour.getConcentrationContainer().get(MEMBRANE, entity) - currentConcentration);
+            if (!neighbour.getCellRegion().equals(restrictedRegion)) {
+                continue;
             }
+            delta += diffusivity * (neighbour.getConcentrationContainer().get(MEMBRANE, entity) - currentConcentration);
         }
         // return delta
         return new ConcentrationDelta(this, supplier.getCurrentSubsection(), entity, delta);
@@ -102,10 +106,6 @@ public class LateralMembraneDiffusion extends ConcentrationBasedModule<EntityDel
     @Override
     public void checkFeatures() {
         logger.debug("The module " + getClass().getSimpleName() + " requires the Feature MembraneDiffusivity to be annotated to all requested chemical entities.");
-    }
-
-    public static ModuleBuilder getBuilder(Simulation simulation) {
-        return new LateralMembraneDiffusionBuilder(simulation);
     }
 
     public interface EntityLimitationStep {
@@ -121,7 +121,7 @@ public class LateralMembraneDiffusion extends ConcentrationBasedModule<EntityDel
 
     public interface SectionLimitationStep {
 
-        BuildStep forMembrane(CellSubsection subsection);
+        BuildStep forMembrane(CellRegion subsection);
 
         BuildStep forAllMembranes();
 
@@ -141,11 +141,17 @@ public class LateralMembraneDiffusion extends ConcentrationBasedModule<EntityDel
             createModule(simulation);
         }
 
+        private static void setDefaultFeatureIfNecessary(ChemicalEntity entity) {
+            if (entity.hasFeature(MembraneDiffusivity.class)) {
+                return;
+            }
+            entity.setFeature(DEFAULT_MEMBRANE_DIFFUSIVITY);
+        }
+
         @Override
         public LateralMembraneDiffusion getModule() {
             return module;
         }
-
 
         @Override
         public LateralMembraneDiffusion createModule(Simulation simulation) {
@@ -172,23 +178,20 @@ public class LateralMembraneDiffusion extends ConcentrationBasedModule<EntityDel
             for (ChemicalEntity chemicalEntity : chemicalEntities) {
                 setDefaultFeatureIfNecessary(chemicalEntity);
             }
-            module.setFeature(new Cargoes(new ArrayList<>(chemicalEntities)));
+            module.setFeature(Cargoes.of(chemicalEntities)
+                    .comment("entities affected by lateral membrane diffusion")
+                    .build());
             return this;
         }
 
-        private static void setDefaultFeatureIfNecessary(ChemicalEntity entity) {
-            if (entity.hasFeature(MembraneDiffusivity.class)) {
-                return;
-            }
-            entity.setFeature(DEFAULT_MEMBRANE_DIFFUSIVITY);
-        }
-
         @Override
-        public BuildStep forMembrane(CellSubsection subsection) {
-            if (!subsection.isMembrane()) {
-                logger.warn("The supplied subsection {} is not annotated as a membrane.", subsection.getIdentifier());
+        public BuildStep forMembrane(CellRegion region) {
+            if (region.hasMembrane()) {
+                logger.warn("The supplied region {} has no membrane assigned subsection", region.getIdentifier());
             }
-            module.setFeature(new AffectedSection(subsection));
+            module.setFeature(AffectedRegion.of(region)
+                    .comment("region affected by lateral membrane diffusion")
+                    .build());
             return this;
         }
 

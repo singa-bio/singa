@@ -1,32 +1,45 @@
 package bio.singa.simulation.features;
 
-import bio.singa.features.model.Evidence;
+import bio.singa.features.model.AbstractFeature;
 import bio.singa.features.model.AbstractQuantitativeFeature;
 import tech.units.indriya.quantity.Quantities;
 
 import javax.measure.Quantity;
+import javax.measure.Unit;
 import javax.measure.quantity.Time;
-import java.util.List;
-
-import static tech.units.indriya.unit.Units.SECOND;
 
 /**
  * @author cl
  */
 public class FusionTime extends AbstractQuantitativeFeature<Time> {
 
-    public static final FusionTime DEFAULT_FUSION_TIME = new FusionTime(Quantities.getQuantity(18.0, SECOND), DefaultFeatureSources.DONOVAN2015);
-
-    public FusionTime(Quantity<Time> timeQuantity, List<Evidence> evidence) {
-        super(timeQuantity, evidence);
-    }
-
-    public FusionTime(Quantity<Time> timeQuantity, Evidence evidence) {
-        super(timeQuantity, evidence);
-    }
-
     public FusionTime(Quantity<Time> timeQuantity) {
         super(timeQuantity);
+    }
+
+    public static Builder of(Quantity<Time> quantity) {
+        return new Builder(quantity);
+    }
+
+    public static Builder of(double value, Unit<Time> unit) {
+        return new Builder(Quantities.getQuantity(value, unit));
+    }
+
+    public static class Builder extends AbstractFeature.Builder<Quantity<Time>, FusionTime, Builder> {
+
+        public Builder(Quantity<Time> quantity) {
+            super(quantity);
+        }
+
+        @Override
+        protected FusionTime createObject(Quantity<Time> quantity) {
+            return new FusionTime(quantity);
+        }
+
+        @Override
+        protected Builder getBuilder() {
+            return this;
+        }
     }
 
 }

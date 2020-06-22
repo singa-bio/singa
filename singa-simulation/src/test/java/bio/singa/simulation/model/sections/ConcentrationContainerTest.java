@@ -1,8 +1,8 @@
 package bio.singa.simulation.model.sections;
 
-import bio.singa.chemistry.entities.ChemicalEntity;
-import bio.singa.chemistry.entities.simple.SmallMolecule;
+import bio.singa.simulation.entities.ChemicalEntity;
 import bio.singa.features.units.UnitRegistry;
+import bio.singa.simulation.entities.SimpleEntity;
 import org.junit.jupiter.api.Test;
 import tech.units.indriya.quantity.Quantities;
 
@@ -24,8 +24,8 @@ class ConcentrationContainerTest {
     private static final CellSubsection subsectionA = new CellSubsection("Test A");
     private static final CellSubsection subsectionB = new CellSubsection("Test B");
 
-    private static final ChemicalEntity entityA = SmallMolecule.create("A").build();
-    private static final ChemicalEntity entityB = SmallMolecule.create("B").build();
+    private static final ChemicalEntity entityA = SimpleEntity.create("A").build();
+    private static final ChemicalEntity entityB = SimpleEntity.create("B").build();
 
     @Test
     void initializeSubsection() {

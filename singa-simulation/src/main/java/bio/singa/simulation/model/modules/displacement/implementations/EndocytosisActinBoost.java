@@ -1,8 +1,6 @@
 package bio.singa.simulation.model.modules.displacement.implementations;
 
-import bio.singa.features.parameters.Environment;
 import bio.singa.features.quantities.MolarConcentration;
-import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.simulation.features.ActinBoostVelocity;
 import bio.singa.simulation.features.BoostMediatingEntity;
@@ -11,17 +9,12 @@ import bio.singa.simulation.model.agents.pointlike.VesicleStateRegistry;
 import bio.singa.simulation.model.modules.displacement.DisplacementBasedModule;
 import bio.singa.simulation.model.modules.displacement.DisplacementDelta;
 import bio.singa.simulation.model.sections.CellTopology;
-import tech.units.indriya.quantity.Quantities;
-
-import javax.measure.Quantity;
-import javax.measure.quantity.Length;
 
 /**
  * @author cl
  */
 public class EndocytosisActinBoost extends DisplacementBasedModule {
 
-    private double scaledVelocity;
 
     public EndocytosisActinBoost() {
         // delta function
@@ -31,12 +24,6 @@ public class EndocytosisActinBoost extends DisplacementBasedModule {
         getRequiredFeatures().add(BoostMediatingEntity.class);
     }
 
-    @Override
-    public void calculateUpdates() {
-        scaledVelocity = getScaledFeature(ActinBoostVelocity.class) * 2.0 / 60.0;
-        super.calculateUpdates();
-    }
-
     public DisplacementDelta calculateDisplacement(Vesicle vesicle) {
         BoostMediatingEntity decayingEntity = getFeature(BoostMediatingEntity.class);
         // calculate speed based on clathrins available
@@ -44,13 +31,13 @@ public class EndocytosisActinBoost extends DisplacementBasedModule {
         if (pullingEntity < 1) {
             vesicle.setState(VesicleStateRegistry.UNATTACHED);
         }
-        double systemSpeed = scaledVelocity * pullingEntity;
-        Quantity<Length> distance = Quantities.getQuantity(systemSpeed, UnitRegistry.getSpaceUnit());
+
+        double systemSpeed = getScaledFeature(ActinBoostVelocity.class) * pullingEntity ;
         // determine direction
         Vector2D centre = getSimulation().getMembraneLayer().getMicrotubuleOrganizingCentre().getCircleRepresentation().getMidpoint();
         Vector2D direction = centre.subtract(vesicle.getPosition()).normalize();
         // determine delta
-        Vector2D delta = direction.multiply(Environment.convertSystemToSimulationScale(distance));
+        Vector2D delta = direction.multiply(systemSpeed);
         return new DisplacementDelta(this, delta);
     }
 

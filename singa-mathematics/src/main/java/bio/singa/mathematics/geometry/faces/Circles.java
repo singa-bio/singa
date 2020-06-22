@@ -1,5 +1,6 @@
 package bio.singa.mathematics.geometry.faces;
 
+import bio.singa.mathematics.geometry.edges.LineSegment;
 import bio.singa.mathematics.vectors.Vector2D;
 
 import java.util.ArrayList;
@@ -99,6 +100,25 @@ public class Circles {
             commulativeAngle += angle;
         }
         return points;
+    }
+
+    public static boolean intersect(Circle circle, LineSegment lineSegment) {
+        double ax = lineSegment.getStartingPoint().getX() - circle.getMidpoint().getX();
+        double ay = lineSegment.getStartingPoint().getY() - circle.getMidpoint().getY();
+        double bx = lineSegment.getEndingPoint().getX() - circle.getMidpoint().getX();
+        double by = lineSegment.getEndingPoint().getY() - circle.getMidpoint().getY();
+        double a = Math.pow(bx - ax, 2) + Math.pow(by - ay, 2);
+        double b = 2 * (ax * (bx - ax) + ay * (by - ay));
+        double c = ax * ax + ay * ay - circle.getRadius() * circle.getRadius();
+        double disc = b * b - 4 * a * c;
+        if (disc <= 0) {
+            return false;
+        } else {
+            double sqrtdisc = Math.sqrt(disc);
+            double t1 = (-b + sqrtdisc) / (2 * a);
+            double t2 = (-b - sqrtdisc) / (2 * a);
+            return (0 < t1 && t1 < 1) || (0 < t2 && t2 < 1);
+        }
     }
 
 }

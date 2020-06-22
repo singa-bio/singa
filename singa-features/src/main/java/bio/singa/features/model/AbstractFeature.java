@@ -1,6 +1,7 @@
 package bio.singa.features.model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -117,12 +118,54 @@ public abstract class AbstractFeature<FeatureContent> implements Feature<Feature
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         AbstractFeature<?> that = (AbstractFeature<?>) o;
-        return Objects.equals(featureContent, that.featureContent);
+        return identifier == that.identifier &&
+                Objects.equals(featureContent, that.featureContent);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(featureContent);
+        return Objects.hash(identifier, featureContent);
+    }
+
+    public static abstract class Builder<FeatureContent, TopLevelType extends Feature<FeatureContent>, BuilderType extends Builder> {
+
+        protected final TopLevelType topLevelObject;
+        protected final BuilderType builderObject;
+
+        public Builder(FeatureContent content) {
+            topLevelObject = createObject(content);
+            builderObject = getBuilder();
+        }
+
+        protected abstract TopLevelType createObject(FeatureContent content);
+
+        protected abstract BuilderType getBuilder();
+
+        public BuilderType comment(String comment) {
+            topLevelObject.setComment(comment);
+            return builderObject;
+        }
+
+        public BuilderType evidence(Evidence evidence) {
+            topLevelObject.addEvidence(evidence);
+            return builderObject;
+        }
+
+        public BuilderType evidence(Evidence... evidences) {
+            Arrays.stream(evidences).forEach(topLevelObject::addEvidence);
+            return builderObject;
+        }
+
+        public BuilderType evidence(List<Evidence> evidences) {
+            evidences.forEach(topLevelObject::addEvidence);
+            return builderObject;
+        }
+
+
+        public TopLevelType build() {
+            return topLevelObject;
+        }
+
     }
 
 }

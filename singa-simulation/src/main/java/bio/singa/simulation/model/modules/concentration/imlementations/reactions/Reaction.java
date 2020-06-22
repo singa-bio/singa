@@ -1,6 +1,7 @@
 package bio.singa.simulation.model.modules.concentration.imlementations.reactions;
 
-import bio.singa.chemistry.entities.ChemicalEntity;
+import bio.singa.simulation.entities.ChemicalEntity;
+import bio.singa.simulation.model.concentrations.ConcentrationCondition;
 import bio.singa.simulation.model.modules.concentration.ConcentrationBasedModule;
 import bio.singa.simulation.model.modules.concentration.ConcentrationDelta;
 import bio.singa.simulation.model.modules.concentration.ConcentrationDeltaIdentifier;
@@ -12,9 +13,7 @@ import bio.singa.simulation.model.modules.concentration.imlementations.reactions
 import bio.singa.simulation.model.sections.ConcentrationContainer;
 import bio.singa.simulation.model.simulation.Updatable;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author cl
@@ -24,18 +23,23 @@ public class Reaction extends ConcentrationBasedModule<UpdatableDeltaFunction> {
     private KineticLaw kineticLaw;
     private ReactantBehavior reactantBehavior;
 
+    private TreeMap<Integer, ConcentrationCondition> conditions;
+
+    public Reaction() {
+        conditions = new TreeMap<>();
+    }
+
     void postConstruct() {
         reactantBehavior.getReferencedEntities().forEach(this::addReferencedEntity);
-        // TODO apply meaningful condition
-        if (hasMembraneAssociatedEntities()) {
+        if (hasMembraneAssociatedEntities() && conditions.isEmpty()) {
             setApplicationCondition(this::hasMembrane);
-        } else {
+        } else if (conditions.isEmpty()) {
             setApplicationCondition(updatable -> true);
+        } else {
+            setApplicationCondition(this::passConditions);
         }
-        // TODO apply meaningful condition
         UpdatableDeltaFunction function = new UpdatableDeltaFunction(this::calculateDeltas, container -> true);
         addDeltaFunction(function);
-        // reference entities for this module
     }
 
     private boolean hasMembraneAssociatedEntities() {
@@ -46,6 +50,16 @@ public class Reaction extends ConcentrationBasedModule<UpdatableDeltaFunction> {
             }
         }
         return false;
+    }
+
+    private boolean passConditions(Updatable updatable) {
+        for (ConcentrationCondition condition : conditions.values()) {
+            // return if any condition fails
+            if (!condition.test(updatable)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private boolean hasMembrane(Updatable updatable) {
@@ -87,5 +101,16 @@ public class Reaction extends ConcentrationBasedModule<UpdatableDeltaFunction> {
 
     public void setReactantBehavior(ReactantBehavior reactantBehavior) {
         this.reactantBehavior = reactantBehavior;
+    }
+
+    public TreeMap<Integer, ConcentrationCondition> getConditions() {
+        return conditions;
+    }
+
+    public void addCondition(ConcentrationCondition condition) {
+        conditions.put(condition.getPriority(), condition);
+    }
+    public void setConditions(TreeMap<Integer, ConcentrationCondition> conditions) {
+        this.conditions = conditions;
     }
 }

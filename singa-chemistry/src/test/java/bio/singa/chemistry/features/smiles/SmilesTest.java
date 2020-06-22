@@ -1,6 +1,6 @@
 package bio.singa.chemistry.features.smiles;
 
-import bio.singa.chemistry.entities.simple.SmallMolecule;
+import bio.singa.chemistry.simple.SmallMolecule;
 import bio.singa.features.identifiers.ChEBIIdentifier;
 import org.junit.jupiter.api.Test;
 

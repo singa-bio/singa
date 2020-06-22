@@ -1,25 +1,37 @@
 package bio.singa.simulation.features;
 
-import bio.singa.features.model.Evidence;
+import bio.singa.features.model.AbstractFeature;
 import bio.singa.features.model.StringFeature;
-
-import java.util.List;
 
 /**
  * @author cl
  */
-public class RequiredVesicleState extends StringFeature{
+public class RequiredVesicleState extends StringFeature {
 
-        public RequiredVesicleState(String vesicleState, List<Evidence> evidence) {
-            super(vesicleState, evidence);
+    public RequiredVesicleState(String vesicleState) {
+        super(vesicleState);
+    }
+
+    public static Builder of(String quantity) {
+        return new Builder(quantity);
+    }
+
+    public static class Builder extends AbstractFeature.Builder<String, RequiredVesicleState, Builder> {
+
+        public Builder(String quantity) {
+            super(quantity);
         }
 
-        public RequiredVesicleState(String vesicleState, Evidence evidence) {
-            super(vesicleState, evidence);
+        @Override
+        protected RequiredVesicleState createObject(String quantity) {
+            return new RequiredVesicleState(quantity);
         }
 
-        public RequiredVesicleState(String vesicleState) {
-            super(vesicleState);
+        @Override
+        protected Builder getBuilder() {
+            return this;
         }
+    }
+
 
 }

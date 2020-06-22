@@ -1,22 +1,27 @@
 package bio.singa.simulation.model.concentrations;
 
-import bio.singa.chemistry.entities.simple.SmallMolecule;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.geometry.faces.Rectangle;
 import bio.singa.mathematics.vectors.Vector2D;
+import bio.singa.simulation.entities.ChemicalEntity;
+import bio.singa.simulation.entities.SimpleEntity;
 import bio.singa.simulation.model.agents.pointlike.Vesicle;
 import bio.singa.simulation.model.agents.pointlike.VesicleLayer;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.simulation.Simulation;
+import bio.singa.simulation.model.simulation.error.TimeStepManager;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import tech.units.indriya.quantity.Quantities;
 
 import static bio.singa.features.units.UnitProvider.NANO_MOLE_PER_LITRE;
+import static bio.singa.simulation.model.concentrations.TimedCondition.Relation.GREATER;
+import static bio.singa.simulation.model.sections.CellRegions.CELL_INNER_MEMBRANE_REGION;
 import static bio.singa.simulation.model.sections.CellRegions.CELL_OUTER_MEMBRANE_REGION;
 import static bio.singa.simulation.model.sections.CellSubsections.*;
 import static bio.singa.simulation.model.sections.CellTopology.INNER;
@@ -32,12 +37,20 @@ import static tech.units.indriya.unit.Units.SECOND;
  */
 class InitialConcentrationTest {
 
-    private static SmallMolecule entity;
+    private static ChemicalEntity entity;
 
     @BeforeAll
     static void initialize() {
+        UnitRegistry.reinitialize();
+        Environment.reset();
         // entity
-        entity = SmallMolecule.create("entity").build();
+        entity = SimpleEntity.create("entity").build();
+    }
+
+    @AfterEach
+    void cleanUp() {
+        UnitRegistry.reinitialize();
+        Environment.reset();
     }
 
     @Test
@@ -71,7 +84,7 @@ class InitialConcentrationTest {
         // graph
         AutomatonGraph graph = AutomatonGraphs.singularGraph();
         AutomatonNode node = graph.getNode(0, 0);
-        node.setCellRegion(CELL_OUTER_MEMBRANE_REGION);
+        node.setCellRegion(CELL_INNER_MEMBRANE_REGION);
         simulation.setGraph(graph);
 
         ConcentrationBuilder.create(simulation)
@@ -144,7 +157,7 @@ class InitialConcentrationTest {
         // graph
         AutomatonGraph graph = AutomatonGraphs.singularGraph();
         AutomatonNode node = graph.getNode(0, 0);
-        node.setCellRegion(CELL_OUTER_MEMBRANE_REGION);
+        node.setCellRegion(CELL_INNER_MEMBRANE_REGION);
         simulation.setGraph(graph);
 
         ConcentrationBuilder.create(simulation)
@@ -169,7 +182,7 @@ class InitialConcentrationTest {
         // graph
         AutomatonGraph graph = AutomatonGraphs.singularGraph();
         AutomatonNode node = graph.getNode(0, 0);
-        node.setCellRegion(CELL_OUTER_MEMBRANE_REGION);
+        node.setCellRegion(CELL_INNER_MEMBRANE_REGION);
         simulation.setGraph(graph);
 
         ConcentrationBuilder.create(simulation)
@@ -177,13 +190,13 @@ class InitialConcentrationTest {
                 .subsection(CYTOPLASM)
                 .concentrationValue(10)
                 .nanoMolar()
-                .atTimeValue(10)
+                .timed(GREATER, 10)
                 .seconds()
                 .build();
 
         assertEquals(0.0, UnitRegistry.concentration(simulation.getGraph().getNode(0, 0).getConcentrationContainer().get(INNER, entity)).to(NANO_MOLE_PER_LITRE).getValue().doubleValue());
 
-        while (simulation.getElapsedTime().isLessThanOrEqualTo(Quantities.getQuantity(11, SECOND))) {
+        while (TimeStepManager.getElapsedTime().isLessThanOrEqualTo(Quantities.getQuantity(11, SECOND))) {
             simulation.nextEpoch();
         }
 

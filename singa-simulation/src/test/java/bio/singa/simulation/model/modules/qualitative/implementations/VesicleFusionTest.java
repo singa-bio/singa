@@ -2,9 +2,9 @@ package bio.singa.simulation.model.modules.qualitative.implementations;
 
 import bio.singa.chemistry.annotations.Annotation;
 import bio.singa.chemistry.annotations.AnnotationType;
-import bio.singa.chemistry.entities.ChemicalEntity;
-import bio.singa.chemistry.entities.complex.ComplexEntity;
-import bio.singa.chemistry.entities.simple.Protein;
+import bio.singa.simulation.entities.ChemicalEntity;
+import bio.singa.simulation.entities.ComplexEntity;
+import bio.singa.simulation.entities.simple.Protein;
 import bio.singa.features.identifiers.UniProtIdentifier;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.quantities.MolarConcentration;
@@ -14,25 +14,29 @@ import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.simulation.features.*;
 import bio.singa.simulation.model.agents.pointlike.Vesicle;
 import bio.singa.simulation.model.agents.pointlike.VesicleLayer;
+import bio.singa.simulation.model.agents.pointlike.VesicleStateRegistry;
 import bio.singa.simulation.model.agents.surfacelike.Membrane;
 import bio.singa.simulation.model.agents.surfacelike.MembraneLayer;
 import bio.singa.simulation.model.agents.surfacelike.MembraneTracer;
+import bio.singa.simulation.model.concentrations.ConcentrationBuilder;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.sections.CellRegions;
 import bio.singa.simulation.model.sections.CellTopology;
 import bio.singa.simulation.model.simulation.Simulation;
+import bio.singa.simulation.model.simulation.error.TimeStepManager;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import tech.units.indriya.ComparableQuantity;
 import tech.units.indriya.quantity.Quantities;
 
 import javax.measure.quantity.Length;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static tech.units.indriya.AbstractUnit.ONE;
 import static tech.units.indriya.unit.MetricPrefix.MICRO;
 import static tech.units.indriya.unit.MetricPrefix.NANO;
 import static tech.units.indriya.unit.Units.METRE;
@@ -43,8 +47,21 @@ import static tech.units.indriya.unit.Units.SECOND;
  */
 class VesicleFusionTest {
 
+    @BeforeAll
+    static void initialize() {
+        UnitRegistry.reinitialize();
+        Environment.reset();
+    }
+
+    @AfterEach
+    void cleanUp() {
+        UnitRegistry.reinitialize();
+        Environment.reset();
+    }
+
     @Test
-    void testModuleInContext() {
+    @DisplayName("fusion - with snares")
+    void testModuleWithSnares() {
 
         // setup simulation
         Simulation simulation = new Simulation();
@@ -55,6 +72,7 @@ class VesicleFusionTest {
         Environment.setSystemExtend(systemExtend);
         Environment.setSimulationExtend(simulationExtend);
         UnitRegistry.setTime(Quantities.getQuantity(1, MICRO(SECOND)));
+        simulation.setMaximalTimeStep(Quantities.getQuantity(0.5, SECOND));
 
         // setup snares for fusion
         Protein vamp2 = Protein.create("VAMP2")
@@ -108,28 +126,79 @@ class VesicleFusionTest {
 
         // setup fusion module
         VesicleFusion fusion = new VesicleFusion();
-        List<ChemicalEntity> qSnareEntities = new ArrayList<>();
-        qSnareEntities.add(snareComplex1);
-        qSnareEntities.add(snareComplex2);
-        MatchingQSnares qSnares = new MatchingQSnares(qSnareEntities);
-        fusion.setFeature(qSnares);
-
-        List<ChemicalEntity> rSnareEntities = new ArrayList<>();
-        rSnareEntities.add(vamp2);
-        rSnareEntities.add(vamp3);
-        MatchingRSnares rSnares = new MatchingRSnares(rSnareEntities);
-        fusion.setFeature(rSnares);
-        fusion.setFeature(new SNAREFusionPairs(Quantities.getQuantity(3, ONE)));
-        fusion.setFeature(FusionTime.DEFAULT_FUSION_TIME);
-        fusion.setFeature(AttachmentDistance.DEFAULT_DYNEIN_ATTACHMENT_DISTANCE);
+        fusion.setFeature(MatchingQSnares.of(snareComplex1, snareComplex2).build());
+        fusion.setFeature(MatchingRSnares.of(vamp2, vamp3).build());
+        fusion.setFeature(SNAREFusionPairs.of(3).build());
+        fusion.setFeature(FusionTime.of(18.0, SECOND).build());
+        fusion.setFeature(AttachmentDistance.of(61, NANO(METRE)).build());
         simulation.addModule(fusion);
 
-        while (simulation.getElapsedTime().isLessThanOrEqualTo(Quantities.getQuantity(20.0, SECOND))) {
+        while (TimeStepManager.getElapsedTime().isLessThanOrEqualTo(Quantities.getQuantity(20.0, SECOND))) {
             simulation.nextEpoch();
         }
 
         assertEquals(7.0, MolarConcentration.concentrationToMolecules(node.getConcentrationContainer().get(CellTopology.MEMBRANE, vamp3)).getValue().doubleValue(), 1e-10);
         assertEquals(7.0, MolarConcentration.concentrationToMolecules(node.getConcentrationContainer().get(CellTopology.MEMBRANE, snareComplex1)).getValue().doubleValue(), 1e-10);
+
+    }
+
+    @Test
+    @DisplayName("fusion - without snares")
+    void testModuleWithoutSnares() {
+
+        // setup simulation
+        Simulation simulation = new Simulation();
+        final double simulationExtend = 100;
+        Rectangle rectangle = new Rectangle(simulationExtend, simulationExtend);
+        simulation.setSimulationRegion(rectangle);
+        ComparableQuantity<Length> systemExtend = Quantities.getQuantity(2, MICRO(METRE));
+        Environment.setSystemExtend(systemExtend);
+        Environment.setSimulationExtend(simulationExtend);
+        UnitRegistry.setTime(Quantities.getQuantity(1, MICRO(SECOND)));
+        simulation.setMaximalTimeStep(Quantities.getQuantity(0.5, SECOND));
+
+        // setup graph
+        AutomatonGraph graph = AutomatonGraphs.singularGraph();
+        AutomatonNode node = graph.getNode(0, 0);
+        node.setPosition(new Vector2D(50.0, 50.0));
+        node.setCellRegion(CellRegions.CELL_OUTER_MEMBRANE_REGION);
+        simulation.setGraph(graph);
+
+        // setup membrane
+        List<Membrane> membranes = MembraneTracer.regionsToMembrane(graph);
+        MembraneLayer membraneLayer = new MembraneLayer();
+        membraneLayer.addMembranes(membranes);
+        simulation.setMembraneLayer(membraneLayer);
+
+        // setup vesicle
+        VesicleLayer vesicleLayer = new VesicleLayer(simulation);
+        Vesicle vesicle = new Vesicle(new Vector2D(49.0, 49.0), Quantities.getQuantity(100.0, NANO(METRE)));
+        vesicle.setState(VesicleStateRegistry.MICROTUBULE_ATTACHED);
+        vesicleLayer.addVesicle(vesicle);
+        simulation.setVesicleLayer(vesicleLayer);
+
+        ChemicalEntity testEntity = Protein.create("TEST")
+                .membraneBound()
+                .build();
+
+        ConcentrationBuilder.create(simulation)
+                .entity(testEntity)
+                .subsection(vesicle.getRegion().getMembraneSubsection())
+                .molecules(100)
+                .build();
+
+        // setup fusion module
+        VesicleFusion fusion = new VesicleFusion();
+        fusion.setFeature(new AppliedVesicleState(VesicleStateRegistry.MICROTUBULE_ATTACHED));
+        fusion.setFeature(FusionTime.of(18, SECOND).build());
+        fusion.setFeature(new AttachmentDistance(Quantities.getQuantity(61, NANO(METRE))));
+        simulation.addModule(fusion);
+
+        while (TimeStepManager.getElapsedTime().isLessThanOrEqualTo(Quantities.getQuantity(20.0, SECOND))) {
+            simulation.nextEpoch();
+        }
+
+        assertEquals(100, MolarConcentration.concentrationToMolecules(node.getConcentrationContainer().get(CellTopology.MEMBRANE, testEntity)).getValue().intValue());
 
     }
 

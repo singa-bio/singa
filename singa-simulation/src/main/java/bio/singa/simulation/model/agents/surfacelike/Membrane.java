@@ -1,11 +1,12 @@
 package bio.singa.simulation.model.agents.surfacelike;
 
 import bio.singa.mathematics.geometry.edges.LineSegment;
-import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.sections.CellRegion;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * @author cl
@@ -16,8 +17,6 @@ public class Membrane {
     private List<MembraneSegment> segments;
     private CellRegion innerRegion;
     private CellRegion membraneRegion;
-    private Map<CellRegion, List<Vector2D>> regionMap;
-    private Vector2D innerPoint;
 
     public Membrane(String identifier) {
         this.identifier = identifier;
@@ -29,7 +28,10 @@ public class Membrane {
     }
 
     public void addSegment(AutomatonNode node, LineSegment segment) {
-        MembraneSegment membraneSegment = new MembraneSegment(node, segment);
+        addSegment(new MembraneSegment(node, segment));
+    }
+
+    public void addSegment(MembraneSegment membraneSegment) {
         segments.add(membraneSegment);
     }
 
@@ -51,22 +53,6 @@ public class Membrane {
 
     public void setMembraneRegion(CellRegion membraneRegion) {
         this.membraneRegion = membraneRegion;
-    }
-
-    public Map<CellRegion, List<Vector2D>> getRegionMap() {
-        return regionMap;
-    }
-
-    public void setRegionMap(Map<CellRegion, List<Vector2D>> regionMap) {
-        this.regionMap = regionMap;
-    }
-
-    public Vector2D getInnerPoint() {
-        return innerPoint;
-    }
-
-    public void setInnerPoint(Vector2D innerPoint) {
-        this.innerPoint = innerPoint;
     }
 
     @Override

@@ -1,5 +1,8 @@
 package bio.singa.features.model;
 
+import bio.singa.features.quantities.MembraneDiffusivity;
+import tech.units.indriya.ComparableQuantity;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -16,6 +19,13 @@ public class FeatureRegistry {
     private List<AbstractQuantitativeFeature<?>> quantitativeFeatures;
     private List<AbstractScalableQuantitativeFeature<?>> scalableQuantitativeFeatures;
 
+    private FeatureRegistry() {
+        identifierGenerator = new AtomicInteger();
+        qualitativeFeatures = new ArrayList<>();
+        quantitativeFeatures = new ArrayList<>();
+        scalableQuantitativeFeatures = new ArrayList<>();
+    }
+
     private static FeatureRegistry getInstance() {
         if (instance == null) {
             reinitialize();
@@ -29,13 +39,6 @@ public class FeatureRegistry {
         }
     }
 
-    private FeatureRegistry() {
-        identifierGenerator = new AtomicInteger();
-        qualitativeFeatures = new ArrayList<>();
-        quantitativeFeatures = new ArrayList<>();
-        scalableQuantitativeFeatures = new ArrayList<>();
-    }
-
     public static void addQuantitativeFeature(AbstractQuantitativeFeature<?> quantitativeFeature) {
         quantitativeFeature.setIdentifier(getInstance().identifierGenerator.getAndIncrement());
         getInstance().quantitativeFeatures.add(quantitativeFeature);
@@ -47,7 +50,20 @@ public class FeatureRegistry {
     }
 
     public static void addScalableQuantitativeFeatures(AbstractScalableQuantitativeFeature<?> scalableQuantitativeFeature) {
+        // crosscheck
         scalableQuantitativeFeature.setIdentifier(getInstance().identifierGenerator.getAndIncrement());
+        if (scalableQuantitativeFeature instanceof MembraneDiffusivity) {
+            for (AbstractScalableQuantitativeFeature<?> registryFeature : getInstance().scalableQuantitativeFeatures) {
+                if (registryFeature.getClass().equals(scalableQuantitativeFeature.getClass())) {
+                    ComparableQuantity registryContent = (ComparableQuantity) registryFeature.getContent();
+                    ComparableQuantity newContent = (ComparableQuantity) scalableQuantitativeFeature.getContent();
+
+                    if (registryContent.isEquivalentOf(newContent)) {
+                        scalableQuantitativeFeature.setIdentifier(registryFeature.getIdentifier());
+                    }
+                }
+            }
+        }
         scalableQuantitativeFeature.scale();
         getInstance().scalableQuantitativeFeatures.add(scalableQuantitativeFeature);
     }
@@ -71,7 +87,7 @@ public class FeatureRegistry {
         return null;
     }
 
-    public static  void scale() {
+    public static void scale() {
         for (AbstractScalableQuantitativeFeature<?> feature : getInstance().scalableQuantitativeFeatures) {
             feature.scale();
         }

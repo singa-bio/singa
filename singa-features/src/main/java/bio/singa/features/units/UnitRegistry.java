@@ -1,6 +1,7 @@
 package bio.singa.features.units;
 
 import bio.singa.features.model.FeatureRegistry;
+import bio.singa.features.parameters.Environment;
 import bio.singa.features.quantities.MolarConcentration;
 import tech.units.indriya.quantity.Quantities;
 import tech.units.indriya.unit.TransformedUnit;
@@ -103,6 +104,22 @@ public class UnitRegistry {
         return getInstance().space.getValue().doubleValue();
     }
 
+    public static double getSpaceToPixelScale() {
+        return Environment.getSimulationScale();
+    }
+
+    public static double scaleSpaceToPixel(Quantity<Length> length) {
+        return length.to(getSpaceUnit()).getValue().doubleValue() * getSpaceToPixelScale();
+    }
+
+    public static Quantity<Length> getPixelToSpaceScale() {
+        return Environment.getSystemScale();
+    }
+
+    public static Quantity<Length> scalePixelToSpace(double length) {
+        return getPixelToSpaceScale().multiply(length);
+    }
+
     public static void setSpaceScale(double scale) {
         getInstance().space = Quantities.getQuantity(scale, getInstance().space.getUnit());
     }
@@ -115,6 +132,7 @@ public class UnitRegistry {
         // only rescale if unit was updated
         getInstance().space = Quantities.getQuantity(getInstance().space.getValue().doubleValue(), unit);
         getInstance().defaultUnits.put(LENGTH, unit);
+        Environment.updateScales();
         rescaleRegisteredUnits();
     }
 
@@ -219,6 +237,31 @@ public class UnitRegistry {
             }
 
             if (timeExponent > 0 && getSpaceScale() != 1.0) {
+                value = value / Math.pow(getTimeScale(), timeExponent);
+            } else {
+                value = value * Math.pow(getTimeScale(), Math.abs(timeExponent));
+            }
+            return Quantities.getQuantity(value, convert.getUnit());
+        }
+        return convert;
+    }
+
+    public static <QuantityType extends Quantity<QuantityType>> Quantity<QuantityType> scaleForPixel(Quantity<QuantityType> quantity) {
+        if (getSpaceToPixelScale() == 0.0) {
+            throw new IllegalStateException("Space scale is not initialized.");
+        }
+        Quantity<QuantityType> convert = convert(quantity);
+        double value = convert.getValue().doubleValue();
+        int spaceExponent = getSpaceExponent(convert.getUnit());
+        int timeExponent = getTimeExponent(convert.getUnit());
+        if (spaceExponent != 0 || timeExponent != 0) {
+            if (spaceExponent > 0) {
+                value = value * Math.pow(getSpaceToPixelScale(), spaceExponent);
+            } else {
+                value = value / Math.pow(getSpaceToPixelScale(), Math.abs(spaceExponent));
+            }
+
+            if (timeExponent > 0) {
                 value = value / Math.pow(getTimeScale(), timeExponent);
             } else {
                 value = value * Math.pow(getTimeScale(), Math.abs(timeExponent));
