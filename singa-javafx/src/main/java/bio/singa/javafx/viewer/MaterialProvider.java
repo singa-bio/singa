@@ -1,6 +1,6 @@
 package bio.singa.javafx.viewer;
 
-import bio.singa.structure.elements.Element;
+import bio.singa.chemistry.model.elements.Element;
 import bio.singa.structure.model.families.AminoAcidFamily;
 import bio.singa.structure.model.families.NucleotideFamily;
 import bio.singa.structure.model.families.StructuralFamily;

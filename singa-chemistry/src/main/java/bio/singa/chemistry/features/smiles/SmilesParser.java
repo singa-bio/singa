@@ -1,10 +1,10 @@
 package bio.singa.chemistry.features.smiles;
 
+import bio.singa.chemistry.model.CovalentBondType;
+import bio.singa.chemistry.model.MoleculeGraph;
+import bio.singa.chemistry.model.elements.Element;
+import bio.singa.chemistry.model.elements.ElementProvider;
 import bio.singa.core.utility.Pair;
-import bio.singa.structure.elements.Element;
-import bio.singa.structure.elements.ElementProvider;
-import bio.singa.structure.model.molecules.MoleculeBondType;
-import bio.singa.structure.model.molecules.MoleculeGraph;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,7 +35,7 @@ public class SmilesParser {
     /**
      * Maps the consecutive connections between atoms (as a pair of identifiers) to the bond type
      */
-    private final HashMap<Pair<Integer>, MoleculeBondType> connectors;
+    private final HashMap<Pair<Integer>, CovalentBondType> connectors;
     /**
      * Maps the ring closure identifier to atom identifier that is to be connected
      */
@@ -75,7 +75,7 @@ public class SmilesParser {
     /**
      * The bond type to connect the next atom with
      */
-    private MoleculeBondType currentBondType;
+    private CovalentBondType currentBondType;
     /**
      * A flag that is set true when a branch is closed, so the last referenced branch is used to connect the next atom
      */
@@ -127,12 +127,12 @@ public class SmilesParser {
         // add hydrogens to connectors
         parser.hydrogens.forEach((identifier) -> {
             int hydrogenIdentifier = parser.molecule.addNextAtom("H");
-            parser.connectors.put(new Pair<>(identifier, hydrogenIdentifier), MoleculeBondType.SINGLE_BOND);
+            parser.connectors.put(new Pair<>(identifier, hydrogenIdentifier), CovalentBondType.SINGLE_BOND);
         });
 
         // add bonds
         parser.connectors.forEach((connector, type) -> {
-            if (type != MoleculeBondType.UNCONNECTED) {
+            if (type != CovalentBondType.UNCONNECTED) {
                 parser.molecule.addEdgeBetween(parser.molecule.getNode(connector.getFirst()),
                         parser.molecule.getNode(connector.getSecond()), type);
             }
@@ -368,7 +368,7 @@ public class SmilesParser {
             case 'p':
             case 's': {
                 handleAtom(addLater);
-                currentBondType = MoleculeBondType.AROMATIC_BOND;
+                currentBondType = CovalentBondType.AROMATIC_BOND;
                 poll();
                 return true;
             }
@@ -464,7 +464,7 @@ public class SmilesParser {
                 // parse selenium
                 dispose();
                 currentElement = ElementProvider.SELENIUM;
-                currentBondType = MoleculeBondType.AROMATIC_BOND;
+                currentBondType = CovalentBondType.AROMATIC_BOND;
                 poll();
                 return true;
             }
@@ -474,7 +474,7 @@ public class SmilesParser {
                 // parse arsenic
                 dispose();
                 currentElement = ElementProvider.ARSENIC;
-                currentBondType = MoleculeBondType.AROMATIC_BOND;
+                currentBondType = CovalentBondType.AROMATIC_BOND;
                 poll();
                 return true;
             }
@@ -729,22 +729,22 @@ public class SmilesParser {
     }
 
     private void setNextBond() {
-        currentBondType = MoleculeBondType.getBondForSMILESSymbol(currentSymbol);
+        currentBondType = CovalentBondType.getBondForSMILESSymbol(currentSymbol);
     }
 
     private void connectConsecutiveAtoms() {
         if (molecule.getNodes().size() > 1) {
             if (firstAtomInBranch) {
                 if (sameChainReference) {
-                    connectors.put(new Pair<>(branches.peekLast(), currentIdentifer), currentBondType == null ? MoleculeBondType.SINGLE_BOND : currentBondType);
+                    connectors.put(new Pair<>(branches.peekLast(), currentIdentifer), currentBondType == null ? CovalentBondType.SINGLE_BOND : currentBondType);
                     sameChainReference = false;
                 } else {
-                    connectors.put(new Pair<>(branches.pollLast(), currentIdentifer), currentBondType == null ? MoleculeBondType.SINGLE_BOND : currentBondType);
+                    connectors.put(new Pair<>(branches.pollLast(), currentIdentifer), currentBondType == null ? CovalentBondType.SINGLE_BOND : currentBondType);
                 }
                 currentBondType = null;
                 firstAtomInBranch = false;
             } else {
-                connectors.put(new Pair<>(currentIdentifer - 1, currentIdentifer), currentBondType == null ? MoleculeBondType.SINGLE_BOND : currentBondType);
+                connectors.put(new Pair<>(currentIdentifer - 1, currentIdentifer), currentBondType == null ? CovalentBondType.SINGLE_BOND : currentBondType);
                 currentBondType = null;
             }
         }
@@ -759,7 +759,7 @@ public class SmilesParser {
     private void addRingClosure() {
         int closureIdentifier = Integer.valueOf(String.valueOf(currentSymbol));
         if (ringClosures.containsKey(closureIdentifier)) {
-            connectors.put(new Pair<>(ringClosures.get(closureIdentifier), currentIdentifer), MoleculeBondType.SINGLE_BOND);
+            connectors.put(new Pair<>(ringClosures.get(closureIdentifier), currentIdentifer), CovalentBondType.SINGLE_BOND);
             ringClosures.remove(closureIdentifier);
         } else {
             ringClosures.put(closureIdentifier, currentIdentifer);

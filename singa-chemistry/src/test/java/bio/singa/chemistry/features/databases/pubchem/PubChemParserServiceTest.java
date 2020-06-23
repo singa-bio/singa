@@ -2,11 +2,11 @@ package bio.singa.chemistry.features.databases.pubchem;
 
 import bio.singa.chemistry.features.logp.LogP;
 import bio.singa.chemistry.features.smiles.Smiles;
-import bio.singa.chemistry.simple.SmallMolecule;
+import bio.singa.chemistry.model.SmallMolecule;
 import bio.singa.features.identifiers.ChEBIIdentifier;
 import bio.singa.features.identifiers.InChIKey;
 import bio.singa.features.identifiers.PubChemIdentifier;
-import bio.singa.structure.features.molarmass.MolarMass;
+import bio.singa.features.quantities.MolarMass;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

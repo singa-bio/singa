@@ -1,16 +1,14 @@
 package bio.singa.simulation.model.modules.qualitative.implementations;
 
-import bio.singa.chemistry.annotations.Annotation;
-import bio.singa.chemistry.annotations.AnnotationType;
-import bio.singa.simulation.entities.ChemicalEntity;
-import bio.singa.simulation.entities.ComplexEntity;
-import bio.singa.simulation.entities.simple.Protein;
 import bio.singa.features.identifiers.UniProtIdentifier;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.geometry.faces.Rectangle;
 import bio.singa.mathematics.vectors.Vector2D;
+import bio.singa.simulation.entities.ChemicalEntity;
+import bio.singa.simulation.entities.ComplexEntity;
+import bio.singa.simulation.entities.SimpleEntity;
 import bio.singa.simulation.features.*;
 import bio.singa.simulation.model.agents.pointlike.Vesicle;
 import bio.singa.simulation.model.agents.pointlike.VesicleLayer;
@@ -75,29 +73,24 @@ class VesicleFusionTest {
         simulation.setMaximalTimeStep(Quantities.getQuantity(0.5, SECOND));
 
         // setup snares for fusion
-        Protein vamp2 = Protein.create("VAMP2")
+        ChemicalEntity vamp2 = SimpleEntity.create("VAMP2")
                 .assignFeature(new UniProtIdentifier("Q15836"))
-                .annotation(new Annotation<>(AnnotationType.NOTE, "SNARE type", "R-SNARE"))
                 .build();
 
-        Protein vamp3 = Protein.create("VAMP3")
+        ChemicalEntity vamp3 = SimpleEntity.create("VAMP3")
                 .assignFeature(new UniProtIdentifier("P63027"))
-                .annotation(new Annotation<>(AnnotationType.NOTE, "SNARE type", "R-SNARE"))
                 .build();
 
-        Protein syntaxin3 = Protein.create("Syntaxin 3")
+        ChemicalEntity syntaxin3 = SimpleEntity.create("Syntaxin 3")
                 .assignFeature(new UniProtIdentifier("Q13277"))
-                .annotation(new Annotation<>(AnnotationType.NOTE, "SNARE type", "Qa-SNARE"))
                 .build();
 
-        Protein syntaxin4 = Protein.create("Syntaxin 4")
+        ChemicalEntity syntaxin4 = SimpleEntity.create("Syntaxin 4")
                 .assignFeature(new UniProtIdentifier("Q12846"))
-                .annotation(new Annotation<>(AnnotationType.NOTE, "SNARE type", "Qa-SNARE"))
                 .build();
 
-        Protein snap23 = Protein.create("SNAP23")
+        ChemicalEntity snap23 = SimpleEntity.create("SNAP23")
                 .assignFeature(new UniProtIdentifier("O00161"))
-                .annotation(new Annotation<>(AnnotationType.NOTE, "SNARE type", "Qbc-SNARE"))
                 .build();
 
         ComplexEntity snareComplex1 = ComplexEntity.from(syntaxin3, snap23);
@@ -177,7 +170,7 @@ class VesicleFusionTest {
         vesicleLayer.addVesicle(vesicle);
         simulation.setVesicleLayer(vesicleLayer);
 
-        ChemicalEntity testEntity = Protein.create("TEST")
+        ChemicalEntity testEntity = SimpleEntity.create("TEST")
                 .membraneBound()
                 .build();
 

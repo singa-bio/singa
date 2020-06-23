@@ -36,6 +36,6 @@ class GyrationTest {
     void shouldCalculateGyrationOfLeafSubstructure() {
         LeafSubstructure alanine = AminoAcidFamily.ALANINE.getPrototype();
         Gyration gyration = Gyration.of(alanine);
-        assertEquals(1.66, gyration.getRadius(), 1E-2);
+        assertEquals(1.46, gyration.getRadius(), 1E-2);
     }
 }

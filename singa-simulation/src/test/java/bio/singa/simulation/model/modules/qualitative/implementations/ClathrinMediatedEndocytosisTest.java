@@ -2,9 +2,9 @@ package bio.singa.simulation.model.modules.qualitative.implementations;
 
 import bio.singa.simulation.entities.ChemicalEntity;
 import bio.singa.simulation.entities.EntityRegistry;
-import bio.singa.simulation.entities.simple.Protein;
 import bio.singa.chemistry.features.reactions.FirstOrderRate;
 import bio.singa.chemistry.features.reactions.RateConstant;
+import bio.singa.simulation.entities.SimpleEntity;
 import bio.singa.simulation.reactions.conditions.CandidateConditionBuilder;
 import bio.singa.simulation.reactions.reactors.ReactionChainBuilder;
 import bio.singa.features.formatter.TimeFormatter;
@@ -72,28 +72,29 @@ class ClathrinMediatedEndocytosisTest {
         ComparableQuantity<Time> timeStep = Quantities.getQuantity(1, MILLI(SECOND));
         UnitRegistry.setTime(timeStep);
 
-        ChemicalEntity primaryCargo = Protein.create("PRIMARY_CARGO")
+        ChemicalEntity primaryCargo = SimpleEntity.create("PRIMARY_CARGO")
                 .membraneBound()
                 .build();
 
-        ChemicalEntity otherCargo = Protein.create("OTHER_CARGO")
+        ChemicalEntity otherCargo = SimpleEntity.create("OTHER_CARGO")
                 .membraneBound()
                 .build();
 
-        ChemicalEntity inhibitor = Protein.create("INHIBITOR")
-                .membraneBound()
-                .build();
-        ChemicalEntity accelerator = Protein.create("ACCELERATOR")
+        ChemicalEntity inhibitor = SimpleEntity.create("INHIBITOR")
                 .membraneBound()
                 .build();
 
-        ChemicalEntity initializedCargo = Protein.create("INITIALIZED_CARGO")
+        ChemicalEntity accelerator = SimpleEntity.create("ACCELERATOR")
                 .membraneBound()
                 .build();
 
-        ChemicalEntity substrate = Protein.create("SUBSTRATE").build();
-        ChemicalEntity product = Protein.create("PRODUCT").build();
-        ChemicalEntity enzyme = Protein.create("ENZYME")
+        ChemicalEntity initializedCargo = SimpleEntity.create("INITIALIZED_CARGO")
+                .membraneBound()
+                .build();
+
+        ChemicalEntity substrate = SimpleEntity.create("SUBSTRATE").build();
+        ChemicalEntity product = SimpleEntity.create("PRODUCT").build();
+        ChemicalEntity enzyme = SimpleEntity.create("ENZYME")
                 .membraneBound()
                 .build();
 

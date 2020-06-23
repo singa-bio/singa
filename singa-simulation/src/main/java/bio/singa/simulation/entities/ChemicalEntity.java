@@ -2,7 +2,7 @@ package bio.singa.simulation.entities;
 
 import bio.singa.features.identifiers.model.Identifier;
 import bio.singa.features.model.Featureable;
-import bio.singa.structure.features.molarmass.MolarMass;
+import bio.singa.features.quantities.MolarMass;
 
 import java.util.List;
 

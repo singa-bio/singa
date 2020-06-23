@@ -1,7 +1,7 @@
 package bio.singa.structure.model.oak;
 
 import bio.singa.core.utility.Range;
-import bio.singa.structure.elements.ElementProvider;
+import bio.singa.chemistry.model.elements.ElementProvider;
 import bio.singa.structure.model.interfaces.*;
 
 import java.util.Objects;

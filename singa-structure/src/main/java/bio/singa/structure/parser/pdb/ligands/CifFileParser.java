@@ -1,9 +1,10 @@
 package bio.singa.structure.parser.pdb.ligands;
 
+import bio.singa.chemistry.model.CovalentBondType;
 import bio.singa.core.utility.Pair;
 import bio.singa.mathematics.vectors.Vector3D;
-import bio.singa.structure.elements.Element;
-import bio.singa.structure.elements.ElementProvider;
+import bio.singa.chemistry.model.elements.Element;
+import bio.singa.chemistry.model.elements.ElementProvider;
 import bio.singa.structure.model.families.AminoAcidFamily;
 import bio.singa.structure.model.families.LigandFamily;
 import bio.singa.structure.model.families.NucleotideFamily;
@@ -29,7 +30,7 @@ public class CifFileParser {
     private final List<String> atomLines;
     private final List<String> bondLines;
     private final Map<String, OakAtom> atoms;
-    private final Map<Pair<String>, BondType> bonds;
+    private final Map<Pair<String>, CovalentBondType> bonds;
     private String name;
     private String type;
     private String oneLetterCode;
@@ -190,7 +191,7 @@ public class CifFileParser {
             String[] splitLine = line.split("\\s+");
             // 1 = first atom, 2 = second atom, 3 = bond type
             bonds.put(new Pair<>(splitLine[1].replace("\"", ""), splitLine[2].replace("\"", "")),
-                    BondType.getBondTypeByCifName(splitLine[3]).orElse(BondType.SINGLE_BOND));
+                    CovalentBondType.getBondForCifString(splitLine[3]));
         }
     }
 
@@ -331,7 +332,7 @@ public class CifFileParser {
      */
     private void connectAtoms(OakLeafSubstructure<?> leafWithAtoms) {
         int bondCounter = 0;
-        for (Map.Entry<Pair<String>, BondType> bond : bonds.entrySet()) {
+        for (Map.Entry<Pair<String>, CovalentBondType> bond : bonds.entrySet()) {
             OakBond oakBond = new OakBond(bondCounter++, bond.getValue());
             leafWithAtoms.addBondBetween(oakBond, atoms.get(bond.getKey().getFirst()),
                     atoms.get(bond.getKey().getSecond()));

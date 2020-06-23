@@ -2,7 +2,7 @@ package bio.singa.structure.algorithms.superimposition.fit3d.representations;
 
 
 import bio.singa.mathematics.vectors.Vectors3D;
-import bio.singa.structure.elements.ElementProvider;
+import bio.singa.chemistry.model.elements.ElementProvider;
 import bio.singa.structure.model.interfaces.Atom;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.oak.OakAtom;

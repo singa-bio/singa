@@ -1,5 +1,7 @@
 package bio.singa.structure.model.oak;
 
+import bio.singa.chemistry.model.CovalentBondType;
+
 /**
  * @author cl
  */
@@ -11,14 +13,13 @@ public class OakBond {
 
     protected OakAtom target;
 
-    private BondType bondType;
-
+    private CovalentBondType bondType;
 
     public OakBond(int identifier) {
         this.identifier = identifier;
     }
 
-    public OakBond(int identifier, BondType bondType) {
+    public OakBond(int identifier, CovalentBondType bondType) {
         this(identifier);
         this.bondType = bondType;
     }
@@ -40,11 +41,11 @@ public class OakBond {
         return identifier;
     }
 
-    public BondType getBondType() {
+    public CovalentBondType getBondType() {
         return bondType;
     }
 
-    public void setBondType(BondType bondType) {
+    public void setBondType(CovalentBondType bondType) {
         this.bondType = bondType;
     }
 

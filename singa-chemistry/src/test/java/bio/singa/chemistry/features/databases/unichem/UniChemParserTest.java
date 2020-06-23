@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author cl
@@ -28,19 +28,37 @@ class UniChemParserTest {
     @Test
     @DisplayName("parse unichem - chebi identifier")
     void fetchChEBIIdentifier() {
-        assertTrue(identifiers.contains(new ChEBIIdentifier("CHEBI:8772")));
+        for (Identifier identifier : identifiers) {
+            if (identifier instanceof ChEBIIdentifier) {
+                assertEquals("CHEBI:8772", identifier.getContent());
+                return;
+            }
+        }
+        fail("ChEBIIdentifier not found");
     }
 
     @Test
     @DisplayName("parse unichem - pubchem identifier")
     void fetchPubChemIdentifier() {
-        assertTrue(identifiers.contains(new PubChemIdentifier("CID:5035")));
+        for (Identifier identifier : identifiers) {
+            if (identifier instanceof PubChemIdentifier) {
+                assertEquals("CID:5035", identifier.getContent());
+                return;
+            }
+        }
+        fail("PubChemIdentifier not found");
     }
 
     @Test
     @DisplayName("parse unichem - pdb ligand identifier")
     void fetchPDBLigandIdentifier() {
-        assertTrue(identifiers.contains(new PDBLigandIdentifier("RAL")));
+        for (Identifier identifier : identifiers) {
+            if (identifier instanceof PDBLigandIdentifier) {
+                assertEquals("RAL", identifier.getContent());
+                return;
+            }
+        }
+        fail("PDBLigandIdentifier not found");
     }
 
 }

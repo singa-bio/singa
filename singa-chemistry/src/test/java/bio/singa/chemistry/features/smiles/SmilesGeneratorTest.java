@@ -1,6 +1,6 @@
 package bio.singa.chemistry.features.smiles;
 
-import bio.singa.structure.model.molecules.MoleculeGraph;
+import bio.singa.chemistry.model.MoleculeGraph;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;

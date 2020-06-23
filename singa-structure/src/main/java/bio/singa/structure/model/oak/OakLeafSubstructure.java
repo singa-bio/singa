@@ -1,5 +1,6 @@
 package bio.singa.structure.model.oak;
 
+import bio.singa.chemistry.model.CovalentBondType;
 import bio.singa.structure.model.families.StructuralFamily;
 import bio.singa.structure.model.identifiers.LeafIdentifier;
 import bio.singa.structure.model.interfaces.Atom;
@@ -194,10 +195,10 @@ public abstract class OakLeafSubstructure<FamilyType extends StructuralFamily> i
     }
 
     public int addBondBetween(OakAtom source, OakAtom target) {
-        return addBondBetween(source, target, BondType.SINGLE_BOND);
+        return addBondBetween(source, target, CovalentBondType.SINGLE_BOND);
     }
 
-    public int addBondBetween(OakAtom source, OakAtom target, BondType bondType) {
+    public int addBondBetween(OakAtom source, OakAtom target, CovalentBondType bondType) {
         if (source == null || target == null) {
             return -1;
         }

@@ -1,7 +1,7 @@
 package bio.singa.structure.model.interfaces;
 
 import bio.singa.mathematics.vectors.Vector3D;
-import bio.singa.structure.elements.Element;
+import bio.singa.chemistry.model.elements.Element;
 
 /**
  * An Atom is the physical instance of an atom in three dimensional space.

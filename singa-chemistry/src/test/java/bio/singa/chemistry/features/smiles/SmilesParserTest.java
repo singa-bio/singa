@@ -1,14 +1,14 @@
 package bio.singa.chemistry.features.smiles;
 
-import bio.singa.structure.model.molecules.MoleculeAtom;
-import bio.singa.structure.model.molecules.MoleculeBondType;
-import bio.singa.structure.model.molecules.MoleculeGraph;
+import bio.singa.chemistry.model.CovalentBondType;
+import bio.singa.chemistry.model.MoleculeAtom;
+import bio.singa.chemistry.model.MoleculeGraph;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static bio.singa.structure.elements.ElementProvider.*;
+import static bio.singa.chemistry.model.elements.ElementProvider.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -56,10 +56,10 @@ class SmilesParserTest {
         assertTrue(neighboursOfP2.stream()
                 .anyMatch(atom -> atom.getIdentifier() == 5 && atom.getElement().equals(OXYGEN)));
         // where one is a double bond and the rest are single bonds
-        assertEquals(moleculeGraph.getEdgeBetween(moleculeGraph.getNode(2), moleculeGraph.getNode(4)).get().getType(), MoleculeBondType.DOUBLE_BOND);
-        assertEquals(moleculeGraph.getEdgeBetween(moleculeGraph.getNode(2), moleculeGraph.getNode(1)).get().getType(), MoleculeBondType.SINGLE_BOND);
-        assertEquals(moleculeGraph.getEdgeBetween(moleculeGraph.getNode(2), moleculeGraph.getNode(3)).get().getType(), MoleculeBondType.SINGLE_BOND);
-        assertEquals(moleculeGraph.getEdgeBetween(moleculeGraph.getNode(2), moleculeGraph.getNode(5)).get().getType(), MoleculeBondType.SINGLE_BOND);
+        assertEquals(moleculeGraph.getEdgeBetween(moleculeGraph.getNode(2), moleculeGraph.getNode(4)).get().getType(), CovalentBondType.DOUBLE_BOND);
+        assertEquals(moleculeGraph.getEdgeBetween(moleculeGraph.getNode(2), moleculeGraph.getNode(1)).get().getType(), CovalentBondType.SINGLE_BOND);
+        assertEquals(moleculeGraph.getEdgeBetween(moleculeGraph.getNode(2), moleculeGraph.getNode(3)).get().getType(), CovalentBondType.SINGLE_BOND);
+        assertEquals(moleculeGraph.getEdgeBetween(moleculeGraph.getNode(2), moleculeGraph.getNode(5)).get().getType(), CovalentBondType.SINGLE_BOND);
     }
 
 

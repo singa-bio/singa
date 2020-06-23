@@ -2,14 +2,13 @@ package bio.singa.simulation.model.modules.qualitative.implementations;
 
 import bio.singa.simulation.entities.ChemicalEntity;
 import bio.singa.simulation.entities.ComplexEntity;
-import bio.singa.simulation.entities.simple.Protein;
-import bio.singa.simulation.entities.simple.SmallMolecule;
 import bio.singa.chemistry.features.reactions.RateConstant;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.geometry.faces.Rectangle;
 import bio.singa.mathematics.vectors.Vector2D;
+import bio.singa.simulation.entities.SimpleEntity;
 import bio.singa.simulation.features.AppliedVesicleState;
 import bio.singa.simulation.features.Cargoes;
 import bio.singa.simulation.features.Ratio;
@@ -57,8 +56,9 @@ class ConcentrationStateChangeTest {
         UnitRegistry.setTime(Quantities.getQuantity(1, MILLI(SECOND)));
 
         // setup trigger entity
-        Protein aqp2 = Protein.create("AQP2").build();
-        ChemicalEntity p = SmallMolecule.create("P").build();
+        ChemicalEntity aqp2 = SimpleEntity.create("AQP2").build();
+        ChemicalEntity p = SimpleEntity.create("P")
+                .small().build();
         ComplexEntity aqp2p = ComplexEntity.from(aqp2, p);
 
         // setup graph

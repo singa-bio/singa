@@ -1,7 +1,7 @@
 package bio.singa.structure.model.oak;
 
 import bio.singa.mathematics.vectors.Vector3D;
-import bio.singa.structure.elements.ElementProvider;
+import bio.singa.chemistry.model.elements.ElementProvider;
 import bio.singa.structure.model.families.StructuralFamily;
 import bio.singa.structure.model.identifiers.LeafIdentifier;
 import bio.singa.structure.model.interfaces.Atom;

@@ -1,6 +1,9 @@
 package bio.singa.javafx.viewer;
 
 import bio.singa.chemistry.features.smiles.SmilesParser;
+import bio.singa.chemistry.model.MoleculeAtom;
+import bio.singa.chemistry.model.MoleculeBond;
+import bio.singa.chemistry.model.MoleculeGraph;
 import bio.singa.javafx.renderer.graphs.GraphDisplayApplication;
 import bio.singa.javafx.renderer.molecules.MoleculeGraphRenderer;
 import bio.singa.structure.algorithms.molecules.MoleculeIsomorphism;
@@ -9,9 +12,6 @@ import bio.singa.structure.algorithms.molecules.MoleculeIsomorphismFinder.AtomCo
 import bio.singa.structure.model.identifiers.LeafIdentifier;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.interfaces.Structure;
-import bio.singa.structure.model.molecules.MoleculeAtom;
-import bio.singa.structure.model.molecules.MoleculeBond;
-import bio.singa.structure.model.molecules.MoleculeGraph;
 import bio.singa.structure.model.molecules.MoleculeGraphs;
 import bio.singa.structure.model.oak.OakLeafSubstructure;
 import bio.singa.structure.parser.pdb.structures.StructureParser;

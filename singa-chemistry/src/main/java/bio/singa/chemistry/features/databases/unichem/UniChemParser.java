@@ -1,6 +1,5 @@
 package bio.singa.chemistry.features.databases.unichem;
 
-import bio.singa.chemistry.features.databases.uniprot.UniProtParserService;
 import bio.singa.core.parser.AbstractHTMLParser;
 import bio.singa.features.identifiers.ChEBIIdentifier;
 import bio.singa.features.identifiers.InChIKey;
@@ -24,7 +23,7 @@ import java.util.stream.Collectors;
  */
 public class UniChemParser extends AbstractHTMLParser<List<Identifier>> {
 
-    private static final Logger logger = LoggerFactory.getLogger(UniProtParserService.class);
+    private static final Logger logger = LoggerFactory.getLogger(UniChemParser.class);
     private static final String UNICHEM_FETCH_URL = "https://www.ebi.ac.uk/unichem/rest/verbose_inchikey/%s";
 
     public UniChemParser(InChIKey inChIKey) {

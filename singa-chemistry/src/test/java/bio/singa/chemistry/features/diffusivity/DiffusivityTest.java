@@ -1,11 +1,11 @@
 package bio.singa.chemistry.features.diffusivity;
 
 import bio.singa.chemistry.features.FeatureProviderRegistry;
-import bio.singa.chemistry.simple.SmallMolecule;
+import bio.singa.chemistry.model.SmallMolecule;
 import bio.singa.features.identifiers.ChEBIIdentifier;
 import bio.singa.features.quantities.ConcentrationDiffusivity;
 import bio.singa.features.quantities.Diffusivity;
-import bio.singa.structure.features.molarmass.MolarMass;
+import bio.singa.features.quantities.MolarMass;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -36,7 +36,7 @@ class DiffusivityTest {
     @Test
     void shouldUseWilkeToCalculateDiffusifity() {
         SmallMolecule testSpecies = SmallMolecule.create("light entity")
-                .assignFeature(new MolarMass(100))
+                .assignFeature(MolarMass.of(100, MolarMass.GRAM_PER_MOLE).build())
                 .build();
         // get feature
         ConcentrationDiffusivity feature = testSpecies.getFeature(ConcentrationDiffusivity.class);
@@ -49,7 +49,7 @@ class DiffusivityTest {
     @Test
     void shouldUseYoungToCalculateDiffusifity() {
         SmallMolecule testSpecies = SmallMolecule.create("heavy entity")
-                .assignFeature(new MolarMass(10000))
+                .assignFeature(MolarMass.of(10000, MolarMass.GRAM_PER_MOLE).build())
                 .build();
         // get feature
         ConcentrationDiffusivity feature = testSpecies.getFeature(ConcentrationDiffusivity.class);

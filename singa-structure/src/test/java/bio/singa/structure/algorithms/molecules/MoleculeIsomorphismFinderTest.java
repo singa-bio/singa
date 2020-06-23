@@ -1,10 +1,10 @@
 package bio.singa.structure.algorithms.molecules;
 
+import bio.singa.chemistry.model.MoleculeAtom;
+import bio.singa.chemistry.model.MoleculeGraph;
 import bio.singa.core.utility.Pair;
 import bio.singa.core.utility.Resources;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
-import bio.singa.structure.model.molecules.MoleculeAtom;
-import bio.singa.structure.model.molecules.MoleculeGraph;
 import bio.singa.structure.model.molecules.MoleculeGraphs;
 import bio.singa.structure.model.oak.OakLeafSubstructure;
 import bio.singa.structure.parser.pdb.structures.StructureParser;

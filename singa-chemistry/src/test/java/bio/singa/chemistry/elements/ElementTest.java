@@ -1,7 +1,7 @@
 package bio.singa.chemistry.elements;
 
-import bio.singa.structure.elements.Element;
-import bio.singa.structure.elements.ElementProvider;
+import bio.singa.chemistry.model.elements.Element;
+import bio.singa.chemistry.model.elements.ElementProvider;
 import org.junit.jupiter.api.Test;
 
 

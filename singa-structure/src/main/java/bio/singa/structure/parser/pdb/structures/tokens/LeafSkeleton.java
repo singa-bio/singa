@@ -1,5 +1,6 @@
 package bio.singa.structure.parser.pdb.structures.tokens;
 
+import bio.singa.chemistry.model.CovalentBondType;
 import bio.singa.core.utility.Pair;
 import bio.singa.structure.model.families.AminoAcidFamily;
 import bio.singa.structure.model.families.LigandFamily;
@@ -18,9 +19,9 @@ public class LeafSkeleton {
     private String parent;
     private String inchi;
     private AssignedFamily assignedFamily;
-    private Map<Pair<String>, BondType> bonds;
+    private Map<Pair<String>, CovalentBondType> bonds;
 
-    public LeafSkeleton(String threeLetterCode, String parent, AssignedFamily assignedFamily, Map<Pair<String>, BondType> bonds) {
+    public LeafSkeleton(String threeLetterCode, String parent, AssignedFamily assignedFamily, Map<Pair<String>, CovalentBondType> bonds) {
         this.threeLetterCode = threeLetterCode;
         this.parent = parent;
         this.assignedFamily = assignedFamily;
@@ -59,11 +60,11 @@ public class LeafSkeleton {
         this.assignedFamily = assignedFamily;
     }
 
-    public Map<Pair<String>, BondType> getBonds() {
+    public Map<Pair<String>, CovalentBondType> getBonds() {
         return bonds;
     }
 
-    public void setBonds(Map<Pair<String>, BondType> bonds) {
+    public void setBonds(Map<Pair<String>, CovalentBondType> bonds) {
         this.bonds = bonds;
     }
 
@@ -87,7 +88,7 @@ public class LeafSkeleton {
         }
         substructure.setAnnotatedAsHetAtom(true);
         atoms.values().forEach(substructure::addAtom);
-        for (Map.Entry<Pair<String>, BondType> bond : bonds.entrySet()) {
+        for (Map.Entry<Pair<String>, CovalentBondType> bond : bonds.entrySet()) {
             substructure.addBondBetween(atoms.get(bond.getKey().getFirst()),
                     atoms.get(bond.getKey().getSecond()),bond.getValue());
         }

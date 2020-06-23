@@ -43,8 +43,6 @@ public class MolarConcentration extends AbstractQuantity<MolarConcentration> {
         return (super.getUnit().equals(unit)) ? value : super.getUnit().getConverterTo(unit).convert(value);
     }
 
-
-
     @Override
     public long longValue(Unit<MolarConcentration> unit) {
         double result = doubleValue(unit);

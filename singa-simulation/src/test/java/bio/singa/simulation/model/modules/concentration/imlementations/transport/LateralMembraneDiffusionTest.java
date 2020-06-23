@@ -1,11 +1,12 @@
 package bio.singa.simulation.model.modules.concentration.imlementations.transport;
 
-import bio.singa.simulation.entities.simple.Protein;
 import bio.singa.chemistry.features.structure3d.Radius;
 import bio.singa.core.utility.Pair;
 import bio.singa.core.utility.Resources;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.units.UnitRegistry;
+import bio.singa.simulation.entities.ChemicalEntity;
+import bio.singa.simulation.entities.SimpleEntity;
 import bio.singa.simulation.model.agents.surfacelike.GridImageReader;
 import bio.singa.simulation.model.agents.surfacelike.GridMembraneBuilder;
 import bio.singa.simulation.model.agents.surfacelike.Membrane;
@@ -93,7 +94,7 @@ class LateralMembraneDiffusionTest {
 
         simulation.setGraph(graph);
 
-        Protein lacz = Protein.create("LacZ")
+        ChemicalEntity lacz = SimpleEntity.create("LacZ")
                 .assignFeature(Radius
                         .of(3.0, NANO(METRE))
                         .build())

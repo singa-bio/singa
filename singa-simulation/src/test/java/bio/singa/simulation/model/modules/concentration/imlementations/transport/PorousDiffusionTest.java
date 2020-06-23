@@ -1,13 +1,12 @@
 package bio.singa.simulation.model.modules.concentration.imlementations.transport;
 
-import bio.singa.simulation.entities.ChemicalEntity;
-import bio.singa.simulation.entities.simple.SmallMolecule;
-import bio.singa.features.quantities.ConcentrationDiffusivity;
-import bio.singa.features.quantities.Diffusivity;
 import bio.singa.core.utility.Pair;
 import bio.singa.core.utility.Resources;
 import bio.singa.features.parameters.Environment;
+import bio.singa.features.quantities.ConcentrationDiffusivity;
 import bio.singa.features.units.UnitRegistry;
+import bio.singa.simulation.entities.ChemicalEntity;
+import bio.singa.simulation.entities.SimpleEntity;
 import bio.singa.simulation.features.AffectedRegion;
 import bio.singa.simulation.features.Cargo;
 import bio.singa.simulation.features.MembraneTickness;
@@ -29,13 +28,13 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import tech.units.indriya.ComparableQuantity;
 import tech.units.indriya.quantity.Quantities;
-import tech.units.indriya.unit.ProductUnit;
 
 import javax.measure.quantity.Length;
 import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 
+import static bio.singa.features.quantities.Diffusivity.SQUARE_MICROMETRE_PER_SECOND;
 import static bio.singa.features.units.UnitProvider.MICRO_MOLE_PER_LITRE;
 import static bio.singa.simulation.model.sections.CellRegions.*;
 import static bio.singa.simulation.model.sections.CellSubsections.EXTRACELLULAR_REGION;
@@ -43,7 +42,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static tech.units.indriya.unit.MetricPrefix.MICRO;
 import static tech.units.indriya.unit.MetricPrefix.NANO;
 import static tech.units.indriya.unit.Units.METRE;
-import static tech.units.indriya.unit.Units.SECOND;
 
 /**
  * @author cl
@@ -101,8 +99,8 @@ class PorousDiffusionTest {
 
         simulation.setGraph(graph);
 
-        ChemicalEntity camp = SmallMolecule.create("CAMP")
-                .assignFeature(new ConcentrationDiffusivity(Quantities.getQuantity(32, new ProductUnit<>(MICRO(METRE).pow(2).divide(SECOND)).asType(Diffusivity.class))))
+        ChemicalEntity camp = SimpleEntity.create("CAMP")
+                .assignFeature(ConcentrationDiffusivity.of(32.0, SQUARE_MICROMETRE_PER_SECOND).build())
                 .build();
 
         PorousDiffusion.inSimulation(simulation)

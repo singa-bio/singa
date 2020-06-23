@@ -2,7 +2,7 @@ package bio.singa.structure.algorithms.superimposition.fit3d.representations;
 
 import bio.singa.mathematics.vectors.Vector3D;
 import bio.singa.mathematics.vectors.Vectors3D;
-import bio.singa.structure.elements.ElementProvider;
+import bio.singa.chemistry.model.elements.ElementProvider;
 import bio.singa.structure.model.families.AminoAcidFamily;
 import bio.singa.structure.model.interfaces.AminoAcid;
 import bio.singa.structure.model.interfaces.Atom;

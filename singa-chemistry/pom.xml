@@ -33,7 +33,12 @@
     <dependencies>
         <dependency>
             <groupId>bio.singa</groupId>
-            <artifactId>singa-structure</artifactId>
+            <artifactId>singa-features</artifactId>
+            <version>0.6.0</version>
+        </dependency>
+        <dependency>
+            <groupId>bio.singa</groupId>
+            <artifactId>singa-mathematics</artifactId>
             <version>0.6.0</version>
         </dependency>
         <dependency>

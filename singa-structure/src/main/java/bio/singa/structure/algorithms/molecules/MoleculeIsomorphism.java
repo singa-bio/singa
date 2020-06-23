@@ -1,11 +1,11 @@
 package bio.singa.structure.algorithms.molecules;
 
+import bio.singa.chemistry.model.MoleculeAtom;
+import bio.singa.chemistry.model.MoleculeBond;
+import bio.singa.chemistry.model.MoleculeGraph;
 import bio.singa.core.utility.Pair;
 import bio.singa.mathematics.algorithms.graphs.isomorphism.RISubgraphFinder;
 import bio.singa.mathematics.vectors.Vector2D;
-import bio.singa.structure.model.molecules.MoleculeAtom;
-import bio.singa.structure.model.molecules.MoleculeBond;
-import bio.singa.structure.model.molecules.MoleculeGraph;
 
 import java.util.*;
 import java.util.function.Function;

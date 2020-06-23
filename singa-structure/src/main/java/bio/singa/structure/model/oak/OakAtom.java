@@ -1,7 +1,7 @@
 package bio.singa.structure.model.oak;
 
 import bio.singa.mathematics.vectors.Vector3D;
-import bio.singa.structure.elements.Element;
+import bio.singa.chemistry.model.elements.Element;
 import bio.singa.structure.model.interfaces.Atom;
 
 import java.util.HashSet;

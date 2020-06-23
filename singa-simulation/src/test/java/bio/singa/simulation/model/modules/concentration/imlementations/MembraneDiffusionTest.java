@@ -1,12 +1,13 @@
 package bio.singa.simulation.model.modules.concentration.imlementations;
 
-import bio.singa.simulation.entities.simple.SmallMolecule;
 import bio.singa.chemistry.features.permeability.MembranePermeability;
 import bio.singa.features.model.Evidence;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.vectors.Vector2D;
+import bio.singa.simulation.entities.ChemicalEntity;
+import bio.singa.simulation.entities.SimpleEntity;
 import bio.singa.simulation.model.agents.pointlike.Vesicle;
 import bio.singa.simulation.model.agents.pointlike.VesicleLayer;
 import bio.singa.simulation.model.agents.surfacelike.Membrane;
@@ -49,7 +50,7 @@ import static tech.units.indriya.unit.Units.SECOND;
  */
 class MembraneDiffusionTest {
 
-    private final SmallMolecule water = SmallMolecule.create("water")
+    private final ChemicalEntity water = SimpleEntity.create("water")
             .assignFeature(new MembranePermeability(Quantities.getQuantity(3.5E-03, CENTIMETRE_PER_SECOND), Evidence.NO_EVIDENCE))
             .build();
 

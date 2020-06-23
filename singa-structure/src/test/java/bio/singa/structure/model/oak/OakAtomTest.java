@@ -1,7 +1,7 @@
 package bio.singa.structure.model.oak;
 
 import bio.singa.mathematics.vectors.Vector3D;
-import bio.singa.structure.elements.ElementProvider;
+import bio.singa.chemistry.model.elements.ElementProvider;
 import bio.singa.structure.model.interfaces.Atom;
 import bio.singa.structure.model.interfaces.Structure;
 import bio.singa.structure.parser.pdb.structures.StructureParser;
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Set;
 
-import static bio.singa.structure.elements.ElementProvider.CARBON;
+import static bio.singa.chemistry.model.elements.ElementProvider.CARBON;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**

@@ -2,12 +2,12 @@ package bio.singa.chemistry.features.databases.pubchem;
 
 import bio.singa.chemistry.features.logp.LogP;
 import bio.singa.chemistry.features.smiles.Smiles;
-import bio.singa.chemistry.simple.SmallMolecule;
+import bio.singa.chemistry.model.SmallMolecule;
 import bio.singa.features.identifiers.ChEBIIdentifier;
 import bio.singa.features.identifiers.InChIKey;
 import bio.singa.features.identifiers.PubChemIdentifier;
 import bio.singa.features.identifiers.model.Identifier;
-import bio.singa.structure.features.molarmass.MolarMass;
+import bio.singa.features.quantities.MolarMass;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.Locator;
@@ -53,7 +53,9 @@ class PubChemContentHandler implements ContentHandler {
             species.addName(name);
         }
         if (molarMass != 0.0) {
-            species.setFeature(new MolarMass(molarMass, PubChemDatabase.evidence));
+            species.setFeature(MolarMass.of(molarMass, MolarMass.GRAM_PER_MOLE)
+                    .evidence(PubChemDatabase.evidence)
+                    .build());
         }
         if (logP != 0.0) {
             species.setFeature(new LogP(logP, PubChemDatabase.evidence));

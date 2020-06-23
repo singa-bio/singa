@@ -1,9 +1,9 @@
 package bio.singa.simulation.model.simulation;
 
-import bio.singa.simulation.entities.ChemicalEntity;
-import bio.singa.simulation.entities.simple.SmallMolecule;
 import bio.singa.chemistry.features.reactions.RateConstant;
 import bio.singa.features.units.UnitRegistry;
+import bio.singa.simulation.entities.ChemicalEntity;
+import bio.singa.simulation.entities.SimpleEntity;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.modules.concentration.imlementations.reactions.Reaction;
@@ -46,9 +46,9 @@ public class NumericalApproximationTest {
             AutomatonGraph automatonGraph = AutomatonGraphs.singularGraph();
             simulation.setGraph(automatonGraph);
 
-            ChemicalEntity entityA = SmallMolecule.create("A").build();
-            ChemicalEntity entityP = SmallMolecule.create("P").build();
-            ChemicalEntity entityQ = SmallMolecule.create("Q").build();
+            ChemicalEntity entityA = SimpleEntity.create("A").build();
+            ChemicalEntity entityP = SimpleEntity.create("P").build();
+            ChemicalEntity entityQ = SimpleEntity.create("Q").build();
 
             UnitRegistry.setTime(Quantities.getQuantity(1, SECOND));
             automatonGraph.getNodes().iterator().next().getConcentrationManager().getConcentrationContainer().initialize(INNER, entityA, Quantities.getQuantity(1.0, MICRO_MOLE_PER_LITRE));

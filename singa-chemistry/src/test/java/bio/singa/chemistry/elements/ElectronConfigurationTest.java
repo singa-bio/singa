@@ -1,6 +1,6 @@
 package bio.singa.chemistry.elements;
 
-import bio.singa.structure.elements.ElectronConfiguration;
+import bio.singa.chemistry.model.elements.ElectronConfiguration;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

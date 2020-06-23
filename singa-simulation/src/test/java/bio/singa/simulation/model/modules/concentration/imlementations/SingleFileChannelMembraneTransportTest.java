@@ -1,11 +1,11 @@
 package bio.singa.simulation.model.modules.concentration.imlementations;
 
-import bio.singa.simulation.entities.simple.Protein;
-import bio.singa.simulation.entities.simple.SmallMolecule;
 import bio.singa.chemistry.features.permeability.OsmoticPermeability;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.features.units.UnitRegistry;
+import bio.singa.simulation.entities.ChemicalEntity;
+import bio.singa.simulation.entities.SimpleEntity;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.graphs.AutomatonNode;
@@ -48,13 +48,15 @@ class SingleFileChannelMembraneTransportTest {
         Simulation simulation = new Simulation();
         // setup species
         // water
-        SmallMolecule water = SmallMolecule.create("water")
+        ChemicalEntity water = SimpleEntity.create("water")
+                .small()
                 .build();
         // solutes
-        SmallMolecule solute = SmallMolecule.create("solutes")
+        ChemicalEntity solute = SimpleEntity.create("solutes")
+                .small()
                 .build();
         // aqp2
-        Protein aquaporin2 = Protein.create("aqp2")
+        ChemicalEntity aquaporin2 = SimpleEntity.create("aqp2")
                 .assignFeature(new OsmoticPermeability(Quantities.getQuantity(5.31e-14, CUBIC_CENTIMETRE_PER_SECOND)))
                 .build();
         // graph

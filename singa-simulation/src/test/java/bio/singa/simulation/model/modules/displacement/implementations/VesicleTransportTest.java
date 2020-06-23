@@ -1,13 +1,11 @@
 package bio.singa.simulation.model.modules.displacement.implementations;
 
-import bio.singa.simulation.entities.ChemicalEntity;
-import bio.singa.simulation.entities.EntityRegistry;
-import bio.singa.simulation.entities.simple.Protein;
 import bio.singa.core.utility.ListHelper;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.topology.grids.rectangular.NeumannRectangularDirection;
 import bio.singa.mathematics.vectors.Vector2D;
+import bio.singa.simulation.entities.EntityRegistry;
 import bio.singa.simulation.features.*;
 import bio.singa.simulation.model.agents.linelike.LineLikeAgent;
 import bio.singa.simulation.model.agents.linelike.LineLikeAgentLayer;
@@ -38,7 +36,8 @@ import static bio.singa.features.units.UnitProvider.MICRO_MOLE_PER_LITRE;
 import static bio.singa.simulation.features.ActinBoostVelocity.NANOMETRE_PER_SECOND;
 import static bio.singa.simulation.features.MotorPullDirection.PLUS;
 import static bio.singa.simulation.model.agents.linelike.LineLikeAgent.ACTIN;
-import static bio.singa.simulation.model.agents.pointlike.VesicleStateRegistry.*;
+import static bio.singa.simulation.model.agents.pointlike.VesicleStateRegistry.ACTIN_ATTACHED;
+import static bio.singa.simulation.model.agents.pointlike.VesicleStateRegistry.TAGGED_FOR_EXOCYTOSIS;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static tech.units.indriya.unit.MetricPrefix.*;
@@ -70,8 +69,6 @@ class VesicleTransportTest {
 
         ComparableQuantity<Time> timeStep = Quantities.getQuantity(1, MILLI(SECOND));
         UnitRegistry.setTime(timeStep);
-
-        ChemicalEntity myo = Protein.create("MYO").build();
 
         Simulation simulation = new Simulation();
 

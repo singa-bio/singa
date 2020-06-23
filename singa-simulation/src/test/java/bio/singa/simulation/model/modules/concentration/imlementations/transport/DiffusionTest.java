@@ -1,6 +1,5 @@
 package bio.singa.simulation.model.modules.concentration.imlementations.transport;
 
-import bio.singa.simulation.entities.simple.SmallMolecule;
 import bio.singa.features.quantities.ConcentrationDiffusivity;
 import bio.singa.core.utility.Pair;
 import bio.singa.core.utility.Resources;
@@ -9,6 +8,8 @@ import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.geometry.faces.Rectangle;
 import bio.singa.mathematics.graphs.model.Graphs;
 import bio.singa.mathematics.topology.grids.rectangular.RectangularCoordinate;
+import bio.singa.simulation.entities.ChemicalEntity;
+import bio.singa.simulation.entities.SimpleEntity;
 import bio.singa.simulation.model.agents.surfacelike.GridImageReader;
 import bio.singa.simulation.model.agents.surfacelike.GridMembraneBuilder;
 import bio.singa.simulation.model.agents.surfacelike.Membrane;
@@ -57,16 +58,19 @@ class DiffusionTest {
     private static final double simulationExtend = 2500;
 
     // required species
-    private static final SmallMolecule hydrogen = SmallMolecule.create("h2")
+    private static final SimpleEntity hydrogen = SimpleEntity.create("h2")
             .assignFeature(ConcentrationDiffusivity.of(4.40E-05, SQUARE_CENTIMETRE_PER_SECOND).build())
+            .small()
             .build();
 
-    private static final SmallMolecule ammonia = SmallMolecule.create("ammonia")
+    private static final SimpleEntity ammonia = SimpleEntity.create("ammonia")
             .assignFeature(ConcentrationDiffusivity.of(2.28E-05, SQUARE_CENTIMETRE_PER_SECOND).build())
+            .small()
             .build();
 
-    private static final SmallMolecule benzene = SmallMolecule.create("benzene")
+    private static final SimpleEntity benzene = SimpleEntity.create("benzene")
             .assignFeature(ConcentrationDiffusivity.of(1.09E-05, SQUARE_CENTIMETRE_PER_SECOND).build())
+            .small()
             .build();
 
     @BeforeAll
@@ -196,7 +200,7 @@ class DiffusionTest {
 
     }
 
-    private Simulation setUpSimulation(int numberOfNodes, SmallMolecule species) {
+    private Simulation setUpSimulation(int numberOfNodes, ChemicalEntity chemicalEntity) {
         Environment.setSystemExtend(systemExtend);
         Environment.setSimulationExtend(simulationExtend);
         // setup node distance to diameter
@@ -207,9 +211,9 @@ class DiffusionTest {
         // initialize species in graph with desired concentration leaving the right "half" empty
         for (AutomatonNode node : graph.getNodes()) {
             if (node.getIdentifier().getColumn() < (graph.getNumberOfColumns() / 2)) {
-                node.getConcentrationContainer().initialize(EXTRACELLULAR_REGION, species, Quantities.getQuantity(1.0, MOLE_PER_LITRE));
+                node.getConcentrationContainer().initialize(EXTRACELLULAR_REGION, chemicalEntity, Quantities.getQuantity(1.0, MOLE_PER_LITRE));
             } else {
-                node.getConcentrationContainer().initialize(EXTRACELLULAR_REGION, species, Quantities.getQuantity(0.0, MOLE_PER_LITRE));
+                node.getConcentrationContainer().initialize(EXTRACELLULAR_REGION, chemicalEntity, Quantities.getQuantity(0.0, MOLE_PER_LITRE));
             }
         }
         // setup simulation
@@ -218,14 +222,14 @@ class DiffusionTest {
         simulation.setGraph(graph);
         // add diffusion module
         Diffusion.inSimulation(simulation)
-                .forEntity(species)
+                .forEntity(chemicalEntity)
                 .forAllSections()
                 .build();
         // return complete simulation
         return simulation;
     }
 
-    private Quantity<Time> runSimulation(Simulation simulation, int numberOfNodes, SmallMolecule species) {
+    private Quantity<Time> runSimulation(Simulation simulation, int numberOfNodes, ChemicalEntity chemicalEntity) {
         // returns the node in the middle on the right
         RectangularCoordinate coordinate = new RectangularCoordinate(numberOfNodes - 1, (numberOfNodes / 2) - 1);
         simulation.getGraph().getNode(coordinate).setObserved(true);
@@ -233,9 +237,9 @@ class DiffusionTest {
         double currentConcentration = 0.0;
         while (currentConcentration < 0.25) {
             simulation.nextEpoch();
-            currentConcentration = UnitRegistry.concentration(simulation.getGraph().getNode(coordinate).getConcentrationContainer().get(EXTRACELLULAR_REGION, species)).to(MOLE_PER_LITRE).getValue().doubleValue();
+            currentConcentration = UnitRegistry.concentration(simulation.getGraph().getNode(coordinate).getConcentrationContainer().get(EXTRACELLULAR_REGION, chemicalEntity)).to(MOLE_PER_LITRE).getValue().doubleValue();
         }
-        logger.info("Half life time of {} reached at {}.", species.getIdentifier(), TimeStepManager.getElapsedTime().to(MICRO(SECOND)));
+        logger.info("Half life time of {} reached at {}.", chemicalEntity.getIdentifier(), TimeStepManager.getElapsedTime().to(MICRO(SECOND)));
         return TimeStepManager.getElapsedTime().to(MICRO(SECOND));
     }
 

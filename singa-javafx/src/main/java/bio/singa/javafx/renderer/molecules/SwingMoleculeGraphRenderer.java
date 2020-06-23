@@ -1,13 +1,13 @@
 package bio.singa.javafx.renderer.molecules;
 
+import bio.singa.chemistry.model.MoleculeAtom;
+import bio.singa.chemistry.model.MoleculeBond;
+import bio.singa.chemistry.model.MoleculeGraph;
 import bio.singa.javafx.renderer.SwingRenderer;
 import bio.singa.javafx.renderer.graphs.GraphRenderOptions;
 import bio.singa.mathematics.geometry.edges.Line;
 import bio.singa.mathematics.geometry.edges.SimpleLineSegment;
 import bio.singa.mathematics.vectors.Vector2D;
-import bio.singa.structure.model.molecules.MoleculeAtom;
-import bio.singa.structure.model.molecules.MoleculeBond;
-import bio.singa.structure.model.molecules.MoleculeGraph;
 import bio.singa.structure.parser.plip.Interaction;
 
 import java.awt.*;

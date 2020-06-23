@@ -1,9 +1,9 @@
 package bio.singa.javafx.viewer;
 
+import bio.singa.chemistry.model.MoleculeGraph;
 import bio.singa.javafx.renderer.graphs.GraphRenderOptions;
 import bio.singa.javafx.renderer.molecules.MoleculeRendererOptions;
 import bio.singa.javafx.renderer.molecules.SwingMoleculeGraphRenderer;
-import bio.singa.structure.model.molecules.MoleculeGraph;
 import bio.singa.structure.parser.mol.MolParser;
 import javafx.scene.paint.Color;
 import org.jfree.graphics2d.svg.SVGGraphics2D;

@@ -1,19 +1,18 @@
 package bio.singa.simulation.model.modules.concentration.imlementations.reactions;
 
 import bio.singa.chemistry.features.reactions.MichaelisConstant;
-import bio.singa.chemistry.features.reactions.TurnoverNumber;
-import bio.singa.features.quantities.MolarConcentration;
-import bio.singa.simulation.entities.*;
-import bio.singa.simulation.entities.simple.Protein;
-import bio.singa.simulation.entities.simple.SmallMolecule;
 import bio.singa.chemistry.features.reactions.RateConstant;
+import bio.singa.chemistry.features.reactions.TurnoverNumber;
 import bio.singa.features.identifiers.ChEBIIdentifier;
 import bio.singa.features.identifiers.UniProtIdentifier;
 import bio.singa.features.model.Evidence;
 import bio.singa.features.parameters.Environment;
+import bio.singa.features.quantities.MolarConcentration;
+import bio.singa.features.quantities.MolarMass;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.geometry.faces.Rectangle;
 import bio.singa.mathematics.vectors.Vector2D;
+import bio.singa.simulation.entities.*;
 import bio.singa.simulation.model.agents.pointlike.Vesicle;
 import bio.singa.simulation.model.agents.pointlike.VesicleLayer;
 import bio.singa.simulation.model.concentrations.ConcentrationBuilder;
@@ -26,7 +25,6 @@ import bio.singa.simulation.model.modules.concentration.imlementations.reactions
 import bio.singa.simulation.model.sections.*;
 import bio.singa.simulation.model.simulation.Simulation;
 import bio.singa.simulation.model.simulation.error.TimeStepManager;
-import bio.singa.structure.features.molarmass.MolarMass;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -40,16 +38,16 @@ import javax.measure.quantity.Dimensionless;
 import javax.measure.quantity.Length;
 import javax.measure.quantity.Time;
 
-import static bio.singa.simulation.model.sections.CellRegions.EXTRACELLULAR_REGION;
-import static bio.singa.simulation.reactions.conditions.CandidateConditionBuilder.*;
-import static bio.singa.simulation.reactions.reactors.ReactionChainBuilder.add;
-import static bio.singa.simulation.reactions.reactors.ReactionChainBuilder.bind;
 import static bio.singa.features.units.UnitProvider.*;
 import static bio.singa.simulation.model.sections.CellRegions.CELL_OUTER_MEMBRANE_REGION;
 import static bio.singa.simulation.model.sections.CellRegions.CYTOPLASM_REGION;
-import static bio.singa.simulation.model.sections.CellSubsections.*;
+import static bio.singa.simulation.model.sections.CellSubsections.CELL_OUTER_MEMBRANE;
+import static bio.singa.simulation.model.sections.CellSubsections.CYTOPLASM;
 import static bio.singa.simulation.model.sections.CellTopology.INNER;
 import static bio.singa.simulation.model.sections.CellTopology.MEMBRANE;
+import static bio.singa.simulation.reactions.conditions.CandidateConditionBuilder.*;
+import static bio.singa.simulation.reactions.reactors.ReactionChainBuilder.add;
+import static bio.singa.simulation.reactions.reactors.ReactionChainBuilder.bind;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static tech.units.indriya.AbstractUnit.ONE;
@@ -232,7 +230,7 @@ class ReactionTest {
         ChemicalEntity speciesB = SimpleEntity.create("B").build();
 
         // set concentrations
-        CellSubsection subsection = EXTRACELLULAR_REGION.getInnerSubsection();
+        CellSubsection subsection = CellRegions.EXTRACELLULAR_REGION.getInnerSubsection();
         for (AutomatonNode node : graph.getNodes()) {
             node.getConcentrationContainer().initialize(subsection, speciesA, Quantities.getQuantity(1.0, MOLE_PER_LITRE));
         }
@@ -311,7 +309,7 @@ class ReactionTest {
 
         ConcentrationBuilder.create(simulation)
                 .entity(ligand)
-                .subsection(EXTRACELLULAR_REGION)
+                .subsection(CellSubsections.EXTRACELLULAR_REGION)
                 .concentrationValue(0.1)
                 .unit(MOLE_PER_LITRE)
                 .build();
@@ -377,19 +375,19 @@ class ReactionTest {
         AutomatonGraph graph = AutomatonGraphs.singularGraph();
 
         // prepare species
-        SmallMolecule dpo = SmallMolecule.create("DPO")
+        ChemicalEntity dpo = SimpleEntity.create("DPO")
                 .additionalIdentifier(new ChEBIIdentifier("CHEBI:29802"))
                 .build();
 
-        SmallMolecule ndo = SmallMolecule.create("NDO")
+        ChemicalEntity ndo = SimpleEntity.create("NDO")
                 .additionalIdentifier(new ChEBIIdentifier("CHEBI:33101"))
                 .build();
 
-        SmallMolecule oxygen = SmallMolecule.create("O")
+        ChemicalEntity oxygen = SimpleEntity.create("O")
                 .additionalIdentifier(new ChEBIIdentifier("CHEBI:15379"))
                 .build();
 
-        CellSubsection subsection = EXTRACELLULAR_REGION.getInnerSubsection();
+        CellSubsection subsection = CellRegions.EXTRACELLULAR_REGION.getInnerSubsection();
         for (AutomatonNode node : graph.getNodes()) {
             node.getConcentrationContainer().initialize(subsection, dpo, Quantities.getQuantity(0.02, MOLE_PER_LITRE));
         }
@@ -457,7 +455,7 @@ class ReactionTest {
         simulation.setGraph(graph);
 
         // prepare species
-        SmallMolecule sm = SmallMolecule.create("A").build();
+        ChemicalEntity sm = SimpleEntity.create("A").build();
 
         VesicleLayer layer = new VesicleLayer(simulation);
         Vesicle vesicle = new Vesicle(new Vector2D(400, 400.0), Quantities.getQuantity(50, NANO(METRE)));
@@ -500,17 +498,20 @@ class ReactionTest {
         AutomatonGraph graph = AutomatonGraphs.singularGraph();
 
         // get required species
-        SmallMolecule fructosePhosphate = SmallMolecule.create("FP").build();
-        SmallMolecule glyceronePhosphate = SmallMolecule.create("GP").build();
-        SmallMolecule glyceraldehyde = SmallMolecule.create("GA").build();
-        Protein aldolase = Protein.create("P07752").build();
+        ChemicalEntity fructosePhosphate = SimpleEntity.create("FP")
+                .small().build();
+        ChemicalEntity glyceronePhosphate = SimpleEntity.create("GP")
+                .small().build();
+        ChemicalEntity glyceraldehyde = SimpleEntity.create("GA")
+                .small().build();
+        ChemicalEntity aldolase = SimpleEntity.create("P07752").build();
 
         // rates
         MichaelisConstant michaelisConstant = new MichaelisConstant(Quantities.getQuantity(9.0e-3, MOLE_PER_LITRE), Evidence.NO_EVIDENCE);
         TurnoverNumber turnoverNumber = new TurnoverNumber(76, new ProductUnit<>(ONE.divide(MINUTE)), Evidence.NO_EVIDENCE);
 
         // set concentrations
-        CellSubsection subsection = EXTRACELLULAR_REGION.getInnerSubsection();
+        CellSubsection subsection = CellRegions.EXTRACELLULAR_REGION.getInnerSubsection();
         for (AutomatonNode node : graph.getNodes()) {
             node.getConcentrationContainer().initialize(subsection, fructosePhosphate, Quantities.getQuantity(1.0, MOLE_PER_LITRE));
             node.getConcentrationContainer().initialize(subsection, aldolase, Quantities.getQuantity(0.01, MOLE_PER_LITRE));
@@ -559,9 +560,9 @@ class ReactionTest {
     void shouldPerformDynamicReaction() {
 
         // reactant
-        ChemicalEntity substrate = SmallMolecule.create("substrate").build();
-        ChemicalEntity product = SmallMolecule.create("product").build();
-        ChemicalEntity catalyst = SmallMolecule.create("catalyst").build();
+        ChemicalEntity substrate = SimpleEntity.create("substrate").build();
+        ChemicalEntity product = SimpleEntity.create("product").build();
+        ChemicalEntity catalyst = SimpleEntity.create("catalyst").build();
 
         // create simulation
         Simulation simulation = new Simulation();
@@ -585,7 +586,7 @@ class ReactionTest {
         simulation.setGraph(automatonGraph);
         // set concentrations
         AutomatonNode node = automatonGraph.getNode(0, 0);
-        node.setCellRegion(CellRegions.CYTOPLASM_REGION);
+        node.setCellRegion(CYTOPLASM_REGION);
 
         ConcentrationBuilder.create(simulation)
                 .entity(substrate)
@@ -650,11 +651,11 @@ class ReactionTest {
                 .build();
 
         // the ligand
-        ChemicalEntity bindee = SmallMolecule.create("bindee")
+        ChemicalEntity bindee = SimpleEntity.create("bindee")
                 .build();
 
         // the receptor
-        Protein binder = new Protein.Builder("binder")
+        ChemicalEntity binder = SimpleEntity.create("binder")
                 .build();
 
         ComplexEntity complex = ComplexEntity.from(binder, bindee);
@@ -746,11 +747,11 @@ class ReactionTest {
                 .build();
 
         // the ligand
-        ChemicalEntity bindee = SmallMolecule.create("bindee")
+        ChemicalEntity bindee = SimpleEntity.create("bindee")
                 .build();
 
         // the receptor
-        Protein binder = new Protein.Builder("binder")
+        ChemicalEntity binder = SimpleEntity.create("binder")
                 .build();
 
         ComplexEntity complex = ComplexEntity.from(binder, bindee);
@@ -833,13 +834,13 @@ class ReactionTest {
                 .build();
 
         // the ligand
-        ChemicalEntity bindee = SmallMolecule.create("bindee")
-                .assignFeature(new MolarMass(10, Evidence.NO_EVIDENCE))
+        ChemicalEntity bindee = SimpleEntity.create("bindee")
+                .assignFeature(MolarMass.of(10, MolarMass.GRAM_PER_MOLE).build())
                 .build();
 
         // the receptor
-        Protein binder = new Protein.Builder("binder")
-                .assignFeature(new MolarMass(100, Evidence.NO_EVIDENCE))
+        ChemicalEntity binder = SimpleEntity.create("binder")
+                .assignFeature(MolarMass.of(100, MolarMass.GRAM_PER_MOLE).build())
                 .build();
 
         ComplexEntity complex = ComplexEntity.from(binder, bindee);
@@ -931,7 +932,7 @@ class ReactionTest {
 
         // set concentrations
         AutomatonNode membraneNode = automatonGraph.getNode(0, 0);
-        membraneNode.setCellRegion(CellRegions.CELL_OUTER_MEMBRANE_REGION);
+        membraneNode.setCellRegion(CELL_OUTER_MEMBRANE_REGION);
         membraneNode.getConcentrationContainer().initialize(INNER, bindee, Quantities.getQuantity(1.0, MOLE_PER_LITRE));
         membraneNode.getConcentrationContainer().initialize(MEMBRANE, binder, Quantities.getQuantity(1.0, MOLE_PER_LITRE));
         membraneNode.getConcentrationContainer().initialize(MEMBRANE, complex, Quantities.getQuantity(1.0, MOLE_PER_LITRE));
@@ -988,7 +989,7 @@ class ReactionTest {
 
         // concentrations
         AutomatonNode membraneNode = automatonGraph.getNode(0, 0);
-        membraneNode.setCellRegion(CellRegions.CELL_OUTER_MEMBRANE_REGION);
+        membraneNode.setCellRegion(CELL_OUTER_MEMBRANE_REGION);
         membraneNode.getConcentrationContainer().set(INNER, bindee, 1.0);
         membraneNode.getConcentrationContainer().set(MEMBRANE, binder, 0.1);
         membraneNode.getConcentrationContainer().set(MEMBRANE, complex, 0.0);
@@ -1008,15 +1009,15 @@ class ReactionTest {
         AutomatonGraph automatonGraph = AutomatonGraphs.singularGraph(CELL_OUTER_MEMBRANE_REGION);
         simulation.setGraph(automatonGraph);
 
-        ChemicalEntity aqp2 = Protein.create("AQP2").membraneBound().build();
+        ChemicalEntity aqp2 = SimpleEntity.create("AQP2").membraneBound().build();
         BindingSite aqpSite = BindingSite.createNamed("ser265");
 
-        ChemicalEntity pp1 = Protein.create("PP1").build();
+        ChemicalEntity pp1 = SimpleEntity.create("PP1").build();
         BindingSite pp1Site = BindingSite.createNamed("thr38");
 
-        ChemicalEntity p = SmallMolecule.create("P").build();
+        ChemicalEntity p = SimpleEntity.create("P").small().build();
 
-        ChemicalEntity pka = Protein.create("PKA").build();
+        ChemicalEntity pka = SimpleEntity.create("PKA").build();
         BindingSite substrateSite = BindingSite.createNamed("sub");
 
         RateConstant forwardRate = RateConstant.create(200)
@@ -1125,13 +1126,13 @@ class ReactionTest {
         AutomatonGraph automatonGraph = AutomatonGraphs.singularGraph(CELL_OUTER_MEMBRANE_REGION);
         simulation.setGraph(automatonGraph);
 
-        Protein enzyme = Protein.create("Enzyme")
+        ChemicalEntity enzyme = SimpleEntity.create("Enzyme")
                 .membraneBound()
                 .build();
 
-        SmallMolecule ligand = SmallMolecule.create("Ligand").build();
-        Protein kinase = Protein.create("Kinase").build();
-        SmallMolecule phosphate = SmallMolecule.create("P").build();
+        ChemicalEntity ligand = SimpleEntity.create("Ligand").build();
+        ChemicalEntity kinase = SimpleEntity.create("Kinase").build();
+        ChemicalEntity phosphate = SimpleEntity.create("P").small().build();
 
         RateConstant kFE = RateConstant.create(0.5)
                 .forward().secondOrder()
@@ -1197,7 +1198,7 @@ class ReactionTest {
         AutomatonGraph automatonGraph = AutomatonGraphs.singularGraph(CYTOPLASM_REGION);
         simulation.setGraph(automatonGraph);
 
-        SmallMolecule camp = SmallMolecule.create("camp").build();
+        SimpleEntity camp = SimpleEntity.create("camp").small().build();
 
         RateConstant<?> camp_influx = RateConstant.create(10)
                 .forward().zeroOrder()

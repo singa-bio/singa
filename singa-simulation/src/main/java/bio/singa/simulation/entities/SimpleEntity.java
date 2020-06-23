@@ -2,13 +2,12 @@ package bio.singa.simulation.entities;
 
 import bio.singa.chemistry.features.ChemistryFeatureContainer;
 import bio.singa.chemistry.features.permeability.MembranePermeability;
-import bio.singa.chemistry.features.structure3d.Structure3D;
 import bio.singa.features.identifiers.*;
 import bio.singa.features.identifiers.model.Identifier;
 import bio.singa.features.model.Feature;
 import bio.singa.features.model.FeatureContainer;
 import bio.singa.features.quantities.MolarVolume;
-import bio.singa.structure.features.molarmass.MolarMass;
+import bio.singa.features.quantities.MolarMass;
 
 import java.util.*;
 
@@ -27,7 +26,6 @@ public class SimpleEntity implements ChemicalEntity {
         availableFeatures.add(MembranePermeability.class);
         availableFeatures.add(MolarMass.class);
         availableFeatures.add(MolarVolume.class);
-        availableFeatures.add(Structure3D.class);
     }
 
     public static SimpleEntityBuilder create(String identifier) {

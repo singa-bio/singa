@@ -1,5 +1,6 @@
 package bio.singa.structure.model.molecules;
 
+import bio.singa.chemistry.model.MoleculeGraph;
 import bio.singa.structure.model.families.AminoAcidFamily;
 import bio.singa.structure.model.oak.OakLeafSubstructure;
 import org.junit.jupiter.api.DisplayName;

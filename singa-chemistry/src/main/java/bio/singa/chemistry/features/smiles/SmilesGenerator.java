@@ -1,10 +1,10 @@
 package bio.singa.chemistry.features.smiles;
 
-import bio.singa.structure.elements.ElementProvider;
-import bio.singa.structure.model.molecules.MoleculeAtom;
-import bio.singa.structure.model.molecules.MoleculeBond;
-import bio.singa.structure.model.molecules.MoleculeBondType;
-import bio.singa.structure.model.molecules.MoleculeGraph;
+import bio.singa.chemistry.model.CovalentBondType;
+import bio.singa.chemistry.model.MoleculeAtom;
+import bio.singa.chemistry.model.MoleculeBond;
+import bio.singa.chemistry.model.MoleculeGraph;
+import bio.singa.chemistry.model.elements.ElementProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.ebi.beam.*;
@@ -21,18 +21,18 @@ public class SmilesGenerator {
 
     private static final Logger logger = LoggerFactory.getLogger(SmilesGenerator.class);
 
-    private static final Map<MoleculeBondType, Bond> BEAM_BOND_TYPE_MAP;
+    private static final Map<CovalentBondType, Bond> BEAM_BOND_TYPE_MAP;
 
     static {
         BEAM_BOND_TYPE_MAP = new HashMap<>();
-        BEAM_BOND_TYPE_MAP.put(MoleculeBondType.SINGLE_BOND, Bond.SINGLE);
-        BEAM_BOND_TYPE_MAP.put(MoleculeBondType.DOUBLE_BOND, Bond.DOUBLE);
-        BEAM_BOND_TYPE_MAP.put(MoleculeBondType.TRIPLE_BOND, Bond.TRIPLE);
-        BEAM_BOND_TYPE_MAP.put(MoleculeBondType.QUADRUPLE_BOND, Bond.QUADRUPLE);
-        BEAM_BOND_TYPE_MAP.put(MoleculeBondType.AROMATIC_BOND, Bond.AROMATIC);
-        BEAM_BOND_TYPE_MAP.put(MoleculeBondType.ISOMERIC_BOND_DOWN, Bond.DOWN);
-        BEAM_BOND_TYPE_MAP.put(MoleculeBondType.ISOMERIC_BOND_UP, Bond.UP);
-        BEAM_BOND_TYPE_MAP.put(MoleculeBondType.UNCONNECTED, Bond.DOT);
+        BEAM_BOND_TYPE_MAP.put(CovalentBondType.SINGLE_BOND, Bond.SINGLE);
+        BEAM_BOND_TYPE_MAP.put(CovalentBondType.DOUBLE_BOND, Bond.DOUBLE);
+        BEAM_BOND_TYPE_MAP.put(CovalentBondType.TRIPLE_BOND, Bond.TRIPLE);
+        BEAM_BOND_TYPE_MAP.put(CovalentBondType.QUADRUPLE_BOND, Bond.QUADRUPLE);
+        BEAM_BOND_TYPE_MAP.put(CovalentBondType.AROMATIC_BOND, Bond.AROMATIC);
+        BEAM_BOND_TYPE_MAP.put(CovalentBondType.ISOMERIC_BOND_DOWN, Bond.DOWN);
+        BEAM_BOND_TYPE_MAP.put(CovalentBondType.ISOMERIC_BOND_UP, Bond.UP);
+        BEAM_BOND_TYPE_MAP.put(CovalentBondType.UNCONNECTED, Bond.DOT);
     }
 
     private Graph beamGraph;
@@ -41,13 +41,6 @@ public class SmilesGenerator {
         toBeamGraph(moleculeGraph);
     }
 
-    /**
-     * Creates a SMILES representation of the given {@link MoleculeGraph}.
-     *
-     * @param moleculeGraph The {@link MoleculeGraph} that should be converted to a SMILES string.
-     * @return The SMILES string.
-     * @throws IOException If SMILES could not be created.
-     */
     public static String generate(MoleculeGraph moleculeGraph) throws IOException {
         SmilesGenerator smilesGenerator = new SmilesGenerator(moleculeGraph);
         return smilesGenerator.beamGraph.toSmiles();

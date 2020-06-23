@@ -1,6 +1,6 @@
 package bio.singa.chemistry.features.databases.pubchem;
 
-import bio.singa.chemistry.simple.SmallMolecule;
+import bio.singa.chemistry.model.SmallMolecule;
 import bio.singa.core.parser.AbstractXMLParser;
 import bio.singa.features.identifiers.PubChemIdentifier;
 import org.slf4j.Logger;

@@ -1,12 +1,12 @@
 package bio.singa.simulation.model.modules.displacement.implementations;
 
 import bio.singa.simulation.entities.ChemicalEntity;
-import bio.singa.simulation.entities.simple.Protein;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.geometry.faces.Circle;
 import bio.singa.mathematics.geometry.faces.Rectangle;
 import bio.singa.mathematics.vectors.Vector2D;
+import bio.singa.simulation.entities.SimpleEntity;
 import bio.singa.simulation.features.ActinBoostVelocity;
 import bio.singa.simulation.features.BoostMediatingEntity;
 import bio.singa.simulation.model.agents.linelike.MicrotubuleOrganizingCentre;
@@ -61,7 +61,7 @@ class EndocytosisActinBoostTest {
         AutomatonGraph graph = AutomatonGraphs.createRectangularAutomatonGraph(nodesHorizontal, 1);
         simulation.setGraph(graph);
 
-        ChemicalEntity boostMediator = Protein.create("BOOST_MEDIATOR")
+        ChemicalEntity boostMediator = SimpleEntity.create("BOOST_MEDIATOR")
                 .membraneBound()
                 .build();
 

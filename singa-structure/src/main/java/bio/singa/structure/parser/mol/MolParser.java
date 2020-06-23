@@ -1,18 +1,17 @@
 package bio.singa.structure.parser.mol;
 
+import bio.singa.chemistry.model.CovalentBondType;
+import bio.singa.chemistry.model.MoleculeAtom;
+import bio.singa.chemistry.model.MoleculeGraph;
+import bio.singa.chemistry.model.elements.Element;
+import bio.singa.chemistry.model.elements.ElementProvider;
 import bio.singa.core.utility.Pair;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.mathematics.vectors.Vector3D;
-import bio.singa.structure.elements.Element;
-import bio.singa.structure.elements.ElementProvider;
 import bio.singa.structure.model.families.LigandFamily;
 import bio.singa.structure.model.identifiers.LeafIdentifier;
 import bio.singa.structure.model.interfaces.Atom;
 import bio.singa.structure.model.interfaces.Ligand;
-import bio.singa.structure.model.molecules.MoleculeAtom;
-import bio.singa.structure.model.molecules.MoleculeBondType;
-import bio.singa.structure.model.molecules.MoleculeGraph;
-import bio.singa.structure.model.oak.BondType;
 import bio.singa.structure.model.oak.OakAtom;
 import bio.singa.structure.model.oak.OakBond;
 import bio.singa.structure.model.oak.OakLigand;
@@ -37,7 +36,7 @@ public class MolParser {
     private int bondCount;
 
     private List<OakAtom> atoms;
-    private Map<Pair<Integer>, BondType> bonds;
+    private Map<Pair<Integer>, CovalentBondType> bonds;
     private List<Integer> skippedAtoms;
 
     public MolParser(List<String> lines) {
@@ -116,18 +115,18 @@ public class MolParser {
             }
 
             final int typeInt = Integer.parseInt(line.substring(6, 9).trim());
-            BondType type;
+            CovalentBondType type;
             switch (typeInt) {
                 case 2:
                 case 4:
-                    type = BondType.DOUBLE_BOND;
+                    type = CovalentBondType.DOUBLE_BOND;
                     break;
                 case 3:
-                    type = BondType.TRIPLE_BOND;
+                    type = CovalentBondType.TRIPLE_BOND;
                     break;
                 case 1:
                 default:
-                    type = BondType.SINGLE_BOND;
+                    type = CovalentBondType.SINGLE_BOND;
                     break;
             }
             // compute shift of bonds
@@ -143,7 +142,7 @@ public class MolParser {
         OakLigand ligand = new OakLigand(LeafIdentifier.DEFAULT_LEAF_IDENTIFIER, new LigandFamily("UNK", "?"));
         atoms.forEach(ligand::addAtom);
         int bondCounter = 0;
-        for (Map.Entry<Pair<Integer>, BondType> bond : bonds.entrySet()) {
+        for (Map.Entry<Pair<Integer>, CovalentBondType> bond : bonds.entrySet()) {
             ligand.addBondBetween(new OakBond(bondCounter, bond.getValue()), atoms.get(bond.getKey().getFirst() - 1),
                     atoms.get(bond.getKey().getSecond() - 1));
             bondCounter++;
@@ -165,14 +164,14 @@ public class MolParser {
             graph.addNode(new MoleculeAtom(atom.getAtomIdentifier(), position, atom.getElement()));
         }
         // then add bonds
-        for (Map.Entry<Pair<Integer>, BondType> entry : bonds.entrySet()) {
+        for (Map.Entry<Pair<Integer>, CovalentBondType> entry : bonds.entrySet()) {
             // only use bonds connecting the leaf internally
             int source = entry.getKey().getFirst() - 1;
             int target = entry.getKey().getSecond() - 1;
             MoleculeAtom sourceNode = graph.getNode(source);
             MoleculeAtom targetNode = graph.getNode(target);
             if (sourceNode != null && targetNode != null) {
-                graph.addEdgeBetween(sourceNode, targetNode, MoleculeBondType.getBondForOakBondType(entry.getValue()));
+                graph.addEdgeBetween(sourceNode, targetNode, entry.getValue());
             }
         }
         return graph;

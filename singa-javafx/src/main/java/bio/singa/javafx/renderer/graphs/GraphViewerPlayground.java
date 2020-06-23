@@ -2,13 +2,13 @@ package bio.singa.javafx.renderer.graphs;
 
 
 import bio.singa.chemistry.features.smiles.SmilesParser;
+import bio.singa.chemistry.model.MoleculeGraph;
 import bio.singa.mathematics.algorithms.graphs.NeighbourhoodExtractor;
 import bio.singa.mathematics.graphs.model.GenericGraph;
 import bio.singa.mathematics.graphs.model.GenericNode;
 import bio.singa.structure.model.interfaces.Chain;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.interfaces.Structure;
-import bio.singa.structure.model.molecules.MoleculeGraph;
 import bio.singa.structure.parser.pdb.structures.StructureParser;
 import bio.singa.structure.parser.pdb.structures.StructureSelector;
 import bio.singa.structure.parser.plip.InteractionContainer;

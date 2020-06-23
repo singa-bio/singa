@@ -1,10 +1,14 @@
 package bio.singa.structure.model.molecules;
 
+import bio.singa.chemistry.model.CovalentBondType;
+import bio.singa.chemistry.model.MoleculeAtom;
+import bio.singa.chemistry.model.MoleculeBond;
+import bio.singa.chemistry.model.MoleculeGraph;
+import bio.singa.chemistry.model.elements.Element;
 import bio.singa.mathematics.geometry.faces.Rectangle;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.mathematics.vectors.Vectors2D;
 import bio.singa.structure.algorithms.molecules.MoleculePathFinder;
-import bio.singa.structure.elements.Element;
 import bio.singa.structure.model.interfaces.Atom;
 import bio.singa.structure.model.oak.OakAtom;
 import bio.singa.structure.model.oak.OakBond;
@@ -71,9 +75,9 @@ public class MoleculeGraphs {
         for (List<MoleculeBond> path : aromaticPaths) {
             for (int i = 0; i < path.size(); i++) {
                 if (i % 2 == 0) {
-                    path.get(i).setType(MoleculeBondType.DOUBLE_BOND);
+                    path.get(i).setType(CovalentBondType.DOUBLE_BOND);
                 } else {
-                    path.get(i).setType(MoleculeBondType.SINGLE_BOND);
+                    path.get(i).setType(CovalentBondType.SINGLE_BOND);
                 }
             }
         }

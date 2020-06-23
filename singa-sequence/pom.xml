@@ -16,7 +16,7 @@
     <dependencies>
         <dependency>
             <groupId>bio.singa</groupId>
-            <artifactId>singa-chemistry</artifactId>
+            <artifactId>singa-structure</artifactId>
             <version>0.6.0</version>
         </dependency>
     </dependencies>

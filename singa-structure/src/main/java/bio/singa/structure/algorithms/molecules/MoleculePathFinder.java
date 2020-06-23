@@ -1,7 +1,11 @@
 package bio.singa.structure.algorithms.molecules;
 
-import bio.singa.structure.elements.Element;
-import bio.singa.structure.model.molecules.*;
+import bio.singa.chemistry.model.CovalentBondType;
+import bio.singa.chemistry.model.MoleculeAtom;
+import bio.singa.chemistry.model.MoleculeBond;
+import bio.singa.chemistry.model.MoleculeGraph;
+import bio.singa.chemistry.model.elements.Element;
+import bio.singa.structure.model.molecules.MoleculeGraphs;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -42,7 +46,7 @@ public class MoleculePathFinder {
         MoleculePathFinder pathFinder = new MoleculePathFinder(molecule);
         // find all aromatic bonds
         List<MoleculeBond> aromaticBonds = pathFinder.graph.getEdges().stream()
-                .filter(bond -> bond.getType() == MoleculeBondType.AROMATIC_BOND)
+                .filter(bond -> bond.getType() == CovalentBondType.AROMATIC_BOND)
                 .collect(Collectors.toList());
         // find continuous paths
         List<LinkedList<MoleculeBond>> continuousAromaticPaths = new ArrayList<>();
