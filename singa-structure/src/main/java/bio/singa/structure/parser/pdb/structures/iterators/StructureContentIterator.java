@@ -1,6 +1,8 @@
-package bio.singa.structure.parser.pdb.structures;
+package bio.singa.structure.parser.pdb.structures.iterators;
 
 import bio.singa.core.utility.Pair;
+import bio.singa.structure.parser.pdb.structures.SourceLocation;
+import bio.singa.structure.parser.pdb.structures.StructureParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,7 +25,7 @@ import static bio.singa.structure.parser.pdb.structures.SourceLocation.*;
  *
  * @author cl
  */
-class StructureContentIterator implements Iterator<List<String>> {
+public class StructureContentIterator implements Iterator<List<String>> {
 
     /**
      * The logger.
@@ -41,7 +43,7 @@ class StructureContentIterator implements Iterator<List<String>> {
     /**
      * The local pdb, if there is any.
      */
-    private StructureParser.LocalPDB localPdb;
+    private StructureParser.LocalPdb localPdb;
     /**
      * The urls that are to be parsed.
      */
@@ -97,7 +99,7 @@ class StructureContentIterator implements Iterator<List<String>> {
      *
      * @param identifier The identifier that is to be parsed.
      */
-    StructureContentIterator(String identifier, SourceLocation sourceLocation) {
+    public StructureContentIterator(String identifier, SourceLocation sourceLocation) {
         this(String.class, Collections.singletonList(identifier), sourceLocation);
     }
 
@@ -106,7 +108,7 @@ class StructureContentIterator implements Iterator<List<String>> {
      *
      * @param path The path of a file that is to be parsed.
      */
-    StructureContentIterator(Path path) {
+    public StructureContentIterator(Path path) {
         this(Path.class, Collections.singletonList(path), OFFLINE_PDB);
     }
 
@@ -115,7 +117,7 @@ class StructureContentIterator implements Iterator<List<String>> {
      *
      * @param file The  file that is to be parsed.
      */
-    StructureContentIterator(File file) {
+    public StructureContentIterator(File file) {
         this(File.class, Collections.singletonList(file), OFFLINE_PDB);
     }
 
@@ -125,7 +127,7 @@ class StructureContentIterator implements Iterator<List<String>> {
      * @param localPdb The pdb installation.
      * @param identifier The identifier that is to be parsed.
      */
-    StructureContentIterator(StructureParser.LocalPDB localPdb, String identifier) {
+    public StructureContentIterator(StructureParser.LocalPdb localPdb, String identifier) {
         this.localPdb = localPdb;
         paths = new ArrayList<>();
         pdbIdentifiers = new ArrayList<>();
@@ -138,7 +140,7 @@ class StructureContentIterator implements Iterator<List<String>> {
      * @param localPdb The pdb installation.
      * @param identifiers The identifiers that are to be parsed.
      */
-    StructureContentIterator(StructureParser.LocalPDB localPdb, List<String> identifiers) {
+    public StructureContentIterator(StructureParser.LocalPdb localPdb, List<String> identifiers) {
         this.localPdb = localPdb;
         paths = new ArrayList<>();
         pdbIdentifiers = new ArrayList<>();
@@ -151,7 +153,7 @@ class StructureContentIterator implements Iterator<List<String>> {
      * @param mapping The pdb identifier - chain identifier mapping.
      * @param localPDB The pdb installation.
      */
-    StructureContentIterator(List<Pair<String>> mapping, StructureParser.LocalPDB localPDB) {
+    public StructureContentIterator(List<Pair<String>> mapping, StructureParser.LocalPdb localPDB) {
         // sorry for the argument switch to work around erasure :(
         localPdb = localPDB;
         paths = new ArrayList<>();
@@ -165,7 +167,7 @@ class StructureContentIterator implements Iterator<List<String>> {
      *
      * @param mapping The pdb identifier - chain identifier mapping.
      */
-    StructureContentIterator(List<Pair<String>> mapping, SourceLocation sourceLocation) {
+    public StructureContentIterator(List<Pair<String>> mapping, SourceLocation sourceLocation) {
         paths = new ArrayList<>();
         identifiers = new ArrayList<>();
         pdbIdentifiers = new ArrayList<>();
@@ -180,7 +182,7 @@ class StructureContentIterator implements Iterator<List<String>> {
      * @param identifiers The identifiers to parse
      */
     @SuppressWarnings("unchecked")
-    StructureContentIterator(Class<?> context, List<?> identifiers, SourceLocation sourceLocation) {
+    public StructureContentIterator(Class<?> context, List<?> identifiers, SourceLocation sourceLocation) {
         paths = new ArrayList<>();
         this.identifiers = new ArrayList<>();
         pdbIdentifiers = new ArrayList<>();
@@ -327,7 +329,7 @@ class StructureContentIterator implements Iterator<List<String>> {
      *
      * @return The the number of enqueued structures to parse.
      */
-    int getNumberOfQueuedStructures() {
+    public int getNumberOfQueuedStructures() {
         if (location == ONLINE_PDB || location == ONLINE_MMTF) {
             return pdbIdentifiers.size();
         } else {
@@ -340,7 +342,7 @@ class StructureContentIterator implements Iterator<List<String>> {
      *
      * @return The the number of structures still to be parsed.
      */
-    int getNumberOfRemainingStructures() {
+    public int getNumberOfRemainingStructures() {
         if (location == ONLINE_PDB || location == ONLINE_MMTF) {
             return pdbIdentifiers.size() - progressCounter;
         } else {
@@ -353,7 +355,7 @@ class StructureContentIterator implements Iterator<List<String>> {
      *
      * @return the current pdb identifier.
      */
-    String getCurrentPdbIdentifier() {
+    public String getCurrentPdbIdentifier() {
         if (currentPdbIdentifier != null) {
             return currentPdbIdentifier;
         } else {
@@ -366,7 +368,7 @@ class StructureContentIterator implements Iterator<List<String>> {
      *
      * @return The current chain identifier.
      */
-    String getCurrentChainIdentifier() {
+    public String getCurrentChainIdentifier() {
         if (currentChainIdentifier != null) {
             return currentChainIdentifier;
         } else {
@@ -379,11 +381,11 @@ class StructureContentIterator implements Iterator<List<String>> {
      *
      * @return The current source.
      */
-    String getCurrentSource() {
+    public String getCurrentSource() {
         return currentSource;
     }
 
-    Path getCurrentPath() {
+    public Path getCurrentPath() {
         return currentPath;
     }
 

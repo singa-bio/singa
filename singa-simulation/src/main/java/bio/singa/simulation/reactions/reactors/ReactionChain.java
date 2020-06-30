@@ -118,7 +118,7 @@ public class ReactionChain {
         for (ReactionTrack track : tracks) {
             List<ComplexEntity> substrates = track.getFirst();
             List<ComplexEntity> products = track.getLast();
-            ReactionElement newElement = null;
+            ReactionElement newElement;
             if (track.isInverse()) {
                 newElement = new ReactionElement(products, substrates);
             } else {

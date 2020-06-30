@@ -213,10 +213,10 @@ public class ReactionBuilder {
         public MichaelisMentenReactionStep michaelisMenten() {
             reaction.setKineticLaw(new MichaelisMentenKineticLaw(reaction));
             if (reaction.getReactantBehavior().getSubstrates().size() > 1) {
-                logger.warn("Only one substrate is considered in classical Michaelis-Meten kinetics.");
+                logger.warn("Only one substrate is considered in classical Michaelis-Menten kinetics.");
             }
             if (reaction.getReactantBehavior().getSubstrates().size() > 1) {
-                logger.warn("Only one catalyst (enzyme) is considered in classical Michaelis-Meten kinetics.");
+                logger.warn("Only one catalyst (enzyme) is considered in classical Michaelis-Menten kinetics.");
             }
             return this;
         }

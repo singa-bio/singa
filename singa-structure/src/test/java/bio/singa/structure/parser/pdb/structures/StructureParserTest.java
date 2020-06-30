@@ -139,9 +139,9 @@ class StructureParserTest {
 
     @Test
     void shouldParseFromLocalPDB() {
-        StructureParser.LocalPDB localPdb = new StructureParser.LocalPDB(Resources.getResourceAsFileLocation("pdb"), SourceLocation.OFFLINE_PDB);
+        StructureParser.LocalPdb localPdb = new StructureParser.LocalPdb(Resources.getResourceAsFileLocation("pdb"), SourceLocation.OFFLINE_PDB);
         Structure structure = StructureParser.local()
-                .localPDB(localPdb, "1C0A")
+                .localPdb(localPdb, "1C0A")
                 .parse();
 
         assertNotNull(structure);
@@ -149,9 +149,9 @@ class StructureParserTest {
 
     @Test
     void shouldParseFromLocalMMTF() {
-        StructureParser.LocalPDB localPdb = new StructureParser.LocalPDB(Resources.getResourceAsFileLocation("pdb"), SourceLocation.OFFLINE_MMTF);
+        StructureParser.LocalPdb localPdb = new StructureParser.LocalPdb(Resources.getResourceAsFileLocation("pdb"), SourceLocation.OFFLINE_MMTF);
         Structure structure = StructureParser.local()
-                .localPDB(localPdb, "1C0A")
+                .localPdb(localPdb, "1C0A")
                 .parse();
     }
 
@@ -178,10 +178,10 @@ class StructureParserTest {
 
     @Test
     void shouldParseFromLocalPDBWithChainList() {
-        StructureParser.LocalPDB localPdb = new StructureParser.LocalPDB(Resources.getResourceAsFileLocation("pdb"), SourceLocation.OFFLINE_PDB);
+        StructureParser.LocalPdb localPdb = new StructureParser.LocalPdb(Resources.getResourceAsFileLocation("pdb"), SourceLocation.OFFLINE_PDB);
         Path chainList = Paths.get(Resources.getResourceAsFileLocation("chain_list.txt"));
         List<Structure> structure = StructureParser.local()
-                .localPDB(localPdb)
+                .localPdb(localPdb)
                 .chainList(chainList, ":")
                 .parse();
         assertTrue(structure.get(0).getNumberOfLeafSubstructures() > 0);
@@ -189,7 +189,7 @@ class StructureParserTest {
 
     @Test
     void shouldRetrievePathOfLocalPDB() {
-        StructureParser.LocalPDB localPdb = new StructureParser.LocalPDB(Resources.getResourceAsFileLocation("pdb"), SourceLocation.OFFLINE_PDB);
+        StructureParser.LocalPdb localPdb = new StructureParser.LocalPdb(Resources.getResourceAsFileLocation("pdb"), SourceLocation.OFFLINE_PDB);
         assertTrue(localPdb.getPathForPdbIdentifier("1C0A").endsWith("pdb/data/structures/divided/pdb/c0/pdb1c0a.ent.gz"));
     }
 
@@ -262,7 +262,7 @@ class StructureParserTest {
     @Test
     void shouldParsallPdbFiles() {
         // FIXMEuse correct path in production
-        StructureParser.LocalPDB localPDB = new StructureParser.LocalPDB("/tmp/pdb", SourceLocation.OFFLINE_PDB);
+        StructureParser.LocalPdb localPDB = new StructureParser.LocalPdb("/tmp/pdb", SourceLocation.OFFLINE_PDB);
 //        StructureParser.MultiParser multiParser = StructureParser.local()
 //                .localPDB(localPDB)
 //                .all();

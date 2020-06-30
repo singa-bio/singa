@@ -101,7 +101,7 @@ public class StructureCollector {
      * @return The resulting structure.
      * @throws StructureParserException if any problem occur during parsing.
      */
-    static Structure parse(List<String> pdbLines, StructureParser.Reducer reducer) throws StructureParserException {
+    public static Structure parse(List<String> pdbLines, StructureParser.Reducer reducer) throws StructureParserException {
         StructureCollector collector = new StructureCollector(pdbLines, reducer);
         collector.reduceLines();
         return collector.collectStructure();
@@ -131,7 +131,7 @@ public class StructureCollector {
         String firstLine = pdbLines.get(0);
         // parse meta information
         if (reducer.options.isInferringIdentifierFromFileName()) {
-            String currentSource = reducer.sourceSelector.contentIterator.getCurrentSource();
+            String currentSource = reducer.sourceSelector.iterator.getCurrentSource();
             String identifier = PDBIdentifier.extractFirst(currentSource);
             if (identifier != null) {
                 currentPDB = identifier;
@@ -166,7 +166,7 @@ public class StructureCollector {
      */
     private void getTitle() {
         if (reducer.options.isInferringTitleFromFileName()) {
-            titleBuilder.append(reducer.sourceSelector.contentIterator.getCurrentSource());
+            titleBuilder.append(reducer.sourceSelector.iterator.getCurrentSource());
         } else {
             boolean titleFound = false;
             for (String currentLine : pdbLines) {

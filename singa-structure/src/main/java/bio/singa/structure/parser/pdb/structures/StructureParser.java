@@ -1,8 +1,8 @@
 package bio.singa.structure.parser.pdb.structures;
 
-import bio.singa.core.utility.Pair;
 import bio.singa.structure.model.interfaces.Structure;
 import bio.singa.structure.model.mmtf.MmtfStructure;
+import bio.singa.structure.parser.pdb.structures.iterators.StructureIterator;
 import bio.singa.structure.parser.pdb.structures.tokens.LeafSkeleton;
 import org.rcsb.mmtf.decoder.ReaderUtils;
 import org.slf4j.Logger;
@@ -14,8 +14,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Parses structures in pdb format.
@@ -119,7 +117,7 @@ public class StructureParser {
          * @param localPDB The local pdb.
          * @return Additional local list file selection.
          */
-        AdditionalLocalSourceStep localPDB(LocalPDB localPDB);
+        AdditionalLocalSourceStep localPdb(LocalPdb localPDB);
 
         /**
          * The location of a local PDB installation in addition to the structure, that is to be parsed.
@@ -128,7 +126,7 @@ public class StructureParser {
          * @param pdbIdentifier The PDB identifier.
          * @return Branch selection
          */
-        SingleBranchStep localPDB(LocalPDB localPDB, String pdbIdentifier);
+        SingleBranchStep localPdb(LocalPdb localPDB, String pdbIdentifier);
 
         /**
          * The location of a local PDB installation in addition to a list of structures, that are to be parsed.
@@ -137,7 +135,7 @@ public class StructureParser {
          * @param pdbIdentifiers The PDB identifiers.
          * @return Branch selection
          */
-        MultiBranchStep localPDB(LocalPDB localPDB, List<String> pdbIdentifiers);
+        MultiBranchStep localPdb(LocalPdb localPDB, List<String> pdbIdentifiers);
 
         /**
          * The location of a file as a sting.
@@ -353,17 +351,17 @@ public class StructureParser {
         public Structure parse() throws StructureParserException {
             try {
                 if (selector.sourceSelector.sourceLocation == SourceLocation.ONLINE_MMTF) {
-                    MmtfStructure mmtfStructure = new MmtfStructure(ReaderUtils.getByteArrayFromUrl(selector.sourceSelector.contentIterator.next().get(0)));
+                    MmtfStructure mmtfStructure = new MmtfStructure(ReaderUtils.getByteArrayFromUrl(selector.sourceSelector.structureIterator.next().get(0)));
                     MmtfReducer.reduceMMTFStructure(mmtfStructure, selector);
                     return mmtfStructure;
                 } else if (selector.sourceSelector.sourceLocation == SourceLocation.OFFLINE_MMTF) {
-                    return new MmtfStructure(Files.readAllBytes(Paths.get(selector.sourceSelector.contentIterator.next().get(0))), false);
+                    return new MmtfStructure(Files.readAllBytes(Paths.get(selector.sourceSelector.structureIterator.next().get(0))), false);
                 }
             } catch (IOException e) {
                 logger.warn("failed to parse structure", e);
                 throw new StructureParserException(e.getMessage());
             }
-            return StructureCollector.parse(selector.sourceSelector.contentIterator.next(), selector);
+            return StructureCollector.parse(selector.sourceSelector.structureIterator.next(), selector);
         }
     }
 
@@ -397,7 +395,7 @@ public class StructureParser {
          * @return The number of structures totally queued.
          */
         public int getNumberOfQueuedStructures() {
-            return selector.sourceSelector.contentIterator.getNumberOfQueuedStructures();
+            return selector.sourceSelector.structureIterator.getNumberOfQueuedStructures();
         }
 
         /**
@@ -406,7 +404,7 @@ public class StructureParser {
          * @return The number of structures remaining.
          */
         public synchronized int getNumberOfRemainingStructures() {
-            return selector.sourceSelector.contentIterator.getNumberOfRemainingStructures();
+            return selector.sourceSelector.structureIterator.getNumberOfRemainingStructures();
         }
 
         /**
@@ -416,7 +414,7 @@ public class StructureParser {
          * @throws IllegalStateException if the structures identifier could not be accessed.
          */
         public String getCurrentPdbIdentifier() {
-            return selector.sourceSelector.contentIterator.getCurrentPdbIdentifier();
+            return selector.sourceSelector.structureIterator.getCurrentPdbIdentifier();
         }
 
         /**
@@ -426,15 +424,15 @@ public class StructureParser {
          * @throws IllegalStateException if the structures identifier could not be accessed.
          */
         public String getCurrentChainIdentifier() {
-            return selector.sourceSelector.contentIterator.getCurrentChainIdentifier();
+            return selector.sourceSelector.structureIterator.getCurrentChainIdentifier();
         }
 
         public String getCurrentSource() {
-            return selector.sourceSelector.contentIterator.getCurrentSource();
+            return selector.sourceSelector.structureIterator.getCurrentSource();
         }
 
         public Path getCurrentPath() {
-            return selector.sourceSelector.contentIterator.getCurrentPath();
+            return selector.sourceSelector.structureIterator.getCurrentPath();
         }
 
 
@@ -461,58 +459,24 @@ public class StructureParser {
         public List<Structure> parse() {
             logger.info("parsing {} structures ", getNumberOfQueuedStructures());
             List<Structure> structures = new ArrayList<>();
-            selector.sourceSelector.contentIterator.forEachRemaining(lines -> {
-                try {
-                    // FIXME uiuiui
-                    switch (selector.sourceSelector.sourceLocation) {
-                        case ONLINE_MMTF:
-                            MmtfStructure structureOnline = new MmtfStructure(ReaderUtils.getByteArrayFromUrl(lines.get(0)));
-                            MmtfReducer.reduceMMTFStructure(structureOnline, selector);
-                            structures.add(structureOnline);
-                            break;
-                        case OFFLINE_MMTF:
-                            MmtfStructure structureOffline = new MmtfStructure(Files.readAllBytes(Paths.get(lines.get(0))), false);
-                            MmtfReducer.reduceMMTFStructure(structureOffline, selector);
-                            structures.add(structureOffline);
-                            break;
-                        default:
-                            structures.add(StructureCollector.parse(lines, selector));
-                            break;
-                    }
-                } catch (StructureParserException | IOException e) {
-                    logger.warn("failed to parse structure", e);
-                }
-            });
+            selector.sourceSelector.iterator.forEachRemaining(structures::add);
             return structures;
         }
 
 
         @Override
         synchronized public boolean hasNext() {
-            return selector.sourceSelector.contentIterator.hasNext();
+            return selector.sourceSelector.iterator.hasNext();
         }
 
         @Override
         synchronized public Structure next() {
-            try {
-                // FIXME uiuiui
-                if (selector.sourceSelector.sourceLocation == SourceLocation.ONLINE_MMTF) {
-                    MmtfStructure mmtfStructure = new MmtfStructure(ReaderUtils.getByteArrayFromUrl(selector.sourceSelector.contentIterator.next().get(0)));
-                    MmtfReducer.reduceMMTFStructure(mmtfStructure, selector);
-                    return mmtfStructure;
-                } else if (selector.sourceSelector.sourceLocation == SourceLocation.OFFLINE_MMTF) {
-                    MmtfStructure mmtfStructure = new MmtfStructure(Files.readAllBytes(Paths.get(selector.sourceSelector.contentIterator.next().get(0))), true);
-                    MmtfReducer.reduceMMTFStructure(mmtfStructure, selector);
-                    return mmtfStructure;
-                }
-            } catch (IOException e) {
-                logger.warn("failed to parse structure {}", selector.sourceSelector.contentIterator.next().get(0));
-            }
-            return StructureCollector.parse(selector.sourceSelector.contentIterator.next(), selector);
+            selector.sourceSelector.iterator.prepareNext();
+            return selector.sourceSelector.iterator.next();
         }
 
         synchronized public void skip() {
-            selector.sourceSelector.contentIterator.skip();
+            selector.sourceSelector.iterator.prepareNext();
         }
     }
 
@@ -632,7 +596,7 @@ public class StructureParser {
     /**
      * This class remembers what general restrictions are to be applied during the parsing.
      */
-    protected static class Reducer {
+    public static class Reducer {
 
         /**
          * The content to be parsed.
@@ -740,14 +704,14 @@ public class StructureParser {
          * Updates the pdb identifier after parsing.
          */
         void updatePdbIdentifer() {
-            pdbIdentifier = sourceSelector.contentIterator.getCurrentPdbIdentifier();
+            pdbIdentifier = sourceSelector.structureIterator.getCurrentPdbIdentifier();
         }
 
         /**
          * Updates the chain identifier after parsing.
          */
         void updateChainIdentifier() {
-            chainIdentifier = sourceSelector.contentIterator.getCurrentChainIdentifier();
+            chainIdentifier = sourceSelector.structureIterator.getCurrentChainIdentifier();
         }
 
         @Override
@@ -773,12 +737,12 @@ public class StructureParser {
         /**
          * The iterator that guides the parsing process to the specified files.
          */
-        StructureContentIterator contentIterator;
+        StructureIterator iterator;
 
         /**
          * The local pdb installation if there is any.
          */
-        private LocalPDB localPDB;
+        private LocalPdb localPdb;
 
         private SourceLocation sourceLocation;
 
@@ -791,44 +755,54 @@ public class StructureParser {
 
         @Override
         public SingleBranchStep pdbIdentifier(String pdbIdentifier) {
-            contentIterator = new StructureContentIterator(pdbIdentifier, sourceLocation);
-            return new SingleReducingSelector(this);
+            List<String> pdbIdentifiers = Collections.singletonList(pdbIdentifier);
+            SingleReducingSelector reducer = new SingleReducingSelector(this);
+            iterator = StructureIterator.createFromIdentifiers(pdbIdentifiers, reducer, sourceLocation);
+            return reducer;
         }
 
         @Override
         public MultiBranchStep pdbIdentifiers(List<String> pdbIdentifiers) {
-            contentIterator = new StructureContentIterator(String.class, pdbIdentifiers, sourceLocation);
-            return new MultiReducingSelector(this);
+            MultiReducingSelector reducer = new MultiReducingSelector(this);
+            iterator = StructureIterator.createFromIdentifiers(pdbIdentifiers, reducer, sourceLocation);
+            return reducer;
         }
+
 
         @Override
         public SingleBranchStep file(File file) {
-            contentIterator = new StructureContentIterator(file);
-            return new SingleReducingSelector(this);
+            SingleReducingSelector singleReducingSelector = new SingleReducingSelector(this);
+            iterator = StructureIterator.createFromFiles(Collections.singletonList(file), singleReducingSelector, sourceLocation);
+            return singleReducingSelector;
         }
 
         @Override
         public MultiBranchStep files(List<File> files) {
-            contentIterator = new StructureContentIterator(File.class, files, SourceLocation.OFFLINE_PDB);
-            return new MultiReducingSelector(this);
+            MultiReducingSelector multiReducingSelector = new MultiReducingSelector(this);
+            iterator = StructureIterator.createFromFiles(files, multiReducingSelector, sourceLocation);
+            return multiReducingSelector;
         }
+
 
         @Override
         public SingleBranchStep path(Path path) {
-            contentIterator = new StructureContentIterator(path);
-            return new SingleReducingSelector(this);
+            SingleReducingSelector singleReducingSelector = new SingleReducingSelector(this);
+            iterator = StructureIterator.createFromPaths(Collections.singletonList(path), singleReducingSelector, sourceLocation);
+            return singleReducingSelector;
         }
 
         @Override
         public MultiBranchStep paths(List<Path> paths) {
-            contentIterator = new StructureContentIterator(Path.class, paths, SourceLocation.OFFLINE_PDB);
-            return new MultiReducingSelector(this);
+            MultiReducingSelector multiReducingSelector = new MultiReducingSelector(this);
+            iterator = StructureIterator.createFromPaths(paths, multiReducingSelector, sourceLocation);
+            return multiReducingSelector;
         }
 
         @Override
         public SingleBranchStep inputStream(InputStream inputStream) {
             File tempFile;
             try {
+                // TODO create converter for InputStream
                 tempFile = File.createTempFile("temporaryStructure", ".pdb");
                 Objects.requireNonNull(tempFile);
                 tempFile.deleteOnExit();
@@ -836,57 +810,53 @@ public class StructureParser {
             } catch (IOException e) {
                 throw new UncheckedIOException("Unable to parse structure from input stream.", e);
             }
-            contentIterator = new StructureContentIterator(tempFile);
-            return new SingleReducingSelector(this);
+            SingleReducingSelector singleReducingSelector = new SingleReducingSelector(this);
+            iterator = StructureIterator.createFromFiles(Collections.singletonList(tempFile), singleReducingSelector, sourceLocation);
+            return singleReducingSelector;
         }
 
         @Override
-        public AdditionalLocalSourceStep localPDB(LocalPDB localPDB) {
-            sourceLocation = localPDB.sourceLocation;
-            this.localPDB = localPDB;
+        public AdditionalLocalSourceStep localPdb(LocalPdb localPdb) {
+            sourceLocation = localPdb.sourceLocation;
+            this.localPdb = localPdb;
             return this;
         }
 
         @Override
-        public MultiBranchStep localPDB(LocalPDB localPDB, List<String> pdbIdentifiers) {
-            sourceLocation = localPDB.sourceLocation;
-            contentIterator = new StructureContentIterator(localPDB, pdbIdentifiers);
-            return new MultiReducingSelector(this);
+        public MultiBranchStep localPdb(LocalPdb localPdb, List<String> pdbIdentifiers) {
+            sourceLocation = localPdb.sourceLocation;
+            MultiReducingSelector multiReducingSelector = new MultiReducingSelector(this);
+            iterator = StructureIterator.createFromIdentifiers(pdbIdentifiers, multiReducingSelector, localPdb);
+            return multiReducingSelector;
         }
 
         @Override
-        public SingleBranchStep localPDB(LocalPDB localPDB, String pdbIdentifier) {
-            contentIterator = new StructureContentIterator(localPDB, pdbIdentifier);
-            return new SingleReducingSelector(this);
+        public SingleBranchStep localPdb(LocalPdb localPdb, String pdbIdentifier) {
+            sourceLocation = localPdb.sourceLocation;
+            SingleReducingSelector singleReducingSelector = new SingleReducingSelector(this);
+            iterator = StructureIterator.createFromIdentifiers(Collections.singletonList(pdbIdentifier), singleReducingSelector, localPdb);
+            return singleReducingSelector;
         }
 
         @Override
         public SingleBranchStep fileLocation(String location) {
-            contentIterator = new StructureContentIterator(Paths.get(location));
-            return new SingleReducingSelector(this);
+            SingleReducingSelector singleReducingSelector = new SingleReducingSelector(this);
+            iterator = StructureIterator.createFromLocations(Collections.singletonList(location), singleReducingSelector, sourceLocation);
+            return singleReducingSelector;
         }
 
         @Override
         public MultiBranchStep fileLocations(List<String> locations) {
-            List<Path> paths = locations.stream()
-                    .map(Paths::get)
-                    .collect(Collectors.toList());
-            contentIterator = new StructureContentIterator(Path.class, paths, SourceLocation.OFFLINE_PDB);
-            return new MultiReducingSelector(this);
+            MultiReducingSelector multiReducingSelector = new MultiReducingSelector(this);
+            iterator = StructureIterator.createFromLocations(locations, multiReducingSelector, sourceLocation);
+            return multiReducingSelector;
         }
 
         @Override
         public MultiParser chainList(Path path, String separator) {
-            try {
-                if (localPDB != null) {
-                    contentIterator = new StructureContentIterator(readMappingFile(path, separator), localPDB);
-                } else {
-                    contentIterator = new StructureContentIterator(readMappingFile(path, separator), sourceLocation);
-                }
-            } catch (IOException e) {
-                throw new UncheckedIOException("Could not open input stream for chain list file.", e);
-            }
-            return new MultiReducingSelector(this).mapping();
+            MultiReducingSelector multiReducingSelector = new MultiReducingSelector(this);
+            iterator = StructureIterator.createFromChainList(path, separator, multiReducingSelector, localPdb);
+            return multiReducingSelector.mapping();
         }
 
         @Override
@@ -896,81 +866,17 @@ public class StructureParser {
 
         @Override
         public MultiParser all() {
-            if (localPDB != null) {
-                List<Path> paths = new ArrayList<>();
-                Path localPdbPath = localPDB.getLocalPdbPath();
-                try (Stream<Path> splitDirectories = Files.list(localPdbPath)) {
-                    for (Path splitDirectory : splitDirectories.collect(Collectors.toList())) {
-                        logger.info("processing {}", splitDirectory);
-                        try (Stream<Path> files = Files.walk(splitDirectory)) {
-                            for (Path xmlFilePath : files.collect(Collectors.toList())) {
-                                String fileName = xmlFilePath.getFileName().toString().toLowerCase();
-                                // skip non .xml.gz files
-                                if (!fileName.endsWith(".ent.gz")) {
-                                    continue;
-                                }
-                                paths.add(xmlFilePath);
-                            }
-                        } catch (IOException e) {
-                            throw new UncheckedIOException("unable to read files from " + splitDirectory, e);
-                        }
-                    }
-                } catch (IOException e) {
-                    throw new UncheckedIOException("unable to read files from " + localPdbPath, e);
-                }
-                contentIterator = new StructureContentIterator(Path.class, paths, SourceLocation.OFFLINE_PDB);
-            } else {
-                contentIterator = null; //new StructureContentIterator(readMappingFile(path, separator), sourceLocation);
-            }
-//            } catch (IOException e) {
-//                throw new UncheckedIOException("Could not open input stream for chain list file.", e);
-//            }
-            return new MultiReducingSelector(this).everything();
-            // return null;
+            MultiReducingSelector multiReducingSelector = new MultiReducingSelector(this);
+            iterator = StructureIterator.createFromLocalPdb(localPdb, multiReducingSelector);
+            return multiReducingSelector.everything();
         }
-
-        /**
-         * Reads a pdb identifier chain identifier mapping file.
-         *
-         * @param mappingPath The path to the mapping file.
-         * @param separator The String separating both.
-         * @return A list of pdb identifier chain paris.
-         * @throws IOException if the file could not be read.
-         */
-        private List<Pair<String>> readMappingFile(Path mappingPath, String separator) throws IOException {
-            InputStream inputStream = Files.newInputStream(mappingPath);
-            try (InputStreamReader inputStreamReader = new InputStreamReader(inputStream)) {
-                try (BufferedReader bufferedReader = new BufferedReader(inputStreamReader)) {
-                    return composePairsForChainList(bufferedReader.lines().collect(Collectors.toList()), separator);
-                }
-            }
-        }
-
-        /**
-         * Reads a file of pdb identifier chain identifier paris and converts them to be read by the {@link
-         * StructureContentIterator}.
-         *
-         * @param lines The lines that should be parsed.
-         * @param separator The String separating the pairs.
-         * @return A list of pdb identifier chain paris.
-         */
-        private List<Pair<String>> composePairsForChainList(List<String> lines, String separator) {
-            ArrayList<Pair<String>> pairs = new ArrayList<>();
-            for (String line : lines) {
-                String[] split = line.split(separator);
-                // first contains PDB-ID and second contains chainIdentifier-ID
-                pairs.add(new Pair<>(split[0], split[1]));
-            }
-            return pairs;
-        }
-
 
     }
 
     /**
      * This class represents a local PDB installation.
      */
-    public static class LocalPDB {
+    public static class LocalPdb {
 
         /**
          * The default folder structure of local pdb installations.
@@ -991,7 +897,7 @@ public class StructureParser {
          * @param sourceLocation The type of file used (either {@link SourceLocation#OFFLINE_MMTF} or {@link
          * SourceLocation#OFFLINE_PDB}).
          */
-        public LocalPDB(String localPdbLocation, SourceLocation sourceLocation) {
+        public LocalPdb(String localPdbLocation, SourceLocation sourceLocation) {
             this(localPdbLocation, sourceLocation, BASE_PATH_PDB);
         }
 
@@ -1003,7 +909,7 @@ public class StructureParser {
          * SourceLocation#OFFLINE_PDB}).
          * @param basePathPdb The base PDB path if different from data/structures/divided/
          */
-        public LocalPDB(String localPdbLocation, SourceLocation sourceLocation, Path basePathPdb) {
+        public LocalPdb(String localPdbLocation, SourceLocation sourceLocation, Path basePathPdb) {
             this.sourceLocation = sourceLocation;
             switch (sourceLocation) {
                 case OFFLINE_MMTF:
@@ -1025,6 +931,10 @@ public class StructureParser {
          */
         public Path getLocalPdbPath() {
             return localPdbPath;
+        }
+
+        public SourceLocation getSourceLocation() {
+            return sourceLocation;
         }
 
         /**
