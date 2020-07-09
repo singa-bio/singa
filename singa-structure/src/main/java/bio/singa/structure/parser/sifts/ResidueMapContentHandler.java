@@ -85,14 +85,14 @@ public class ResidueMapContentHandler implements ContentHandler {
                             } else {
                                 Matcher matcher = insertionCode.matcher(dbResNum);
                                 if (matcher.matches()) {
-                                    currentResidue = Integer.valueOf(matcher.group(1));
+                                    currentResidue = Integer.parseInt(matcher.group(1));
                                     currentInsertionCode = matcher.group(2).isEmpty() ? LeafIdentifier.DEFAULT_INSERTION_CODE : matcher.group(2).charAt(0);
                                 }
                             }
                         } else if (dbSource.equals("UniProt")) {
                             final String dbResNum = atts.getValue("dbResNum");
                             currentUniProtIdentifier = new UniProtIdentifier(atts.getValue("dbAccessionId"));
-                            mappedResidue = Integer.valueOf(dbResNum);
+                            mappedResidue = Integer.parseInt(dbResNum);
                         }
                     }
                 }
@@ -110,10 +110,9 @@ public class ResidueMapContentHandler implements ContentHandler {
                 } else {
                     if (!mapping.containsKey(currentUniProtIdentifier)) {
                         mapping.put(currentUniProtIdentifier, new TreeMap<>());
-                    } else {
-                        LeafIdentifier leafIdentifier = new LeafIdentifier(currentPdbid, currentModel, currentChain, currentResidue, currentInsertionCode);
-                        mapping.get(currentUniProtIdentifier).put(leafIdentifier, mappedResidue);
                     }
+                    LeafIdentifier leafIdentifier = new LeafIdentifier(currentPdbid, currentModel, currentChain, currentResidue, currentInsertionCode);
+                    mapping.get(currentUniProtIdentifier).put(leafIdentifier, mappedResidue);
                 }
                 inResidue = false;
             }

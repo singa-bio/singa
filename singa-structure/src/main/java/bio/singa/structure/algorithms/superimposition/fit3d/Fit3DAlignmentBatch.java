@@ -7,7 +7,7 @@ import bio.singa.structure.model.interfaces.Model;
 import bio.singa.structure.model.interfaces.Structure;
 import bio.singa.structure.model.oak.StructuralMotif;
 import bio.singa.structure.model.oak.Structures;
-import bio.singa.structure.parser.pdb.structures.StructureParser;
+import bio.singa.structure.parser.pdb.structures.iterators.StructureIterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,7 +37,7 @@ public class Fit3DAlignmentBatch implements Fit3D {
     private final double rmsdCutoff;
     private final double distanceTolerance;
     private final ExecutorService executorService;
-    private final StructureParser.MultiParser multiParser;
+    private final StructureIterator multiParser;
     private final boolean skipAlphaCarbonTargets;
     private final boolean skipBackboneTargets;
     private final StatisticalModel statisticalModel;
@@ -140,6 +140,7 @@ public class Fit3DAlignmentBatch implements Fit3D {
             if (multiParser.hasNext()) {
                 Structure structure = null;
                 try {
+                    multiParser.prepareNext();
                     structure = multiParser.next();
                     if (skipAlphaCarbonTargets && Structures.isAlphaCarbonStructure(structure)) {
                         logger.debug("ignored alpha carbon only structure {}", structure);

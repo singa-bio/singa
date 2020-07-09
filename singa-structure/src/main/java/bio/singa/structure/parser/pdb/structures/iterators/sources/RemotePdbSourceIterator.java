@@ -1,8 +1,7 @@
-package bio.singa.structure.parser.pdb.structures.iterators.implementations;
+package bio.singa.structure.parser.pdb.structures.iterators.sources;
 
 import bio.singa.structure.parser.pdb.structures.iterators.converters.IdentifierToPdbUrlConverter;
 import bio.singa.structure.parser.pdb.structures.iterators.converters.UrlToPdbLinesConverter;
-import bio.singa.structure.parser.pdb.structures.iterators.AbstractIterator;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -10,22 +9,22 @@ import java.util.List;
 /**
  * @author cl
  */
-public class OnlinePdbIterator extends AbstractIterator<String, List<String>> {
+public class RemotePdbSourceIterator extends AbstractSourceIterator<String, List<String>> {
 
     private final UrlToPdbLinesConverter urlConverter;
     private final IdentifierToPdbUrlConverter identifierConverter;
 
-    public OnlinePdbIterator(List<String> sources) {
+    public RemotePdbSourceIterator(List<String> sources) {
         super(sources);
         urlConverter = UrlToPdbLinesConverter.get();
         identifierConverter = IdentifierToPdbUrlConverter.get();
     }
 
-    public OnlinePdbIterator(Path chainList, String separator) {
+    public RemotePdbSourceIterator(Path chainList, String separator) {
         super();
         urlConverter = UrlToPdbLinesConverter.get();
         identifierConverter = IdentifierToPdbUrlConverter.get();
-        OnlinePdbIterator.prepareChains(this, chainList, separator);
+        RemotePdbSourceIterator.prepareChains(this, chainList, separator);
     }
 
     @Override

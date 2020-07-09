@@ -13,6 +13,7 @@ import bio.singa.structure.model.oak.OakStructure;
 import bio.singa.structure.model.oak.StructuralEntityFilter;
 import bio.singa.structure.model.oak.StructuralMotif;
 import bio.singa.structure.parser.pdb.structures.StructureParser;
+import bio.singa.structure.parser.pdb.structures.iterators.StructureIterator;
 import bio.singa.structure.parser.plip.InteractionContainer;
 import bio.singa.structure.parser.plip.PlipParser;
 import org.junit.jupiter.api.BeforeEach;
@@ -86,7 +87,7 @@ class Fit3DAlignmentTest {
         List<Path> targetStructures = Files.list(
                 Paths.get(Resources.getResourceAsFileLocation("RF00167")))
                 .collect(Collectors.toList());
-        StructureParser.MultiParser multiParser = StructureParser.local()
+        StructureIterator multiParser = StructureParser.local()
                 .paths(targetStructures)
                 .everything();
         Fit3D fit3dBatch = Fit3DBuilder.create()
@@ -270,7 +271,7 @@ class Fit3DAlignmentTest {
         queryMotif.addExchangeableFamilyToAll(MatcherFamily.ALL);
         List<String> alphaCarbonStructures = new ArrayList<>();
         alphaCarbonStructures.add("1zlg");
-        StructureParser.MultiParser multiParser = StructureParser.pdb()
+        StructureIterator multiParser = StructureParser.pdb()
                 .pdbIdentifiers(alphaCarbonStructures)
                 .everything();
         Fit3D fit3d = Fit3DBuilder.create().query(queryMotif)
@@ -289,7 +290,7 @@ class Fit3DAlignmentTest {
         queryMotif.addExchangeableFamilyToAll(MatcherFamily.ALL);
         List<String> alphaCarbonStructures = new ArrayList<>();
         alphaCarbonStructures.add("2plp");
-        StructureParser.MultiParser multiParser = StructureParser.pdb()
+        StructureIterator multiParser = StructureParser.pdb()
                 .pdbIdentifiers(alphaCarbonStructures)
                 .everything();
         Fit3D fit3d = Fit3DBuilder.create().query(queryMotif)
@@ -414,7 +415,7 @@ class Fit3DAlignmentTest {
 
     @Test
     void shouldAnnotateIdentifiersInBatch() {
-        StructureParser.MultiParser multiParser = StructureParser.mmtf()
+        StructureIterator multiParser = StructureParser.mmtf()
                 .chainList(Paths.get(Resources.getResourceAsFileLocation("chain_list_PF00089.txt")), "\t");
         Fit3D fit3d = Fit3DBuilder.create()
                 .query(queryMotif)

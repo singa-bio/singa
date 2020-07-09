@@ -5,6 +5,7 @@ import bio.singa.chemistry.features.logp.LogP;
 import bio.singa.chemistry.model.SmallMolecule;
 import bio.singa.features.quantities.MolarMass;
 import bio.singa.features.quantities.MolarVolume;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -39,6 +40,7 @@ class ChEBIParserServiceTest {
     }
 
     @Test
+    @Disabled
     void shouldUseChEBIToCalculateVolume() {
         // values from http://pubs.acs.org/doi/pdf/10.1021/ja00354a007
 

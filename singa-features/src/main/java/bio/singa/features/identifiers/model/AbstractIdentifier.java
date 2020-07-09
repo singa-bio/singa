@@ -1,9 +1,11 @@
 package bio.singa.features.identifiers.model;
 
+import bio.singa.features.model.AbstractFeature;
 import bio.singa.features.model.Evidence;
 import bio.singa.features.model.StringFeature;
 
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 /**
@@ -39,6 +41,17 @@ public abstract class AbstractIdentifier extends StringFeature implements Identi
         return getContent();
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AbstractFeature<?> that = (AbstractFeature<?>) o;
+        return Objects.equals(featureContent, that.getContent());
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(featureContent);
+    }
 
 }

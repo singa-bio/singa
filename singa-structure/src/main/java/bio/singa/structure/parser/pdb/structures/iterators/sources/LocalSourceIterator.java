@@ -1,10 +1,9 @@
-package bio.singa.structure.parser.pdb.structures.iterators.implementations;
+package bio.singa.structure.parser.pdb.structures.iterators.sources;
 
 import bio.singa.structure.parser.pdb.structures.StructureParser;
 import bio.singa.structure.parser.pdb.structures.iterators.converters.ContentConverter;
 import bio.singa.structure.parser.pdb.structures.iterators.converters.IdentityConverter;
-import bio.singa.structure.parser.pdb.structures.iterators.converters.PathToPdbLinesConverter;
-import bio.singa.structure.parser.pdb.structures.iterators.AbstractIterator;
+import bio.singa.structure.parser.pdb.structures.iterators.converters.PathToObjectConverter;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -18,30 +17,30 @@ import java.util.stream.Stream;
 /**
  * @author cl
  */
-public class OfflinePdbIterator<SourceContent> extends AbstractIterator<SourceContent, List<String>> {
+public class LocalSourceIterator<SourceContent> extends AbstractSourceIterator<SourceContent, Object> {
 
     private final ContentConverter<SourceContent, Path> locationConverter;
-    private final PathToPdbLinesConverter pathConverter;
+    private final PathToObjectConverter pathConverter;
 
-    public OfflinePdbIterator(List<SourceContent> sources, ContentConverter<SourceContent, Path> converter) {
+    public LocalSourceIterator(List<SourceContent> sources, ContentConverter<SourceContent, Path> converter) {
         super(sources);
         locationConverter = converter;
-        pathConverter = PathToPdbLinesConverter.get();
+        pathConverter = PathToObjectConverter.get();
     }
 
-    private OfflinePdbIterator(ContentConverter<SourceContent, Path> converter) {
+    private LocalSourceIterator(ContentConverter<SourceContent, Path> converter) {
         super();
         locationConverter = converter;
-        pathConverter = PathToPdbLinesConverter.get();
+        pathConverter = PathToObjectConverter.get();
     }
 
-    public static OfflinePdbIterator<String> fromChainList(Path chainList, String separator, ContentConverter<String, Path> converter) {
-        OfflinePdbIterator<String> offlinePdbIterator = new OfflinePdbIterator<>(converter);
-        OfflinePdbIterator.prepareChains(offlinePdbIterator, chainList, separator);
-        return offlinePdbIterator;
+    public static LocalSourceIterator<String> fromChainList(Path chainList, String separator, ContentConverter<String, Path> converter) {
+        LocalSourceIterator<String> localIterator = new LocalSourceIterator<>(converter);
+        LocalSourceIterator.prepareChains(localIterator, chainList, separator);
+        return localIterator;
     }
 
-    public static OfflinePdbIterator<Path> fromLocalPdb(StructureParser.LocalPdb localPdb) {
+    public static LocalSourceIterator<Path> fromLocalPdb(StructureParser.LocalPdb localPdb) {
         List<Path> paths = new ArrayList<>();
         Path localPdbPath = localPdb.getLocalPdbPath();
         try (Stream<Path> splitDirectories = Files.list(localPdbPath)) {
@@ -49,24 +48,23 @@ public class OfflinePdbIterator<SourceContent> extends AbstractIterator<SourceCo
                 try (Stream<Path> files = Files.walk(splitDirectory)) {
                     for (Path path : files.collect(Collectors.toList())) {
                         String fileName = path.getFileName().toString().toLowerCase();
-                        // skip non .ent.gz files
-                        if (!fileName.endsWith(".ent.gz")) {
-                            continue;
+                        // skip non relevant files
+                        if (fileName.endsWith(".mmtf.gz") || fileName.endsWith(".ent.gz")) {
+                            paths.add(path);
                         }
-                        paths.add(path);
                     }
                 } catch (IOException e) {
                     throw new UncheckedIOException("unable to read files from " + splitDirectory, e);
                 }
             }
-            return new OfflinePdbIterator<>(paths, IdentityConverter.get(Path.class));
+            return new LocalSourceIterator<>(paths, IdentityConverter.get(Path.class));
         } catch (IOException e) {
             throw new UncheckedIOException("unable to read files from " + localPdbPath, e);
         }
     }
 
     @Override
-    public List<String> getContent(SourceContent source) {
+    public Object getContent(SourceContent source) {
         return pathConverter.convert(locationConverter.convert(source));
     }
 

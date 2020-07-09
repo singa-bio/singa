@@ -4,16 +4,18 @@ import bio.singa.structure.model.families.AminoAcidFamily;
 import bio.singa.structure.model.families.LigandFamily;
 import bio.singa.structure.model.families.NucleotideFamily;
 import bio.singa.structure.model.identifiers.LeafIdentifier;
-import bio.singa.structure.model.identifiers.PDBIdentifier;
 import bio.singa.structure.model.identifiers.UniqueAtomIdentifer;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.interfaces.Structure;
 import bio.singa.structure.model.oak.*;
 import bio.singa.structure.parser.pdb.ligands.LigandParserService;
+import bio.singa.structure.parser.pdb.structures.iterators.StructureReducer;
+import bio.singa.structure.parser.pdb.structures.iterators.StructureIterator;
 import bio.singa.structure.parser.pdb.structures.tokens.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.nio.file.Paths;
 import java.util.*;
 
 /**
@@ -55,7 +57,7 @@ public class StructureCollector {
     /**
      * The reducer containing the information of what should be parsed and how it should be done.
      */
-    private final StructureParser.Reducer reducer;
+    private final StructureIterator iterator;
     /**
      * The currently parsed pdb file.
      */
@@ -81,10 +83,10 @@ public class StructureCollector {
      * Creates a new structure collector to extract structural information from pdb lines and reducing information.
      *
      * @param pdbLines The lines of a pdb file.
-     * @param reducer The information on what should be parsed and how it should be done.
+     * @param iterator The information on what should be parsed and how it should be done.
      */
-    private StructureCollector(List<String> pdbLines, StructureParser.Reducer reducer) {
-        this.reducer = reducer;
+    private StructureCollector(List<String> pdbLines, StructureIterator iterator) {
+        this.iterator = iterator;
         this.pdbLines = pdbLines;
         atoms = new HashMap<>();
         leafCodes = new TreeMap<>();
@@ -97,12 +99,12 @@ public class StructureCollector {
      * parses a structure from pdb lines and reducing information.
      *
      * @param pdbLines The lines of a pdb file.
-     * @param reducer The information on what should be parsed and how it should be done.
+     * @param iterator The information on what should be parsed and how it should be done.
      * @return The resulting structure.
      * @throws StructureParserException if any problem occur during parsing.
      */
-    public static Structure parse(List<String> pdbLines, StructureParser.Reducer reducer) throws StructureParserException {
-        StructureCollector collector = new StructureCollector(pdbLines, reducer);
+    public static Structure parse(List<String> pdbLines, StructureIterator iterator) throws StructureParserException {
+        StructureCollector collector = new StructureCollector(pdbLines, iterator);
         collector.reduceLines();
         return collector.collectStructure();
     }
@@ -123,16 +125,15 @@ public class StructureCollector {
     }
 
     /**
-     * Reduces the lines as described in the {@link StructureParser.Reducer}.
+     * Reduces the lines as described in the {@link StructureReducer}.
      *
      * @throws StructureParserException if any problem occur during reducing.
      */
     private void reduceLines() throws StructureParserException {
         String firstLine = pdbLines.get(0);
         // parse meta information
-        if (reducer.options.isInferringIdentifierFromFileName()) {
-            String currentSource = reducer.sourceSelector.iterator.getCurrentSource();
-            String identifier = PDBIdentifier.extractFirst(currentSource);
+        if (iterator.getReducer().getOptions().isInferringIdentifierFromFileName()) {
+            String identifier = iterator.getCurrentPdbIdentifier();
             if (identifier != null) {
                 currentPDB = identifier;
             }
@@ -142,21 +143,19 @@ public class StructureCollector {
             }
         }
         getTitle();
-        if (reducer.parseMapping) {
-            reducer.updatePdbIdentifer();
-            reducer.updateChainIdentifier();
-            reduceToChain(reducer.chainIdentifier);
-            logger.info("Parsing structure {} chainIdentifier {}", reducer.pdbIdentifier, reducer.chainIdentifier);
+        if (iterator.hasChain()) {
+            reduceToChain(iterator.getCurrentChainIdentifier());
+            logger.info("Parsing structure {} chain {}", iterator.getCurrentPdbIdentifier(), iterator.getCurrentChainIdentifier());
         } else {
-            if (!reducer.allModels) {
+            if (iterator.getReducer().isReducingModels()) {
                 // parse only specific model
                 // reduce lines to specific model
-                reduceToModel(reducer.modelIdentifier);
+                reduceToModel(iterator.getReducer().getModelIdentifier());
             }
-            if (!reducer.allChains) {
+            if (iterator.getReducer().isReducingChains()) {
                 // parse only specific chainIdentifier
                 // reduce lines to specific chainIdentifier
-                reduceToChain(reducer.chainIdentifier);
+                reduceToChain(iterator.getReducer().getChainIdentifier());
             }
         }
     }
@@ -165,8 +164,9 @@ public class StructureCollector {
      * Extracts the title from tha pdb header.
      */
     private void getTitle() {
-        if (reducer.options.isInferringTitleFromFileName()) {
-            titleBuilder.append(reducer.sourceSelector.iterator.getCurrentSource());
+        if (iterator.getReducer().getOptions().isInferringTitleFromFileName()) {
+            String currentSource = iterator.getCurrentSource();
+            titleBuilder.append(Paths.get(currentSource).getFileName().toString().replaceFirst("[.][^.]+$", ""));
         } else {
             boolean titleFound = false;
             for (String currentLine : pdbLines) {
@@ -201,7 +201,7 @@ public class StructureCollector {
         for (String currentLine : pdbLines) {
             // check if the correct model has begun
             if (ModelToken.RECORD_PATTERN.matcher(currentLine).matches()) {
-                int currentModel = Integer.valueOf(ModelToken.MODEL_SERIAL.extract(currentLine));
+                int currentModel = Integer.parseInt(ModelToken.MODEL_SERIAL.extract(currentLine));
                 // turn on collection of lines
                 if (currentModel == modelIdentifier) {
                     this.currentModel = currentModel;
@@ -267,12 +267,12 @@ public class StructureCollector {
 
         for (ContentTreeNode modelNode : contentTree.getNodesFromLevel(ContentTreeNode.StructureLevel.MODEL)) {
             logger.debug("Collecting chains for model {}", modelNode.getIdentifier());
-            OakModel model = new OakModel(Integer.valueOf(modelNode.getIdentifier()));
+            OakModel model = new OakModel(Integer.parseInt(modelNode.getIdentifier()));
             for (ContentTreeNode chainNode : modelNode.getNodesFromLevel(ContentTreeNode.StructureLevel.CHAIN)) {
                 logger.trace("Collecting leafs for chain {}", chainNode.getIdentifier());
                 OakChain chain = new OakChain(chainNode.getIdentifier());
                 for (ContentTreeNode leafNode : chainNode.getNodesFromLevel(ContentTreeNode.StructureLevel.LEAF)) {
-                    OakLeafSubstructure<?> leafSubstructure = assignLeaf(leafNode, Integer.valueOf(modelNode.getIdentifier()), chainNode.getIdentifier());
+                    OakLeafSubstructure<?> leafSubstructure = assignLeaf(leafNode, Integer.parseInt(modelNode.getIdentifier()), chainNode.getIdentifier());
                     if (hetAtoms.contains(leafSubstructure.getIdentifier())) {
                         leafSubstructure.setAnnotatedAsHetAtom(true);
                     }
@@ -286,7 +286,7 @@ public class StructureCollector {
             }
             structure.addModel(model);
         }
-        if (reducer.options.isCreatingEdges()) {
+        if (iterator.getReducer().getOptions().isCreatingEdges()) {
             structure.getAllChains().stream()
                     .map(OakChain.class::cast).forEach(OakChain::connectChainBackbone);
         }
@@ -304,7 +304,7 @@ public class StructureCollector {
             String currentRecordType = AtomToken.RECORD_TYPE.extract(currentLine);
             if (AtomToken.RECORD_PATTERN.matcher(currentRecordType).matches()) {
                 // TODO move this to reducer?
-                if (!reducer.options.isHeteroAtoms() && currentRecordType.equals("HETATM")) {
+                if (!iterator.getReducer().getOptions().isHeteroAtoms() && currentRecordType.equals("HETATM")) {
                     continue;
                 }
                 UniqueAtomIdentifer identifier = createUniqueAtomIdentifier(currentLine);
@@ -322,7 +322,7 @@ public class StructureCollector {
                 }
                 leafCodes.put(leafIdentifier, AtomToken.RESIDUE_NAME.extract(currentLine));
             } else if (currentRecordType.equals("MODEL")) {
-                currentModel = Integer.valueOf(ModelToken.MODEL_SERIAL.extract(currentLine));
+                currentModel = Integer.parseInt(ModelToken.MODEL_SERIAL.extract(currentLine));
             } else if (currentRecordType.equals("TER")) {
                 closedChains.add(currentModel + "-" + currentChain);
             }
@@ -337,7 +337,7 @@ public class StructureCollector {
         contentTree = new ContentTreeNode(currentPDB, ContentTreeNode.StructureLevel.STRUCTURE);
         atoms.forEach((identifer, atom) -> contentTree.appendAtom(atom, identifer));
         if (atoms.isEmpty()) {
-            throw new StructureParserException("Unable to apply the reduction, supplied with the reducer: " + reducer);
+            throw new StructureParserException("Unable to apply the reduction, supplied with the reducer: " + iterator);
         }
     }
 
@@ -348,9 +348,9 @@ public class StructureCollector {
      * @return An unique atom identifier.
      */
     private UniqueAtomIdentifer createUniqueAtomIdentifier(String atomLine) {
-        int atomSerial = Integer.valueOf(AtomToken.ATOM_SERIAL.extract(atomLine));
+        int atomSerial = Integer.parseInt(AtomToken.ATOM_SERIAL.extract(atomLine));
         String chain = AtomToken.CHAIN_IDENTIFIER.extract(atomLine);
-        int leaf = Integer.valueOf(AtomToken.RESIDUE_SERIAL.extract(atomLine));
+        int leaf = Integer.parseInt(AtomToken.RESIDUE_SERIAL.extract(atomLine));
         String insertion = AtomToken.RESIDUE_INSERTION.extract(atomLine);
         char insertionCode = insertion.isEmpty() ? LeafIdentifier.DEFAULT_INSERTION_CODE : insertion.charAt(0);
         return new UniqueAtomIdentifer(currentPDB, currentModel, chain, leaf, insertionCode, atomSerial);
@@ -366,7 +366,7 @@ public class StructureCollector {
      */
     private OakLeafSubstructure<?> assignLeaf(ContentTreeNode leafNode, int modelIdentifier, String chainIdentifer) {
         // generate leaf pdbIdentifier
-        LeafIdentifier leafIdentifier = new LeafIdentifier(currentPDB, modelIdentifier, chainIdentifer, Integer.valueOf(leafNode.getIdentifier()), leafNode.getInsertionCode());
+        LeafIdentifier leafIdentifier = new LeafIdentifier(currentPDB, modelIdentifier, chainIdentifer, Integer.parseInt(leafNode.getIdentifier()), leafNode.getInsertionCode());
         // get leaf name for leaf identifer
         String leafName = leafCodes.get(leafIdentifier);
         // get atoms of this leaf
@@ -384,7 +384,7 @@ public class StructureCollector {
             NucleotideFamily family = nucleotideFamilyOptional.get();
             return createNucleotide(leafIdentifier, family, atoms);
         }
-        if (reducer.options.isRetrievingLigandInformation()) {
+        if (iterator.getReducer().getOptions().isRetrievingLigandInformation()) {
             return createLeafWithAdditionalInformation(leafIdentifier, leafName, atoms);
         } else {
             return createLeafWithoutAdditionalInformation(leafIdentifier, leafName, atoms);
@@ -420,7 +420,7 @@ public class StructureCollector {
      * @return The amino acid.
      */
     private OakAminoAcid createAminoAcid(LeafIdentifier identifier, AminoAcidFamily family, Map<String, OakAtom> atoms) {
-        return LeafSubstructureFactory.createAminoAcidFromAtoms(identifier, family, atoms, reducer.options);
+        return LeafSubstructureFactory.createAminoAcidFromAtoms(identifier, family, atoms, iterator.getReducer().getOptions());
     }
 
     /**
@@ -433,7 +433,7 @@ public class StructureCollector {
      */
 
     private OakNucleotide createNucleotide(LeafIdentifier identifier, NucleotideFamily family, Map<String, OakAtom> atoms) {
-        return LeafSubstructureFactory.createNucleotideFromAtoms(identifier, family, atoms, reducer.options);
+        return LeafSubstructureFactory.createNucleotideFromAtoms(identifier, family, atoms, iterator.getReducer().getOptions());
     }
 
     /**
@@ -461,11 +461,11 @@ public class StructureCollector {
      */
     private OakLeafSubstructure<?> createLeafWithAdditionalInformation(LeafIdentifier identifier, String leafName, Map<String, OakAtom> atoms) {
         LeafSkeleton leafSkeleton;
-        if (!reducer.skeletons.containsKey(leafName)) {
+        if (!iterator.getSkeletons().containsKey(leafName)) {
             leafSkeleton = LigandParserService.parseLeafSkeleton(leafName);
-            reducer.skeletons.put(leafName, leafSkeleton);
+            iterator.getSkeletons().put(leafName, leafSkeleton);
         } else {
-            leafSkeleton = reducer.skeletons.get(leafName);
+            leafSkeleton = iterator.getSkeletons().get(leafName);
         }
         return leafSkeleton.toRealLeafSubstructure(identifier, atoms);
     }

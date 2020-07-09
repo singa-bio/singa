@@ -1,4 +1,4 @@
-package bio.singa.structure.parser.pdb.structures.iterators.implementations;
+package bio.singa.structure.parser.pdb.structures.iterators.sources;
 
 import bio.singa.core.utility.Resources;
 import bio.singa.structure.model.identifiers.PDBIdentifier;
@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * @author cl
  */
-class OnlinePdbIteratorTest {
+class RemotePdbIteratorTest {
 
     @Test
     void shouldIterateOnlinePdbFiles() {
@@ -24,7 +24,7 @@ class OnlinePdbIteratorTest {
         sources.add("2src");
         sources.add("1xp0");
 
-        OnlinePdbIterator onlinePdbIterator = new OnlinePdbIterator(sources);
+        RemotePdbSourceIterator onlinePdbIterator = new RemotePdbSourceIterator(sources);
         while (onlinePdbIterator.hasNext()) {
             String nextPdbIdentifier = onlinePdbIterator.next();
             assertTrue(PDBIdentifier.PATTERN.matcher(nextPdbIdentifier).matches());
@@ -38,7 +38,7 @@ class OnlinePdbIteratorTest {
     @Test
     void shouldIterateOnlinePdbWithChainList() {
         String resourceAsFileLocation = Resources.getResourceAsFileLocation("chain_list.txt");
-        OnlinePdbIterator pdbIterator = new OnlinePdbIterator(Paths.get(resourceAsFileLocation), ":");
+        RemotePdbSourceIterator pdbIterator = new RemotePdbSourceIterator(Paths.get(resourceAsFileLocation), ":");
         while (pdbIterator.hasNext()) {
             String nextPdbIdentifier = pdbIterator.next();
             assertTrue(PDBIdentifier.PATTERN.matcher(nextPdbIdentifier).matches());

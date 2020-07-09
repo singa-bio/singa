@@ -127,6 +127,8 @@ public abstract class AbstractFeature<FeatureContent> implements Feature<Feature
         return Objects.hash(identifier, featureContent);
     }
 
+
+
     public static abstract class Builder<FeatureContent, TopLevelType extends Feature<FeatureContent>, BuilderType extends Builder> {
 
         protected final TopLevelType topLevelObject;

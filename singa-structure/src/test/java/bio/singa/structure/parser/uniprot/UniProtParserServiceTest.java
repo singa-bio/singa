@@ -3,6 +3,7 @@ package bio.singa.structure.parser.uniprot;
 import bio.singa.features.identifiers.UniProtIdentifier;
 import bio.singa.features.quantities.MolarMass;
 import bio.singa.structure.model.Protein;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static bio.singa.features.quantities.MolarMass.GRAM_PER_MOLE;
@@ -14,6 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class UniProtParserServiceTest {
 
     @Test
+    @Disabled
     void shouldUseUniProtToFetchMolarMass() {
         Protein testProtein = new Protein.Builder("Q4DA54")
                 .additionalIdentifier(new UniProtIdentifier("Q4DA54"))

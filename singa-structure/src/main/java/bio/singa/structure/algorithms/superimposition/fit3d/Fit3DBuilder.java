@@ -13,12 +13,11 @@ import bio.singa.structure.model.interfaces.Atom;
 import bio.singa.structure.model.interfaces.LeafSubstructureContainer;
 import bio.singa.structure.model.oak.StructuralEntityFilter;
 import bio.singa.structure.model.oak.StructuralMotif;
+import bio.singa.structure.parser.pdb.structures.iterators.StructureIterator;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
-
-import static bio.singa.structure.parser.pdb.structures.StructureParser.MultiParser;
 
 /**
  * A builder that guides through the creation of a {@link Fit3D} alignment.
@@ -150,10 +149,10 @@ public class Fit3DBuilder {
          * Defines the targets against which this Fit3D search should be run in batch mode. This can either be a list of
          * PDB-IDs or file paths pointing to target files in PDB format.
          *
-         * @param multiParser The {@link MultiParser} that provides the structures to that should be run in batch mode.
+         * @param multiParser The {@link StructureIterator} that provides the structures to that should be run in batch mode.
          * @return The {@link BatchParameterStep} to define the level of parallelism the batch search should use.
          */
-        BatchParameterStep targets(MultiParser multiParser);
+        BatchParameterStep targets(StructureIterator multiParser);
     }
 
     public interface BatchParameterStep {
@@ -288,7 +287,7 @@ public class Fit3DBuilder {
     public static class Builder implements QueryStep, SiteStep, SiteParameterConfigurationStep, SiteConfigurationStep, TargetStep, AtomStep, BatchParameterStep, ParameterStep {
 
         StructuralMotif queryMotif;
-        MultiParser multiParser;
+        StructureIterator multiParser;
         LeafSubstructureContainer target;
         int parallelism;
         double rmsdCutoff = DEFAULT_RMSD_CUTOFF;
@@ -333,7 +332,7 @@ public class Fit3DBuilder {
         }
 
         @Override
-        public BatchParameterStep targets(MultiParser multiParser) {
+        public BatchParameterStep targets(StructureIterator multiParser) {
             Objects.requireNonNull(multiParser);
 
             this.multiParser = multiParser;

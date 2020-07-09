@@ -1,7 +1,6 @@
-package bio.singa.structure.parser.pdb.structures.iterators.implementations;
+package bio.singa.structure.parser.pdb.structures.iterators.sources;
 
 import bio.singa.structure.parser.pdb.structures.iterators.converters.IdentifierToMmtfBytesConverter;
-import bio.singa.structure.parser.pdb.structures.iterators.AbstractIterator;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -9,19 +8,19 @@ import java.util.List;
 /**
  * @author cl
  */
-public class OnlineMmtfIterator extends AbstractIterator<String, byte[]> {
+public class RemoteMmtfSourceIterator extends AbstractSourceIterator<String, byte[]> {
 
     private final IdentifierToMmtfBytesConverter converter;
 
-    public OnlineMmtfIterator(List<String> sources) {
+    public RemoteMmtfSourceIterator(List<String> sources) {
         super(sources);
         converter = IdentifierToMmtfBytesConverter.get();
     }
 
-    public OnlineMmtfIterator(Path chainList, String separator) {
+    public RemoteMmtfSourceIterator(Path chainList, String separator) {
         super();
         converter = IdentifierToMmtfBytesConverter.get();
-        OnlineMmtfIterator.prepareChains(this, chainList, separator);
+        RemoteMmtfSourceIterator.prepareChains(this, chainList, separator);
     }
 
     @Override

@@ -9,6 +9,7 @@ import bio.singa.structure.model.oak.StructuralEntityFilter;
 import bio.singa.structure.model.oak.StructuralMotif;
 import bio.singa.structure.parser.pdb.structures.StructureParser;
 import bio.singa.structure.parser.pdb.structures.StructureParserOptions;
+import bio.singa.structure.parser.pdb.structures.iterators.StructureIterator;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -41,9 +42,9 @@ class FofanovEstimationTest {
     @Test
     void shouldCalculatePvalues() {
         FofanovEstimation fofanovEstimation = new FofanovEstimation(2.5);
-        StructureParser.MultiParser multiParser = StructureParser.mmtf()
-                .chainList(Paths.get(Resources.getResourceAsFileLocation("nrpdb_BLAST_10e80_100.txt")), "_")
-                .setOptions(structureParserOptions);
+        StructureIterator multiParser = StructureParser.mmtf()
+                .chainList(Paths.get(Resources.getResourceAsFileLocation("nrpdb_BLAST_10e80_100.txt")), "_");
+        multiParser.getReducer().setOptions(structureParserOptions);
         Fit3D fit3dBatch = Fit3DBuilder.create()
                 .query(queryMotif)
                 .targets(multiParser)
@@ -62,9 +63,9 @@ class FofanovEstimationTest {
         double modelCorrectnessCutoff = 3.0;
         double epsilon = FofanovEstimation.determineEpsilon(queryMotif, modelCorrectnessCutoff);
         FofanovEstimation fofanovEstimation = new FofanovEstimation(epsilon, FofanovEstimation.DEFAULT_REFERENCE_SIZE, modelCorrectnessCutoff);
-        StructureParser.MultiParser multiParser = StructureParser.mmtf()
-                .chainList(Paths.get(Resources.getResourceAsFileLocation("nrpdb_BLAST_10e80_100.txt")), "_")
-                .setOptions(structureParserOptions);
+        StructureIterator multiParser = StructureParser.mmtf()
+                .chainList(Paths.get(Resources.getResourceAsFileLocation("nrpdb_BLAST_10e80_100.txt")), "_");
+        multiParser.getReducer().setOptions(structureParserOptions);
         Fit3D fit3dBatch = Fit3DBuilder.create()
                 .query(queryMotif)
                 .targets(multiParser)

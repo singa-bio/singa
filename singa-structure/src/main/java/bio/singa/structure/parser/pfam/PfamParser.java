@@ -11,10 +11,12 @@ import bio.singa.structure.parser.pfam.tokens.PfamToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UncheckedIOException;
+import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.channels.Channels;
-import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -159,26 +161,32 @@ public class PfamParser {
     }
 
     private void fetchMappingFile() {
+        logger.info("creating temporary file to store mapping file Pfam version {}", version);
+        URL website;
         try {
-            logger.info("creating temporary file to store mapping file Pfam version {}", version);
-            Path temporaryZippedFile = Files.createTempFile("singa_", ".txt.gz");
-            URL website = new URL(version.pfamMappingLocation);
-            ReadableByteChannel rbc = Channels.newChannel(website.openStream());
-            FileOutputStream fos = new FileOutputStream(temporaryZippedFile.toFile());
-            fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
-            fos.close();
-            rbc.close();
-            logger.debug("unzipping mapping file {}", temporaryZippedFile);
-            try (GZIPInputStream zip = new GZIPInputStream(new FileInputStream(temporaryZippedFile.toFile()));
-                 BufferedReader reader = new BufferedReader(new InputStreamReader(zip, "UTF-8"))) {
-                relevantLines = reader.lines()
+            website = new URL(version.pfamMappingLocation);
+        } catch (MalformedURLException e) {
+            throw new IllegalStateException("Unable to convert url from " + version.pfamMappingLocation + " for pfam mapping.");
+        }
+        GZIPInputStream gzipInputStream;
+        try {
+            gzipInputStream = new GZIPInputStream(website.openStream());
+        } catch (IOException e) {
+            throw new IllegalStateException("Unable to open url " + version.pfamMappingLocation + " for pfam mapping.");
+        }
+        try (InputStreamReader inputStreamReader = new InputStreamReader(gzipInputStream)) {
+            try (BufferedReader bufferedReader = new BufferedReader(inputStreamReader)) {
+                relevantLines = bufferedReader.lines()
                         .filter(line -> PfamToken.IdentifierToken.PFAM_IDENTIFIER.extract(line).equals(pfamIdentifier.getContent()))
                         .collect(Collectors.toList());
-                logger.debug("Pfam {} has {} entries", pfamIdentifier, relevantLines.size());
+            } catch (IOException e) {
+                throw new UncheckedIOException("unable to parse pfam list ", e);
             }
         } catch (IOException e) {
-            throw new UncheckedIOException(e);
+            throw new UncheckedIOException("unable to parse pfam list ", e);
         }
+        logger.debug("Pfam {} has {} entries", pfamIdentifier, relevantLines.size());
+
     }
 
     public List<List<LeafSubstructure<?>>> getDomains() {
@@ -191,7 +199,8 @@ public class PfamParser {
 
     public enum PfamVersion {
 
-        V31("http://ftp.ebi.ac.uk/pub/databases/Pfam/releases/Pfam31.0/database_files/pdb_pfamA_reg.txt.gz");
+        V31("http://ftp.ebi.ac.uk/pub/databases/Pfam/releases/Pfam31.0/database_files/pdb_pfamA_reg.txt.gz"),
+        V33("http://ftp.ebi.ac.uk/pub/databases/Pfam/releases/Pfam33.1/database_files/pdb_pfamA_reg.txt.gz");
 
         private final String pfamMappingLocation;
 

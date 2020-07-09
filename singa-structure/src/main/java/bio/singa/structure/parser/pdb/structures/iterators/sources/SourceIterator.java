@@ -1,4 +1,4 @@
-package bio.singa.structure.parser.pdb.structures.iterators;
+package bio.singa.structure.parser.pdb.structures.iterators.sources;
 
 import java.util.Iterator;
 import java.util.List;

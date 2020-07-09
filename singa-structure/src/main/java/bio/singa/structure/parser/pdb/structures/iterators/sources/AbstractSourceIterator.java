@@ -1,4 +1,4 @@
-package bio.singa.structure.parser.pdb.structures.iterators;
+package bio.singa.structure.parser.pdb.structures.iterators.sources;
 
 import bio.singa.core.utility.Pair;
 
@@ -12,19 +12,19 @@ import java.util.stream.Collectors;
 /**
  * @author cl
  */
-public abstract class AbstractIterator<SourceContent, ContentType> implements SourceIterator<SourceContent, ContentType> {
+public abstract class AbstractSourceIterator<SourceContent, ContentType> implements SourceIterator<SourceContent, ContentType> {
 
     private int cursor;
     private List<SourceContent> sources;
     private List<String> chains;
 
-    public AbstractIterator(List<SourceContent> sources) {
+    public AbstractSourceIterator(List<SourceContent> sources) {
         cursor = 0;
         this.sources = sources;
         chains = new ArrayList<>();
     }
 
-    public AbstractIterator() {
+    public AbstractSourceIterator() {
         cursor = 0;
         sources = new ArrayList<>();
         chains = new ArrayList<>();
@@ -70,7 +70,7 @@ public abstract class AbstractIterator<SourceContent, ContentType> implements So
 
     @Override
     public String getChain() {
-        return chains.get(cursor);
+        return chains.get(cursor-1);
     }
 
     public void setChains(List<String> chains) {
@@ -100,8 +100,7 @@ public abstract class AbstractIterator<SourceContent, ContentType> implements So
     }
 
     /**
-     * Reads a file of pdb identifier chain identifier paris and converts them to be read by the {@link
-     * StructureContentIterator}.
+     * Reads a file of pdb identifier chain identifier paris.
      *
      * @param lines The lines that should be parsed.
      * @param separator The String separating the pairs.
@@ -111,7 +110,7 @@ public abstract class AbstractIterator<SourceContent, ContentType> implements So
         ArrayList<Pair<String>> pairs = new ArrayList<>();
         for (String line : lines) {
             String[] split = line.split(separator);
-            // first contains PDB-ID and second contains chainIdentifier-ID
+            // first contains pdbid and second contains chain
             pairs.add(new Pair<>(split[0], split[1]));
         }
         return pairs;
