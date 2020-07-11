@@ -5,7 +5,7 @@ import bio.singa.features.parameters.Environment;
 import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.topology.grids.rectangular.NeumannRectangularDirection;
 import bio.singa.mathematics.vectors.Vector2D;
-import bio.singa.simulation.entities.EntityRegistry;
+import bio.singa.simulation.entities.SimpleEntity;
 import bio.singa.simulation.features.*;
 import bio.singa.simulation.model.agents.linelike.LineLikeAgent;
 import bio.singa.simulation.model.agents.linelike.LineLikeAgentLayer;
@@ -76,11 +76,13 @@ class VesicleTransportTest {
         AutomatonGraph graph = AutomatonGraphs.createRectangularAutomatonGraph(10, 1);
         simulation.setGraph(graph);
 
+        SimpleEntity myo = SimpleEntity.create("MYO").build();
+
         Vector2D initialVesiclePosition = new Vector2D(50, 30);
         Vesicle vesicle = new Vesicle(initialVesiclePosition, Quantities.getQuantity(150, NANO(METRE)));
         vesicle.setState(TAGGED_FOR_EXOCYTOSIS);
         vesicle.getConcentrationContainer().initialize(CellTopology.MEMBRANE,
-                EntityRegistry.matchExactly("MYO"),
+                myo,
                 Quantities.getQuantity(1, MICRO_MOLE_PER_LITRE));
 
         // add vesicle layer
@@ -110,7 +112,7 @@ class VesicleTransportTest {
         // 2b attachment to actin
         LineLikeAgentAttachment vesicleActinAttachment = new LineLikeAgentAttachment();
         vesicleActinAttachment.setIdentifier("attach vesicle to actin");
-        vesicleActinAttachment.setFeature(new AttachedMotor(EntityRegistry.matchExactly("MYO")));
+        vesicleActinAttachment.setFeature(new AttachedMotor(myo));
         vesicleActinAttachment.setFeature(new AttachedFilament(ACTIN));
         vesicleActinAttachment.setFeature(new MotorPullDirection(PLUS));
         vesicleActinAttachment.setFeature(new AttachmentDistance(Quantities.getQuantity(45, NANO(METRE))));
