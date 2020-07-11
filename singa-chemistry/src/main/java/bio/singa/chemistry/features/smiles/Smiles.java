@@ -1,5 +1,6 @@
 package bio.singa.chemistry.features.smiles;
 
+import bio.singa.chemistry.features.FeatureProviderRegistry;
 import bio.singa.features.model.Evidence;
 import bio.singa.features.model.QualitativeFeature;
 
@@ -12,8 +13,8 @@ public class Smiles extends QualitativeFeature<String> {
         super(smilesString, evidence);
     }
 
-//    public static void register() {
-//        FeatureProviderRegistry.addProviderForFeature(Smiles.class, SmilesProvider.class);
-//    }
+    public static void register() {
+        FeatureProviderRegistry.addProviderForFeature(Smiles.class, SmilesProvider.class);
+    }
 
 }

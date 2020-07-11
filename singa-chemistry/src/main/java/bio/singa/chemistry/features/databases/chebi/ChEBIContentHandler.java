@@ -1,13 +1,13 @@
 package bio.singa.chemistry.features.databases.chebi;
 
 import bio.singa.chemistry.features.smiles.Smiles;
+import bio.singa.chemistry.features.structure2d.MolParser2D;
+import bio.singa.chemistry.features.structure2d.Structure2D;
+import bio.singa.chemistry.model.MoleculeGraph;
 import bio.singa.chemistry.model.SmallMolecule;
 import bio.singa.features.identifiers.InChIKey;
 import bio.singa.features.identifiers.SimpleStringIdentifier;
 import bio.singa.features.quantities.MolarMass;
-import bio.singa.structure.features.Structure3D;
-import bio.singa.structure.model.interfaces.Ligand;
-import bio.singa.structure.parser.mol.MolParser;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.Locator;
@@ -27,15 +27,14 @@ public class ChEBIContentHandler implements ContentHandler {
     private MolarMass molarMass;
     private StringBuilder smilesBuilder;
     private InChIKey inChIKey;
-    private Ligand ligand2D;
-    private Ligand ligand3D;
+    private MoleculeGraph structure;
 
     private StringBuilder structureBuilder;
     private boolean isInChemicalStructure;
     private boolean isMolStructure;
     private boolean is3DStructure;
     private boolean is2DStructure;
-    private boolean isDefaultStrucutre;
+    private boolean isDefaultStructure;
 
     public ChEBIContentHandler() {
         smilesBuilder = new StringBuilder();
@@ -64,10 +63,8 @@ public class ChEBIContentHandler implements ContentHandler {
         if (molarMass != null) {
             species.setFeature(molarMass);
         }
-        if (ligand3D != null) {
-            species.setFeature(new Structure3D(ligand3D, ChEBIDatabase.DEGTYARENKO2008));
-        } else if (ligand2D != null){
-            species.setFeature(new Structure3D(ligand2D, ChEBIDatabase.DEGTYARENKO2008));
+        if (structure != null){
+            species.setFeature(new Structure2D(structure, ChEBIDatabase.DEGTYARENKO2008));
         }
         return species;
     }
@@ -125,14 +122,10 @@ public class ChEBIContentHandler implements ContentHandler {
     public void endElement(String uri, String localName, String qName) {
         switch (qName) {
             case "ChemicalStructures":
-                if (is3DStructure && isMolStructure) {
+                if (is2DStructure && isDefaultStructure){
                     // create structure
-                    MolParser parser = new MolParser(Arrays.asList(structureBuilder.toString().split("\\R")));
-                    ligand3D = parser.parseNextAsLigand();
-                } else if (is2DStructure && isDefaultStrucutre){
-                    // create structure
-                    MolParser parser = new MolParser(Arrays.asList(structureBuilder.toString().split("\\R")));
-                    ligand2D = parser.parseNextAsLigand();
+                    MolParser2D parser = new MolParser2D(Arrays.asList(structureBuilder.toString().split("\\R")));
+                    structure = parser.parseNextMoleculeGraph();
                 }
                 // clean up
                 structureBuilder = new StringBuilder();
@@ -140,7 +133,7 @@ public class ChEBIContentHandler implements ContentHandler {
                 is2DStructure = false;
                 is3DStructure = false;
                 isMolStructure = false;
-                isDefaultStrucutre = false;
+                isDefaultStructure = false;
             case "structure":
             case "type":
             case "dimension":
@@ -204,7 +197,7 @@ public class ChEBIContentHandler implements ContentHandler {
             case "defaultStructure": {
                 final String string = new String(ch, start, length);
                 if (string.equals("true")) {
-                    isDefaultStrucutre = true;
+                    isDefaultStructure = true;
                 }
             }
             case "structure": {

@@ -7,7 +7,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
-import java.nio.charset.StandardCharsets;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,11 +31,25 @@ public class PDBUniProtMapper extends AbstractHTMLParser<Map<String, UniProtIden
     private PDBUniProtMapper() {
         setResource(MAP_URL);
         fetchResource();
+    }
+
+    @Override
+    public void fetchResource() {
+        GZIPInputStream gzipInputStream;
         try {
-            mappingStrings = new BufferedReader(new InputStreamReader(new GZIPInputStream(getFetchResult()), StandardCharsets.UTF_8))
-                    .lines().collect(Collectors.toList());
+            gzipInputStream = new GZIPInputStream(new URL(getResource()).openStream());
         } catch (IOException e) {
-            throw new UncheckedIOException("Unable to unpack gzip.", e);
+            throw new IllegalStateException("Unable to fetch result url " + getResource() + " for uniprot sifts mapping.");
+        }
+        try (InputStreamReader inputStreamReader = new InputStreamReader(gzipInputStream)) {
+            try (BufferedReader bufferedReader = new BufferedReader(inputStreamReader)) {
+                mappingStrings = bufferedReader.lines()
+                        .collect(Collectors.toList());
+            } catch (IOException e) {
+                throw new UncheckedIOException("unable to parse pfam list ", e);
+            }
+        } catch (IOException e) {
+            throw new UncheckedIOException("unable to parse pfam list ", e);
         }
     }
 

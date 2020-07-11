@@ -1,10 +1,9 @@
-package bio.singa.chemistry.features.identifiers;
+package bio.singa.chemistry.features.smiles;
 
-import bio.singa.chemistry.features.smiles.Smiles;
+import bio.singa.chemistry.features.databases.chebi.ChEBIDatabase;
 import bio.singa.features.identifiers.ChEBIIdentifier;
 import bio.singa.features.model.FeatureProvider;
 import bio.singa.features.model.Featureable;
-import bio.singa.chemistry.features.databases.chebi.ChEBIDatabase;
 
 /**
  * @author cl

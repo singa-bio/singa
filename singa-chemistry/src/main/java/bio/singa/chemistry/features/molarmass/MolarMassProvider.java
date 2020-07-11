@@ -1,4 +1,4 @@
-package bio.singa.chemistry.features.identifiers;
+package bio.singa.chemistry.features.molarmass;
 
 import bio.singa.features.identifiers.ChEBIIdentifier;
 import bio.singa.features.identifiers.UniProtIdentifier;

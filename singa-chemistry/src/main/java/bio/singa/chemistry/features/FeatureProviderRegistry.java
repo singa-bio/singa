@@ -1,8 +1,7 @@
 package bio.singa.chemistry.features;
 
-import bio.singa.chemistry.features.identifiers.PDBLigandIdentiferProvider;
-import bio.singa.chemistry.features.identifiers.PubChemIdentifierProvider;
-import bio.singa.chemistry.features.identifiers.PubChemToChEBI;
+import bio.singa.chemistry.features.identifiers.*;
+import bio.singa.chemistry.features.molarmass.MolarMassProvider;
 import bio.singa.features.exceptions.IllegalFeatureRequestException;
 import bio.singa.features.identifiers.ChEBIIdentifier;
 import bio.singa.features.identifiers.InChIKey;
@@ -10,6 +9,7 @@ import bio.singa.features.identifiers.PDBLigandIdentifier;
 import bio.singa.features.identifiers.PubChemIdentifier;
 import bio.singa.features.model.Feature;
 import bio.singa.features.model.FeatureProvider;
+import bio.singa.features.quantities.MolarMass;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
@@ -28,7 +28,7 @@ public class FeatureProviderRegistry {
         addProviderForFeature(ChEBIIdentifier.class, PubChemToChEBI.class);
         addProviderForFeature(PubChemIdentifier.class, PubChemIdentifierProvider.class);
         addProviderForFeature(PDBLigandIdentifier.class, PDBLigandIdentiferProvider.class);
-//        addProviderForFeature(MolarMass.class, MolarMassProvider.class);
+        addProviderForFeature(MolarMass.class, MolarMassProvider.class);
     }
 
     private final Map<Class<? extends Feature>, Class<? extends FeatureProvider>> classRegistry;

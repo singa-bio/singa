@@ -17,7 +17,7 @@ import static tech.units.indriya.unit.Units.SECOND;
 public class MembranePermeability extends AbstractScalableQuantitativeFeature<MembranePermeability> implements Quantity<MembranePermeability> {
 
     // theoretically it is volume / time * area - volume and area cancel out
-    private static Unit<Length> CENTIMETRE = CENTI(METRE);
+    public static final Unit<Length> CENTIMETRE = CENTI(METRE);
     public static final Unit<MembranePermeability> CENTIMETRE_PER_SECOND = new ProductUnit<>(CENTIMETRE.divide(SECOND));
 
     public MembranePermeability(Quantity<MembranePermeability> membranePermeabilityQuantity, Evidence evidence) {
