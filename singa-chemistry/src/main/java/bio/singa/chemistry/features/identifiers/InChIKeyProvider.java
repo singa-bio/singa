@@ -1,4 +1,4 @@
-package bio.singa.structure.features;
+package bio.singa.chemistry.features.identifiers;
 
 import bio.singa.chemistry.features.databases.pubchem.PubChemDatabase;
 import bio.singa.features.identifiers.ChEBIIdentifier;
@@ -6,7 +6,7 @@ import bio.singa.features.identifiers.InChIKey;
 import bio.singa.features.identifiers.PubChemIdentifier;
 import bio.singa.features.model.FeatureProvider;
 import bio.singa.features.model.Featureable;
-import bio.singa.structure.parser.chebi.ChEBIDatabase;
+import bio.singa.chemistry.features.databases.chebi.ChEBIDatabase;
 
 public class InChIKeyProvider extends FeatureProvider<InChIKey> {
 

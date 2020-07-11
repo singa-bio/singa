@@ -3,9 +3,9 @@ package bio.singa.structure.model.oak;
 import bio.singa.mathematics.vectors.Vector3D;
 import bio.singa.chemistry.model.elements.ElementProvider;
 import bio.singa.structure.model.families.LigandFamily;
-import bio.singa.structure.model.identifiers.LeafIdentifier;
-import bio.singa.structure.model.identifiers.PDBIdentifier;
-import bio.singa.structure.model.identifiers.UniqueAtomIdentifer;
+import bio.singa.features.identifiers.LeafIdentifier;
+import bio.singa.features.identifiers.PDBIdentifier;
+import bio.singa.features.identifiers.UniqueAtomIdentifer;
 import bio.singa.structure.model.interfaces.*;
 
 import java.util.*;

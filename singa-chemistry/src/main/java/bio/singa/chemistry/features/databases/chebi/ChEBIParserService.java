@@ -1,4 +1,4 @@
-package bio.singa.structure.parser.chebi;
+package bio.singa.chemistry.features.databases.chebi;
 
 import bio.singa.chemistry.model.SmallMolecule;
 import bio.singa.core.parser.AbstractXMLParser;

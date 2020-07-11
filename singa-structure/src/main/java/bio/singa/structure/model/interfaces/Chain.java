@@ -1,6 +1,6 @@
 package bio.singa.structure.model.interfaces;
 
-import bio.singa.structure.model.identifiers.LeafIdentifier;
+import bio.singa.features.identifiers.LeafIdentifier;
 
 /**
  * {@link Chain}s that represent one continuous macro molecule (most often the biggest macro molecules and its ligands

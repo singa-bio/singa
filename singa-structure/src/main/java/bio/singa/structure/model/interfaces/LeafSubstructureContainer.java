@@ -1,7 +1,7 @@
 package bio.singa.structure.model.interfaces;
 
 import bio.singa.structure.model.families.StructuralFamily;
-import bio.singa.structure.model.identifiers.LeafIdentifier;
+import bio.singa.features.identifiers.LeafIdentifier;
 
 import java.util.*;
 import java.util.stream.Collectors;

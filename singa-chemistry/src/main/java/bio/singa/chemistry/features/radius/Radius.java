@@ -1,4 +1,4 @@
-package bio.singa.chemistry.features.structure3d;
+package bio.singa.chemistry.features.radius;
 
 import bio.singa.features.model.AbstractFeature;
 import bio.singa.features.model.AbstractQuantitativeFeature;

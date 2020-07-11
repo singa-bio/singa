@@ -1,4 +1,4 @@
-package bio.singa.structure.model.identifiers;
+package bio.singa.features.identifiers;
 
 import java.util.Comparator;
 

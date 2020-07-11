@@ -7,9 +7,8 @@ import bio.singa.mathematics.matrices.Matrices;
 import bio.singa.mathematics.matrices.Matrix;
 import bio.singa.mathematics.metrics.model.VectorMetricProvider;
 import bio.singa.mathematics.vectors.Vector3D;
-import bio.singa.mathematics.vectors.Vectors;
 import bio.singa.mathematics.vectors.Vectors3D;
-import bio.singa.structure.model.identifiers.LeafIdentifier;
+import bio.singa.features.identifiers.LeafIdentifier;
 import bio.singa.structure.model.interfaces.*;
 
 import java.util.*;

@@ -1,6 +1,6 @@
 package bio.singa.simulation.model.modules.concentration.imlementations.transport;
 
-import bio.singa.chemistry.features.structure3d.Radius;
+import bio.singa.chemistry.features.radius.Radius;
 import bio.singa.core.utility.Pair;
 import bio.singa.core.utility.Resources;
 import bio.singa.features.parameters.Environment;

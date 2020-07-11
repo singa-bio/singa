@@ -1,6 +1,7 @@
-package bio.singa.structure.model.identifiers;
+package bio.singa.features.identifiers;
 
 import java.util.Comparator;
+import java.util.Objects;
 
 /**
  * The leaf identifier consists of the PDB identifer, the model identifier, the chain identifier, the serial of a leaf
@@ -97,9 +98,9 @@ public class LeafIdentifier implements Comparable<LeafIdentifier> {
         String secondPart = split[1];
         if (secondPart.substring(secondPart.length() - 1).matches("[A-Z]")) {
             char insertionCode = secondPart.charAt(secondPart.length() - 1);
-            return new LeafIdentifier(firstPart, Integer.valueOf(secondPart.substring(0, secondPart.length() - 1)), insertionCode);
+            return new LeafIdentifier(firstPart, Integer.parseInt(secondPart.substring(0, secondPart.length() - 1)), insertionCode);
         }
-        return new LeafIdentifier(firstPart, Integer.valueOf(secondPart));
+        return new LeafIdentifier(firstPart, Integer.parseInt(secondPart));
     }
 
     public String getPdbIdentifier() {
@@ -151,9 +152,9 @@ public class LeafIdentifier implements Comparable<LeafIdentifier> {
         if (serial != that.serial) return false;
         if (modelIdentifer != that.modelIdentifer) return false;
         if (insertionCode != that.insertionCode) return false;
-        if (pdbIdentifer != null ? !pdbIdentifer.equals(that.pdbIdentifer) : that.pdbIdentifer != null)
+        if (!Objects.equals(pdbIdentifer, that.pdbIdentifer))
             return false;
-        return chainIdentifer != null ? chainIdentifer.equals(that.chainIdentifer) : that.chainIdentifer == null;
+        return Objects.equals(chainIdentifer, that.chainIdentifer);
     }
 
     @Override

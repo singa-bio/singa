@@ -1,8 +1,8 @@
 package bio.singa.structure.model.oak;
 
 import bio.singa.mathematics.vectors.Vector3D;
-import bio.singa.structure.model.identifiers.LeafIdentifier;
-import bio.singa.structure.model.identifiers.UniqueAtomIdentifer;
+import bio.singa.features.identifiers.LeafIdentifier;
+import bio.singa.features.identifiers.UniqueAtomIdentifer;
 import bio.singa.structure.model.interfaces.*;
 import bio.singa.structure.parser.pdb.structures.StructureParser;
 import org.junit.jupiter.api.BeforeAll;

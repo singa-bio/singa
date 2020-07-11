@@ -1,12 +1,12 @@
-package bio.singa.structure.features;
+package bio.singa.chemistry.features.identifiers;
 
 import bio.singa.features.identifiers.ChEBIIdentifier;
 import bio.singa.features.identifiers.UniProtIdentifier;
 import bio.singa.features.model.FeatureProvider;
 import bio.singa.features.model.Featureable;
 import bio.singa.features.quantities.MolarMass;
-import bio.singa.structure.parser.chebi.ChEBIDatabase;
-import bio.singa.structure.parser.uniprot.UniProtDatabase;
+import bio.singa.chemistry.features.databases.chebi.ChEBIDatabase;
+import bio.singa.chemistry.features.databases.uniprot.UniProtDatabase;
 
 /**
  * @author cl

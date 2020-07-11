@@ -9,7 +9,7 @@ import bio.singa.javafx.renderer.molecules.MoleculeGraphRenderer;
 import bio.singa.structure.algorithms.molecules.MoleculeIsomorphism;
 import bio.singa.structure.algorithms.molecules.MoleculeIsomorphismFinder;
 import bio.singa.structure.algorithms.molecules.MoleculeIsomorphismFinder.AtomConditions;
-import bio.singa.structure.model.identifiers.LeafIdentifier;
+import bio.singa.features.identifiers.LeafIdentifier;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.interfaces.Structure;
 import bio.singa.structure.model.molecules.MoleculeGraphs;

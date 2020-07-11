@@ -1,6 +1,6 @@
 package bio.singa.chemistry.features.diffusivity;
 
-import bio.singa.chemistry.features.structure3d.Radius;
+import bio.singa.chemistry.features.radius.Radius;
 import bio.singa.features.model.*;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.quantities.DynamicViscosity;

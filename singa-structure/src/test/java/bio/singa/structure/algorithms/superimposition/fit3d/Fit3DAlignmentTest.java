@@ -6,8 +6,8 @@ import bio.singa.structure.algorithms.superimposition.SubstructureSuperimpositio
 import bio.singa.structure.model.families.AminoAcidFamily;
 import bio.singa.structure.model.families.MatcherFamily;
 import bio.singa.structure.model.families.NucleotideFamily;
-import bio.singa.structure.model.identifiers.LeafIdentifier;
-import bio.singa.structure.model.identifiers.LeafIdentifiers;
+import bio.singa.features.identifiers.LeafIdentifier;
+import bio.singa.features.identifiers.LeafIdentifiers;
 import bio.singa.structure.model.interfaces.Structure;
 import bio.singa.structure.model.oak.OakStructure;
 import bio.singa.structure.model.oak.StructuralEntityFilter;

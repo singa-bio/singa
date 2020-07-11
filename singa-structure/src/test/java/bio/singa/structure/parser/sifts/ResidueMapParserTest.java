@@ -1,7 +1,7 @@
 package bio.singa.structure.parser.sifts;
 
 import bio.singa.features.identifiers.UniProtIdentifier;
-import bio.singa.structure.model.identifiers.LeafIdentifier;
+import bio.singa.features.identifiers.LeafIdentifier;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;

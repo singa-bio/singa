@@ -1,7 +1,7 @@
 package bio.singa.structure.model.mmtf;
 
 import bio.singa.structure.model.families.LigandFamily;
-import bio.singa.structure.model.identifiers.LeafIdentifier;
+import bio.singa.features.identifiers.LeafIdentifier;
 import bio.singa.structure.model.interfaces.Ligand;
 import org.rcsb.mmtf.api.StructureDataInterface;
 

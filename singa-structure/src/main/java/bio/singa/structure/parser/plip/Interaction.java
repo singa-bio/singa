@@ -1,7 +1,7 @@
 package bio.singa.structure.parser.plip;
 
 
-import bio.singa.structure.model.identifiers.LeafIdentifier;
+import bio.singa.features.identifiers.LeafIdentifier;
 
 /**
  * @author cl

@@ -2,8 +2,8 @@ package bio.singa.structure.parser.sifts;
 
 import bio.singa.core.parser.AbstractXMLParser;
 import bio.singa.features.identifiers.UniProtIdentifier;
-import bio.singa.structure.model.identifiers.LeafIdentifier;
-import bio.singa.structure.model.identifiers.PDBIdentifier;
+import bio.singa.features.identifiers.LeafIdentifier;
+import bio.singa.features.identifiers.PDBIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;

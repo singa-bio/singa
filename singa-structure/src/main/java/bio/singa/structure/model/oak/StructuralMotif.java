@@ -4,7 +4,7 @@ import bio.singa.structure.algorithms.superimposition.fit3d.Fit3DBuilder;
 import bio.singa.structure.model.families.AminoAcidFamily;
 import bio.singa.structure.model.families.MatcherFamily;
 import bio.singa.structure.model.families.NucleotideFamily;
-import bio.singa.structure.model.identifiers.LeafIdentifier;
+import bio.singa.features.identifiers.LeafIdentifier;
 import bio.singa.structure.model.interfaces.*;
 
 import java.util.*;

@@ -1,7 +1,7 @@
 package bio.singa.structure.parser.pdb.structures.iterators.sources;
 
 import bio.singa.core.utility.Resources;
-import bio.singa.structure.model.identifiers.PDBIdentifier;
+import bio.singa.features.identifiers.PDBIdentifier;
 import bio.singa.structure.model.mmtf.MmtfStructure;
 import org.junit.jupiter.api.Test;
 

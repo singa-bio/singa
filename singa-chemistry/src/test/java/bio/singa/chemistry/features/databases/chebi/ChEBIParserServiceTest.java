@@ -1,6 +1,5 @@
-package bio.singa.structure.parser.chebi;
+package bio.singa.chemistry.features.databases.chebi;
 
-import bio.singa.chemistry.features.databases.chebi.ChEBIImageService;
 import bio.singa.chemistry.features.logp.LogP;
 import bio.singa.chemistry.model.SmallMolecule;
 import bio.singa.features.quantities.MolarMass;

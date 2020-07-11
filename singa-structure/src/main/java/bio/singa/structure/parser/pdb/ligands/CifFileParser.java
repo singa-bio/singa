@@ -8,7 +8,7 @@ import bio.singa.chemistry.model.elements.ElementProvider;
 import bio.singa.structure.model.families.AminoAcidFamily;
 import bio.singa.structure.model.families.LigandFamily;
 import bio.singa.structure.model.families.NucleotideFamily;
-import bio.singa.structure.model.identifiers.LeafIdentifier;
+import bio.singa.features.identifiers.LeafIdentifier;
 import bio.singa.structure.model.interfaces.AminoAcid;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.interfaces.Nucleotide;

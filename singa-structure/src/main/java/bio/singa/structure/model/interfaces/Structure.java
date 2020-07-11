@@ -1,6 +1,6 @@
 package bio.singa.structure.model.interfaces;
 
-import bio.singa.structure.model.identifiers.PDBIdentifier;
+import bio.singa.features.identifiers.PDBIdentifier;
 
 import java.util.List;
 import java.util.Optional;

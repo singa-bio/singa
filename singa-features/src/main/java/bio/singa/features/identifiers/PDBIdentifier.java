@@ -1,4 +1,4 @@
-package bio.singa.structure.model.identifiers;
+package bio.singa.features.identifiers;
 
 import bio.singa.features.identifiers.model.AbstractIdentifier;
 

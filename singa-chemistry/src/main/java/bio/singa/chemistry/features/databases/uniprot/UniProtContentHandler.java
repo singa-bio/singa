@@ -1,17 +1,15 @@
-package bio.singa.structure.parser.uniprot;
+package bio.singa.chemistry.features.databases.uniprot;
 
 import bio.singa.chemistry.annotations.Annotation;
 import bio.singa.chemistry.annotations.AnnotationType;
 import bio.singa.chemistry.annotations.taxonomy.Organism;
 import bio.singa.chemistry.annotations.taxonomy.Taxon;
-import bio.singa.structure.features.variants.SequenceVariant;
-import bio.singa.structure.features.variants.SequenceVariants;
-import bio.singa.structure.model.Protein;
+import bio.singa.chemistry.features.databases.sequencevariants.SequenceVariant;
+import bio.singa.chemistry.features.databases.sequencevariants.SequenceVariants;
+import bio.singa.chemistry.model.Protein;
 import bio.singa.features.identifiers.*;
 import bio.singa.features.model.Evidence;
 import bio.singa.features.quantities.MolarMass;
-import bio.singa.structure.model.families.AminoAcidFamily;
-import bio.singa.structure.model.identifiers.PDBIdentifier;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.Locator;
@@ -514,15 +512,13 @@ public class UniProtContentHandler implements ContentHandler {
             }
             case "original": {
                 if (inSequenceVariant) {
-                    currentSequenceVariant.setOriginal(AminoAcidFamily.getAminoAcidTypeByOneLetterCode(new String(ch, start, length))
-                            .orElse(AminoAcidFamily.UNKNOWN));
+                    currentSequenceVariant.setOriginal(new String(ch, start, length));
                 }
                 break;
             }
             case "variation": {
                 if (inSequenceVariant) {
-                    currentSequenceVariant.setVariation(AminoAcidFamily.getAminoAcidTypeByOneLetterCode(new String(ch, start, length))
-                            .orElse(AminoAcidFamily.UNKNOWN));
+                    currentSequenceVariant.setVariation(new String(ch, start, length));
                 }
                 break;
             }

@@ -1,4 +1,4 @@
-package bio.singa.structure.parser.uniprot;
+package bio.singa.chemistry.features.databases.uniprot;
 
 import bio.singa.features.identifiers.UniProtIdentifier;
 import bio.singa.features.quantities.MolarMass;

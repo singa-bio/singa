@@ -5,6 +5,7 @@ import bio.singa.chemistry.features.identifiers.PubChemIdentifierProvider;
 import bio.singa.chemistry.features.identifiers.PubChemToChEBI;
 import bio.singa.features.exceptions.IllegalFeatureRequestException;
 import bio.singa.features.identifiers.ChEBIIdentifier;
+import bio.singa.features.identifiers.InChIKey;
 import bio.singa.features.identifiers.PDBLigandIdentifier;
 import bio.singa.features.identifiers.PubChemIdentifier;
 import bio.singa.features.model.Feature;
@@ -23,7 +24,7 @@ public class FeatureProviderRegistry {
 
     static {
         // identifiers
-//        addProviderForFeature(InChIKey.class, InChIKeyProvider.class);
+        addProviderForFeature(InChIKey.class, InChIKeyProvider.class);
         addProviderForFeature(ChEBIIdentifier.class, PubChemToChEBI.class);
         addProviderForFeature(PubChemIdentifier.class, PubChemIdentifierProvider.class);
         addProviderForFeature(PDBLigandIdentifier.class, PDBLigandIdentiferProvider.class);

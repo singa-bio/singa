@@ -1,6 +1,6 @@
 package bio.singa.structure.model.oak;
 
-import bio.singa.structure.model.identifiers.LeafIdentifier;
+import bio.singa.features.identifiers.LeafIdentifier;
 import bio.singa.structure.model.interfaces.*;
 
 import java.util.*;

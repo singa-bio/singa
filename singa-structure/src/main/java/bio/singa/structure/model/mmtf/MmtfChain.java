@@ -2,7 +2,7 @@ package bio.singa.structure.model.mmtf;
 
 import bio.singa.core.utility.Range;
 import bio.singa.structure.model.families.StructuralFamily;
-import bio.singa.structure.model.identifiers.LeafIdentifier;
+import bio.singa.features.identifiers.LeafIdentifier;
 import bio.singa.structure.model.interfaces.Atom;
 import bio.singa.structure.model.interfaces.Chain;
 import bio.singa.structure.model.interfaces.LeafSubstructure;

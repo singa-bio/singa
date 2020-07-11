@@ -1,6 +1,6 @@
 package bio.singa.structure.parser.pdb.rest.cluster;
 
-import bio.singa.structure.model.identifiers.PDBIdentifier;
+import bio.singa.features.identifiers.PDBIdentifier;
 import bio.singa.structure.parser.pdb.rest.PDBRestEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

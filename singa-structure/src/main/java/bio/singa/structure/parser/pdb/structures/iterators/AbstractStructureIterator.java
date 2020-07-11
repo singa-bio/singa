@@ -1,6 +1,6 @@
 package bio.singa.structure.parser.pdb.structures.iterators;
 
-import bio.singa.structure.model.identifiers.PDBIdentifier;
+import bio.singa.features.identifiers.PDBIdentifier;
 import bio.singa.structure.model.interfaces.Structure;
 import bio.singa.structure.parser.pdb.structures.iterators.sources.SourceIterator;
 import bio.singa.structure.parser.pdb.structures.tokens.LeafSkeleton;

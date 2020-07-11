@@ -1,4 +1,4 @@
-package bio.singa.structure.features.variants;
+package bio.singa.chemistry.features.databases.sequencevariants;
 
 import bio.singa.features.model.Evidence;
 import bio.singa.features.model.QualitativeFeature;
