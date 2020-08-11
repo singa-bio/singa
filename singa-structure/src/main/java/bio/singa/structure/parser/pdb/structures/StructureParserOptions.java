@@ -35,6 +35,10 @@ public class StructureParserOptions {
      * Defines if hetero atoms should be parsed.
      */
     private boolean heteroAtoms = true;
+    /**
+     * Defines whether an exception is thrown or a waring is issued whenever connections cannot be assigned.
+     */
+    private boolean enforceConnection = false;
 
     /**
      * Create a new Options object using enum constants.
@@ -100,6 +104,18 @@ public class StructureParserOptions {
             case GET_IDENTIFIER_FROM_PDB:
                 options.inferIdentifierFromFileName(false);
                 break;
+            case ENFORCE_CONNECTIONS:
+                options.setEnforceConnection(true);
+                break;
+            case DISREGARD_CONNECTIONS:
+                options.setEnforceConnection(false);
+                break;
+        }
+    }
+
+    public void applySettings(Setting... settings) {
+        for (Setting setting : settings) {
+            setOption(this, setting);
         }
     }
 
@@ -238,6 +254,14 @@ public class StructureParserOptions {
         this.inferIdentifierFromFileName = inferIdentifierFromFileName;
     }
 
+    public boolean enforceConnection() {
+        return enforceConnection;
+    }
+
+    public void setEnforceConnection(boolean enforceConnection) {
+        this.enforceConnection = enforceConnection;
+    }
+
     /**
      * Settings that can be passed to the Options.
      */
@@ -311,7 +335,17 @@ public class StructureParserOptions {
         /**
          * Use the pdb file to infer the pdb identifier (default).
          */
-        GET_IDENTIFIER_FROM_PDB
+        GET_IDENTIFIER_FROM_PDB,
+
+        /**
+         * Throws an exception whenever connections cannot be assigned.
+         */
+        ENFORCE_CONNECTIONS,
+
+        /**
+         * Issues a warning whenever connections cannot be assigned.
+         */
+        DISREGARD_CONNECTIONS
 
     }
 }

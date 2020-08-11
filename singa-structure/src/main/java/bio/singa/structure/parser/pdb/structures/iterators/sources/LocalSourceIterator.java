@@ -1,6 +1,6 @@
 package bio.singa.structure.parser.pdb.structures.iterators.sources;
 
-import bio.singa.structure.parser.pdb.structures.StructureParser;
+import bio.singa.structure.parser.pdb.structures.LocalPdbRepository;
 import bio.singa.structure.parser.pdb.structures.iterators.converters.ContentConverter;
 import bio.singa.structure.parser.pdb.structures.iterators.converters.IdentityConverter;
 import bio.singa.structure.parser.pdb.structures.iterators.converters.PathToObjectConverter;
@@ -40,7 +40,7 @@ public class LocalSourceIterator<SourceContent> extends AbstractSourceIterator<S
         return localIterator;
     }
 
-    public static LocalSourceIterator<Path> fromLocalPdb(StructureParser.LocalPdb localPdb) {
+    public static LocalSourceIterator<Path> fromLocalPdb(LocalPdbRepository localPdb) {
         List<Path> paths = new ArrayList<>();
         Path localPdbPath = localPdb.getLocalPdbPath();
         try (Stream<Path> splitDirectories = Files.list(localPdbPath)) {

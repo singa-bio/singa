@@ -1,12 +1,14 @@
 package bio.singa.structure.parser.pdb.ligands;
 
 import bio.singa.structure.model.interfaces.LeafSubstructure;
+import bio.singa.structure.parser.pdb.structures.LocalCifRepository;
 import bio.singa.structure.parser.pdb.structures.tokens.LeafSkeleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.stream.Collectors;
 
 /**
@@ -35,7 +37,18 @@ public class LigandParserService {
         try {
             return parseLeafSkeleton(new URL(String.format(CIF_FETCH_URL, ligandId)).openStream());
         } catch (IOException e) {
-            throw new UncheckedIOException("Could not parse cif file for ligand " + ligandId + ".", e);
+            throw new UncheckedIOException("Could not parse cif file for ligand " + ligandId + ". If this exception" +
+                    " occurred during structure parsing, you may ignore it with setting DISREGARD_CONNECTIONS", e);
+        }
+    }
+
+    public static LeafSkeleton parseLeafSkeleton(String ligandId, LocalCifRepository localCifRepository) {
+        logger.debug("parsing structure {} using the supplied atoms", ligandId);
+        try {
+            return parseLeafSkeleton(Files.newInputStream(localCifRepository.getPathForLigandIdentifier(ligandId)));
+        } catch (IOException e) {
+            throw new UncheckedIOException("Could not parse cif file for ligand " + ligandId + ". If this exception" +
+                    " occurred during structure parsing, you may ignore it with setting DISREGARD_CONNECTIONS", e);
         }
     }
 

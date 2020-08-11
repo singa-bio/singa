@@ -2,6 +2,11 @@
 <project version="4">
   <component name="RemoteRepositoriesConfiguration">
     <remote-repository>
+      <option name="id" value="ebi-repo" />
+      <option name="name" value="ebi-repo" />
+      <option name="url" value="http://www.ebi.ac.uk/intact/maven/nexus/content/repositories/ebi-repo/" />
+    </remote-repository>
+    <remote-repository>
       <option name="id" value="ebi-repo-snapshots" />
       <option name="name" value="ebi-repo-snapshots" />
       <option name="url" value="http://www.ebi.ac.uk/intact/maven/nexus/content/repositories/ebi-repo-snapshots/" />
@@ -15,11 +20,6 @@
       <option name="id" value="central" />
       <option name="name" value="Maven Central repository" />
       <option name="url" value="https://repo1.maven.org/maven2" />
-    </remote-repository>
-    <remote-repository>
-      <option name="id" value="ebi-repo" />
-      <option name="name" value="ebi-repo" />
-      <option name="url" value="http://www.ebi.ac.uk/intact/maven/nexus/content/repositories/ebi-repo/" />
     </remote-repository>
     <remote-repository>
       <option name="id" value="jboss.community" />

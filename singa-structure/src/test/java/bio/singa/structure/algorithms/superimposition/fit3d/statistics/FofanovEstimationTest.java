@@ -43,7 +43,8 @@ class FofanovEstimationTest {
     void shouldCalculatePvalues() {
         FofanovEstimation fofanovEstimation = new FofanovEstimation(2.5);
         StructureIterator multiParser = StructureParser.mmtf()
-                .chainList(Paths.get(Resources.getResourceAsFileLocation("nrpdb_BLAST_10e80_100.txt")), "_");
+                .chainList(Paths.get(Resources.getResourceAsFileLocation("nrpdb_BLAST_10e80_100.txt")), "_")
+                .everything();
         multiParser.getReducer().setOptions(structureParserOptions);
         Fit3D fit3dBatch = Fit3DBuilder.create()
                 .query(queryMotif)
@@ -64,7 +65,8 @@ class FofanovEstimationTest {
         double epsilon = FofanovEstimation.determineEpsilon(queryMotif, modelCorrectnessCutoff);
         FofanovEstimation fofanovEstimation = new FofanovEstimation(epsilon, FofanovEstimation.DEFAULT_REFERENCE_SIZE, modelCorrectnessCutoff);
         StructureIterator multiParser = StructureParser.mmtf()
-                .chainList(Paths.get(Resources.getResourceAsFileLocation("nrpdb_BLAST_10e80_100.txt")), "_");
+                .chainList(Paths.get(Resources.getResourceAsFileLocation("nrpdb_BLAST_10e80_100.txt")), "_")
+                .everything();
         multiParser.getReducer().setOptions(structureParserOptions);
         Fit3D fit3dBatch = Fit3DBuilder.create()
                 .query(queryMotif)

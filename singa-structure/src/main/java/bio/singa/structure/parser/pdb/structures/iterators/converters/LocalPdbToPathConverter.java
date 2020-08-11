@@ -1,6 +1,6 @@
 package bio.singa.structure.parser.pdb.structures.iterators.converters;
 
-import bio.singa.structure.parser.pdb.structures.StructureParser;
+import bio.singa.structure.parser.pdb.structures.LocalPdbRepository;
 
 import java.nio.file.Path;
 
@@ -9,13 +9,13 @@ import java.nio.file.Path;
  */
 public class LocalPdbToPathConverter implements ContentConverter<String, Path> {
 
-    private LocalPdbToPathConverter(StructureParser.LocalPdb localPDB) {
+    private LocalPdbToPathConverter(LocalPdbRepository localPDB) {
         this.localPDB = localPDB;
     }
 
-    private final StructureParser.LocalPdb localPDB;
+    private final LocalPdbRepository localPDB;
 
-    public static LocalPdbToPathConverter get(StructureParser.LocalPdb localPDB) {
+    public static LocalPdbToPathConverter get(LocalPdbRepository localPDB) {
         return new LocalPdbToPathConverter(localPDB);
     }
 

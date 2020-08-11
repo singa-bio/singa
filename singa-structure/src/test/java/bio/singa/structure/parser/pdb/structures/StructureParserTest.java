@@ -18,12 +18,16 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static bio.singa.structure.parser.pdb.structures.StructureParserOptions.Setting.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class StructureParserTest {
 
     private static Structure hemoglobin;
     private static Structure cyanase;
+    private static LocalPdbRepository localPdb;
+    private static LocalCifRepository localCif;
+    private static LocalPdbRepository localMmtf;
 
     @BeforeAll
     static void parseUncomplicatedStructure() {
@@ -31,14 +35,16 @@ class StructureParserTest {
         hemoglobin = StructureParser.pdb()
                 .pdbIdentifier("1BUW")
                 .parse();
-    }
-
-    @BeforeAll
-    static void parseResiduesWithModifiedAminoAcids() {
+        // more complicated
         cyanase = StructureParser.pdb()
                 .pdbIdentifier("1DW9")
                 .parse();
+
+        localPdb = new LocalPdbRepository(Resources.getResourceAsFileLocation("pdb"), SourceLocation.OFFLINE_PDB);
+        localMmtf = new LocalPdbRepository(Resources.getResourceAsFileLocation("pdb"), SourceLocation.OFFLINE_MMTF);
+        localCif = new LocalCifRepository(Resources.getResourceAsFileLocation("pdbechem"));
     }
+
 
     @Test
     void shouldParsePDBIdentifierFromHeader() {
@@ -139,20 +145,20 @@ class StructureParserTest {
 
     @Test
     void shouldParseFromLocalPDB() {
-        StructureParser.LocalPdb localPdb = new StructureParser.LocalPdb(Resources.getResourceAsFileLocation("pdb"), SourceLocation.OFFLINE_PDB);
         Structure structure = StructureParser.local()
-                .localPdb(localPdb, "1C0A")
+                .localPdb(localPdb)
+                .pdbIdentifier("1C0A")
                 .parse();
-
         assertNotNull(structure);
     }
 
     @Test
     void shouldParseFromLocalMMTF() {
-        StructureParser.LocalPdb localPdb = new StructureParser.LocalPdb(Resources.getResourceAsFileLocation("pdb"), SourceLocation.OFFLINE_MMTF);
         Structure structure = StructureParser.local()
-                .localPdb(localPdb, "1C0A")
+                .localPdb(localMmtf)
+                .pdbIdentifier("1C0A")
                 .parse();
+        assertNotNull(structure);
     }
 
     @Test
@@ -178,7 +184,6 @@ class StructureParserTest {
 
     @Test
     void shouldParseFromLocalPDBWithChainList() {
-        StructureParser.LocalPdb localPdb = new StructureParser.LocalPdb(Resources.getResourceAsFileLocation("pdb"), SourceLocation.OFFLINE_PDB);
         Path chainList = Paths.get(Resources.getResourceAsFileLocation("chain_list.txt"));
         List<Structure> structure = StructureParser.local()
                 .localPdb(localPdb)
@@ -189,17 +194,15 @@ class StructureParserTest {
 
     @Test
     void shouldRetrievePathOfLocalPDB() {
-        StructureParser.LocalPdb localPdb = new StructureParser.LocalPdb(Resources.getResourceAsFileLocation("pdb"), SourceLocation.OFFLINE_PDB);
         assertTrue(localPdb.getPathForPdbIdentifier("1C0A").endsWith("pdb/data/structures/divided/pdb/c0/pdb1c0a.ent.gz"));
     }
 
     @Test
     void shouldAssignInformationFromFileName() {
-        StructureParserOptions options = StructureParserOptions.withSettings(StructureParserOptions.Setting.GET_TITLE_FROM_FILENAME, StructureParserOptions.Setting.GET_IDENTIFIER_FROM_FILENAME);
         Structure structure = StructureParser.local()
                 .fileLocation(Resources.getResourceAsFileLocation("1GL0_HDS_intra_E-H57_E-D102_E-S195.pdb"))
+                .settings(GET_TITLE_FROM_FILENAME, GET_IDENTIFIER_FROM_FILENAME)
                 .everything()
-                .setOptions(options)
                 .parse();
 
         assertEquals("1GL0_HDS_intra_E-H57_E-D102_E-S195", structure.getTitle());
@@ -208,19 +211,18 @@ class StructureParserTest {
 
     @Test
     void shouldIgnoreHeteroAtoms() {
-        StructureParserOptions options = StructureParserOptions.withSettings(StructureParserOptions.Setting.OMIT_HETERO_ATOMS);
         Structure structure = StructureParser.pdb()
                 .pdbIdentifier("3fjz")
+                .settings(OMIT_HETERO_ATOMS)
                 .chainIdentifier("A")
-                .setOptions(options)
                 .parse();
         assertFalse(structure.getAllLeafSubstructures().stream()
                 .anyMatch(LeafSubstructure::isAnnotatedAsHeteroAtom));
-        options = StructureParserOptions.withSettings(StructureParserOptions.Setting.GET_HETERO_ATOMS);
+
         structure = StructureParser.pdb()
                 .pdbIdentifier("3fjz")
+                .settings(GET_HETERO_ATOMS)
                 .chainIdentifier("A")
-                .setOptions(options)
                 .parse();
         assertTrue(structure.getAllLeafSubstructures().stream()
                 .anyMatch(LeafSubstructure::isAnnotatedAsHeteroAtom));
@@ -246,7 +248,7 @@ class StructureParserTest {
     void shouldThrowErrorWhenFileDoesNotExist() {
         assertThrows(UncheckedIOException.class,
                 () -> StructureParser.pdb()
-                        .pdbIdentifier("schalalala")
+                        .pdbIdentifier("invalid pdbid")
                         .everything()
                         .parse());
     }
@@ -259,10 +261,23 @@ class StructureParserTest {
                 .parse();
     }
 
+
+    @Test
+    void shouldParseWithLocalCif() {
+        Structure structure = StructureParser.local()
+                .localCifRepository(localCif)
+                .path(localPdb.getPathForPdbIdentifier("1c0a"))
+                .settings(DISREGARD_CONNECTIONS)
+                .parse();
+
+        System.out.println(structure);
+
+    }
+
     @Test
     void shouldParsallPdbFiles() {
         // FIXMEuse correct path in production
-        StructureParser.LocalPdb localPDB = new StructureParser.LocalPdb("/tmp/pdb", SourceLocation.OFFLINE_PDB);
+
 //        StructureParser.MultiParser multiParser = StructureParser.local()
 //                .localPDB(localPDB)
 //                .all();

@@ -1,20 +1,21 @@
 package bio.singa.structure.parser.pdb.structures;
 
+import bio.singa.features.identifiers.LeafIdentifier;
+import bio.singa.features.identifiers.UniqueAtomIdentifer;
 import bio.singa.structure.model.families.AminoAcidFamily;
 import bio.singa.structure.model.families.LigandFamily;
 import bio.singa.structure.model.families.NucleotideFamily;
-import bio.singa.features.identifiers.LeafIdentifier;
-import bio.singa.features.identifiers.UniqueAtomIdentifer;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.interfaces.Structure;
 import bio.singa.structure.model.oak.*;
 import bio.singa.structure.parser.pdb.ligands.LigandParserService;
-import bio.singa.structure.parser.pdb.structures.iterators.StructureReducer;
 import bio.singa.structure.parser.pdb.structures.iterators.StructureIterator;
+import bio.singa.structure.parser.pdb.structures.iterators.StructureReducer;
 import bio.singa.structure.parser.pdb.structures.tokens.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.UncheckedIOException;
 import java.nio.file.Paths;
 import java.util.*;
 
@@ -462,10 +463,39 @@ public class StructureCollector {
     private OakLeafSubstructure<?> createLeafWithAdditionalInformation(LeafIdentifier identifier, String leafName, Map<String, OakAtom> atoms) {
         LeafSkeleton leafSkeleton;
         if (!iterator.getSkeletons().containsKey(leafName)) {
-            leafSkeleton = LigandParserService.parseLeafSkeleton(leafName);
-            iterator.getSkeletons().put(leafName, leafSkeleton);
+            LocalCifRepository localCifRepository = iterator.getReducer().getLocalCifRepository();
+            if (localCifRepository != null) {
+                if (iterator.getReducer().getOptions().enforceConnection()) {
+                    leafSkeleton = LigandParserService.parseLeafSkeleton(leafName, localCifRepository);
+                    iterator.getSkeletons().put(leafName, leafSkeleton);
+                }
+                try {
+                    leafSkeleton = LigandParserService.parseLeafSkeleton(leafName, localCifRepository);
+                    iterator.getSkeletons().put(leafName, leafSkeleton);
+                } catch (UncheckedIOException e) {
+                    logger.warn("Unable to assign connections to "+leafName);
+                    iterator.getSkeletons().put(leafName, null);
+                    return createLeafWithoutAdditionalInformation(identifier, leafName, atoms);
+                }
+            } else {
+                if (iterator.getReducer().getOptions().enforceConnection()) {
+                    leafSkeleton = LigandParserService.parseLeafSkeleton(leafName);
+                    iterator.getSkeletons().put(leafName, leafSkeleton);
+                }
+                try {
+                    leafSkeleton = LigandParserService.parseLeafSkeleton(leafName);
+                    iterator.getSkeletons().put(leafName, leafSkeleton);
+                } catch (UncheckedIOException e) {
+                    logger.warn("Unable to assign connections to "+leafName);
+                    iterator.getSkeletons().put(leafName, null);
+                    return createLeafWithoutAdditionalInformation(identifier, leafName, atoms);
+                }
+            }
         } else {
             leafSkeleton = iterator.getSkeletons().get(leafName);
+            if (leafSkeleton == null) {
+                return createLeafWithoutAdditionalInformation(identifier, leafName, atoms);
+            }
         }
         return leafSkeleton.toRealLeafSubstructure(identifier, atoms);
     }

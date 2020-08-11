@@ -1,8 +1,8 @@
 package bio.singa.structure.parser.pdb.structures.iterators;
 
 import bio.singa.structure.model.interfaces.Structure;
+import bio.singa.structure.parser.pdb.structures.LocalPdbRepository;
 import bio.singa.structure.parser.pdb.structures.SourceLocation;
-import bio.singa.structure.parser.pdb.structures.StructureParser;
 import bio.singa.structure.parser.pdb.structures.StructureParserException;
 import bio.singa.structure.parser.pdb.structures.iterators.converters.FileLocationToPathConverter;
 import bio.singa.structure.parser.pdb.structures.iterators.converters.FileToPathConverter;
@@ -22,13 +22,17 @@ import java.util.Map;
  */
 public interface StructureIterator extends Iterator<Structure> {
 
-    static StructureIterator createFromIdentifiers(List<String> strings, SourceLocation sourceLocation) {
+    static StructureIterator createFromIdentifiers(List<String> strings, SourceLocation sourceLocation, LocalPdbRepository localPdbRepository) {
         switch (sourceLocation) {
             case ONLINE_MMTF: {
                 return new MmtfStructureIterator<>(new RemoteMmtfSourceIterator(strings));
             }
             case ONLINE_PDB: {
                 return new PdbStructureIterator<>(new RemotePdbSourceIterator(strings));
+            }
+            case OFFLINE_PDB:
+            case OFFLINE_MMTF: {
+                return new LocalStructureIterator<>(new LocalSourceIterator<>(strings, LocalPdbToPathConverter.get(localPdbRepository)));
             }
             default:
                 throw new StructureParserException("unable to parse combination of " + sourceLocation + " and strings.");
@@ -37,10 +41,6 @@ public interface StructureIterator extends Iterator<Structure> {
 
     static StructureIterator createFromLocations(List<String> strings) {
         return new LocalStructureIterator<>(new LocalSourceIterator<>(strings, FileLocationToPathConverter.get()));
-    }
-
-    static StructureIterator createFromIdentifiers(List<String> strings, StructureParser.LocalPdb localPdb) {
-        return new LocalStructureIterator<>(new LocalSourceIterator<>(strings, LocalPdbToPathConverter.get(localPdb)));
     }
 
     static StructureIterator createFromChainList(Path chainList, String separator, SourceLocation sourceLocation)  {
@@ -56,11 +56,11 @@ public interface StructureIterator extends Iterator<Structure> {
         throw new StructureParserException("unable to create parser for " + chainList + " and source "+ sourceLocation);
     }
 
-    static StructureIterator createFromChainList(Path chainList, String separator, StructureParser.LocalPdb localPdb) {
+    static StructureIterator createFromChainList(Path chainList, String separator, LocalPdbRepository localPdb) {
         return new LocalStructureIterator<>(LocalSourceIterator.fromChainList(chainList, separator, LocalPdbToPathConverter.get(localPdb)));
     }
 
-    static StructureIterator createFromLocalPdb(StructureParser.LocalPdb localPdb) {
+    static StructureIterator createFromLocalPdb(LocalPdbRepository localPdb) {
         return new LocalStructureIterator<>(LocalSourceIterator.fromLocalPdb(localPdb));
     }
 

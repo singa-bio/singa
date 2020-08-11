@@ -416,7 +416,8 @@ class Fit3DAlignmentTest {
     @Test
     void shouldAnnotateIdentifiersInBatch() {
         StructureIterator multiParser = StructureParser.mmtf()
-                .chainList(Paths.get(Resources.getResourceAsFileLocation("chain_list_PF00089.txt")), "\t");
+                .chainList(Paths.get(Resources.getResourceAsFileLocation("chain_list_PF00089.txt")), "\t")
+                .everything();
         Fit3D fit3d = Fit3DBuilder.create()
                 .query(queryMotif)
                 .targets(multiParser)

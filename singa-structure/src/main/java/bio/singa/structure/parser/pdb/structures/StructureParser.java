@@ -9,7 +9,6 @@ import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Collections;
 import java.util.List;
@@ -52,7 +51,7 @@ public class StructureParser {
     /**
      * After selecting the source, the identifer(s) to parse can be chosen.
      */
-    public interface IdentifierStep extends AdditionalLocalSourceStep {
+    public interface IdentifierStep {
 
         /**
          * The pdbIdentifier of the PDB structure.
@@ -60,7 +59,7 @@ public class StructureParser {
          * @param pdbIdentifier The pdbIdentifier.
          * @return Model selection
          */
-        SingleBranchStep pdbIdentifier(String pdbIdentifier);
+        SingleModelStep pdbIdentifier(String pdbIdentifier);
 
         /**
          * The pdbIdentifiers of the PDB structures.
@@ -68,103 +67,7 @@ public class StructureParser {
          * @param pdbIdentifiers The pdbIdentifiers.
          * @return Batch selection
          */
-        MultiBranchStep pdbIdentifiers(List<String> pdbIdentifiers);
-
-    }
-
-    /**
-     * Select a local source to parse from.
-     */
-    public interface LocalSourceStep {
-
-        /**
-         * The file to parse.
-         *
-         * @param file The file.
-         * @return Branch selection
-         */
-        SingleBranchStep file(File file);
-
-        /**
-         * The files to parse.
-         *
-         * @param files The files.
-         * @return Branch selection
-         */
-        MultiBranchStep files(List<File> files);
-
-        /**
-         * The path to parse.
-         *
-         * @param path The path.
-         * @return Branch selection
-         */
-        SingleBranchStep path(Path path);
-
-        /**
-         * The paths to parse.
-         *
-         * @param paths The paths.
-         * @return Branch selection
-         */
-        MultiBranchStep paths(List<Path> paths);
-
-        /**
-         * The location of a local PDB installation. This requires the input of a chin list in the following step.
-         *
-         * @param localPDB The local pdb.
-         * @return Additional local list file selection.
-         */
-        AdditionalLocalSourceStep localPdb(LocalPdb localPDB);
-
-        /**
-         * The location of a local PDB installation in addition to the structure, that is to be parsed.
-         *
-         * @param localPDB The local pdb.
-         * @param pdbIdentifier The PDB identifier.
-         * @return Branch selection
-         */
-        SingleBranchStep localPdb(LocalPdb localPDB, String pdbIdentifier);
-
-        /**
-         * The location of a local PDB installation in addition to a list of structures, that are to be parsed.
-         *
-         * @param localPDB The local pdb.
-         * @param pdbIdentifiers The PDB identifiers.
-         * @return Branch selection
-         */
-        MultiBranchStep localPdb(LocalPdb localPDB, List<String> pdbIdentifiers);
-
-        /**
-         * The location of a file as a sting.
-         *
-         * @param location The location.
-         * @return Branch selection
-         */
-        SingleBranchStep fileLocation(String location);
-
-        /**
-         * The location of files as strings.
-         *
-         * @param targetStructures The locations
-         * @return Branch selection
-         */
-        MultiBranchStep fileLocations(List<String> targetStructures);
-
-        /**
-         * Parses a structure from an input stream of a pdb file.
-         *
-         * @param inputStream The input stream of a pdb file.
-         * @return Branch selection
-         */
-        SingleBranchStep inputStream(InputStream inputStream);
-
-    }
-
-    /**
-     * Using a local pdb installation, additional source steps might be used.
-     */
-    public interface AdditionalLocalSourceStep {
+        MultiModelStep pdbIdentifiers(List<String> pdbIdentifiers);
 
         /**
          * Reads the provided chainIdentifier list from a file. Each line in the file should have the format:
@@ -174,7 +77,7 @@ public class StructureParser {
          * @param path The path of the chainIdentifier list file
          * @return The MultiParser.
          */
-        StructureIterator chainList(Path path);
+        MultiModelStep chainList(Path path);
 
         /**
          * Reads the provided chainIdentifier list from a file. Each line in the file should have the format:
@@ -184,16 +87,89 @@ public class StructureParser {
          * @param separator The separator between the PDBId and the ChainId
          * @return The MultiParser.
          */
-        StructureIterator chainList(Path path, String separator);
+        MultiModelStep chainList(Path path, String separator);
 
-        StructureIterator all();
+    }
+
+    /**
+     * Select a local source to parse from.
+     */
+    public interface LocalSourceStep extends IdentifierStep {
+
+        /**
+         * The file to parse.
+         *
+         * @param file The file.
+         * @return Branch selection
+         */
+        SingleModelStep file(File file);
+
+        /**
+         * The files to parse.
+         *
+         * @param files The files.
+         * @return Branch selection
+         */
+        MultiModelStep files(List<File> files);
+
+        /**
+         * The path to parse.
+         *
+         * @param path The path.
+         * @return Branch selection
+         */
+        SingleModelStep path(Path path);
+
+        /**
+         * The paths to parse.
+         *
+         * @param paths The paths.
+         * @return Branch selection
+         */
+        MultiModelStep paths(List<Path> paths);
+
+        /**
+         * The location of a local PDB installation. This requires the input of a chin list in the following step.
+         *
+         * @param localPDB The local pdb.
+         * @return Additional local list file selection.
+         */
+        LocalSourceStep localPdb(LocalPdbRepository localPDB);
+
+        LocalSourceStep localCifRepository(LocalCifRepository localCifRepository);
+
+        MultiModelStep all();
+
+        /**
+         * The location of a file as a sting.
+         *
+         * @param location The location.
+         * @return Branch selection
+         */
+        SingleModelStep fileLocation(String location);
+
+        /**
+         * The location of files as strings.
+         *
+         * @param targetStructures The locations
+         * @return Branch selection
+         */
+        MultiModelStep fileLocations(List<String> targetStructures);
+
+        /**
+         * Parses a structure from an input stream of a pdb file.
+         *
+         * @param inputStream The input stream of a pdb file.
+         * @return Branch selection
+         */
+        SingleModelStep inputStream(InputStream inputStream);
 
     }
 
     /**
      * Initiates the structure reduction steps for multiple structures.
      */
-    public interface MultiBranchStep extends MultiChainStep {
+    public interface MultiModelStep extends MultiChainStep {
 
         /**
          * If only a single model should be parsed, give its pdbIdentifier here.
@@ -215,7 +191,7 @@ public class StructureParser {
     /**
      * Initiates the structure reduction steps for a single structure.
      */
-    public interface SingleBranchStep extends SingleChainStep {
+    public interface SingleModelStep extends SingleChainStep {
 
         /**
          * If only a single model should be parsed, give its pdbIdentifier here.
@@ -238,6 +214,8 @@ public class StructureParser {
      * Initiates the selection of chains, if multiple structures have been chosen.
      */
     public interface MultiChainStep {
+
+        MultiChainStep settings(StructureParserOptions.Setting... settings);
 
         /**
          * If only a single chain should be parsed, choose it here.
@@ -274,6 +252,8 @@ public class StructureParser {
      */
     public interface SingleChainStep {
 
+        SingleChainStep settings(StructureParserOptions.Setting... settings);
+
         /**
          * If only a single chain should be parsed, choose it here.
          *
@@ -305,7 +285,7 @@ public class StructureParser {
     }
 
 
-    static class MultiReducingSelector extends SourceSelector implements MultiBranchStep {
+    static class MultiReducingSelector extends SourceSelector implements MultiModelStep {
 
         public MultiReducingSelector(SourceLocation sourceLocation) {
             super(sourceLocation);
@@ -336,6 +316,12 @@ public class StructureParser {
         }
 
         @Override
+        public MultiChainStep settings(StructureParserOptions.Setting... settings) {
+            iterator.getReducer().getOptions().applySettings(settings);
+            return this;
+        }
+
+        @Override
         public StructureIterator allChains() {
             return iterator;
         }
@@ -344,6 +330,8 @@ public class StructureParser {
         public List<Structure> parse() {
             return iterator.parse();
         }
+
+
     }
 
     public static class SingleParserFacade {
@@ -370,7 +358,7 @@ public class StructureParser {
 
     }
 
-    static class SingleReducingSelector extends SourceSelector implements SingleBranchStep {
+    static class SingleReducingSelector extends SourceSelector implements SingleModelStep {
 
         public SingleReducingSelector(SourceLocation sourceLocation) {
             super(sourceLocation);
@@ -406,6 +394,12 @@ public class StructureParser {
         }
 
         @Override
+        public SingleChainStep settings(StructureParserOptions.Setting... settings) {
+            iterator.getReducer().getOptions().applySettings(settings);
+            return this;
+        }
+
+        @Override
         public Structure parse() throws StructureParserException {
             return new SingleParserFacade(iterator).parse();
         }
@@ -415,11 +409,13 @@ public class StructureParser {
     /**
      * Remembers the choices during the the stepwise building process.
      */
-    static class SourceSelector implements LocalSourceStep, IdentifierStep, AdditionalLocalSourceStep {
+    static class SourceSelector implements LocalSourceStep, IdentifierStep {
 
-        StructureIterator iterator;
-        private LocalPdb localPdb;
-        private SourceLocation sourceLocation;
+        protected StructureIterator iterator;
+        protected SourceLocation sourceLocation;
+
+        protected LocalPdbRepository localPdb;
+        protected LocalCifRepository localCifRepository;
 
         public SourceSelector(SourceLocation sourceLocation) {
             this.sourceLocation = sourceLocation;
@@ -429,50 +425,62 @@ public class StructureParser {
         }
 
         @Override
-        public SingleBranchStep pdbIdentifier(String pdbIdentifier) {
+        public SingleModelStep pdbIdentifier(String pdbIdentifier) {
             List<String> pdbIdentifiers = Collections.singletonList(pdbIdentifier);
-            SingleReducingSelector reducer = new SingleReducingSelector(sourceLocation);
-            reducer.iterator = StructureIterator.createFromIdentifiers(pdbIdentifiers, sourceLocation);
-            return reducer;
+            SingleReducingSelector selector = new SingleReducingSelector(sourceLocation);
+            selector.iterator = StructureIterator.createFromIdentifiers(pdbIdentifiers, sourceLocation, localPdb);
+            assignRepository(selector.iterator);
+            return selector;
+        }
+
+        public void assignRepository(StructureIterator iterator) {
+            if (localCifRepository != null) {
+               iterator.getReducer().setLocalCifRepository(localCifRepository);
+            }
         }
 
         @Override
-        public MultiBranchStep pdbIdentifiers(List<String> pdbIdentifiers) {
-            MultiReducingSelector reducer = new MultiReducingSelector(sourceLocation);
-            reducer.iterator = StructureIterator.createFromIdentifiers(pdbIdentifiers, sourceLocation);
-            return reducer;
+        public MultiModelStep pdbIdentifiers(List<String> pdbIdentifiers) {
+            MultiReducingSelector selector = new MultiReducingSelector(sourceLocation);
+            selector.iterator = StructureIterator.createFromIdentifiers(pdbIdentifiers, sourceLocation, localPdb);
+            assignRepository(selector.iterator);
+            return selector;
         }
 
         @Override
-        public SingleBranchStep file(File file) {
-            SingleReducingSelector singleReducingSelector = new SingleReducingSelector(sourceLocation);
-            singleReducingSelector.iterator = StructureIterator.createFromFiles(Collections.singletonList(file), sourceLocation);
-            return singleReducingSelector;
+        public SingleModelStep file(File file) {
+            SingleReducingSelector selector = new SingleReducingSelector(sourceLocation);
+            selector.iterator = StructureIterator.createFromFiles(Collections.singletonList(file), sourceLocation);
+            assignRepository(selector.iterator);
+            return selector;
         }
 
         @Override
-        public MultiBranchStep files(List<File> files) {
-            MultiReducingSelector multiReducingSelector = new MultiReducingSelector(sourceLocation);
-            multiReducingSelector.iterator = StructureIterator.createFromFiles(files, sourceLocation);
-            return multiReducingSelector;
+        public MultiModelStep files(List<File> files) {
+            MultiReducingSelector selector = new MultiReducingSelector(sourceLocation);
+            selector.iterator = StructureIterator.createFromFiles(files, sourceLocation);
+            assignRepository(selector.iterator);
+            return selector;
         }
 
         @Override
-        public SingleBranchStep path(Path path) {
-            SingleReducingSelector singleReducingSelector = new SingleReducingSelector(sourceLocation);
-            singleReducingSelector.iterator = StructureIterator.createFromPaths(Collections.singletonList(path), sourceLocation);
-            return singleReducingSelector;
+        public SingleModelStep path(Path path) {
+            SingleReducingSelector selector = new SingleReducingSelector(sourceLocation);
+            selector.iterator = StructureIterator.createFromPaths(Collections.singletonList(path), sourceLocation);
+            assignRepository(selector.iterator);
+            return selector;
         }
 
         @Override
-        public MultiBranchStep paths(List<Path> paths) {
-            MultiReducingSelector multiReducingSelector = new MultiReducingSelector(sourceLocation);
-            multiReducingSelector.iterator = StructureIterator.createFromPaths(paths, sourceLocation);
-            return multiReducingSelector;
+        public MultiModelStep paths(List<Path> paths) {
+            MultiReducingSelector selector = new MultiReducingSelector(sourceLocation);
+            selector.iterator = StructureIterator.createFromPaths(paths, sourceLocation);
+            assignRepository(selector.iterator);
+            return selector;
         }
 
         @Override
-        public SingleBranchStep inputStream(InputStream inputStream) {
+        public SingleModelStep inputStream(InputStream inputStream) {
             File tempFile;
             try {
                 // TODO create converter for InputStream
@@ -485,158 +493,68 @@ public class StructureParser {
             }
             // FIXME this assumes always pdb format streams
             sourceLocation = SourceLocation.OFFLINE_PDB;
-            SingleReducingSelector singleReducingSelector = new SingleReducingSelector(sourceLocation);
-            singleReducingSelector.iterator = StructureIterator.createFromFiles(Collections.singletonList(tempFile), sourceLocation);
-            return singleReducingSelector;
+            SingleReducingSelector selector = new SingleReducingSelector(sourceLocation);
+            selector.iterator = StructureIterator.createFromFiles(Collections.singletonList(tempFile), sourceLocation);
+            assignRepository(selector.iterator);
+            return selector;
         }
 
         @Override
-        public AdditionalLocalSourceStep localPdb(LocalPdb localPdb) {
-            sourceLocation = localPdb.sourceLocation;
+        public LocalSourceStep localPdb(LocalPdbRepository localPdb) {
+            sourceLocation = localPdb.getSourceLocation();
             this.localPdb = localPdb;
             return this;
         }
 
         @Override
-        public MultiBranchStep localPdb(LocalPdb localPdb, List<String> pdbIdentifiers) {
-            sourceLocation = localPdb.sourceLocation;
-            MultiReducingSelector multiReducingSelector = new MultiReducingSelector(sourceLocation);
-            multiReducingSelector.iterator = StructureIterator.createFromIdentifiers(pdbIdentifiers, localPdb);
-            return multiReducingSelector;
+        public LocalSourceStep localCifRepository(LocalCifRepository localCifRepository) {
+            this.localCifRepository = localCifRepository;
+            return this;
         }
 
         @Override
-        public SingleBranchStep localPdb(LocalPdb localPdb, String pdbIdentifier) {
-            sourceLocation = localPdb.sourceLocation;
-            SingleReducingSelector singleReducingSelector = new SingleReducingSelector(sourceLocation);
-            singleReducingSelector.iterator = StructureIterator.createFromIdentifiers(Collections.singletonList(pdbIdentifier), localPdb);
-            return singleReducingSelector;
-        }
-
-        @Override
-        public SingleBranchStep fileLocation(String location) {
-            SingleReducingSelector singleReducingSelector = new SingleReducingSelector(sourceLocation);
-            singleReducingSelector.iterator = StructureIterator.createFromLocations(Collections.singletonList(location));
-            return singleReducingSelector;
-        }
-
-        @Override
-        public MultiBranchStep fileLocations(List<String> locations) {
-            MultiReducingSelector multiReducingSelector = new MultiReducingSelector(sourceLocation);
-            multiReducingSelector.iterator = StructureIterator.createFromLocations(locations);
-            return multiReducingSelector;
-        }
-
-        @Override
-        public StructureIterator chainList(Path path, String separator) {
-            MultiReducingSelector multiReducingSelector = new MultiReducingSelector(sourceLocation);
-            if (localPdb != null) {
-                multiReducingSelector.iterator = StructureIterator.createFromChainList(path, separator, localPdb);
-            } else {
-                multiReducingSelector.iterator = StructureIterator.createFromChainList(path, separator, sourceLocation);
-            }
-            return multiReducingSelector.everything();
-        }
-
-        @Override
-        public StructureIterator chainList(Path path) {
+        public MultiModelStep chainList(Path path) {
             return chainList(path, "\t");
         }
 
         @Override
-        public StructureIterator all() {
-            MultiReducingSelector multiReducingSelector = new MultiReducingSelector(sourceLocation);
-            multiReducingSelector.iterator = StructureIterator.createFromLocalPdb(localPdb);
-            return multiReducingSelector.everything();
-        }
-
-    }
-
-    /**
-     * This class represents a local PDB installation.
-     */
-    public static class LocalPdb {
-
-        /**
-         * The default folder structure of local pdb installations.
-         */
-        static final Path BASE_PATH_PDB = Paths.get("data/structures/divided/");
-
-        private final SourceLocation sourceLocation;
-
-        /**
-         * The path to the local pdb.
-         */
-        private Path localPdbPath;
-
-        /**
-         * Creates a new reference for a local pdb installation.
-         *
-         * @param localPdbLocation The location of the local PDB installation.
-         * @param sourceLocation The type of file used (either {@link SourceLocation#OFFLINE_MMTF} or {@link
-         * SourceLocation#OFFLINE_PDB}).
-         */
-        public LocalPdb(String localPdbLocation, SourceLocation sourceLocation) {
-            this(localPdbLocation, sourceLocation, BASE_PATH_PDB);
-        }
-
-        /**
-         * Creates a new reference for a local pdb installation.
-         *
-         * @param localPdbLocation The location of the local PDB installation.
-         * @param sourceLocation The type of file used (either {@link SourceLocation#OFFLINE_MMTF} or {@link
-         * SourceLocation#OFFLINE_PDB}).
-         * @param basePathPdb The base PDB path if different from data/structures/divided/
-         */
-        public LocalPdb(String localPdbLocation, SourceLocation sourceLocation, Path basePathPdb) {
-            this.sourceLocation = sourceLocation;
-            switch (sourceLocation) {
-                case OFFLINE_MMTF:
-                    localPdbPath = Paths.get(localPdbLocation).resolve(basePathPdb).resolve("mmtf");
-                    break;
-                case OFFLINE_PDB:
-                    localPdbPath = Paths.get(localPdbLocation).resolve(basePathPdb).resolve("pdb");
-                    break;
-                default:
-                    throw new IllegalArgumentException("Source location mus be offline.");
+        public MultiModelStep chainList(Path path, String separator) {
+            MultiReducingSelector selector = new MultiReducingSelector(sourceLocation);
+            if (localPdb != null) {
+                selector.iterator = StructureIterator.createFromChainList(path, separator, localPdb);
+            } else {
+                selector.iterator = StructureIterator.createFromChainList(path, separator, sourceLocation);
             }
-
-        }
-
-        /**
-         * Returns the path to the local pdb.
-         *
-         * @return The path to the local pdb.
-         */
-        public Path getLocalPdbPath() {
-            return localPdbPath;
-        }
-
-        public SourceLocation getSourceLocation() {
-            return sourceLocation;
-        }
-
-        /**
-         * Returns the full path of a given PDB-ID in respect to the local PDB copy.
-         *
-         * @param pdbIdentifier The PDB-ID for which the full path should be retrieved.
-         * @return The full path of the given PDB-ID.
-         */
-        public Path getPathForPdbIdentifier(String pdbIdentifier) {
-            pdbIdentifier = pdbIdentifier.toLowerCase();
-            final Path middleIdentifierPath = localPdbPath.resolve(pdbIdentifier.substring(1, 3));
-            if (sourceLocation == SourceLocation.OFFLINE_PDB) {
-                return middleIdentifierPath.resolve("pdb" + pdbIdentifier + ".ent.gz");
-            }
-            return middleIdentifierPath.resolve(pdbIdentifier + ".mmtf.gz");
+            assignRepository(selector.iterator);
+            return selector;
         }
 
         @Override
-        public String toString() {
-            return "LocalPDB{" +
-                    "sourceLocation=" + sourceLocation +
-                    ", localPdbPath=" + localPdbPath +
-                    '}';
+        public MultiModelStep all() {
+            MultiReducingSelector selector = new MultiReducingSelector(sourceLocation);
+            selector.iterator = StructureIterator.createFromLocalPdb(localPdb);
+            assignRepository(selector.iterator);
+            return selector;
         }
+
+        @Override
+        public SingleModelStep fileLocation(String location) {
+            SingleReducingSelector selector = new SingleReducingSelector(sourceLocation);
+            selector.iterator = StructureIterator.createFromLocations(Collections.singletonList(location));
+            assignRepository(selector.iterator);
+            return selector;
+        }
+
+        @Override
+        public MultiModelStep fileLocations(List<String> locations) {
+            MultiReducingSelector selector = new MultiReducingSelector(sourceLocation);
+            selector.iterator = StructureIterator.createFromLocations(locations);
+            assignRepository(selector.iterator);
+            return selector;
+        }
+
+
+
     }
+
 }
