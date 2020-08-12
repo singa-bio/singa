@@ -473,7 +473,7 @@ public class StructureCollector {
                     leafSkeleton = LigandParserService.parseLeafSkeleton(leafName, localCifRepository);
                     iterator.getSkeletons().put(leafName, leafSkeleton);
                 } catch (UncheckedIOException e) {
-                    logger.warn("Unable to assign connections to "+leafName);
+                    logger.warn("unable to assign connections to "+leafName);
                     iterator.getSkeletons().put(leafName, null);
                     return createLeafWithoutAdditionalInformation(identifier, leafName, atoms);
                 }
@@ -486,7 +486,7 @@ public class StructureCollector {
                     leafSkeleton = LigandParserService.parseLeafSkeleton(leafName);
                     iterator.getSkeletons().put(leafName, leafSkeleton);
                 } catch (UncheckedIOException e) {
-                    logger.warn("Unable to assign connections to "+leafName);
+                    logger.warn("unable to assign connections to "+leafName);
                     iterator.getSkeletons().put(leafName, null);
                     return createLeafWithoutAdditionalInformation(identifier, leafName, atoms);
                 }

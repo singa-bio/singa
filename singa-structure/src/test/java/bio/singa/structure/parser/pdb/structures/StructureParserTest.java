@@ -70,7 +70,7 @@ class StructureParserTest {
                 .allChains()
                 .parse();
         assertEquals(1, structure.getAllModels().size());
-        assertEquals(new Integer(2), structure.getFirstModel().getModelIdentifier());
+        assertEquals(Integer.valueOf(2), structure.getFirstModel().getModelIdentifier());
     }
 
     @Test
@@ -93,7 +93,7 @@ class StructureParserTest {
                 .chainIdentifier("B")
                 .parse();
         assertEquals(1, structure.getAllChains().size());
-        assertEquals(new Integer(3), structure.getFirstModel().getModelIdentifier());
+        assertEquals(Integer.valueOf(3), structure.getFirstModel().getModelIdentifier());
         assertEquals("B", structure.getFirstChain().getChainIdentifier());
     }
 
@@ -187,6 +187,15 @@ class StructureParserTest {
         Path chainList = Paths.get(Resources.getResourceAsFileLocation("chain_list.txt"));
         List<Structure> structure = StructureParser.local()
                 .localPdb(localPdb)
+                .chainList(chainList, ":")
+                .parse();
+        assertTrue(structure.get(0).getNumberOfLeafSubstructures() > 0);
+    }
+
+    @Test
+    void shouldParseFromPDBWithChainList() {
+        Path chainList = Paths.get(Resources.getResourceAsFileLocation("chain_list.txt"));
+        List<Structure> structure = StructureParser.pdb()
                 .chainList(chainList, ":")
                 .parse();
         assertTrue(structure.get(0).getNumberOfLeafSubstructures() > 0);
