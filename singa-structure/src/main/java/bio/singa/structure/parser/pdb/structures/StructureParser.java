@@ -131,12 +131,12 @@ public class StructureParser {
         /**
          * The location of a local PDB installation. This requires the input of a chin list in the following step.
          *
-         * @param localPDB The local pdb.
+         * @param localPdbRepository The local pdb.
          * @return Additional local list file selection.
          */
-        LocalSourceStep localPdb(LocalPdbRepository localPDB);
+        LocalSourceStep localPdbRepository(LocalPDBRepository localPdbRepository);
 
-        LocalSourceStep localCifRepository(LocalCifRepository localCifRepository);
+        LocalSourceStep localCifRepository(LocalCIFRepository localCifRepository);
 
         MultiModelStep all();
 
@@ -414,8 +414,8 @@ public class StructureParser {
         protected StructureIterator iterator;
         protected SourceLocation sourceLocation;
 
-        protected LocalPdbRepository localPdb;
-        protected LocalCifRepository localCifRepository;
+        protected LocalPDBRepository localPdb;
+        protected LocalCIFRepository localCifRepository;
 
         public SourceSelector(SourceLocation sourceLocation) {
             this.sourceLocation = sourceLocation;
@@ -500,14 +500,14 @@ public class StructureParser {
         }
 
         @Override
-        public LocalSourceStep localPdb(LocalPdbRepository localPdb) {
-            sourceLocation = localPdb.getSourceLocation();
-            this.localPdb = localPdb;
+        public LocalSourceStep localPdbRepository(LocalPDBRepository localPdbRepository) {
+            sourceLocation = localPdbRepository.getSourceLocation();
+            this.localPdb = localPdbRepository;
             return this;
         }
 
         @Override
-        public LocalSourceStep localCifRepository(LocalCifRepository localCifRepository) {
+        public LocalSourceStep localCifRepository(LocalCIFRepository localCifRepository) {
             this.localCifRepository = localCifRepository;
             return this;
         }

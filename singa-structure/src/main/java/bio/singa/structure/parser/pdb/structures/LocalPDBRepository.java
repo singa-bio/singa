@@ -6,7 +6,7 @@ import java.nio.file.Paths;
 /**
  * This class represents a local PDB installation.
  */
-public class LocalPdbRepository {
+public class LocalPDBRepository {
 
     /**
      * The default folder structure of local pdb installations.
@@ -27,7 +27,7 @@ public class LocalPdbRepository {
      * @param sourceLocation The type of file used (either {@link SourceLocation#OFFLINE_MMTF} or {@link
      * SourceLocation#OFFLINE_PDB}).
      */
-    public LocalPdbRepository(String localPdbLocation, SourceLocation sourceLocation) {
+    public LocalPDBRepository(String localPdbLocation, SourceLocation sourceLocation) {
         this(localPdbLocation, sourceLocation, BASE_PATH_PDB);
     }
 
@@ -39,7 +39,7 @@ public class LocalPdbRepository {
      * SourceLocation#OFFLINE_PDB}).
      * @param basePathPdb The base PDB path if different from data/structures/divided/
      */
-    public LocalPdbRepository(String localPdbLocation, SourceLocation sourceLocation, Path basePathPdb) {
+    public LocalPDBRepository(String localPdbLocation, SourceLocation sourceLocation, Path basePathPdb) {
         this.sourceLocation = sourceLocation;
         switch (sourceLocation) {
             case OFFLINE_MMTF:

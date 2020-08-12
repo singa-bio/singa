@@ -17,7 +17,7 @@ class StructureWriterTest {
     @Test
     void writeMMTFStructure() throws IOException {
 
-        LocalPdbRepository localPDB = new LocalPdbRepository("/tmp/pdb", SourceLocation.OFFLINE_MMTF);
+        LocalPDBRepository localPDB = new LocalPDBRepository("/tmp/pdb", SourceLocation.OFFLINE_MMTF);
         Path path = localPDB.getPathForPdbIdentifier("1acj");
 
         OakStructure structure = (OakStructure) StructureParser.pdb()
@@ -26,7 +26,7 @@ class StructureWriterTest {
         StructureWriter.writeMMTFStructure(structure, path);
 
         Structure reparsedStructure = StructureParser.local()
-                .localPdb(localPDB)
+                .localPdbRepository(localPDB)
                 .pdbIdentifier("1acj")
                 .parse();
 

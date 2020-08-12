@@ -9,15 +9,15 @@ import java.util.List;
 /**
  * @author cl
  */
-public class PathToPdbLinesConverter implements ContentConverter<Path, List<String>> {
+public class PathToPDBLinesConverter implements ContentConverter<Path, List<String>> {
 
-    private static PathToPdbLinesConverter instance = new PathToPdbLinesConverter();
+    private static PathToPDBLinesConverter instance = new PathToPDBLinesConverter();
 
-    private PathToPdbLinesConverter() {
+    private PathToPDBLinesConverter() {
 
     }
 
-    public static PathToPdbLinesConverter get() {
+    public static PathToPDBLinesConverter get() {
         return instance;
     }
 

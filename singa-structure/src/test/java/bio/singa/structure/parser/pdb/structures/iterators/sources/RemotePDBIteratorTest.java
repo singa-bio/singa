@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * @author cl
  */
-class RemotePdbIteratorTest {
+class RemotePDBIteratorTest {
 
     @Test
     void shouldIterateOnlinePdbFiles() {
@@ -24,7 +24,7 @@ class RemotePdbIteratorTest {
         sources.add("2src");
         sources.add("1xp0");
 
-        RemotePdbSourceIterator onlinePdbIterator = new RemotePdbSourceIterator(sources);
+        RemotePDBSourceIterator onlinePdbIterator = new RemotePDBSourceIterator(sources);
         while (onlinePdbIterator.hasNext()) {
             String nextPdbIdentifier = onlinePdbIterator.next();
             assertTrue(PDBIdentifier.PATTERN.matcher(nextPdbIdentifier).matches());
@@ -38,7 +38,7 @@ class RemotePdbIteratorTest {
     @Test
     void shouldIterateOnlinePdbWithChainList() {
         String resourceAsFileLocation = Resources.getResourceAsFileLocation("chain_list.txt");
-        RemotePdbSourceIterator pdbIterator = new RemotePdbSourceIterator(Paths.get(resourceAsFileLocation), ":");
+        RemotePDBSourceIterator pdbIterator = new RemotePDBSourceIterator(Paths.get(resourceAsFileLocation), ":");
         while (pdbIterator.hasNext()) {
             String nextPdbIdentifier = pdbIterator.next();
             assertTrue(PDBIdentifier.PATTERN.matcher(nextPdbIdentifier).matches());

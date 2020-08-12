@@ -3,11 +3,11 @@ package bio.singa.structure.parser.pdb.structures.iterators.sources;
 import bio.singa.core.utility.Resources;
 import bio.singa.features.identifiers.PDBIdentifier;
 import bio.singa.structure.model.mmtf.MmtfStructure;
-import bio.singa.structure.parser.pdb.structures.LocalPdbRepository;
+import bio.singa.structure.parser.pdb.structures.LocalPDBRepository;
 import bio.singa.structure.parser.pdb.structures.SourceLocation;
 import bio.singa.structure.parser.pdb.structures.iterators.converters.FileLocationToPathConverter;
 import bio.singa.structure.parser.pdb.structures.iterators.converters.IdentityConverter;
-import bio.singa.structure.parser.pdb.structures.iterators.converters.LocalPdbToPathConverter;
+import bio.singa.structure.parser.pdb.structures.iterators.converters.LocalPDBToPathConverter;
 import bio.singa.structure.parser.pdb.structures.tokens.HeaderToken;
 import org.junit.jupiter.api.Test;
 
@@ -16,7 +16,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author cl
@@ -68,11 +68,11 @@ class LocalSourceIteratorTest {
     @Test
     void shouldIterateLocalPdbFilesWithIdentifiers() {
 
-        LocalPdbRepository localPdb = new LocalPdbRepository(Resources.getResourceAsFileLocation("pdb/"), SourceLocation.OFFLINE_PDB);
+        LocalPDBRepository localPdb = new LocalPDBRepository(Resources.getResourceAsFileLocation("pdb/"), SourceLocation.OFFLINE_PDB);
         List<String> sources = new ArrayList<>();
         sources.add("1c0a");
 
-        LocalSourceIterator<String> onlinePdbIterator = new LocalSourceIterator<>(sources, LocalPdbToPathConverter.get(localPdb));
+        LocalSourceIterator<String> onlinePdbIterator = new LocalSourceIterator<>(sources, LocalPDBToPathConverter.get(localPdb));
         while (onlinePdbIterator.hasNext()) {
             String nextPdbIdentifier = onlinePdbIterator.next();
             Object content = onlinePdbIterator.getContent(nextPdbIdentifier);
@@ -86,9 +86,9 @@ class LocalSourceIteratorTest {
 
     @Test
     void shouldIterateOnlinePdbWithChainList() {
-        LocalPdbRepository localPdb = new LocalPdbRepository(Resources.getResourceAsFileLocation("pdb/"), SourceLocation.OFFLINE_PDB);
+        LocalPDBRepository localPdb = new LocalPDBRepository(Resources.getResourceAsFileLocation("pdb/"), SourceLocation.OFFLINE_PDB);
         String resourceAsFileLocation = Resources.getResourceAsFileLocation("chain_list.txt");
-        LocalSourceIterator<String> iterator = LocalSourceIterator.fromChainList(Paths.get(resourceAsFileLocation), ":", LocalPdbToPathConverter.get(localPdb));
+        LocalSourceIterator<String> iterator = LocalSourceIterator.fromChainList(Paths.get(resourceAsFileLocation), ":", LocalPDBToPathConverter.get(localPdb));
         while (iterator.hasNext()) {
             String nextPdbIdentifier = iterator.next();
             assertTrue(PDBIdentifier.PATTERN.matcher(nextPdbIdentifier).matches());
@@ -104,11 +104,11 @@ class LocalSourceIteratorTest {
     @Test
     void shouldIterateLocalMmtfFilesWithPath() {
 
-        LocalPdbRepository localPDB = new LocalPdbRepository(Resources.getResourceAsFileLocation("pdb/"), SourceLocation.OFFLINE_MMTF);
+        LocalPDBRepository localPDB = new LocalPDBRepository(Resources.getResourceAsFileLocation("pdb/"), SourceLocation.OFFLINE_MMTF);
         List<String> sources = new ArrayList<>();
         sources.add("1c0a");
 
-        LocalSourceIterator<String> onlineMmtfIterator = new LocalSourceIterator<>(sources, LocalPdbToPathConverter.get(localPDB));
+        LocalSourceIterator<String> onlineMmtfIterator = new LocalSourceIterator<>(sources, LocalPDBToPathConverter.get(localPDB));
         while (onlineMmtfIterator.hasNext()) {
             String nextPdbIdentifier = onlineMmtfIterator.next();
             assertTrue(PDBIdentifier.PATTERN.matcher(nextPdbIdentifier).matches());
@@ -124,9 +124,9 @@ class LocalSourceIteratorTest {
 
     @Test
     void shouldIterateOnlineMmtfWithChainList() {
-        LocalPdbRepository localPDB = new LocalPdbRepository(Resources.getResourceAsFileLocation("pdb/"), SourceLocation.OFFLINE_MMTF);
+        LocalPDBRepository localPDB = new LocalPDBRepository(Resources.getResourceAsFileLocation("pdb/"), SourceLocation.OFFLINE_MMTF);
         String resourceAsFileLocation = Resources.getResourceAsFileLocation("chain_list.txt");
-        LocalSourceIterator<String> onlineMmtfIterator = LocalSourceIterator.fromChainList(Paths.get(resourceAsFileLocation), ":", LocalPdbToPathConverter.get(localPDB));
+        LocalSourceIterator<String> onlineMmtfIterator = LocalSourceIterator.fromChainList(Paths.get(resourceAsFileLocation), ":", LocalPDBToPathConverter.get(localPDB));
         while (onlineMmtfIterator.hasNext()) {
             String nextPdbIdentifier = onlineMmtfIterator.next();
             assertTrue(PDBIdentifier.PATTERN.matcher(nextPdbIdentifier).matches());

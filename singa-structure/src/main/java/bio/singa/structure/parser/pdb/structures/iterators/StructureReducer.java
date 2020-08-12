@@ -1,6 +1,6 @@
 package bio.singa.structure.parser.pdb.structures.iterators;
 
-import bio.singa.structure.parser.pdb.structures.LocalCifRepository;
+import bio.singa.structure.parser.pdb.structures.LocalCIFRepository;
 import bio.singa.structure.parser.pdb.structures.StructureParserOptions;
 
 /**
@@ -16,7 +16,7 @@ public class StructureReducer {
     private boolean reduceChains;
     private String chainIdentifier;
 
-    private LocalCifRepository localCifRepository;
+    private LocalCIFRepository localCifRepository;
 
     public StructureReducer() {
         options = new StructureParserOptions();
@@ -62,11 +62,11 @@ public class StructureReducer {
         this.chainIdentifier = chainIdentifier;
     }
 
-    public LocalCifRepository getLocalCifRepository() {
+    public LocalCIFRepository getLocalCIFRepository() {
         return localCifRepository;
     }
 
-    public void setLocalCifRepository(LocalCifRepository localCifRepository) {
+    public void setLocalCifRepository(LocalCIFRepository localCifRepository) {
         this.localCifRepository = localCifRepository;
     }
 

@@ -7,7 +7,7 @@ import java.util.StringJoiner;
 /**
  * @author cl
  */
-public class LocalCifRepository {
+public class LocalCIFRepository {
 
     /**
      * The default folder structure of local PDBeChem installations.
@@ -21,7 +21,7 @@ public class LocalCifRepository {
      *
      * @param localPdbLocation The location of the local PDBeChem installation.
      */
-    public LocalCifRepository(String localPdbLocation) {
+    public LocalCIFRepository(String localPdbLocation) {
         this(localPdbLocation, BASE_PATH_PDBE_CIF);
     }
 
@@ -31,7 +31,7 @@ public class LocalCifRepository {
      * @param localPdbLocation The location of the local PDBeChem installation.
      * @param basePathPdb The base PDBeChem path if different from pub/databases/msd/pdbechem_v2/
      */
-    public LocalCifRepository(String localPdbLocation, Path basePathPdb) {
+    public LocalCIFRepository(String localPdbLocation, Path basePathPdb) {
         localPath = Paths.get(localPdbLocation).resolve(basePathPdb);
     }
 
@@ -64,7 +64,7 @@ public class LocalCifRepository {
 
     @Override
     public String toString() {
-        return new StringJoiner(", ", LocalCifRepository.class.getSimpleName() + "[", "]")
+        return new StringJoiner(", ", LocalCIFRepository.class.getSimpleName() + "[", "]")
                 .add("localPath=" + localPath)
                 .toString();
     }

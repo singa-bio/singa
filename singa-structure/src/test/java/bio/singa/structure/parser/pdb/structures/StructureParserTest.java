@@ -25,9 +25,9 @@ class StructureParserTest {
 
     private static Structure hemoglobin;
     private static Structure cyanase;
-    private static LocalPdbRepository localPdb;
-    private static LocalCifRepository localCif;
-    private static LocalPdbRepository localMmtf;
+    private static LocalPDBRepository localPdb;
+    private static LocalCIFRepository localCif;
+    private static LocalPDBRepository localMmtf;
 
     @BeforeAll
     static void parseUncomplicatedStructure() {
@@ -40,9 +40,9 @@ class StructureParserTest {
                 .pdbIdentifier("1DW9")
                 .parse();
 
-        localPdb = new LocalPdbRepository(Resources.getResourceAsFileLocation("pdb"), SourceLocation.OFFLINE_PDB);
-        localMmtf = new LocalPdbRepository(Resources.getResourceAsFileLocation("pdb"), SourceLocation.OFFLINE_MMTF);
-        localCif = new LocalCifRepository(Resources.getResourceAsFileLocation("pdbechem"));
+        localPdb = new LocalPDBRepository(Resources.getResourceAsFileLocation("pdb"), SourceLocation.OFFLINE_PDB);
+        localMmtf = new LocalPDBRepository(Resources.getResourceAsFileLocation("pdb"), SourceLocation.OFFLINE_MMTF);
+        localCif = new LocalCIFRepository(Resources.getResourceAsFileLocation("pdbechem"));
     }
 
 
@@ -146,7 +146,7 @@ class StructureParserTest {
     @Test
     void shouldParseFromLocalPDB() {
         Structure structure = StructureParser.local()
-                .localPdb(localPdb)
+                .localPdbRepository(localPdb)
                 .pdbIdentifier("1C0A")
                 .parse();
         assertNotNull(structure);
@@ -155,7 +155,7 @@ class StructureParserTest {
     @Test
     void shouldParseFromLocalMMTF() {
         Structure structure = StructureParser.local()
-                .localPdb(localMmtf)
+                .localPdbRepository(localMmtf)
                 .pdbIdentifier("1C0A")
                 .parse();
         assertNotNull(structure);
@@ -186,7 +186,7 @@ class StructureParserTest {
     void shouldParseFromLocalPDBWithChainList() {
         Path chainList = Paths.get(Resources.getResourceAsFileLocation("chain_list.txt"));
         List<Structure> structure = StructureParser.local()
-                .localPdb(localPdb)
+                .localPdbRepository(localPdb)
                 .chainList(chainList, ":")
                 .parse();
         assertTrue(structure.get(0).getNumberOfLeafSubstructures() > 0);

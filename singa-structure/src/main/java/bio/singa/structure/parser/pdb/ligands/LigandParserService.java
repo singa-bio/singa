@@ -1,7 +1,7 @@
 package bio.singa.structure.parser.pdb.ligands;
 
 import bio.singa.structure.model.interfaces.LeafSubstructure;
-import bio.singa.structure.parser.pdb.structures.LocalCifRepository;
+import bio.singa.structure.parser.pdb.structures.LocalCIFRepository;
 import bio.singa.structure.parser.pdb.structures.tokens.LeafSkeleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +42,7 @@ public class LigandParserService {
         }
     }
 
-    public static LeafSkeleton parseLeafSkeleton(String ligandId, LocalCifRepository localCifRepository) {
+    public static LeafSkeleton parseLeafSkeleton(String ligandId, LocalCIFRepository localCifRepository) {
         logger.debug("parsing structure {} using the supplied atoms", ligandId);
         try {
             return parseLeafSkeleton(Files.newInputStream(localCifRepository.getPathForLigandIdentifier(ligandId)));

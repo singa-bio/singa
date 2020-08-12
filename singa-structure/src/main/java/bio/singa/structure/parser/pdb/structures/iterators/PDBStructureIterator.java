@@ -9,9 +9,9 @@ import java.util.List;
 /**
  * @author cl
  */
-public class PdbStructureIterator<SourceType> extends AbstractStructureIterator<SourceType, List<String>> {
+public class PDBStructureIterator<SourceType> extends AbstractStructureIterator<SourceType, List<String>> {
 
-    public PdbStructureIterator(SourceIterator<SourceType, List<String>> sourceIterator) {
+    public PDBStructureIterator(SourceIterator<SourceType, List<String>> sourceIterator) {
         super(sourceIterator);
     }
 

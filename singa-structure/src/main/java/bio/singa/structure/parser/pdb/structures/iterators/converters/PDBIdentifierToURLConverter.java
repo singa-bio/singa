@@ -6,15 +6,15 @@ import java.net.URL;
 /**
  * @author cl
  */
-public class IdentifierToPdbUrlConverter implements ContentConverter<String, URL> {
+public class PDBIdentifierToURLConverter implements ContentConverter<String, URL> {
 
-    private static IdentifierToPdbUrlConverter instance = new IdentifierToPdbUrlConverter();
+    private static PDBIdentifierToURLConverter instance = new PDBIdentifierToURLConverter();
 
-    public static IdentifierToPdbUrlConverter get() {
+    public static PDBIdentifierToURLConverter get() {
         return instance;
     }
 
-    private IdentifierToPdbUrlConverter() {
+    private PDBIdentifierToURLConverter() {
 
     }
 

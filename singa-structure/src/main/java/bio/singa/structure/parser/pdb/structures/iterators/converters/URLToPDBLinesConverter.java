@@ -8,16 +8,16 @@ import java.util.stream.Collectors;
 /**
  * @author cl
  */
-public class UrlToPdbLinesConverter implements ContentConverter<URL, List<String>> {
+public class URLToPDBLinesConverter implements ContentConverter<URL, List<String>> {
 
-    private static UrlToPdbLinesConverter instance = new UrlToPdbLinesConverter();
+    private static final URLToPDBLinesConverter instance = new URLToPDBLinesConverter();
 
-    public static UrlToPdbLinesConverter get() {
-        return instance;
+    private URLToPDBLinesConverter() {
+
     }
 
-    private UrlToPdbLinesConverter() {
-
+    public static URLToPDBLinesConverter get() {
+        return instance;
     }
 
     @Override
