@@ -54,7 +54,7 @@ public class SmallestSetOfSmallestRingsFinder<NodeType extends Node<NodeType, Ve
                 .collect(Collectors.toList());
 
         GraphType graphCopy = (GraphType) graph.getCopy();
-        nodesToRemove.forEach(graph::removeNode);
+        nodesToRemove.forEach(graphCopy::removeNode);
 
         rings = new ArrayList<>();
         for (NodeType node : graphCopy.getNodes()) {
