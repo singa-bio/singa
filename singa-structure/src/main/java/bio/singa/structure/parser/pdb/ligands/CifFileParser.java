@@ -14,6 +14,8 @@ import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.interfaces.Nucleotide;
 import bio.singa.structure.model.oak.*;
 import bio.singa.structure.parser.pdb.structures.tokens.LeafSkeleton;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -23,6 +25,8 @@ import java.util.regex.Pattern;
  * @author cl
  */
 public class CifFileParser {
+
+    private static final Logger logger = LoggerFactory.getLogger(CifFileParser.class);
 
     private static final Pattern DEFAULT_VALUE_PATTERN = Pattern.compile("([\\w.]+)\\s+(.+)");
 
@@ -190,9 +194,22 @@ public class CifFileParser {
         for (String line : bondLines) {
             String[] splitLine = line.split("\\s+");
             // 1 = first atom, 2 = second atom, 3 = bond type
+            if (splitLine.length == 0) {
+                continue;
+            }
             bonds.put(new Pair<>(splitLine[1].replace("\"", ""), splitLine[2].replace("\"", "")),
                     CovalentBondType.getBondForCifString(splitLine[3]));
         }
+        if (bonds.size() == 0) {
+            // FIXME hotfix to prevent exception while parsing ligands with only one bond
+            if (atoms.size() == 2) {
+                Iterator<String> iterator = atoms.keySet().iterator();
+                String first = iterator.next();
+                String second = iterator.next();
+                bonds.put(new Pair<>(first, second), CovalentBondType.SINGLE_BOND);
+            }
+        }
+
     }
 
     /**
@@ -273,7 +290,8 @@ public class CifFileParser {
      * @return A leaf skeleton.
      */
     private LeafSkeleton parseLeafSkeleton() {
-        collectLines(true);
+        collectLines(false);
+        extractAtoms();
         extractBonds();
         return createLeafSkeleton();
     }
