@@ -162,6 +162,17 @@ class ContentTreeNode {
         return null;
     }
 
+    public Set<OakAtom> getAtoms(){
+        if (getLevel() == LEAF) {
+            Set<OakAtom> atoms = new HashSet<>();
+            for (ContentTreeNode node : children) {
+                atoms.add(node.getAtom());
+            }
+            return atoms;
+        }
+        return null;
+    }
+
     /**
      * Adds an atom to this tree, creating in between nodes if necessary.
      *

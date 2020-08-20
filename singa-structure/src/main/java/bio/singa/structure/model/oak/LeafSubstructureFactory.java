@@ -1,14 +1,15 @@
 package bio.singa.structure.model.oak;
 
 import bio.singa.chemistry.model.CovalentBondType;
+import bio.singa.features.identifiers.LeafIdentifier;
 import bio.singa.structure.model.families.AminoAcidFamily;
 import bio.singa.structure.model.families.LigandFamily;
 import bio.singa.structure.model.families.NucleotideFamily;
 import bio.singa.structure.model.families.StructuralFamily;
-import bio.singa.features.identifiers.LeafIdentifier;
 import bio.singa.structure.parser.pdb.structures.StructureParserOptions;
 
 import java.util.Map;
+import java.util.Set;
 
 /**
  * The residue factory is used to create residues from a set of AtomFilter with their AtomNames. This also connects the
@@ -162,6 +163,36 @@ public class LeafSubstructureFactory {
         nucleotide.addBondBetween(atoms.get("C5"), atoms.get("C6"));
         nucleotide.addBondBetween(atoms.get("C4"), atoms.get("C5"), CovalentBondType.DOUBLE_BOND);
     }
+
+    public static OakAminoAcid createAminoAcidFromAtoms(LeafIdentifier leafIdentifier, AminoAcidFamily aminoAcidFamily, Set<OakAtom> atoms, StructureParserOptions options) {
+        // create new AminoAcid
+        OakAminoAcid aminoAcid = new OakAminoAcid(leafIdentifier, aminoAcidFamily);
+        // and add atoms
+        if (options.isOmittingHydrogen()) {
+            // without hydrogens
+            atoms.stream()
+                    .filter(atom -> atom.getElement().getProtonNumber() != 1)
+                    .forEach(aminoAcid::addAtom);
+        } else {
+            // all
+            atoms.forEach(aminoAcid::addAtom);
+        }
+        return aminoAcid;
+    }
+
+    public static OakLeafSubstructure<?> createLeafSubstructure(LeafIdentifier leafIdentifier, StructuralFamily family, Set<OakAtom> atoms) {
+        OakLeafSubstructure<?> leafSubstructure;
+        if (family instanceof AminoAcidFamily) {
+            leafSubstructure = new OakAminoAcid(leafIdentifier, (AminoAcidFamily) family);
+        } else if (family instanceof NucleotideFamily) {
+            leafSubstructure = new OakNucleotide(leafIdentifier, (NucleotideFamily) family);
+        } else {
+            leafSubstructure = new OakLigand(leafIdentifier, (LigandFamily) family);
+        }
+        atoms.forEach(leafSubstructure::addAtom);
+        return leafSubstructure;
+    }
+
 
     public static OakAminoAcid createAminoAcidFromAtoms(LeafIdentifier leafIdentifier, AminoAcidFamily aminoAcidFamily, Map<String, OakAtom> atoms, StructureParserOptions options) {
         // create new AminoAcid
