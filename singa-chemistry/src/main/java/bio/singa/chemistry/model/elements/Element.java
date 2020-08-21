@@ -68,7 +68,8 @@ public class Element {
         this.symbol = symbol;
         this.protonNumber = protonNumber;
         electronNumber = protonNumber;
-        valenceElectronNumber = ElectronConfiguration.parseElectronConfigurationFromString(electronConfiguration).getNumberOfValenceElectrons();
+        valenceElectronNumber = ElectronConfiguration.parseElectronConfigurationFromString(electronConfiguration)
+                .getNumberOfValenceElectrons() - getCharge();
         neutronNumber = protonNumber;
         atomicMass = atomicWeight;
     }
@@ -84,7 +85,7 @@ public class Element {
      * @param electronConfiguration The electron configuration.
      * @param vanDerWaalsRadius The van der Waals radius.
      */
-    public Element(String name, String symbol, int protonNumber, double atomicWeight, String electronConfiguration,  double vanDerWaalsRadius) {
+    public Element(String name, String symbol, int protonNumber, double atomicWeight, String electronConfiguration, double vanDerWaalsRadius) {
         this(name, symbol, protonNumber, Quantities.getQuantity(atomicWeight, MolarMass.GRAM_PER_MOLE), electronConfiguration);
         this.vanDerWaalsRadius = Quantities.getQuantity(vanDerWaalsRadius, ANGSTROEM);
     }
@@ -93,19 +94,21 @@ public class Element {
         this(name, symbol, protonNumber, Quantities.getQuantity(atomicWeight, MolarMass.GRAM_PER_MOLE), electronConfiguration);
     }
 
-    /**
-     * Creates a new Element with the possibility to specify electron and neutron number.
-     *
-     * @param element A previously defined element.
-     * @param electronNumber The electron number.
-     * @param neutronNumber The neutron number.
-     */
-    private Element(Element element, int electronNumber, int neutronNumber) {
+    private Element(int charge, Element element) {
         name = element.getName();
         symbol = element.getSymbol();
         protonNumber = element.getProtonNumber();
-        this.electronNumber = electronNumber;
-        valenceElectronNumber = element.valenceElectronNumber;
+        neutronNumber = element.getNeutronNumber();
+        electronNumber = element.electronNumber - charge;
+        valenceElectronNumber = element.valenceElectronNumber - charge;
+    }
+
+    private Element(Element element, int neutronNumber) {
+        name = element.getName();
+        symbol = element.getSymbol();
+        protonNumber = element.getProtonNumber();
+        electronNumber = element.getElectronNumber();
+        valenceElectronNumber = element.getValenceElectronNumber();
         this.neutronNumber = neutronNumber;
         if (neutronNumber != protonNumber) {
             // TODO determine correctly
@@ -113,7 +116,6 @@ public class Element {
         } else {
             atomicMass = element.getAtomicMass();
         }
-
     }
 
     /**
@@ -213,13 +215,13 @@ public class Element {
      */
     public Element asIon(int charge) {
         if (charge != 0) {
-            return new Element(this, electronNumber + charge, neutronNumber);
+            return new Element(charge, this);
         }
         return this;
     }
 
     /**
-     * Converts this element into an ion (cation) by decreasing its electron count.
+     * Converts this element into an cation by decreasing its electron count.
      *
      * @param numberOfElectronsLost The number of electrons to decrease.
      * @return An cation of this element.
@@ -229,7 +231,7 @@ public class Element {
     }
 
     /**
-     * Converts this element into an ion (anion) by increasing its electron count.
+     * Converts this element into an anion by increasing its electron count.
      *
      * @param numberOfElectronsGained The number of electrons gained.
      * @return An anion of this element.
@@ -247,7 +249,7 @@ public class Element {
     public Element asIsotope(int massNumber) {
         int neutronNumber = massNumber - protonNumber;
         if (neutronNumber != this.neutronNumber) {
-            return new Element(this, electronNumber, neutronNumber);
+            return new Element(this, neutronNumber);
         }
         return this;
     }
@@ -285,7 +287,7 @@ public class Element {
      * @return The charge of this Element.
      */
     public int getCharge() {
-        return electronNumber - protonNumber;
+        return protonNumber - electronNumber;
     }
 
     public int getMassNumber() {

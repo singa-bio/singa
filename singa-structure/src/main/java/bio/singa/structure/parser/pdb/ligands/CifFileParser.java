@@ -1,14 +1,14 @@
 package bio.singa.structure.parser.pdb.ligands;
 
 import bio.singa.chemistry.model.CovalentBondType;
-import bio.singa.core.utility.Pair;
-import bio.singa.mathematics.vectors.Vector3D;
 import bio.singa.chemistry.model.elements.Element;
 import bio.singa.chemistry.model.elements.ElementProvider;
+import bio.singa.core.utility.Pair;
+import bio.singa.features.identifiers.LeafIdentifier;
+import bio.singa.mathematics.vectors.Vector3D;
 import bio.singa.structure.model.families.AminoAcidFamily;
 import bio.singa.structure.model.families.LigandFamily;
 import bio.singa.structure.model.families.NucleotideFamily;
-import bio.singa.features.identifiers.LeafIdentifier;
 import bio.singa.structure.model.interfaces.AminoAcid;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.interfaces.Nucleotide;
@@ -29,7 +29,7 @@ public class CifFileParser {
     private static final Logger logger = LoggerFactory.getLogger(CifFileParser.class);
 
     private static final Pattern DEFAULT_VALUE_PATTERN = Pattern.compile("([\\w.]+)\\s+(.+)");
-
+    private static final Pattern quotationPattern = Pattern.compile("([\"'])(?:(?=(\\\\?))\\2.)*?\\1");
     private final List<String> lines;
     private final List<String> atomLines;
     private final List<String> bondLines;
@@ -41,6 +41,8 @@ public class CifFileParser {
     private String threeLetterCode;
     private String parent;
     private String inchi;
+    private boolean singleAtom;
+    private boolean singleBond;
 
     private CifFileParser(List<String> lines) {
         this.lines = lines;
@@ -79,25 +81,37 @@ public class CifFileParser {
         return "";
     }
 
+    private static String replaceQuotation(String quotedString) {
+        if (!quotedString.contains("\"")) {
+            return quotedString;
+        }
+        Matcher matcher = quotationPattern.matcher(quotedString);
+        String target = quotedString;
+        while (matcher.find()) {
+            String substring = matcher.group();
+            String replacement = substring.replaceAll("\\s+", "_");
+            target = target.replace(substring, replacement);
+        }
+        return target;
+    }
+
     /**
      * Collect all relevant lines that are later required for extracting information.
-     *
-     * @param skipAtoms True, if no atom lines should be parsed.
      */
-    private void collectLines(boolean skipAtoms) {
+    private void collectLines() {
         boolean bondSection = false;
         boolean atomSection = false;
         boolean descriptorSection = false;
 
         // extract information
-        for (int i = 0; i < lines.size(); i++) {
-            String line = lines.get(i);
+        ListIterator<String> lineIterator = lines.listIterator();
+        while (lineIterator.hasNext()) {
+            String line = lineIterator.next();
             // extract information
             extractInformation(line);
             // signifies start of bond section
-            if (line.startsWith("_chem_comp_bond.pdbx_ordinal")) {
+            if (line.startsWith("_chem_comp_bond")) {
                 bondSection = true;
-                continue;
             }
             if (bondSection) {
                 // extract bonds connecting the given atoms
@@ -105,19 +119,33 @@ public class CifFileParser {
                     bondSection = false;
                     continue;
                 }
-                bondLines.add(line);
-            }
-            if (!skipAtoms) {
-                if (line.startsWith("_chem_comp_atom.pdbx_ordinal")) {
-                    atomSection = true;
+                // if there is only one atom, split results in multiple entries
+                String[] split = line.split("\\s+");
+                if (line.startsWith("_") && split.length > 1) {
+                    processBondBlock(lineIterator);
+                    bondSection = false;
                     continue;
                 }
-                if (atomSection) {
-                    // extract bonds connecting the given atoms
-                    if (line.startsWith("#")) {
-                        atomSection = false;
-                        continue;
-                    }
+                if (!line.startsWith("_")) {
+                    bondLines.add(line);
+                }
+            }
+            if (line.startsWith("_chem_comp_atom")) {
+                atomSection = true;
+            }
+            if (atomSection) {
+                // extract bonds connecting the given atoms
+                if (line.startsWith("#")) {
+                    atomSection = false;
+                    continue;
+                }
+                String[] split = line.split("\\s+");
+                if (line.startsWith("_") && split.length > 1) {
+                    processAtomBlock(lineIterator);
+                    atomSection = false;
+                    continue;
+                }
+                if (!line.startsWith("_")) {
                     atomLines.add(line);
                 }
             }
@@ -136,11 +164,9 @@ public class CifFileParser {
                 if (splitLine[1].equals("InChI")) {
                     // multi line InChI detected
                     if (splitLine.length == 4) {
-                        List<String> multiLineInchi = lines.subList(i + 1, lines.size());
-                        Iterator<String> iterator = multiLineInchi.iterator();
                         StringJoiner assembledInchi = new StringJoiner("");
-                        while (iterator.hasNext()) {
-                            String inchiLine = iterator.next().trim();
+                        while (lineIterator.hasNext()) {
+                            String inchiLine = lineIterator.next().trim();
                             if (inchiLine.startsWith(";")) {
                                 if (inchiLine.length() == 1) {
                                     // last line is empty
@@ -170,19 +196,97 @@ public class CifFileParser {
 
     }
 
+    private void processBondBlock(ListIterator<String> lineIterator) {
+        lineIterator.previous();
+        String firstAtom = "";
+        String secondAtom = "";
+        CovalentBondType bond = CovalentBondType.SINGLE_BOND;
+
+        while (lineIterator.hasNext()) {
+            String line = lineIterator.next();
+            if (line.startsWith("#")) {
+                addBond(firstAtom, secondAtom, bond);
+                return;
+            }
+            String[] split = line.split("\\s+");
+            String id = split[0];
+            String value = split[1];
+            if ("_chem_comp_bond.atom_id_1".equals(id)) {
+                firstAtom = value;
+            } else if ("_chem_comp_bond.atom_id_2".equals(id)) {
+                secondAtom = value;
+            } else if ("_chem_comp_bond.value_order".equals(id)) {
+                bond = CovalentBondType.getBondForCifString(value);
+            }
+        }
+    }
+
+    private void processAtomBlock(ListIterator<String> lineIterator) {
+        lineIterator.previous();
+        String element = "";
+        String charge = "";
+        String atomName = "";
+        String x = "";
+        String y = "";
+        String z = "";
+        String index = "";
+
+        while (lineIterator.hasNext()) {
+            String line = lineIterator.next();
+            if (line.startsWith("#")) {
+                addAtom(index, atomName, element, charge, x, y, z);
+                return;
+            }
+            String[] split = line.split("\\s+");
+            String id = split[0];
+            String value = split[1];
+            if ("_chem_comp_atom.type_symbol".equals(id)) {
+                element = value;
+            } else if ("_chem_comp_atom.atom_id".equals(id)) {
+                atomName = value;
+            } else if ("_chem_comp_atom.charge".equals(id)) {
+                charge = value;
+            } else if ("_chem_comp_atom.model_Cartn_x".equals(id)) {
+                x = value;
+            } else if ("_chem_comp_atom.model_Cartn_y".equals(id)) {
+                y = value;
+            } else if ("_chem_comp_atom.model_Cartn_z".equals(id)) {
+                z = value;
+            } else if ("_chem_comp_atom.pdbx_ordinal".equals(id)) {
+                index = value;
+            }
+        }
+    }
+
+    private void addAtom(String indexString, String atomNameString, String elementString, String charge, String x, String y, String z) {
+        Element element = ElementProvider.getElementBySymbol(elementString)
+                .orElse(ElementProvider.UNKOWN)
+                .asIon(Integer.parseInt(charge));
+        String atomName = atomNameString.replace("\"", "");
+        Vector3D coordinates = new Vector3D(Double.parseDouble(x), Double.parseDouble(y), Double.parseDouble(z));
+        OakAtom atom = new OakAtom(Integer.parseInt(indexString), element, atomName, coordinates);
+        atoms.put(atomName, atom);
+    }
+
+    private void addBond(String firstAtom, String secondAtom, CovalentBondType bond) {
+        bonds.put(new Pair<>(firstAtom.replace("\"", ""),
+                        secondAtom.replace("\"", "")),
+                bond);
+    }
+
     /**
      * Extracts and creates atoms from the extracted lines.
      */
     private void extractAtoms() {
         for (String line : atomLines) {
+            // take care of text in quotation marks
+            line = replaceQuotation(line);
             String[] splitLine = line.split("\\s+");
-            /// 1 = atom name, 3 = element, 9 = x coordinate, 10 = y coordinate, 11 = z coordinates, 17 = identifer
-            int identifier = Integer.parseInt(splitLine[17]);
-            Element element = ElementProvider.getElementBySymbol(splitLine[3]).orElse(ElementProvider.UNKOWN);
-            String atomName = splitLine[1].replace("\"", "");
-            Vector3D coordinates = new Vector3D(Double.parseDouble(splitLine[9]), Double.parseDouble(splitLine[10]), Double.parseDouble(splitLine[11]));
-            OakAtom atom = new OakAtom(identifier, element, atomName, coordinates);
-            atoms.put(atomName, atom);
+            if (splitLine.length == 0) {
+                continue;
+            }
+            /// 1 = atom name, 3 = element, 4 = charge, 9 = x coordinate, 10 = y coordinate, 11 = z coordinates, 17 = identifer
+            addAtom(splitLine[17], splitLine[1], splitLine[3], splitLine[4], splitLine[9], splitLine[10], splitLine[11]);
         }
     }
 
@@ -197,19 +301,8 @@ public class CifFileParser {
             if (splitLine.length == 0) {
                 continue;
             }
-            bonds.put(new Pair<>(splitLine[1].replace("\"", ""), splitLine[2].replace("\"", "")),
-                    CovalentBondType.getBondForCifString(splitLine[3]));
+            addBond(splitLine[1], splitLine[2], CovalentBondType.getBondForCifString(splitLine[3]));
         }
-        if (bonds.size() == 0) {
-            // FIXME hotfix to prevent exception while parsing ligands with only one bond
-            if (atoms.size() == 2) {
-                Iterator<String> iterator = atoms.keySet().iterator();
-                String first = iterator.next();
-                String second = iterator.next();
-                bonds.put(new Pair<>(first, second), CovalentBondType.SINGLE_BOND);
-            }
-        }
-
     }
 
     /**
@@ -246,7 +339,7 @@ public class CifFileParser {
      * @return A leaf.
      */
     private OakLeafSubstructure<?> parseCompleteLeafSubstructure() {
-        collectLines(false);
+        collectLines();
         extractAtoms();
         extractBonds();
         return createLeafSubstructure(LeafIdentifier.fromSimpleString("A-1"));
@@ -290,7 +383,7 @@ public class CifFileParser {
      * @return A leaf skeleton.
      */
     private LeafSkeleton parseLeafSkeleton() {
-        collectLines(false);
+        collectLines();
         extractAtoms();
         extractBonds();
         return createLeafSkeleton();

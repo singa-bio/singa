@@ -45,7 +45,7 @@ public class ElectronConfiguration {
 
     public int getTotalNumberOfElectrons() {
         return configuration.values().stream()
-                .reduce((v1, v2) -> v1 + v2)
+                .reduce(Integer::sum)
                 .orElseThrow(() -> new IllegalStateException("The configuration does not contain any orbitals."));
 
     }
@@ -61,7 +61,7 @@ public class ElectronConfiguration {
             distinct.putAll(incompleteShells);
             distinct.putAll(outerShells);
             return distinct.values().stream()
-                    .reduce((v1, v2) -> v1 + v2)
+                    .reduce(Integer::sum)
                     .orElseThrow(() -> new IllegalStateException("The configuration does not contain any orbitals."));
         }
         return getNumberOfElectronsInOutermostShell();
@@ -74,7 +74,7 @@ public class ElectronConfiguration {
 
     private int getNumberOfElectronsInOutermostShell() {
         return getOrbitalsOfShell(getOuterMostShell()).values().stream()
-                .reduce((v1, v2) -> v1 + v2)
+                .reduce(Integer::sum)
                 .orElseThrow(() -> new IllegalStateException("The configuration does not contain any orbitals."));
     }
 

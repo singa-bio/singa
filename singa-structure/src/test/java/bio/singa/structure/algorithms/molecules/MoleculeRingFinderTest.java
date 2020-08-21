@@ -23,9 +23,9 @@ class MoleculeRingFinderTest {
                 .parse().getAllLeafSubstructures();
         MoleculeGraph moleculeGraph = MoleculeGraphs.createMoleculeGraphFromStructure((OakLeafSubstructure<?>) targetLeafSubstructure.get(0));
         List<Set<MoleculeAtom>> rings = MoleculeRingFinder.of(moleculeGraph);
-        assertEquals(rings.size(), 3);
-        assertEquals(rings.get(0).size(), 5);
-        assertEquals(rings.get(1).size(), 5);
-        assertEquals(rings.get(2).size(), 6);
+        assertEquals(3, rings.size());
+        assertEquals(5, rings.get(0).size());
+        assertEquals(5, rings.get(1).size());
+        assertEquals(6, rings.get(2).size());
     }
 }
