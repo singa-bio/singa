@@ -39,6 +39,10 @@ public class StructureParserOptions {
      * Defines whether an exception is thrown or a waring is issued whenever connections cannot be assigned.
      */
     private boolean enforceConnection = false;
+    /**
+     * Defines whether an exception is thrown or a waring is issued whenever connections cannot be assigned.
+     */
+    private boolean enforceAminoAcidAtomNames = true;
 
     /**
      * Create a new Options object using enum constants.
@@ -110,7 +114,18 @@ public class StructureParserOptions {
             case DISREGARD_CONNECTIONS:
                 options.setEnforceConnection(false);
                 break;
+            case DISREGARD_AMINO_ACID_ATOM_NAMES:
+                options.setEnforceAminoAcidAtomNames(false);
+                break;
         }
+    }
+
+    public boolean isEnforceAminoAcidAtomNames() {
+        return enforceAminoAcidAtomNames;
+    }
+
+    public void setEnforceAminoAcidAtomNames(boolean enforceAminoAcidAtomNames) {
+        this.enforceAminoAcidAtomNames = enforceAminoAcidAtomNames;
     }
 
     public void applySettings(Setting... settings) {
@@ -345,7 +360,12 @@ public class StructureParserOptions {
         /**
          * Issues a warning whenever connections cannot be assigned.
          */
-        DISREGARD_CONNECTIONS
+        DISREGARD_CONNECTIONS,
+
+        /**
+         * Ignores malformed amino acid atom names (C, CA, CD, ...).
+         */
+        DISREGARD_AMINO_ACID_ATOM_NAMES
 
     }
 }
