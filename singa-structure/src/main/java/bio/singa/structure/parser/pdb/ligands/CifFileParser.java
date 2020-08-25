@@ -238,6 +238,10 @@ public class CifFileParser {
                 return;
             }
             String[] split = line.split("\\s+");
+            if (split.length < 2) {
+                // skip potential empty line
+                continue;
+            }
             String id = split[0];
             String value = split[1];
             if ("_chem_comp_atom.type_symbol".equals(id)) {

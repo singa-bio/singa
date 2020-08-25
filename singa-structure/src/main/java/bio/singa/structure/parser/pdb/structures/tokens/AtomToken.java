@@ -52,9 +52,9 @@ public enum AtomToken implements PDBToken {
 
     public static OakAtom assembleAtom(String atomLine) {
         // coordinates
-        Double x = Double.valueOf(X_COORDINATE.extract(atomLine));
-        Double y = Double.valueOf(Y_COORDINATE.extract(atomLine));
-        Double z = Double.valueOf(Z_COORDINATE.extract(atomLine));
+        double x = Double.parseDouble(X_COORDINATE.extract(atomLine));
+        double y = Double.parseDouble(Y_COORDINATE.extract(atomLine));
+        double z = Double.parseDouble(Z_COORDINATE.extract(atomLine));
         Vector3D coordinates = new Vector3D(x, y, z);
         // serial
         int atomSerial = Integer.parseInt(ATOM_SERIAL.extract(atomLine));
@@ -129,10 +129,10 @@ public enum AtomToken implements PDBToken {
     private static String formatCharge(Element element) {
         int charge = element.getCharge();
         if (charge > 0) {
-            return String.valueOf(charge) + "+";
+            return charge + "+";
         }
         if (charge < 0) {
-            return String.valueOf(Math.abs(charge)) + "-";
+            return Math.abs(charge) + "-";
         }
         return "  ";
     }

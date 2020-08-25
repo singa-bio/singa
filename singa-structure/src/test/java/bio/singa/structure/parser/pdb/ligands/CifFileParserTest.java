@@ -2,12 +2,19 @@ package bio.singa.structure.parser.pdb.ligands;
 
 import bio.singa.chemistry.model.CovalentBondType;
 import bio.singa.core.utility.Pair;
+import bio.singa.structure.model.interfaces.Atom;
+import bio.singa.structure.model.oak.OakBond;
+import bio.singa.structure.model.oak.OakLigand;
 import bio.singa.structure.parser.pdb.structures.tokens.LeafSkeleton;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * @author cl
@@ -15,17 +22,35 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class CifFileParserTest {
 
     @Test
-    void shouldParseSingleBondLigandStructures() {
+    void shouldParseSingleBondLigandSkeleton() {
         LeafSkeleton leafSkeleton = LigandParserService.parseLeafSkeleton("OH");
         Map<Pair<String>, CovalentBondType> bonds = leafSkeleton.getBonds();
         assertEquals(1, bonds.size());
     }
 
     @Test
-    void shouldParseSingleAtomLigandStructures() {
+    void shouldParseSingleAtomLigandSkeleton() {
         LeafSkeleton leafSkeleton = LigandParserService.parseLeafSkeleton("CL");
         Map<Pair<String>, CovalentBondType> bonds = leafSkeleton.getBonds();
         assertEquals(0, bonds.size());
+
+        LeafSkeleton znSkeleton = LigandParserService.parseLeafSkeleton("ZN");
+        Map<Pair<String>, CovalentBondType> znBonds = znSkeleton.getBonds();
+        assertEquals(0, znBonds.size());
+    }
+
+    @Test
+    void shouldParseSingleAtomLigandStructure() {
+        OakLigand leafSubstructure = null;
+        try {
+            leafSubstructure = ((OakLigand) LigandParserService.parseLeafSubstructureById("MG"));
+        } catch (IOException e) {
+            fail("Unable tp parse ligand");
+        }
+        Collection<OakBond> bonds = leafSubstructure.getBonds();
+        List<Atom> atoms = leafSubstructure.getAllAtoms();
+        assertEquals(0, bonds.size());
+        assertEquals(1, atoms.size());
     }
 
     @Test
