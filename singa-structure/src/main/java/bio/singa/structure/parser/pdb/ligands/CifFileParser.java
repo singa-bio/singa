@@ -33,8 +33,13 @@ public class CifFileParser {
     private final List<String> lines;
     private final List<String> atomLines;
     private final List<String> bondLines;
+
     private final Map<String, OakAtom> atoms;
+    private final Map<String, Vector3D> defaultCoordinates;
+    private final Map<String, Vector3D> idealCoordinates;
     private final Map<Pair<String>, CovalentBondType> bonds;
+    private boolean defaultIncomplete;
+    private boolean idealIncomplete;
     private String name;
     private String type;
     private String oneLetterCode;
@@ -47,6 +52,8 @@ public class CifFileParser {
     private CifFileParser(List<String> lines) {
         this.lines = lines;
         atoms = new HashMap<>();
+        defaultCoordinates = new HashMap<>();
+        idealCoordinates = new HashMap<>();
         bonds = new HashMap<>();
         bondLines = new ArrayList<>();
         atomLines = new ArrayList<>();
@@ -230,15 +237,22 @@ public class CifFileParser {
         String element = "";
         String charge = "";
         String atomName = "";
-        String x = "";
-        String y = "";
-        String z = "";
         String index = "";
+
+        String xDefault = "";
+        String yDefault = "";
+        String zDefault = "";
+
+        String xIdeal = "";
+        String yIdeal = "";
+        String zIdeal = "";
 
         while (lineIterator.hasNext()) {
             String line = lineIterator.next();
             if (line.startsWith("#")) {
-                addAtom(index, atomName, element, charge, x, y, z);
+                addAtom(index, atomName, element, charge);
+                addIdealCoordinates(atomName, xIdeal, yIdeal, zIdeal);
+                addDefaultCoordinates(atomName, xDefault, yDefault, zDefault);
                 return;
             }
             String[] split = line.split("\\s+");
@@ -246,34 +260,55 @@ public class CifFileParser {
                 // skip potential empty line
                 continue;
             }
-            String id = split[0];
+            String key = split[0];
             String value = split[1];
-            if ("_chem_comp_atom.type_symbol".equals(id)) {
+            if ("_chem_comp_atom.type_symbol".equals(key)) {
                 element = value;
-            } else if ("_chem_comp_atom.atom_id".equals(id)) {
+            } else if ("_chem_comp_atom.atom_id".equals(key)) {
                 atomName = value;
-            } else if ("_chem_comp_atom.charge".equals(id)) {
+            } else if ("_chem_comp_atom.charge".equals(key)) {
                 charge = value;
-            } else if ("_chem_comp_atom.model_Cartn_x".equals(id)) {
-                x = value;
-            } else if ("_chem_comp_atom.model_Cartn_y".equals(id)) {
-                y = value;
-            } else if ("_chem_comp_atom.model_Cartn_z".equals(id)) {
-                z = value;
-            } else if ("_chem_comp_atom.pdbx_ordinal".equals(id)) {
+            } else if ("_chem_comp_atom.model_Cartn_x".equals(key)) {
+                xDefault = value;
+            } else if ("_chem_comp_atom.model_Cartn_y".equals(key)) {
+                yDefault = value;
+            } else if ("_chem_comp_atom.model_Cartn_z".equals(key)) {
+                zDefault = value;
+            } else if ("_chem_comp_atom.pdbx_model_Cartn_x_ideal".equals(key)) {
+                xIdeal = value;
+            } else if ("_chem_comp_atom.pdbx_model_Cartn_y_ideal".equals(key)) {
+                yIdeal = value;
+            } else if ("_chem_comp_atom.pdbx_model_Cartn_z_ideal".equals(key)) {
+                zIdeal = value;
+            } else if ("_chem_comp_atom.pdbx_ordinal".equals(key)) {
                 index = value;
             }
         }
     }
 
-    private void addAtom(String indexString, String atomNameString, String elementString, String charge, String x, String y, String z) {
+    private void addAtom(String indexString, String atomNameString, String elementString, String charge) {
         Element element = ElementProvider.getElementBySymbol(elementString)
                 .orElse(ElementProvider.UNKOWN)
                 .asIon(Integer.parseInt(charge));
         String atomName = atomNameString.replace("\"", "");
-        Vector3D coordinates = new Vector3D(Double.parseDouble(x), Double.parseDouble(y), Double.parseDouble(z));
-        OakAtom atom = new OakAtom(Integer.parseInt(indexString), element, atomName, coordinates);
+        OakAtom atom = new OakAtom(Integer.parseInt(indexString), element, atomName);
         atoms.put(atomName, atom);
+    }
+
+    private void addIdealCoordinates(String atomName, String x, String y, String z) {
+        if (x.equals("?") || y.equals("?") || z.equals("?")) {
+            idealIncomplete = true;
+            return;
+        }
+        idealCoordinates.put(atomName, new Vector3D(Double.parseDouble(x), Double.parseDouble(y), Double.parseDouble(z)));
+    }
+
+    private void addDefaultCoordinates(String atomName, String x, String y, String z) {
+        if (x.equals("?") || y.equals("?") || z.equals("?")) {
+            defaultIncomplete = true;
+            return;
+        }
+        defaultCoordinates.put(atomName, new Vector3D(Double.parseDouble(x), Double.parseDouble(y), Double.parseDouble(z)));
     }
 
     private void addBond(String firstAtom, String secondAtom, CovalentBondType bond) {
@@ -293,8 +328,13 @@ public class CifFileParser {
             if (splitLine.length == 0) {
                 continue;
             }
-            /// 1 = atom name, 3 = element, 4 = charge, 9 = x coordinate, 10 = y coordinate, 11 = z coordinates, 17 = identifer
-            addAtom(splitLine[17], splitLine[1], splitLine[3], splitLine[4], splitLine[9], splitLine[10], splitLine[11]);
+            // 1 = atom name, 3 = element, 4 = charge,
+            // 9 = x coordinate, 10 = y coordinate, 11 = z coordinates,
+            // 12 = ideal x coordinate, 13 = ideal y coordinate, 14 = ideal z coordinates,
+            // 17 = identifer
+            addAtom(splitLine[17], splitLine[1], splitLine[3], splitLine[4]);
+            addDefaultCoordinates( splitLine[1], splitLine[9], splitLine[10], splitLine[11]);
+            addIdealCoordinates( splitLine[1], splitLine[12], splitLine[13], splitLine[14]);
         }
     }
 
@@ -380,6 +420,35 @@ public class CifFileParser {
             OakLigand.setName(name);
             leafSubstructure = OakLigand;
         }
+
+        if (!idealIncomplete) {
+            for (Map.Entry<String, OakAtom> entry : atoms.entrySet()) {
+                String name = entry.getKey();
+                OakAtom atom = entry.getValue();
+                atom.setPosition(idealCoordinates.get(name));
+            }
+        } else if (!defaultIncomplete) {
+            logger.warn("unable to assign ideal coordinates to ligand {}, using default coordinates.", threeLetterCode);
+            for (Map.Entry<String, OakAtom> entry : atoms.entrySet()) {
+                String name = entry.getKey();
+                OakAtom atom = entry.getValue();
+                atom.setPosition(defaultCoordinates.get(name));
+            }
+        } else {
+            // both are incomplete
+            logger.warn("unable to assign full coordinates to ligand {}", threeLetterCode);
+            for (Map.Entry<String, OakAtom> entry : atoms.entrySet()) {
+                String name = entry.getKey();
+                OakAtom atom = entry.getValue();
+                Vector3D idealPosition = idealCoordinates.get(name);
+                if (idealPosition != null) {
+                    atom.setPosition(idealPosition);
+                } else {
+                    logger.warn("could not set coordinate for {} in {}.", name, threeLetterCode);
+                }
+            }
+        }
+
         atoms.values().forEach(leafSubstructure::addAtom);
         connectAtoms(leafSubstructure);
         return leafSubstructure;
@@ -420,6 +489,7 @@ public class CifFileParser {
             assignedFamily = LeafSkeleton.AssignedFamily.LIGAND;
         }
         LeafSkeleton leafSkeleton = new LeafSkeleton(threeLetterCode, parent, assignedFamily, bonds);
+        leafSkeleton.setAtoms(atoms);
         leafSkeleton.setInchi(inchi);
         return leafSkeleton;
     }

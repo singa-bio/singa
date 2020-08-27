@@ -160,4 +160,5 @@ public abstract class AbstractNode<NodeType extends Node<NodeType, VectorType, I
     public void setSpatialPosition(Vector3D spatialPosition) {
         this.spatialPosition = spatialPosition;
     }
+
 }

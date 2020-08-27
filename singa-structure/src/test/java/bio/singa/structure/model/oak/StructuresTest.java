@@ -1,18 +1,17 @@
 package bio.singa.structure.model.oak;
 
 import bio.singa.core.utility.Pair;
+import bio.singa.features.identifiers.UniqueAtomIdentifer;
 import bio.singa.mathematics.matrices.LabeledSymmetricMatrix;
 import bio.singa.mathematics.matrices.Matrices;
 import bio.singa.features.identifiers.LeafIdentifier;
+import bio.singa.mathematics.vectors.Vector3D;
 import bio.singa.structure.model.interfaces.*;
 import bio.singa.structure.parser.pdb.structures.StructureParser;
 import bio.singa.structure.parser.pdb.structures.StructureSelector;
 import org.junit.jupiter.api.Test;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -83,4 +82,19 @@ class StructuresTest {
                 .aminoAcid(202)
                 .selectAminoAcid();
     }
+
+    @Test
+    void shouldFindAtoms() {
+        OakStructure structure = ((OakStructure) StructureParser.pdb()
+                .pdbIdentifier("1szi")
+                .chainIdentifier("A")
+                .parse());
+        Vector3D atomCoordinate = new Vector3D(51.172, 37.528, -36.507);
+        Optional<Map.Entry<UniqueAtomIdentifer, Atom>> atomByCoordinate = structure.getAtomByCoordinate(atomCoordinate);
+        if (atomByCoordinate.isPresent()) {
+            Atom atom = atomByCoordinate.get().getValue();
+            assertEquals(5293, (int)atom.getAtomIdentifier());
+        }
+    }
+
 }

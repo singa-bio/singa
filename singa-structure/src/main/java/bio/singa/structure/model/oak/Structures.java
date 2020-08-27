@@ -1,6 +1,8 @@
 package bio.singa.structure.model.oak;
 
 import bio.singa.core.utility.Pair;
+import bio.singa.features.identifiers.LeafIdentifier;
+import bio.singa.features.identifiers.UniqueAtomIdentifer;
 import bio.singa.mathematics.geometry.bodies.Sphere;
 import bio.singa.mathematics.matrices.LabeledSymmetricMatrix;
 import bio.singa.mathematics.matrices.Matrices;
@@ -8,7 +10,6 @@ import bio.singa.mathematics.matrices.Matrix;
 import bio.singa.mathematics.metrics.model.VectorMetricProvider;
 import bio.singa.mathematics.vectors.Vector3D;
 import bio.singa.mathematics.vectors.Vectors3D;
-import bio.singa.features.identifiers.LeafIdentifier;
 import bio.singa.structure.model.interfaces.*;
 
 import java.util.*;
@@ -232,4 +233,27 @@ public class Structures {
                 .map(position -> distancesPairwise.getElements()[position.getFirst()][position.getSecond()])
                 .orElse(Double.NaN);
     }
+
+    public static void assignBFactors(Structure structure, Map<UniqueAtomIdentifer, Double> factors) {
+        OakStructure oakStructure = (OakStructure) structure;
+        for (Map.Entry<UniqueAtomIdentifer, Double> entry : factors.entrySet()) {
+            UniqueAtomIdentifer identifer = entry.getKey();
+            Double value = entry.getValue();
+            oakStructure.getAtom(identifer.getAtomSerial()).ifPresent(atom -> atom.setBFactor(value));
+        }
+    }
+
+    public static Map<Vector3D, UniqueAtomIdentifer> mapAtomsByCoordinate(Structure structure, Set<Vector3D> coordinates) {
+        OakStructure oakStructure = (OakStructure) structure;
+        HashMap<Vector3D, UniqueAtomIdentifer> map = new HashMap<>();
+        for (Vector3D coordinate : coordinates) {
+            Optional<Map.Entry<UniqueAtomIdentifer, Atom>> optionalAtom = oakStructure.getAtomByCoordinate(coordinate);
+            if (optionalAtom.isPresent()) {
+                Map.Entry<UniqueAtomIdentifer, Atom> entry = optionalAtom.get();
+                map.put(coordinate, entry.getKey());
+            }
+        }
+        return map;
+    }
+
 }

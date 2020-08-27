@@ -37,6 +37,8 @@ public class OakAtom implements Atom {
      */
     private Vector3D position;
 
+    private double bFactor;
+
     /**
      * Creates a new atom with the given pdbIdentifier, element, name and position.
      *
@@ -50,6 +52,13 @@ public class OakAtom implements Atom {
         this.identifier = identifier;
         this.element = element;
         this.position = position;
+        neighbours = new HashSet<>();
+    }
+
+    public OakAtom(int identifier, Element element, String atomName) {
+        this.identifier = identifier;
+        this.element = element;
+        this.atomName = atomName;
         neighbours = new HashSet<>();
     }
 
@@ -83,6 +92,14 @@ public class OakAtom implements Atom {
     @Override
     public void setPosition(Vector3D position) {
         this.position = position;
+    }
+
+    public double getBFactor() {
+        return bFactor;
+    }
+
+    public void setBFactor(double bFactor) {
+        this.bFactor = bFactor;
     }
 
     @Override

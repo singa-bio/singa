@@ -4,6 +4,7 @@ import bio.singa.mathematics.vectors.Vector3D;
 import bio.singa.chemistry.model.elements.Element;
 import bio.singa.chemistry.model.elements.ElementProvider;
 import bio.singa.structure.model.interfaces.Atom;
+import org.apache.commons.lang.NotImplementedException;
 import org.rcsb.mmtf.api.StructureDataInterface;
 
 /**
@@ -86,6 +87,16 @@ public class MmtfAtom implements Atom {
     @Override
     public void setPosition(Vector3D position) {
         cachedPosition = position;
+    }
+
+    @Override
+    public double getBFactor() {
+        throw new NotImplementedException("Not yet implemented");
+    }
+
+    @Override
+    public void setBFactor(double bFactor) {
+        throw new NotImplementedException("Not yet implemented");
     }
 
     @Override

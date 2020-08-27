@@ -63,6 +63,7 @@ class StructureRepresentationTest {
                 assertLineEquals(AtomToken.Z_COORDINATE.extract(expected), (AtomToken.Z_COORDINATE.extract(actual)));
                 assertLineEquals(AtomToken.ELEMENT_SYMBOL.extract(expected), (AtomToken.ELEMENT_SYMBOL.extract(actual)));
                 assertLineEquals(AtomToken.ELEMENT_CHARGE.extract(expected), (AtomToken.ELEMENT_CHARGE.extract(actual)));
+                assertLineEquals(AtomToken.TEMPERATURE_FACTOR.extract(expected), (AtomToken.TEMPERATURE_FACTOR.extract(actual)));
                 break;
             case "TER   ":
                 assertLineEquals(ChainTerminatorToken.ATOM_SERIAL.extract(expected), (ChainTerminatorToken.ATOM_SERIAL.extract(actual)));

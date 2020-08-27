@@ -54,6 +54,18 @@ class CifFileParserTest {
     }
 
     @Test
+    void shouldIgnoreQuestionMark() {
+        OakLigand leafSubstructure = null;
+        try {
+            leafSubstructure = ((OakLigand) LigandParserService.parseLeafSubstructureById("HGB"));
+        } catch (IOException e) {
+            fail("Unable tp parse ligand");
+        }
+        Collection<OakBond> bonds = leafSubstructure.getBonds();
+        List<Atom> atoms = leafSubstructure.getAllAtoms();
+    }
+
+    @Test
     void shouldParseMultilineInChi() {
         // ;
         LeafSkeleton fad = LigandParserService.parseLeafSkeleton("FAD");

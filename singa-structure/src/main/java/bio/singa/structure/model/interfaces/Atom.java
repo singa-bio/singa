@@ -34,6 +34,10 @@ public interface Atom {
      */
     void setPosition(Vector3D position);
 
+    double getBFactor();
+
+    void setBFactor(double bFactor);
+
     /**
      * Returns the {@link Element}.
      *

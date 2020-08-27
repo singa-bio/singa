@@ -63,7 +63,11 @@ public enum AtomToken implements PDBToken {
         // element
         Element element = ElementProvider.getElementBySymbol(ELEMENT_SYMBOL.extract(atomLine))
                 .orElse(ElementProvider.UNKOWN);
-        return new OakAtom(atomSerial, element, atomName, coordinates);
+        // bfactor
+        double bFactor = Double.parseDouble(TEMPERATURE_FACTOR.extract(atomLine));
+        OakAtom atom = new OakAtom(atomSerial, element, atomName, coordinates);
+        atom.setBFactor(bFactor);
+        return atom;
     }
 
     public static List<String> assemblePDBLine(LeafSubstructure leaf) {
@@ -90,7 +94,7 @@ public enum AtomToken implements PDBToken {
                     .append(Y_COORDINATE.createTokenString(coordinateFormat.format(atom.getPosition().getY())))
                     .append(Z_COORDINATE.createTokenString(coordinateFormat.format(atom.getPosition().getZ())))
                     .append("  1.00") // OCCUPANCY not yet implemented
-                    .append("  0.00") // TEMPERATURE_FACTOR not yet implemented
+                    .append(TEMPERATURE_FACTOR.createTokenString(temperatureFormat.format(atom.getBFactor()))) // TEMPERATURE_FACTOR not yet implemented
                     .append("          ") // 10 spaces
                     .append(ELEMENT_SYMBOL.createTokenString(atom.getElement().getSymbol()).toUpperCase())
                     .append(formatCharge(atom.getElement()));
