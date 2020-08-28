@@ -243,11 +243,11 @@ public class Structures {
         }
     }
 
-    public static Map<Vector3D, UniqueAtomIdentifer> mapAtomsByCoordinate(Structure structure, Set<Vector3D> coordinates) {
+    public static Map<Vector3D, UniqueAtomIdentifer> mapAtomsByCoordinate(Structure structure, Set<Vector3D> coordinates, double eps) {
         OakStructure oakStructure = (OakStructure) structure;
         HashMap<Vector3D, UniqueAtomIdentifer> map = new HashMap<>();
         for (Vector3D coordinate : coordinates) {
-            Optional<Map.Entry<UniqueAtomIdentifer, Atom>> optionalAtom = oakStructure.getAtomByCoordinate(coordinate);
+            Optional<Map.Entry<UniqueAtomIdentifer, Atom>> optionalAtom = oakStructure.getAtomByCoordinate(coordinate, eps);
             if (optionalAtom.isPresent()) {
                 Map.Entry<UniqueAtomIdentifer, Atom> entry = optionalAtom.get();
                 map.put(coordinate, entry.getKey());

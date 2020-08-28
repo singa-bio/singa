@@ -361,6 +361,14 @@ public class Vector3D implements Vector {
         );
     }
 
+    public boolean almostEqual(Vector3D other, double eps) {
+        return almostEqual(getX(), other.getX(), eps) && almostEqual(getY(), other.getY(), eps) && almostEqual(getZ(), other.getZ(), eps);
+    }
+
+    private static boolean almostEqual(double a, double b, double eps){
+        return Math.abs(a-b)<eps;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

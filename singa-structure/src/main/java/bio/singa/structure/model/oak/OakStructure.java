@@ -182,12 +182,12 @@ public class OakStructure implements Structure {
         return Optional.empty();
     }
 
-    public Optional<Map.Entry<UniqueAtomIdentifer, Atom>> getAtomByCoordinate(Vector3D coordinate) {
+    public Optional<Map.Entry<UniqueAtomIdentifer, Atom>> getAtomByCoordinate(Vector3D coordinate, double eps) {
         for (Model model : getAllModels()) {
             for (Chain chain : model.getAllChains()) {
                 for (LeafSubstructure leafSubstructure : chain.getAllLeafSubstructures()) {
                     for (Atom atom : leafSubstructure.getAllAtoms()) {
-                        if (atom.getPosition().equals(coordinate)) {
+                        if (atom.getPosition().almostEqual(coordinate, eps)) {
                             UniqueAtomIdentifer identifier = new UniqueAtomIdentifer(pdbIdentifier, model.getModelIdentifier(),
                                     chain.getChainIdentifier(), leafSubstructure.getIdentifier().getSerial(), leafSubstructure.getIdentifier().getInsertionCode(),
                                     atom.getAtomIdentifier());
@@ -199,6 +199,7 @@ public class OakStructure implements Structure {
         }
         return Optional.empty();
     }
+
 
 
     /**

@@ -444,6 +444,7 @@ public class CifFileParser {
                 if (idealPosition != null) {
                     atom.setPosition(idealPosition);
                 } else {
+                    atom.setPosition(new Vector3D(Double.NaN, Double.NaN, Double.NaN));
                     logger.warn("could not set coordinate for {} in {}.", name, threeLetterCode);
                 }
             }
