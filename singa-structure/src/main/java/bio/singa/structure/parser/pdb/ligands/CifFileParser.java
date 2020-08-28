@@ -288,8 +288,10 @@ public class CifFileParser {
 
     private void addAtom(String indexString, String atomNameString, String elementString, String charge) {
         Element element = ElementProvider.getElementBySymbol(elementString)
-                .orElse(ElementProvider.UNKOWN)
-                .asIon(Integer.parseInt(charge));
+                .orElse(ElementProvider.UNKOWN);
+        if (!charge.equals("?")) {
+            element.asIon(Integer.parseInt(charge));
+        }
         String atomName = atomNameString.replace("\"", "");
         OakAtom atom = new OakAtom(Integer.parseInt(indexString), element, atomName);
         atoms.put(atomName, atom);
