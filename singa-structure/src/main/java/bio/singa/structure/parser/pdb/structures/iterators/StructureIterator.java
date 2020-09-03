@@ -76,6 +76,8 @@ public interface StructureIterator extends Iterator<Structure> {
 
     void prepareNext();
 
+    void skip();
+
     boolean hasChain();
 
     int getNumberOfQueuedStructures();
