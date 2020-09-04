@@ -54,6 +54,18 @@ class CifFileParserTest {
     }
 
     @Test
+    void shouldParseSugarLigandStructure() {
+        OakLigand leafSubstructure = null;
+        try {
+            leafSubstructure = ((OakLigand) LigandParserService.parseLeafSubstructureById("LAT"));
+        } catch (IOException e) {
+            fail("Unable tp parse ligand");
+        }
+        Collection<OakBond> bonds = leafSubstructure.getBonds();
+        List<Atom> atoms = leafSubstructure.getAllAtoms();
+    }
+
+    @Test
     void shouldIgnoreQuestionMark() {
         OakLigand leafSubstructure = null;
         try {

@@ -334,7 +334,7 @@ public class CifFileParser {
             // 9 = x coordinate, 10 = y coordinate, 11 = z coordinates,
             // 12 = ideal x coordinate, 13 = ideal y coordinate, 14 = ideal z coordinates,
             // 17 = identifer
-            addAtom(splitLine[17], splitLine[1], splitLine[3], splitLine[4]);
+            addAtom(splitLine[splitLine.length-1], splitLine[1], splitLine[3], splitLine[4]);
             addDefaultCoordinates( splitLine[1], splitLine[9], splitLine[10], splitLine[11]);
             addIdealCoordinates( splitLine[1], splitLine[12], splitLine[13], splitLine[14]);
         }
