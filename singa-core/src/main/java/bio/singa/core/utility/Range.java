@@ -1,5 +1,7 @@
 package bio.singa.core.utility;
 
+import java.util.Objects;
+
 /**
  * The range defines any interval between two comparable objects.
  *
@@ -56,6 +58,51 @@ public class Range<RangeType extends Comparable<RangeType>> implements Bounded<R
     @Override
     public RangeType getUpperBound() {
         return values.getSecond();
+    }
+
+    public Range<RangeType> determineOverlap(Range<RangeType> range) {
+        RangeType thisLow = getLowerBound();
+        RangeType thisUp = getUpperBound();
+        RangeType thatLow = range.getLowerBound();
+        RangeType thatUp = range.getUpperBound();
+
+        // they are equal
+        if(equals(range)) {
+            return new Range<>(thisLow, thisUp);
+        }
+        RangeType low;
+        if (thisLow.compareTo(thatLow) > 0) {
+            low = thisLow;
+        } else {
+            low = thatLow;
+        }
+
+        RangeType up;
+        if (thisUp.compareTo(thatUp) < 0) {
+            up = thisUp;
+        } else {
+            up = thatUp;
+        }
+
+        if (low.compareTo(up) > 0) {
+            return null;
+        } else {
+            return new Range<>(low, up);
+        }
+
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Range<?> range = (Range<?>) o;
+        return Objects.equals(values, range.values);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(values);
     }
 
     @Override
