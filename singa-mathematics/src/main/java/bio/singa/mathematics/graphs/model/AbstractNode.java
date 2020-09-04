@@ -61,6 +61,9 @@ public abstract class AbstractNode<NodeType extends Node<NodeType, VectorType, I
 
     public AbstractNode(NodeType node) {
         this(node.getIdentifier(), node.getPosition().getCopy());
+        if (node.getSpatialPosition().isPresent()) {
+            spatialPosition = node.getSpatialPosition().get().getCopy();
+        }
     }
 
     @Override
