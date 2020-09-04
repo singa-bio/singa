@@ -58,4 +58,8 @@ public class Range<RangeType extends Comparable<RangeType>> implements Bounded<R
         return values.getSecond();
     }
 
+    @Override
+    public String toString() {
+        return "["+getLowerBound()+", "+getUpperBound()+"]";
+    }
 }
