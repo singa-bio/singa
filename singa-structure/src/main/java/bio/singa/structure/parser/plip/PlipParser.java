@@ -44,7 +44,9 @@ public class PlipParser extends AbstractXMLParser<InteractionContainer> {
     public static InteractionContainer parse(String pdbIdentifier, InputStream inputStream) {
         PlipParser parser = new PlipParser(pdbIdentifier, inputStream);
         try {
-            parser.getXmlReader().parse(new InputSource(parser.getFetchResult()));
+            InputSource input = new InputSource(parser.getFetchResult());
+            input.setEncoding("UTF-8");
+            parser.getXmlReader().parse(input);
             return ((PlipContentHandler) parser.getXmlReader().getContentHandler()).getInteractionContainer();
         } catch (IOException e) {
             throw new UncheckedIOException("Could not parse XML from fetch result, the server seems to be unavailable.", e);

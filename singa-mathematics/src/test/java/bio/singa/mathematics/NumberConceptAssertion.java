@@ -1,6 +1,6 @@
 package bio.singa.mathematics;
 
-import bio.singa.mathematics.intervals.Interval;
+import bio.singa.mathematics.intervals.DoubleInterval;
 import bio.singa.mathematics.matrices.Matrix;
 import bio.singa.mathematics.vectors.Vector;
 
@@ -39,7 +39,7 @@ public class NumberConceptAssertion {
         }
     }
 
-    public static void assertIntervalEquals(Interval expected, Interval actual, double delta) {
+    public static void assertIntervalEquals(DoubleInterval expected, DoubleInterval actual, double delta) {
         double expectedLowerBond = expected.getLowerBound();
         double actualLowerBond = actual.getLowerBound();
         if (doubleIsDifferent(expectedLowerBond, actualLowerBond, delta)) {

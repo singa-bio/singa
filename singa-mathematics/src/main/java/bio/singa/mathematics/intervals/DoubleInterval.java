@@ -9,7 +9,7 @@ import bio.singa.mathematics.concepts.Ring;
  *
  * @author cl
  */
-public class Interval extends Range<Double> implements Ring<Interval> {
+public class DoubleInterval extends Range<Double> implements Ring<DoubleInterval> {
 
     /**
      * Creates a new interval with the given values.
@@ -18,7 +18,7 @@ public class Interval extends Range<Double> implements Ring<Interval> {
      * @param lowerBound The lower bound.
      * @param upperBound The upper bond.
      */
-    public Interval(Double lowerBound, Double upperBound) {
+    public DoubleInterval(Double lowerBound, Double upperBound) {
         super(lowerBound, upperBound);
     }
 
@@ -39,28 +39,28 @@ public class Interval extends Range<Double> implements Ring<Interval> {
     }
 
     @Override
-    public Interval add(Interval summand) {
+    public DoubleInterval add(DoubleInterval summand) {
         final double upperBound = getUpperBound() + summand.getUpperBound();
         final double lowerBound = getLowerBound() + summand.getLowerBound();
-        return new Interval(lowerBound, upperBound);
+        return new DoubleInterval(lowerBound, upperBound);
     }
 
     @Override
-    public Interval additivelyInvert() {
-        return new Interval(-getLowerBound(), -getUpperBound());
+    public DoubleInterval additivelyInvert() {
+        return new DoubleInterval(-getLowerBound(), -getUpperBound());
     }
 
     @Override
-    public Interval multiply(Interval multiplicand) {
+    public DoubleInterval multiply(DoubleInterval multiplicand) {
         double[] minMax = minMax(getLowerBound() * multiplicand.getLowerBound(), getLowerBound() * multiplicand.getUpperBound(),
                 getUpperBound() * multiplicand.getLowerBound(), getUpperBound() * multiplicand.getUpperBound());
-        return new Interval(minMax[0], minMax[1]);
+        return new DoubleInterval(minMax[0], minMax[1]);
     }
 
     @Override
-    public Interval subtract(Interval subtrahend) {
+    public DoubleInterval subtract(DoubleInterval subtrahend) {
         final double upperBound = getUpperBound() - subtrahend.getUpperBound();
         final double lowerBound = getLowerBound() - subtrahend.getLowerBound();
-        return new Interval(lowerBound, upperBound);
+        return new DoubleInterval(lowerBound, upperBound);
     }
 }

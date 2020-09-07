@@ -53,6 +53,11 @@ public abstract class AbstractStructureIterator<SourceType, TargetType> implemen
     }
 
     @Override
+    public int getNumberOfProcessedStructures() {
+        return counter;
+    }
+
+    @Override
     public int getNumberOfRemainingStructures() {
         return getNumberOfQueuedStructures() - counter;
     }

@@ -60,38 +60,6 @@ public class Range<RangeType extends Comparable<RangeType>> implements Bounded<R
         return values.getSecond();
     }
 
-    public Range<RangeType> determineOverlap(Range<RangeType> range) {
-        RangeType thisLow = getLowerBound();
-        RangeType thisUp = getUpperBound();
-        RangeType thatLow = range.getLowerBound();
-        RangeType thatUp = range.getUpperBound();
-
-        // they are equal
-        if(equals(range)) {
-            return new Range<>(thisLow, thisUp);
-        }
-        RangeType low;
-        if (thisLow.compareTo(thatLow) > 0) {
-            low = thisLow;
-        } else {
-            low = thatLow;
-        }
-
-        RangeType up;
-        if (thisUp.compareTo(thatUp) < 0) {
-            up = thisUp;
-        } else {
-            up = thatUp;
-        }
-
-        if (low.compareTo(up) > 0) {
-            return null;
-        } else {
-            return new Range<>(low, up);
-        }
-
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

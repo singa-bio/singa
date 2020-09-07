@@ -82,6 +82,8 @@ public interface StructureIterator extends Iterator<Structure> {
 
     int getNumberOfQueuedStructures();
 
+    int getNumberOfProcessedStructures();
+
     int getNumberOfRemainingStructures();
 
     List<Structure> parse();
