@@ -63,7 +63,11 @@ public interface StructureIterator extends Iterator<Structure> {
     }
 
     static StructureIterator createFromLocalPdb(LocalPDBRepository localPdb) {
-        return new LocalStructureIterator<>(LocalSourceIterator.fromLocalPdb(localPdb));
+        return new LocalStructureIterator<>(LocalSourceIterator.fromLocalPdb(localPdb, -1));
+    }
+
+    static StructureIterator createFromLocalPdb(LocalPDBRepository localPdb, int limit) {
+        return new LocalStructureIterator<>(LocalSourceIterator.fromLocalPdb(localPdb, limit));
     }
 
     static StructureIterator createFromFiles(List<File> files, SourceLocation sourceLocation) {
@@ -75,8 +79,6 @@ public interface StructureIterator extends Iterator<Structure> {
     }
 
     void prepareNext();
-
-    void skip();
 
     boolean hasChain();
 

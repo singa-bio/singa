@@ -40,9 +40,10 @@ public class LocalSourceIterator<SourceContent> extends AbstractSourceIterator<S
         return localIterator;
     }
 
-    public static LocalSourceIterator<Path> fromLocalPdb(LocalPDBRepository localPdb) {
+    public static LocalSourceIterator<Path> fromLocalPdb(LocalPDBRepository localPdb, int limit) {
         List<Path> paths = new ArrayList<>();
         Path localPdbPath = localPdb.getLocalPdbPath();
+        boolean check = limit != -1;
         try (Stream<Path> splitDirectories = Files.list(localPdbPath)) {
             for (Path splitDirectory : splitDirectories.collect(Collectors.toList())) {
                 try (Stream<Path> files = Files.walk(splitDirectory)) {
@@ -50,6 +51,11 @@ public class LocalSourceIterator<SourceContent> extends AbstractSourceIterator<S
                         String fileName = path.getFileName().toString().toLowerCase();
                         // skip non relevant files
                         if (fileName.endsWith(".mmtf.gz") || fileName.endsWith(".ent.gz")) {
+                            if (check) {
+                                if (paths.size() >= limit) {
+                                    return new LocalSourceIterator<>(paths, IdentityConverter.get(Path.class));
+                                }
+                            }
                             paths.add(path);
                         }
                     }

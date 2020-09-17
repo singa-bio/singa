@@ -7,6 +7,7 @@ import bio.singa.mathematics.vectors.Vector3D;
 import bio.singa.features.identifiers.LeafIdentifier;
 import bio.singa.structure.model.interfaces.AtomContainer;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
+import bio.singa.structure.model.interfaces.LeafSubstructureContainer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -119,4 +120,15 @@ public class SubstructureSuperimposition implements Superimposition<LeafSubstruc
                         .add(translation).as(Vector3D.class)));
         return copyOfCandidate;
     }
+
+    public <T extends LeafSubstructureContainer> T applyTo(T candidate) {
+        T candidateCopy = candidate.getCopy();
+        // apply superimposition to every atom of every substructure of the candidate
+        candidateCopy.getAllAtoms()
+                .forEach(atom -> atom.setPosition(rotation.transpose()
+                        .multiply(atom.getPosition())
+                        .add(translation).as(Vector3D.class)));
+        return candidateCopy;
+    }
+
 }

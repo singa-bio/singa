@@ -19,7 +19,6 @@ public class LocalStructureIterator<SourceType> extends AbstractStructureIterato
     @Override
     public Structure next() {
         Object content = sourceIterator.getContent(currentSource);
-        counter++;
         if (content instanceof byte[]) {
             byte[] bytes = (byte[]) content;
             MmtfStructure mmtfStructure = new MmtfStructure(bytes, false);

@@ -6,6 +6,10 @@ import bio.singa.mathematics.metrics.implementations.OverlapDistance;
 import bio.singa.mathematics.metrics.model.Metric;
 import bio.singa.mathematics.metrics.model.Metrizable;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 /**
  * @author cl
  */
@@ -47,6 +51,36 @@ public class IntegerInterval extends Range<Integer> implements Ring<IntegerInter
         int min = first < third ? first : third;
         int max = second > fourth ? second : fourth;
         return new int[]{min, max};
+    }
+
+    public static List<IntegerInterval> determineConsecutiveRanges(Collection<Integer> integers) {
+        ArrayList<Integer> positions = new ArrayList<>(integers);
+        positions.sort(Integer::compareTo);
+        int length = 1;
+        List<IntegerInterval> list = new ArrayList<>();
+        // If the array is empty, return the list
+        if (positions.size() == 0) {
+            return list;
+        }
+        // Traverse the array from first position
+        for (int i = 1; i <= positions.size(); i++) {
+            // Check the difference between the current and the previous elements
+            // If the difference doesn't equal to 1 just increment the length variable.
+            if (i == positions.size() || positions.get(i) - positions.get(i - 1) != 1) {
+                // If the range contains only one element add it into the list.
+                if (length == 1) {
+                    list.add(new IntegerInterval(positions.get(i - length), positions.get(i - length)));
+                } else {
+                    // Build the range between the first element of the range and the current previous element as the last range.
+                    list.add(new IntegerInterval(positions.get(i - length), positions.get(i - 1)));
+                }
+                // After finding the first range initialize the length by 1 to build the next range.
+                length = 1;
+            } else {
+                length++;
+            }
+        }
+        return list;
     }
 
     @Override

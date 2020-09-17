@@ -19,7 +19,6 @@ public class MmtfStructureIterator<SourceType> extends AbstractStructureIterator
         if (reducer.isReducingChains() || reducer.isReducingModels()) {
             MmtfReducer.reduceMMTFStructure(structure, reducer);
         }
-        counter++;
         return structure;
     }
 

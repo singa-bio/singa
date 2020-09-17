@@ -91,4 +91,5 @@ public interface Superimposition<T> {
      * @return a new copy of the superimposed candidates
      */
     List<T> applyTo(List<T> candidate);
+
 }

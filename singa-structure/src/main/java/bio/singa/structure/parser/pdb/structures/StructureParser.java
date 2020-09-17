@@ -140,6 +140,8 @@ public class StructureParser {
 
         MultiModelStep all();
 
+        MultiModelStep all(int limit);
+
         /**
          * The location of a file as a sting.
          *
@@ -533,6 +535,14 @@ public class StructureParser {
         public MultiModelStep all() {
             MultiReducingSelector selector = new MultiReducingSelector(sourceLocation);
             selector.iterator = StructureIterator.createFromLocalPdb(localPdb);
+            assignRepository(selector.iterator);
+            return selector;
+        }
+
+        @Override
+        public MultiModelStep all(int limit) {
+            MultiReducingSelector selector = new MultiReducingSelector(sourceLocation);
+            selector.iterator = StructureIterator.createFromLocalPdb(localPdb, limit);
             assignRepository(selector.iterator);
             return selector;
         }

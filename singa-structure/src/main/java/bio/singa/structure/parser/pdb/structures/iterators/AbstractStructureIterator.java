@@ -35,10 +35,6 @@ public abstract class AbstractStructureIterator<SourceType, TargetType> implemen
 
     public void prepareNext() {
         currentSource = sourceIterator.next();
-    }
-
-    public void skip() {
-        prepareNext();
         counter++;
     }
 
