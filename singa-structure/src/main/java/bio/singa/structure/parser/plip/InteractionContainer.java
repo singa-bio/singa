@@ -24,6 +24,8 @@ public class InteractionContainer {
 
     private static final Logger logger = LoggerFactory.getLogger(InteractionContainer.class);
 
+    public static boolean checkAddedInteractions = true;
+
     /**
      * The interactions
      */
@@ -57,24 +59,6 @@ public class InteractionContainer {
             return firstTarget.equals(secondTarget);
         }
         return firstSource.equals(secondTarget) && firstTarget.equals(secondSource);
-    }
-
-    /**
-     * Tests if two sets of integers (atom identifiers in this context) overlap.
-     *
-     * @param firstList The first list of integers.
-     * @param secondList The second lst of integers.
-     * @return True, if at least one integer is contained in both sets.
-     */
-    private static boolean atomsOverlap(List<Integer> firstList, List<Integer> secondList) {
-        for (int first : firstList) {
-            for (int second : secondList) {
-                if (first == second) {
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 
     public Map<Ligand, List<Interaction>> getLigandInteractionMap() {
@@ -167,7 +151,7 @@ public class InteractionContainer {
         logger.debug("Handling interaction between: {} and {}", interaction.getSource(), interaction.getTarget());
         // get interactions that are already present between the leaves
         List<Interaction> presentInteractions = getInteractionsBetween(interaction.getSource(), interaction.getTarget());
-        if (presentInteractions.size() > 0) {
+        if (presentInteractions.size() > 0 && InteractionContainer.checkAddedInteractions) {
             // there are already interactions between those leaves
             logger.trace("There are already interactions annotated between those leaves.");
             boolean allAreDifferent = true;

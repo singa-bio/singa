@@ -1,6 +1,5 @@
 package bio.singa.structure.parser.plip;
 
-import bio.singa.structure.model.families.AminoAcidFamily;
 import bio.singa.features.identifiers.LeafIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -85,35 +84,35 @@ public class PlipContentHandler implements ContentHandler {
         currentTag = qName;
         switch (qName) {
             case "halogen_bond":
-                currentInteraction = new HalogenBond(Integer.valueOf(atts.getValue("id")));
+                currentInteraction = new HalogenBond(Integer.parseInt(atts.getValue("id")));
                 interactionType = InteractionType.HALOGEN_BOND;
                 break;
             case "hydrophobic_interaction":
-                currentInteraction = new HydrophobicInteraction(Integer.valueOf(atts.getValue("id")));
+                currentInteraction = new HydrophobicInteraction(Integer.parseInt(atts.getValue("id")));
                 interactionType = InteractionType.HYDROPHOBIC_INTERACTION;
                 break;
             case "hydrogen_bond":
-                currentInteraction = new HydrogenBond(Integer.valueOf(atts.getValue("id")));
+                currentInteraction = new HydrogenBond(Integer.parseInt(atts.getValue("id")));
                 interactionType = InteractionType.HYDROGEN_BOND;
                 break;
             case "water_bridge":
-                currentInteraction = new WaterBridge(Integer.valueOf(atts.getValue("id")));
+                currentInteraction = new WaterBridge(Integer.parseInt(atts.getValue("id")));
                 interactionType = InteractionType.WATER_BRIDGE;
                 break;
             case "salt_bridge":
-                currentInteraction = new SaltBridge(Integer.valueOf(atts.getValue("id")));
+                currentInteraction = new SaltBridge(Integer.parseInt(atts.getValue("id")));
                 interactionType = InteractionType.SALT_BRIDGE;
                 break;
             case "pi_stack":
-                currentInteraction = new PiStacking(Integer.valueOf(atts.getValue("id")));
+                currentInteraction = new PiStacking(Integer.parseInt(atts.getValue("id")));
                 interactionType = InteractionType.PI_STACKING;
                 break;
             case "pi_cation_interaction":
-                currentInteraction = new PiCation(Integer.valueOf(atts.getValue("id")));
+                currentInteraction = new PiCation(Integer.parseInt(atts.getValue("id")));
                 interactionType = InteractionType.PI_CATION_INTERACTION;
                 break;
             case "metal_complex":
-                currentInteraction = new MetalComplex(Integer.valueOf(atts.getValue("id")));
+                currentInteraction = new MetalComplex(Integer.parseInt(atts.getValue("id")));
                 interactionType = InteractionType.METAL_COMPLEX;
                 break;
             case "ligcoo":
@@ -148,6 +147,11 @@ public class PlipContentHandler implements ContentHandler {
 
     @Override
     public void characters(char[] ch, int start, int length) {
+//        String testString = new String(ch, start, length);
+//        if (currentTag.isEmpty() || testString.isBlank()) {
+//            return;
+//        }
+//        System.out.println(currentTag + ": ("+length+") " + testString);
         switch (currentTag) {
             case "resnr":
                 firstLeafSerial = new String(ch, start, length);
@@ -233,12 +237,8 @@ public class PlipContentHandler implements ContentHandler {
                 as(WaterBridge.class).setAcceptor(asInteger(ch, start, length));
                 break;
             case "sidechain":
-                switch (interactionType) {
-                    case HYDROGEN_BOND:
-                        as(HydrogenBond.class).setSidechain(asBoolean(ch, start, length));
-                        break;
-                    default:
-                        break;
+                if (interactionType == InteractionType.HYDROGEN_BOND) {
+                    as(HydrogenBond.class).setSidechain(asBoolean(ch, start, length));
                 }
                 break;
             case "protisdon":
@@ -341,11 +341,6 @@ public class PlipContentHandler implements ContentHandler {
             case "ligcarbonidx":
                 as(HydrophobicInteraction.class).setAtom2(asInteger(ch, start, length));
                 break;
-            case "restype_lig":
-                String restype = new String(ch, start, length);
-                if (!AminoAcidFamily.getAminoAcidTypeByThreeLetterCode(restype).isPresent()) {
-                    // this.noResidueInteraction = true;
-                }
         }
 
     }
@@ -371,7 +366,7 @@ public class PlipContentHandler implements ContentHandler {
 
     private void addInteraction() {
         // skip all interactions that are not between standard amino acids
-        // TODO This may be going down for amino acid ligands or modified amino acids
+        // TODO This may be failing for amino acid ligands or modified amino acids
         if (noResidueInteraction) {
             noResidueInteraction = false;
             return;
@@ -386,8 +381,8 @@ public class PlipContentHandler implements ContentHandler {
             return;
         }
         // generate identifiers
-        final LeafIdentifier source = new LeafIdentifier(currentPdbIdentifier, 1, firstLeafChain, Integer.valueOf(firstLeafSerial));
-        final LeafIdentifier target = new LeafIdentifier(currentPdbIdentifier, 1, secondLeafChain, Integer.valueOf(secondLeafSerial));
+        final LeafIdentifier source = new LeafIdentifier(currentPdbIdentifier, 1, firstLeafChain, Integer.parseInt(firstLeafSerial));
+        final LeafIdentifier target = new LeafIdentifier(currentPdbIdentifier, 1, secondLeafChain, Integer.parseInt(secondLeafSerial));
         // FIXME for metal complexes this seems to be not valid to take the first occurring entry as source: at atom level source is always the ion
         currentInteraction.setSource(source);
         currentInteraction.setTarget(target);
@@ -399,15 +394,15 @@ public class PlipContentHandler implements ContentHandler {
     }
 
     private double asDouble(char[] ch, int start, int length) {
-        return Double.valueOf(new String(ch, start, length));
+        return Double.parseDouble(new String(ch, start, length));
     }
 
     private int asInteger(char[] ch, int start, int length) {
-        return Integer.valueOf(new String(ch, start, length));
+        return Integer.parseInt(new String(ch, start, length));
     }
 
     private boolean asBoolean(char[] ch, int start, int length) {
-        return Boolean.valueOf(new String(ch, start, length));
+        return Boolean.parseBoolean(new String(ch, start, length));
     }
 
 

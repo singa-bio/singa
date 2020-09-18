@@ -45,7 +45,6 @@ public class PlipParser extends AbstractXMLParser<InteractionContainer> {
         PlipParser parser = new PlipParser(pdbIdentifier, inputStream);
         try {
             InputSource input = new InputSource(parser.getFetchResult());
-            input.setEncoding("UTF-8");
             parser.getXmlReader().parse(input);
             return ((PlipContentHandler) parser.getXmlReader().getContentHandler()).getInteractionContainer();
         } catch (IOException e) {

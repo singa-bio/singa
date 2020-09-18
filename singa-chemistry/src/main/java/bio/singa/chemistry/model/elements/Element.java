@@ -227,7 +227,7 @@ public class Element {
      * @return An cation of this element.
      */
     public Element asCation(int numberOfElectronsLost) {
-        return asIon(-numberOfElectronsLost);
+        return asIon(numberOfElectronsLost);
     }
 
     /**
@@ -237,7 +237,7 @@ public class Element {
      * @return An anion of this element.
      */
     public Element asAnion(int numberOfElectronsGained) {
-        return asIon(numberOfElectronsGained);
+        return asIon(-numberOfElectronsGained);
     }
 
     /**
