@@ -5,6 +5,7 @@ import bio.singa.features.identifiers.ChEBIIdentifier;
 import bio.singa.features.identifiers.InChIKey;
 import bio.singa.features.identifiers.PDBLigandIdentifier;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -32,6 +33,7 @@ class PDBLigandIdentiferProviderTest {
 
     @Test
     @DisplayName("pdb ligand identifier provider - using chebi identifier")
+    @Disabled
     void fetchWithChebi() {
         chebiEntity.setFeature(PDBLigandIdentifier.class);
         assertEquals("TCI", chebiEntity.getFeature(PDBLigandIdentifier.class).toString());
@@ -39,6 +41,7 @@ class PDBLigandIdentiferProviderTest {
 
     @Test
     @DisplayName("pdb ligand identifier provider - using inchi key")
+    @Disabled
     void fetchWithInCHI() {
         inchiEntity.setFeature(PDBLigandIdentifier.class);
         assertEquals("5OD", inchiEntity.getFeature(PDBLigandIdentifier.class).toString());

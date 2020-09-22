@@ -6,6 +6,7 @@ import bio.singa.features.identifiers.PDBLigandIdentifier;
 import bio.singa.features.identifiers.PubChemIdentifier;
 import bio.singa.features.identifiers.model.Identifier;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -27,6 +28,7 @@ class UniChemParserTest {
 
     @Test
     @DisplayName("parse unichem - chebi identifier")
+    @Disabled
     void fetchChEBIIdentifier() {
         for (Identifier identifier : identifiers) {
             if (identifier instanceof ChEBIIdentifier) {
@@ -39,6 +41,7 @@ class UniChemParserTest {
 
     @Test
     @DisplayName("parse unichem - pubchem identifier")
+    @Disabled
     void fetchPubChemIdentifier() {
         for (Identifier identifier : identifiers) {
             if (identifier instanceof PubChemIdentifier) {
@@ -51,6 +54,7 @@ class UniChemParserTest {
 
     @Test
     @DisplayName("parse unichem - pdb ligand identifier")
+    @Disabled
     void fetchPDBLigandIdentifier() {
         for (Identifier identifier : identifiers) {
             if (identifier instanceof PDBLigandIdentifier) {

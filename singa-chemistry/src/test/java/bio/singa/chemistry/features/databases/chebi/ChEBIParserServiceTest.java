@@ -29,6 +29,7 @@ class ChEBIParserServiceTest {
     }
 
     @Test
+    @Disabled
     void shouldBeAbleToFetchLogPWithChEBISpecies() {
         SmallMolecule testSpecies = ChEBIParserService.parse("CHEBI:8772");
         // get feature
