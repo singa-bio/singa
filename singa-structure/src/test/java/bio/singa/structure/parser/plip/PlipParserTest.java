@@ -1,15 +1,13 @@
 package bio.singa.structure.parser.plip;
 
+import bio.singa.core.utility.Resources;
 import bio.singa.structure.model.oak.OakStructure;
 import bio.singa.structure.parser.pdb.structures.StructureParser;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,12 +44,7 @@ class PlipParserTest {
 
     @Test
     void shouldFixSymmetricInteractions() {
-        InputStream inputStream = null;
-        try {
-            inputStream = new FileInputStream(Paths.get("/home/leberech/Downloads/PYW_4bge-1-A-1270.xml").toFile());
-        } catch (FileNotFoundException e) {
-            fail("");
-        }
+        InputStream inputStream = Resources.getResourceAsStream("plip/4bge.xml");
         InteractionContainer.checkAddedInteractions = false;
         InteractionContainer interactionContainer = PlipParser.parse("4bge", inputStream);
         Optional<Interaction> secondHBond = interactionContainer.getAllInteractions()
@@ -61,12 +54,7 @@ class PlipParserTest {
                 .findAny();
         assertTrue(secondHBond.isPresent());
 
-        inputStream = null;
-        try {
-            inputStream = new FileInputStream(Paths.get("/home/leberech/Downloads/PYW_4bge-1-A-1270.xml").toFile());
-        } catch (FileNotFoundException e) {
-            fail("");
-        }
+        inputStream = Resources.getResourceAsStream("plip/4bge.xml");
         InteractionContainer.checkAddedInteractions = true;
         interactionContainer = PlipParser.parse("4bge", inputStream);
         secondHBond = interactionContainer.getAllInteractions()
