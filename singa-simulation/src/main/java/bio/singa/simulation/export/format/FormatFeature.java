@@ -61,8 +61,8 @@ public class FormatFeature {
     /**
      * map: key: feature - value: list: evidence
      *
-     * @param reaction
-     * @return
+     * @param reaction The reaction
+     * @return  A mapping where the key references the feature and the values are the corresponding evidences.
      */
     public static Map<String, List<String>> formatRates(Reaction reaction) {
         Map<String, List<String>> rates = new HashMap<>();

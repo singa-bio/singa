@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
  * Implementation of Smallest Set of Smallest Rings (SSSR) identification according to:
  *
  * <pre>
- *     Fan, B. T., Panaye, A., Doucet, J. P., & Barbu, A. (1993).
+ *     Fan, B. T., Panaye, A., Doucet, J. P., and Barbu, A. (1993).
  *     Ring perception. A new algorithm for directly finding the smallest set of smallest rings from a connection table.
  *     Journal of chemical information and computer sciences, 33(5), 657-662.
  * </pre>

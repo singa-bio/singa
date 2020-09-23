@@ -60,7 +60,7 @@ public interface Metric<MetrizableType> {
      *
      * @param list1 The firts list.
      * @param list2 The second list.
-     * @param <SubType>
+     * @param <SubType> The metrizable type.
      * @return A rectangular matrix with pairwise distances.
      */
     default <SubType extends MetrizableType> Matrix calculateDistancesPairwise(List<SubType> list1, List<SubType> list2) {

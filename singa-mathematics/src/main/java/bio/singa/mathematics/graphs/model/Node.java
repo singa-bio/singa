@@ -47,6 +47,7 @@ public interface Node<NodeType extends Node<NodeType, VectorType, IdentifierType
 
     /**
      * Sets the position of the node in 3D space.
+     * @param spatialPosition The new position.
      */
     void setSpatialPosition(Vector3D spatialPosition);
 

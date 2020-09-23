@@ -8,14 +8,14 @@ import bio.singa.simulation.model.simulation.UpdateScheduler;
  * @author cl
  */
 public enum ModuleState {
+
     /**
      * Currently unprocessed module.
      */
     PENDING,
 
     /**
-     * Calculation has completed with numerical error below the given threshold (set by
-     * {@link UpdateScheduler#setRecalculationCutoff(double)}). Updates are not yet applied.
+     * Calculation has completed with numerical error below the given threshold. Updates are not yet applied.
      */
     SUCCEEDED,
 
@@ -26,8 +26,7 @@ public enum ModuleState {
     SUCCEEDED_WITH_PENDING_CHANGES,
 
     /**
-     * The calculation has finished but the numerical error was too large (set by
-     * {@link UpdateScheduler#setRecalculationCutoff(double)}).
+     * The calculation has finished but the numerical error was too large.
      */
     REQUIRING_RECALCULATION,
 

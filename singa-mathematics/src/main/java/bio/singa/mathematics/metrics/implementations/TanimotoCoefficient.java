@@ -8,7 +8,7 @@ import bio.singa.mathematics.vectors.BitVector;
  * Implementation of the Tanimoto coefficient for similarity of {@link BitVector}s. The definition follows the standards
  * defined by ChEMBL.
  *
- * @param <BitVectorType>
+ * @param <BitVectorType> The implementation of the bit vector.
  * @author fk
  * @see <a href="https://www.surechembl.org/knowledgebase/84207-tanimoto-coefficient-and-fingerprint-generation">Definition</a>
  */

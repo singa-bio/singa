@@ -115,7 +115,7 @@ public interface Graph<NodeType extends Node<NodeType, ? extends Vector, Identif
      * Returns all nodes touching the given node (i.e. neighbours regardless of the eventual directionality of the
      * connecting edge). Prefer {@link Node#getNeighbours()} to this method if possible, since this has higher
      * complexity.
-     *
+     * @param node The node.
      * @return The neighbours.
      */
     default List<NodeType> getTouchingNodes(NodeType node) {

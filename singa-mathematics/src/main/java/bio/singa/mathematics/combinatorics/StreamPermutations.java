@@ -48,6 +48,7 @@ public class StreamPermutations {
      * {{a,1}, {a,2}, {a,3}, {a,4}, {b,1}, {b,2}, {b,3}, {b,4}, {c,1}, {c,2}, {c,3}, {c,4}}</pre>
      *
      *
+     * @param <T> The content of the list.
      * @param collections Original list of collections which elements have to be combined.
      * @return Resultant collection of lists with all permutations of original list.
      * @see <a href="https://stackoverflow.com/a/23870892">Stack Overflow Answer</a>

@@ -48,6 +48,8 @@ public interface Polygon extends Polytope<Vector2D> {
      * Returns the intersection and the nodes, which connecting edge was intersected.
      *
      * @param lineSegment The line segment.
+     * @return An intersection fragment containing the point of intersection as well as the start and endpoint of the
+     * edge that was intersected.
      */
     default List<IntersectionFragment> getIntersectionFragments(LineSegment lineSegment) {
         List<IntersectionFragment> intersections = new ArrayList<>();
