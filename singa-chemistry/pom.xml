@@ -7,12 +7,12 @@
     <parent>
         <artifactId>singa-all</artifactId>
         <groupId>bio.singa</groupId>
-        <version>0.6.0</version>
+        <version>0.7.0</version>
         <relativePath>../singa-all/pom.xml</relativePath>
     </parent>
 
     <artifactId>singa-chemistry</artifactId>
-    <version>0.6.0</version>
+    <version>0.7.0</version>
     <packaging>jar</packaging>
     <description>
         The chemistry package of SiNGA handles aspects that range into chemoinformatics, such as parsing and
@@ -34,12 +34,12 @@
         <dependency>
             <groupId>bio.singa</groupId>
             <artifactId>singa-features</artifactId>
-            <version>0.6.0</version>
+            <version>0.7.0</version>
         </dependency>
         <dependency>
             <groupId>bio.singa</groupId>
             <artifactId>singa-mathematics</artifactId>
-            <version>0.6.0</version>
+            <version>0.7.0</version>
         </dependency>
         <dependency>
             <groupId>uk.ac.ebi.beam</groupId>
