@@ -16,7 +16,7 @@ public class OakModel implements Model {
     /**
      * The identifier of this entity.
      */
-    private final Integer identifier;
+    private Integer identifier;
 
     /**
      * The substructures of this substructure.
@@ -39,12 +39,15 @@ public class OakModel implements Model {
         for (OakChain chain : model.chains.values()) {
             chains.put(chain.getChainIdentifier(), chain.getCopy());
         }
-
     }
 
     @Override
     public Integer getModelIdentifier() {
         return identifier;
+    }
+
+    public void setIdentifier(Integer identifier) {
+        this.identifier = identifier;
     }
 
     public Chain getFirstChain() {

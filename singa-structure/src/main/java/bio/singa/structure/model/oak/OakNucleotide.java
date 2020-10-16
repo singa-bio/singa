@@ -13,13 +13,16 @@ public class OakNucleotide extends OakLeafSubstructure<NucleotideFamily> impleme
         super(leafIdentifier, family);
     }
 
-
     public OakNucleotide(LeafIdentifier identifer, NucleotideFamily nucleotideFamily, String threeLetterCode) {
         super(identifer, nucleotideFamily, threeLetterCode);
     }
 
     public OakNucleotide(OakNucleotide oakNucleotide) {
         super(oakNucleotide);
+    }
+
+    public OakNucleotide(OakNucleotide oakNucleotide, LeafIdentifier leafIdentifier) {
+        super(oakNucleotide, leafIdentifier);
     }
 
     @Override

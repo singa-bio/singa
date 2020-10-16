@@ -6,8 +6,11 @@ import bio.singa.structure.model.families.AminoAcidFamily;
 import bio.singa.structure.model.families.LigandFamily;
 import bio.singa.structure.model.families.NucleotideFamily;
 import bio.singa.structure.model.families.StructuralFamily;
+import bio.singa.structure.model.interfaces.Atom;
+import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.parser.pdb.structures.StructureParserOptions;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -28,6 +31,35 @@ public class LeafSubstructureFactory {
             return new OakNucleotide(leafIdentifier, (NucleotideFamily) family);
         }
         return new OakLigand(leafIdentifier, (LigandFamily) family);
+    }
+
+    public static LeafSubstructure<?> copy(LeafIdentifier leafIdentifier, LeafSubstructure<?> originalLeaf) {
+        if (originalLeaf.getFamily() instanceof AminoAcidFamily) {
+            return new OakAminoAcid(((OakAminoAcid) originalLeaf), leafIdentifier);
+        } else if (originalLeaf.getFamily()  instanceof NucleotideFamily) {
+            return new OakNucleotide(((OakNucleotide) originalLeaf), leafIdentifier );
+        }
+        return new OakLigand(((OakLigand) originalLeaf), leafIdentifier);
+    }
+
+    public static OakLigand mergePeptideLigand(List<OakAminoAcid> substructures, String threeLetterCode, int serial) {
+        LeafIdentifier identifier = substructures.iterator().next().getIdentifier();
+        LeafIdentifier newIdentifier = new LeafIdentifier(identifier.getPdbIdentifier(), identifier.getModelIdentifier(), identifier.getChainIdentifier(), serial);
+        OakLigand ligand = new OakLigand(newIdentifier, new LigandFamily(threeLetterCode));
+        for (OakLeafSubstructure<?> leafSubstructure : substructures) {
+            // add all atoms
+            for (Atom atom : leafSubstructure.getAllAtoms()) {
+                ligand.addAtom(((OakAtom) atom));
+            }
+            // add all bonds
+            for (OakBond bond : leafSubstructure.getBonds()) {
+                OakAtom sourceCopy = ((OakAtom) ligand.getAtom(bond.getSource().getAtomIdentifier()).get());
+                OakAtom targetCopy = ((OakAtom) ligand.getAtom(bond.getTarget().getAtomIdentifier()).get());
+                ligand.addBondBetween(sourceCopy, targetCopy, bond.getBondType());
+            }
+        }
+        ligand.setAnnotatedAsHetAtom(true);
+        return ligand;
     }
 
     public static OakNucleotide createNucleotideFromAtoms(LeafIdentifier leafIdentifier, NucleotideFamily nucleotideFamily, Map<String, OakAtom> atoms, StructureParserOptions options) {

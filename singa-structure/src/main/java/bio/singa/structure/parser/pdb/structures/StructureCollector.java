@@ -19,6 +19,8 @@ import java.io.UncheckedIOException;
 import java.nio.file.Paths;
 import java.util.*;
 
+import static bio.singa.features.identifiers.LeafIdentifier.*;
+
 /**
  * The actual processing of pdb files. This class collects all required information form the a list of lines from a pdb
  * file.
@@ -62,15 +64,15 @@ public class StructureCollector {
     /**
      * The currently parsed pdb file.
      */
-    private String currentPDB = LeafIdentifier.DEFAULT_PDB_IDENTIFIER;
+    private String currentPDB = DEFAULT_PDB_IDENTIFIER;
     /**
      * The current model.
      */
-    private int currentModel = LeafIdentifier.DEFAULT_MODEL_IDENTIFIER;
+    private int currentModel = DEFAULT_MODEL_IDENTIFIER;
     /**
      * The current chain.
      */
-    private String currentChain = LeafIdentifier.DEFAULT_CHAIN_IDENTIFIER;
+    private String currentChain = DEFAULT_CHAIN_IDENTIFIER;
     /**
      * The root node of the content tree.
      */
@@ -141,6 +143,9 @@ public class StructureCollector {
         } else {
             if (HeaderToken.RECORD_PATTERN.matcher(firstLine).matches()) {
                 currentPDB = HeaderToken.ID_CODE.extract(firstLine);
+                if (currentPDB.isEmpty()) {
+                    currentPDB = DEFAULT_PDB_IDENTIFIER;
+                }
             }
         }
         getTitle();
@@ -263,6 +268,9 @@ public class StructureCollector {
         logger.debug("Creating structure for {}", contentTree.getIdentifier());
 
         OakStructure structure = new OakStructure();
+        if (contentTree.getIdentifier().isEmpty()) {
+            contentTree.setIdentifier(DEFAULT_PDB_IDENTIFIER);
+        }
         structure.setPdbIdentifier(contentTree.getIdentifier());
         structure.setTitle(titleBuilder.toString());
 
@@ -353,7 +361,7 @@ public class StructureCollector {
         String chain = AtomToken.CHAIN_IDENTIFIER.extract(atomLine);
         int leaf = Integer.parseInt(AtomToken.RESIDUE_SERIAL.extract(atomLine));
         String insertion = AtomToken.RESIDUE_INSERTION.extract(atomLine);
-        char insertionCode = insertion.isEmpty() ? LeafIdentifier.DEFAULT_INSERTION_CODE : insertion.charAt(0);
+        char insertionCode = insertion.isEmpty() ? DEFAULT_INSERTION_CODE : insertion.charAt(0);
         return new UniqueAtomIdentifer(currentPDB, currentModel, chain, leaf, insertionCode, atomSerial);
     }
 

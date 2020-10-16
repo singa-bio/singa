@@ -1,12 +1,14 @@
 package bio.singa.structure.model.families;
 
+import java.util.Objects;
+
 /**
  * @author cl
  */
 public class LigandFamily implements StructuralFamily<LigandFamily> {
 
-    private final String oneLetterCode;
-    private final String threeLetterCode;
+    private String oneLetterCode;
+    private String threeLetterCode;
 
     public LigandFamily(String threeLetterCode) {
         this("?", threeLetterCode);
@@ -22,9 +24,17 @@ public class LigandFamily implements StructuralFamily<LigandFamily> {
         return oneLetterCode;
     }
 
+    public void setOneLetterCode(String oneLetterCode) {
+        this.oneLetterCode = oneLetterCode;
+    }
+
     @Override
     public String getThreeLetterCode() {
         return threeLetterCode;
+    }
+
+    public void setThreeLetterCode(String threeLetterCode) {
+        this.threeLetterCode = threeLetterCode;
     }
 
     @Override
@@ -36,15 +46,14 @@ public class LigandFamily implements StructuralFamily<LigandFamily> {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         LigandFamily that = (LigandFamily) o;
-
-        return threeLetterCode != null ? threeLetterCode.equals(that.threeLetterCode) : that.threeLetterCode == null;
+        return Objects.equals(oneLetterCode, that.oneLetterCode) &&
+                Objects.equals(threeLetterCode, that.threeLetterCode);
     }
 
     @Override
     public int hashCode() {
-        return threeLetterCode != null ? threeLetterCode.hashCode() : 0;
+        return Objects.hash(oneLetterCode, threeLetterCode);
     }
 
     @Override

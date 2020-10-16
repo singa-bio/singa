@@ -157,6 +157,7 @@ public class StructureWriter {
         logger.debug("Renumbering structure consecutively.");
         OakStructure renumberedStructure = new OakStructure();
         renumberedStructure.setPdbIdentifier(structure.getPdbIdentifier());
+        renumberedStructure.setTitle(structure.getTitle());
         int identifier = 1;
         for (Model model : structure.getAllModels()) {
             OakModel renumberedModel = new OakModel(model.getModelIdentifier());
@@ -166,11 +167,13 @@ public class StructureWriter {
                 OakChain oakChain = (OakChain) chain;
                 OakChain renumberedChain = new OakChain(chain.getChainIdentifier());
                 renumberedModel.addChain(renumberedChain);
-                for (LeafSubstructure leafSubstructure : oakChain.getConsecutivePart()) {
-                    OakLeafSubstructure renumberedLeafSubstructure = createLeafSubstructure(leafSubstructure.getIdentifier(), leafSubstructure.getFamily());
+                for (LeafSubstructure<?> leafSubstructure : oakChain.getConsecutivePart()) {
+                    OakLeafSubstructure<?> renumberedLeafSubstructure = createLeafSubstructure(leafSubstructure.getIdentifier(), leafSubstructure.getFamily());
+                    renumberedLeafSubstructure.setAnnotatedAsHetAtom(leafSubstructure.isAnnotatedAsHeteroAtom());
                     renumberedChain.addLeafSubstructure(renumberedLeafSubstructure, true);
                     for (Atom atom : leafSubstructure.getAllAtoms()) {
                         OakAtom renumberedAtom = new OakAtom(identifier, atom.getElement(), atom.getAtomName(), atom.getPosition());
+                        renumberedAtom.setBFactor(atom.getBFactor());
                         logger.trace("Renumbering atom {} to {}.", atom.getAtomIdentifier(), renumberedAtom.getAtomIdentifier());
                         renumberedLeafSubstructure.addAtom(renumberedAtom);
                         identifier++;
@@ -189,6 +192,7 @@ public class StructureWriter {
                     renumberedChain.addLeafSubstructure(renumberedLeafSubstructure);
                     for (Atom atom : leafSubstructure.getAllAtoms()) {
                         OakAtom renumberedAtom = new OakAtom(identifier, atom.getElement(), atom.getAtomName(), atom.getPosition());
+                        renumberedAtom.setBFactor(atom.getBFactor());
                         renumberedLeafSubstructure.addAtom(renumberedAtom);
                         logger.trace("Renumbering atom {} to {}.", atom.getAtomIdentifier(), renumberedAtom.getAtomIdentifier());
                         identifier++;

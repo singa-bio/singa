@@ -181,6 +181,7 @@ public class Structures {
                             renumberingMap.get(originalIdentifier),
                             originalIdentifier.getInsertionCode());
                     OakLeafSubstructure renumberedLeafSubstructure = createLeafSubstructure(renumberedIdentifier, leafSubstructure.getFamily());
+                    renumberedLeafSubstructure.setAnnotatedAsHetAtom(leafSubstructure.isAnnotatedAsHeteroAtom());
                     renumberedChain.addLeafSubstructure(renumberedLeafSubstructure, true);
                     for (Atom atom : leafSubstructure.getAllAtoms()) {
                         OakAtom renumberedAtom = new OakAtom(

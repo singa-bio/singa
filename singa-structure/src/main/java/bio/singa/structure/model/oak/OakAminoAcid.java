@@ -1,8 +1,8 @@
 package bio.singa.structure.model.oak;
 
+import bio.singa.features.identifiers.LeafIdentifier;
 import bio.singa.mathematics.vectors.Vector3D;
 import bio.singa.structure.model.families.AminoAcidFamily;
-import bio.singa.features.identifiers.LeafIdentifier;
 import bio.singa.structure.model.interfaces.AminoAcid;
 import bio.singa.structure.model.interfaces.Atom;
 
@@ -23,6 +23,10 @@ public class OakAminoAcid extends OakLeafSubstructure<AminoAcidFamily> implement
 
     public OakAminoAcid(OakAminoAcid oakAminoAcid) {
         super(oakAminoAcid);
+    }
+
+    public OakAminoAcid(OakAminoAcid oakAminoAcid, LeafIdentifier leafIdentifier) {
+        super(oakAminoAcid, leafIdentifier);
     }
 
     @Override

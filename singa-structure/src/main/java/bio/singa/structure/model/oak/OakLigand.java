@@ -19,6 +19,10 @@ public class OakLigand extends OakLeafSubstructure<LigandFamily> implements Liga
         super(oakLigand);
     }
 
+    public OakLigand(OakLigand oakLigand, LeafIdentifier leafIdentifier) {
+        super(oakLigand, leafIdentifier);
+    }
+
     public String getName() {
         return name;
     }

@@ -74,6 +74,7 @@ public class OakAtom implements Atom {
         atomName = atom.atomName;
         identifier = atom.identifier;
         element = atom.element;
+        bFactor = atom.bFactor;
         position = new Vector3D(atom.position);
         neighbours = new HashSet<>();
     }

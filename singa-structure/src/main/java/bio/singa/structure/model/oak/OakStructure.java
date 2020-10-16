@@ -1,11 +1,10 @@
 package bio.singa.structure.model.oak;
 
-import bio.singa.mathematics.vectors.Vector3D;
 import bio.singa.chemistry.model.elements.ElementProvider;
-import bio.singa.structure.model.families.LigandFamily;
 import bio.singa.features.identifiers.LeafIdentifier;
-import bio.singa.features.identifiers.PDBIdentifier;
 import bio.singa.features.identifiers.UniqueAtomIdentifer;
+import bio.singa.mathematics.vectors.Vector3D;
+import bio.singa.structure.model.families.LigandFamily;
 import bio.singa.structure.model.interfaces.*;
 
 import java.util.*;
@@ -52,11 +51,10 @@ public class OakStructure implements Structure {
     }
 
     public void setPdbIdentifier(String pdbIdentifier) {
-        if (PDBIdentifier.PATTERN.matcher(pdbIdentifier).matches() || pdbIdentifier.equals(LeafIdentifier.DEFAULT_PDB_IDENTIFIER)) {
-            this.pdbIdentifier = pdbIdentifier.toLowerCase();
-        } else {
-            throw new IllegalArgumentException("The pdb identifier must match to the pdb identifier pattern.");
+        if (pdbIdentifier.isEmpty()) {
+            pdbIdentifier = LeafIdentifier.DEFAULT_PDB_IDENTIFIER;
         }
+        this.pdbIdentifier = pdbIdentifier.toLowerCase();
     }
 
     @Override
@@ -199,7 +197,6 @@ public class OakStructure implements Structure {
         }
         return Optional.empty();
     }
-
 
 
     /**
