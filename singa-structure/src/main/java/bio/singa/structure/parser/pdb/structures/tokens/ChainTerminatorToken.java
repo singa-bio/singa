@@ -42,7 +42,7 @@ public enum ChainTerminatorToken implements PDBToken {
         return "TER   " +
                 String.format("%5d", (lastLeafOfChain.getAllAtoms().get(lastLeafOfChain.getAllAtoms().size() - 1).getAtomIdentifier() + 1)) +
                 "      " +
-                lastLeafOfChain.getFamily().getThreeLetterCode().toUpperCase() +
+                RESIDUE_NAME.createTokenString(lastLeafOfChain.getFamily().getThreeLetterCode().toUpperCase()) +
                 " " +
                 lastLeafOfChain.getChainIdentifier() +
                 String.format("%4d", lastLeafOfChain.getSerial()) +
@@ -57,6 +57,18 @@ public enum ChainTerminatorToken implements PDBToken {
     @Override
     public Range<Integer> getColumns() {
         return columns;
+    }
+
+    private String createTokenString(String content) {
+        int totalLength = columns.getUpperBound() - columns.getLowerBound() - content.length();
+        StringBuilder filler = new StringBuilder();
+        for (int i = 0; i < totalLength + 1; i++) {
+            filler.append(" ");
+        }
+        if (justification == Justification.LEFT) {
+            return content + filler;
+        }
+        return filler + content;
     }
 
 }

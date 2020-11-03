@@ -82,6 +82,8 @@ public class StructureCollector {
      */
     private List<String> pdbLines;
 
+    private List<String> linkLines;
+
     /**
      * Creates a new structure collector to extract structural information from pdb lines and reducing information.
      *
@@ -96,6 +98,7 @@ public class StructureCollector {
         hetAtoms = new HashSet<>();
         notInConsecutiveChain = new HashSet<>();
         closedChains = new HashSet<>();
+        linkLines = new ArrayList<>();
     }
 
     /**
@@ -149,6 +152,9 @@ public class StructureCollector {
             }
         }
         getTitle();
+        if(iterator.getReducer().getOptions().enforceConnection()) {
+            getLinks();
+        }
         if (iterator.hasChain()) {
             reduceToChain(iterator.getCurrentChainIdentifier());
             logger.info("Parsing structure {} chain {}", iterator.getCurrentPdbIdentifier(), iterator.getCurrentChainIdentifier());
@@ -190,6 +196,30 @@ public class StructureCollector {
                         // quit parsing title
                         return;
                     }
+                }
+            }
+        }
+    }
+
+    /**
+     * Extract all lines that contain link entries.
+     */
+    private void getLinks() {
+        boolean linksFound = false;
+        for (String currentLine : pdbLines) {
+            // check if title line
+            if (LinkToken.RECORD_PATTERN.matcher(currentLine).matches()) {
+                // if this is the first time such a line occurs, the title was found
+                if (!linksFound) {
+                    linksFound = true;
+                }
+                // append title
+                linkLines.add(currentLine);
+            } else {
+                // if title has been found and a line with another content is found
+                if (linksFound) {
+                    // quit parsing title
+                    return;
                 }
             }
         }
@@ -295,13 +325,28 @@ public class StructureCollector {
             }
             structure.addModel(model);
         }
+        // connect backbone
         if (iterator.getReducer().getOptions().isCreatingEdges()) {
             structure.getAllChains().stream()
                     .map(OakChain.class::cast).forEach(OakChain::connectChainBackbone);
         }
+        // process link entries
+        if (iterator.getReducer().getOptions().enforceConnection()) {
+            annotateLinks(structure);
+        }
         UniqueAtomIdentifer lastAtom = Collections.max(atoms.keySet());
         structure.setLastAddedAtomIdentifier(lastAtom.getAtomSerial());
         return structure;
+    }
+
+    /**
+     * Create and assign links to the structure.
+     * @param structure The structure to be annotated.
+     */
+    private void annotateLinks(OakStructure structure) {
+        for (String linkLine : linkLines) {
+            structure.addLinkEntry(LinkToken.assembleLinkEntry(structure, linkLine));
+        }
     }
 
     /**

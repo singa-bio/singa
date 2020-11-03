@@ -109,7 +109,6 @@ public enum AtomToken implements PDBToken {
         String element = atom.getElement().getSymbol();
 
         // RULES FOR ATOM NAME PADDING: 4 columns in total: 13, 14, 15, 16
-
         // if length 4: nothing to do
         if (name.length() == 4) {
             fullName = name;

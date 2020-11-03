@@ -3,10 +3,7 @@ package bio.singa.structure.parser.pdb.structures;
 
 import bio.singa.core.utility.Resources;
 import bio.singa.structure.model.interfaces.Structure;
-import bio.singa.structure.parser.pdb.structures.tokens.AtomToken;
-import bio.singa.structure.parser.pdb.structures.tokens.ChainTerminatorToken;
-import bio.singa.structure.parser.pdb.structures.tokens.HeaderToken;
-import bio.singa.structure.parser.pdb.structures.tokens.TitleToken;
+import bio.singa.structure.parser.pdb.structures.tokens.*;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -15,6 +12,7 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 
+import static bio.singa.structure.parser.pdb.structures.StructureParserOptions.Setting.ENFORCE_CONNECTIONS;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
@@ -49,6 +47,18 @@ class StructureRepresentationTest {
                 break;
             case "TITLE ":
                 assertLineEquals(StructureCollector.trimEnd(TitleToken.TEXT.extract(expected)), (TitleToken.TEXT.extract(actual)));
+                break;
+            case "LINK  ":
+                assertLineEquals(LinkToken.FIRST_ATOM_NAME.extract(expected), (LinkToken.FIRST_ATOM_NAME.extract(actual)));
+                assertLineEquals(LinkToken.FIRST_ATOM_RESIDUE_NAME.extract(expected), (LinkToken.FIRST_ATOM_RESIDUE_NAME.extract(actual)));
+                assertLineEquals(LinkToken.FIRST_ATOM_CHAIN_IDENTIFIER.extract(expected), (LinkToken.FIRST_ATOM_CHAIN_IDENTIFIER.extract(actual)));
+                assertLineEquals(LinkToken.FIRST_ATOM_RESIDUE_SERIAL.extract(expected), (LinkToken.FIRST_ATOM_RESIDUE_SERIAL.extract(actual)));
+                assertLineEquals(LinkToken.FIRST_ATOM_RESIDUE_INSERTION.extract(expected), (LinkToken.FIRST_ATOM_RESIDUE_INSERTION.extract(actual)));
+                assertLineEquals(LinkToken.SECOND_ATOM_NAME.extract(expected), (LinkToken.SECOND_ATOM_NAME.extract(actual)));
+                assertLineEquals(LinkToken.SECOND_ATOM_RESIDUE_NAME.extract(expected), (LinkToken.SECOND_ATOM_RESIDUE_NAME.extract(actual)));
+                assertLineEquals(LinkToken.SECOND_ATOM_CHAIN_IDENTIFIER.extract(expected), (LinkToken.SECOND_ATOM_CHAIN_IDENTIFIER.extract(actual)));
+                assertLineEquals(LinkToken.SECOND_ATOM_RESIDUE_SERIAL.extract(expected), (LinkToken.SECOND_ATOM_RESIDUE_SERIAL.extract(actual)));
+                assertLineEquals(LinkToken.SECOND_ATOM_RESIDUE_INSERTION.extract(expected), (LinkToken.SECOND_ATOM_RESIDUE_INSERTION.extract(actual)));
                 break;
             case "ATOM  ":
             case "HETATM":
@@ -126,4 +136,17 @@ class StructureRepresentationTest {
         assertPDBLinesEqual(expectedLines, actualLines);
     }
 
+    @Test
+    void shouldParseLinks() throws IOException {
+        String fileLocation = Resources.getResourceAsFileLocation("1c0a_links_test.pdb");
+        List<String> expectedLines = Files.readAllLines(Paths.get(fileLocation));
+        Structure structure = StructureParser.local()
+                .fileLocation(fileLocation)
+                .settings(ENFORCE_CONNECTIONS)
+                .everything()
+                .parse();
+        String pdbRepresentation = StructureRepresentation.composePdbRepresentation(structure);
+        List<String> actualLines = Arrays.asList(pdbRepresentation.split(System.lineSeparator()));
+        assertPDBLinesEqual(expectedLines, actualLines);
+    }
 }

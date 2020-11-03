@@ -281,16 +281,6 @@ class StructureParserTest {
 
     }
 
-    @Test
-    void shouldParsallPdbFiles() {
-        // FIXMEuse correct path in production
-
-//        StructureParser.MultiParser multiParser = StructureParser.local()
-//                .localPDB(localPDB)
-//                .all();
-//        int numberOfQueuedStructures = multiParser.getNumberOfQueuedStructures();
-//        Structure next = multiParser.next();
-    }
 
 
 

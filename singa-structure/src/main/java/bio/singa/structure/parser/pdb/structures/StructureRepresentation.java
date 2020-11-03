@@ -5,16 +5,16 @@ import bio.singa.structure.model.interfaces.AtomContainer;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.interfaces.Model;
 import bio.singa.structure.model.interfaces.Structure;
+import bio.singa.structure.model.oak.LinkEntry;
 import bio.singa.structure.model.oak.OakChain;
 import bio.singa.structure.model.oak.OakModel;
+import bio.singa.structure.model.oak.OakStructure;
 import bio.singa.structure.parser.pdb.structures.tokens.ChainTerminatorToken;
 import bio.singa.structure.parser.pdb.structures.tokens.HeaderToken;
+import bio.singa.structure.parser.pdb.structures.tokens.LinkToken;
 import bio.singa.structure.parser.pdb.structures.tokens.TitleToken;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -60,7 +60,7 @@ public class StructureRepresentation {
     public static String composePdbRepresentation(Structure structure) {
         StringBuilder sb = new StringBuilder();
         // add preamble
-        sb.append(getPreamble(structure.getPdbIdentifier(), structure.getTitle()));
+        sb.append(getPreamble(structure.getPdbIdentifier(), structure.getTitle(), ((OakStructure) structure).getLinkEntries()));
         // get all models
         List<OakModel> allModels = structure.getAllModels().stream()
                 .map(OakModel.class::cast)
@@ -92,7 +92,7 @@ public class StructureRepresentation {
         StringBuilder sb = new StringBuilder();
         LeafSubstructure first = leaves.iterator().next();
         // add preamble
-        sb.append(getPreamble(first.getPdbIdentifier(), ""));
+        sb.append(getPreamble(first.getPdbIdentifier(), "", Collections.emptyList()));
         // if there is only one model
         sb.append(composePdbRepresentationOfNonConsecutiveRecords(leaves));
         // add postamble
@@ -174,7 +174,7 @@ public class StructureRepresentation {
      *
      * @return The title and header line for this structure.
      */
-    private static String getPreamble(String pdbIdentifier, String title) {
+    private static String getPreamble(String pdbIdentifier, String title, List<LinkEntry> linkEntries) {
         StringBuilder sb = new StringBuilder();
         if (pdbIdentifier != null && !pdbIdentifier.equals(LeafIdentifier.DEFAULT_PDB_IDENTIFIER)) {
             sb.append(HeaderToken.assemblePDBLine(pdbIdentifier));
@@ -185,6 +185,9 @@ public class StructureRepresentation {
                 sb.append(titleLine);
                 sb.append(System.lineSeparator());
             }
+        }
+        for (LinkEntry linkEntry : linkEntries) {
+            sb.append(LinkToken.assemblePDBLine(linkEntry));
         }
         return sb.toString();
     }

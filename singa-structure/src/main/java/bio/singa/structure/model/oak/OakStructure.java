@@ -31,8 +31,11 @@ public class OakStructure implements Structure {
 
     private int lastAddedAtomIdentifier;
 
+    private List<LinkEntry> linkEntries;
+
     public OakStructure() {
         models = new TreeMap<>();
+        linkEntries = new ArrayList<>();
     }
 
     public OakStructure(OakStructure structure) {
@@ -231,6 +234,13 @@ public class OakStructure implements Structure {
         }
     }
 
+    public void addLinkEntry(LinkEntry linkEntry) {
+        linkEntries.add(linkEntry);
+    }
+
+    public List<LinkEntry> getLinkEntries() {
+        return linkEntries;
+    }
 
     public int getLastAddedAtomIdentifier() {
         return lastAddedAtomIdentifier;
