@@ -89,10 +89,14 @@ public class StructureRepresentation {
      * @return The string representing the structure in pdb format.
      */
     public static String composePdbRepresentation(List<LeafSubstructure<?>> leaves) {
+        return composePdbRepresentation(leaves, Collections.emptyList());
+    }
+
+    public static String composePdbRepresentation(List<LeafSubstructure<?>> leaves, List<LinkEntry> linkEntries) {
         StringBuilder sb = new StringBuilder();
-        LeafSubstructure first = leaves.iterator().next();
+        LeafSubstructure<?> first = leaves.iterator().next();
         // add preamble
-        sb.append(getPreamble(first.getPdbIdentifier(), "", Collections.emptyList()));
+        sb.append(getPreamble(first.getPdbIdentifier(), "", linkEntries));
         // if there is only one model
         sb.append(composePdbRepresentationOfNonConsecutiveRecords(leaves));
         // add postamble

@@ -64,6 +64,13 @@ public class StructureWriter {
         Files.write(outputPath, StructureRepresentation.composePdbRepresentation(leafSubstructures).getBytes());
     }
 
+    public static void writeLeafSubstructures(List<LeafSubstructure<?>> leafSubstructures, List<LinkEntry> linkEntries, Path outputPath) throws IOException {
+        logger.info("Writing {} leaf substructures to {}.", leafSubstructures.size(), outputPath);
+        Files.createDirectories(outputPath.getParent());
+        //TODO the links could be mapped down to include only relevant leaf substructures
+        Files.write(outputPath, StructureRepresentation.composePdbRepresentation(leafSubstructures, linkEntries).getBytes());
+    }
+
     /**
      * Writes a {@link OakStructure} in PDB format.
      *
