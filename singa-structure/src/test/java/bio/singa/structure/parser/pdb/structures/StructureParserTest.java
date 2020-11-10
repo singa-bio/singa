@@ -268,20 +268,4 @@ class StructureParserTest {
                 .parse();
     }
 
-
-    @Test
-    void shouldParseWithLocalCif() {
-        Structure structure = StructureParser.local()
-                .localCifRepository(localCif)
-                .path(localPdb.getPathForPdbIdentifier("1c0a"))
-                .settings(DISREGARD_CONNECTIONS)
-                .parse();
-
-        System.out.println(structure);
-
-    }
-
-
-
-
 }

@@ -16,6 +16,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.NoSuchElementException;
@@ -64,11 +65,34 @@ public class StructureWriter {
         Files.write(outputPath, StructureRepresentation.composePdbRepresentation(leafSubstructures).getBytes());
     }
 
+    /**
+     * Writes a given list of {@link LeafSubstructure}s in PDB format. Also includes the given list of link entries,
+     * but only if the relevant leaves are included in the list of leaf substructures.
+     *
+     * @param leafSubstructures The list of {@link LeafSubstructure}s to be written.
+     * @param outputPath The output {@link Path}.
+     * @throws IOException If the path cannot be written.
+     */
     public static void writeLeafSubstructures(List<LeafSubstructure<?>> leafSubstructures, List<LinkEntry> linkEntries, Path outputPath) throws IOException {
         logger.info("Writing {} leaf substructures to {}.", leafSubstructures.size(), outputPath);
         Files.createDirectories(outputPath.getParent());
-        //TODO the links could be mapped down to include only relevant leaf substructures
-        Files.write(outputPath, StructureRepresentation.composePdbRepresentation(leafSubstructures, linkEntries).getBytes());
+        List<LinkEntry> reducedLinks = reduceToRelevantLinks(leafSubstructures, linkEntries);
+        Files.write(outputPath, StructureRepresentation.composePdbRepresentation(leafSubstructures, reducedLinks).getBytes());
+    }
+
+    /**
+     * Return only link entries from the list, that are represented in the given leaf substructures.
+     * @param leafSubstructures The relevant leaf substructures.
+     * @param linkEntries The links to be reduced
+     */
+    private static List<LinkEntry> reduceToRelevantLinks(List<LeafSubstructure<?>> leafSubstructures, List<LinkEntry> linkEntries) {
+        ArrayList<LinkEntry> reducedLinkEntries = new ArrayList<>();
+        for (LinkEntry linkEntry : linkEntries) {
+            if (leafSubstructures.contains(linkEntry.getFirstLeafSubstructure()) && leafSubstructures.contains(linkEntry.getSecondLeafSubstructure())) {
+                reducedLinkEntries.add(linkEntry);
+            }
+        }
+        return reducedLinkEntries;
     }
 
     /**
