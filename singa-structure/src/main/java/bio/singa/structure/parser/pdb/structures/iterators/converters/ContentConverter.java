@@ -41,6 +41,4 @@ public interface ContentConverter<ContentType, ConversionType> {
         }
     }
 
-
-
 }

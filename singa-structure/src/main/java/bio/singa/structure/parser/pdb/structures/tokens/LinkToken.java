@@ -109,7 +109,7 @@ public enum LinkToken implements PDBToken {
 
     private static LeafIdentifier getLeafIdentifier(OakStructure oakStructure, String chainIdentifier, int residueSerial, String insertionCodeString) {
         char firstAtomInsertionCode = insertionCodeString.isEmpty() ? LeafIdentifier.DEFAULT_INSERTION_CODE : insertionCodeString.charAt(0);
-        return new LeafIdentifier(oakStructure.getPdbIdentifier(), 1, chainIdentifier, residueSerial, firstAtomInsertionCode);
+        return new LeafIdentifier(oakStructure.getPdbIdentifier(), oakStructure.getFirstModel().getModelIdentifier(), chainIdentifier, residueSerial, firstAtomInsertionCode);
     }
 
     @Override
