@@ -532,6 +532,10 @@ public class StructureCollector {
     private OakLeafSubstructure<?> createLeafWithAdditionalInformation(LeafIdentifier identifier, String leafName, Map<String, OakAtom> atoms) {
         LeafSkeleton leafSkeleton;
         if (!iterator.getSkeletons().containsKey(leafName)) {
+            if (iterator.getReducer().getOptions().isOmittingHydrogen()) {
+                // without hydrogens
+                atoms.values().removeIf(oakAtom -> oakAtom.getElement().getProtonNumber() == 1);
+            }
             LocalCIFRepository localCifRepository = iterator.getReducer().getLocalCIFRepository();
             if (localCifRepository != null) {
                 if (iterator.getReducer().getOptions().enforceConnection()) {

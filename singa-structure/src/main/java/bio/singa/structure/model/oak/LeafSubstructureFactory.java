@@ -207,7 +207,15 @@ public class LeafSubstructureFactory {
                     .forEach(aminoAcid::addAtom);
         } else {
             // all
-            atoms.forEach(aminoAcid::addAtom);
+            if (options.isOmittingHydrogen()) {
+                // without hydrogens
+                atoms.stream()
+                        .filter(atom -> atom.getElement().getProtonNumber() != 1)
+                        .forEach(aminoAcid::addAtom);
+            } else {
+                // all
+                atoms.forEach(aminoAcid::addAtom);
+            }
         }
         return aminoAcid;
     }
