@@ -29,6 +29,7 @@ public class Structures {
 
     }
 
+
     /**
      * Returns the distance matrix of the given {@link LeafSubstructureContainer}.
      *
@@ -229,10 +230,27 @@ public class Structures {
         List<Vector3D> positions2 = atomContainer2.getAllAtoms().stream()
                 .map(Atom::getPosition)
                 .collect(Collectors.toList());
+        return getClosestDistance(positions1, positions2);
+    }
+
+    public static double getClosestDistance(Collection<? extends AtomContainer> containers1, Collection<? extends AtomContainer> containers2) {
+        List<Vector3D> positions1 = containers1.stream().flatMap(atomContainer -> atomContainer.getAllAtoms().stream())
+                .map(Atom::getPosition)
+                .collect(Collectors.toList());
+        List<Vector3D> positions2 = containers2.stream().flatMap(atomContainer -> atomContainer.getAllAtoms().stream())
+                .map(Atom::getPosition)
+                .collect(Collectors.toList());
+        return getClosestDistance(positions1, positions2);
+    }
+
+    private static double getClosestDistance(List<Vector3D> positions1, List<Vector3D> positions2) {
         Matrix distancesPairwise = VectorMetricProvider.EUCLIDEAN_METRIC.calculateDistancesPairwise(positions1, positions2);
-        return Matrices.getPositionOfMinimalElement(distancesPairwise)
-                .map(position -> distancesPairwise.getElements()[position.getFirst()][position.getSecond()])
-                .orElse(Double.NaN);
+        List<Pair<Integer>> minimalDistances = Matrices.getPositionsOfMinimalElement(distancesPairwise);
+        if (minimalDistances.isEmpty()) {
+            return Double.NaN;
+        }
+        Pair<Integer> firstPair = minimalDistances.get(0);
+        return distancesPairwise.getElement(firstPair.getFirst(), firstPair.getSecond());
     }
 
     public static void assignBFactors(Structure structure, Map<UniqueAtomIdentifer, Double> factors) {
