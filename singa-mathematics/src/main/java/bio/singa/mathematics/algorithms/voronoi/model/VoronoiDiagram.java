@@ -269,7 +269,7 @@ public class VoronoiDiagram {
 
         // depending on the direction, find the best side of the
         // bounding box to use to determine a reasonable start point
-        if (Double.isInfinite(fm)) {
+        if (fm == 0.0) {
             // special case: vertical line
             if (fx < leftBorder || fx >= rightBorder) {
                 // doesn't intersect with viewport

@@ -126,10 +126,10 @@ public class VoronoiPlayground extends Application implements Renderer {
         diagram = null;
         points = Vectors2D.generateMultipleRandom2DVectors(50, new Rectangle(getDrawingWidth(), getDrawingHeight()));
 //        points = new ArrayList<>();
-//        points.add(new Vector2D(50, 50));
-//        points.add(new Vector2D(100, 50));
-//        points.add(new Vector2D(150, 50));
-//        points.add(new Vector2D(200, 50));
+        points.add(new Vector2D(50, 50));
+        points.add(new Vector2D(100, 50));
+        points.add(new Vector2D(150, 50));
+        points.add(new Vector2D(120, 50));
         clearCanvas();
         drawPoints();
     }
