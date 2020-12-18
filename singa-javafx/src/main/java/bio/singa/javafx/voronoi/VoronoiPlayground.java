@@ -1,25 +1,24 @@
 package bio.singa.javafx.voronoi;
 
 import bio.singa.javafx.renderer.Renderer;
+import bio.singa.javafx.renderer.graphs.GraphDisplayApplication;
 import bio.singa.mathematics.algorithms.voronoi.VoronoiGenerator;
 import bio.singa.mathematics.algorithms.voronoi.VoronoiRelaxation;
-import bio.singa.mathematics.algorithms.voronoi.model.VoronoiCell;
 import bio.singa.mathematics.algorithms.voronoi.model.VoronoiDiagram;
 import bio.singa.mathematics.geometry.faces.Rectangle;
+import bio.singa.mathematics.graphs.model.Graphs;
 import bio.singa.mathematics.vectors.Vector2D;
+import bio.singa.mathematics.vectors.Vectors2D;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -32,7 +31,9 @@ public class VoronoiPlayground extends Application implements Renderer {
     private List<Vector2D> points;
 
     public static void main(String[] args) {
-        launch();
+        GraphDisplayApplication.graph = Graphs.buildGridGraph(10, 10);
+        Application.launch(VoronoiPlayground.class);
+
     }
 
     @Override
@@ -61,8 +62,6 @@ public class VoronoiPlayground extends Application implements Renderer {
         //        vectors.add( new Vector2D( 148.00687851502775, 42.19159635139591));
 
 
-
-
         // setup root
         BorderPane root = new BorderPane();
 
@@ -70,22 +69,23 @@ public class VoronoiPlayground extends Application implements Renderer {
         canvas = new Canvas(700, 700);
         canvas.setOnMouseClicked(this::handleCanvasClick);
         root.setCenter(canvas);
+        generatePoints(null);
+        generateVoronoi(null);
+//        ToolBar toolBar = new ToolBar();
 
-        // setup button bar
-        HBox buttonBar = new HBox();
-
-        Button pointsButton = new Button("Generate points");
-        pointsButton.setOnAction(this::generatePoints);
-
-        Button voronoiButton = new Button("Generate Voronoi");
-        voronoiButton.setOnAction(this::generateVoronoi);
-
-        Button relaxButton = new Button("Relax sites");
-        relaxButton.setOnAction(this::relaxSites);
-
-        buttonBar.getChildren().addAll(pointsButton, voronoiButton, relaxButton);
-
-        root.setBottom(buttonBar);
+//        Button pointsButton = new Button("Generate points");
+//        pointsButton.setOnAction(this::generatePoints);
+//        toolBar.getItems().add(pointsButton);
+//
+//        Button voronoiButton = new Button("Generate Voronoi");
+//        voronoiButton.setOnAction(this::generateVoronoi);
+//
+//        Button relaxButton = new Button("Relax sites");
+//        relaxButton.setOnAction(this::relaxSites);
+//
+//        buttonBar.getChildren().addAll(pointsButton, voronoiButton, relaxButton);
+//
+//        root.setBottom(toolBar);
 
         // show
         Scene scene = new Scene(root);
@@ -109,24 +109,27 @@ public class VoronoiPlayground extends Application implements Renderer {
     }
 
     private void handleCanvasClick(MouseEvent event) {
-        Vector2D clickPosition = new Vector2D(event.getX(), event.getY());
-        for (VoronoiCell voronoiCell : diagram.getCells()) {
-            if (voronoiCell.containsVector(clickPosition)) {
-                getGraphicsContext().setFill(Color.INDIANRED);
-                fillPolygon(voronoiCell);
-                break;
-            }
+        for (int i = 0; i < 10; i++) {
+            relaxSites(null);
         }
+//        Vector2D clickPosition = new Vector2D(event.getX(), event.getY());
+//        for (VoronoiCell voronoiCell : diagram.getCells()) {
+//            if (voronoiCell.containsVector(clickPosition)) {
+//                getGraphicsContext().setFill(Color.INDIANRED);
+//                fillPolygon(voronoiCell);
+//                break;
+//            }
+//        }
     }
 
     private void generatePoints(ActionEvent event) {
         diagram = null;
-        // points = Vectors.generateMultipleRandom2DVectors(50, new Rectangle(getDrawingWidth(), getDrawingHeight()));
-        points = new ArrayList<>();
-        points.add(new Vector2D(50, 50));
-        points.add(new Vector2D(100, 50));
-        points.add(new Vector2D(150, 50));
-        points.add(new Vector2D(200, 50));
+        points = Vectors2D.generateMultipleRandom2DVectors(50, new Rectangle(getDrawingWidth(), getDrawingHeight()));
+//        points = new ArrayList<>();
+//        points.add(new Vector2D(50, 50));
+//        points.add(new Vector2D(100, 50));
+//        points.add(new Vector2D(150, 50));
+//        points.add(new Vector2D(200, 50));
         clearCanvas();
         drawPoints();
     }
@@ -157,16 +160,16 @@ public class VoronoiPlayground extends Application implements Renderer {
 
     private void drawDiagram() {
         getGraphicsContext().setStroke(Color.TOMATO);
-        getGraphicsContext().setLineWidth(4);
+        getGraphicsContext().setLineWidth(1);
         diagram.getEdges().forEach(edge -> strokeStraight(edge.getStartingPoint(), edge.getEndingPoint()));
-        getGraphicsContext().setLineWidth(6);
+        getGraphicsContext().setLineWidth(1);
         getGraphicsContext().setFill(Color.GREEN);
         diagram.getVertices().forEach(this::fillPoint);
     }
 
     private void drawPoints() {
         getGraphicsContext().setFill(Color.DARKRED);
-        getGraphicsContext().setLineWidth(4);
+        getGraphicsContext().setLineWidth(1);
         points.forEach(this::fillPoint);
     }
 

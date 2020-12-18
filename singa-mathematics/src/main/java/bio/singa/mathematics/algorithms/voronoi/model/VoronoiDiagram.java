@@ -73,8 +73,8 @@ public class VoronoiDiagram {
         this.boundingBox = boundingBox;
         leftBorder = boundingBox.getLeftMostXPosition();
         rightBorder = boundingBox.getRightMostXPosition();
-        bottomBorder = boundingBox.getTopMostYPosition();
-        topBorder = boundingBox.getBottomMostYPosition();
+        bottomBorder = boundingBox.getBottomMostYPosition();
+        topBorder = boundingBox.getTopMostYPosition();
     }
 
     public List<Vector2D> getSites() {
