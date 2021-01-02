@@ -1,6 +1,6 @@
 package bio.singa.mathematics.algorithms.voronoi.model;
 
-import bio.singa.mathematics.geometry.faces.Rectangle;
+import bio.singa.mathematics.geometry.model.Polygon;
 import bio.singa.mathematics.vectors.Vector2D;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,7 +43,7 @@ public class BeachLine {
      *
      * @param boundingBox The bounding box.
      */
-    public BeachLine(Rectangle boundingBox) {
+    public BeachLine(Polygon boundingBox) {
         diagram = new VoronoiDiagram(boundingBox);
         beachline = new BeachSection();
         // top to bottom
@@ -191,7 +191,7 @@ public class BeachLine {
             final double d = 2.0 * (bx * cy - by * cx);
             final double hb = bx * bx + by * by;
             final double hc = cx * cx + cy * cy;
-            Vector2D vertex = diagram.createVertex((cy * hb - by * hc) / d + ax, (bx * hc - cx * hb) / d + ay);
+            Vector2D vertex = diagram.addVertex((cy * hb - by * hc) / d + ax, (bx * hc - cx * hb) / d + ay);
 
             // one transition disappear
             rArc.getEdge().setStartingPoint(lSite, rSite, vertex);
@@ -217,7 +217,7 @@ public class BeachLine {
         CircleEvent circle = beachSection.getCircleEvent();
         final double x = circle.getEventCoordinate().getX();
         final double y = circle.getYCenter();
-        Vector2D vertex = diagram.createVertex(x, y);
+        Vector2D vertex = diagram.addVertex(x, y);
         BeachSection previous = beachSection.getPrevious();
         BeachSection next = beachSection.getNext();
 
@@ -357,7 +357,7 @@ public class BeachLine {
         }
         SiteEvent site = beachSection.getSite();
         double result = site.getY() == directrix ? site.getX() : Double.POSITIVE_INFINITY;
-        logger.trace("No beach section to the right.", result);
+        logger.trace("No beach section to the right.");
         return result;
     }
 

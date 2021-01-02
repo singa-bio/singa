@@ -1,9 +1,6 @@
 package bio.singa.javafx.renderer;
 
-import bio.singa.mathematics.geometry.edges.Line;
-import bio.singa.mathematics.geometry.edges.LineSegment;
-import bio.singa.mathematics.geometry.edges.Parabola;
-import bio.singa.mathematics.geometry.edges.SimpleLineSegment;
+import bio.singa.mathematics.geometry.edges.*;
 import bio.singa.mathematics.geometry.faces.Circle;
 import bio.singa.mathematics.geometry.faces.Rectangle;
 import bio.singa.mathematics.geometry.faces.VertexPolygon;
@@ -130,6 +127,10 @@ public interface Renderer {
         strokeStraight(lineSegment.getStartingPoint(), lineSegment.getEndingPoint());
     }
 
+    default void strokeRay(LineRay lineRay) {
+        strokeStraight(lineRay.getOrigin(), lineRay.getDirection().multiply(10000));
+    }
+
     /**
      * Draws the given line segment.
      * <ul>
@@ -172,8 +173,10 @@ public interface Renderer {
             start = new Vector2D(line.getXIntercept(), minY);
             end = new Vector2D(line.getXIntercept(), maxY);
         } else {
-            start = line.getIntersectWithLine(new Line(0, 0));
-            end = line.getIntersectWithLine(new Line(maxY, 0));
+            start = line.getIntersectionWith(new Line(0, 0))
+                    .orElseThrow(() -> new IllegalStateException("Unable to determine intersections."));;
+            end = line.getIntersectionWith(new Line(maxY, 0))
+                    .orElseThrow(() -> new IllegalStateException("Unable to determine intersections."));;
         }
         strokeStraight(start, end);
     }

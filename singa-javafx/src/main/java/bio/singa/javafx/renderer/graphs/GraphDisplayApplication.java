@@ -142,7 +142,7 @@ public class GraphDisplayApplication extends Application {
         });
         // voronoi drawing
         CheckMenuItem voronoiItem = new CheckMenuItem("Render Voronoi");
-        voronoiItem.setSelected(true);
+        voronoiItem.setSelected(false);
         voronoiItem.selectedProperty().addListener((ov, old_val, new_val) -> {
             renderer.renderVoronoi(new_val);
             renderer.render(graph);

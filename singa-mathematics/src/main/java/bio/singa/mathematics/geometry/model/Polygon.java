@@ -1,5 +1,7 @@
 package bio.singa.mathematics.geometry.model;
 
+import bio.singa.mathematics.geometry.edges.Line;
+import bio.singa.mathematics.geometry.edges.LineRay;
 import bio.singa.mathematics.geometry.edges.LineSegment;
 import bio.singa.mathematics.geometry.edges.SimpleLineSegment;
 import bio.singa.mathematics.geometry.faces.Circle;
@@ -28,6 +30,84 @@ public interface Polygon extends Polytope<Vector2D> {
         return segments;
     }
 
+    default List<Vector2D> traverseVertices(Vector2D firstVector, Vector2D lastVector) {
+        List<Vector2D> vertices = getVertices();
+        List<Vector2D> sortedVertices = new ArrayList<>();
+//        sortedVertices.add(firstVector);
+        int indexFirst = vertices.indexOf(firstVector);
+        int indexLast = vertices.indexOf(lastVector);
+        if ((indexFirst +1) % vertices.size() == (indexLast +1) % vertices.size() + 1) {
+            ListIterator<Vector2D> iterator = vertices.listIterator(indexFirst);
+            while (sortedVertices.size() != vertices.size()) {
+                if (!iterator.hasNext()) {
+                    iterator = vertices.listIterator();
+                }
+                Vector2D vector = iterator.next();
+                sortedVertices.add(vector);
+                if (vector.equals(lastVector)) {
+                    break;
+                }
+            }
+        } else {
+            ListIterator<Vector2D> iterator = vertices.listIterator((indexFirst + 1) % vertices.size());
+            while (sortedVertices.size() != vertices.size()) {
+                if (!iterator.hasPrevious()) {
+                    iterator = vertices.listIterator(vertices.size());
+                }
+                Vector2D vector = iterator.previous();
+                sortedVertices.add(vector);
+                if (vector.equals(lastVector)) {
+                    break;
+                }
+            }
+        }
+        return sortedVertices;
+    }
+
+    default List<Vector2D> getVertices(Vector2D startingWith) {
+        List<Vector2D> vertices = getVertices();
+        if (!vertices.contains(startingWith)) {
+            return Collections.emptyList();
+        }
+        List<Vector2D> sortedVertices = new ArrayList<>();
+        sortedVertices.add(startingWith);
+        int index = vertices.indexOf(startingWith);
+        Iterator<Vector2D> iterator = vertices.listIterator(index + 1 % vertices.size());
+        while (iterator.hasNext()) {
+            Vector2D vector = iterator.next();
+            if (vector.equals(startingWith)) {
+                break;
+            }
+            sortedVertices.add(vector);
+            if (!iterator.hasNext()) {
+                iterator = vertices.listIterator();
+            }
+        }
+        return sortedVertices;
+    }
+
+    default List<LineSegment> getEdges(LineSegment startingWith) {
+        List<LineSegment> edges = getEdges();
+        if (!edges.contains(startingWith)) {
+            return Collections.emptyList();
+        }
+        List<LineSegment> sortedEdges = new ArrayList<>();
+        sortedEdges.add(startingWith);
+        int index = edges.indexOf(startingWith);
+        Iterator<LineSegment> iterator = edges.listIterator(index + 1 % edges.size());
+        while (sortedEdges.size() != edges.size()) {
+            if (!iterator.hasNext()) {
+                iterator = edges.listIterator();
+            }
+            LineSegment lineSegment = iterator.next();
+            if (lineSegment.equals(startingWith)) {
+                break;
+            }
+            sortedEdges.add(lineSegment);
+        }
+        return sortedEdges;
+    }
+
     default Set<Vector2D> getIntersections(Circle circle) {
         Set<Vector2D> intersections = new HashSet<>();
         for (LineSegment lineSegment : getEdges()) {
@@ -42,6 +122,35 @@ public interface Polygon extends Polytope<Vector2D> {
             polygonSegment.getIntersectionWith(lineSegment).ifPresent(intersections::add);
         }
         return intersections;
+    }
+
+    default Set<Vector2D> getIntersections(Line line) {
+        Set<Vector2D> intersections = new HashSet<>();
+        for (LineSegment polygonSegment : getEdges()) {
+            Optional<Vector2D> intersection = ((SimpleLineSegment) polygonSegment).getIntersectionWith(line);
+            intersection.ifPresent(intersections::add);
+        }
+        return intersections;
+    }
+
+    default Set<Vector2D> getIntersections(LineRay ray) {
+        Set<Vector2D> intersections = new HashSet<>();
+        for (LineSegment polygonSegment : getEdges()) {
+            Optional<Vector2D> intersection = ((SimpleLineSegment) polygonSegment).getIntersectionWith(ray);
+            intersection.ifPresent(intersections::add);
+        }
+        return intersections;
+    }
+
+    /**
+     * Returns the line segment which the given point is on.
+     *
+     * @return
+     */
+    default Optional<LineSegment> getEdgeWith(Vector2D point) {
+        return getEdges().stream()
+                .filter(lineSegment -> lineSegment.isAboutOnLine(point))
+                .findAny();
     }
 
     /**

@@ -1,7 +1,12 @@
 package bio.singa.mathematics.algorithms.voronoi.model;
 
+import bio.singa.core.utility.Pair;
 import bio.singa.mathematics.algorithms.voronoi.VoronoiGenerator;
-import bio.singa.mathematics.geometry.faces.Rectangle;
+import bio.singa.mathematics.geometry.edges.Line;
+import bio.singa.mathematics.geometry.edges.LineRay;
+import bio.singa.mathematics.geometry.edges.LineSegment;
+import bio.singa.mathematics.geometry.edges.SimpleLineSegment;
+import bio.singa.mathematics.geometry.model.Polygon;
 import bio.singa.mathematics.vectors.Vector2D;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,9 +14,11 @@ import org.slf4j.LoggerFactory;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static bio.singa.mathematics.metrics.model.VectorMetricProvider.EUCLIDEAN_METRIC;
+
 /**
  * Contains all information about the voronoi diagram created by {@link VoronoiGenerator#generateVoronoiDiagram(Collection,
- * Rectangle)}. Vertices are created for every point two edges meet and for intersections with the bounding box. Edges
+ * Polygon)}. Vertices are created for every point two edges meet and for intersections with the bounding box. Edges
  * are splitting cells that are associated to each of the processed vectors.
  */
 public class VoronoiDiagram {
@@ -20,27 +27,22 @@ public class VoronoiDiagram {
      * The logger.
      */
     private static final Logger logger = LoggerFactory.getLogger(VoronoiDiagram.class);
-
+    /**
+     * The bounding box.
+     */
+    private final Polygon boundingBox;
     /**
      * The cells mapped by the identifier of the processed site.
      */
     private Map<Integer, VoronoiCell> cells;
-
     /**
      * The edges splitting cells.
      */
     private List<VoronoiEdge> edges;
-
     /**
      * All intersections of edges and bounding box.
      */
     private List<Vector2D> vertices;
-
-    /**
-     * The bounding box.
-     */
-    private final Rectangle boundingBox;
-
     /**
      * Left border of the bounding box
      */
@@ -66,15 +68,49 @@ public class VoronoiDiagram {
      *
      * @param boundingBox The bounding box surrounding the voronoi diagram.
      */
-    VoronoiDiagram(Rectangle boundingBox) {
+    VoronoiDiagram(Polygon boundingBox) {
         cells = new HashMap<>();
         edges = new ArrayList<>();
         vertices = new ArrayList<>();
+//        Rectangle minimalBoundingBox = Polygons.getMinimalBoundingBox(boundingBox);
         this.boundingBox = boundingBox;
-        leftBorder = boundingBox.getLeftMostXPosition();
-        rightBorder = boundingBox.getRightMostXPosition();
-        bottomBorder = boundingBox.getBottomMostYPosition();
-        topBorder = boundingBox.getTopMostYPosition();
+//        leftBorder = minimalBoundingBox.getLeftMostXPosition();
+//        rightBorder = minimalBoundingBox.getRightMostXPosition();
+//        bottomBorder = minimalBoundingBox.getBottomMostYPosition();
+//        topBorder = minimalBoundingBox.getTopMostYPosition();
+    }
+
+    /**
+     * Returns true if a is equal to b withing range of epsilon.
+     *
+     * @param a The first value.
+     * @param b The second value.
+     * @return true if a is equal to b withing range of epsilon.
+     */
+    private static boolean equalWithEpsilon(double a, double b) {
+        return Math.abs(a - b) < 1e-9;
+    }
+
+    /**
+     * Returns true if a is greater than b withing range of epsilon.
+     *
+     * @param a The first value.
+     * @param b The second value.
+     * @return true if a is greater than b withing range of epsilon.
+     */
+    private static boolean greaterThanWithEpsilon(double a, double b) {
+        return a - b > 1e-9;
+    }
+
+    /**
+     * Returns true if a is less than b withing range of epsilon.
+     *
+     * @param a The first value.
+     * @param b The second value.
+     * @return true if a is less than b withing range of epsilon.
+     */
+    private static boolean lessThanWithEpsilon(double a, double b) {
+        return b - a > 1e-9;
     }
 
     public List<Vector2D> getSites() {
@@ -156,8 +192,8 @@ public class VoronoiDiagram {
      * @param y The y coordinate.
      * @return The vertex.
      */
-    Vector2D createVertex(double x, double y) {
-        return createVertex(new Vector2D(x, y));
+    Vector2D addVertex(double x, double y) {
+        return addVertex(new Vector2D(x, y));
     }
 
     /**
@@ -166,14 +202,13 @@ public class VoronoiDiagram {
      * @param vertex The vertex.
      * @return The vertex.
      */
-    Vector2D createVertex(Vector2D vertex) {
+    Vector2D addVertex(Vector2D vertex) {
         if (vertices.contains(vertex)) {
             return vertex;
         }
         vertices.add(vertex);
         return vertex;
     }
-
 
     /**
      * Creates a new cell, adds it to the diagram and returns it.
@@ -182,7 +217,7 @@ public class VoronoiDiagram {
      * @param site The site.
      * @return The cell.
      */
-    public VoronoiCell createCell(int siteIdentifier, SiteEvent site) {
+    public VoronoiCell addCell(int siteIdentifier, SiteEvent site) {
         site.setIdentifier(siteIdentifier);
         VoronoiCell cell = new VoronoiCell(site);
         cells.put(siteIdentifier, cell);
@@ -198,7 +233,7 @@ public class VoronoiDiagram {
         return cells.values();
     }
 
-    public Rectangle getBoundingBox() {
+    public Polygon getBoundingBox() {
         return boundingBox;
     }
 
@@ -215,8 +250,7 @@ public class VoronoiDiagram {
             // edge is removed if:
             //   it is wholly outside the bounding box
             //   it is looking more like a point than a line
-            if (!connectEdge(iEdge, edge) ||
-                    !clipEdge(edge) ||
+            if (!connectEdge(edge) ||
                     (Math.abs(edge.getStartingPoint().getX() - edge.getEndingPoint().getX()) < 1e-9 && Math.abs(edge.getStartingPoint().getY() - edge.getEndingPoint().getY()) < 1e-9)) {
                 logger.trace(" Removing edge {}, starting at {}, ending at {}", iEdge, edge.getStartingPoint(), edge.getEndingPoint());
                 edge.setStartingPoint(null);
@@ -231,254 +265,181 @@ public class VoronoiDiagram {
     /**
      * Connects the edge if it has no associated ending point.
      *
-     * @param iEdge The identifier of the edge.
      * @param edge The edge.
      * @return True if the edge was connected, false if nothing could be done.
      */
-    private boolean connectEdge(int iEdge, VoronoiEdge edge) {
+    private boolean connectEdge(VoronoiEdge edge) {
         // skip if end point already connected
-        Vector2D vb = edge.getEndingPoint();
-        if (vb != null) {
-            return true;
+        Vector2D startingPoint = edge.getStartingPoint();
+        Vector2D endingPoint = edge.getEndingPoint();
+
+        // [null, null]
+        // both start and end are not set
+        if (startingPoint == null && endingPoint == null) {
+            Vector2D leftSite = edge.getLeftSite().getSite();
+            Vector2D rightSite = edge.getRightSite().getSite();
+
+            SimpleLineSegment lineSegment = new SimpleLineSegment(leftSite, rightSite);
+            Line perpendicularBisector = lineSegment.getPerpendicularBisector();
+
+            Set<Vector2D> intersections = boundingBox.getIntersections(perpendicularBisector);
+
+            if (intersections.size() == 2) {
+                Iterator<Vector2D> iterator = intersections.iterator();
+                Vector2D first = addVertex(iterator.next());
+                Vector2D second = addVertex(iterator.next());
+                edge.setStartingPoint(first);
+                edge.setEndingPoint(second);
+                // mark cells to be closed
+                markCellsOpen(edge);
+                return true;
+            }
+
+            // line is beyond repair
+            return false;
         }
 
-        Vector2D va = edge.getStartingPoint();
-        SiteEvent lSite = edge.getLeftSite();
-        SiteEvent rSite = edge.getRightSite();
-        double lx = lSite.getX();
-        double ly = lSite.getY();
-        double rx = rSite.getX();
-        double ry = rSite.getY();
-        double fx = (lx + rx) / 2;
-        double fy = (ly + ry) / 2;
+        // [start, end]
+        // both start and end are set
+        if (endingPoint != null) {
+
+            // check if any point is inside
+            boolean startIsInside = boundingBox.containsVector(startingPoint);
+            boolean endIsInside = boundingBox.containsVector(endingPoint);
+            // get intersections with the line segemnt representing the edge
+            LineSegment lineSegment = new SimpleLineSegment(startingPoint, endingPoint);
+            Set<Vector2D> intersections = boundingBox.getIntersections(lineSegment);
+
+            // #intersections == 0
+            // no intersections and both points outside, drop edge
+            if (intersections.size() < 1 && !startIsInside && !endIsInside) {
+                return false;
+            }
+
+            // #intersections == 1
+            // determine which side is inside the polygon and modify the other
+            if (intersections.size() == 1) {
+                Vector2D updatedVertex = addVertex(intersections.iterator().next());
+                if (startIsInside) {
+                    edge.setEndingPoint(updatedVertex);
+                }
+                if (endIsInside) {
+                    edge.setStartingPoint(updatedVertex);
+                }
+                // mark cells to be closed
+                markCellsOpen(edge);
+                return true;
+            }
+
+            // #intersections > 1
+            // might be the case if there are complex polygons or start and end are placed outside of the bounding box
+            if (intersections.size() > 1) {
+                System.out.println("+");
+                // determine closest points
+                List<Vector2D> intersectionList = new ArrayList<>(intersections);
+                Map.Entry<Vector2D, Double> startClosest = EUCLIDEAN_METRIC.calculateClosestDistance(intersectionList, startingPoint);
+                Vector2D updatedStart = addVertex(startClosest.getKey());
+                edge.setStartingPoint(updatedStart);
+                Map.Entry<Vector2D, Double> endClosest = EUCLIDEAN_METRIC.calculateClosestDistance(intersectionList, endingPoint);
+                Vector2D updatedEnd = addVertex(endClosest.getKey());
+                edge.setStartingPoint(updatedEnd);
+                // mark cells to be closed
+                markCellsOpen(edge);
+                return true;
+            }
+
+            // edge is totally contained in the bounding box
+            return true;
+
+        }
+
+        // calculate new ending point
+        SiteEvent leftSite = edge.getLeftSite();
+        SiteEvent rightSite = edge.getRightSite();
 
         // if we reach here, this means cells which use this edge will need
         // to be closed, whether because the edge was removed, or because it
         // was connected to the bounding box.
-        cells.get(lSite.getIdentifier()).setClosed(false);
-        cells.get(rSite.getIdentifier()).setClosed(false);
+        markCellsOpen(edge);
 
-        // get the line equation of the bisector if line is not vertical
-        double fm = 0.0;
-        double fb = 0.0;
-
-        if (ry != ly) {
-            fm = (lx - rx) / (ry - ly);
-            fb = fy - fm * fx;
+        // if the end point is null and starting point is not in the box
+        if (!boundingBox.containsVector(startingPoint)) {
+            return false;
         }
 
-        // depending on the direction, find the best side of the
-        // bounding box to use to determine a reasonable start point
-        if (fm == 0.0) {
-            // special case: vertical line
-            if (fx < leftBorder || fx >= rightBorder) {
-                // doesn't intersect with viewport
-                return false;
-            }
-            if (lx > rx) {
-                // downward
-                if (va == null || va.getY() < topBorder) {
-                    va = createVertex(fx, topBorder);
-                } else if (va.getY() >= bottomBorder) {
-                    return false;
-                }
-                vb = createVertex(fx, bottomBorder);
-            } else {
-                // upward
-                if (va == null || va.getY() > bottomBorder) {
-                    va = createVertex(fx, bottomBorder);
-                } else if (va.getY() < topBorder) {
-                    return false;
-                }
-                vb = createVertex(fx, topBorder);
-            }
-        } else if (fm < -1 || fm > 1) {
-            // closer to vertical than horizontal, connect start point to the
-            // top or bottom side of the bounding box
-            if (lx > rx) {
-                // downward
-                if (va == null || va.getY() < topBorder) {
-                    va = createVertex((topBorder - fb) / fm, topBorder);
-                } else if (va.getY() >= bottomBorder) {
-                    return false;
-                }
-                vb = createVertex((bottomBorder - fb) / fm, bottomBorder);
-            } else {
-                // upward
-                if (va == null || va.getY() > bottomBorder) {
-                    va = createVertex((bottomBorder - fb) / fm, bottomBorder);
-                } else if (va.getY() < topBorder) {
-                    return false;
-                }
-                vb = createVertex((topBorder - fb) / fm, topBorder);
-            }
+        // calculate midpoint between the two adjacent sites
+        Vector2D midpoint = leftSite.getSite().getMidpointTo(rightSite.getSite());
+        // ray one direction
+        Vector2D firstIntersection = determineIntersectionWithBoundingBox(midpoint, startingPoint)
+                .orElseThrow(() -> new IllegalStateException("Unable to determine intersection"));
+        // ray other direction
+        Vector2D secondIntersection = determineIntersectionWithBoundingBox(startingPoint, midpoint)
+                .orElseThrow(() -> new IllegalStateException("Unable to determine intersection"));
+
+        // use the shortest intersection as end point
+        if (isOnTheLeft(leftSite.getSite(), startingPoint, firstIntersection)) {
+            endingPoint = addVertex(firstIntersection);
         } else {
-            // closer to horizontal than vertical, connect start point to the
-            // left or right side of the bounding box
-            if (ly < ry) {
-                // rightward
-                if (va == null || va.getX() < leftBorder) {
-                    va = createVertex(leftBorder, fm * leftBorder + fb);
-                } else if (va.getX() >= rightBorder) {
-                    return false;
-                }
-                vb = createVertex(rightBorder, fm * rightBorder + fb);
-            } else {
-                // leftward
-                if (va == null || va.getX() > rightBorder) {
-                    va = createVertex(rightBorder, fm * rightBorder + fb);
-                } else if (va.getX() < leftBorder) {
-                    return false;
-                }
-                vb = createVertex(leftBorder, fm * leftBorder + fb);
-            }
+            endingPoint = addVertex(secondIntersection);
         }
-        // set points
-        edge.setStartingPoint(va);
-        edge.setEndingPoint(vb);
-        logger.trace("Connected edge {} to {} and {}.", iEdge, va, vb);
+
+        // set point
+        edge.setEndingPoint(endingPoint);
+        logger.trace("Connected dangling edge starting at {} to {}.", startingPoint, endingPoint);
         return true;
     }
 
     /**
-     * Clips the edge if it sticks out of the bounding box.
+     * Mark both cells adjacent to an edge to be closed later.
      *
-     * @param edge The Edge.
-     * @return True if the edge was clipped, false if nothing was done.
+     * @param edge The edge with adjacent cells.
      */
-    private boolean clipEdge(VoronoiEdge edge) {
+    private void markCellsOpen(VoronoiEdge edge) {
+        SiteEvent leftSite = edge.getLeftSite();
+        SiteEvent rightSite = edge.getRightSite();
+        cells.get(leftSite.getIdentifier()).setClosed(false);
+        cells.get(rightSite.getIdentifier()).setClosed(false);
+    }
 
-        double ax = edge.getStartingPoint().getX();
-        double ay = edge.getStartingPoint().getY();
-        double bx = edge.getEndingPoint().getX();
-        double by = edge.getEndingPoint().getY();
+    /**
+     * Determines, which side of a line a point is on. If d &lt; 0 then the point lies on one side of the line,
+     * and if d &gt; 0 then it lies on the other side. If d = 0 then the point lies exactly on the line.
+     *
+     * @param point The point in question.
+     * @param start Starting point of the line.
+     * @param end Another point on the line.
+     * @return The resulting value.
+     * @see <a href="https://math.stackexchange.com/a/274728">Stack exchange post</a>
+     */
+    private double determineSide(Vector2D point, Vector2D start, Vector2D end) {
+        // TODO maybe move to general class
+        // (x−x1)(y2−y1)−(y−y1)(x2−x1)
+        return (point.getX() - start.getX()) * (end.getY() - start.getY()) - (point.getY() - start.getY()) * (end.getX() - start.getX());
+    }
 
-        double t0 = 0.0;
-        double t1 = 1.0;
+    private boolean isOnTheLeft(Vector2D point, Vector2D start, Vector2D end) {
+        return determineSide(point, start, end) > 0;
+    }
 
-        double dx = bx - ax;
-        double dy = by - ay;
-
-        // left
-        double q = ax - leftBorder;
-        if (dx == 0.0 && q < 0) {
-            return false;
+    private Optional<Vector2D> determineIntersectionWithBoundingBox(Vector2D startingPoint, Vector2D midpoint) {
+        LineRay lineRay = new LineRay(midpoint, startingPoint);
+        Set<Vector2D> intersections = boundingBox.getIntersections(lineRay);
+        // FIXME in complex polygons there might be more than 1 intersection
+        if (intersections.size() == 1) {
+            return Optional.of(intersections.iterator().next());
+        } else {
+            return Optional.empty();
         }
-        double r = -q / dx;
-        if (dx < 0) {
-            if (r < t0) {
-                return false;
-            }
-            if (r < t1) {
-                t1 = r;
-            }
-        } else if (dx > 0) {
-            if (r > t1) {
-                return false;
-            }
-            if (r > t0) {
-                t0 = r;
-            }
-        }
-
-        // right
-        q = rightBorder - ax;
-        if (dx == 0 && q < 0) {
-            return false;
-        }
-        r = q / dx;
-        if (dx < 0) {
-            if (r > t1) {
-                return false;
-            }
-            if (r > t0) {
-                t0 = r;
-            }
-        } else if (dx > 0) {
-            if (r < t0) {
-                return false;
-            }
-            if (r < t1) {
-                t1 = r;
-            }
-        }
-
-        // top
-        q = ay - topBorder;
-        if (dy == 0 && q < 0) {
-            return false;
-        }
-        r = -q / dy;
-        if (dy < 0) {
-            if (r < t0) {
-                return false;
-            }
-            if (r < t1) {
-                t1 = r;
-            }
-        } else if (dy > 0) {
-            if (r > t1) {
-                return false;
-            }
-            if (r > t0) {
-                t0 = r;
-            }
-        }
-
-        // bottom
-        q = bottomBorder - ay;
-        if (dy == 0 && q < 0) {
-            return false;
-        }
-        r = q / dy;
-        if (dy < 0) {
-            if (r > t1) {
-                return false;
-            }
-            if (r > t0) {
-                t0 = r;
-            }
-        } else if (dy > 0) {
-            if (r < t0) {
-                return false;
-            }
-            if (r < t1) {
-                t1 = r;
-            }
-        }
-
-        // if we reach this point, Voronoi edge is within bbox
-
-        // we need to create a new vertex rather
-        // than modifying the existing one, since the existing
-        // one is likely shared with at least another edge
-        if (t0 > 0) {
-            edge.setStartingPoint(createVertex(ax + t0 * dx, ay + t0 * dy));
-        }
-
-        if (t1 < 1) {
-            edge.setEndingPoint(createVertex(ax + t1 * dx, ay + t1 * dy));
-        }
-
-        // va and/or vb were clipped, thus we will need to close
-        // cells which use this edge.
-        if (t0 > 0 || t1 < 1) {
-            cells.get(edge.getLeftSite().getIdentifier()).setClosed(false);
-            cells.get(edge.getRightSite().getIdentifier()).setClosed(false);
-        }
-
-        return true;
     }
 
     /**
      * Closes all cells that have not been closed until now.
      */
     public void closeCells() {
-        boolean lastBorderSegment;
+
         for (VoronoiCell cell : cells.values()) {
-            // prune, order halfedges counterclockwise, then add missing ones
+            // prune, order half edges counterclockwise, then add missing ones
             // required to close cells
-            // cell.prepareHalfEdges();
             if (cell.prepareHalfEdges() == 0) {
                 continue;
             }
@@ -489,145 +450,102 @@ public class VoronoiDiagram {
             // an 'unclosed' point will be the end point of a halfedge which
             // does not match the start point of the following halfedge
             List<VoronoiHalfEdge> halfEdges = cell.getHalfEdges();
-            int nHalfedges = halfEdges.size();
 
-            int iLeft = 0;
-            while (iLeft < nHalfedges) {
-                Vector2D va = halfEdges.get(iLeft).getEndPoint();
-                Vector2D vz = halfEdges.get((iLeft + 1) % nHalfedges).getStartPoint();
-                // if end point is not equal to start point, we need to add the missing
-                // halfedge(s) up to vz
-                if (Math.abs(va.getX() - vz.getX()) >= 1e-9 || Math.abs(va.getY() - vz.getY()) >= 1e-9) {
+            // prepare a copy for the final check
 
-                    // walk downward along left side
-                    if (equalWithEpsilon(va.getX(), leftBorder) && lessThanWithEpsilon(va.getY(), bottomBorder)) {
-                        lastBorderSegment = equalWithEpsilon(vz.getX(), leftBorder);
-                        Vector2D vb = createVertex(leftBorder, lastBorderSegment ? vz.getY() : bottomBorder);
-                        VoronoiEdge edge = createBorderEdge(cell.getSite(), va, vb);
-                        iLeft++;
-                        halfEdges.add(iLeft, new VoronoiHalfEdge(edge, cell.getSite(), null));
-                        nHalfedges++;
-                        if (lastBorderSegment) {
-                            break;
-                        }
-                        va = vb;
+
+
+            // find open sections
+            List<Pair<Vector2D>> danglingStubs = cell.determineDanglingStubs();
+            // no open sections
+            if (danglingStubs.isEmpty()) {
+                continue;
+            }
+
+            if (danglingStubs.size() == 1) {
+                Pair<Vector2D> stubPair = danglingStubs.get(0);
+                Vector2D firstDanglingStub = stubPair.getFirst();
+                Vector2D secondDanglingStub = stubPair.getSecond();
+
+                // check which line segments the relevant points lie on
+                List<LineSegment> boundingBoxEdges = boundingBox.getEdges();
+                LineSegment firstSegment = getCorrespondingSegment(firstDanglingStub, boundingBoxEdges);
+                LineSegment secondSegment = getCorrespondingSegment(secondDanglingStub, boundingBoxEdges);
+
+                SiteEvent site = cell.getSite();
+                if (firstSegment.equals(secondSegment)) {
+                    // trivial case
+                    // stubs on same segment, just add the line between both points
+                    VoronoiEdge edge = createBorderEdge(site, firstDanglingStub, secondDanglingStub);
+                    halfEdges.add(new VoronoiHalfEdge(edge, site, null));
+                } else {
+                    // stubs on different segments, traverse path to the other one
+                    // get initial direction by checking which edge keeps the point on the left side
+                    // by contract, the right side of border edges should be empty
+                    Vector2D siteVector = site.getSite();
+                    Vector2D firstVertex;
+                    Vector2D lastVertex;
+                    // determine in which direction to extend the cell
+                    // midpoint of the segment should be closer to to the cell's site
+                    double startingDistance = getMidpointDistance(siteVector, firstDanglingStub, firstSegment.getStartingPoint());
+                    double endingDistance = getMidpointDistance(siteVector, firstDanglingStub, firstSegment.getEndingPoint());
+                    if (startingDistance < endingDistance) {
+                        firstVertex = firstSegment.getStartingPoint();
+                        lastVertex = firstSegment.getEndingPoint();
+                    } else {
+                        firstVertex = firstSegment.getEndingPoint();
+                        lastVertex = firstSegment.getStartingPoint();
                     }
-
-                    // walk rightward along bottom side
-                    if (equalWithEpsilon(va.getY(), bottomBorder) && lessThanWithEpsilon(va.getX(), rightBorder)) {
-                        lastBorderSegment = equalWithEpsilon(vz.getY(), bottomBorder);
-                        Vector2D vb = createVertex(lastBorderSegment ? vz.getX() : rightBorder, bottomBorder);
-                        VoronoiEdge edge = createBorderEdge(cell.getSite(), va, vb);
-                        iLeft++;
-                        halfEdges.add(iLeft, new VoronoiHalfEdge(edge, cell.getSite(), null));
-                        nHalfedges++;
-                        if (lastBorderSegment) {
-                            break;
+                    // add initial line segment
+                    addVertex(firstVertex);
+                    VoronoiEdge initialEdge = createBorderEdge(site, firstDanglingStub, firstVertex);
+                    halfEdges.add(new VoronoiHalfEdge(initialEdge, site, null));
+                    // then, traverse vertices in the given order
+                    List<Vector2D> traverseVertices = boundingBox.traverseVertices(firstVertex, lastVertex);
+                    Vector2D previousVertex = null;
+                    for (Vector2D currentVertex : traverseVertices) {
+                        if (previousVertex != null) {
+                            // and add line segment by line segment
+                            SimpleLineSegment currentSegment = new SimpleLineSegment(previousVertex, currentVertex);
+                            if (currentSegment.isCongruent(secondSegment)) {
+                                // target segment reached
+                                addVertex(previousVertex);
+                                VoronoiEdge edge = createBorderEdge(site, previousVertex, secondDanglingStub);
+                                halfEdges.add(new VoronoiHalfEdge(edge, site, null));
+                                break;
+                            }
+                            addVertex(previousVertex);
+                            VoronoiEdge edge = createBorderEdge(site, previousVertex, currentVertex);
+                            halfEdges.add(new VoronoiHalfEdge(edge, site, null));
                         }
-                        va = vb;
-                    }
-
-                    // walk upward along right side
-                    if (equalWithEpsilon(va.getX(), rightBorder) && greaterThanWithEpsilon(va.getY(), topBorder)) {
-                        lastBorderSegment = equalWithEpsilon(vz.getX(), rightBorder);
-                        Vector2D vb = createVertex(rightBorder, lastBorderSegment ? vz.getY() : topBorder);
-                        VoronoiEdge edge = createBorderEdge(cell.getSite(), va, vb);
-                        iLeft++;
-                        halfEdges.add(iLeft, new VoronoiHalfEdge(edge, cell.getSite(), null));
-                        nHalfedges++;
-                        if (lastBorderSegment) {
-                            break;
-                        }
-                        va = vb;
-                    }
-
-                    // walk leftward along top side
-                    if (equalWithEpsilon(va.getY(), topBorder) && greaterThanWithEpsilon(va.getX(), leftBorder)) {
-                        lastBorderSegment = equalWithEpsilon(vz.getY(), topBorder);
-                        Vector2D vb = createVertex(lastBorderSegment ? vz.getX() : leftBorder, topBorder);
-                        VoronoiEdge edge = createBorderEdge(cell.getSite(), va, vb);
-                        iLeft++;
-                        halfEdges.add(iLeft, new VoronoiHalfEdge(edge, cell.getSite(), null));
-                        nHalfedges++;
-                        if (lastBorderSegment) {
-                            break;
-                        }
-                        va = vb;
-
-                        // walk downward along left side
-                        lastBorderSegment = equalWithEpsilon(vz.getX(), leftBorder);
-                        vb = createVertex(leftBorder, lastBorderSegment ? vz.getY() : bottomBorder);
-                        edge = createBorderEdge(cell.getSite(), va, vb);
-                        iLeft++;
-                        halfEdges.add(iLeft, new VoronoiHalfEdge(edge, cell.getSite(), null));
-                        nHalfedges++;
-                        if (lastBorderSegment) {
-                            break;
-                        }
-                        va = vb;
-
-                        // walk rightward along bottom side
-                        lastBorderSegment = equalWithEpsilon(vz.getY(), bottomBorder);
-                        vb = createVertex(lastBorderSegment ? vz.getX() : rightBorder, bottomBorder);
-                        edge = createBorderEdge(cell.getSite(), va, vb);
-                        iLeft++;
-                        halfEdges.add(iLeft, new VoronoiHalfEdge(edge, cell.getSite(), null));
-                        nHalfedges++;
-                        if (lastBorderSegment) {
-                            break;
-                        }
-                        va = vb;
-
-                        // walk upward along right side
-                        lastBorderSegment = equalWithEpsilon(vz.getX(), rightBorder);
-                        vb = createVertex(rightBorder, lastBorderSegment ? vz.getY() : topBorder);
-                        edge = createBorderEdge(cell.getSite(), va, vb);
-                        iLeft++;
-                        halfEdges.add(iLeft, new VoronoiHalfEdge(edge, cell.getSite(), null));
-                        nHalfedges++;
-                        if (lastBorderSegment) {
-                            break;
-                        }
+                        previousVertex = currentVertex;
                     }
 
                 }
-                iLeft++;
+            }
+
+            if (danglingStubs.size() > 1) {
+
+                // TODO implement
+                // close boundary see:
+                //  points.add(new Vector2D(100.0, 200.0));
+                //  points.add(new Vector2D(150.0, 200.0));
+                //  points.add(new Vector2D(200.0, 200.0));
+                System.out.println("more than one stub");
             }
             cell.setClosed(true);
         }
     }
 
-    /**
-     * Returns true if a is equal to b withing range of epsilon.
-     *
-     * @param a The first value.
-     * @param b The second value.
-     * @return true if a is equal to b withing range of epsilon.
-     */
-    private static boolean equalWithEpsilon(double a, double b) {
-        return Math.abs(a - b) < 1e-9;
+    public LineSegment getCorrespondingSegment(Vector2D firstDanglingStub, List<LineSegment> boundingBoxEdges) {
+        return boundingBoxEdges.stream()
+                .filter(lineSegment -> lineSegment.isAboutOnLine(firstDanglingStub))
+                .findAny()
+                .orElseThrow(() -> new IllegalStateException("unable to get polygon segment"));
     }
 
-    /**
-     * Returns true if a is greater than b withing range of epsilon.
-     *
-     * @param a The first value.
-     * @param b The second value.
-     * @return true if a is greater than b withing range of epsilon.
-     */
-    private static boolean greaterThanWithEpsilon(double a, double b) {
-        return a - b > 1e-9;
-    }
-
-    /**
-     * Returns true if a is less than b withing range of epsilon.
-     *
-     * @param a The first value.
-     * @param b The second value.
-     * @return true if a is less than b withing range of epsilon.
-     */
-    private static boolean lessThanWithEpsilon(double a, double b) {
-        return b - a > 1e-9;
+    private double getMidpointDistance(Vector2D site, Vector2D start, Vector2D end) {
+        return new SimpleLineSegment(start, end).distanceTo(site);
     }
 
 }

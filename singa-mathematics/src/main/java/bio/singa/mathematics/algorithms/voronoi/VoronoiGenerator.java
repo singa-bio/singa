@@ -1,7 +1,7 @@
 package bio.singa.mathematics.algorithms.voronoi;
 
 import bio.singa.mathematics.algorithms.voronoi.model.*;
-import bio.singa.mathematics.geometry.faces.Rectangle;
+import bio.singa.mathematics.geometry.model.Polygon;
 import bio.singa.mathematics.graphs.model.Node;
 import bio.singa.mathematics.vectors.Vector2D;
 import org.slf4j.Logger;
@@ -49,14 +49,14 @@ public class VoronoiGenerator {
      * @param boundingBox The bounding box.
      * @return The Voronoi diagram.
      */
-    public static VoronoiDiagram generateVoronoiDiagram(Collection<Vector2D> sites, Rectangle boundingBox) {
+    public static VoronoiDiagram generateVoronoiDiagram(Collection<Vector2D> sites, Polygon boundingBox) {
         VoronoiGenerator voronoi = new VoronoiGenerator(sites, boundingBox);
         voronoi.generateDiagram();
         return voronoi.beachLine.getDiagram();
     }
 
 
-    public static <IdentifierType, NodeType extends Node<NodeType, Vector2D, IdentifierType>> VoronoiDiagram generateVoronoiDiagram(Map<Integer, NodeType> nodeMap, Rectangle boundingBox) {
+    public static <IdentifierType, NodeType extends Node<NodeType, Vector2D, IdentifierType>> VoronoiDiagram generateVoronoiDiagram(Map<Integer, NodeType> nodeMap, Polygon boundingBox) {
         VoronoiGenerator voronoi = new VoronoiGenerator(nodeMap, boundingBox);
         voronoi.generateDiagram();
         return voronoi.beachLine.getDiagram();
@@ -68,7 +68,7 @@ public class VoronoiGenerator {
      * @param sites The sites.
      * @param boundingBox The bounding box.
      */
-    private VoronoiGenerator(Collection<Vector2D> sites, Rectangle boundingBox) {
+    private VoronoiGenerator(Collection<Vector2D> sites, Polygon boundingBox) {
         // initialize beach line with bounding box
         beachLine = new BeachLine(boundingBox);
         // sort the original vectors from top to bottom
@@ -80,7 +80,7 @@ public class VoronoiGenerator {
         logger.trace("Sorted sites in queue: {}", siteEvents);
     }
 
-    private <IdentifierType, NodeType extends Node<NodeType, Vector2D, IdentifierType>> VoronoiGenerator(Map<Integer, NodeType> nodeMap, Rectangle boundingBox) {
+    private <IdentifierType, NodeType extends Node<NodeType, Vector2D, IdentifierType>> VoronoiGenerator(Map<Integer, NodeType> nodeMap, Polygon boundingBox) {
         // initialize beach line with bounding box
         beachLine = new BeachLine(boundingBox);
         // sort the original vectors from top to bottom
@@ -113,10 +113,10 @@ public class VoronoiGenerator {
                     logger.trace("Processing site event: {}", siteEvent);
                     // first create cell for new site
                     if (siteEvent.getIdentifier() == -1) {
-                        beachLine.getDiagram().createCell(siteIdentifier, siteEvent);
+                        beachLine.getDiagram().addCell(siteIdentifier, siteEvent);
                         siteIdentifier++;
                     } else {
-                        beachLine.getDiagram().createCell(siteEvent.getIdentifier(), siteEvent);
+                        beachLine.getDiagram().addCell(siteEvent.getIdentifier(), siteEvent);
                     }
                     // then create a beach section for that site
                     beachLine.addBeachSection(siteEvent);

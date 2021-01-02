@@ -58,6 +58,38 @@ public class Polygons {
     }
 
     /**
+     * Returns the minimal bounding box that contains all vertices.
+     *
+     * @param polygon The contained polygon.
+     * @return The containing bounding box.
+     */
+    public static Rectangle getMinimalBoundingBox(Polygon polygon) {
+        double xMin = Double.MAX_VALUE;
+        double yMin = Double.MAX_VALUE;
+        double xMax = -Double.MAX_VALUE;
+        double yMax = -Double.MAX_VALUE;
+        // look for minimal and maximal x and y
+        for (Vector2D vertex : polygon.getVertices()) {
+            double currentX = vertex.getX();
+            double currentY = vertex.getY();
+            if (currentX < xMin) {
+                xMin = currentX;
+            }
+            if (currentY < yMin) {
+                yMin = currentY;
+            }
+            if (currentX > xMax) {
+                xMax = currentX;
+            }
+            if (currentY > yMax) {
+                yMax = currentY;
+            }
+        }
+        return new Rectangle(new Vector2D(xMin, yMin), new Vector2D(xMax, yMax));
+    }
+
+
+    /**
      * Returns a map of all touching line segments. The key is the pair of line segments that touch and the value is the
      * actual line segment that both lines share. The first element of the key pair is the line segment from the first
      * polygon and vice versa.

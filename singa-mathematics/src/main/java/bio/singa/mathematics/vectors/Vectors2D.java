@@ -2,7 +2,11 @@ package bio.singa.mathematics.vectors;
 
 import bio.singa.mathematics.geometry.edges.LineSegment;
 import bio.singa.mathematics.geometry.edges.SimpleLineSegment;
+import bio.singa.mathematics.geometry.faces.Polygons;
 import bio.singa.mathematics.geometry.faces.Rectangle;
+import bio.singa.mathematics.geometry.model.Polygon;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
@@ -13,6 +17,11 @@ import static bio.singa.mathematics.metrics.model.VectorMetricProvider.EUCLIDEAN
  * @author cl
  */
 public class Vectors2D {
+
+    /**
+     * The logger.
+     */
+    private static final Logger logger = LoggerFactory.getLogger(Vectors2D.class);
 
     /**
      * Calculates the the angle between two vectors, where the sign of the angle indicates a clockwise (-) or
@@ -28,12 +37,32 @@ public class Vectors2D {
 
 
     public static List<Vector2D> generateMultipleRandom2DVectors(int numberOfVectors, Rectangle rectangle) {
-        ArrayList<Vector2D> vectors = new ArrayList<>(numberOfVectors);
+        List<Vector2D> vectors = new ArrayList<>(numberOfVectors);
         for (int i = 0; i < numberOfVectors; i++) {
             vectors.add(generateRandom2DVector(rectangle));
         }
         return vectors;
     }
+
+    public static List<Vector2D> generateMultipleRandom2DVectors(int numberOfVectors, Polygon polygon) {
+        Rectangle boundingBox = Polygons.getMinimalBoundingBox(polygon);
+        List<Vector2D> vectors = new ArrayList<>(numberOfVectors);
+        int maximalTries = numberOfVectors * 100;
+        int generatedVectors = 0;
+        while (vectors.size() < numberOfVectors && generatedVectors < maximalTries) {
+            Vector2D vector = generateRandom2DVector(boundingBox);
+            if (polygon.containsVector(vector)) {
+                vectors.add(vector);
+            }
+            generatedVectors++;
+        }
+        if (maximalTries <= generatedVectors) {
+            logger.error("Maximal number of tries exceeded while generating random vectors in a polygon. Returned empty list.");
+            return Collections.emptyList();
+        }
+        return vectors;
+    }
+
 
     /**
      * Generates a random Vector2D that is contained in the given {@link Rectangle}. The random values is inclusive the

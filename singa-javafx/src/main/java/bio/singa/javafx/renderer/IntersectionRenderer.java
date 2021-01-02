@@ -1,10 +1,13 @@
 package bio.singa.javafx.renderer;
 
-import bio.singa.mathematics.geometry.edges.LineSegment;
+import bio.singa.mathematics.geometry.edges.LineRay;
 import bio.singa.mathematics.geometry.edges.SimpleLineSegment;
 import bio.singa.mathematics.geometry.faces.Circle;
 import bio.singa.mathematics.geometry.faces.Circles;
+import bio.singa.mathematics.geometry.faces.Rectangle;
+import bio.singa.mathematics.geometry.model.Polygon;
 import bio.singa.mathematics.vectors.Vector2D;
+import bio.singa.mathematics.vectors.Vectors2D;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -15,13 +18,16 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
+import java.util.Set;
+
 /**
  * @author cl
  */
 public class IntersectionRenderer extends Application implements Renderer {
 
     private Canvas canvas;
-    private LineSegment ls;
+    private SimpleLineSegment ls;
+    private LineRay ray;
 
     public static void main(String[] args) {
         launch();
@@ -39,8 +45,20 @@ public class IntersectionRenderer extends Application implements Renderer {
         root.setCenter(canvas);
 
         // total height of box
-        ls = new SimpleLineSegment(new Vector2D(70, 50), new Vector2D(190, 230));
-        strokeLineSegment(ls);
+//        ls = new SimpleLineSegment(new Vector2D(70, 50), new Vector2D(190, 230));
+//        strokeLineSegment(ls);
+
+        getGraphicsContext().setStroke(Color.GREEN);
+        ray = new LineRay(new Vector2D(80, 80), Vectors2D.generateStandardGaussian2DVector());
+        strokeRay(ray);
+        getGraphicsContext().setStroke(Color.RED);
+        Polygon poly = new Rectangle(new Vector2D(100, 100), new Vector2D(200, 200));
+        strokePolygon(poly);
+        getGraphicsContext().setFill(Color.BLUE);
+        Set<Vector2D> intersections = poly.getIntersections(ray);
+        for (Vector2D intersection : intersections) {
+            fillPoint(intersection);
+        }
 
         // show
         Scene scene = new Scene(root);

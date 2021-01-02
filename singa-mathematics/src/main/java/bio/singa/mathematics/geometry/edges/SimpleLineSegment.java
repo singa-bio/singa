@@ -4,6 +4,7 @@ import bio.singa.mathematics.metrics.model.VectorMetricProvider;
 import bio.singa.mathematics.vectors.Vector2D;
 
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * A line segment is a part of a line that is bounded by two distinct points and
@@ -124,6 +125,49 @@ public class SimpleLineSegment extends Line implements LineSegment {
         }
     }
 
+    public Optional<Vector2D> getIntersectionWith(Line otherLine) {
+        Line thisLine = new Line(getStartingPoint(), getEndingPoint());
+        Optional<Vector2D> optionalIntersection = thisLine.getIntersectionWith(otherLine);
+        if (optionalIntersection.isPresent()) {
+            Vector2D intersection = optionalIntersection.get();
+            if (isAboutOnLine(intersection)) {
+                return optionalIntersection;
+            }
+            return Optional.empty();
+        }
+        return optionalIntersection;
+    }
+
+    public Optional<Vector2D> getIntersectionWith(LineRay ray) {
+
+        Vector2D point1 = getStartingPoint();
+        Vector2D point2 = getEndingPoint();
+
+        Vector2D rayOrigin = ray.getOrigin();
+        Vector2D rayDirection = ray.getDirection();
+
+        Vector2D v1 = rayOrigin.subtract(point1);
+        Vector2D v2 = point2.subtract(point1);
+        Vector2D v3 = new Vector2D(-rayDirection.getY(), rayDirection.getX());
+
+        double dot = v2.dotProduct(v3);
+        if (Math.abs(dot) < 1e-6) {
+            return Optional.empty();
+        }
+
+        double t1 = v2.crossProduct(v1) / dot;
+        double t2 = v1.dotProduct(v3) / dot;
+
+        if (t1 >= 0.0 && (t2 >= 0.0 && t2 <= 1.0)) {
+            // t1 is distance from origin to the intersection
+            double x = ray.getOrigin().getX() + ray.getDirection().getX() * t1;
+            double y = ray.getOrigin().getY() + ray.getDirection().getY() * t1;
+            return Optional.of(new Vector2D(x,y));
+        }
+
+        return Optional.empty();
+    }
+
     /**
      * Returns a new LineSegment parallel to this one, separated by the given
      * ({@link VectorMetricProvider#EUCLIDEAN_METRIC Euclidean}-)distance.
@@ -143,8 +187,13 @@ public class SimpleLineSegment extends Line implements LineSegment {
             Line parallel = getParallel(distance);
             Line perpendicularStart = new Line(startingPoint, parallel.getPerpendicularSlope());
             Line perpendicularEnd = new Line(endingPoint, parallel.getPerpendicularSlope());
-            return new SimpleLineSegment(parallel.getIntersectWithLine(perpendicularStart),
-                    parallel.getIntersectWithLine(perpendicularEnd));
+
+            Vector2D intersectionWithStart = parallel.getIntersectionWith(perpendicularStart)
+                    .orElseThrow(() -> new IllegalStateException("Unable to determine intersections."));
+            Vector2D intersectionWithEnd = parallel.getIntersectionWith(perpendicularEnd)
+                    .orElseThrow(() -> new IllegalStateException("Unable to determine intersections."));
+            return new SimpleLineSegment(intersectionWithStart,
+                    intersectionWithEnd);
         }
     }
 
@@ -166,6 +215,9 @@ public class SimpleLineSegment extends Line implements LineSegment {
     public Line getPerpendicularBisector() {
         Vector2D midAB = getStartingPoint().getMidpointTo(getEndingPoint());
         double slope = getPerpendicularSlope();
+        if (Double.isInfinite(slope)) {
+            return new Line(midAB, slope);
+        }
         double yIntercept = midAB.getY() - slope * midAB.getX();
         return new Line(midAB, new Vector2D(0, yIntercept));
     }

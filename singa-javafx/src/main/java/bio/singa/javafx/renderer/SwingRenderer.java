@@ -169,8 +169,10 @@ public interface SwingRenderer {
             start = new Vector2D(line.getXIntercept(), minY);
             end = new Vector2D(line.getXIntercept(), maxY);
         } else {
-            start = line.getIntersectWithLine(new Line(0, 0));
-            end = line.getIntersectWithLine(new Line(maxY, 0));
+            start = line.getIntersectionWith(new Line(0, 0))
+                    .orElseThrow(() -> new IllegalStateException("Unable to determine intersections."));;
+            end = line.getIntersectionWith(new Line(maxY, 0))
+                    .orElseThrow(() -> new IllegalStateException("Unable to determine intersections."));;
         }
         strokeStraight(start, end);
     }

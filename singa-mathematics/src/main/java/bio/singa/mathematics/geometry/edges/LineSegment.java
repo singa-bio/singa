@@ -9,9 +9,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
-import static bio.singa.mathematics.geometry.faces.Polygons.INSIDE;
-import static bio.singa.mathematics.geometry.faces.Polygons.ON_LINE;
-import static bio.singa.mathematics.geometry.faces.Polygons.OUTSIDE;
+import static bio.singa.mathematics.geometry.faces.Polygons.*;
 
 /**
  * @author cl
@@ -26,18 +24,18 @@ public interface LineSegment {
     Vector2D getStartingPoint();
 
     /**
-     * Returns the ending point.
-     *
-     * @return The ending point.
-     */
-    Vector2D getEndingPoint();
-
-    /**
      * Sets the point where the line starts.
      *
      * @param startingPoint The point where the line starts.
      */
     void setStartingPoint(Vector2D startingPoint);
+
+    /**
+     * Returns the ending point.
+     *
+     * @return The ending point.
+     */
+    Vector2D getEndingPoint();
 
     /**
      * Sets the point where the line ends.
@@ -57,6 +55,30 @@ public interface LineSegment {
                 && Math.max(getStartingPoint().getY(), getEndingPoint().getY()) >= vector.getY();
     }
 
+    default boolean isAboutOnLine(Vector2D vector) {
+        double crossproduct = (vector.getY() - getStartingPoint().getY()) * (getEndingPoint().getX() - getStartingPoint().getX())
+                - (vector.getX() - getStartingPoint().getX()) * (getEndingPoint().getY() - getStartingPoint().getY());
+
+        if (Math.abs(crossproduct) > 1e-9) {
+            return false;
+        }
+
+        double dotproduct = (vector.getX() - getStartingPoint().getX()) * (getEndingPoint().getX() - getStartingPoint().getX())
+                + (vector.getY() - getStartingPoint().getY()) * (getEndingPoint().getY() - getStartingPoint().getY());
+
+        if (dotproduct < 0) {
+            return false;
+        }
+
+        double squaredlengthba = (getEndingPoint().getX() - getStartingPoint().getX()) * (getEndingPoint().getX() - getStartingPoint().getX())
+                + (getEndingPoint().getY() - getStartingPoint().getY()) * (getEndingPoint().getY() - getStartingPoint().getY());
+        if (dotproduct > squaredlengthba) {
+            return false;
+        }
+
+        return true;
+    }
+
     default boolean isHorizontal() {
         return getStartingPoint().getX() == getEndingPoint().getX();
     }
@@ -66,14 +88,13 @@ public interface LineSegment {
     }
 
     default boolean isCongruentTo(LineSegment otherSegment) {
-            return (getStartingPoint().equals(otherSegment.getStartingPoint()) && getEndingPoint().equals(otherSegment.getEndingPoint())) ||
-                    (getStartingPoint().equals(otherSegment.getEndingPoint()) && getEndingPoint().equals(otherSegment.getStartingPoint()));
+        return (getStartingPoint().equals(otherSegment.getStartingPoint()) && getEndingPoint().equals(otherSegment.getEndingPoint())) ||
+                (getStartingPoint().equals(otherSegment.getEndingPoint()) && getEndingPoint().equals(otherSegment.getStartingPoint()));
     }
 
     default Vector2D getUnitVector() {
         return getEndingPoint().subtract(getStartingPoint()).normalize();
     }
-
 
 
     default Set<Vector2D> getIntersectionWith(Circle circle) {
@@ -212,6 +233,11 @@ public interface LineSegment {
             return OUTSIDE;
         }
         return INSIDE;
+    }
+
+    default boolean isCongruent(LineSegment lineSegment) {
+        return (lineSegment.getStartingPoint().equals(getStartingPoint()) && lineSegment.getEndingPoint().equals(getEndingPoint())) ||
+                (lineSegment.getStartingPoint().equals(getEndingPoint()) && lineSegment.getEndingPoint().equals(getStartingPoint()));
     }
 
 }

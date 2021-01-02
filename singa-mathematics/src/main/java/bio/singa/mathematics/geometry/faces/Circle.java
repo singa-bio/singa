@@ -34,7 +34,8 @@ public class Circle {
         SimpleLineSegment acLine = new SimpleLineSegment(firstPoint, thirdPoint);
         Line acBisect = acLine.getPerpendicularBisector();
 
-        midpoint = abBisect.getIntersectWithLine(acBisect);
+        midpoint = abBisect.getIntersectionWith(acBisect)
+                .orElseThrow(() -> new IllegalStateException("Unable to determine intersections."));;
 
         radius = midpoint.distanceTo(firstPoint);
 

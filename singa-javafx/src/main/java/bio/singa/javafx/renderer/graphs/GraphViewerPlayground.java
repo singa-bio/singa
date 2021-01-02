@@ -49,7 +49,7 @@ public class GraphViewerPlayground {
         List<GenericNode<LeafSubstructure<?>>> firstShell = NeighbourhoodExtractor.extractShell(graph, referenceNode, 1);
         List<GenericNode<LeafSubstructure<?>>> secondShell = NeighbourhoodExtractor.extractShell(graph, referenceNode, 2);
         List<GenericNode<LeafSubstructure<?>>> thirdShell = NeighbourhoodExtractor.extractShell(graph, referenceNode, 3);
-        String originalSmiles = "C1:C1C1:C1";
+        String originalSmiles = "CC(=O)OC1=CC=CC=C1C(=O)O";
         MoleculeGraph moleculeGraph = SmilesParser.parse(originalSmiles);
 
         GenericGraph<Integer> testGraph = new GenericGraph<>();
@@ -69,7 +69,7 @@ public class GraphViewerPlayground {
 
 
 
-        GraphDisplayApplication.graph = testGraph;
+        GraphDisplayApplication.graph = moleculeGraph;
         GraphRenderer renderer = new GraphRenderer();
         GraphRenderOptions<?> objectGraphRenderOptions = new GraphRenderOptions<>();
         objectGraphRenderOptions.setDisplayText(true);

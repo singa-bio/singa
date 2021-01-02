@@ -188,6 +188,10 @@ public class Vector2D extends RegularVector {
         return getX() * vector.getX() + getY() * vector.getY();
     }
 
+    public double crossProduct(Vector2D vector) {
+        return getX() * vector.getY() - getY() * vector.getX();
+    }
+
     /**
      * Returns the angle between this vector and the given vector, in relation to the origin (0,0) in radians.
      *

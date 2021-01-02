@@ -1,7 +1,7 @@
 package bio.singa.mathematics.algorithms.voronoi.model;
 
+import bio.singa.core.utility.Pair;
 import bio.singa.mathematics.geometry.edges.LineSegment;
-import bio.singa.mathematics.geometry.faces.Rectangle;
 import bio.singa.mathematics.geometry.model.Polygon;
 import bio.singa.mathematics.vectors.Vector2D;
 
@@ -79,37 +79,6 @@ public class VoronoiCell implements Polygon {
     }
 
     /**
-     * Returns the minimal bounding box that contains all sites.
-     *
-     * @return The minimal bounding box that contains all sites.
-     */
-    public Rectangle getMinimalBoundingBox() {
-        double xMin = Double.MAX_VALUE;
-        double yMin = Double.MAX_VALUE;
-        double xMax = -Double.MAX_VALUE;
-        double yMax = -Double.MAX_VALUE;
-        // look for minimal and maximal x and y
-        for (VoronoiHalfEdge halfEdge : halfEdges) {
-            Vector2D startPoint = halfEdge.getStartPoint();
-            double currentX = startPoint.getX();
-            double currentY = startPoint.getY();
-            if (currentX < xMin) {
-                xMin = currentX;
-            }
-            if (currentY < yMin) {
-                yMin = currentY;
-            }
-            if (currentX > xMax) {
-                xMax = currentX;
-            }
-            if (currentY > yMax) {
-                yMax = currentY;
-            }
-        }
-        return new Rectangle(new Vector2D(xMin, yMax - yMin), new Vector2D(xMax - xMin, yMin));
-    }
-
-    /**
      * Returns the original site of this cell.
      *
      * @return The original site of this cell.
@@ -125,6 +94,20 @@ public class VoronoiCell implements Polygon {
      */
     public List<VoronoiHalfEdge> getHalfEdges() {
         return halfEdges;
+    }
+
+    public List<Pair<Vector2D>> determineDanglingStubs() {
+        List<Pair<Vector2D>> stubs = new ArrayList<>();
+        Vector2D firstDanglingStub;
+        Vector2D secondDanglingStub;
+        for (int i = 0; i < halfEdges.size(); i++) {
+            firstDanglingStub = halfEdges.get(i).getEndPoint();
+            secondDanglingStub = halfEdges.get((i + 1) % halfEdges.size()).getStartPoint();
+            if (Math.abs(firstDanglingStub.getX() - secondDanglingStub.getX()) >= 1e-9 || Math.abs(firstDanglingStub.getY() - secondDanglingStub.getY()) >= 1e-9) {
+                stubs.add(new Pair<>(firstDanglingStub, secondDanglingStub));
+            }
+        }
+        return stubs;
     }
 
     /**
@@ -190,7 +173,9 @@ public class VoronoiCell implements Polygon {
 
     @Override
     public List<LineSegment> getEdges() {
-        return halfEdges.stream().map(VoronoiHalfEdge::getEdge).collect(Collectors.toList());
+        return halfEdges.stream()
+                .map(VoronoiHalfEdge::getEdge)
+                .collect(Collectors.toList());
     }
 
     @Override

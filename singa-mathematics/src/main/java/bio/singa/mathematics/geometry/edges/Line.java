@@ -3,6 +3,8 @@ package bio.singa.mathematics.geometry.edges;
 import bio.singa.mathematics.metrics.model.VectorMetricProvider;
 import bio.singa.mathematics.vectors.Vector2D;
 
+import java.util.Optional;
+
 /**
  * A line is a straight one-dimensional figure having no thickness and extending
  * infinitely in both directions. It is uniquely defined by two distinct points
@@ -221,12 +223,37 @@ public class Line {
      * @param line Another line.
      * @return The intersection.
      */
-    public Vector2D getIntersectWithLine(Line line) {
-        final double a = slope;
+    public Optional<Vector2D> getIntersectionWith(Line line) {
+        if (isVertical()) {
+            if (line.isVertical()) {
+                return Optional.empty();
+            }
+            return Optional.of(new Vector2D(yIntercept, line.getYValue(yIntercept)));
+        }
+        if (line.isVertical()) {
+            if (isHorizontal()) {
+                return Optional.of(new Vector2D(line.yIntercept, getYValue(line.yIntercept)));
+            }
+            return Optional.of(new Vector2D(line.yIntercept, getYValue(line.yIntercept)));
+        }
+        if (isHorizontal()) {
+            if (line.isHorizontal()) {
+                return Optional.empty();
+            }
+            return Optional.of(new Vector2D(line.getXValue(yIntercept), yIntercept));
+        }
+        if (line.isHorizontal()) {
+            return Optional.of(new Vector2D(line.getXValue(line.yIntercept), line.yIntercept));
+        }
+        if (getSlope() == line.getSlope()) {
+            // parallel = no intercept
+            return Optional.empty();
+        }
+        final double a = getSlope();
         final double b = line.getSlope();
         final double c = getYIntercept();
         final double d = line.getYIntercept();
-        return new Vector2D((d - c) / (a - b), (a * d - b * c) / (a - b));
+        return Optional.of(new Vector2D((d - c) / (a - b), (a * d - b * c) / (a - b)));
     }
 
     /**
@@ -291,6 +318,12 @@ public class Line {
 
     @Override
     public String toString() {
+        if (isHorizontal()) {
+            return "Horizontal line [yIntercept=" + yIntercept + "]";
+        }
+        if (isVertical()) {
+            return "Vertial line [xIntercept=" + yIntercept + "]";
+        }
         return "Line [yIntercept=" + getYIntercept() + ", slope=" + slope + "]";
     }
 
