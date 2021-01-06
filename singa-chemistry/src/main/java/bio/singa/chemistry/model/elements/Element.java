@@ -247,11 +247,7 @@ public class Element {
      * @return An isotope of this element.
      */
     public Element asIsotope(int massNumber) {
-        int neutronNumber = massNumber - protonNumber;
-        if (neutronNumber != this.neutronNumber) {
-            return new Element(this, neutronNumber);
-        }
-        return this;
+        return new Element(this, massNumber);
     }
 
     /**
@@ -309,7 +305,7 @@ public class Element {
 
     @Override
     public String toString() {
-        return (neutronNumber != protonNumber ? getMassNumber() : "") + symbol + (getCharge() != 0 ? getCharge() : "");
+        return symbol + (getCharge() != 0 ? getCharge() : "");
     }
 
     @Override

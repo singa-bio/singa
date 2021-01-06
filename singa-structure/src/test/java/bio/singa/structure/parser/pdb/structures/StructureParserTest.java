@@ -268,4 +268,14 @@ class StructureParserTest {
                 .parse();
     }
 
+    @Test
+    void shouldParseStructureWithDeuterium() {
+        Structure structure = StructureParser.pdb()
+                .pdbIdentifier("2r24")
+                .settings(OMIT_HYDROGENS)
+                .parse();
+        System.out.println();
+    }
+
+
 }

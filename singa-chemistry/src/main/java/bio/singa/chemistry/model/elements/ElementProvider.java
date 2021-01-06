@@ -16,8 +16,8 @@ public final class ElementProvider {
     private static final ElementProvider INSTANCE = new ElementProvider();
 
     public static final Element HYDROGEN = addElement(new Element("Hydrogen", "H", 1, 1.008, "1s1",1.1));
-    public static final Element DEUTERIUM = addElement(new Element("Deuterium", "D", 1, 1.008, "1s1",1.1)).asIsotope(2);
-    public static final Element TRITIUM = addElement(new Element("Tritium", "T", 1, 1.008, "1s1",1.1)).asIsotope(3);
+    public static final Element DEUTERIUM = addElement(new Element("Deuterium", "D", 1, 1.008, "1s1",1.1).asIsotope(2));
+    public static final Element TRITIUM = addElement(new Element("Tritium", "T", 1, 1.008, "1s1",1.1).asIsotope(3));
     public static final Element HELIUM = addElement(new Element("Helium", "He", 2, 4.002602, "1s2",1.4));
     public static final Element LITHIUM = addElement(new Element("Lithium", "Li", 3, 6.94, "1s2-2s1",1.82));
     public static final Element BERYLLIUM = addElement(new Element("Beryllium", "Be", 4, 6.94, "1s2-2s2", 1.53));
