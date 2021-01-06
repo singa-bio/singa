@@ -2,6 +2,8 @@ package bio.singa.mathematics.algorithms.voronoi.model;
 
 import bio.singa.mathematics.vectors.Vector2D;
 
+import java.util.StringJoiner;
+
 /**
  * Site events originate from the source vectors of the voronoi diagram. The identifier represent the processing
  * succession (The first processed site event has id 0, the next 1, and so on).
@@ -80,9 +82,10 @@ public class SiteEvent {
 
     @Override
     public String toString() {
-        return "SiteEvent{" +
-                "id=" + identifier +
-                ", site=" + site +
-                '}';
+        return new StringJoiner(", ", SiteEvent.class.getSimpleName() + "[", "]")
+                .add("identifier=" + identifier)
+                .add("site=" + site)
+                .toString();
     }
+
 }

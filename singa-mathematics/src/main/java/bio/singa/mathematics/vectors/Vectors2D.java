@@ -35,6 +35,33 @@ public class Vectors2D {
         return Math.atan2(frist.getX() * second.getY() - frist.getY() * second.getX(), frist.getX() * second.getX() + frist.getY() * second.getY());
     }
 
+    /**
+     * Determines, which side of a line a point is on. If d &lt; 0 then the point lies on one side of the line,
+     * and if d &gt; 0 then it lies on the other side. If d = 0 then the point lies exactly on the line.
+     *
+     * @param point The point in question.
+     * @param start Starting point of the line.
+     * @param end Another point on the line.
+     * @return The resulting value.
+     * @see <a href="https://math.stackexchange.com/a/274728">Stack exchange post</a>
+     */
+    public static double determineSide(Vector2D point, Vector2D start, Vector2D end) {
+        // (x−x1)(y2−y1)−(y−y1)(x2−x1)
+        return (point.getX() - start.getX()) * (end.getY() - start.getY()) - (point.getY() - start.getY()) * (end.getX() - start.getX());
+    }
+
+    /**
+     * Returns true, if the point (first argument) is on the left of the line described by start and end vectors.
+     *
+     * @param point The point in question.
+     * @param start Starting point of the line.
+     * @param end Another point on the line.
+     * @return The resulting value.
+     * @see <a href="https://math.stackexchange.com/a/274728">Stack exchange post</a>
+     */
+    public static boolean isOnTheLeft(Vector2D point, Vector2D start, Vector2D end) {
+        return determineSide(point, start, end) > 0;
+    }
 
     public static List<Vector2D> generateMultipleRandom2DVectors(int numberOfVectors, Rectangle rectangle) {
         List<Vector2D> vectors = new ArrayList<>(numberOfVectors);

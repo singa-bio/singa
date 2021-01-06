@@ -2,6 +2,8 @@ package bio.singa.mathematics.algorithms.voronoi.model;
 
 import bio.singa.mathematics.vectors.Vector2D;
 
+import java.util.StringJoiner;
+
 /**
  * Each edge can be represented by two directed opposed half edges. Each edge holds a reference to its original site
  * event its corresponding edge and its angle.
@@ -51,6 +53,20 @@ public class VoronoiHalfEdge {
                 angle = Math.atan2(startingPoint.getX() - endingPoint.getX(), endingPoint.getY() - startingPoint.getY());
             }
         }
+    }
+
+    public VoronoiHalfEdge invert() {
+        if (edge.getLeftSite() != null && edge.getRightSite() != null) {
+            return new VoronoiHalfEdge(edge, edge.getLeftSite(), edge.getRightSite());
+        }
+        if (edge.getRightSite() == null) {
+            Vector2D previousStart = edge.getStartingPoint();
+            Vector2D previousEnd = edge.getEndingPoint();
+            edge.setStartingPoint(previousEnd);
+            edge.setEndingPoint(previousStart);
+            return new VoronoiHalfEdge(edge, edge.getLeftSite(), edge.getRightSite());
+        }
+        throw new IllegalArgumentException("Cannot create half edge from edge with no set sides.");
     }
 
     /**
@@ -104,4 +120,12 @@ public class VoronoiHalfEdge {
         return angle;
     }
 
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", VoronoiHalfEdge.class.getSimpleName() + "[", "]")
+                .add("site=" + site)
+                .add("start=" + getStartPoint())
+                .add("end=" + getEndPoint())
+                .toString();
+    }
 }

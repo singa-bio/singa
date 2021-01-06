@@ -4,6 +4,8 @@ package bio.singa.mathematics.algorithms.voronoi.model;
 import bio.singa.mathematics.geometry.edges.LineSegment;
 import bio.singa.mathematics.vectors.Vector2D;
 
+import java.util.StringJoiner;
+
 /**
  * The edges of voronoi diagrams. A left and right side is assigned to each edge, as well as its starting and ending
  * point. The direction of  the line is considered as follows (relative to the left side):
@@ -57,6 +59,14 @@ public class VoronoiEdge implements LineSegment {
      */
     public SiteEvent getLeftSite() {
         return leftSite;
+    }
+
+    public void setLeftSite(SiteEvent leftSite) {
+        this.leftSite = leftSite;
+    }
+
+    public void setRightSite(SiteEvent rightSite) {
+        this.rightSite = rightSite;
     }
 
     /**
@@ -134,9 +144,10 @@ public class VoronoiEdge implements LineSegment {
 
     @Override
     public String toString() {
-        return "VoronoiEdge{" +
-                "startingPoint=" + startingPoint +
-                ", endingPoint=" + endingPoint +
-                '}';
+        return new StringJoiner(", ", VoronoiEdge.class.getSimpleName() + "[", "]")
+                .add("startingPoint=" + startingPoint)
+                .add("endingPoint=" + endingPoint)
+                .toString();
     }
+
 }

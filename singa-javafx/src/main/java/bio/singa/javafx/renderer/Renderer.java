@@ -317,15 +317,17 @@ public interface Renderer {
         return rectangle;
     }
 
-
     default void strokeLineSegmentWithArrow(LineSegment lineSegment) {
         Vector2D tail = lineSegment.getStartingPoint();
         Vector2D head = lineSegment.getEndingPoint();
+        strokeLineSegmentWithArrow(tail, head);
+    }
 
+    default void strokeLineSegmentWithArrow(Vector2D tail, Vector2D tip) {
         double arrowLength = 12;
 
-        double tipX = head.getX();
-        double tipY = tail.getY();
+        double tipX = tip.getX();
+        double tipY = tip.getY();
 
         double tailX = tail.getX();
         double tailY = tail.getY();
@@ -335,11 +337,11 @@ public interface Renderer {
 
         double theta = Math.atan2(dy, dx);
 
-        double rad = Math.toRadians(25); //35 angle, can be adjusted
+        double rad = Math.toRadians(25); // 35 angle, can be adjusted
         double x = tipX - arrowLength * Math.cos(theta + rad);
         double y = tipY - arrowLength * Math.sin(theta + rad);
 
-        double phi2 = Math.toRadians(-25);//-35 angle, can be adjusted
+        double phi2 = Math.toRadians(-25);// -35 angle, can be adjusted
         double x2 = tipX - arrowLength * Math.cos(theta + phi2);
         double y2 = tipY - arrowLength * Math.sin(theta + phi2);
 
@@ -352,7 +354,7 @@ public interface Renderer {
         arrowXs[0] = tipX;
         arrowXs[1] = x;
         arrowXs[2] = x2;
-        strokeStraight(tail, head);
+        strokeStraight(tail, tip);
         getGraphicsContext().fillPolygon(arrowXs, arrowYs, 3);
     }
 

@@ -1,9 +1,9 @@
 package bio.singa.mathematics.algorithms.voronoi.model;
 
-import bio.singa.core.utility.Pair;
 import bio.singa.mathematics.geometry.edges.LineSegment;
 import bio.singa.mathematics.geometry.model.Polygon;
 import bio.singa.mathematics.vectors.Vector2D;
+import bio.singa.mathematics.vectors.Vectors2D;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -96,15 +96,16 @@ public class VoronoiCell implements Polygon {
         return halfEdges;
     }
 
-    public List<Pair<Vector2D>> determineDanglingStubs() {
-        List<Pair<Vector2D>> stubs = new ArrayList<>();
+    public List<Vector2D> determineDanglingStubs() {
+        List<Vector2D> stubs = new ArrayList<>();
         Vector2D firstDanglingStub;
         Vector2D secondDanglingStub;
         for (int i = 0; i < halfEdges.size(); i++) {
             firstDanglingStub = halfEdges.get(i).getEndPoint();
             secondDanglingStub = halfEdges.get((i + 1) % halfEdges.size()).getStartPoint();
             if (Math.abs(firstDanglingStub.getX() - secondDanglingStub.getX()) >= 1e-9 || Math.abs(firstDanglingStub.getY() - secondDanglingStub.getY()) >= 1e-9) {
-                stubs.add(new Pair<>(firstDanglingStub, secondDanglingStub));
+                stubs.add(firstDanglingStub);
+                stubs.add(secondDanglingStub);
             }
         }
         return stubs;
@@ -119,10 +120,6 @@ public class VoronoiCell implements Polygon {
         return closed;
     }
 
-    public boolean isOpen() {
-        return !closed;
-    }
-
     /**
      * Sets whether this cell is considered as closed or not.
      *
@@ -130,6 +127,10 @@ public class VoronoiCell implements Polygon {
      */
     void setClosed(boolean closed) {
         this.closed = closed;
+    }
+
+    public boolean isOpen() {
+        return !closed;
     }
 
     public Vector2D getCentroid() {
@@ -166,6 +167,62 @@ public class VoronoiCell implements Polygon {
         return vertices;
     }
 
+    public void cleanEdges() {
+        // segments might have been initialized out of order
+        // case 1: start and end points are assigned with different clockwise orders
+        // case 2: the start and end points dont match up when iterated sequentially
+        // move segments to a pool to draw from
+        List<VoronoiHalfEdge> drawPool = new ArrayList<>(halfEdges);
+        // new solution pool wth the sorted and potentially flipped edges
+        Deque<VoronoiHalfEdge> solutionPool = new ArrayDeque<>();
+        // get and remove initial edge from pool
+        ListIterator<VoronoiHalfEdge> drawIterator = drawPool.listIterator();
+        VoronoiHalfEdge firstEdge = drawIterator.next();
+        // determine if its directionality is correct
+        // FIXME seems to not work correctly
+        if (!Vectors2D.isOnTheLeft(getSite().getSite(), firstEdge.getStartPoint(), firstEdge.getEndPoint())) {
+            // swap sides
+            firstEdge = firstEdge.invert();
+        }
+        //add to solutions
+        drawIterator.remove();
+        solutionPool.offer(firstEdge);
+
+        // draw from original edges
+        while (!drawPool.isEmpty()) {
+            VoronoiHalfEdge first = solutionPool.peekLast();
+            Vector2D endPoint = Objects.requireNonNull(first).getEndPoint();
+            drawIterator = drawPool.listIterator();
+            int previousSolutionSize = solutionPool.size();
+            while (drawIterator.hasNext()) {
+                // find adjacent edge
+                VoronoiHalfEdge drawEdge = drawIterator.next();
+                if (drawEdge.getStartPoint().equals(endPoint)) {
+                    // all fine
+                    drawIterator.remove();
+                    solutionPool.offer(drawEdge);
+                    break;
+                }
+                if (drawEdge.getEndPoint().equals(endPoint)) {
+                    // swap sides
+                    drawEdge = drawEdge.invert();
+                    drawIterator.remove();
+                    solutionPool.offer(drawEdge);
+                    break;
+                }
+            }
+            if (solutionPool.size() == previousSolutionSize) {
+                // non of the segments matched the endpoint of the previous segments
+                // unable to sort edges, if there is still unclosed sections
+                System.out.println("unable to close cell wit id "+getSite().getIdentifier());
+                return;
+            }
+
+        }
+        // set new edges
+        halfEdges = new ArrayList<>(solutionPool);
+    }
+
     @Override
     public Vector2D getVertex(int vertexIdentifier) {
         return halfEdges.get(vertexIdentifier).getStartPoint();
@@ -177,6 +234,8 @@ public class VoronoiCell implements Polygon {
                 .map(VoronoiHalfEdge::getEdge)
                 .collect(Collectors.toList());
     }
+
+
 
     @Override
     public void move(Vector2D targetLocation) {

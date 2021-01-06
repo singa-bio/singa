@@ -4,11 +4,14 @@ import bio.singa.javafx.renderer.Renderer;
 import bio.singa.javafx.renderer.graphs.GraphDisplayApplication;
 import bio.singa.mathematics.algorithms.voronoi.VoronoiGenerator;
 import bio.singa.mathematics.algorithms.voronoi.VoronoiRelaxation;
+import bio.singa.mathematics.algorithms.voronoi.model.VoronoiCell;
 import bio.singa.mathematics.algorithms.voronoi.model.VoronoiDiagram;
+import bio.singa.mathematics.algorithms.voronoi.model.VoronoiHalfEdge;
 import bio.singa.mathematics.geometry.faces.Rectangle;
 import bio.singa.mathematics.geometry.model.Polygon;
 import bio.singa.mathematics.graphs.model.Graphs;
 import bio.singa.mathematics.vectors.Vector2D;
+import bio.singa.mathematics.vectors.Vectors2D;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.scene.Scene;
@@ -17,9 +20,9 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -42,26 +45,17 @@ public class VoronoiPlayground extends Application implements Renderer {
     public void start(Stage primaryStage) throws Exception {
 
         // test vectors
-        //        vectors.add( new Vector2D( 492.10627015949353, 161.3859284431188));
-        //        vectors.add( new Vector2D( 304.41390170716045, 100.8436922352427));
-        //        vectors.add( new Vector2D( 227.0866297746229, 177.68042859131978));
-        //        vectors.add( new Vector2D( 78.90201175867433, 222.59900136862709));
-        //        vectors.add( new Vector2D( 228.7571866113683, 196.04440213246878));
-        //        vectors.add( new Vector2D( 205.78320681403727, 41.06371751749649));
-        //        vectors.add( new Vector2D( 108.10938219497035, 140.7761516086512));
-        //        vectors.add( new Vector2D( 355.18872313636723, 358.0850591026259));
-        //        vectors.add( new Vector2D( 58.6214872698857, 174.12161224688467));
-        //        vectors.add( new Vector2D( 189.27987511877708, 433.229177910623));
-        //        vectors.add( new Vector2D( 120.56297801688754, 208.8911052087157));
-        //        vectors.add( new Vector2D( 279.1489481395522, 404.4239158747165));
-        //        vectors.add( new Vector2D( 447.02634063399876, 113.29145720628742));
-        //        vectors.add( new Vector2D( 433.9649857774931, 283.84419822038546));
-        //        vectors.add( new Vector2D( 144.15624662658138, 412.67313559840875));
-        //        vectors.add( new Vector2D( 410.67192297337454, 69.62878782584365));
-        //        vectors.add( new Vector2D( 132.67889470174822, 257.62214945912297));
-        //        vectors.add( new Vector2D( 336.79197335017653, 116.77048208672436));
-        //        vectors.add( new Vector2D( 211.2341697614347, 241.23831556336904));
-        //        vectors.add( new Vector2D( 148.00687851502775, 42.19159635139591));
+//        points.add(new Vector2D(74.52592345749316, 77.42901243562156));
+//        points.add(new Vector2D(438.78698728924513, 90.87280755881734));
+//        points.add(new Vector2D(206.481158819044, 95.37541880005496));
+//        points.add(new Vector2D(320.92307542598354, 118.67345818160646));
+//        points.add(new Vector2D(98.63945819500807, 215.11513459793625));
+//        points.add(new Vector2D(423.8559086624602, 267.47397764948494));
+//        points.add(new Vector2D(255.94317793773138, 298.6865263299364));
+//        points.add(new Vector2D(74.29743058838064, 356.94979734705805));
+//        points.add(new Vector2D(391.5833653119365, 428.32827533909676));
+//        points.add(new Vector2D(163.43925271445042, 445.871635186965));
+
 
 
         // setup root
@@ -131,16 +125,15 @@ public class VoronoiPlayground extends Application implements Renderer {
 
     private void generatePoints(ActionEvent event) {
         diagram = null;
-//        points = Vectors2D.generateMultipleRandom2DVectors(10, boundingPolygon);
-        points = new ArrayList<>();
-        points.add(new Vector2D(100, 200));
-        points.add(new Vector2D(150, 200));
-        points.add(new Vector2D(200, 200));
-//        points.add(new Vector2D(65.73974609375, 251.5625));
-//        points.add(new Vector2D(175.1220703125, 251.5625));
-//        points.add(new Vector2D(357.81982421875, 251.5625));
+        points = Vectors2D.generateMultipleRandom2DVectors(10, boundingPolygon);
+//        points = new ArrayList<>();
+//        points.add(new Vector2D(100, 200));
+//        points.add(new Vector2D(150, 200));
+//        points.add(new Vector2D(200, 200));
+//        points.add(new Vector2D(82.3185325867044, 254.99832153320312));
+//        points.add(new Vector2D(236.11033419183457, 254.99832153320312));
+//        points.add(new Vector2D(408.7885972594271, 254.99832153320318));
         clearCanvas();
-        drawPoints();
     }
 
     private void drawBoundingPolygon() {
@@ -153,7 +146,6 @@ public class VoronoiPlayground extends Application implements Renderer {
             diagram = VoronoiGenerator.generateVoronoiDiagram(points, boundingPolygon);
             clearCanvas();
             drawDiagram();
-            drawPoints();
         }
     }
 
@@ -168,7 +160,6 @@ public class VoronoiPlayground extends Application implements Renderer {
             printPoints();
             diagram = VoronoiGenerator.generateVoronoiDiagram(points, boundingPolygon);
             clearCanvas();
-            drawPoints();
             drawDiagram();
         }
     }
@@ -183,19 +174,27 @@ public class VoronoiPlayground extends Application implements Renderer {
         getGraphicsContext().setLineWidth(3);
         boundingPolygon.getEdges().forEach(edge -> strokeStraight(edge.getStartingPoint(), edge.getEndingPoint()));
 
-        getGraphicsContext().setStroke(Color.TOMATO);
         getGraphicsContext().setLineWidth(1);
-        diagram.getEdges().forEach(edge -> strokeStraight(edge.getStartingPoint(), edge.getEndingPoint()));
 
-        getGraphicsContext().setLineWidth(1);
-        getGraphicsContext().setFill(Color.TOMATO);
-        diagram.getVertices().forEach(this::fillPoint);
-    }
+        getGraphicsContext().setFont(Font.font(8));
+        for (VoronoiCell cell : diagram.getCells()) {
+        int i = 0;
+            Color randomColor = Color.color(Math.random(), Math.random(), Math.random());
+            getGraphicsContext().setStroke(randomColor);
+            getGraphicsContext().setFill(randomColor);
+            for (VoronoiHalfEdge edge : cell.getHalfEdges()) {
+                Vector2D innerSite = cell.getSite().getSite();
+                Vector2D edgeStartingPoint = edge.getStartPoint();
+                Vector2D edgeEndingPoint = edge.getEndPoint();
+                Vector2D edgeMidpoint = edgeStartingPoint.getMidpointTo(edgeEndingPoint);
+                Vector2D innerDirection = innerSite.subtract(edgeMidpoint).normalize();
+                strokeLineSegmentWithArrow(edgeStartingPoint, edgeEndingPoint);
+                fillPoint(innerSite);
+                strokeTextCenteredOnPoint(String.valueOf(i), edgeMidpoint.add(innerDirection.multiply(10)));
+                i++;
+            }
+        }
 
-    private void drawPoints() {
-        getGraphicsContext().setFill(Color.GREEN);
-        getGraphicsContext().setLineWidth(1);
-        points.forEach(this::fillPoint);
     }
 
 }

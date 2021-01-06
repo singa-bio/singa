@@ -1,6 +1,5 @@
 package bio.singa.mathematics.algorithms.voronoi.model;
 
-import bio.singa.core.utility.Pair;
 import bio.singa.mathematics.algorithms.voronoi.VoronoiGenerator;
 import bio.singa.mathematics.geometry.edges.Line;
 import bio.singa.mathematics.geometry.edges.LineRay;
@@ -8,6 +7,7 @@ import bio.singa.mathematics.geometry.edges.LineSegment;
 import bio.singa.mathematics.geometry.edges.SimpleLineSegment;
 import bio.singa.mathematics.geometry.model.Polygon;
 import bio.singa.mathematics.vectors.Vector2D;
+import bio.singa.mathematics.vectors.Vectors2D;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,6 +15,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static bio.singa.mathematics.metrics.model.VectorMetricProvider.EUCLIDEAN_METRIC;
+import static bio.singa.mathematics.vectors.Vectors2D.isOnTheLeft;
 
 /**
  * Contains all information about the voronoi diagram created by {@link VoronoiGenerator#generateVoronoiDiagram(Collection,
@@ -164,14 +165,19 @@ public class VoronoiDiagram {
      * Creates a new edge associated with the border of the diagram, adds it to the diagram and returns it.
      *
      * @param leftSite The site event on the left of this edge.
-     * @param startingPoint The starting point.
-     * @param endingPoint The ending point.
+     * @param first The starting point.
+     * @param second The ending point.
      * @return The edge.
      */
-    private VoronoiEdge createBorderEdge(SiteEvent leftSite, Vector2D startingPoint, Vector2D endingPoint) {
+    private VoronoiEdge createBorderEdge(SiteEvent leftSite, Vector2D first, Vector2D second) {
         VoronoiEdge edge = new VoronoiEdge(leftSite, null);
-        edge.setStartingPoint(startingPoint);
-        edge.setEndingPoint(endingPoint);
+        if (Vectors2D.isOnTheLeft(leftSite.getSite(), first, second)) {
+            edge.setStartingPoint(first);
+            edge.setEndingPoint(second);
+        } else {
+            edge.setStartingPoint(second);
+            edge.setEndingPoint(first);
+        }
         edges.add(edge);
         return edge;
     }
@@ -288,8 +294,17 @@ public class VoronoiDiagram {
                 Iterator<Vector2D> iterator = intersections.iterator();
                 Vector2D first = addVertex(iterator.next());
                 Vector2D second = addVertex(iterator.next());
-                edge.setStartingPoint(first);
-                edge.setEndingPoint(second);
+                if (Vectors2D.isOnTheLeft(leftSite, first, second)) {
+                    edge.setStartingPoint(first);
+                    edge.setEndingPoint(second);
+                } else {
+                    edge.setStartingPoint(second);
+                    edge.setEndingPoint(first);
+                    SiteEvent previousRightSite = edge.getRightSite();
+                    SiteEvent previousLeftSite = edge.getLeftSite();
+                    edge.setLeftSite(previousRightSite);
+                    edge.setRightSite(previousLeftSite);
+                }
                 // mark cells to be closed
                 markCellsOpen(edge);
                 return true;
@@ -334,7 +349,6 @@ public class VoronoiDiagram {
             // #intersections > 1
             // might be the case if there are complex polygons or start and end are placed outside of the bounding box
             if (intersections.size() > 1) {
-                System.out.println("+");
                 // determine closest points
                 List<Vector2D> intersectionList = new ArrayList<>(intersections);
                 Map.Entry<Vector2D, Double> startClosest = EUCLIDEAN_METRIC.calculateClosestDistance(intersectionList, startingPoint);
@@ -342,7 +356,7 @@ public class VoronoiDiagram {
                 edge.setStartingPoint(updatedStart);
                 Map.Entry<Vector2D, Double> endClosest = EUCLIDEAN_METRIC.calculateClosestDistance(intersectionList, endingPoint);
                 Vector2D updatedEnd = addVertex(endClosest.getKey());
-                edge.setStartingPoint(updatedEnd);
+                edge.setEndingPoint(updatedEnd);
                 // mark cells to be closed
                 markCellsOpen(edge);
                 return true;
@@ -401,25 +415,6 @@ public class VoronoiDiagram {
         cells.get(rightSite.getIdentifier()).setClosed(false);
     }
 
-    /**
-     * Determines, which side of a line a point is on. If d &lt; 0 then the point lies on one side of the line,
-     * and if d &gt; 0 then it lies on the other side. If d = 0 then the point lies exactly on the line.
-     *
-     * @param point The point in question.
-     * @param start Starting point of the line.
-     * @param end Another point on the line.
-     * @return The resulting value.
-     * @see <a href="https://math.stackexchange.com/a/274728">Stack exchange post</a>
-     */
-    private double determineSide(Vector2D point, Vector2D start, Vector2D end) {
-        // TODO maybe move to general class
-        // (x−x1)(y2−y1)−(y−y1)(x2−x1)
-        return (point.getX() - start.getX()) * (end.getY() - start.getY()) - (point.getY() - start.getY()) * (end.getX() - start.getX());
-    }
-
-    private boolean isOnTheLeft(Vector2D point, Vector2D start, Vector2D end) {
-        return determineSide(point, start, end) > 0;
-    }
 
     private Optional<Vector2D> determineIntersectionWithBoundingBox(Vector2D startingPoint, Vector2D midpoint) {
         LineRay lineRay = new LineRay(midpoint, startingPoint);
@@ -451,28 +446,56 @@ public class VoronoiDiagram {
             // does not match the start point of the following halfedge
             List<VoronoiHalfEdge> halfEdges = cell.getHalfEdges();
 
-            // prepare a copy for the final check
-
-
-
             // find open sections
-            List<Pair<Vector2D>> danglingStubs = cell.determineDanglingStubs();
+            List<Vector2D> danglingStubs = cell.determineDanglingStubs();
             // no open sections
             if (danglingStubs.isEmpty()) {
                 continue;
             }
 
-            if (danglingStubs.size() == 1) {
-                Pair<Vector2D> stubPair = danglingStubs.get(0);
-                Vector2D firstDanglingStub = stubPair.getFirst();
-                Vector2D secondDanglingStub = stubPair.getSecond();
+            // whenever two stubs end on the same segment they should be connected
+            // therefore, assign them so a set based on their corresponding segments
+            List<LineSegment> boundingBoxEdges = boundingBox.getEdges();
+            Map<LineSegment, Set<Vector2D>> segmentMap = new HashMap<>();
+            for (Vector2D danglingStub : danglingStubs) {
+                Optional<LineSegment> correspondingSegment = getCorrespondingSegment(danglingStub, boundingBoxEdges);
+                if (correspondingSegment.isPresent()) {
+                        LineSegment lineSegment = correspondingSegment.get();
+                    if (!segmentMap.containsKey(lineSegment)) {
+                        segmentMap.put(lineSegment, new HashSet<>());
+                    }
+                    segmentMap.get(lineSegment).add(danglingStub);
+                }
+            }
+            // connect them
+            SiteEvent site = cell.getSite();
+            for (Map.Entry<LineSegment, Set<Vector2D>> entry : segmentMap.entrySet()) {
+                Set<Vector2D> stubs = entry.getValue();
+                if (stubs.size() == 2) {
+                    Iterator<Vector2D> iterator = stubs.iterator();
+                    Vector2D firstSegment = iterator.next();
+                    Vector2D secondSegment = iterator.next();
+                    VoronoiEdge edge = createBorderEdge(site, firstSegment, secondSegment);
+                    halfEdges.add(new VoronoiHalfEdge(edge, site, null));
+                    // clean up connected stubs
+                    stubs.remove(firstSegment);
+                    stubs.remove(secondSegment);
+                }
+            }
+            // remove processed segments
+            segmentMap.entrySet()
+                    .removeIf(entry -> entry.getValue().isEmpty());
+            // FIXME
 
-                // check which line segments the relevant points lie on
-                List<LineSegment> boundingBoxEdges = boundingBox.getEdges();
-                LineSegment firstSegment = getCorrespondingSegment(firstDanglingStub, boundingBoxEdges);
-                LineSegment secondSegment = getCorrespondingSegment(secondDanglingStub, boundingBoxEdges);
+            if (segmentMap.size() == 2) {
+                Iterator<Map.Entry<LineSegment, Set<Vector2D>>> iterator = segmentMap.entrySet().iterator();
+                Map.Entry<LineSegment, Set<Vector2D>> first = iterator.next();
+                Map.Entry<LineSegment, Set<Vector2D>> second = iterator.next();
+                Vector2D firstDanglingStub = first.getValue().iterator().next();
+                Vector2D secondDanglingStub = second.getValue().iterator().next();
+                LineSegment firstSegment = first.getKey();
+                LineSegment secondSegment = second.getKey();
 
-                SiteEvent site = cell.getSite();
                 if (firstSegment.equals(secondSegment)) {
                     // trivial case
                     // stubs on same segment, just add the line between both points
@@ -523,25 +546,15 @@ public class VoronoiDiagram {
 
                 }
             }
-
-            if (danglingStubs.size() > 1) {
-
-                // TODO implement
-                // close boundary see:
-                //  points.add(new Vector2D(100.0, 200.0));
-                //  points.add(new Vector2D(150.0, 200.0));
-                //  points.add(new Vector2D(200.0, 200.0));
-                System.out.println("more than one stub");
-            }
+            cell.cleanEdges();
             cell.setClosed(true);
         }
     }
 
-    public LineSegment getCorrespondingSegment(Vector2D firstDanglingStub, List<LineSegment> boundingBoxEdges) {
+    public Optional<LineSegment> getCorrespondingSegment(Vector2D firstDanglingStub, List<LineSegment> boundingBoxEdges) {
         return boundingBoxEdges.stream()
                 .filter(lineSegment -> lineSegment.isAboutOnLine(firstDanglingStub))
-                .findAny()
-                .orElseThrow(() -> new IllegalStateException("unable to get polygon segment"));
+                .findAny();
     }
 
     private double getMidpointDistance(Vector2D site, Vector2D start, Vector2D end) {
