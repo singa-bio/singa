@@ -64,7 +64,7 @@ public class NeighborhoodMappingManager {
                         mapping.setDiffusiveRatio(cortexRatio);
                     } else if (currentIsInArea || neighborIsInArea) {
                         // determine area that is affected
-                        Set<Vector2D> intersections = area.getIntersections(new SimpleLineSegment(currentCentroid, neighborCentroid));
+                        Set<Vector2D> intersections = area.getIntersections(((LineSegment) new SimpleLineSegment(currentCentroid, neighborCentroid)));
                         if (intersections.size() == 1) {
                             Vector2D intersection = intersections.iterator().next();
                             double totalDistance = currentCentroid.distanceTo(neighborCentroid);
