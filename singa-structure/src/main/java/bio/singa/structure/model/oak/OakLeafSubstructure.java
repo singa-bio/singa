@@ -1,8 +1,8 @@
 package bio.singa.structure.model.oak;
 
 import bio.singa.chemistry.model.CovalentBondType;
-import bio.singa.structure.model.families.StructuralFamily;
 import bio.singa.features.identifiers.LeafIdentifier;
+import bio.singa.structure.model.families.StructuralFamily;
 import bio.singa.structure.model.interfaces.Atom;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 
@@ -213,6 +213,11 @@ public abstract class OakLeafSubstructure<FamilyType extends StructuralFamily> i
         source.addNeighbour(target);
         target.addNeighbour(source);
         return bond.getIdentifier();
+    }
+
+    public boolean hasBond(OakAtom firstAtom, OakAtom secondAtom) {
+        return bonds.values().stream()
+                .anyMatch(edge -> edge.connectsAtom(firstAtom) && edge.connectsAtom(secondAtom));
     }
 
     @Override

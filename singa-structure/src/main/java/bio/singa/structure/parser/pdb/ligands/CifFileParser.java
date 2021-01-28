@@ -478,7 +478,7 @@ public class CifFileParser {
         LeafSkeleton.AssignedFamily assignedFamily;
         if (isNucleotide()) {
             // check for nucleotides
-            if (!parent.equals("?")) {
+            if (!parent.equals(LeafSkeleton.DEFAULT_PARENT)) {
                 assignedFamily = LeafSkeleton.AssignedFamily.MODIFIED_NUCLEOTIDE;
             } else {
                 // TODO fix this fallback solution

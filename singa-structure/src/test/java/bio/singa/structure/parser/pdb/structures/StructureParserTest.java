@@ -274,8 +274,19 @@ class StructureParserTest {
                 .pdbIdentifier("2r24")
                 .settings(OMIT_HYDROGENS)
                 .parse();
-        System.out.println();
+        // TODO actually assert something
     }
 
-
+    @Test
+    void shouldParsePyMolExportPeptideConnections() {
+        // we want connections but cannot guarantee unique atom names
+        StructureParser.SingleParserFacade facade = StructureParser.local()
+                .fileLocation(Resources.getResourceAsFileLocation("peptide_pymol_export.pdb"))
+                .settings(ENFORCE_CONNECTIONS, DISREGARD_AMINO_ACID_ATOM_NAMES)
+                .everything();
+        Structure structure = facade.parse();
+        String inchi = facade.getIterator().getSkeletons().get("P_B").getInchi();
+        // TODO actually assert something
+        System.out.println();
+    }
 }

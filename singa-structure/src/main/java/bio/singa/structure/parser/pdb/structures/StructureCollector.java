@@ -1,5 +1,6 @@
 package bio.singa.structure.parser.pdb.structures;
 
+import bio.singa.core.utility.Pair;
 import bio.singa.features.identifiers.LeafIdentifier;
 import bio.singa.features.identifiers.UniqueAtomIdentifer;
 import bio.singa.structure.model.families.AminoAcidFamily;
@@ -83,6 +84,12 @@ public class StructureCollector {
     private List<String> pdbLines;
 
     private List<String> linkLines;
+    private List<String> connectionLines;
+
+    /**
+     * References Pair of ThreeLetterCode and AttributeType to AttributeValue
+     */
+    private Map<Pair<String>, String> ligandPropertyRemarks;
 
     /**
      * Creates a new structure collector to extract structural information from pdb lines and reducing information.
@@ -99,6 +106,8 @@ public class StructureCollector {
         notInConsecutiveChain = new HashSet<>();
         closedChains = new HashSet<>();
         linkLines = new ArrayList<>();
+        connectionLines = new ArrayList<>();
+        ligandPropertyRemarks = new HashMap<>();
     }
 
     /**
@@ -152,8 +161,11 @@ public class StructureCollector {
             }
         }
         getTitle();
-        if(iterator.getReducer().getOptions().enforceConnection()) {
+        // TODO add option for INCHI from Remark
+        getRemarks();
+        if (iterator.getReducer().getOptions().enforceConnection()) {
             getLinks();
+            getConnections();
         }
         if (iterator.hasChain()) {
             reduceToChain(iterator.getCurrentChainIdentifier());
@@ -174,6 +186,7 @@ public class StructureCollector {
 
     /**
      * Extracts the title from tha pdb header.
+     * FIXME: this requires an extra iteration over all pdb lines
      */
     private void getTitle() {
         if (iterator.getReducer().getOptions().isInferringTitleFromFileName()) {
@@ -201,15 +214,63 @@ public class StructureCollector {
         }
     }
 
+    private void getRemarks() {
+        boolean remarkFound = false;
+        String refThreeLetterCode = null;
+        String refAttribute = null;
+        StringBuilder refValue = new StringBuilder();
+        for (String currentLine : pdbLines) {
+            // check if title line
+            if (RemarkToken.REMARK_80.matcher(currentLine).matches()) {
+                // if this is the first time such a line occurs, the title was found
+                if (!remarkFound) {
+                    // first line should always be empty
+                    remarkFound = true;
+                    continue;
+                }
+                String content = RemarkToken.REMARK_CONTENT.extract(currentLine);
+                if (refThreeLetterCode == null) {
+                    refThreeLetterCode = trimEnd(content);
+                    continue;
+                }
+                if (refAttribute == null) {
+                    refAttribute = trimEnd(content);
+                    continue;
+                }
+                if (content.isEmpty() && !refThreeLetterCode.isEmpty()) {
+                    Pair<String> keyPair = new Pair<>(refThreeLetterCode, refAttribute);
+                    ligandPropertyRemarks.put(keyPair, refValue.toString());
+                    // reset values
+                    refThreeLetterCode = null;
+                    refAttribute = null;
+                    refValue = new StringBuilder();
+                    continue;
+                }
+                // append values
+                refValue.append(trimEnd(content));
+            } else {
+                // if title has been found and a line with another content is found
+                if (remarkFound) {
+                    // quit parsing title
+                    break;
+                }
+            }
+            if (AtomToken.RECORD_PATTERN.matcher(currentLine).matches()) {
+                break;
+            }
+        }
+    }
+
     /**
-     * Extract all lines that contain link entries.
+     * Extract all lines that contain conect entries.
+     * FIXME: this requires an extra iteration over all pdb lines
      */
     private void getLinks() {
         boolean linksFound = false;
         for (String currentLine : pdbLines) {
             // check if title line
             if (LinkToken.RECORD_PATTERN.matcher(currentLine).matches()) {
-                // if this is the first time such a line occurs, the title was found
+                // if this is the first time such a line occurs, the links were found
                 if (!linksFound) {
                     linksFound = true;
                 }
@@ -218,6 +279,27 @@ public class StructureCollector {
             } else {
                 // if title has been found and a line with another content is found
                 if (linksFound) {
+                    // quit parsing title
+                    return;
+                }
+            }
+        }
+    }
+
+    private void getConnections() {
+        boolean connectionFound = false;
+        for (String currentLine : pdbLines) {
+            // check if title line
+            if (ConnectionToken.RECORD_PATTERN.matcher(currentLine).matches()) {
+                // if this is the first time such a line occurs, the connections were found
+                if (!connectionFound) {
+                    connectionFound = true;
+                }
+                // append title
+                connectionLines.add(currentLine);
+            } else {
+                // if title has been found and a line with another content is found
+                if (connectionFound) {
                     // quit parsing title
                     return;
                 }
@@ -333,19 +415,28 @@ public class StructureCollector {
         // process link entries
         if (iterator.getReducer().getOptions().enforceConnection()) {
             annotateLinks(structure);
+            annotateConnections(structure);
         }
         UniqueAtomIdentifer lastAtom = Collections.max(atoms.keySet());
         structure.setLastAddedAtomIdentifier(lastAtom.getAtomSerial());
+        postProcessProperties();
         return structure;
     }
 
     /**
      * Create and assign links to the structure.
+     *
      * @param structure The structure to be annotated.
      */
     private void annotateLinks(OakStructure structure) {
         for (String linkLine : linkLines) {
             structure.addLinkEntry(LinkToken.assembleLinkEntry(structure, linkLine));
+        }
+    }
+
+    private void annotateConnections(OakStructure structure) {
+        for (String connectionLine : connectionLines) {
+            ConnectionToken.assignConnections(structure, connectionLine);
         }
     }
 
@@ -437,6 +528,7 @@ public class StructureCollector {
                 return LeafSubstructureFactory.createLeafSubstructure(leafIdentifier, family, atoms);
             }
             LigandFamily ligandFamily = new LigandFamily("?", leafName);
+            iterator.getSkeletons().put(leafName, new LeafSkeleton(leafName));
             return LeafSubstructureFactory.createLeafSubstructure(leafIdentifier, ligandFamily, atoms);
         } else {
             Map<String, OakAtom> atoms = leafNode.getAtomMap();
@@ -540,7 +632,11 @@ public class StructureCollector {
             if (localCifRepository != null) {
                 if (iterator.getReducer().getOptions().enforceConnection()) {
                     leafSkeleton = LigandParserService.parseLeafSkeleton(leafName, localCifRepository);
-                    iterator.getSkeletons().put(leafName, leafSkeleton);
+                    if (!leafSkeleton.getAtoms().isEmpty()) {
+                        iterator.getSkeletons().put(leafName, leafSkeleton);
+                    } else {
+                        return createLeafWithoutAdditionalInformation(identifier, leafName, atoms);
+                    }
                 }
                 try {
                     leafSkeleton = LigandParserService.parseLeafSkeleton(leafName, localCifRepository);
@@ -553,7 +649,11 @@ public class StructureCollector {
             } else {
                 if (iterator.getReducer().getOptions().enforceConnection()) {
                     leafSkeleton = LigandParserService.parseLeafSkeleton(leafName);
-                    iterator.getSkeletons().put(leafName, leafSkeleton);
+                    if (!leafSkeleton.getAtoms().isEmpty()) {
+                        iterator.getSkeletons().put(leafName, leafSkeleton);
+                    } else {
+                        return createLeafWithoutAdditionalInformation(identifier, leafName, atoms);
+                    }
                 }
                 try {
                     leafSkeleton = LigandParserService.parseLeafSkeleton(leafName);
@@ -571,6 +671,23 @@ public class StructureCollector {
             }
         }
         return leafSkeleton.toRealLeafSubstructure(identifier, atoms);
+    }
+
+    private void postProcessProperties() {
+        for (Map.Entry<Pair<String>, String> entry : ligandPropertyRemarks.entrySet()) {
+            Pair<String> key = entry.getKey();
+            String threeLetterCode = key.getFirst();
+            String propertyType = key.getSecond();
+            String content = entry.getValue();
+            if (propertyType.equals("INCHI")) {
+                LeafSkeleton leafSkeleton = iterator.getSkeletons().get(threeLetterCode);
+                if (leafSkeleton == null) {
+                    logger.warn("parsed property for {}, but no suitable leaf was present", threeLetterCode);
+                    continue;
+                }
+                leafSkeleton.setInchi(content);
+            }
+        }
     }
 
 }

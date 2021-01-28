@@ -26,7 +26,11 @@ public interface PDBToken {
         if (line.length() >= token.getColumns().getUpperBound()) {
             return line.substring(token.getColumns().getLowerBound() - 1, token.getColumns().getUpperBound()).trim();
         } else {
-            return "";
+            if (line.length() >= token.getColumns().getLowerBound()) {
+                return line.substring(token.getColumns().getLowerBound() - 1).trim();
+            } else {
+                return "";
+            }
         }
     }
 

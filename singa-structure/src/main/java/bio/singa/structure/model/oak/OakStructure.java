@@ -46,6 +46,9 @@ public class OakStructure implements Structure {
         for (OakModel model : structure.models.values()) {
             models.put(model.getModelIdentifier(), model.getCopy());
         }
+        // TODO this is only a shallow copy
+        linkEntries = new ArrayList<>(structure.linkEntries);
+
     }
 
     @Override

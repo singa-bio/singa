@@ -37,9 +37,10 @@ public class LigandParserService {
         try {
             return parseLeafSkeleton(new URL(String.format(CIF_FETCH_URL, ligandId)).openStream());
         } catch (IOException e) {
-            throw new UncheckedIOException("Could not parse cif file for ligand " + ligandId + ". If this exception" +
-                    " occurred during structure parsing, you may ignore it with setting DISREGARD_CONNECTIONS", e);
+            logger.warn("Could not parse cif file for ligand {}. If this exception" +
+                    " occurred during structure parsing, you may ignore it with setting DISREGARD_CONNECTIONS", ligandId);
         }
+        return new LeafSkeleton(ligandId);
     }
 
     public static LeafSkeleton parseLeafSkeleton(String ligandId, LocalCIFRepository localCifRepository) {
@@ -47,9 +48,10 @@ public class LigandParserService {
         try {
             return parseLeafSkeleton(Files.newInputStream(localCifRepository.getPathForLigandIdentifier(ligandId)));
         } catch (IOException e) {
-            throw new UncheckedIOException("Could not parse cif file for ligand " + ligandId + ". If this exception" +
-                    " occurred during structure parsing, you may ignore it with setting DISREGARD_CONNECTIONS", e);
+            logger.warn("Could not parse cif file for ligand {}. If this exception" +
+                    " occurred during structure parsing, you may ignore it with setting DISREGARD_CONNECTIONS", ligandId, e);
         }
+        return new LeafSkeleton(ligandId);
     }
 
     public static LeafSkeleton parseLeafSkeleton(InputStream inputStream) throws IOException {

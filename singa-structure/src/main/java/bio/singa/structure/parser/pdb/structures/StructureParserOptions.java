@@ -353,12 +353,12 @@ public class StructureParserOptions {
         GET_IDENTIFIER_FROM_PDB,
 
         /**
-         * Throws an exception whenever connections cannot be assigned.
+         * Tries to enforce connections wherever possible.
          */
         ENFORCE_CONNECTIONS,
 
         /**
-         * Issues a warning whenever connections cannot be assigned.
+         * If connections cannot be assigned upon first try they are ignored (default).
          */
         DISREGARD_CONNECTIONS,
 

@@ -8,12 +8,15 @@ import bio.singa.structure.model.families.LigandFamily;
 import bio.singa.structure.model.families.NucleotideFamily;
 import bio.singa.structure.model.oak.*;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
  * @author cl
  */
 public class LeafSkeleton {
+
+    public static String DEFAULT_PARENT = "?";
 
     private String threeLetterCode;
     private String parent;
@@ -27,6 +30,14 @@ public class LeafSkeleton {
         this.parent = parent;
         this.assignedFamily = assignedFamily;
         this.bonds = bonds;
+    }
+
+    public LeafSkeleton(String threeLetterCode) {
+        this.threeLetterCode = threeLetterCode;
+        parent = DEFAULT_PARENT;
+        assignedFamily = AssignedFamily.LIGAND;
+        bonds = new HashMap<>();
+        atoms = new HashMap<>();
     }
 
     public Map<String, OakAtom> getAtoms() {
