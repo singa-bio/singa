@@ -29,9 +29,6 @@ import static bio.singa.simulation.model.modules.concentration.imlementations.re
  */
 public class ReactionBuilder {
 
-    /**
-     * The logger
-     */
     private static final Logger logger = LoggerFactory.getLogger(ReactionBuilder.class);
 
     public static StaticReactantStep staticReactants(Simulation simulation) {

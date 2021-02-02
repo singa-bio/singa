@@ -88,6 +88,10 @@ public class LeafSkeleton {
         this.bonds = bonds;
     }
 
+    public boolean hasBonds() {
+        return !bonds.isEmpty();
+    }
+
     public OakLeafSubstructure<?> toRealLeafSubstructure(LeafIdentifier identifer, Map<String, OakAtom> atoms) {
         OakLeafSubstructure<?> substructure;
         switch (assignedFamily) {
@@ -113,6 +117,13 @@ public class LeafSkeleton {
                     atoms.get(bond.getKey().getSecond()),bond.getValue());
         }
         return substructure;
+    }
+
+    public void connect(OakLeafSubstructure<?> substructure, Map<String, OakAtom> atomMap) {
+        for (Map.Entry<Pair<String>, CovalentBondType> bond : bonds.entrySet()) {
+            substructure.addBondBetween(atomMap.get(bond.getKey().getFirst()),
+                    atomMap.get(bond.getKey().getSecond()),bond.getValue());
+        }
     }
 
     public enum AssignedFamily {
