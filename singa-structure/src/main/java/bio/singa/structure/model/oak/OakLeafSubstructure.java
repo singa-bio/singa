@@ -23,7 +23,7 @@ public abstract class OakLeafSubstructure<FamilyType extends StructuralFamily> i
      */
     private final FamilyType family;
 
-    private final String divergingThreeLetterCode;
+    private String divergingThreeLetterCode;
 
     /**
      * The atoms representing the nodes of the atom graph.
@@ -66,6 +66,10 @@ public abstract class OakLeafSubstructure<FamilyType extends StructuralFamily> i
         atoms = new TreeMap<>();
         bonds = new HashMap<>();
         exchangeableFamilies = new HashSet<>();
+    }
+
+    public void setDivergingThreeLetterCode(String divergingThreeLetterCode) {
+        this.divergingThreeLetterCode = divergingThreeLetterCode;
     }
 
     /**

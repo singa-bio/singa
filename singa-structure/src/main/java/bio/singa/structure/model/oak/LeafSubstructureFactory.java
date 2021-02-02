@@ -43,45 +43,6 @@ public class LeafSubstructureFactory {
         return new OakLigand(((OakLigand) originalLeaf), leafIdentifier);
     }
 
-    public static OakLigand mergePeptideLigand(List<OakAminoAcid> substructures, String threeLetterCode, int serial) {
-        LeafIdentifier identifier = substructures.iterator().next().getIdentifier();
-        LeafIdentifier newIdentifier = new LeafIdentifier(identifier.getPdbIdentifier(), identifier.getModelIdentifier(), identifier.getChainIdentifier(), serial);
-        OakLigand ligand = new OakLigand(newIdentifier, new LigandFamily(threeLetterCode));
-        for (OakLeafSubstructure<?> leafSubstructure : substructures) {
-            // add all atoms
-            for (Atom atom : leafSubstructure.getAllAtoms()) {
-                ligand.addAtom(((OakAtom) atom));
-            }
-            // add all bonds
-            for (OakBond bond : leafSubstructure.getBonds()) {
-                OakAtom sourceCopy = ((OakAtom) ligand.getAtom(bond.getSource().getAtomIdentifier()).get());
-                OakAtom targetCopy = ((OakAtom) ligand.getAtom(bond.getTarget().getAtomIdentifier()).get());
-                ligand.addBondBetween(sourceCopy, targetCopy, bond.getBondType());
-            }
-        }
-        ligand.setAnnotatedAsHetAtom(true);
-        return ligand;
-    }
-
-    public static OakNucleotide createNucleotideFromAtoms(LeafIdentifier leafIdentifier, NucleotideFamily nucleotideFamily, Map<String, OakAtom> atoms, StructureParserOptions options) {
-        // create new Nucleotide
-        OakNucleotide nucleotide = new OakNucleotide(leafIdentifier, nucleotideFamily);
-        if (options.isOmittingHydrogen()) {
-            // without hydrogens
-            atoms.values().stream()
-                    .filter(atom -> atom.getElement().getProtonNumber() != 1)
-                    .forEach(nucleotide::addAtom);
-        } else {
-            atoms.values().forEach(nucleotide::addAtom);
-        }
-
-        if (options.isCreatingEdges()) {
-            connectNucleotide(nucleotide, atoms);
-        }
-
-        return nucleotide;
-    }
-
     public static void connectNucleotide(OakNucleotide nucleotide, Map<String, OakAtom> atoms) {
         connectRibose(nucleotide, atoms);
         connectPhosphateGroup(nucleotide, atoms);
@@ -236,26 +197,6 @@ public class LeafSubstructureFactory {
         }
         atoms.forEach(leafSubstructure::addAtom);
         return leafSubstructure;
-    }
-
-
-    public static OakAminoAcid createAminoAcidFromAtoms(LeafIdentifier leafIdentifier, AminoAcidFamily aminoAcidFamily, Map<String, OakAtom> atoms, StructureParserOptions options) {
-        // create new AminoAcid
-        OakAminoAcid aminoAcid = new OakAminoAcid(leafIdentifier, aminoAcidFamily);
-        // and add atoms
-        if (options.isOmittingHydrogen()) {
-            // without hydrogens
-            atoms.values().stream()
-                    .filter(atom -> atom.getElement().getProtonNumber() != 1)
-                    .forEach(aminoAcid::addAtom);
-        } else {
-            // all
-            atoms.values().forEach(aminoAcid::addAtom);
-        }
-
-        connectAminoAcid(aminoAcid, atoms);
-
-        return aminoAcid;
     }
 
     public static void connectAminoAcid(OakAminoAcid aminoAcid, Map<String, OakAtom> atoms) {

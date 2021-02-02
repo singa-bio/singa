@@ -24,7 +24,6 @@ public class LeafSubstructureBuilder {
 
     private static final Logger logger = LoggerFactory.getLogger(LeafSubstructureBuilder.class);
 
-
     public static NameStep create(StructureIterator iterator) {
         return new GeneralLeafSubstructureBuilder(iterator);
     }
@@ -34,15 +33,6 @@ public class LeafSubstructureBuilder {
         IdentifierStep name(String threeLetterCode);
 
     }
-
-//    public interface FamilyStep {
-//
-//        IdentifierStep aminoAcid(AminoAcidFamily family);
-//        IdentifierStep nucleotide(NucleotideFamily family);
-//        IdentifierStep ligand(LigandFamily family);
-//        <FamilyType extends StructuralFamily<FamilyType>> IdentifierStep family(FamilyType family);
-//
-//    }
 
     public interface IdentifierStep {
 
@@ -235,11 +225,12 @@ public class LeafSubstructureBuilder {
                 atomSet = atoms.stream()
                         .filter(atom -> atom.getElement().getProtonNumber() != 1)
                         .collect(Collectors.toSet());
+            } else {
+                atomSet = atoms;
             }
             if (atomNamesAreUnique()) {
                 prepareAtomMap();
             }
-            atomSet = atoms;
             return this;
         }
 
@@ -268,6 +259,7 @@ public class LeafSubstructureBuilder {
                     if (!isModified) {
                         LeafSubstructureFactory.connectAminoAcid(aminoAcid, atomMap);
                     } else {
+                        aminoAcid.setDivergingThreeLetterCode(name);
                         if (leafSkeleton != null && leafSkeleton.hasBonds()) {
                             leafSkeleton.connect(aminoAcid, atomMap);
                         }
@@ -279,6 +271,7 @@ public class LeafSubstructureBuilder {
                     if (!isModified) {
                         LeafSubstructureFactory.connectNucleotide(nucleotide, atomMap);
                     } else {
+                        nucleotide.setDivergingThreeLetterCode(name);
                         if (leafSkeleton != null && leafSkeleton.hasBonds()) {
                             leafSkeleton.connect(nucleotide, atomMap);
                         }

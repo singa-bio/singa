@@ -4,7 +4,9 @@ import bio.singa.mathematics.vectors.Vector3D;
 import bio.singa.chemistry.model.elements.Element;
 import bio.singa.structure.model.interfaces.Atom;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**

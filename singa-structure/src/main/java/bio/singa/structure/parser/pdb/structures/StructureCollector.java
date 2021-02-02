@@ -393,7 +393,16 @@ public class StructureCollector {
                 logger.trace("Collecting leafs for chain {}", chainNode.getIdentifier());
                 OakChain chain = new OakChain(chainNode.getIdentifier());
                 for (ContentTreeNode leafNode : chainNode.getNodesFromLevel(ContentTreeNode.StructureLevel.LEAF)) {
-                    OakLeafSubstructure<?> leafSubstructure = assignLeaf(leafNode, Integer.parseInt(modelNode.getIdentifier()), chainNode.getIdentifier());
+                    LeafIdentifier leafIdentifier = new LeafIdentifier(currentPDB,
+                            model.getModelIdentifier(),
+                            chain.getChainIdentifier(),
+                            Integer.parseInt(leafNode.getIdentifier()),
+                            leafNode.getInsertionCode());
+                    OakLeafSubstructure<?> leafSubstructure = LeafSubstructureBuilder.create(iterator)
+                            .name(leafCodes.get(leafIdentifier))
+                            .identifier(leafIdentifier)
+                            .atoms(leafNode.getAtoms())
+                            .build();
                     if (hetAtoms.contains(leafSubstructure.getIdentifier())) {
                         leafSubstructure.setAnnotatedAsHetAtom(true);
                     }
@@ -445,11 +454,17 @@ public class StructureCollector {
      */
     private void collectAtomInformation() {
         logger.debug("Collecting information from {} PDB lines", pdbLines.size());
-        for (String currentLine : pdbLines) {
+        Iterator<String> lineIterator = pdbLines.iterator();
+        while (lineIterator.hasNext()) {
+            String currentLine = lineIterator.next();
             String currentRecordType = AtomToken.RECORD_TYPE.extract(currentLine);
             if (AtomToken.RECORD_PATTERN.matcher(currentRecordType).matches()) {
                 // TODO move this to reducer?
                 if (!iterator.getReducer().getOptions().isHeteroAtoms() && currentRecordType.equals("HETATM")) {
+                    continue;
+                }
+                String alternativeLocation = AtomToken.ALTERNATE_LOCATION_INDICATOR.extract(currentLine);
+                if (!alternativeLocation.trim().isEmpty() && !alternativeLocation.equals("A")) {
                     continue;
                 }
                 UniqueAtomIdentifer identifier = createUniqueAtomIdentifier(currentLine);
@@ -499,178 +514,6 @@ public class StructureCollector {
         String insertion = AtomToken.RESIDUE_INSERTION.extract(atomLine);
         char insertionCode = insertion.isEmpty() ? DEFAULT_INSERTION_CODE : insertion.charAt(0);
         return new UniqueAtomIdentifer(currentPDB, currentModel, chain, leaf, insertionCode, atomSerial);
-    }
-
-    /**
-     * Chooses which kind of leaf to create and returns the assembled {@link LeafSubstructure}.
-     *
-     * @param leafNode The {@link ContentTreeNode} of a leaf.
-     * @param modelIdentifier The model of the leaf.
-     * @param chainIdentifer The chain of the leaf.
-     * @return The assembled leaf.
-     */
-    private OakLeafSubstructure<?> assignLeaf(ContentTreeNode leafNode, int modelIdentifier, String chainIdentifer) {
-        // generate leaf pdbIdentifier
-        LeafIdentifier leafIdentifier = new LeafIdentifier(currentPDB, modelIdentifier, chainIdentifer, Integer.parseInt(leafNode.getIdentifier()), leafNode.getInsertionCode());
-        // get leaf name for leaf identifier
-        String leafName = leafCodes.get(leafIdentifier);
-
-        if (!iterator.getReducer().getOptions().isEnforceAminoAcidAtomNames()) {
-            Set<OakAtom> atoms = leafNode.getAtoms();
-            Optional<AminoAcidFamily> aminoAcidFamilyOptional = AminoAcidFamily.getAminoAcidTypeByThreeLetterCode(leafName);
-            if (aminoAcidFamilyOptional.isPresent()) {
-                AminoAcidFamily family = aminoAcidFamilyOptional.get();
-                return LeafSubstructureFactory.createLeafSubstructure(leafIdentifier, family, atoms);
-            }
-            Optional<NucleotideFamily> nucleotideFamilyOptional = NucleotideFamily.getNucleotideByThreeLetterCode(leafName);
-            if (nucleotideFamilyOptional.isPresent()) {
-                NucleotideFamily family = nucleotideFamilyOptional.get();
-                return LeafSubstructureFactory.createLeafSubstructure(leafIdentifier, family, atoms);
-            }
-            LigandFamily ligandFamily = new LigandFamily("?", leafName);
-            iterator.getSkeletons().put(leafName, new LeafSkeleton(leafName));
-            return LeafSubstructureFactory.createLeafSubstructure(leafIdentifier, ligandFamily, atoms);
-        } else {
-            Map<String, OakAtom> atoms = leafNode.getAtomMap();
-            // log it
-            logger.trace("Creating leaf {}-{} in chain {}", leafNode.getIdentifier(), leafName, chainIdentifer);
-            // find most suitable implementation
-            Optional<AminoAcidFamily> aminoAcidFamilyOptional = AminoAcidFamily.getAminoAcidTypeByThreeLetterCode(leafName);
-            if (aminoAcidFamilyOptional.isPresent()) {
-                AminoAcidFamily family = aminoAcidFamilyOptional.get();
-                return createAminoAcid(leafIdentifier, family, atoms);
-            }
-            Optional<NucleotideFamily> nucleotideFamilyOptional = NucleotideFamily.getNucleotideByThreeLetterCode(leafName);
-            if (nucleotideFamilyOptional.isPresent()) {
-                NucleotideFamily family = nucleotideFamilyOptional.get();
-                return createNucleotide(leafIdentifier, family, atoms);
-            }
-            if (iterator.getReducer().getOptions().isRetrievingLigandInformation()) {
-                return createLeafWithAdditionalInformation(leafIdentifier, leafName, atoms);
-            } else {
-                return createLeafWithoutAdditionalInformation(leafIdentifier, leafName, atoms);
-            }
-        }
-    }
-
-    /**
-     * Decides if a {@link LeafSubstructure} is a amino acid using this three letter code.
-     *
-     * @param leafName The three letter code of a leaf.
-     * @return True, if the given tree letter code used for an amino acid.
-     */
-    private boolean isPlainAminoAcid(String leafName) {
-        return AminoAcidFamily.getAminoAcidTypeByThreeLetterCode(leafName).isPresent();
-    }
-
-    /**
-     * Decides if a {@link LeafSubstructure} is a nucleotide using this three letter code.
-     *
-     * @param leafName The three letter code of a leaf.
-     * @return True, if the given tree letter code used for an nucleotide.
-     */
-    private boolean isPlainNucleotide(String leafName) {
-        return NucleotideFamily.getNucleotideByThreeLetterCode(leafName).isPresent();
-    }
-
-    /**
-     * Creates a new amino acid.
-     *
-     * @param identifier The identifier of the amino acid.
-     * @param family Its concrete family.
-     * @param atoms Its atoms.
-     * @return The amino acid.
-     */
-    private OakAminoAcid createAminoAcid(LeafIdentifier identifier, AminoAcidFamily family, Map<String, OakAtom> atoms) {
-        return LeafSubstructureFactory.createAminoAcidFromAtoms(identifier, family, atoms, iterator.getReducer().getOptions());
-    }
-
-    /**
-     * Creates a new nucleotide.
-     *
-     * @param identifier The identifier of the nucleotide.
-     * @param family Its concrete family.
-     * @param atoms Its atoms.
-     * @return The amino acid.
-     */
-
-    private OakNucleotide createNucleotide(LeafIdentifier identifier, NucleotideFamily family, Map<String, OakAtom> atoms) {
-        return LeafSubstructureFactory.createNucleotideFromAtoms(identifier, family, atoms, iterator.getReducer().getOptions());
-    }
-
-    /**
-     * Creating a leaf from a {@link LeafSkeleton} in the cache.
-     *
-     * @param identifier The identifier of the leaf.
-     * @param leafName Its three letter code.
-     * @param atoms Its atoms.
-     * @return The Leaf.
-     */
-    private OakLeafSubstructure<?> createLeafWithoutAdditionalInformation(LeafIdentifier identifier, String leafName, Map<String, OakAtom> atoms) {
-        OakLeafSubstructure<?> substructure = new OakLigand(identifier, new LigandFamily("?", leafName));
-        atoms.values().forEach(substructure::addAtom);
-        return substructure;
-    }
-
-    /**
-     * Creating a leaf using additional information from parsing the corresponding cif file or using already parsed
-     * {@link LeafSkeleton}s from the cache.
-     *
-     * @param identifier The identifier of the leaf.
-     * @param leafName Its three letter code.
-     * @param atoms Its atoms.
-     * @return The Leaf.
-     */
-    private OakLeafSubstructure<?> createLeafWithAdditionalInformation(LeafIdentifier identifier, String leafName, Map<String, OakAtom> atoms) {
-        LeafSkeleton leafSkeleton;
-        if (!iterator.getSkeletons().containsKey(leafName)) {
-            if (iterator.getReducer().getOptions().isOmittingHydrogen()) {
-                // without hydrogens
-                atoms.values().removeIf(oakAtom -> oakAtom.getElement().getProtonNumber() == 1);
-            }
-            LocalCIFRepository localCifRepository = iterator.getReducer().getLocalCIFRepository();
-            if (localCifRepository != null) {
-                if (iterator.getReducer().getOptions().enforceConnection()) {
-                    leafSkeleton = LigandParserService.parseLeafSkeleton(leafName, localCifRepository);
-                    if (!leafSkeleton.getAtoms().isEmpty()) {
-                        iterator.getSkeletons().put(leafName, leafSkeleton);
-                    } else {
-                        return createLeafWithoutAdditionalInformation(identifier, leafName, atoms);
-                    }
-                }
-                try {
-                    leafSkeleton = LigandParserService.parseLeafSkeleton(leafName, localCifRepository);
-                    iterator.getSkeletons().put(leafName, leafSkeleton);
-                } catch (UncheckedIOException e) {
-                    logger.warn("unable to assign connections to " + leafName);
-                    iterator.getSkeletons().put(leafName, null);
-                    return createLeafWithoutAdditionalInformation(identifier, leafName, atoms);
-                }
-            } else {
-                if (iterator.getReducer().getOptions().enforceConnection()) {
-                    leafSkeleton = LigandParserService.parseLeafSkeleton(leafName);
-                    if (!leafSkeleton.getAtoms().isEmpty()) {
-                        iterator.getSkeletons().put(leafName, leafSkeleton);
-                    } else {
-                        return createLeafWithoutAdditionalInformation(identifier, leafName, atoms);
-                    }
-                }
-                try {
-                    leafSkeleton = LigandParserService.parseLeafSkeleton(leafName);
-                    iterator.getSkeletons().put(leafName, leafSkeleton);
-                } catch (UncheckedIOException e) {
-                    logger.warn("unable to assign connections to " + leafName);
-                    iterator.getSkeletons().put(leafName, null);
-                    return createLeafWithoutAdditionalInformation(identifier, leafName, atoms);
-                }
-            }
-        } else {
-            leafSkeleton = iterator.getSkeletons().get(leafName);
-            if (leafSkeleton == null) {
-                return createLeafWithoutAdditionalInformation(identifier, leafName, atoms);
-            }
-        }
-        return leafSkeleton.toRealLeafSubstructure(identifier, atoms);
     }
 
     private void postProcessProperties() {

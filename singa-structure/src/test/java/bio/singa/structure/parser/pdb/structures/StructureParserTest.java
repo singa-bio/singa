@@ -241,6 +241,7 @@ class StructureParserTest {
         Structure structure = StructureParser.local()
                 .inputStream(inputStream)
                 .parse();
+        // TODO assert something
     }
 
     @Test
@@ -249,6 +250,7 @@ class StructureParserTest {
         List<Structure> structures = StructureParser.mmtf()
                 .pdbIdentifiers(Arrays.asList("5F3P", "5G5T", "5J6Q", "5MAT"))
                 .parse();
+        // TODO assert something
     }
 
     @Test
@@ -266,6 +268,7 @@ class StructureParserTest {
                 .fileLocation(Resources.getResourceAsFileLocation("1GL0_HDS_intra_E-H57_E-D102_E-S195.pdb"))
                 .allChains()
                 .parse();
+        // TODO assert something
     }
 
     @Test
