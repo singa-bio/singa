@@ -4,8 +4,12 @@ package bio.singa.structure.parser.pdb.structures;
 import bio.singa.core.utility.Resources;
 import bio.singa.features.identifiers.LeafIdentifier;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
+import bio.singa.structure.model.interfaces.Ligand;
 import bio.singa.structure.model.interfaces.Structure;
+import bio.singa.structure.model.oak.OakLigand;
+import bio.singa.structure.model.oak.StructuralEntityFilter;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.io.InputStream;
@@ -16,62 +20,62 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static bio.singa.structure.model.oak.StructuralEntityFilter.AtomFilter.*;
 import static bio.singa.structure.parser.pdb.structures.StructureParserOptions.Setting.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class StructureParserTest {
 
-    private static Structure hemoglobin;
-    private static Structure cyanase;
     private static LocalPDBRepository localPdb;
-    private static LocalCIFRepository localCif;
     private static LocalPDBRepository localMmtf;
 
     @BeforeAll
     static void parseUncomplicatedStructure() {
-        // "normal" structure
-        hemoglobin = StructureParser.pdb()
-                .pdbIdentifier("1BUW")
-                .parse();
-        // more complicated
-        cyanase = StructureParser.pdb()
-                .pdbIdentifier("1DW9")
-                .parse();
-
         localPdb = new LocalPDBRepository(Resources.getResourceAsFileLocation("pdb"), SourceLocation.OFFLINE_PDB);
         localMmtf = new LocalPDBRepository(Resources.getResourceAsFileLocation("pdb"), SourceLocation.OFFLINE_MMTF);
-        localCif = new LocalCIFRepository(Resources.getResourceAsFileLocation("pdbechem"));
     }
 
-
     @Test
+    @DisplayName("pdb parsing - correct pdb identifier")
     void shouldParsePDBIdentifierFromHeader() {
+        Structure hemoglobin = StructureParser.pdb()
+                .pdbIdentifier("1BUW")
+                .parse();
         assertEquals("1buw", hemoglobin.getPdbIdentifier());
     }
 
     @Test
+    @DisplayName("pdb parsing - correct one line title")
     void shouldParseOneLineTitleFromHeader() {
+        Structure hemoglobin = StructureParser.pdb()
+                .pdbIdentifier("1BUW")
+                .parse();
         assertEquals("CRYSTAL STRUCTURE OF S-NITROSO-NITROSYL HUMAN HEMOGLOBIN A", hemoglobin.getTitle());
     }
 
     @Test
+    @DisplayName("pdb parsing - correct multi line title")
     void shouldParseMultiLineTitleFromHeader() {
+        Structure cyanase = StructureParser.pdb()
+                .pdbIdentifier("1DW9")
+                .parse();
         assertEquals("STRUCTURE OF CYANASE REVEALS THAT A NOVEL DIMERIC AND DECAMERIC ARRANGEMENT OF SUBUNITS IS REQUIRED FOR FORMATION OF THE ENZYME ACTIVE SITE", cyanase.getTitle());
     }
 
     @Test
+    @DisplayName("pdb parsing - correct model reduction")
     void shouldParseModel() {
-        // parse one model of multi model structure
         Structure structure = StructureParser.pdb()
                 .pdbIdentifier("1PQS")
                 .model(2)
                 .allChains()
                 .parse();
         assertEquals(1, structure.getAllModels().size());
-        assertEquals(Integer.valueOf(2), structure.getFirstModel().getModelIdentifier());
+        assertEquals(2, structure.getFirstModel().getModelIdentifier().intValue());
     }
 
     @Test
+    @DisplayName("pdb parsing - correct chain reduction")
     void shouldParseChain() {
         // parse one chainIdentifier of multi chainIdentifier structure
         Structure structure = StructureParser.pdb()
@@ -83,6 +87,7 @@ class StructureParserTest {
     }
 
     @Test
+    @DisplayName("pdb parsing - correct model and chain reduction")
     void shouldParseModelAndChain() {
         // parse one model of multi model structure and only a specific chainIdentifier
         Structure structure = StructureParser.pdb()
@@ -95,40 +100,45 @@ class StructureParserTest {
         assertEquals("B", structure.getFirstChain().getChainIdentifier());
     }
 
-    @Test
+    @Test()
+    @DisplayName("pdb parsing - correct multi model chain reduction")
     void shouldParseChainOfMultiModel() {
         // parse only a specific chainIdentifier of all models in a structure
         Structure structure = StructureParser.pdb()
                 .pdbIdentifier("2N5E")
                 .chainIdentifier("B")
                 .parse();
+        assertEquals(10, structure.getAllModels().size());
+        assertEquals(1, structure.getFirstModel().getAllChains().size());
+        assertEquals("B", structure.getFirstChain().getChainIdentifier());
     }
 
     // structure with dna or rna
     @Test
+    @DisplayName("pdb parsing - correct nucleotide assignment")
     void shouldParseStructureWithNucleotides() {
         Structure structure = StructureParser.pdb()
                 .pdbIdentifier("5T3L")
                 .everything()
                 .parse();
+        assertEquals(12, structure.getFirstChain().getAllNucleotides().size());
     }
 
     @Test
+    @DisplayName("pdb parsing - correct default insertion code handling")
     void shouldParseStructureWithInsertionCodes() {
         Structure structure = StructureParser.pdb()
                 .pdbIdentifier("1C0A")
                 .everything()
                 .parse();
-
         List<LeafSubstructure<?>> leavesWithInsertionCode = structure.getAllLeafSubstructures().stream()
                 .filter(leafSubstructure -> leafSubstructure.getIdentifier().getSerial() == 620)
                 .collect(Collectors.toList());
-
         assertEquals(2, leavesWithInsertionCode.size());
-
     }
 
     @Test
+    @DisplayName("pdb parsing - correct lower case insertion code handling")
     void shouldParseStructureWithLowerCaseInsertionCodes() {
         Structure structure = StructureParser.pdb()
                 .pdbIdentifier("6bb4")
@@ -142,6 +152,7 @@ class StructureParserTest {
     }
 
     @Test
+    @DisplayName("pdb parsing - correct local pdb resolving")
     void shouldParseFromLocalPDB() {
         Structure structure = StructureParser.local()
                 .localPdbRepository(localPdb)
@@ -151,6 +162,7 @@ class StructureParserTest {
     }
 
     @Test
+    @DisplayName("mmtf parsing - correct local mmtf resolving")
     void shouldParseFromLocalMMTF() {
         Structure structure = StructureParser.local()
                 .localPdbRepository(localMmtf)
@@ -160,6 +172,7 @@ class StructureParserTest {
     }
 
     @Test
+    @DisplayName("mmtf parsing - correct chain reduction")
     void shouldParseMMTFChain() {
         Structure structure = StructureParser.mmtf()
                 .pdbIdentifier("4v5d")
@@ -171,6 +184,7 @@ class StructureParserTest {
     }
 
     @Test
+    @DisplayName("mmtf parsing - correct model reduction")
     void shouldParseMMTFModel() {
         Structure structure = StructureParser.mmtf()
                 .pdbIdentifier("1pqs")
@@ -181,6 +195,7 @@ class StructureParserTest {
     }
 
     @Test
+    @DisplayName("pdb parsing - correct local chain list handling")
     void shouldParseFromLocalPDBWithChainList() {
         Path chainList = Paths.get(Resources.getResourceAsFileLocation("chain_list.txt"));
         List<Structure> structure = StructureParser.local()
@@ -191,6 +206,7 @@ class StructureParserTest {
     }
 
     @Test
+    @DisplayName("pdb parsing - correct online chain list handling")
     void shouldParseFromPDBWithChainList() {
         Path chainList = Paths.get(Resources.getResourceAsFileLocation("chain_list.txt"));
         List<Structure> structure = StructureParser.pdb()
@@ -200,11 +216,13 @@ class StructureParserTest {
     }
 
     @Test
+    @DisplayName("pdb parsing - correct local repository resolving handling")
     void shouldRetrievePathOfLocalPDB() {
         assertTrue(localPdb.getPathForPdbIdentifier("1C0A").endsWith("pdb/data/structures/divided/pdb/c0/pdb1c0a.ent.gz"));
     }
 
     @Test
+    @DisplayName("pdb parsing - correct title from filename")
     void shouldAssignInformationFromFileName() {
         Structure structure = StructureParser.local()
                 .fileLocation(Resources.getResourceAsFileLocation("1GL0_HDS_intra_E-H57_E-D102_E-S195.pdb"))
@@ -217,6 +235,7 @@ class StructureParserTest {
     }
 
     @Test
+    @DisplayName("pdb parsing - ignore hetero atoms")
     void shouldIgnoreHeteroAtoms() {
         Structure structure = StructureParser.pdb()
                 .pdbIdentifier("3fjz")
@@ -236,24 +255,27 @@ class StructureParserTest {
     }
 
     @Test
+    @DisplayName("pdb parsing - correct parsing from input stream")
     void shouldParseFromInputStream() {
         InputStream inputStream = Resources.getResourceAsStream("1GL0_HDS_intra_E-H57_E-D102_E-S195.pdb");
         Structure structure = StructureParser.local()
                 .inputStream(inputStream)
                 .parse();
-        // TODO assert something
+        assertNotNull(structure);
     }
 
     @Test
+    @DisplayName("pdb parsing - correct parsing of multiple structures")
     void shouldParseMultipleStructures() {
         // all have the ligand SO4
         List<Structure> structures = StructureParser.mmtf()
                 .pdbIdentifiers(Arrays.asList("5F3P", "5G5T", "5J6Q", "5MAT"))
                 .parse();
-        // TODO assert something
+        assertEquals(4, structures.size());
     }
 
     @Test
+    @DisplayName("pdb parsing - failure for invalid names")
     void shouldThrowErrorWhenFileDoesNotExist() {
         assertThrows(UncheckedIOException.class,
                 () -> StructureParser.pdb()
@@ -263,33 +285,38 @@ class StructureParserTest {
     }
 
     @Test
+    @DisplayName("pdb parsing - correct number of chains")
     void shouldParseAllChainsFromLocalFile() {
-        StructureParser.local()
+        Structure structure = StructureParser.local()
                 .fileLocation(Resources.getResourceAsFileLocation("1GL0_HDS_intra_E-H57_E-D102_E-S195.pdb"))
                 .allChains()
                 .parse();
-        // TODO assert something
+        assertEquals(1, structure.getAllChains().size());
     }
 
     @Test
+    @DisplayName("pdb parsing - correctly omitting deuterium")
     void shouldParseStructureWithDeuterium() {
         Structure structure = StructureParser.pdb()
                 .pdbIdentifier("2r24")
                 .settings(OMIT_HYDROGENS)
                 .parse();
-        // TODO actually assert something
+        assertEquals(0, structure.getAllAtoms().stream()
+                .filter(isHydrogen())
+                .count());
     }
 
     @Test
+    @DisplayName("pdb parsing - correctly parse inchi from REMARK and connections from CONECT records")
     void shouldParsePyMolExportPeptideConnections() {
         // we want connections but cannot guarantee unique atom names
         StructureParser.SingleParserFacade facade = StructureParser.local()
                 .fileLocation(Resources.getResourceAsFileLocation("peptide_pymol_export.pdb"))
-                .settings(ENFORCE_CONNECTIONS, DISREGARD_AMINO_ACID_ATOM_NAMES)
+                .settings(ENFORCE_CONNECTIONS)
                 .everything();
         Structure structure = facade.parse();
+        assertEquals(87, ((OakLigand) structure.getAllLigands().get(0)).getBonds().size());
         String inchi = facade.getIterator().getSkeletons().get("P_B").getInchi();
-        // TODO actually assert something
-        System.out.println();
+        assertEquals("InChI=1S/C54H85N15O15S/c1-30(55)53(84)69-21-12-18-42(69)52(83)68-40(28-72)50(81)61-32(3)45(76)66-39(27-71)49(80)60-31(2)44(75)64-38(24-34-15-9-6-10-16-34)48(79)65-37(23-33-13-7-5-8-14-33)46(77)59-25-43(74)63-36(19-22-85-4)47(78)67-41(29-73)51(82)62-35(26-70)17-11-20-58-54(56)57/h5-10,13-16,30-32,35-42,54,58,70-73H,11-12,17-29,55-57H2,1-4H3,(H,59,77)(H,60,80)(H,61,81)(H,62,82)(H,63,74)(H,64,75)(H,65,79)(H,66,76)(H,67,78)(H,68,83)/t30-,31-,32-,35-,36-,37-,38-,39-,40-,41-,42-/m0/s1", inchi);
     }
 }

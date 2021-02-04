@@ -251,8 +251,9 @@ public class LeafSubstructureBuilder {
 
         @Override
         public OakLeafSubstructure<?> build() {
-            // valid atom names
+            // check whether atom names are distinct
             if (atomMap != null) {
+                // atom names are unique
                 if (family instanceof AminoAcidFamily) {
                     OakAminoAcid aminoAcid = new OakAminoAcid(identifier, (AminoAcidFamily) family);
                     atomSet.forEach(aminoAcid::addAtom);
@@ -286,6 +287,8 @@ public class LeafSubstructureBuilder {
                     return ligand;
                 }
             } else {
+                // at least one duplicated atom name
+                // connections need to be assigned via CONECT records
                 if (family instanceof AminoAcidFamily) {
                     OakAminoAcid aminoAcid = new OakAminoAcid(identifier, (AminoAcidFamily) family);
                     atomSet.forEach(aminoAcid::addAtom);
@@ -301,8 +304,6 @@ public class LeafSubstructureBuilder {
                 }
             }
         }
-
-
     }
 
 }

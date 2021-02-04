@@ -168,7 +168,7 @@ public class StructuralEntityFilter {
         }
 
         public static Predicate<Atom> isHydrogen() {
-            return atom -> atom.getElement().equals(ElementProvider.HYDROGEN);
+            return atom -> atom.getElement().getProtonNumber() == 1;
         }
 
         public static Predicate<Atom> isNitrogen() {

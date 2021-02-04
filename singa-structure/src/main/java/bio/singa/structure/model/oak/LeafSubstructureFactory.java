@@ -25,7 +25,7 @@ public class LeafSubstructureFactory {
 
     }
 
-    public static OakLeafSubstructure<?> createLeafSubstructure(LeafIdentifier leafIdentifier, StructuralFamily family) {
+    public static OakLeafSubstructure<?> createLeafSubstructure(LeafIdentifier leafIdentifier, StructuralFamily<?> family) {
         if (family instanceof AminoAcidFamily) {
             return new OakAminoAcid(leafIdentifier, (AminoAcidFamily) family);
         } else if (family instanceof NucleotideFamily) {
@@ -162,31 +162,7 @@ public class LeafSubstructureFactory {
         nucleotide.addBondBetween(atoms.get("C4"), atoms.get("C5"), CovalentBondType.DOUBLE_BOND);
     }
 
-    public static OakAminoAcid createAminoAcidFromAtoms(LeafIdentifier leafIdentifier, AminoAcidFamily aminoAcidFamily, Set<OakAtom> atoms, StructureParserOptions options) {
-        // create new AminoAcid
-        OakAminoAcid aminoAcid = new OakAminoAcid(leafIdentifier, aminoAcidFamily);
-        // and add atoms
-        if (options.isOmittingHydrogen()) {
-            // without hydrogens
-            atoms.stream()
-                    .filter(atom -> atom.getElement().getProtonNumber() != 1)
-                    .forEach(aminoAcid::addAtom);
-        } else {
-            // all
-            if (options.isOmittingHydrogen()) {
-                // without hydrogens
-                atoms.stream()
-                        .filter(atom -> atom.getElement().getProtonNumber() != 1)
-                        .forEach(aminoAcid::addAtom);
-            } else {
-                // all
-                atoms.forEach(aminoAcid::addAtom);
-            }
-        }
-        return aminoAcid;
-    }
-
-    public static OakLeafSubstructure<?> createLeafSubstructure(LeafIdentifier leafIdentifier, StructuralFamily family, Set<OakAtom> atoms) {
+    public static OakLeafSubstructure<?> createLeafSubstructure(LeafIdentifier leafIdentifier, StructuralFamily<?> family, Set<OakAtom> atoms) {
         OakLeafSubstructure<?> leafSubstructure;
         if (family instanceof AminoAcidFamily) {
             leafSubstructure = new OakAminoAcid(leafIdentifier, (AminoAcidFamily) family);
@@ -372,7 +348,7 @@ public class LeafSubstructureFactory {
      * @param atoms The atoms to take from.
      */
     private static void connectNTerminalAtoms(OakAminoAcid aminoAcid, Map<String, OakAtom> atoms, StructureParserOptions options) {
-        if (options.isConnectingHydrogens()) {
+        if (!options.isOmittingHydrogen()) {
             aminoAcid.addBondBetween(atoms.get("N"), atoms.get("H"));
             aminoAcid.addBondBetween(atoms.get("N"), atoms.get("H2"));
         }
@@ -386,7 +362,7 @@ public class LeafSubstructureFactory {
      */
     private static void connectCTerminaAtoms(OakAminoAcid aminoAcid, Map<String, OakAtom> atoms, StructureParserOptions options) {
         aminoAcid.addBondBetween(atoms.get("C"), atoms.get("OXT"));
-        if (options.isConnectingHydrogens()) {
+        if (!options.isOmittingHydrogen()) {
             aminoAcid.addBondBetween(atoms.get("OXT"), atoms.get("HXT"));
         }
     }

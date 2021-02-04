@@ -11,38 +11,36 @@ public class StructureParserOptions {
      * Creates edges in the graph.
      */
     private boolean createEdges = true;
+
     /**
      * Retrieves additional information from CIF files.
      */
     private boolean retrieveLigandInformation = true;
-    /**
-     * Tries to saturate the residue with hydrogen atoms if they are in the given map of atoms.
-     */
-    private boolean connectHydrogens = false;
+
     /**
      * Omits all hydrogen (and eventually deuterium) atoms. Those atoms are not added to the resulting residue.
      */
     private boolean omitHydrogens = false;
+
     /**
      * Uses the filename as the title of the parsed structure.
      */
     private boolean inferTitleFromFileName = false;
+
     /**
      * Tries to find a pdbid in the file name and uses it as the identifier of the structure.
      */
     private boolean inferIdentifierFromFileName = false;
+
     /**
      * Defines if hetero atoms should be parsed.
      */
     private boolean heteroAtoms = true;
+
     /**
      * Defines whether an exception is thrown or a waring is issued whenever connections cannot be assigned.
      */
     private boolean enforceConnection = false;
-    /**
-     * Defines whether an exception is thrown or a waring is issued whenever connections cannot be assigned.
-     */
-    private boolean enforceAminoAcidAtomNames = true;
 
     /**
      * Create a new Options object using enum constants.
@@ -84,12 +82,6 @@ public class StructureParserOptions {
             case OMIT_HETERO_ATOMS:
                 options.heteroAtoms(false);
                 break;
-            case GET_HYDROGEN_CONNECTIONS:
-                options.connectHydrogens(true);
-                break;
-            case OMIT_HYDROGENS_CONNECTIONS:
-                options.connectHydrogens(false);
-                break;
             case GET_HYDROGENS:
                 options.omitHydrogens(false);
                 break;
@@ -108,24 +100,13 @@ public class StructureParserOptions {
             case GET_IDENTIFIER_FROM_PDB:
                 options.inferIdentifierFromFileName(false);
                 break;
-            case ENFORCE_CONNECTIONS:
-                options.setEnforceConnection(true);
-                break;
             case DISREGARD_CONNECTIONS:
                 options.setEnforceConnection(false);
                 break;
-            case DISREGARD_AMINO_ACID_ATOM_NAMES:
-                options.setEnforceAminoAcidAtomNames(false);
+            case ENFORCE_CONNECTIONS:
+                options.setEnforceConnection(true);
                 break;
         }
-    }
-
-    public boolean isEnforceAminoAcidAtomNames() {
-        return enforceAminoAcidAtomNames;
-    }
-
-    public void setEnforceAminoAcidAtomNames(boolean enforceAminoAcidAtomNames) {
-        this.enforceAminoAcidAtomNames = enforceAminoAcidAtomNames;
     }
 
     public void applySettings(Setting... settings) {
@@ -186,25 +167,6 @@ public class StructureParserOptions {
         this.retrieveLigandInformation = retrieveLigandInformation;
     }
 
-    /**
-     * Setting this option to {@code true} will try to connect hydrogen atom tho their respective partners.<br><br>
-     * Default value: {@code false}
-     *
-     * @return The value of this option.
-     */
-    public boolean isConnectingHydrogens() {
-        return connectHydrogens;
-    }
-
-    /**
-     * Setting this option to {@code true} will try to connect hydrogen atom tho their respective partners.<br><br>
-     * Default value: {@code false}
-     *
-     * @param connectHydrogens {@code true} to turn this option on, {@code false} to turn it off.
-     */
-    public void connectHydrogens(boolean connectHydrogens) {
-        this.connectHydrogens = connectHydrogens;
-    }
 
     /**
      * Setting this option to {@code true} will omit all hydrogen (and eventually deuterium) atoms in amino acids and
@@ -224,9 +186,6 @@ public class StructureParserOptions {
      */
     public void omitHydrogens(boolean omitHydrogens) {
         this.omitHydrogens = omitHydrogens;
-        if (omitHydrogens) {
-            connectHydrogens = false;
-        }
     }
 
     /**
@@ -313,22 +272,12 @@ public class StructureParserOptions {
         OMIT_HETERO_ATOMS,
 
         /**
-         * Connect hydrogens to leafs.
-         */
-        GET_HYDROGEN_CONNECTIONS,
-
-        /**
-         * Omit hydrogen connections to leafs (default).
-         */
-        OMIT_HYDROGENS_CONNECTIONS,
-
-        /**
-         * Parse hydrogen atoms.
+         * Parse hydrogen atoms (default).
          */
         GET_HYDROGENS,
 
         /**
-         * Omit hydrogen atoms (default).
+         * Omit hydrogen atoms.
          */
         OMIT_HYDROGENS,
 
@@ -353,19 +302,14 @@ public class StructureParserOptions {
         GET_IDENTIFIER_FROM_PDB,
 
         /**
-         * Tries to enforce connections wherever possible.
-         */
-        ENFORCE_CONNECTIONS,
-
-        /**
-         * If connections cannot be assigned upon first try they are ignored (default).
+         * CONECT and LINK records are ignored (default).
          */
         DISREGARD_CONNECTIONS,
 
         /**
-         * Ignores malformed amino acid atom names (C, CA, CD, ...).
+         * Additional connections are parsed from CONECT and LINK records.
          */
-        DISREGARD_AMINO_ACID_ATOM_NAMES
+        ENFORCE_CONNECTIONS
 
     }
 }

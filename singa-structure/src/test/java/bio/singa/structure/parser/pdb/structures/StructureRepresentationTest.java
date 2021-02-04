@@ -12,7 +12,6 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 
-import static bio.singa.structure.parser.pdb.structures.StructureParserOptions.Setting.ENFORCE_CONNECTIONS;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
@@ -142,7 +141,6 @@ class StructureRepresentationTest {
         List<String> expectedLines = Files.readAllLines(Paths.get(fileLocation));
         Structure structure = StructureParser.local()
                 .fileLocation(fileLocation)
-                .settings(ENFORCE_CONNECTIONS)
                 .everything()
                 .parse();
         String pdbRepresentation = StructureRepresentation.composePdbRepresentation(structure);
