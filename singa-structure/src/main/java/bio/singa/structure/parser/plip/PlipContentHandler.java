@@ -32,6 +32,9 @@ public class PlipContentHandler implements ContentHandler {
     private double c2y;
     private double c2z;
 
+    private boolean ligandAtomInformation;
+    private boolean proteinAtomInformation;
+
     private boolean noResidueInteraction;
 
     private InteractionType interactionType;
@@ -118,6 +121,12 @@ public class PlipContentHandler implements ContentHandler {
             case "ligcoo":
                 ligcoo = true;
                 break;
+            case "lig_idx_list":
+                ligandAtomInformation = true;
+                break;
+            case "prot_idx_list":
+                proteinAtomInformation = true;
+                break;
             default:
                 break;
         }
@@ -140,6 +149,12 @@ public class PlipContentHandler implements ContentHandler {
             case "ligcoo":
                 ligcoo = false;
                 break;
+            case "lig_idx_list":
+                ligandAtomInformation = false;
+                break;
+            case "prot_idx_list":
+                proteinAtomInformation = false;
+                break;
             default:
                 break;
         }
@@ -147,11 +162,6 @@ public class PlipContentHandler implements ContentHandler {
 
     @Override
     public void characters(char[] ch, int start, int length) {
-//        String testString = new String(ch, start, length);
-//        if (currentTag.isEmpty() || testString.isBlank()) {
-//            return;
-//        }
-//        System.out.println(currentTag + ": ("+length+") " + testString);
         switch (currentTag) {
             case "resnr":
                 firstLeafSerial = new String(ch, start, length);
@@ -291,16 +301,30 @@ public class PlipContentHandler implements ContentHandler {
                 as(HalogenBond.class).setAcceptor(asInteger(ch, start, length));
                 break;
             case "idx":
-                switch (interactionType) {
-                    case PI_CATION_INTERACTION:
-                        as(PiCation.class).getAtoms2().add(asInteger(ch, start, length));
-                        break;
-                    case PI_STACKING:
-                        as(PiStacking.class).getAtoms2().add(asInteger(ch, start, length));
-                        break;
-                    case SALT_BRIDGE:
-                        as(SaltBridge.class).getAtoms2().add(asInteger(ch, start, length));
-                        break;
+                if (ligandAtomInformation) {
+                    switch (interactionType) {
+                        case PI_CATION_INTERACTION:
+                            as(PiCation.class).getAtoms2().add(asInteger(ch, start, length));
+                            break;
+                        case PI_STACKING:
+                            as(PiStacking.class).getAtoms2().add(asInteger(ch, start, length));
+                            break;
+                        case SALT_BRIDGE:
+                            as(SaltBridge.class).getAtoms2().add(asInteger(ch, start, length));
+                            break;
+                    }
+                } else if (proteinAtomInformation) {
+                    switch (interactionType) {
+                        case PI_CATION_INTERACTION:
+                            as(PiCation.class).getAtoms1().add(asInteger(ch, start, length));
+                            break;
+                        case PI_STACKING:
+                            as(PiStacking.class).getAtoms1().add(asInteger(ch, start, length));
+                            break;
+                        case SALT_BRIDGE:
+                            as(SaltBridge.class).getAtoms1().add(asInteger(ch, start, length));
+                            break;
+                    }
                 }
                 break;
             case "protispos":
