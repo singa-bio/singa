@@ -439,7 +439,10 @@ public class StructureCollector {
      */
     private void annotateLinks(OakStructure structure) {
         for (String linkLine : linkLines) {
-            structure.addLinkEntry(LinkToken.assembleLinkEntry(structure, linkLine));
+            LinkEntry linkEntry = LinkToken.assembleLinkEntry(structure, linkLine);
+            if (linkEntry != null) {
+                structure.addLinkEntry(linkEntry);
+            }
         }
     }
 

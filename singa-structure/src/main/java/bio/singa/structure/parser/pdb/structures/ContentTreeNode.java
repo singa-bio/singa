@@ -260,6 +260,14 @@ class ContentTreeNode {
         }
     }
 
+    @Override
+    public String toString() {
+        return "ContentTreeNode{" +
+                "level=" + level +
+                ", identifier='" + identifier + '\'' +
+                '}';
+    }
+
     /**
      * The level of any atom in the tree.
      */
