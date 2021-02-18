@@ -66,6 +66,9 @@ public enum LinkToken implements PDBToken {
             return null;
         }
         Atom firstAtom = getAtom(oakStructure, firstAtomName, firstAtomLeafIdentifier);
+        if (firstAtom == null) {
+            return null;
+        }
         // process second atom
         String secondAtomName = SECOND_ATOM_NAME.extract(linkLine);
         String secondAtomChainIdentifier = SECOND_ATOM_CHAIN_IDENTIFIER.extract(linkLine);
@@ -78,7 +81,9 @@ public enum LinkToken implements PDBToken {
             return null;
         }
         Atom secondAtom = getAtom(oakStructure, secondAtomName, secondAtomLeafIdentifier);
-
+        if (secondAtom == null) {
+            return null;
+        }
         return new LinkEntry(firstLeafSubstructureOptional.get(), firstAtom, secondLeafSubstructureOptional.get(), secondAtom);
     }
 
@@ -111,10 +116,17 @@ public enum LinkToken implements PDBToken {
     }
 
     private static Atom getAtom(OakStructure oakStructure, String atomName, LeafIdentifier leafIdentifier) {
-        LeafSubstructure<?> firstLeafSubstructure = oakStructure.getLeafSubstructure(leafIdentifier)
-                .orElseThrow(() -> new StructureParserException("unable to find " + leafIdentifier + " for link creation"));
-        return firstLeafSubstructure.getAtomByName(atomName)
-                .orElseThrow(() -> new StructureParserException("unable to find " + atomName + " in " + leafIdentifier + " for link creation"));
+        Optional<LeafSubstructure<?>> leafSubstructureOptional = oakStructure.getLeafSubstructure(leafIdentifier);
+        if (!leafSubstructureOptional.isPresent()) {
+            logger.warn("unable to find {} for link creation", leafIdentifier);
+            return null;
+        }
+        Optional<Atom> optionalAtom = leafSubstructureOptional.get().getAtomByName(atomName);
+        if (!optionalAtom.isPresent()) {
+            logger.warn("unable to find {} in {} for link creation", atomName, leafIdentifier);
+            return null;
+        }
+        return optionalAtom.get();
     }
 
     private static LeafIdentifier getLeafIdentifier(OakStructure oakStructure, String chainIdentifier, int residueSerial, String insertionCodeString) {
