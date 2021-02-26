@@ -34,15 +34,6 @@ public class LeafSubstructureFactory {
         return new OakLigand(leafIdentifier, (LigandFamily) family);
     }
 
-    public static LeafSubstructure<?> copy(LeafIdentifier leafIdentifier, LeafSubstructure<?> originalLeaf) {
-        if (originalLeaf.getFamily() instanceof AminoAcidFamily) {
-            return new OakAminoAcid(((OakAminoAcid) originalLeaf), leafIdentifier);
-        } else if (originalLeaf.getFamily()  instanceof NucleotideFamily) {
-            return new OakNucleotide(((OakNucleotide) originalLeaf), leafIdentifier );
-        }
-        return new OakLigand(((OakLigand) originalLeaf), leafIdentifier);
-    }
-
     public static void connectNucleotide(OakNucleotide nucleotide, Map<String, OakAtom> atoms) {
         connectRibose(nucleotide, atoms);
         connectPhosphateGroup(nucleotide, atoms);

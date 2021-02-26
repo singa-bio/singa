@@ -23,10 +23,8 @@ public class OakNucleotide extends OakLeafSubstructure<NucleotideFamily> impleme
 
     public OakNucleotide(OakNucleotide oakNucleotide) {
         super(oakNucleotide);
-    }
-
-    public OakNucleotide(OakNucleotide oakNucleotide, LeafIdentifier leafIdentifier) {
-        super(oakNucleotide, leafIdentifier);
+        mutation = oakNucleotide.mutation;
+        wildTypeNucleotide = oakNucleotide.wildTypeNucleotide;
     }
 
     @Override

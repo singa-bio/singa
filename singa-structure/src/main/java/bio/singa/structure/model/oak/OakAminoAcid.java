@@ -26,10 +26,8 @@ public class OakAminoAcid extends OakLeafSubstructure<AminoAcidFamily> implement
 
     public OakAminoAcid(OakAminoAcid oakAminoAcid) {
         super(oakAminoAcid);
-    }
-
-    public OakAminoAcid(OakAminoAcid oakAminoAcid, LeafIdentifier leafIdentifier) {
-        super(oakAminoAcid, leafIdentifier);
+        mutation = oakAminoAcid.mutation;
+        wildTypeResidue = oakAminoAcid.wildTypeResidue;
     }
 
     @Override

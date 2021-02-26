@@ -43,6 +43,7 @@ public class OakStructure implements Structure {
     public OakStructure(OakStructure structure) {
         pdbIdentifier = structure.getPdbIdentifier();
         title = structure.title;
+        resolution = structure.resolution;
         models = new TreeMap<>();
         lastAddedAtomIdentifier = structure.lastAddedAtomIdentifier;
         for (OakModel model : structure.models.values()) {
