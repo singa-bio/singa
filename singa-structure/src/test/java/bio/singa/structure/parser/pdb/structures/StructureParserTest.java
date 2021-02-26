@@ -3,9 +3,13 @@ package bio.singa.structure.parser.pdb.structures;
 
 import bio.singa.core.utility.Resources;
 import bio.singa.features.identifiers.LeafIdentifier;
+import bio.singa.structure.model.families.AminoAcidFamily;
+import bio.singa.structure.model.interfaces.AminoAcid;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.interfaces.Ligand;
 import bio.singa.structure.model.interfaces.Structure;
+import bio.singa.structure.model.mmtf.MmtfAminoAcid;
+import bio.singa.structure.model.oak.OakAminoAcid;
 import bio.singa.structure.model.oak.OakLigand;
 import bio.singa.structure.model.oak.StructuralEntityFilter;
 import org.junit.jupiter.api.BeforeAll;
@@ -18,6 +22,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static bio.singa.structure.model.oak.StructuralEntityFilter.AtomFilter.*;
@@ -319,4 +324,32 @@ class StructureParserTest {
         String inchi = facade.getIterator().getSkeletons().get("P_B").getInchi();
         assertEquals("InChI=1S/C54H85N15O15S/c1-30(55)53(84)69-21-12-18-42(69)52(83)68-40(28-72)50(81)61-32(3)45(76)66-39(27-71)49(80)60-31(2)44(75)64-38(24-34-15-9-6-10-16-34)48(79)65-37(23-33-13-7-5-8-14-33)46(77)59-25-43(74)63-36(19-22-85-4)47(78)67-41(29-73)51(82)62-35(26-70)17-11-20-58-54(56)57/h5-10,13-16,30-32,35-42,54,58,70-73H,11-12,17-29,55-57H2,1-4H3,(H,59,77)(H,60,80)(H,61,81)(H,62,82)(H,63,74)(H,64,75)(H,65,79)(H,66,76)(H,67,78)(H,68,83)/t30-,31-,32-,35-,36-,37-,38-,39-,40-,41-,42-/m0/s1", inchi);
     }
+
+    @Test
+    @DisplayName("pdb parsing - correctly parse resolution from REMARK")
+    void shouldParseResolution() {
+        // we want connections but cannot guarantee unique atom names
+        Structure hemoglobin = StructureParser.pdb()
+                .pdbIdentifier("1BUW")
+                .parse();
+        assertEquals(1.9, hemoglobin.getResolution());
+    }
+
+    @Test
+    @DisplayName("pdb parsing - correctly parse mutations from SEQADV")
+    void shouldParseMutations() {
+        // we want connections but cannot guarantee unique atom names
+        Structure structure = StructureParser.pdb()
+                .pdbIdentifier("6sl6")
+                .parse();
+        Optional<AminoAcid> aminoAcidOptional = structure.getAminoAcid(LeafIdentifier.fromString("6sl6-1-A-138"));
+        if (aminoAcidOptional.isPresent()) {
+            OakAminoAcid aminoAcid = ((OakAminoAcid) aminoAcidOptional.get());
+            assertTrue(aminoAcid.isMutated());
+            assertEquals(AminoAcidFamily.ALANINE, aminoAcid.getWildTypeResidue());
+        } else {
+            fail("could not find mutated amino acid");
+        }
+    }
+
 }

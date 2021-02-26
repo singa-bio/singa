@@ -34,6 +34,8 @@ public class MmtfStructure implements Structure {
      */
     private Set<Integer> removedModels;
 
+    private double resolution;
+
     /**
      * The models that have already been requested.
      */
@@ -57,6 +59,7 @@ public class MmtfStructure implements Structure {
     public MmtfStructure(byte[] bytes, boolean deflate) {
         this.bytes = bytes;
         data = bytesToStructureData(bytes, deflate);
+        resolution = data.getResolution();
         cachedModels = new HashMap<>();
         removedModels = new HashSet<>();
     }
@@ -93,6 +96,11 @@ public class MmtfStructure implements Structure {
     @Override
     public String getTitle() {
         return data.getTitle();
+    }
+
+    @Override
+    public double getResolution() {
+        return resolution;
     }
 
     @Override

@@ -1,22 +1,17 @@
 package bio.singa.structure.parser.pdb.structures;
 
+import bio.singa.core.utility.DoubleMatcher;
 import bio.singa.core.utility.Pair;
 import bio.singa.features.identifiers.LeafIdentifier;
 import bio.singa.features.identifiers.UniqueAtomIdentifer;
-import bio.singa.structure.model.families.AminoAcidFamily;
-import bio.singa.structure.model.families.LigandFamily;
-import bio.singa.structure.model.families.NucleotideFamily;
-import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.interfaces.Structure;
 import bio.singa.structure.model.oak.*;
-import bio.singa.structure.parser.pdb.ligands.LigandParserService;
 import bio.singa.structure.parser.pdb.structures.iterators.StructureIterator;
 import bio.singa.structure.parser.pdb.structures.iterators.StructureReducer;
 import bio.singa.structure.parser.pdb.structures.tokens.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.UncheckedIOException;
 import java.nio.file.Paths;
 import java.util.*;
 
@@ -85,11 +80,14 @@ public class StructureCollector {
 
     private List<String> linkLines;
     private List<String> connectionLines;
+    private List<String> sequenceAdviceLines;
 
     /**
      * References Pair of ThreeLetterCode and AttributeType to AttributeValue
      */
     private Map<Pair<String>, String> ligandPropertyRemarks;
+
+    private double resolution;
 
     /**
      * Creates a new structure collector to extract structural information from pdb lines and reducing information.
@@ -107,6 +105,7 @@ public class StructureCollector {
         closedChains = new HashSet<>();
         linkLines = new ArrayList<>();
         connectionLines = new ArrayList<>();
+        sequenceAdviceLines = new ArrayList<>();
         ligandPropertyRemarks = new HashMap<>();
     }
 
@@ -162,7 +161,7 @@ public class StructureCollector {
         }
         getTitle();
         // TODO add option for INCHI from Remark
-        getRemarks();
+        getAdditionalInformation();
         if (iterator.getReducer().getOptions().enforceConnection()) {
             getLinks();
             getConnections();
@@ -214,21 +213,18 @@ public class StructureCollector {
         }
     }
 
-    private void getRemarks() {
-        boolean remarkFound = false;
+    private void getAdditionalInformation() {
         String refThreeLetterCode = null;
         String refAttribute = null;
         StringBuilder refValue = new StringBuilder();
         for (String currentLine : pdbLines) {
-            // check if title line
-            if (RemarkToken.REMARK_80.matcher(currentLine).matches()) {
+            // REMARK 80
+            if (Remark80Token.REMARK_80.matcher(currentLine).matches()) {
                 // if this is the first time such a line occurs, the title was found
-                if (!remarkFound) {
-                    // first line should always be empty
-                    remarkFound = true;
+                String content = Remark80Token.REMARK_CONTENT.extract(currentLine);
+                if (content.trim().isEmpty()) {
                     continue;
                 }
-                String content = RemarkToken.REMARK_CONTENT.extract(currentLine);
                 if (refThreeLetterCode == null) {
                     refThreeLetterCode = trimEnd(content);
                     continue;
@@ -248,12 +244,22 @@ public class StructureCollector {
                 }
                 // append values
                 refValue.append(trimEnd(content));
-            } else {
-                // if title has been found and a line with another content is found
-                if (remarkFound) {
-                    // quit parsing title
-                    break;
+            }
+            // REMARK 2
+            if (Remark2Token.REMARK_2.matcher(currentLine).matches()) {
+                String content = Remark2Token.REMARK_CONTENT.extract(currentLine).trim();
+                if (content.trim().isEmpty()) {
+                    continue;
                 }
+                if (DoubleMatcher.containsDouble(content)) {
+                    resolution = Double.parseDouble(content);
+                } else {
+                    resolution = -1;
+                }
+            }
+            // SEQADV
+            if (SequenceAdviceToken.RECORD_PATTERN.matcher(currentLine).matches()) {
+                sequenceAdviceLines.add(currentLine);
             }
             if (AtomToken.RECORD_PATTERN.matcher(currentLine).matches()) {
                 break;
@@ -385,7 +391,7 @@ public class StructureCollector {
         }
         structure.setPdbIdentifier(contentTree.getIdentifier());
         structure.setTitle(titleBuilder.toString());
-
+        structure.setResolution(resolution);
         for (ContentTreeNode modelNode : contentTree.getNodesFromLevel(ContentTreeNode.StructureLevel.MODEL)) {
             logger.debug("Collecting chains for model {}", modelNode.getIdentifier());
             OakModel model = new OakModel(Integer.parseInt(modelNode.getIdentifier()));
@@ -426,6 +432,7 @@ public class StructureCollector {
             annotateLinks(structure);
             annotateConnections(structure);
         }
+        annotateSeqenceAdvice(structure);
         UniqueAtomIdentifer lastAtom = Collections.max(atoms.keySet());
         structure.setLastAddedAtomIdentifier(lastAtom.getAtomSerial());
         postProcessProperties();
@@ -449,6 +456,12 @@ public class StructureCollector {
     private void annotateConnections(OakStructure structure) {
         for (String connectionLine : connectionLines) {
             ConnectionToken.assignConnections(structure, connectionLine);
+        }
+    }
+
+    private void annotateSeqenceAdvice(OakStructure structure) {
+        for (String connectionLine : sequenceAdviceLines) {
+            SequenceAdviceToken.assignSequenceAdvice(structure, connectionLine);
         }
     }
 

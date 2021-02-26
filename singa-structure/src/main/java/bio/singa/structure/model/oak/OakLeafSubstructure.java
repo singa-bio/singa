@@ -68,10 +68,6 @@ public abstract class OakLeafSubstructure<FamilyType extends StructuralFamily> i
         exchangeableFamilies = new HashSet<>();
     }
 
-    public void setDivergingThreeLetterCode(String divergingThreeLetterCode) {
-        this.divergingThreeLetterCode = divergingThreeLetterCode;
-    }
-
     /**
      * This is a copy constructor. Creates a new leaf with the same attributes as the given leaf. This also recursively
      * creates copies of all the underlying substructures and atoms. The neighbours of this substructure are NOT copied.
@@ -104,6 +100,9 @@ public abstract class OakLeafSubstructure<FamilyType extends StructuralFamily> i
         annotatedAsHetAtom = leafSubstructure.annotatedAsHetAtom;
     }
 
+    public void setDivergingThreeLetterCode(String divergingThreeLetterCode) {
+        this.divergingThreeLetterCode = divergingThreeLetterCode;
+    }
 
     @Override
     public LeafIdentifier getIdentifier() {

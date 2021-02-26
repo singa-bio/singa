@@ -13,6 +13,9 @@ import java.util.Optional;
  */
 public class OakAminoAcid extends OakLeafSubstructure<AminoAcidFamily> implements AminoAcid {
 
+    private boolean mutation;
+    private AminoAcidFamily wildTypeResidue;
+
     public OakAminoAcid(LeafIdentifier leafIdentifier, AminoAcidFamily family) {
         super(leafIdentifier, family);
     }
@@ -40,4 +43,24 @@ public class OakAminoAcid extends OakLeafSubstructure<AminoAcidFamily> implement
         return optionalAlphaCarbon.map(Atom::getPosition).orElseGet(super::getPosition);
     }
 
+    public boolean isMutated() {
+        return mutation;
+    }
+
+    public void setMutation(boolean mutation) {
+        this.mutation = mutation;
+    }
+
+    public AminoAcidFamily getWildTypeResidue() {
+        return wildTypeResidue;
+    }
+
+    public void setWildTypeResidue(AminoAcidFamily wildTypeResidue) {
+        this.wildTypeResidue = wildTypeResidue;
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() + (mutation ? "*" : "");
+    }
 }

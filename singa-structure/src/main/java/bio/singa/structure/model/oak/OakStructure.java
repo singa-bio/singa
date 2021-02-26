@@ -33,6 +33,8 @@ public class OakStructure implements Structure {
 
     private List<LinkEntry> linkEntries;
 
+    private double resolution;
+
     public OakStructure() {
         models = new TreeMap<>();
         linkEntries = new ArrayList<>();
@@ -251,6 +253,15 @@ public class OakStructure implements Structure {
 
     public void setLastAddedAtomIdentifier(int lastAddedAtomIdentifier) {
         this.lastAddedAtomIdentifier = lastAddedAtomIdentifier;
+    }
+
+    @Override
+    public double getResolution() {
+        return resolution;
+    }
+
+    public void setResolution(double resolution) {
+        this.resolution = resolution;
     }
 
     @Override

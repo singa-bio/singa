@@ -79,6 +79,8 @@ public interface Structure extends LeafSubstructureContainer, ChainContainer {
      */
     Optional<Chain> getChain(int modelIdentifier, String chainIdentifier);
 
+    double getResolution();
+
     /**
      * Returns a copy of this structure.
      *

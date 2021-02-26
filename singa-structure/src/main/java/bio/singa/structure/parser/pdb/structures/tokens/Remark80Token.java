@@ -23,7 +23,7 @@ import java.util.regex.Pattern;
  *
  * @author cl
  */
-public enum RemarkToken implements PDBToken {
+public enum Remark80Token implements PDBToken {
 
     RECORD_TYPE(Range.of(1, 6), Justification.LEFT),
     REMARK_NUMBER(Range.of(8, 10), Justification.RIGHT),
@@ -35,7 +35,7 @@ public enum RemarkToken implements PDBToken {
     private final Range<Integer> columns;
     private final Justification justification;
 
-    RemarkToken(Range<Integer> columns, Justification justification) {
+    Remark80Token(Range<Integer> columns, Justification justification) {
         this.columns = columns;
         this.justification = justification;
     }
