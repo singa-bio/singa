@@ -60,7 +60,7 @@ public abstract class AbstractStructureIterator<SourceType, TargetType> implemen
 
     @Override
     public String getCurrentPdbIdentifier() {
-        return PDBIdentifier.extractFirst(getCurrentSource());
+        return PDBIdentifier.extractLast(getCurrentSource());
     }
 
     @Override

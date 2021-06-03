@@ -128,7 +128,7 @@ public class OakChain implements Chain {
      * @param source AminoAcid with Backbone Carbon.
      * @param target AminoAcid with Backbone Nitrogen.
      */
-    public void connectPeptideBonds(OakAminoAcid source, OakAminoAcid target) {
+    public static void connectPeptideBonds(OakAminoAcid source, OakAminoAcid target) {
         // creates the peptide backbone
         Optional<Atom> sourceAtomOptional = source.getAtomByName("C");
         Optional<Atom> targetAtomOptional = target.getAtomByName("N");

@@ -11,9 +11,12 @@ import bio.singa.structure.model.oak.OakStructure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * @author cl
@@ -110,6 +113,46 @@ public enum ConnectionToken implements PDBToken {
         }
     }
 
+    public static String assemblePDBLines(OakLeafSubstructure<?> leafsubstructure) {
+        StringBuilder builder = new StringBuilder();
+        for (Atom atom : leafsubstructure.getAllAtoms()) {
+            OakAtom firstAtom = (OakAtom) atom;
+            List<OakAtom> connectedAtoms = leafsubstructure.getBonds().stream()
+                    // determine all bonds where the atom is involved in
+                    .filter(oakBond -> oakBond.getSource().equals(firstAtom) || oakBond.getTarget().equals(firstAtom))
+                    // determine the atoms that are NOT the source atom
+                    .map(oakBond -> {
+                        if (oakBond.getSource().equals(firstAtom)) {
+                            return oakBond.getTarget();
+                        } else {
+                            return oakBond.getSource();
+                        }
+                    }).sorted(Comparator.comparingInt(OakAtom::getAtomIdentifier))
+                    .collect(Collectors.toList());
+            if (connectedAtoms.isEmpty()) {
+                return "";
+            }
+            if (connectedAtoms.size() > 4) {
+                logger.warn("more than 4 atoms are connected to {}", atom);
+            }
+            // concatenate information
+            builder.append(RECORD_TYPE.createTokenString("CONECT"))
+                    .append(CONNECTION_SOURCE_ATOM.createTokenString(String.valueOf(atom.getAtomIdentifier())));
+            builder.append(CONNECTION_TARGET_ATOM_1.createTokenString(String.valueOf(connectedAtoms.get(0).getAtomIdentifier())));
+            if (connectedAtoms.size() > 1) {
+                builder.append(CONNECTION_TARGET_ATOM_2.createTokenString(String.valueOf(connectedAtoms.get(1).getAtomIdentifier())));
+            }
+            if (connectedAtoms.size() > 2) {
+                builder.append(CONNECTION_TARGET_ATOM_3.createTokenString(String.valueOf(connectedAtoms.get(2).getAtomIdentifier())));
+            }
+            if (connectedAtoms.size() > 3) {
+                builder.append(CONNECTION_TARGET_ATOM_4.createTokenString(String.valueOf(connectedAtoms.get(3).getAtomIdentifier())));
+            }
+            builder.append(System.lineSeparator());
+        }
+        return builder.toString();
+    }
+
     public static boolean isNumeric(String strNum) {
         if (strNum == null || strNum.isEmpty()) {
             return false;
@@ -125,6 +168,18 @@ public enum ConnectionToken implements PDBToken {
     @Override
     public Pattern getRecordNamePattern() {
         return RECORD_PATTERN;
+    }
+
+    private String createTokenString(String content) {
+        int totalLength = columns.getUpperBound() - columns.getLowerBound() - content.length();
+        StringBuilder filler = new StringBuilder();
+        for (int i = 0; i < totalLength + 1; i++) {
+            filler.append(" ");
+        }
+        if (justification == Justification.LEFT) {
+            return content + filler;
+        }
+        return filler + content;
     }
 
 }

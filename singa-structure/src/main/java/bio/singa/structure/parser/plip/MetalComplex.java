@@ -1,6 +1,8 @@
 package bio.singa.structure.parser.plip;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author cl
@@ -183,6 +185,16 @@ public class MetalComplex extends Interaction {
     @Override
     public int getFirstTargetAtom() {
         return atom2;
+    }
+
+    @Override
+    public List<Integer> getAllSourceAtoms() {
+        return Collections.singletonList(atom1);
+    }
+
+    @Override
+    public List<Integer> getAllTargetAtoms() {
+        return Collections.singletonList(atom2);
     }
 
     @Override

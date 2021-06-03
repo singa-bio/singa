@@ -75,7 +75,7 @@ public class PDBSequenceCluster extends PDBRestEndpoint {
                 }
             }
             if (clusterMembers.isEmpty()) {
-                throw new IllegalArgumentException("failed to obtain PDB sequence clusters for" + pdbIdentifier + "/" + chainIdentifier);
+                throw new IllegalArgumentException("failed to obtain PDB sequence clusters for " + pdbIdentifier + "/" + chainIdentifier);
             }
         } catch (IOException e) {
             throw new UncheckedIOException("failed to parse results for chain " + pdbIdentifier + "." + chainIdentifier, e);

@@ -30,18 +30,19 @@ public class PDBIdentifier extends AbstractIdentifier {
     }
 
     /**
-     * Extracts the first occurrence of any PDB identifier from a string.
+     * Extracts the last occurrence of any PDB identifier from a string.
      *
      * @param line The string to extract from.
      * @return The first occurrence of any PDB identifier from a string, and {@code null} if no PDB identifier could be
      * found.
      */
-    public static String extractFirst(String line) {
+    public static String extractLast(String line) {
         Matcher matcher = PATTERN.matcher(line);
-        if (matcher.find()) {
-            return matcher.group();
+        String lastMatch = null;
+        while (matcher.find()) {
+            lastMatch = matcher.group();
         }
-        return null;
+        return lastMatch;
     }
 
 }

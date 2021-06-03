@@ -5,14 +5,8 @@ import bio.singa.structure.model.interfaces.AtomContainer;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.interfaces.Model;
 import bio.singa.structure.model.interfaces.Structure;
-import bio.singa.structure.model.oak.LinkEntry;
-import bio.singa.structure.model.oak.OakChain;
-import bio.singa.structure.model.oak.OakModel;
-import bio.singa.structure.model.oak.OakStructure;
-import bio.singa.structure.parser.pdb.structures.tokens.ChainTerminatorToken;
-import bio.singa.structure.parser.pdb.structures.tokens.HeaderToken;
-import bio.singa.structure.parser.pdb.structures.tokens.LinkToken;
-import bio.singa.structure.parser.pdb.structures.tokens.TitleToken;
+import bio.singa.structure.model.oak.*;
+import bio.singa.structure.parser.pdb.structures.tokens.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -78,7 +72,7 @@ public class StructureRepresentation {
             }
         }
         // add postamble
-        sb.append(getPostamble());
+        sb.append(getPostamble(structure.getAllLeafSubstructures()));
         return sb.toString();
     }
 
@@ -100,7 +94,7 @@ public class StructureRepresentation {
         // if there is only one model
         sb.append(composePdbRepresentationOfNonConsecutiveRecords(leaves));
         // add postamble
-        sb.append(getPostamble());
+        sb.append(getPostamble(leaves));
         return sb.toString();
     }
 
@@ -201,8 +195,13 @@ public class StructureRepresentation {
      *
      * @return The closing lines.
      */
-    private static String getPostamble() {
-        return "END" + System.lineSeparator() + System.lineSeparator();
+    private static String getPostamble(List<LeafSubstructure<?>> leafSubstructures) {
+        String connectRecords = leafSubstructures.stream()
+                .filter(leafSubstructure -> leafSubstructure.getClass().equals(OakLigand.class))
+                .map(OakLigand.class::cast)
+                .map(ConnectionToken::assemblePDBLines)
+                .collect(Collectors.joining());
+        return connectRecords + "END" + System.lineSeparator() + System.lineSeparator();
     }
 
     /**

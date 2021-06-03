@@ -34,7 +34,7 @@ class LocalSourceIteratorTest {
         LocalSourceIterator<String> onlinePdbIterator = new LocalSourceIterator<>(sources, FileLocationToPathConverter.get());
         while (onlinePdbIterator.hasNext()) {
             String nextFileLocation = onlinePdbIterator.next();
-            String nextPdbIdentifier = PDBIdentifier.extractFirst(nextFileLocation);
+            String nextPdbIdentifier = PDBIdentifier.extractLast(nextFileLocation);
             Object content = onlinePdbIterator.getContent(nextFileLocation);
             assertTrue(content instanceof List);
             List<String> strings = (List<String>) content;
@@ -55,7 +55,7 @@ class LocalSourceIteratorTest {
         LocalSourceIterator<Path> onlinePdbIterator = new LocalSourceIterator<>(sources, IdentityConverter.get(Path.class));
         while (onlinePdbIterator.hasNext()) {
             Path nextFileLocation = onlinePdbIterator.next();
-            String nextPdbIdentifier = PDBIdentifier.extractFirst(nextFileLocation.getFileName().toString());
+            String nextPdbIdentifier = PDBIdentifier.extractLast(nextFileLocation.getFileName().toString());
             Object content = onlinePdbIterator.getContent(nextFileLocation);
             assertTrue(content instanceof List);
             List<String> strings = (List<String>) content;

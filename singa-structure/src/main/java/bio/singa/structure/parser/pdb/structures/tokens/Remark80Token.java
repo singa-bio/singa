@@ -41,7 +41,6 @@ public enum Remark80Token implements PDBToken {
     }
 
     public static String getContentOfRemark(String remarkLine) {
-
         return REMARK_CONTENT.extract(remarkLine);
     }
 

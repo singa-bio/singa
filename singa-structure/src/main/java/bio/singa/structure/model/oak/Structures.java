@@ -243,7 +243,7 @@ public class Structures {
         return getClosestDistance(positions1, positions2);
     }
 
-    private static double getClosestDistance(List<Vector3D> positions1, List<Vector3D> positions2) {
+    public static double getClosestDistance(List<Vector3D> positions1, List<Vector3D> positions2) {
         Matrix distancesPairwise = VectorMetricProvider.EUCLIDEAN_METRIC.calculateDistancesPairwise(positions1, positions2);
         List<Pair<Integer>> minimalDistances = Matrices.getPositionsOfMinimalElement(distancesPairwise);
         if (minimalDistances.isEmpty()) {

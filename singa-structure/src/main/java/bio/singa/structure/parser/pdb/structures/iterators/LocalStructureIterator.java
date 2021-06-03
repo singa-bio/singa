@@ -32,4 +32,7 @@ public class LocalStructureIterator<SourceType> extends AbstractStructureIterato
         }
         throw new IllegalStateException("Expected List of Strings or byte array but recived " + content.getClass());
     }
+
+
+
 }

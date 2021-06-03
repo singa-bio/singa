@@ -3,6 +3,8 @@ package bio.singa.structure.parser.plip;
 
 import bio.singa.features.identifiers.LeafIdentifier;
 
+import java.util.List;
+
 /**
  * @author cl
  */
@@ -117,6 +119,8 @@ public abstract class Interaction {
      */
     abstract public int getFirstSourceAtom();
 
+    abstract public List<Integer> getAllSourceAtoms();
+
     /**
      * Returns the Atom ID of the target atom of the interaction, belonging to the ligand. Pay attention to interaction
      * type in question since definition may vary accordingly.
@@ -124,5 +128,7 @@ public abstract class Interaction {
      * @return The interaction's target atom ID.
      */
     abstract public int getFirstTargetAtom();
+
+    abstract public List<Integer> getAllTargetAtoms();
 
 }

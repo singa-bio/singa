@@ -1,6 +1,8 @@
 package bio.singa.structure.parser.plip;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author cl
@@ -114,6 +116,16 @@ public class HalogenBond extends Interaction {
     @Override
     public int getFirstTargetAtom() {
         return acceptor;
+    }
+
+    @Override
+    public List<Integer> getAllSourceAtoms() {
+        return Collections.singletonList(donor);
+    }
+
+    @Override
+    public List<Integer> getAllTargetAtoms() {
+        return Collections.singletonList(acceptor);
     }
 
     @Override

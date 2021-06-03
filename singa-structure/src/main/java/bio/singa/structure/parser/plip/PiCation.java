@@ -2,6 +2,7 @@ package bio.singa.structure.parser.plip;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -141,6 +142,16 @@ public class PiCation extends Interaction {
         } else {
             return -1;
         }
+    }
+
+    @Override
+    public List<Integer> getAllSourceAtoms() {
+        return atoms1;
+    }
+
+    @Override
+    public List<Integer> getAllTargetAtoms() {
+        return atoms2;
     }
 
     @Override

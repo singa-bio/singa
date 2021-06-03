@@ -143,6 +143,16 @@ public class SaltBridge extends Interaction {
     }
 
     @Override
+    public List<Integer> getAllSourceAtoms() {
+        return atoms1;
+    }
+
+    @Override
+    public List<Integer> getAllTargetAtoms() {
+        return atoms2;
+    }
+
+    @Override
     public String toString() {
         return "SaltBridge{" +
                 "atoms1=" + atoms1 +

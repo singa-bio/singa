@@ -10,16 +10,14 @@ import org.rcsb.mmtf.encoder.AdapterToStructureData;
 import org.rcsb.mmtf.encoder.WriterUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.ac.ebi.beam.Bond;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 import static bio.singa.structure.model.oak.LeafSubstructureFactory.createLeafSubstructure;
 
@@ -30,6 +28,10 @@ import static bio.singa.structure.model.oak.LeafSubstructureFactory.createLeafSu
  * @author fk
  */
 public class StructureWriter {
+
+    // TODO add builder pattern for writing structures
+    // TODO also add REMARK 80 to be written
+    // TODO option for short and long ter records
 
     private static final Logger logger = LoggerFactory.getLogger(StructureWriter.class);
 
@@ -82,6 +84,7 @@ public class StructureWriter {
 
     /**
      * Return only link entries from the list, that are represented in the given leaf substructures.
+     *
      * @param leafSubstructures The relevant leaf substructures.
      * @param linkEntries The links to be reduced
      */
@@ -189,6 +192,8 @@ public class StructureWriter {
         OakStructure renumberedStructure = new OakStructure();
         renumberedStructure.setPdbIdentifier(structure.getPdbIdentifier());
         renumberedStructure.setTitle(structure.getTitle());
+
+        Map<Integer, Integer> identifierMapping = new HashMap<>();
         int identifier = 1;
         for (Model model : structure.getAllModels()) {
             OakModel renumberedModel = new OakModel(model.getModelIdentifier());
@@ -204,10 +209,18 @@ public class StructureWriter {
                     renumberedChain.addLeafSubstructure(renumberedLeafSubstructure, true);
                     for (Atom atom : leafSubstructure.getAllAtoms()) {
                         OakAtom renumberedAtom = new OakAtom(identifier, atom.getElement(), atom.getAtomName(), atom.getPosition());
-                        renumberedAtom.setBFactor(atom.getBFactor());
+                        // conserve identifier
                         logger.trace("Renumbering atom {} to {}.", atom.getAtomIdentifier(), renumberedAtom.getAtomIdentifier());
+                        identifierMapping.put(atom.getAtomIdentifier(), renumberedAtom.getAtomIdentifier());
+                        renumberedAtom.setBFactor(atom.getBFactor());
                         renumberedLeafSubstructure.addAtom(renumberedAtom);
                         identifier++;
+                    }
+                    for (OakBond edge : ((OakLeafSubstructure<?>) leafSubstructure).getBonds()) {
+                        OakBond edgeCopy = edge.getCopy();
+                        OakAtom source = ((OakAtom) renumberedLeafSubstructure.getAtom(identifierMapping.get(edge.getSource().getAtomIdentifier())).get());
+                        OakAtom target = ((OakAtom) renumberedLeafSubstructure.getAtom(identifierMapping.get(edge.getTarget().getAtomIdentifier())).get());
+                        renumberedLeafSubstructure.addBondBetween(edgeCopy, source, target);
                     }
                 }
                 logger.trace("Keeping identifier {} for terminator token.", identifier);
@@ -217,16 +230,23 @@ public class StructureWriter {
             for (Chain chain : model.getAllChains()) {
                 OakChain oakChain = (OakChain) chain;
                 OakChain renumberedChain = (OakChain) renumberedModel.getChain(chain.getChainIdentifier()).orElseThrow(NoSuchElementException::new);
-                for (LeafSubstructure leafSubstructure : oakChain.getNonConsecutivePart()) {
-                    OakLeafSubstructure renumberedLeafSubstructure = createLeafSubstructure(leafSubstructure.getIdentifier(), leafSubstructure.getFamily());
+                for (LeafSubstructure<?> leafSubstructure : oakChain.getNonConsecutivePart()) {
+                    OakLeafSubstructure<?> renumberedLeafSubstructure = createLeafSubstructure(leafSubstructure.getIdentifier(), leafSubstructure.getFamily());
                     renumberedLeafSubstructure.setAnnotatedAsHetAtom(true);
                     renumberedChain.addLeafSubstructure(renumberedLeafSubstructure);
                     for (Atom atom : leafSubstructure.getAllAtoms()) {
                         OakAtom renumberedAtom = new OakAtom(identifier, atom.getElement(), atom.getAtomName(), atom.getPosition());
+                        logger.trace("Renumbering atom {} to {}.", atom.getAtomIdentifier(), renumberedAtom.getAtomIdentifier());
+                        identifierMapping.put(atom.getAtomIdentifier(), renumberedAtom.getAtomIdentifier());
                         renumberedAtom.setBFactor(atom.getBFactor());
                         renumberedLeafSubstructure.addAtom(renumberedAtom);
-                        logger.trace("Renumbering atom {} to {}.", atom.getAtomIdentifier(), renumberedAtom.getAtomIdentifier());
                         identifier++;
+                    }
+                    for (OakBond edge : ((OakLeafSubstructure<?>) leafSubstructure).getBonds()) {
+                        OakBond edgeCopy = edge.getCopy();
+                        OakAtom source = ((OakAtom) renumberedLeafSubstructure.getAtom(identifierMapping.get(edge.getSource().getAtomIdentifier())).get());
+                        OakAtom target = ((OakAtom) renumberedLeafSubstructure.getAtom(identifierMapping.get(edge.getTarget().getAtomIdentifier())).get());
+                        renumberedLeafSubstructure.addBondBetween(edgeCopy, source, target);
                     }
                 }
             }
