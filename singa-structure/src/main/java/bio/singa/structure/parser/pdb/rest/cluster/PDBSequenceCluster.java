@@ -17,6 +17,7 @@ import java.util.regex.Pattern;
  * A {@link PDBRestEndpoint} that uses the PDB REST API to obtain the sequence cluster for a given chain.
  *
  * @author fk
+ * @deprecated the RSCB api has changed, refactor or drop accordingly
  */
 public class PDBSequenceCluster extends PDBRestEndpoint {
 

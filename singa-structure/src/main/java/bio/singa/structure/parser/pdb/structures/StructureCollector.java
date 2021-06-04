@@ -222,7 +222,7 @@ public class StructureCollector {
             if (Remark80Token.REMARK_80.matcher(currentLine).matches()) {
                 // if this is the first time such a line occurs, the title was found
                 String content = Remark80Token.REMARK_CONTENT.extract(currentLine);
-                if (content.trim().isEmpty()) {
+                if (content.trim().isEmpty() && refThreeLetterCode == null) {
                     continue;
                 }
                 if (refThreeLetterCode == null) {

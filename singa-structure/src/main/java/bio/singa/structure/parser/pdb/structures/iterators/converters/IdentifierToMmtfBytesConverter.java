@@ -23,7 +23,7 @@ public class IdentifierToMmtfBytesConverter implements ContentConverter<String, 
     @Override
     public byte[] convert(String content) {
         try {
-            return ReaderUtils.getByteArrayFromUrl(content);
+            return ReaderUtils.getByteArrayFromUrl(content, true, false);
         } catch (IOException e) {
             throw new UncheckedIOException("unable to access " + content, e);
         }

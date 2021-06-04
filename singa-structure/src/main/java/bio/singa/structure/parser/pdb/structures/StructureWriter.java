@@ -72,7 +72,7 @@ public class StructureWriter {
 
     }
 
-    public interface PDBSubstructureStep extends OptionsStep, OutputStep {
+    public interface PDBSubstructureStep extends OptionsStep {
 
         PDBSubstructureStep title(String title);
 
@@ -82,7 +82,7 @@ public class StructureWriter {
 
     }
 
-    public interface OptionsStep {
+    public interface OptionsStep extends OutputStep {
 
         OutputStep renumberSubstructures(Map<LeafIdentifier, Integer> renumberingMap);
 

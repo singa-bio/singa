@@ -24,7 +24,7 @@ class MmtfAtomTest {
 
     @BeforeAll
     static void initialize() throws IOException {
-        structure1C0A = new MmtfStructure(ReaderUtils.getByteArrayFromUrl("1C0A"));
+        structure1C0A = new MmtfStructure(ReaderUtils.getByteArrayFromUrl("1C0A", true, false));
         // no offset to regular pdb file
         atom412 = structure1C0A.getAtom(412).get();
         // one offset to regular pdb file

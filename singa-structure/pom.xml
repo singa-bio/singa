@@ -24,7 +24,7 @@
     </parent>
 
     <artifactId>singa-structure</artifactId>
-    <version>0.7.0</version>
+    <version>0.7.1</version>
     <packaging>jar</packaging>
 
     <dependencies>
@@ -46,7 +46,7 @@
         <dependency>
             <groupId>org.rcsb</groupId>
             <artifactId>mmtf-codec</artifactId>
-            <version>1.0.8</version>
+            <version>1.0.9</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.apache.logging.log4j</groupId>
