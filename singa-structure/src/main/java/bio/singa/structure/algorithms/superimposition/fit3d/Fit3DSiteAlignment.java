@@ -515,23 +515,26 @@ public class Fit3DSiteAlignment implements Fit3D {
         }
         SubstructureSuperimposition bestSuperimposition = matches.get(0).getSubstructureSuperimposition();
         List<LeafSubstructure<?>> mappedSite2 = bestSuperimposition.applyTo(site2.getCopy().getAllLeafSubstructures());
+
+        String site1FileLocation = site1.getAllLeafSubstructures().stream()
+                .sorted(Comparator.comparing(LeafSubstructure::getIdentifier))
+                .map(leafSubstructure -> leafSubstructure.getChainIdentifier() + "-" + leafSubstructure.getIdentifier().getSerial())
+                .collect(Collectors.joining("_", bestSuperimposition.getFormattedRmsd() + "_" + site1.getAllLeafSubstructures().get(0).getPdbIdentifier() + "_", ""))
+                + "_site1.pdb";
+
+        String site2FileLocation = site2.getAllLeafSubstructures().stream()
+                .sorted(Comparator.comparing(LeafSubstructure::getIdentifier))
+                .map(leafSubstructure -> leafSubstructure.getChainIdentifier() + "-" + leafSubstructure.getIdentifier().getSerial())
+                .collect(Collectors.joining("_", bestSuperimposition.getFormattedRmsd() + "_" + site2.getAllLeafSubstructures().get(0).getPdbIdentifier() + "_", ""))
+                + "_site2.pdb";
+
         try {
-            StructureWriter.writeLeafSubstructures(site1.getAllLeafSubstructures(),
-                    outputDirectory.resolve(site1.getAllLeafSubstructures().stream()
-                            .sorted(Comparator.comparing(LeafSubstructure::getIdentifier))
-                            .map(leafSubstructure -> leafSubstructure.getChainIdentifier() + "-"
-                                    + leafSubstructure.getIdentifier().getSerial())
-                            .collect(Collectors.joining("_", bestSuperimposition.getFormattedRmsd() + "_"
-                                    + site1.getAllLeafSubstructures().get(0).getPdbIdentifier()
-                                    + "_", "")) + "_site1.pdb"));
-            StructureWriter.writeLeafSubstructures(mappedSite2,
-                    outputDirectory.resolve(site2.getAllLeafSubstructures().stream()
-                            .sorted(Comparator.comparing(LeafSubstructure::getIdentifier))
-                            .map(leafSubstructure -> leafSubstructure.getChainIdentifier() + "-"
-                                    + leafSubstructure.getIdentifier().getSerial())
-                            .collect(Collectors.joining("_", bestSuperimposition.getFormattedRmsd() + "_"
-                                    + site2.getAllLeafSubstructures().get(0).getPdbIdentifier()
-                                    + "_", "")) + "_site2.pdb"));
+            StructureWriter.pdb()
+                    .substructures(site1.getAllLeafSubstructures())
+                    .writeToPath(outputDirectory.resolve(site1FileLocation));
+            StructureWriter.pdb()
+                    .substructures(mappedSite2)
+                    .writeToPath(outputDirectory.resolve(site2FileLocation));
         } catch (IOException e) {
             logger.error("error writing Fit3DSite results", e);
         }

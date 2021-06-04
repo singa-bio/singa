@@ -157,12 +157,15 @@ public class AffinityAlignment extends AlignmentMethod {
         for (Map.Entry<StructuralMotif, List<StructuralMotif>> entry : clusters.entrySet()) {
             String clusterBaseLocation = "cluster_" + (clusterCounter + 1) + "/";
             // write exemplar
-            StructureWriter.writeLeafSubstructures(entry.getKey().getAllLeafSubstructures(),
-                    outputPath.resolve(clusterBaseLocation + "exemplar_" + (clusterCounter + 1) + "_" + entry.getKey() + ".pdb"));
+            StructureWriter.pdb()
+                    .substructures(entry.getKey().getAllLeafSubstructures())
+                    .writeToPath(outputPath.resolve(clusterBaseLocation + "exemplar_" + (clusterCounter + 1) + "_" + entry.getKey() + ".pdb"));
+
             // write cluster members
             for (StructuralMotif structuralMotif : entry.getValue()) {
-                StructureWriter.writeLeafSubstructures(structuralMotif.getAllLeafSubstructures(),
-                        outputPath.resolve(clusterBaseLocation + structuralMotif + ".pdb"));
+                StructureWriter.pdb()
+                        .substructures(structuralMotif.getAllLeafSubstructures())
+                        .writeToPath(outputPath.resolve(clusterBaseLocation + structuralMotif + ".pdb"));
             }
             clusterCounter++;
         }

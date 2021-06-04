@@ -134,17 +134,20 @@ public class ConsensusAlignment extends AlignmentMethod {
             BinaryTree<ConsensusContainer> currentCluster = clusters.get(i);
             // write consensus
             if (currentCluster.getLeafNodes().size() > 1) {
-                StructureWriter.writeLeafSubstructures(currentCluster.getRoot().getData().getStructuralMotif().getAllLeafSubstructures(),
-                        outputPath.resolve(clusterBaseLocation + "consensus_" + (i + 1) + ".pdb"));
+                StructureWriter.pdb()
+                        .substructures(currentCluster.getRoot().getData().getStructuralMotif().getAllLeafSubstructures())
+                        .writeToPath(outputPath.resolve(clusterBaseLocation + "consensus_" + (i + 1) + ".pdb"));
             }
             // write leaves
             for (BinaryTreeNode<ConsensusContainer> leafNode : currentCluster.getLeafNodes()) {
                 if (leafNode.getData().getSuperimposition() != null) {
-                    StructureWriter.writeLeafSubstructures(leafNode.getData().getSuperimposition().getMappedFullCandidate(),
-                            outputPath.resolve(clusterBaseLocation + leafNode.getData().toString() + ".pdb"));
+                    StructureWriter.pdb()
+                            .substructures(leafNode.getData().getSuperimposition().getMappedFullCandidate())
+                            .writeToPath(outputPath.resolve(clusterBaseLocation + leafNode.getData().toString() + ".pdb"));
                 } else {
-                    StructureWriter.writeLeafSubstructures(leafNode.getData().getStructuralMotif().getAllLeafSubstructures(),
-                            outputPath.resolve(clusterBaseLocation + leafNode.getData().toString() + ".pdb"));
+                    StructureWriter.pdb()
+                            .substructures(leafNode.getData().getStructuralMotif().getAllLeafSubstructures())
+                            .writeToPath(outputPath.resolve(clusterBaseLocation + leafNode.getData().toString() + ".pdb"));
                 }
             }
         }

@@ -8,6 +8,7 @@ import bio.singa.features.identifiers.LeafIdentifier;
 import bio.singa.mathematics.vectors.Vector3D;
 import bio.singa.structure.model.interfaces.*;
 import bio.singa.structure.parser.pdb.structures.StructureParser;
+import bio.singa.structure.parser.pdb.structures.StructureRenumberer;
 import bio.singa.structure.parser.pdb.structures.StructureSelector;
 import org.junit.jupiter.api.Test;
 
@@ -75,7 +76,7 @@ class StructuresTest {
         LeafIdentifier leafIdentifier = new LeafIdentifier("1szi", 1, "A", 206);
         Map<LeafIdentifier, Integer> renumberingMap = new TreeMap<>();
         renumberingMap.put(leafIdentifier, 202);
-        OakStructure renumberStructure = Structures.renumberStructure(structure, renumberingMap);
+        Structure renumberStructure = StructureRenumberer.renumberLeaveSubstructuresWithMap(structure, renumberingMap);
         StructureSelector.selectFrom(renumberStructure)
                 .model(1)
                 .chain("A")

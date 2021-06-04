@@ -122,18 +122,6 @@ class StructureRepresentationTest {
         assertPDBLinesEqual(expectedLines, actualLines);
     }
 
-    @Test
-    void shouldRepresentLeaves() throws IOException {
-        String fileLocation = Resources.getResourceAsFileLocation("1GL0_HDS_intra_E-H57_E-D102_E-S195.pdb");
-        List<String> expectedLines = Files.readAllLines(Paths.get(fileLocation));
-        Structure structure = StructureParser.local()
-                .fileLocation(fileLocation)
-                .everything()
-                .parse();
-        String pdbRepresentation = StructureRepresentation.composePdbRepresentation(structure.getAllLeafSubstructures());
-        List<String> actualLines = Arrays.asList(pdbRepresentation.split(System.lineSeparator()));
-        assertPDBLinesEqual(expectedLines, actualLines);
-    }
 
     @Test
     void shouldParseLinks() throws IOException {

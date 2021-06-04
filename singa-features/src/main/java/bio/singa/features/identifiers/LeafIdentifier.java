@@ -56,6 +56,10 @@ public class LeafIdentifier implements Comparable<LeafIdentifier> {
         this(DEFAULT_PDB_IDENTIFIER, DEFAULT_MODEL_IDENTIFIER, DEFAULT_CHAIN_IDENTIFIER, serial);
     }
 
+    public LeafIdentifier(UniqueAtomIdentifer uniqueAtomIdentifer) {
+        this(uniqueAtomIdentifer.getPdbIdentifier(), uniqueAtomIdentifer.getModelIdentifier(),uniqueAtomIdentifer.getChainIdentifier(), uniqueAtomIdentifer.getLeafSerial(), uniqueAtomIdentifer.getLeafInsertionCode());
+    }
+
     /**
      * Constructs a {@link LeafIdentifier} from its full string specification: PDB-ID, model ID, chain ID, serial
      * number, and (optionally) insertion code.

@@ -70,8 +70,9 @@ public interface Fit3D {
                 .filter(match -> match.getRmsd() <= rmsdCutoff)
                 .forEach(match -> {
                     try {
-                        StructureWriter.writeLeafSubstructures(match.getSubstructureSuperimposition().getMappedFullCandidate(),
-                                outputDirectory.resolve(match.getSubstructureSuperimposition().getStringRepresentation() + ".pdb"));
+                        StructureWriter.pdb()
+                                .substructures(match.getSubstructureSuperimposition().getMappedFullCandidate())
+                                .writeToPath(outputDirectory.resolve(match.getSubstructureSuperimposition().getStringRepresentation() + ".pdb"));
                     } catch (IOException e) {
                         logger.error("could not write match {}", match.getSubstructureSuperimposition().getStringRepresentation(), e);
                     }
@@ -89,8 +90,9 @@ public interface Fit3D {
                 .filter(match -> match.getSubstructureSuperimposition() != null)
                 .forEach(match -> {
                     try {
-                        StructureWriter.writeLeafSubstructures(match.getSubstructureSuperimposition().getMappedFullCandidate(),
-                                outputDirectory.resolve(match.getSubstructureSuperimposition().getStringRepresentation() + ".pdb"));
+                        StructureWriter.pdb()
+                                .substructures(match.getSubstructureSuperimposition().getMappedFullCandidate())
+                                .writeToPath(outputDirectory.resolve(match.getSubstructureSuperimposition().getStringRepresentation() + ".pdb"));
                     } catch (IOException e) {
                         logger.error("could not write match {}", match.getSubstructureSuperimposition().getStringRepresentation(), e);
                     }

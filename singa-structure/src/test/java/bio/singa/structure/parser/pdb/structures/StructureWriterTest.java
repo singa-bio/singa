@@ -23,7 +23,10 @@ class StructureWriterTest {
         OakStructure structure = (OakStructure) StructureParser.pdb()
                 .pdbIdentifier("1acj")
                 .parse();
-        StructureWriter.writeMMTFStructure(structure, path);
+
+        StructureWriter.mmtf()
+                .structure(structure)
+                .writeToPath(path);
 
         Structure reparsedStructure = StructureParser.local()
                 .localPdbRepository(localPDB)

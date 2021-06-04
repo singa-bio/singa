@@ -77,28 +77,6 @@ public class StructureRepresentation {
     }
 
     /**
-     * Creates a pdb representation of the given structure.
-     *
-     * @param leaves The leaves.
-     * @return The string representing the structure in pdb format.
-     */
-    public static String composePdbRepresentation(List<LeafSubstructure<?>> leaves) {
-        return composePdbRepresentation(leaves, Collections.emptyList());
-    }
-
-    public static String composePdbRepresentation(List<LeafSubstructure<?>> leaves, List<LinkEntry> linkEntries) {
-        StringBuilder sb = new StringBuilder();
-        LeafSubstructure<?> first = leaves.iterator().next();
-        // add preamble
-        sb.append(getPreamble(first.getPdbIdentifier(), "", linkEntries));
-        // if there is only one model
-        sb.append(composePdbRepresentationOfNonConsecutiveRecords(leaves));
-        // add postamble
-        sb.append(getPostamble(leaves));
-        return sb.toString();
-    }
-
-    /**
      * Adds all chains in the model to the given string builder.
      *
      * @param sb The string builder to append to.
