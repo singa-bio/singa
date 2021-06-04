@@ -110,8 +110,8 @@ public class StructureWriter {
 
         private Structure structure;
         private List<LeafSubstructure<?>> leafSubstructures;
-        private String title;
-        private String pdbIdentifier;
+        private String title = "";
+        private String pdbIdentifier = "";
         private List<LinkEntry> linkEntries;
 
         private StructureRepresentationOptions options;
