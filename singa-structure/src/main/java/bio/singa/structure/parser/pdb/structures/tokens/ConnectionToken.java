@@ -54,56 +54,63 @@ public enum ConnectionToken implements PDBToken {
         if (isNumeric(sourceAtomString)) {
             Optional<Map.Entry<UniqueAtomIdentifer, Atom>> uniqueAtomEntryOptional = structure.getUniqueAtomEntry(Integer.parseInt(sourceAtomString));
             if (!uniqueAtomEntryOptional.isPresent()) {
-                logger.warn("structure contains a invalid CONECT record: connected atom not found");
+                logger.warn("could not add connection for atom {}, source atom could not be found in the structure", sourceAtomString);
                 return;
             }
             uniqueAtomEntry = uniqueAtomEntryOptional.get();
         } else {
-            logger.warn("structure contains a invalid CONECT record: no source atom");
+            logger.warn("could not add connection for atom {}, invalid atom identifier", sourceAtomString);
             return;
         }
         UniqueAtomIdentifer atomIdentifer = uniqueAtomEntry.getKey();
-        Optional<LeafSubstructure<?>> leafSubstructureOptional = structure.getLeafSubstructure(new LeafIdentifier(atomIdentifer.getPdbIdentifier(),
+        LeafIdentifier leafIdentifier = new LeafIdentifier(atomIdentifer.getPdbIdentifier(),
                 atomIdentifer.getModelIdentifier(),
                 atomIdentifer.getChainIdentifier(),
                 atomIdentifer.getLeafSerial(),
-                atomIdentifer.getLeafInsertionCode()));
+                atomIdentifer.getLeafInsertionCode());
+        Optional<LeafSubstructure<?>> leafSubstructureOptional = structure.getLeafSubstructure(leafIdentifier);
         if (!leafSubstructureOptional.isPresent()) {
-            logger.warn("structure contains a invalid CONECT record: no related leaf substructure found");
+            logger.warn("could not add connection for leaf {}, leaf could not be found in the structure", leafIdentifier);
             return;
         }
         OakLeafSubstructure<?> leafsubstructure = ((OakLeafSubstructure<?>) leafSubstructureOptional.get());
         OakAtom sourceAtom = ((OakAtom) uniqueAtomEntry.getValue());
 
         String firstTargetAtomString = CONNECTION_TARGET_ATOM_1.extract(connectionLine);
-        addBond(leafsubstructure, sourceAtom, firstTargetAtomString);
+        addBond(structure, leafsubstructure, sourceAtom, firstTargetAtomString);
 
         String secondTargetAtomString = CONNECTION_TARGET_ATOM_2.extract(connectionLine);
-        addBond(leafsubstructure, sourceAtom, secondTargetAtomString);
+        addBond(structure, leafsubstructure, sourceAtom, secondTargetAtomString);
 
         String thirdTargetAtomString = CONNECTION_TARGET_ATOM_3.extract(connectionLine);
-        addBond(leafsubstructure, sourceAtom, thirdTargetAtomString);
+        addBond(structure, leafsubstructure, sourceAtom, thirdTargetAtomString);
 
         String fourthTargetAtomString = CONNECTION_TARGET_ATOM_4.extract(connectionLine);
-        addBond(leafsubstructure, sourceAtom, fourthTargetAtomString);
+        addBond(structure, leafsubstructure, sourceAtom, fourthTargetAtomString);
 
     }
 
-    private static void addBond(OakLeafSubstructure<?> leafsubstructure, OakAtom sourceAtom, String fourthTargetAtomString) {
-        Optional<OakAtom> fourthTargetOptional = extractAtom(leafsubstructure, fourthTargetAtomString);
-        fourthTargetOptional.ifPresent(oakAtom -> {
-            if (!leafsubstructure.hasBond(sourceAtom, oakAtom)) {
-                leafsubstructure.addBondBetween(sourceAtom, oakAtom);
+    private static void addBond(OakStructure structure, OakLeafSubstructure<?> leafsubstructure, OakAtom sourceAtom, String targetAtomString) {
+        Optional<OakAtom> targetOptional = extractAtom(structure, leafsubstructure, targetAtomString);
+        if (targetOptional.isPresent()) {
+            OakAtom targetAtom = targetOptional.get();
+            if (!leafsubstructure.hasBond(sourceAtom, targetAtom)) {
+                leafsubstructure.addBondBetween(sourceAtom, targetAtom);
             }
-        });
+        }
     }
 
-    public static Optional<OakAtom> extractAtom(OakLeafSubstructure<?> leafsubstructure, String targetAtomString) {
+    public static Optional<OakAtom> extractAtom(OakStructure structure, OakLeafSubstructure<?> leafsubstructure, String targetAtomString) {
         if (isNumeric(targetAtomString)) {
             // FIXME it is possible the the target of the connection is referenced in another leaf
-            Optional<Atom> targetOptionAtom = leafsubstructure.getAtom(Integer.parseInt(targetAtomString));
+            int targetAtom = Integer.parseInt(targetAtomString);
+            Optional<Atom> targetOptionAtom = leafsubstructure.getAtom(targetAtom);
             if (!targetOptionAtom.isPresent()) {
-                logger.warn("structure contains a invalid CONECT record: connected atom not found");
+                Optional<Atom> optionalBackupAtom = structure.getAtom(targetAtom);
+                if (optionalBackupAtom.isPresent()) {
+                    return Optional.of(((OakAtom) optionalBackupAtom.get()));
+                }
+                logger.warn("could not add connection for atom {}, target atom could not be found in the structure", targetAtomString);
                 return Optional.empty();
             } else {
                 return Optional.of(((OakAtom) targetOptionAtom.get()));
