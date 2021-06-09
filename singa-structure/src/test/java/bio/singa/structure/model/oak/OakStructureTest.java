@@ -2,7 +2,7 @@ package bio.singa.structure.model.oak;
 
 import bio.singa.mathematics.vectors.Vector3D;
 import bio.singa.features.identifiers.LeafIdentifier;
-import bio.singa.features.identifiers.UniqueAtomIdentifer;
+import bio.singa.features.identifiers.UniqueAtomIdentifier;
 import bio.singa.structure.model.interfaces.*;
 import bio.singa.structure.parser.pdb.structures.StructureParser;
 import org.junit.jupiter.api.BeforeAll;
@@ -204,11 +204,11 @@ class OakStructureTest {
 
     @Test
     void getUniqueAtomEntry() {
-        final Optional<Map.Entry<UniqueAtomIdentifer, Atom>> atom = structure1C0A.getUniqueAtomEntry(15);
+        final Optional<Map.Entry<UniqueAtomIdentifier, Atom>> atom = structure1C0A.getUniqueAtomEntry(15);
         if (!atom.isPresent()) {
             fail("Optional atom was empty.");
         }
-        UniqueAtomIdentifer identifier = atom.get().getKey();
+        UniqueAtomIdentifier identifier = atom.get().getKey();
         assertEquals("1C0A", identifier.getPdbIdentifier());
         assertEquals(1, identifier.getModelIdentifier());
         assertEquals("B", identifier.getChainIdentifier());

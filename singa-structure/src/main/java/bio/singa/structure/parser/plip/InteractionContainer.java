@@ -3,7 +3,7 @@ package bio.singa.structure.parser.plip;
 import bio.singa.mathematics.vectors.Vector3D;
 import bio.singa.structure.model.families.LigandFamily;
 import bio.singa.features.identifiers.LeafIdentifier;
-import bio.singa.features.identifiers.UniqueAtomIdentifer;
+import bio.singa.features.identifiers.UniqueAtomIdentifier;
 import bio.singa.structure.model.interfaces.*;
 import bio.singa.structure.model.oak.OakChain;
 import bio.singa.structure.model.oak.OakStructure;
@@ -350,10 +350,10 @@ public class InteractionContainer {
     private void fixBrokenSourceIdentifier(Interaction interaction, OakStructure structure) {
         // try to retrieve first referenced atom
         int firstSourceAtom = interaction.getFirstSourceAtom();
-        Optional<Map.Entry<UniqueAtomIdentifer, Atom>> sourceEntry = structure.getUniqueAtomEntry(firstSourceAtom);
+        Optional<Map.Entry<UniqueAtomIdentifier, Atom>> sourceEntry = structure.getUniqueAtomEntry(firstSourceAtom);
         if (sourceEntry.isPresent()) {
             // use the atom identifier to remap leaf
-            UniqueAtomIdentifer atomIdentifer = sourceEntry.get().getKey();
+            UniqueAtomIdentifier atomIdentifer = sourceEntry.get().getKey();
             LeafIdentifier leafIdentifier = new LeafIdentifier(atomIdentifer.getPdbIdentifier(), atomIdentifer.getModelIdentifier(),
                     atomIdentifer.getChainIdentifier(), atomIdentifer.getLeafSerial(), atomIdentifer.getLeafInsertionCode());
             logger.debug("Fixed to leaf identifier {}.", leafIdentifier);
@@ -365,10 +365,10 @@ public class InteractionContainer {
 
     private void fixBrokenTargetIdentifier(Interaction interaction, OakStructure structure) {
         // try to retrieve first referenced atom
-        Optional<Map.Entry<UniqueAtomIdentifer, Atom>> targetEntry = structure.getUniqueAtomEntry(interaction.getFirstTargetAtom());
+        Optional<Map.Entry<UniqueAtomIdentifier, Atom>> targetEntry = structure.getUniqueAtomEntry(interaction.getFirstTargetAtom());
         if (targetEntry.isPresent()) {
             // use the atom identifier to remap leaf
-            UniqueAtomIdentifer atomIdentifer = targetEntry.get().getKey();
+            UniqueAtomIdentifier atomIdentifer = targetEntry.get().getKey();
             LeafIdentifier leafIdentifier = new LeafIdentifier(atomIdentifer.getPdbIdentifier(), atomIdentifer.getModelIdentifier(),
                     atomIdentifer.getChainIdentifier(), atomIdentifer.getLeafSerial(), atomIdentifer.getLeafInsertionCode());
             logger.debug("Fixed to leaf identifier {}.", leafIdentifier);

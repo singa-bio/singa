@@ -1,6 +1,7 @@
 package bio.singa.structure.model.interfaces;
 
 import bio.singa.features.identifiers.PDBIdentifier;
+import bio.singa.features.identifiers.UniqueAtomIdentifier;
 
 import java.util.List;
 import java.util.Optional;
@@ -78,6 +79,8 @@ public interface Structure extends LeafSubstructureContainer, ChainContainer {
      * @return An {@link Optional} encapsulating the {@link Chain}.
      */
     Optional<Chain> getChain(int modelIdentifier, String chainIdentifier);
+
+    Optional<Atom> getAtom(UniqueAtomIdentifier atomIdentifier);
 
     double getResolution();
 

@@ -1,8 +1,7 @@
 package bio.singa.structure.model.oak;
 
 import bio.singa.core.utility.Pair;
-import bio.singa.features.identifiers.LeafIdentifier;
-import bio.singa.features.identifiers.UniqueAtomIdentifer;
+import bio.singa.features.identifiers.UniqueAtomIdentifier;
 import bio.singa.mathematics.geometry.bodies.Sphere;
 import bio.singa.mathematics.matrices.LabeledSymmetricMatrix;
 import bio.singa.mathematics.matrices.Matrices;
@@ -221,22 +220,22 @@ public class Structures {
         return distancesPairwise.getElement(firstPair.getFirst(), firstPair.getSecond());
     }
 
-    public static void assignBFactors(Structure structure, Map<UniqueAtomIdentifer, Double> factors) {
+    public static void assignBFactors(Structure structure, Map<UniqueAtomIdentifier, Double> factors) {
         OakStructure oakStructure = (OakStructure) structure;
-        for (Map.Entry<UniqueAtomIdentifer, Double> entry : factors.entrySet()) {
-            UniqueAtomIdentifer identifer = entry.getKey();
+        for (Map.Entry<UniqueAtomIdentifier, Double> entry : factors.entrySet()) {
+            UniqueAtomIdentifier identifer = entry.getKey();
             Double value = entry.getValue();
             oakStructure.getAtom(identifer.getAtomSerial()).ifPresent(atom -> atom.setBFactor(value));
         }
     }
 
-    public static Map<Vector3D, UniqueAtomIdentifer> mapAtomsByCoordinate(Structure structure, Set<Vector3D> coordinates, double eps) {
+    public static Map<Vector3D, UniqueAtomIdentifier> mapAtomsByCoordinate(Structure structure, Set<Vector3D> coordinates, double eps) {
         OakStructure oakStructure = (OakStructure) structure;
-        HashMap<Vector3D, UniqueAtomIdentifer> map = new HashMap<>();
+        HashMap<Vector3D, UniqueAtomIdentifier> map = new HashMap<>();
         for (Vector3D coordinate : coordinates) {
-            Optional<Map.Entry<UniqueAtomIdentifer, Atom>> optionalAtom = oakStructure.getAtomByCoordinate(coordinate, eps);
+            Optional<Map.Entry<UniqueAtomIdentifier, Atom>> optionalAtom = oakStructure.getAtomByCoordinate(coordinate, eps);
             if (optionalAtom.isPresent()) {
-                Map.Entry<UniqueAtomIdentifer, Atom> entry = optionalAtom.get();
+                Map.Entry<UniqueAtomIdentifier, Atom> entry = optionalAtom.get();
                 map.put(coordinate, entry.getKey());
             }
         }

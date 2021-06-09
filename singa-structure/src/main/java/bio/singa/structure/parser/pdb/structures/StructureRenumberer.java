@@ -1,7 +1,7 @@
 package bio.singa.structure.parser.pdb.structures;
 
 import bio.singa.features.identifiers.LeafIdentifier;
-import bio.singa.features.identifiers.UniqueAtomIdentifer;
+import bio.singa.features.identifiers.UniqueAtomIdentifier;
 import bio.singa.structure.model.interfaces.*;
 import bio.singa.structure.model.oak.*;
 import org.slf4j.Logger;
@@ -107,14 +107,14 @@ public class StructureRenumberer {
             return structure;
         }
         for (LinkEntry linkEntry : structure.getLinkEntries()) {
-            Optional<Map.Entry<UniqueAtomIdentifer, Atom>> firstAtomEntry = structure.getUniqueAtomEntry(atomIdentifierMapping.get(linkEntry.getFirstAtom().getAtomIdentifier()));
-            Optional<Map.Entry<UniqueAtomIdentifer, Atom>> secondAtomEntry = structure.getUniqueAtomEntry(atomIdentifierMapping.get(linkEntry.getSecondAtom().getAtomIdentifier()));
+            Optional<Map.Entry<UniqueAtomIdentifier, Atom>> firstAtomEntry = structure.getUniqueAtomEntry(atomIdentifierMapping.get(linkEntry.getFirstAtom().getAtomIdentifier()));
+            Optional<Map.Entry<UniqueAtomIdentifier, Atom>> secondAtomEntry = structure.getUniqueAtomEntry(atomIdentifierMapping.get(linkEntry.getSecondAtom().getAtomIdentifier()));
             if (firstAtomEntry.isPresent() && secondAtomEntry.isPresent()) {
                 Atom firstAtom = firstAtomEntry.get().getValue();
-                UniqueAtomIdentifer firstUniqueAtomIdentifer = firstAtomEntry.get().getKey();
-                LeafSubstructure<?> firstLeaf = structure.getLeafSubstructure(new LeafIdentifier(firstUniqueAtomIdentifer)).get();
+                UniqueAtomIdentifier firstUniqueAtomIdentifier = firstAtomEntry.get().getKey();
+                LeafSubstructure<?> firstLeaf = structure.getLeafSubstructure(new LeafIdentifier(firstUniqueAtomIdentifier)).get();
                 Atom secondAtom = secondAtomEntry.get().getValue();
-                UniqueAtomIdentifer secondUniqueAtomIdentifier = secondAtomEntry.get().getKey();
+                UniqueAtomIdentifier secondUniqueAtomIdentifier = secondAtomEntry.get().getKey();
                 LeafSubstructure<?> secondLeaf = structure.getLeafSubstructure(new LeafIdentifier(secondUniqueAtomIdentifier)).get();
                 structure.addLinkEntry((new LinkEntry(firstLeaf, firstAtom, secondLeaf, secondAtom)));
             }

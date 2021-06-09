@@ -194,6 +194,10 @@ public class StructureWriter {
 
         private void prepareInformationToWrite() {
             if (leafSubstructures != null) {
+                if (pdbIdentifier.isEmpty()) {
+                    LeafSubstructure<?> leafSubstructure = leafSubstructures.iterator().next();
+                    pdbIdentifier = leafSubstructure.getIdentifier().getPdbIdentifier();
+                }
                 structure = Structures.toStructure(leafSubstructures, pdbIdentifier, title);
             }
             if (linkEntries != null) {

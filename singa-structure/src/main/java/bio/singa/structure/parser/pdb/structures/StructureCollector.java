@@ -3,7 +3,7 @@ package bio.singa.structure.parser.pdb.structures;
 import bio.singa.core.utility.DoubleMatcher;
 import bio.singa.core.utility.Pair;
 import bio.singa.features.identifiers.LeafIdentifier;
-import bio.singa.features.identifiers.UniqueAtomIdentifer;
+import bio.singa.features.identifiers.UniqueAtomIdentifier;
 import bio.singa.structure.model.interfaces.Structure;
 import bio.singa.structure.model.oak.*;
 import bio.singa.structure.parser.pdb.structures.iterators.StructureIterator;
@@ -36,7 +36,7 @@ public class StructureCollector {
     /**
      * A cache of all atoms identified by unique atom identifiers.
      */
-    private final Map<UniqueAtomIdentifer, OakAtom> atoms;
+    private final Map<UniqueAtomIdentifier, OakAtom> atoms;
     /**
      * A cache of all leafs and their three letter codes.
      */
@@ -433,7 +433,7 @@ public class StructureCollector {
             annotateConnections(structure);
         }
         annotateSeqenceAdvice(structure);
-        UniqueAtomIdentifer lastAtom = Collections.max(atoms.keySet());
+        UniqueAtomIdentifier lastAtom = Collections.max(atoms.keySet());
         structure.setLastAddedAtomIdentifier(lastAtom.getAtomSerial());
         postProcessProperties();
         return structure;
@@ -483,7 +483,7 @@ public class StructureCollector {
                 if (!alternativeLocation.trim().isEmpty() && !alternativeLocation.equals("A")) {
                     continue;
                 }
-                UniqueAtomIdentifer identifier = createUniqueAtomIdentifier(currentLine);
+                UniqueAtomIdentifier identifier = createUniqueAtomIdentifier(currentLine);
                 atoms.put(identifier, AtomToken.assembleAtom(currentLine));
                 LeafIdentifier leafIdentifier = new LeafIdentifier(identifier.getPdbIdentifier(),
                         identifier.getModelIdentifier(), identifier.getChainIdentifier(),
@@ -523,13 +523,13 @@ public class StructureCollector {
      * @param atomLine The atom line.
      * @return An unique atom identifier.
      */
-    private UniqueAtomIdentifer createUniqueAtomIdentifier(String atomLine) {
+    private UniqueAtomIdentifier createUniqueAtomIdentifier(String atomLine) {
         int atomSerial = Integer.parseInt(AtomToken.ATOM_SERIAL.extract(atomLine));
         String chain = AtomToken.CHAIN_IDENTIFIER.extract(atomLine);
         int leaf = Integer.parseInt(AtomToken.RESIDUE_SERIAL.extract(atomLine));
         String insertion = AtomToken.RESIDUE_INSERTION.extract(atomLine);
         char insertionCode = insertion.isEmpty() ? DEFAULT_INSERTION_CODE : insertion.charAt(0);
-        return new UniqueAtomIdentifer(currentPDB, currentModel, chain, leaf, insertionCode, atomSerial);
+        return new UniqueAtomIdentifier(currentPDB, currentModel, chain, leaf, insertionCode, atomSerial);
     }
 
     private void postProcessProperties() {

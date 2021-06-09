@@ -1,6 +1,6 @@
 package bio.singa.structure.parser.pdb.structures;
 
-import bio.singa.features.identifiers.UniqueAtomIdentifer;
+import bio.singa.features.identifiers.UniqueAtomIdentifier;
 import bio.singa.structure.model.oak.OakAtom;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -179,7 +179,7 @@ class ContentTreeNode {
      * @param atom The atom to add.
      * @param identifer Its identifier.
      */
-    public void appendAtom(OakAtom atom, UniqueAtomIdentifer identifer) {
+    public void appendAtom(OakAtom atom, UniqueAtomIdentifier identifer) {
         ListIterator<ContentTreeNode> iterator = children.listIterator();
         if (children.isEmpty()) {
             switch (level) {

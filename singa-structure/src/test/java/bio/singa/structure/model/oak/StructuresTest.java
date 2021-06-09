@@ -1,7 +1,7 @@
 package bio.singa.structure.model.oak;
 
 import bio.singa.core.utility.Pair;
-import bio.singa.features.identifiers.UniqueAtomIdentifer;
+import bio.singa.features.identifiers.UniqueAtomIdentifier;
 import bio.singa.mathematics.matrices.LabeledSymmetricMatrix;
 import bio.singa.mathematics.matrices.Matrices;
 import bio.singa.features.identifiers.LeafIdentifier;
@@ -91,7 +91,7 @@ class StructuresTest {
                 .chainIdentifier("A")
                 .parse());
         Vector3D atomCoordinate = new Vector3D(51.172, 37.528, -36.507);
-        Optional<Map.Entry<UniqueAtomIdentifer, Atom>> atomByCoordinate = structure.getAtomByCoordinate(atomCoordinate, 0.1);
+        Optional<Map.Entry<UniqueAtomIdentifier, Atom>> atomByCoordinate = structure.getAtomByCoordinate(atomCoordinate, 0.1);
         if (atomByCoordinate.isPresent()) {
             Atom atom = atomByCoordinate.get().getValue();
             assertEquals(5293, (int)atom.getAtomIdentifier());

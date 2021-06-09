@@ -2,7 +2,7 @@ package bio.singa.structure.model.oak;
 
 import bio.singa.chemistry.model.elements.ElementProvider;
 import bio.singa.features.identifiers.LeafIdentifier;
-import bio.singa.features.identifiers.UniqueAtomIdentifer;
+import bio.singa.features.identifiers.UniqueAtomIdentifier;
 import bio.singa.mathematics.vectors.Vector3D;
 import bio.singa.structure.model.families.LigandFamily;
 import bio.singa.structure.model.interfaces.*;
@@ -171,13 +171,13 @@ public class OakStructure implements Structure {
         return Optional.empty();
     }
 
-    public Optional<Map.Entry<UniqueAtomIdentifer, Atom>> getUniqueAtomEntry(int atomSerial) {
+    public Optional<Map.Entry<UniqueAtomIdentifier, Atom>> getUniqueAtomEntry(int atomSerial) {
         for (Model model : getAllModels()) {
             for (Chain chain : model.getAllChains()) {
                 for (LeafSubstructure leafSubstructure : chain.getAllLeafSubstructures()) {
                     for (Atom atom : leafSubstructure.getAllAtoms()) {
                         if (atom.getAtomIdentifier().equals(atomSerial)) {
-                            UniqueAtomIdentifer identifier = new UniqueAtomIdentifer(pdbIdentifier, model.getModelIdentifier(),
+                            UniqueAtomIdentifier identifier = new UniqueAtomIdentifier(pdbIdentifier, model.getModelIdentifier(),
                                     chain.getChainIdentifier(), leafSubstructure.getIdentifier().getSerial(), leafSubstructure.getIdentifier().getInsertionCode(),
                                     atomSerial);
                             return Optional.of(new AbstractMap.SimpleEntry<>(identifier, atom));
@@ -189,13 +189,13 @@ public class OakStructure implements Structure {
         return Optional.empty();
     }
 
-    public Optional<Map.Entry<UniqueAtomIdentifer, Atom>> getAtomByCoordinate(Vector3D coordinate, double eps) {
+    public Optional<Map.Entry<UniqueAtomIdentifier, Atom>> getAtomByCoordinate(Vector3D coordinate, double eps) {
         for (Model model : getAllModels()) {
             for (Chain chain : model.getAllChains()) {
                 for (LeafSubstructure<?> leafSubstructure : chain.getAllLeafSubstructures()) {
                     for (Atom atom : leafSubstructure.getAllAtoms()) {
                         if (atom.getPosition().almostEqual(coordinate, eps)) {
-                            UniqueAtomIdentifer identifier = new UniqueAtomIdentifer(pdbIdentifier, model.getModelIdentifier(),
+                            UniqueAtomIdentifier identifier = new UniqueAtomIdentifier(pdbIdentifier, model.getModelIdentifier(),
                                     chain.getChainIdentifier(), leafSubstructure.getIdentifier().getSerial(), leafSubstructure.getIdentifier().getInsertionCode(),
                                     atom.getAtomIdentifier());
                             return Optional.of(new AbstractMap.SimpleEntry<>(identifier, atom));
@@ -227,6 +227,14 @@ public class OakStructure implements Structure {
         } else {
             throw new IllegalStateException("Unable to add atom to chain " + chainIdentifier + ", chain could not be found.");
         }
+    }
+
+    @Override
+    public Optional<Atom> getAtom(UniqueAtomIdentifier atomIdentifier) {
+        // does actually not compare pdb id
+        return getChain(atomIdentifier.getModelIdentifier(), atomIdentifier.getChainIdentifier())
+                .flatMap(chain -> chain.getLeafSubstructure(atomIdentifier.getLeafIdentifier()))
+                .flatMap(leafSubstructure -> leafSubstructure.getAtom(atomIdentifier.getAtomSerial()));
     }
 
     @Override

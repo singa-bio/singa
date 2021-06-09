@@ -2,7 +2,7 @@ package bio.singa.structure.parser.pdb.structures.tokens;
 
 import bio.singa.core.utility.Range;
 import bio.singa.features.identifiers.LeafIdentifier;
-import bio.singa.features.identifiers.UniqueAtomIdentifer;
+import bio.singa.features.identifiers.UniqueAtomIdentifier;
 import bio.singa.structure.model.interfaces.Atom;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.oak.OakAtom;
@@ -50,9 +50,9 @@ public enum ConnectionToken implements PDBToken {
      */
     public static void assignConnections(OakStructure structure, String connectionLine) {
         String sourceAtomString = CONNECTION_SOURCE_ATOM.extract(connectionLine);
-        Map.Entry<UniqueAtomIdentifer, Atom> uniqueAtomEntry;
+        Map.Entry<UniqueAtomIdentifier, Atom> uniqueAtomEntry;
         if (isNumeric(sourceAtomString)) {
-            Optional<Map.Entry<UniqueAtomIdentifer, Atom>> uniqueAtomEntryOptional = structure.getUniqueAtomEntry(Integer.parseInt(sourceAtomString));
+            Optional<Map.Entry<UniqueAtomIdentifier, Atom>> uniqueAtomEntryOptional = structure.getUniqueAtomEntry(Integer.parseInt(sourceAtomString));
             if (!uniqueAtomEntryOptional.isPresent()) {
                 logger.warn("could not add connection for atom {}, source atom could not be found in the structure", sourceAtomString);
                 return;
@@ -62,7 +62,7 @@ public enum ConnectionToken implements PDBToken {
             logger.warn("could not add connection for atom {}, invalid atom identifier", sourceAtomString);
             return;
         }
-        UniqueAtomIdentifer atomIdentifer = uniqueAtomEntry.getKey();
+        UniqueAtomIdentifier atomIdentifer = uniqueAtomEntry.getKey();
         LeafIdentifier leafIdentifier = new LeafIdentifier(atomIdentifer.getPdbIdentifier(),
                 atomIdentifer.getModelIdentifier(),
                 atomIdentifer.getChainIdentifier(),

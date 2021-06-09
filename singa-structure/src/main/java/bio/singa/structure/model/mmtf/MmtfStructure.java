@@ -1,6 +1,7 @@
 package bio.singa.structure.model.mmtf;
 
 import bio.singa.features.identifiers.LeafIdentifier;
+import bio.singa.features.identifiers.UniqueAtomIdentifier;
 import bio.singa.structure.model.interfaces.*;
 import org.rcsb.mmtf.api.StructureDataInterface;
 import org.rcsb.mmtf.decoder.GenericDecoder;
@@ -249,6 +250,14 @@ public class MmtfStructure implements Structure {
             }
         }
         return Optional.empty();
+    }
+
+    @Override
+    public Optional<Atom> getAtom(UniqueAtomIdentifier atomIdentifier) {
+        // does actually not compare pdb id
+        return getChain(atomIdentifier.getModelIdentifier(), atomIdentifier.getChainIdentifier())
+                .flatMap(chain -> chain.getLeafSubstructure(atomIdentifier.getLeafIdentifier()))
+                .flatMap(leafSubstructure -> leafSubstructure.getAtom(atomIdentifier.getAtomSerial()));
     }
 
     @Override

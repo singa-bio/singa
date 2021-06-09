@@ -56,8 +56,8 @@ public class LeafIdentifier implements Comparable<LeafIdentifier> {
         this(DEFAULT_PDB_IDENTIFIER, DEFAULT_MODEL_IDENTIFIER, DEFAULT_CHAIN_IDENTIFIER, serial);
     }
 
-    public LeafIdentifier(UniqueAtomIdentifer uniqueAtomIdentifer) {
-        this(uniqueAtomIdentifer.getPdbIdentifier(), uniqueAtomIdentifer.getModelIdentifier(),uniqueAtomIdentifer.getChainIdentifier(), uniqueAtomIdentifer.getLeafSerial(), uniqueAtomIdentifer.getLeafInsertionCode());
+    public LeafIdentifier(UniqueAtomIdentifier uniqueAtomIdentifier) {
+        this(uniqueAtomIdentifier.getPdbIdentifier(), uniqueAtomIdentifier.getModelIdentifier(), uniqueAtomIdentifier.getChainIdentifier(), uniqueAtomIdentifier.getLeafSerial(), uniqueAtomIdentifier.getLeafInsertionCode());
     }
 
     /**
