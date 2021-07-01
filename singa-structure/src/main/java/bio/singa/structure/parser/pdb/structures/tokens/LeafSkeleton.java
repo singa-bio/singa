@@ -21,6 +21,7 @@ public class LeafSkeleton {
     private String threeLetterCode;
     private String parent;
     private String inchi;
+    private String name;
     private AssignedFamily assignedFamily;
     private Map<Pair<String>, CovalentBondType> bonds;
     private Map<String, OakAtom> atoms;
@@ -54,6 +55,14 @@ public class LeafSkeleton {
 
     public void setInchi(String inchi) {
         this.inchi = inchi;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getThreeLetterCode() {
@@ -106,7 +115,9 @@ public class LeafSkeleton {
                 break;
             }
             default: {
-                substructure = new OakLigand(identifer, new LigandFamily("?", threeLetterCode));
+                OakLigand ligand = new OakLigand(identifer, new LigandFamily("?", threeLetterCode));
+                ligand.setName(name);
+                substructure = ligand;
                 break;
             }
         }

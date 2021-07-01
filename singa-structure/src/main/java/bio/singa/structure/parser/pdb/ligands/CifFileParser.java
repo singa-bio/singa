@@ -116,6 +116,7 @@ public class CifFileParser {
             String line = lineIterator.next();
             // extract information
             extractInformation(line);
+            extractLigandName(line, lineIterator);
             // signifies start of bond section
             if (line.startsWith("_chem_comp_bond")) {
                 bondSection = true;
@@ -355,16 +356,50 @@ public class CifFileParser {
         }
     }
 
+    private void extractLigandName(String currentLine, ListIterator<String> lineIterator) {
+        // extract compound name
+        if (currentLine.startsWith("_chem_comp.name")) {
+            // option 1: inline name
+            name = extractValue(currentLine);
+            if (name.isEmpty()) {
+                // option 2: multi line name
+                StringJoiner assembledName = new StringJoiner("");
+                while (lineIterator.hasNext()) {
+                    currentLine = lineIterator.next();
+                    if (currentLine.startsWith("_")) {
+                        name = assembledName.toString();
+                        lineIterator.previous();
+                        break;
+                    }
+                    if (currentLine.startsWith(";")) {
+                        if (currentLine.length() == 1) {
+                            // last line is empty
+                            name = assembledName.toString();
+                            break;
+                        }
+                        // start of multiline name
+                        assembledName.add(currentLine.replaceAll("\"", "").replaceFirst(";", ""));
+                    }
+                    if (currentLine.startsWith("\"")) {
+                        // start of multiline name
+                        assembledName.add(currentLine.replaceAll("\"", ""));
+                        if (currentLine.endsWith("\"")) {
+                            // last line is empty
+                            name = assembledName.toString();
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     /**
      * Extracts information about the ligand.
      *
      * @param line The line.
      */
     private void extractInformation(String line) {
-        // extract compound name
-        if (line.startsWith("_chem_comp.name")) {
-            name = extractValue(line);
-        }
         // extract compound type
         if (line.startsWith("_chem_comp.type")) {
             type = extractValue(line);
@@ -493,6 +528,7 @@ public class CifFileParser {
         }
         LeafSkeleton leafSkeleton = new LeafSkeleton(threeLetterCode, parent, assignedFamily, bonds);
         leafSkeleton.setAtoms(atoms);
+        leafSkeleton.setName(name);
         leafSkeleton.setInchi(inchi);
         return leafSkeleton;
     }

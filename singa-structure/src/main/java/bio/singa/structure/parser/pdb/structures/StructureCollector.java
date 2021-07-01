@@ -99,7 +99,7 @@ public class StructureCollector {
         this.iterator = iterator;
         this.pdbLines = pdbLines;
         atoms = new HashMap<>();
-        leafCodes = new TreeMap<>();
+        leafCodes = new HashMap<>();
         hetAtoms = new HashSet<>();
         notInConsecutiveChain = new HashSet<>();
         closedChains = new HashSet<>();
@@ -470,9 +470,7 @@ public class StructureCollector {
      */
     private void collectAtomInformation() {
         logger.debug("Collecting information from {} PDB lines", pdbLines.size());
-        Iterator<String> lineIterator = pdbLines.iterator();
-        while (lineIterator.hasNext()) {
-            String currentLine = lineIterator.next();
+        for (String currentLine : pdbLines) {
             String currentRecordType = AtomToken.RECORD_TYPE.extract(currentLine);
             if (AtomToken.RECORD_PATTERN.matcher(currentRecordType).matches()) {
                 // TODO move this to reducer?

@@ -37,6 +37,7 @@ public class LigandParserService {
         try {
             return parseLeafSkeleton(new URL(String.format(CIF_FETCH_URL, ligandId)).openStream());
         } catch (IOException e) {
+            e.printStackTrace();
             logger.warn("Could not parse cif file for ligand {}. If this exception" +
                     " occurred during structure parsing, you may ignore it with setting DISREGARD_CONNECTIONS", ligandId);
         }

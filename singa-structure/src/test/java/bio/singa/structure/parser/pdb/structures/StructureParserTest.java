@@ -16,8 +16,10 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -271,7 +273,7 @@ class StructureParserTest {
 
     @Test
     @DisplayName("pdb parsing - correct parsing of multiple structures")
-    void shouldParseMultipleStructures() {
+    void shouldParseMultipleMMTFStructures() {
         // all have the ligand SO4
         List<Structure> structures = StructureParser.mmtf()
                 .pdbIdentifiers(Arrays.asList("5F3P", "5G5T", "5J6Q", "5MAT"))
