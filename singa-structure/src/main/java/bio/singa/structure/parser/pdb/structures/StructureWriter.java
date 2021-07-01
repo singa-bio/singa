@@ -183,7 +183,7 @@ public class StructureWriter {
         @Override
         public String writeToString() {
             prepareInformationToWrite();
-            if (options.isRenumberingSubstructures()) {
+            if (options.isRenumberingAtoms()) {
                 structure = StructureRenumberer.renumberAtomsConsecutively(structure);
             }
             if (options.isRenumberingSubstructures()) {

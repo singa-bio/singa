@@ -137,6 +137,7 @@ public enum ConnectionToken implements PDBToken {
                     }).sorted(Comparator.comparingInt(OakAtom::getAtomIdentifier))
                     .collect(Collectors.toList());
             if (connectedAtoms.isEmpty()) {
+                // FIXME this will skip entire CONECT atom record generation of a single dangling atom is in the ligand, e.g. terminal OXT for MD-derived peptides
                 return "";
             }
             if (connectedAtoms.size() > 4) {
