@@ -24,8 +24,14 @@ public class LeafSubstructureBuilder {
 
     private static final Logger logger = LoggerFactory.getLogger(LeafSubstructureBuilder.class);
 
-    public static NameStep create(StructureIterator iterator) {
+    public static ConsecutivePartStep create(StructureIterator iterator) {
         return new GeneralLeafSubstructureBuilder(iterator);
+    }
+
+    public interface ConsecutivePartStep {
+
+        NameStep inConsecutivePart(boolean isInConsecutivePart);
+
     }
 
     public interface NameStep {
@@ -74,7 +80,9 @@ public class LeafSubstructureBuilder {
 
     }
 
-    public static class GeneralLeafSubstructureBuilder implements NameStep, IdentifierStep, IdentifierModelStep, IdentifierChainStep, IdentifierSerialStep, AtomStep, BuildStep {
+    public static class GeneralLeafSubstructureBuilder implements ConsecutivePartStep, NameStep, IdentifierStep, IdentifierModelStep, IdentifierChainStep, IdentifierSerialStep, AtomStep, BuildStep {
+
+        private boolean isInConsecutivePart;
 
         private StructuralFamily<?> family;
         private boolean isModified;
@@ -103,13 +111,21 @@ public class LeafSubstructureBuilder {
         }
 
         @Override
+        public NameStep inConsecutivePart(boolean isInConsecutivePart) {
+            this.isInConsecutivePart = isInConsecutivePart;
+            return this;
+        }
+
+        @Override
         public IdentifierStep name(String threeLetterCode) {
             name = threeLetterCode;
-            if (tryAminoAcid(threeLetterCode)) {
-                return this;
-            }
-            if (tryNucleotide(threeLetterCode)) {
-                return this;
+            if (isInConsecutivePart) {
+                if (tryAminoAcid(threeLetterCode)) {
+                    return this;
+                }
+                if (tryNucleotide(threeLetterCode)) {
+                    return this;
+                }
             }
             tryLigand(threeLetterCode);
             return this;
@@ -154,7 +170,7 @@ public class LeafSubstructureBuilder {
                 }
             }
             // skeleton available
-            if (leafSkeleton != null) {
+            if (leafSkeleton != null && isInConsecutivePart) {
                 // determine modifications
                 if (leafSkeleton.getAssignedFamily().equals(MODIFIED_AMINO_ACID)) {
                     family = AminoAcidFamily.getAminoAcidTypeByThreeLetterCode(leafSkeleton.getParent())
@@ -281,8 +297,11 @@ public class LeafSubstructureBuilder {
                 } else {
                     OakLigand ligand = new OakLigand(identifier, (LigandFamily) family);
                     atomSet.forEach(ligand::addAtom);
-                    if (leafSkeleton != null && leafSkeleton.hasBonds()) {
-                        leafSkeleton.connect(ligand, atomMap);
+                    if (leafSkeleton != null) {
+                        if (leafSkeleton.hasBonds()) {
+                            leafSkeleton.connect(ligand, atomMap);
+                        }
+                        ligand.setName(leafSkeleton.getName());
                     }
                     return ligand;
                 }
@@ -300,6 +319,9 @@ public class LeafSubstructureBuilder {
                 } else {
                     OakLigand ligand = new OakLigand(identifier, (LigandFamily) family);
                     atomSet.forEach(ligand::addAtom);
+                    if (leafSkeleton != null) {
+                        ligand.setName(leafSkeleton.getName());
+                    }
                     return ligand;
                 }
             }

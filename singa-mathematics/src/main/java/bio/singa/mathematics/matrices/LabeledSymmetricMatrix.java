@@ -64,7 +64,7 @@ public class LabeledSymmetricMatrix<LabelType> extends SymmetricMatrix implement
     @Override
     public List<LabelType> getRowLabels() {
         return labelMap.entrySet().stream()
-                .sorted(Comparator.comparing(Map.Entry::getValue))
+                .sorted(Map.Entry.comparingByValue())
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toList());
     }

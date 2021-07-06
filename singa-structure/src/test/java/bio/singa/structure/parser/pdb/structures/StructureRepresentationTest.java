@@ -107,6 +107,16 @@ class StructureRepresentationTest {
                 .parse();
         String pdbRepresentation = StructureRepresentation.composePdbRepresentation(structure);
         List<String> actualLines = Arrays.asList(pdbRepresentation.split(System.lineSeparator()));
+
+//        for (int i = 0; i < expectedLines.size(); i++) {
+//            String actual = actualLines.get(i).trim();
+//            String expected = expectedLines.get(i);
+//            if (!expected.equals(actual)) {
+//                System.out.println("actual  : "+ actual);
+//                System.out.println("expected: "+ expected);
+//            }
+//        }
+
         assertPDBLinesEqual(expectedLines, actualLines);
     }
 

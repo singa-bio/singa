@@ -9,8 +9,10 @@ import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.interfaces.Ligand;
 import bio.singa.structure.model.interfaces.Structure;
 import bio.singa.structure.model.mmtf.MmtfAminoAcid;
+import bio.singa.structure.model.mmtf.MmtfStructure;
 import bio.singa.structure.model.oak.OakAminoAcid;
 import bio.singa.structure.model.oak.OakLigand;
+import bio.singa.structure.model.oak.OakStructure;
 import bio.singa.structure.model.oak.StructuralEntityFilter;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -24,6 +26,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -352,6 +355,18 @@ class StructureParserTest {
         } else {
             fail("could not find mutated amino acid");
         }
+    }
+
+    @Test
+    @DisplayName("pdb parsing - correctly parse assemblies")
+    void shouldParseAssemblies() {
+        // we want connections but cannot guarantee unique atom names
+        Structure structure = StructureParser.pdb()
+                .pdbIdentifier("6dm8")
+                .parse();
+        Map<String, List<String>> assemblies = ((OakStructure) structure).getBiologicalAssemblies();
+        structure.getCopy();
+        assertEquals(8, assemblies.size());
     }
 
 }

@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.regex.Matcher;
 
 import static bio.singa.features.identifiers.LeafIdentifier.*;
 
@@ -81,6 +82,7 @@ public class StructureCollector {
     private List<String> linkLines;
     private List<String> connectionLines;
     private List<String> sequenceAdviceLines;
+    private Map<String, List<String>> assemblies;
 
     /**
      * References Pair of ThreeLetterCode and AttributeType to AttributeValue
@@ -107,6 +109,7 @@ public class StructureCollector {
         connectionLines = new ArrayList<>();
         sequenceAdviceLines = new ArrayList<>();
         ligandPropertyRemarks = new HashMap<>();
+        assemblies = new HashMap<>();
     }
 
     /**
@@ -217,6 +220,7 @@ public class StructureCollector {
         String refThreeLetterCode = null;
         String refAttribute = null;
         StringBuilder refValue = new StringBuilder();
+        String assemblyId = "";
         for (String currentLine : pdbLines) {
             // REMARK 80
             if (Remark80Token.REMARK_80.matcher(currentLine).matches()) {
@@ -260,6 +264,18 @@ public class StructureCollector {
             // SEQADV
             if (SequenceAdviceToken.RECORD_PATTERN.matcher(currentLine).matches()) {
                 sequenceAdviceLines.add(currentLine);
+            }
+            // REMARK 350 (Biological Assemblies)
+            if (Remark350Token.REMARK_350.matcher(currentLine).matches()) {
+                Matcher idMatcher = Remark350Token.REMARK_350_ID.matcher(currentLine);
+                if (idMatcher.find()) {
+                    assemblyId = idMatcher.group(1).trim();
+                }
+                Matcher chainMatcher = Remark350Token.REMARK_350_CHAINS.matcher(currentLine);
+                if (chainMatcher.find()) {
+                    String[] chains = chainMatcher.group(1).trim().split(", ");
+                    assemblies.put(assemblyId, Arrays.asList(chains));
+                }
             }
             if (AtomToken.RECORD_PATTERN.matcher(currentLine).matches()) {
                 break;
@@ -404,7 +420,9 @@ public class StructureCollector {
                             chain.getChainIdentifier(),
                             Integer.parseInt(leafNode.getIdentifier()),
                             leafNode.getInsertionCode());
+                    boolean isInConsecutivePart = !notInConsecutiveChain.contains(leafIdentifier);
                     OakLeafSubstructure<?> leafSubstructure = LeafSubstructureBuilder.create(iterator)
+                            .inConsecutivePart(isInConsecutivePart)
                             .name(leafCodes.get(leafIdentifier))
                             .identifier(leafIdentifier)
                             .atoms(leafNode.getAtoms())
@@ -412,11 +430,7 @@ public class StructureCollector {
                     if (hetAtoms.contains(leafSubstructure.getIdentifier())) {
                         leafSubstructure.setAnnotatedAsHetAtom(true);
                     }
-                    if (notInConsecutiveChain.contains(leafSubstructure.getIdentifier())) {
-                        chain.addLeafSubstructure(leafSubstructure);
-                    } else {
-                        chain.addLeafSubstructure(leafSubstructure, true);
-                    }
+                    chain.addLeafSubstructure(leafSubstructure, isInConsecutivePart);
                 }
                 model.addChain(chain);
             }
@@ -433,6 +447,7 @@ public class StructureCollector {
             annotateConnections(structure);
         }
         annotateSeqenceAdvice(structure);
+        structure.setBiologicalAssemblies(assemblies);
         UniqueAtomIdentifier lastAtom = Collections.max(atoms.keySet());
         structure.setLastAddedAtomIdentifier(lastAtom.getAtomSerial());
         postProcessProperties();

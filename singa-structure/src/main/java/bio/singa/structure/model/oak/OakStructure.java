@@ -33,11 +33,14 @@ public class OakStructure implements Structure {
 
     private List<LinkEntry> linkEntries;
 
+    private Map<String, List<String>> biologicalAssemblies;
+
     private double resolution;
 
     public OakStructure() {
         models = new TreeMap<>();
         linkEntries = new ArrayList<>();
+        biologicalAssemblies = new HashMap<>();
     }
 
     public OakStructure(OakStructure structure) {
@@ -51,7 +54,7 @@ public class OakStructure implements Structure {
         }
         // TODO this is only a shallow copy
         linkEntries = new ArrayList<>(structure.linkEntries);
-
+        biologicalAssemblies = new HashMap<>(structure.biologicalAssemblies);
     }
 
     @Override
@@ -262,6 +265,14 @@ public class OakStructure implements Structure {
 
     public void setLastAddedAtomIdentifier(int lastAddedAtomIdentifier) {
         this.lastAddedAtomIdentifier = lastAddedAtomIdentifier;
+    }
+
+    public Map<String, List<String>> getBiologicalAssemblies() {
+        return biologicalAssemblies;
+    }
+
+    public void setBiologicalAssemblies(Map<String, List<String>> biologicalAssemblies) {
+        this.biologicalAssemblies = biologicalAssemblies;
     }
 
     @Override
