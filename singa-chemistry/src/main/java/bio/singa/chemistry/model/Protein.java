@@ -5,7 +5,6 @@ import bio.singa.chemistry.annotations.AnnotationType;
 import bio.singa.chemistry.annotations.taxonomy.Organism;
 import bio.singa.core.utility.Range;
 import bio.singa.features.identifiers.GoTerm;
-import bio.singa.features.identifiers.LeafIdentifier;
 import bio.singa.features.identifiers.PDBIdentifier;
 import bio.singa.features.model.Feature;
 
@@ -137,30 +136,6 @@ public class Protein extends AbstractChemicalEntity {
 
     public void addPdbIdentifier(PDBIdentifier pdbIdentifier) {
         addAnnotation(new Annotation<>(AnnotationType.PDB_IDENTIFIER, pdbIdentifier));
-    }
-
-    /**
-     * Adds a new PDB structure range to the protein.
-     *
-     * @param pdbIdentifier      The PDB identifier of the structure.
-     * @param rangeSpecification The range specification according to UniProt format (e.g. A/B=1-590).
-     */
-    public void addPdbRange(PDBIdentifier pdbIdentifier, String rangeSpecification) {
-        // parse range specification
-        String[] specifications = rangeSpecification.split(",");
-        for (String specification : specifications) {
-            specification = specification.trim();
-            String[] ranges = specification.split("=");
-            String[] chains = ranges[0].split("/");
-            String[] range = ranges[1].split("-");
-            for (String chain : chains) {
-                String start = range[0];
-                String end = range[1];
-                LeafIdentifier startingLeaf = LeafIdentifier.fromString(pdbIdentifier + "-1-" + chain + "-" + start);
-                LeafIdentifier endingLeaf = LeafIdentifier.fromString(pdbIdentifier + "-1-" + chain + "-" + end);
-                addAnnotation(new Annotation<>(AnnotationType.PDB_RANGE, new Range<>(startingLeaf, endingLeaf)));
-            }
-        }
     }
 
     public static class Builder extends AbstractChemicalEntity.Builder<Protein, Builder> {

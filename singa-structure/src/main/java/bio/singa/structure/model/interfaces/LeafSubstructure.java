@@ -3,7 +3,7 @@ package bio.singa.structure.model.interfaces;
 import bio.singa.mathematics.vectors.Vector3D;
 import bio.singa.mathematics.vectors.Vectors3D;
 import bio.singa.structure.model.families.StructuralFamily;
-import bio.singa.features.identifiers.LeafIdentifier;
+import bio.singa.structure.model.oak.LeafIdentifier;
 import bio.singa.structure.model.oak.Exchangeable;
 import bio.singa.structure.parser.pdb.structures.tokens.AtomToken;
 

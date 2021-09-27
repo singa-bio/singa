@@ -1,6 +1,6 @@
 package bio.singa.structure.model.molecules;
 
-import bio.singa.features.identifiers.LeafIdentifier;
+import bio.singa.structure.model.oak.LeafIdentifier;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.interfaces.Structure;
 import bio.singa.structure.parser.pdb.structures.StructureParser;

@@ -1,6 +1,6 @@
 package bio.singa.structure.parser.pdb.structures;
 
-import bio.singa.features.identifiers.LeafIdentifier;
+import bio.singa.structure.model.oak.LeafIdentifier;
 import bio.singa.structure.model.families.StructuralFamily;
 import bio.singa.structure.model.interfaces.*;
 import bio.singa.structure.model.mmtf.MmtfAminoAcid;

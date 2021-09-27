@@ -1,8 +1,8 @@
 package bio.singa.structure.parser.pdb.structures.tokens;
 
 import bio.singa.core.utility.Range;
-import bio.singa.features.identifiers.LeafIdentifier;
-import bio.singa.features.identifiers.UniqueAtomIdentifier;
+import bio.singa.structure.model.oak.LeafIdentifier;
+import bio.singa.structure.model.oak.UniqueAtomIdentifier;
 import bio.singa.structure.model.interfaces.Atom;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.oak.OakAtom;

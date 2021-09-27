@@ -2,7 +2,7 @@ package bio.singa.structure.algorithms.superimposition.affinity;
 
 import bio.singa.core.utility.Resources;
 import bio.singa.structure.model.families.AminoAcidFamily;
-import bio.singa.features.identifiers.LeafIdentifier;
+import bio.singa.structure.model.oak.LeafIdentifier;
 import bio.singa.structure.model.interfaces.Structure;
 import bio.singa.structure.model.oak.OakAminoAcid;
 import bio.singa.structure.model.oak.StructuralMotif;

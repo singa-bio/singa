@@ -40,6 +40,12 @@
             <artifactId>jfreesvg</artifactId>
             <version>3.3</version>
         </dependency>
+        <dependency>
+            <groupId>bio.singa</groupId>
+            <artifactId>singa-structure</artifactId>
+            <version>0.7.1</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
 </project>

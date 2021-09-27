@@ -1,30 +1,18 @@
 package bio.singa.structure.parser.pdb.structures.tokens;
 
-import bio.singa.chemistry.model.elements.Element;
-import bio.singa.chemistry.model.elements.ElementProvider;
 import bio.singa.core.utility.Range;
-import bio.singa.features.identifiers.LeafIdentifier;
-import bio.singa.mathematics.vectors.Vector3D;
 import bio.singa.structure.model.families.AminoAcidFamily;
 import bio.singa.structure.model.families.NucleotideFamily;
-import bio.singa.structure.model.interfaces.Atom;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
-import bio.singa.structure.model.interfaces.Nucleotide;
-import bio.singa.structure.model.interfaces.Structure;
 import bio.singa.structure.model.oak.OakAminoAcid;
-import bio.singa.structure.model.oak.OakAtom;
 import bio.singa.structure.model.oak.OakNucleotide;
 import bio.singa.structure.model.oak.OakStructure;
 
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static bio.singa.features.identifiers.LeafIdentifier.DEFAULT_INSERTION_CODE;
+import static bio.singa.structure.model.oak.LeafIdentifier.DEFAULT_INSERTION_CODE;
 
 public enum SequenceAdviceToken implements PDBToken {
 

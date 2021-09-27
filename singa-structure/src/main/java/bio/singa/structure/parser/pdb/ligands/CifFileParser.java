@@ -4,7 +4,7 @@ import bio.singa.chemistry.model.CovalentBondType;
 import bio.singa.chemistry.model.elements.Element;
 import bio.singa.chemistry.model.elements.ElementProvider;
 import bio.singa.core.utility.Pair;
-import bio.singa.features.identifiers.LeafIdentifier;
+import bio.singa.structure.model.oak.LeafIdentifier;
 import bio.singa.mathematics.vectors.Vector3D;
 import bio.singa.structure.model.families.AminoAcidFamily;
 import bio.singa.structure.model.families.LigandFamily;

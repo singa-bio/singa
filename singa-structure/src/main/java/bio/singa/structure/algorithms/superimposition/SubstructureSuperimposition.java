@@ -4,7 +4,7 @@ import bio.singa.mathematics.algorithms.superimposition.Superimposition;
 import bio.singa.mathematics.matrices.Matrix;
 import bio.singa.mathematics.vectors.Vector;
 import bio.singa.mathematics.vectors.Vector3D;
-import bio.singa.features.identifiers.LeafIdentifier;
+import bio.singa.structure.model.oak.LeafIdentifier;
 import bio.singa.structure.model.interfaces.AtomContainer;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.interfaces.LeafSubstructureContainer;
@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static bio.singa.features.identifiers.LeafIdentifier.DEFAULT_INSERTION_CODE;
+import static bio.singa.structure.model.oak.LeafIdentifier.DEFAULT_INSERTION_CODE;
 
 /**
  * An implementation of a {@link Superimposition} for {@link AtomContainer}s.

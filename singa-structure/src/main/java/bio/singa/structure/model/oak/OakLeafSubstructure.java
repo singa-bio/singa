@@ -1,7 +1,6 @@
 package bio.singa.structure.model.oak;
 
 import bio.singa.chemistry.model.CovalentBondType;
-import bio.singa.features.identifiers.LeafIdentifier;
 import bio.singa.structure.model.families.StructuralFamily;
 import bio.singa.structure.model.interfaces.Atom;
 import bio.singa.structure.model.interfaces.LeafSubstructure;

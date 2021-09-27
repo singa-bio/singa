@@ -1,8 +1,6 @@
 package bio.singa.structure.model.oak;
 
-import bio.singa.structure.model.families.AminoAcidFamily;
 import bio.singa.structure.model.families.NucleotideFamily;
-import bio.singa.features.identifiers.LeafIdentifier;
 import bio.singa.structure.model.interfaces.Nucleotide;
 
 /**

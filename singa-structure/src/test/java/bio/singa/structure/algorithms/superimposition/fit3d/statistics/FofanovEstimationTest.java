@@ -3,7 +3,7 @@ package bio.singa.structure.algorithms.superimposition.fit3d.statistics;
 import bio.singa.core.utility.Resources;
 import bio.singa.structure.algorithms.superimposition.fit3d.Fit3D;
 import bio.singa.structure.algorithms.superimposition.fit3d.Fit3DBuilder;
-import bio.singa.features.identifiers.LeafIdentifiers;
+import bio.singa.structure.model.oak.LeafIdentifiers;
 import bio.singa.structure.model.interfaces.Structure;
 import bio.singa.structure.model.oak.StructuralEntityFilter;
 import bio.singa.structure.model.oak.StructuralMotif;

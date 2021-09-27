@@ -1,7 +1,7 @@
 package bio.singa.structure.model.mmtf;
 
 import bio.singa.structure.model.families.StructuralFamily;
-import bio.singa.features.identifiers.LeafIdentifier;
+import bio.singa.structure.model.oak.LeafIdentifier;
 import bio.singa.structure.model.interfaces.Atom;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 import org.rcsb.mmtf.api.StructureDataInterface;

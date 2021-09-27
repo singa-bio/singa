@@ -1,6 +1,5 @@
 package bio.singa.structure.model.oak;
 
-import bio.singa.features.identifiers.LeafIdentifier;
 import bio.singa.structure.model.families.AminoAcidFamily;
 import bio.singa.structure.model.families.LigandFamily;
 import bio.singa.structure.model.families.NucleotideFamily;
@@ -16,7 +15,7 @@ import org.slf4j.LoggerFactory;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static bio.singa.features.identifiers.LeafIdentifier.*;
+import static bio.singa.structure.model.oak.LeafIdentifier.*;
 import static bio.singa.structure.parser.pdb.structures.tokens.LeafSkeleton.AssignedFamily.MODIFIED_AMINO_ACID;
 import static bio.singa.structure.parser.pdb.structures.tokens.LeafSkeleton.AssignedFamily.MODIFIED_NUCLEOTIDE;
 

@@ -1,4 +1,4 @@
-package bio.singa.features.identifiers;
+package bio.singa.structure.model.oak;
 
 import java.util.Arrays;
 import java.util.List;

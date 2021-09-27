@@ -1,6 +1,6 @@
 package bio.singa.structure.parser.pdb.structures;
 
-import bio.singa.features.identifiers.UniqueAtomIdentifier;
+import bio.singa.structure.model.oak.UniqueAtomIdentifier;
 import bio.singa.structure.model.oak.OakAtom;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -2,8 +2,8 @@ package bio.singa.structure.algorithms.superimposition.fit3d;
 
 import bio.singa.core.utility.Resources;
 import bio.singa.structure.model.families.AminoAcidFamily;
-import bio.singa.features.identifiers.LeafIdentifier;
-import bio.singa.features.identifiers.LeafIdentifiers;
+import bio.singa.structure.model.oak.LeafIdentifier;
+import bio.singa.structure.model.oak.LeafIdentifiers;
 import bio.singa.structure.model.interfaces.Structure;
 import bio.singa.structure.model.oak.StructuralMotif;
 import bio.singa.structure.parser.pdb.structures.StructureParser;

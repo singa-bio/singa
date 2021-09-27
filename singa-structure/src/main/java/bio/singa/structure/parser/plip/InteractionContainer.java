@@ -2,8 +2,8 @@ package bio.singa.structure.parser.plip;
 
 import bio.singa.mathematics.vectors.Vector3D;
 import bio.singa.structure.model.families.LigandFamily;
-import bio.singa.features.identifiers.LeafIdentifier;
-import bio.singa.features.identifiers.UniqueAtomIdentifier;
+import bio.singa.structure.model.oak.LeafIdentifier;
+import bio.singa.structure.model.oak.UniqueAtomIdentifier;
 import bio.singa.structure.model.interfaces.*;
 import bio.singa.structure.model.oak.OakChain;
 import bio.singa.structure.model.oak.OakStructure;

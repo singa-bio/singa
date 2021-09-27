@@ -1,7 +1,7 @@
 package bio.singa.structure.parser.pdb.structures;
 
-import bio.singa.features.identifiers.LeafIdentifier;
-import bio.singa.features.identifiers.UniqueAtomIdentifier;
+import bio.singa.structure.model.oak.LeafIdentifier;
+import bio.singa.structure.model.oak.UniqueAtomIdentifier;
 import bio.singa.structure.model.interfaces.*;
 import bio.singa.structure.model.oak.*;
 import org.slf4j.Logger;

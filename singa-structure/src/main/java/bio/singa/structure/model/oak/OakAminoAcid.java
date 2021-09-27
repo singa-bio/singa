@@ -1,6 +1,5 @@
 package bio.singa.structure.model.oak;
 
-import bio.singa.features.identifiers.LeafIdentifier;
 import bio.singa.mathematics.vectors.Vector3D;
 import bio.singa.structure.model.families.AminoAcidFamily;
 import bio.singa.structure.model.interfaces.AminoAcid;

@@ -2,7 +2,7 @@ package bio.singa.structure.parser.pdb.ligands;
 
 import bio.singa.chemistry.model.CovalentBondType;
 import bio.singa.core.utility.Pair;
-import bio.singa.features.identifiers.LeafIdentifier;
+import bio.singa.structure.model.oak.LeafIdentifier;
 import bio.singa.structure.model.families.LigandFamily;
 import bio.singa.structure.model.interfaces.Atom;
 import bio.singa.structure.model.interfaces.LeafSubstructure;

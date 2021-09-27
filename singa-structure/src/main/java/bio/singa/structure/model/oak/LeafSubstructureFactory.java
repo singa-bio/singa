@@ -1,16 +1,12 @@
 package bio.singa.structure.model.oak;
 
 import bio.singa.chemistry.model.CovalentBondType;
-import bio.singa.features.identifiers.LeafIdentifier;
 import bio.singa.structure.model.families.AminoAcidFamily;
 import bio.singa.structure.model.families.LigandFamily;
 import bio.singa.structure.model.families.NucleotideFamily;
 import bio.singa.structure.model.families.StructuralFamily;
-import bio.singa.structure.model.interfaces.Atom;
-import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.parser.pdb.structures.StructureParserOptions;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 

@@ -7,7 +7,7 @@ import bio.singa.structure.algorithms.superimposition.fit3d.representations.Repr
 import bio.singa.structure.algorithms.superimposition.fit3d.representations.RepresentationSchemeType;
 import bio.singa.structure.model.families.AminoAcidFamily;
 import bio.singa.structure.model.families.StructuralFamily;
-import bio.singa.features.identifiers.LeafIdentifier;
+import bio.singa.structure.model.oak.LeafIdentifier;
 import bio.singa.structure.model.interfaces.Atom;
 import bio.singa.structure.model.interfaces.AtomContainer;
 import bio.singa.structure.model.interfaces.LeafSubstructure;

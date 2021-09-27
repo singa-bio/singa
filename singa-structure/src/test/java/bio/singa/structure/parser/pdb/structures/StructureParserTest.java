@@ -2,26 +2,20 @@ package bio.singa.structure.parser.pdb.structures;
 
 
 import bio.singa.core.utility.Resources;
-import bio.singa.features.identifiers.LeafIdentifier;
+import bio.singa.structure.model.oak.LeafIdentifier;
 import bio.singa.structure.model.families.AminoAcidFamily;
 import bio.singa.structure.model.interfaces.AminoAcid;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
-import bio.singa.structure.model.interfaces.Ligand;
 import bio.singa.structure.model.interfaces.Structure;
-import bio.singa.structure.model.mmtf.MmtfAminoAcid;
-import bio.singa.structure.model.mmtf.MmtfStructure;
 import bio.singa.structure.model.oak.OakAminoAcid;
 import bio.singa.structure.model.oak.OakLigand;
 import bio.singa.structure.model.oak.OakStructure;
-import bio.singa.structure.model.oak.StructuralEntityFilter;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;

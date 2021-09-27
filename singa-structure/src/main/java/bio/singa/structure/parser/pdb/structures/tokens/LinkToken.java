@@ -1,13 +1,11 @@
 package bio.singa.structure.parser.pdb.structures.tokens;
 
 import bio.singa.core.utility.Range;
-import bio.singa.features.identifiers.LeafIdentifier;
+import bio.singa.structure.model.oak.LeafIdentifier;
 import bio.singa.structure.model.interfaces.Atom;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.oak.LinkEntry;
 import bio.singa.structure.model.oak.OakStructure;
-import bio.singa.structure.parser.pdb.structures.StructureCollector;
-import bio.singa.structure.parser.pdb.structures.StructureParserException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

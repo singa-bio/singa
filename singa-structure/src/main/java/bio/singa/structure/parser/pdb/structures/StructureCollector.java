@@ -2,8 +2,8 @@ package bio.singa.structure.parser.pdb.structures;
 
 import bio.singa.core.utility.DoubleMatcher;
 import bio.singa.core.utility.Pair;
-import bio.singa.features.identifiers.LeafIdentifier;
-import bio.singa.features.identifiers.UniqueAtomIdentifier;
+import bio.singa.structure.model.oak.LeafIdentifier;
+import bio.singa.structure.model.oak.UniqueAtomIdentifier;
 import bio.singa.structure.model.interfaces.Structure;
 import bio.singa.structure.model.oak.*;
 import bio.singa.structure.parser.pdb.structures.iterators.StructureIterator;
@@ -16,7 +16,7 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.regex.Matcher;
 
-import static bio.singa.features.identifiers.LeafIdentifier.*;
+import static bio.singa.structure.model.oak.LeafIdentifier.*;
 
 /**
  * The actual processing of pdb files. This class collects all required information form the a list of lines from a pdb
