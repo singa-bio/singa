@@ -1,9 +1,6 @@
 package bio.singa.structure.model.oak;
 
-import bio.singa.structure.model.interfaces.Atom;
-import bio.singa.structure.model.interfaces.Chain;
-import bio.singa.structure.model.interfaces.LeafSubstructure;
-import bio.singa.structure.model.interfaces.Model;
+import bio.singa.structure.model.interfaces.*;
 
 import java.util.*;
 

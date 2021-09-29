@@ -4,9 +4,9 @@ package bio.singa.structure.algorithms.superimposition.consensus;
 import bio.singa.core.utility.Resources;
 import bio.singa.structure.algorithms.superimposition.fit3d.representations.RepresentationSchemeType;
 import bio.singa.structure.model.families.AminoAcidFamily;
-import bio.singa.structure.model.oak.LeafIdentifier;
 import bio.singa.structure.model.interfaces.Structure;
 import bio.singa.structure.model.oak.OakAminoAcid;
+import bio.singa.structure.model.oak.PdbLeafIdentifier;
 import bio.singa.structure.model.oak.StructuralEntityFilter;
 import bio.singa.structure.model.oak.StructuralMotif;
 import bio.singa.structure.parser.pdb.structures.StructureParser;
@@ -55,7 +55,7 @@ class ConsensusAlignmentTest {
 
     @Test
     void shouldFailWithInputOfDifferentSize() {
-        input.get(0).addLeafSubstructure(new OakAminoAcid(new LeafIdentifier(0), AminoAcidFamily.ALANINE));
+        input.get(0).addLeafSubstructure(new OakAminoAcid(new PdbLeafIdentifier(PdbLeafIdentifier.DEFAULT_PDB_IDENTIFIER, PdbLeafIdentifier.DEFAULT_MODEL_IDENTIFIER, PdbLeafIdentifier.DEFAULT_CHAIN_IDENTIFIER, 0), AminoAcidFamily.ALANINE));
         assertThrows(ConsensusException.class,
                 () -> ConsensusBuilder.create()
                         .inputStructuralMotifs(input)

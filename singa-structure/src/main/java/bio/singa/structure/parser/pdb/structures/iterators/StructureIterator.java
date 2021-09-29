@@ -11,7 +11,7 @@ import bio.singa.structure.parser.pdb.structures.iterators.converters.LocalPDBTo
 import bio.singa.structure.parser.pdb.structures.iterators.sources.LocalSourceIterator;
 import bio.singa.structure.parser.pdb.structures.iterators.sources.RemoteMmtfSourceIterator;
 import bio.singa.structure.parser.pdb.structures.iterators.sources.RemotePDBSourceIterator;
-import bio.singa.structure.parser.pdb.structures.tokens.LeafSkeleton;
+import bio.singa.structure.model.general.LeafSkeleton;
 
 import java.io.File;
 import java.nio.file.Path;

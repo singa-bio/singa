@@ -21,7 +21,7 @@ public class LeafSubstructureFactory {
 
     }
 
-    public static OakLeafSubstructure<?> createLeafSubstructure(LeafIdentifier leafIdentifier, StructuralFamily<?> family) {
+    public static OakLeafSubstructure<?> createLeafSubstructure(PdbLeafIdentifier leafIdentifier, StructuralFamily<?> family) {
         if (family instanceof AminoAcidFamily) {
             return new OakAminoAcid(leafIdentifier, (AminoAcidFamily) family);
         } else if (family instanceof NucleotideFamily) {
@@ -149,7 +149,7 @@ public class LeafSubstructureFactory {
         nucleotide.addBondBetween(atoms.get("C4"), atoms.get("C5"), CovalentBondType.DOUBLE_BOND);
     }
 
-    public static OakLeafSubstructure<?> createLeafSubstructure(LeafIdentifier leafIdentifier, StructuralFamily<?> family, Set<OakAtom> atoms) {
+    public static OakLeafSubstructure<?> createLeafSubstructure(PdbLeafIdentifier leafIdentifier, StructuralFamily<?> family, Set<OakAtom> atoms) {
         OakLeafSubstructure<?> leafSubstructure;
         if (family instanceof AminoAcidFamily) {
             leafSubstructure = new OakAminoAcid(leafIdentifier, (AminoAcidFamily) family);

@@ -3,8 +3,8 @@ package bio.singa.structure.model.mmtf;
 import bio.singa.structure.model.families.AminoAcidFamily;
 import bio.singa.structure.model.families.LigandFamily;
 import bio.singa.structure.model.families.NucleotideFamily;
-import bio.singa.structure.model.oak.LeafIdentifier;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
+import bio.singa.structure.model.oak.PdbLeafIdentifier;
 import org.rcsb.mmtf.api.StructureDataInterface;
 
 import java.util.HashMap;
@@ -39,7 +39,7 @@ class MmtfLeafFactory {
      * @param atomEndIndex The index of the last atom that belong to this leaf.
      * @return A instance of {@link LeafSubstructure}.
      */
-    static MmtfLeafSubstructure<?> createLeaf(StructureDataInterface data, byte[] bytes, LeafIdentifier leafIdentifier, int internalGroupIndex, int atomStartIndex, int atomEndIndex) {
+    static MmtfLeafSubstructure<?> createLeaf(StructureDataInterface data, byte[] bytes, PdbLeafIdentifier leafIdentifier, int internalGroupIndex, int atomStartIndex, int atomEndIndex) {
         final String threeLetterCode = data.getGroupName(data.getGroupTypeIndices()[internalGroupIndex]);
         Optional<AminoAcidFamily> aminoAcidFamily = AminoAcidFamily.getAminoAcidTypeByThreeLetterCode(threeLetterCode);
         if (aminoAcidFamily.isPresent()) {

@@ -1,6 +1,6 @@
 package bio.singa.structure.parser.plip;
 
-import bio.singa.structure.model.oak.LeafIdentifier;
+import bio.singa.structure.model.oak.PdbLeafIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.Attributes;
@@ -405,8 +405,8 @@ public class PlipContentHandler implements ContentHandler {
             return;
         }
         // generate identifiers
-        final LeafIdentifier source = new LeafIdentifier(currentPdbIdentifier, 1, firstLeafChain, Integer.parseInt(firstLeafSerial));
-        final LeafIdentifier target = new LeafIdentifier(currentPdbIdentifier, 1, secondLeafChain, Integer.parseInt(secondLeafSerial));
+        final PdbLeafIdentifier source = new PdbLeafIdentifier(currentPdbIdentifier, 1, firstLeafChain, Integer.parseInt(firstLeafSerial));
+        final PdbLeafIdentifier target = new PdbLeafIdentifier(currentPdbIdentifier, 1, secondLeafChain, Integer.parseInt(secondLeafSerial));
         // FIXME for metal complexes this seems to be not valid to take the first occurring entry as source: at atom level source is always the ion
         currentInteraction.setSource(source);
         currentInteraction.setTarget(target);

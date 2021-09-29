@@ -62,7 +62,7 @@ public class OakStructure implements Structure {
 
     public void setPdbIdentifier(String pdbIdentifier) {
         if (pdbIdentifier.isEmpty()) {
-            pdbIdentifier = LeafIdentifier.DEFAULT_PDB_IDENTIFIER;
+            pdbIdentifier = PdbLeafIdentifier.DEFAULT_PDB_IDENTIFIER;
         }
         this.pdbIdentifier = pdbIdentifier.toLowerCase();
     }
@@ -178,9 +178,7 @@ public class OakStructure implements Structure {
                 for (LeafSubstructure leafSubstructure : chain.getAllLeafSubstructures()) {
                     for (Atom atom : leafSubstructure.getAllAtoms()) {
                         if (atom.getAtomIdentifier().equals(atomSerial)) {
-                            UniqueAtomIdentifier identifier = new UniqueAtomIdentifier(pdbIdentifier, model.getModelIdentifier(),
-                                    chain.getChainIdentifier(), leafSubstructure.getIdentifier().getSerial(), leafSubstructure.getIdentifier().getInsertionCode(),
-                                    atomSerial);
+                            UniqueAtomIdentifier identifier = new UniqueAtomIdentifier(leafSubstructure.getIdentifier(), atom.getAtomIdentifier());
                             return Optional.of(new AbstractMap.SimpleEntry<>(identifier, atom));
                         }
                     }
@@ -196,9 +194,7 @@ public class OakStructure implements Structure {
                 for (LeafSubstructure<?> leafSubstructure : chain.getAllLeafSubstructures()) {
                     for (Atom atom : leafSubstructure.getAllAtoms()) {
                         if (atom.getPosition().almostEqual(coordinate, eps)) {
-                            UniqueAtomIdentifier identifier = new UniqueAtomIdentifier(pdbIdentifier, model.getModelIdentifier(),
-                                    chain.getChainIdentifier(), leafSubstructure.getIdentifier().getSerial(), leafSubstructure.getIdentifier().getInsertionCode(),
-                                    atom.getAtomIdentifier());
+                            UniqueAtomIdentifier identifier = new UniqueAtomIdentifier(leafSubstructure.getIdentifier(), atom.getAtomIdentifier());
                             return Optional.of(new AbstractMap.SimpleEntry<>(identifier, atom));
                         }
                     }
@@ -233,7 +229,7 @@ public class OakStructure implements Structure {
     @Override
     public Optional<Atom> getAtom(UniqueAtomIdentifier atomIdentifier) {
         // does actually not compare pdb id
-        return getChain(atomIdentifier.getModelIdentifier(), atomIdentifier.getChainIdentifier())
+        return getChain(atomIdentifier.getLeafIdentifier().getModelIdentifier(), atomIdentifier.getLeafIdentifier().getChainIdentifier())
                 .flatMap(chain -> chain.getLeafSubstructure(atomIdentifier.getLeafIdentifier()))
                 .flatMap(leafSubstructure -> leafSubstructure.getAtom(atomIdentifier.getAtomSerial()));
     }

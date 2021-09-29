@@ -1,8 +1,8 @@
 package bio.singa.structure.model.mmtf;
 
 import bio.singa.structure.model.families.LigandFamily;
-import bio.singa.structure.model.oak.LeafIdentifier;
 import bio.singa.structure.model.interfaces.Ligand;
+import bio.singa.structure.model.oak.PdbLeafIdentifier;
 import org.rcsb.mmtf.api.StructureDataInterface;
 
 import java.util.HashSet;
@@ -24,7 +24,7 @@ public class MmtfLigand extends MmtfLeafSubstructure<LigandFamily> implements Li
      * @param atomStartIndex The index of the first atom that belong to this leaf.
      * @param atomEndIndex The index of the last atom that belong to this leaf.
      */
-    MmtfLigand(StructureDataInterface data, byte[] bytes, LigandFamily family, LeafIdentifier leafIdentifier, int internalGroupIndex, int atomStartIndex, int atomEndIndex) {
+    MmtfLigand(StructureDataInterface data, byte[] bytes, LigandFamily family, PdbLeafIdentifier leafIdentifier, int internalGroupIndex, int atomStartIndex, int atomEndIndex) {
         super(data, bytes, family, leafIdentifier, internalGroupIndex, atomStartIndex, atomEndIndex);
     }
 

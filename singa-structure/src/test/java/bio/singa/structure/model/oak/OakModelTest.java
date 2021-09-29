@@ -65,7 +65,7 @@ class OakModelTest {
 
     @Test
     void getLeafSubstructure() {
-        Optional<LeafSubstructure<?>> leafSubstructure = firstModel.getLeafSubstructure(new LeafIdentifier("2N5E", 1, "B", 64));
+        Optional<LeafSubstructure<?>> leafSubstructure = firstModel.getLeafSubstructure(new PdbLeafIdentifier("2N5E", 1, "B", 64));
         if (!leafSubstructure.isPresent()) {
             fail("Optional leaf substructure was empty.");
         }
@@ -88,7 +88,7 @@ class OakModelTest {
     @Test
     void removeLeafSubstructure() {
         final int expected = modelToModify.getNumberOfLeafSubstructures() - 1;
-        final boolean response = modelToModify.removeLeafSubstructure(new LeafIdentifier("2N5E", 3, "B", 64));
+        final boolean response = modelToModify.removeLeafSubstructure(new PdbLeafIdentifier("2N5E", 3, "B", 64));
         if (!response) {
             fail("Response was false but should be true if any leaf substructure was removed.");
         }

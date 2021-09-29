@@ -5,12 +5,12 @@ import bio.singa.core.utility.Resources;
 import bio.singa.structure.algorithms.superimposition.fit3d.representations.RepresentationSchemeFactory;
 import bio.singa.structure.algorithms.superimposition.fit3d.representations.RepresentationSchemeType;
 import bio.singa.structure.algorithms.superimposition.scores.SubstitutionMatrix;
-import bio.singa.structure.model.oak.LeafIdentifier;
 import bio.singa.structure.model.oak.LeafIdentifiers;
 import bio.singa.structure.model.interfaces.AminoAcid;
 import bio.singa.structure.model.interfaces.Chain;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.interfaces.Structure;
+import bio.singa.structure.model.oak.PdbLeafIdentifier;
 import bio.singa.structure.model.oak.StructuralEntityFilter;
 import bio.singa.structure.model.oak.StructuralMotif;
 import bio.singa.structure.parser.pdb.structures.StructureParser;
@@ -140,13 +140,13 @@ class SubstructureSuperimposerTest {
         Structure first = StructureParser.mmtf()
                 .pdbIdentifier("1cd9")
                 .parse();
-        List<LeafIdentifier> firstIdentifiers = LeafIdentifiers.of("C-68", "C-70");
+        List<PdbLeafIdentifier> firstIdentifiers = LeafIdentifiers.of("C-68", "C-70");
         StructuralMotif firstMotif = StructuralMotif.fromLeafIdentifiers(first, firstIdentifiers);
 
         Structure second = StructureParser.mmtf()
                 .pdbIdentifier("1cn4")
                 .parse();
-        List<LeafIdentifier> secondIdentifiers = LeafIdentifiers.of("A-58", "A-59");
+        List<PdbLeafIdentifier> secondIdentifiers = LeafIdentifiers.of("A-58", "A-59");
         StructuralMotif secondMotif = StructuralMotif.fromLeafIdentifiers(second, secondIdentifiers);
 
         SubstructureSuperimposition mmtfSuperimposition = SubstructureSuperimposer.calculateSubstructureSuperimposition(firstMotif, secondMotif, StructuralEntityFilter.AtomFilter.isArbitrary());

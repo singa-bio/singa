@@ -2,11 +2,8 @@ package bio.singa.structure.model.mmtf;
 
 import bio.singa.core.utility.Range;
 import bio.singa.structure.model.families.StructuralFamily;
-import bio.singa.structure.model.oak.LeafIdentifier;
-import bio.singa.structure.model.interfaces.Atom;
-import bio.singa.structure.model.interfaces.Chain;
-import bio.singa.structure.model.interfaces.LeafSubstructure;
-import bio.singa.structure.model.interfaces.LeafSubstructureContainer;
+import bio.singa.structure.model.interfaces.*;
+import bio.singa.structure.model.oak.PdbLeafIdentifier;
 import org.rcsb.mmtf.api.StructureDataInterface;
 
 import java.util.*;
@@ -47,7 +44,7 @@ public class MmtfChain implements Chain {
     /**
      * The generated leaf identifiers for all relevant leaves.
      */
-    private final Map<Integer, LeafIdentifier> leafIdentifiers;
+    private final Map<Integer, PdbLeafIdentifier> leafIdentifiers;
 
     /**
      * Contains the relevant atom ranges for all relevant leaves.
@@ -80,7 +77,7 @@ public class MmtfChain implements Chain {
             if (internalChainIndices.contains(groupsPerChainIndex)) {
                 for (int groupIndex = currentGroupIndex; groupIndex <= endRange - 1; groupIndex++) {
                     relevantGroups.add(groupIndex);
-                    leafIdentifiers.put(groupIndex, new LeafIdentifier(data.getStructureId(), modelIndex + 1, chainIdentifier, data.getGroupIds()[groupIndex], data.getInsCodes()[groupIndex]));
+                    leafIdentifiers.put(groupIndex, new PdbLeafIdentifier(data.getStructureId(), modelIndex + 1, chainIdentifier, data.getGroupIds()[groupIndex], data.getInsCodes()[groupIndex]));
                 }
             }
             currentGroupIndex = endRange;
@@ -206,7 +203,7 @@ public class MmtfChain implements Chain {
     }
 
     private int getInternalIndexForLeafIdentifier(LeafIdentifier leafIdentifier) {
-        for (Map.Entry<Integer, LeafIdentifier> leafIdentifierEntry : leafIdentifiers.entrySet()) {
+        for (Map.Entry<Integer, PdbLeafIdentifier> leafIdentifierEntry : leafIdentifiers.entrySet()) {
             if (leafIdentifierEntry.getValue().equals(leafIdentifier)) {
                 return leafIdentifierEntry.getKey();
             }

@@ -7,7 +7,6 @@ import bio.singa.structure.algorithms.superimposition.fit3d.representations.Repr
 import bio.singa.structure.algorithms.superimposition.fit3d.representations.RepresentationSchemeType;
 import bio.singa.structure.model.families.AminoAcidFamily;
 import bio.singa.structure.model.families.StructuralFamily;
-import bio.singa.structure.model.oak.LeafIdentifier;
 import bio.singa.structure.model.interfaces.Atom;
 import bio.singa.structure.model.interfaces.AtomContainer;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
@@ -15,6 +14,7 @@ import bio.singa.structure.model.interfaces.LeafSubstructureContainer;
 import bio.singa.structure.model.oak.LeafSubstructureFactory;
 import bio.singa.structure.model.oak.OakAtom;
 import bio.singa.structure.model.oak.OakLeafSubstructure;
+import bio.singa.structure.model.oak.PdbLeafIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -173,7 +173,7 @@ public class AlignmentMethod {
             }
 
             // create new atom container
-            OakLeafSubstructure<?> leafSubstructure = LeafSubstructureFactory.createLeafSubstructure(new LeafIdentifier(leafCounter), family);
+            OakLeafSubstructure<?> leafSubstructure = LeafSubstructureFactory.createLeafSubstructure(new PdbLeafIdentifier(PdbLeafIdentifier.DEFAULT_PDB_IDENTIFIER, PdbLeafIdentifier.DEFAULT_MODEL_IDENTIFIER, PdbLeafIdentifier.DEFAULT_CHAIN_IDENTIFIER, leafCounter), family);
             averagedAtoms.forEach(leafSubstructure::addAtom);
             consensusLeaveSubstructures.add(leafSubstructure);
             leafCounter++;

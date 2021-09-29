@@ -2,7 +2,7 @@ package bio.singa.structure.parser.pdb.ligands;
 
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.parser.pdb.structures.LocalCIFRepository;
-import bio.singa.structure.parser.pdb.structures.tokens.LeafSkeleton;
+import bio.singa.structure.model.general.LeafSkeleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

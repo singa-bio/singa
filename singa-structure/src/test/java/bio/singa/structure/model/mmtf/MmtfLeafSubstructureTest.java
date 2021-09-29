@@ -1,10 +1,10 @@
 package bio.singa.structure.model.mmtf;
 
 import bio.singa.mathematics.vectors.Vector3D;
-import bio.singa.structure.model.oak.LeafIdentifier;
 import bio.singa.structure.model.interfaces.Atom;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.interfaces.Structure;
+import bio.singa.structure.model.oak.PdbLeafIdentifier;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.rcsb.mmtf.decoder.ReaderUtils;
@@ -32,16 +32,16 @@ class MmtfLeafSubstructureTest {
         // ATOM   2967  N   THR A 162      44.461  51.348  -6.215  1.00 13.02           N
         // ...
         // ATOM   2973  CG2 THR A 162      44.646  50.871  -9.169  1.00 11.44           C
-        leaf162 = structure1C0A.getLeafSubstructure(new LeafIdentifier("1C0A", 1, "A", 162)).get();
-        leaf154 = structure1C0A.getLeafSubstructure(new LeafIdentifier("1C0A", 1, "A", 154)).get();
-        leaf620A = structure1C0A.getLeafSubstructure(new LeafIdentifier("1C0A", 1, "B", 620, 'A')).get();
-        leafToModify = structure1C0A.getLeafSubstructure(new LeafIdentifier("1C0A", 1, "A", 163)).get();
+        leaf162 = structure1C0A.getLeafSubstructure(new PdbLeafIdentifier("1C0A", 1, "A", 162)).get();
+        leaf154 = structure1C0A.getLeafSubstructure(new PdbLeafIdentifier("1C0A", 1, "A", 154)).get();
+        leaf620A = structure1C0A.getLeafSubstructure(new PdbLeafIdentifier("1C0A", 1, "B", 620, 'A')).get();
+        leafToModify = structure1C0A.getLeafSubstructure(new PdbLeafIdentifier("1C0A", 1, "A", 163)).get();
     }
 
     @Test
     void getIdentifier() {
-        assertEquals(new LeafIdentifier("1C0A", 1, "A", 162), leaf162.getIdentifier());
-        assertEquals(new LeafIdentifier("1C0A", 1, "B", 620, 'A'), leaf620A.getIdentifier());
+        assertEquals(new PdbLeafIdentifier("1C0A", 1, "A", 162), leaf162.getIdentifier());
+        assertEquals(new PdbLeafIdentifier("1C0A", 1, "B", 620, 'A'), leaf620A.getIdentifier());
     }
 
     @Test

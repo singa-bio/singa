@@ -4,22 +4,22 @@ import bio.singa.chemistry.model.CovalentBondType;
 import bio.singa.chemistry.model.elements.Element;
 import bio.singa.chemistry.model.elements.ElementProvider;
 import bio.singa.core.utility.Pair;
-import bio.singa.structure.model.oak.LeafIdentifier;
 import bio.singa.mathematics.vectors.Vector3D;
 import bio.singa.structure.model.families.AminoAcidFamily;
 import bio.singa.structure.model.families.LigandFamily;
 import bio.singa.structure.model.families.NucleotideFamily;
-import bio.singa.structure.model.interfaces.AminoAcid;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
-import bio.singa.structure.model.interfaces.Nucleotide;
 import bio.singa.structure.model.oak.*;
-import bio.singa.structure.parser.pdb.structures.tokens.LeafSkeleton;
+import bio.singa.structure.model.general.LeafSkeleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static bio.singa.structure.model.general.LeafSkeleton.isAminoAcid;
+import static bio.singa.structure.model.general.LeafSkeleton.isNucleotide;
 
 /**
  * @author cl
@@ -427,7 +427,7 @@ public class CifFileParser {
         collectLines();
         extractAtoms();
         extractBonds();
-        return createLeafSubstructure(LeafIdentifier.fromSimpleString("A-1"));
+        return createLeafSubstructure(PdbLeafIdentifier.fromSimpleString("A-1"));
     }
 
     /**
@@ -436,16 +436,16 @@ public class CifFileParser {
      * @param leafIdentifier The identifier this leaf should have.
      * @return A complete {@link LeafSubstructure} using the information collected until the call of this method.
      */
-    private OakLeafSubstructure<?> createLeafSubstructure(LeafIdentifier leafIdentifier) {
+    private OakLeafSubstructure<?> createLeafSubstructure(PdbLeafIdentifier leafIdentifier) {
         OakLeafSubstructure<?> leafSubstructure;
-        if (isNucleotide()) {
+        if (isNucleotide(type)) {
             // check for nucleotides
             Optional<NucleotideFamily> nucleotideFamily = NucleotideFamily.getNucleotideByThreeLetterCode(parent);
             leafSubstructure = nucleotideFamily.map(nucleotideFamily1 -> new OakNucleotide(leafIdentifier, nucleotideFamily1, threeLetterCode))
                     .orElseGet(() -> new OakNucleotide(leafIdentifier, NucleotideFamily.getNucleotideByThreeLetterCode(threeLetterCode).orElseThrow(() ->
                             new IllegalArgumentException("Could not create Nucleotide with three letter code" + threeLetterCode))));
 
-        } else if (isAminoAcid()) {
+        } else if (isAminoAcid(type)) {
             // check for amino acids
             Optional<AminoAcidFamily> aminoAcidFamily = AminoAcidFamily.getAminoAcidTypeByThreeLetterCode(parent);
             leafSubstructure = aminoAcidFamily.map(aminoAcidFamily1 -> new OakAminoAcid(leafIdentifier, aminoAcidFamily1, threeLetterCode))
@@ -511,21 +511,7 @@ public class CifFileParser {
      */
     private LeafSkeleton createLeafSkeleton() {
         LeafSkeleton.AssignedFamily assignedFamily;
-        if (isNucleotide()) {
-            // check for nucleotides
-            if (!parent.equals(LeafSkeleton.DEFAULT_PARENT)) {
-                assignedFamily = LeafSkeleton.AssignedFamily.MODIFIED_NUCLEOTIDE;
-            } else {
-                // TODO fix this fallback solution
-                assignedFamily = LeafSkeleton.AssignedFamily.LIGAND;
-            }
-        } else if (isAminoAcid()) {
-            // check for amino acids
-            assignedFamily = LeafSkeleton.AssignedFamily.MODIFIED_AMINO_ACID;
-        } else {
-            // else this is a ligand
-            assignedFamily = LeafSkeleton.AssignedFamily.LIGAND;
-        }
+        assignedFamily = determineAssignedFamily();
         LeafSkeleton leafSkeleton = new LeafSkeleton(threeLetterCode, parent, assignedFamily, bonds);
         leafSkeleton.setAtoms(atoms);
         leafSkeleton.setName(name);
@@ -533,24 +519,24 @@ public class CifFileParser {
         return leafSkeleton;
     }
 
-    /**
-     * Returns whether this molecule can be considered as a {@link Nucleotide}. This checks if the type is either {@code
-     * RNA LINKING} or {@code DNA LINKING}.
-     *
-     * @return True if the entity is a nucleotide.
-     */
-    private boolean isNucleotide() {
-        return type.equalsIgnoreCase("RNA LINKING") || type.equalsIgnoreCase("DNA LINKING");
-    }
-
-    /**
-     * Returns whether this molecule can be considered as a {@link AminoAcid}. This checks if the type is {@code
-     * L-PEPTIDE LINKING} and a valid parent is specified.
-     *
-     * @return True if entity is amino acid.
-     */
-    private boolean isAminoAcid() {
-        return type.equalsIgnoreCase("L-PEPTIDE LINKING"); // && AminoAcidFamily.getAminoAcidTypeByThreeLetterCode(this.parent).isPresent();
+    private LeafSkeleton.AssignedFamily determineAssignedFamily() {
+        LeafSkeleton.AssignedFamily assignedFamily;
+        if (isNucleotide(type)) {
+            // check for nucleotides
+            if (!parent.equals(LeafSkeleton.DEFAULT_PARENT)) {
+                assignedFamily = LeafSkeleton.AssignedFamily.MODIFIED_NUCLEOTIDE;
+            } else {
+                // TODO fix this fallback solution
+                assignedFamily = LeafSkeleton.AssignedFamily.LIGAND;
+            }
+        } else if (isAminoAcid(type)) {
+            // check for amino acids
+            assignedFamily = LeafSkeleton.AssignedFamily.MODIFIED_AMINO_ACID;
+        } else {
+            // else this is a ligand
+            assignedFamily = LeafSkeleton.AssignedFamily.LIGAND;
+        }
+        return assignedFamily;
     }
 
     /**

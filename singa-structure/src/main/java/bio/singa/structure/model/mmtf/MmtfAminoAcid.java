@@ -2,10 +2,10 @@ package bio.singa.structure.model.mmtf;
 
 import bio.singa.mathematics.vectors.Vector3D;
 import bio.singa.structure.model.families.AminoAcidFamily;
-import bio.singa.structure.model.oak.LeafIdentifier;
 import bio.singa.structure.model.interfaces.AminoAcid;
 import bio.singa.structure.model.interfaces.Atom;
 import bio.singa.structure.model.oak.AtomName;
+import bio.singa.structure.model.oak.PdbLeafIdentifier;
 import org.rcsb.mmtf.api.StructureDataInterface;
 
 import java.util.HashSet;
@@ -33,7 +33,7 @@ public class MmtfAminoAcid extends MmtfLeafSubstructure<AminoAcidFamily> impleme
      * @param atomStartIndex The index of the first atom that belong to this leaf.
      * @param atomEndIndex The index of the last atom that belong to this leaf.
      */
-    MmtfAminoAcid(StructureDataInterface data, byte[] bytes, AminoAcidFamily family, MmtfSecondaryStructure secondaryStructure, LeafIdentifier leafIdentifier, int internalGroupIndex, int atomStartIndex, int atomEndIndex) {
+    MmtfAminoAcid(StructureDataInterface data, byte[] bytes, AminoAcidFamily family, MmtfSecondaryStructure secondaryStructure, PdbLeafIdentifier leafIdentifier, int internalGroupIndex, int atomStartIndex, int atomEndIndex) {
         super(data, bytes, family, leafIdentifier, internalGroupIndex, atomStartIndex, atomEndIndex);
         this.secondaryStructure = secondaryStructure;
     }

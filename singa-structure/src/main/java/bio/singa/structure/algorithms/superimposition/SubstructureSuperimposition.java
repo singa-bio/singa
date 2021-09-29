@@ -4,16 +4,17 @@ import bio.singa.mathematics.algorithms.superimposition.Superimposition;
 import bio.singa.mathematics.matrices.Matrix;
 import bio.singa.mathematics.vectors.Vector;
 import bio.singa.mathematics.vectors.Vector3D;
-import bio.singa.structure.model.oak.LeafIdentifier;
 import bio.singa.structure.model.interfaces.AtomContainer;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.interfaces.LeafSubstructureContainer;
+import bio.singa.structure.model.oak.PdbLeafIdentifier;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static bio.singa.structure.model.oak.LeafIdentifier.DEFAULT_INSERTION_CODE;
+import static bio.singa.structure.model.oak.PdbLeafIdentifier.DEFAULT_INSERTION_CODE;
+
 
 /**
  * An implementation of a {@link Superimposition} for {@link AtomContainer}s.
@@ -57,7 +58,7 @@ public class SubstructureSuperimposition implements Superimposition<LeafSubstruc
     /**
      * Returns a string representation of the {@link SubstructureSuperimposition}, that is:
      * <pre>[RMSD]_[PDB-ID of mapped candidates]_[candidate residues]...</pre>
-     * The ordering of {@link LeafIdentifier}s corresponds to the actual found optimal alignment to the reference.
+     * The ordering of {@link PdbLeafIdentifier}s corresponds to the actual found optimal alignment to the reference.
      * TODO move this to interface, as other superimpositions should also get a string representation.
      *
      * @return The full string representation of this {@link SubstructureSuperimposition}.
@@ -66,7 +67,7 @@ public class SubstructureSuperimposition implements Superimposition<LeafSubstruc
         return mappedCandidate.stream()
                 .map(leafSubstructure -> leafSubstructure.getChainIdentifier() + "-"
                         + leafSubstructure.getIdentifier().getSerial()
-                        + (leafSubstructure.getInsertionCode() != DEFAULT_INSERTION_CODE ? leafSubstructure.getInsertionCode() : ""))
+                        + (leafSubstructure.getIdentifier().getInsertionCode() != DEFAULT_INSERTION_CODE ? leafSubstructure.getIdentifier().getInsertionCode() : ""))
                 .collect(Collectors.joining("_", getFormattedRmsd() + "_"
                         + mappedCandidate.get(0).getPdbIdentifier()
                         + "_", ""));

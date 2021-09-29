@@ -1,7 +1,6 @@
 package bio.singa.structure.parser.pdb.structures.tokens;
 
 import bio.singa.core.utility.Range;
-import bio.singa.structure.model.oak.LeafIdentifier;
 import bio.singa.structure.model.oak.UniqueAtomIdentifier;
 import bio.singa.structure.model.interfaces.Atom;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
@@ -62,15 +61,10 @@ public enum ConnectionToken implements PDBToken {
             logger.warn("could not add connection for atom {}, invalid atom identifier", sourceAtomString);
             return;
         }
-        UniqueAtomIdentifier atomIdentifer = uniqueAtomEntry.getKey();
-        LeafIdentifier leafIdentifier = new LeafIdentifier(atomIdentifer.getPdbIdentifier(),
-                atomIdentifer.getModelIdentifier(),
-                atomIdentifer.getChainIdentifier(),
-                atomIdentifer.getLeafSerial(),
-                atomIdentifer.getLeafInsertionCode());
-        Optional<LeafSubstructure<?>> leafSubstructureOptional = structure.getLeafSubstructure(leafIdentifier);
+        UniqueAtomIdentifier atomIdentifier = uniqueAtomEntry.getKey();
+        Optional<LeafSubstructure<?>> leafSubstructureOptional = structure.getLeafSubstructure(atomIdentifier.getLeafIdentifier());
         if (!leafSubstructureOptional.isPresent()) {
-            logger.warn("could not add connection for leaf {}, leaf could not be found in the structure", leafIdentifier);
+            logger.warn("could not add connection for leaf {}, leaf could not be found in the structure", atomIdentifier.getLeafIdentifier());
             return;
         }
         OakLeafSubstructure<?> leafsubstructure = ((OakLeafSubstructure<?>) leafSubstructureOptional.get());

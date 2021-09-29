@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static bio.singa.structure.model.oak.LeafIdentifier.DEFAULT_INSERTION_CODE;
+import static bio.singa.structure.model.oak.PdbLeafIdentifier.DEFAULT_INSERTION_CODE;
 
 public enum SequenceAdviceToken implements PDBToken {
 
@@ -54,7 +54,7 @@ public enum SequenceAdviceToken implements PDBToken {
         List<LeafSubstructure<?>> advisableResidues = structure.getAllChains().stream()
                 .filter(chain -> chain.getChainIdentifier().equals(adviceChain))
                 .flatMap(chain -> chain.getAllLeafSubstructures().stream())
-                .filter(leaf -> leaf.getSerial().equals(adviceSerial) && leaf.getInsertionCode() == adviceInsertionCode)
+                .filter(leaf -> leaf.getSerial().equals(adviceSerial) && leaf.getIdentifier().getInsertionCode() == adviceInsertionCode)
                 .collect(Collectors.toList());
 
         String originalResidueName = DATABASE_RESIDUE_NAME.extract(line).trim();

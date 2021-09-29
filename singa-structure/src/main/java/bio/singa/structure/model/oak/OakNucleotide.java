@@ -11,11 +11,11 @@ public class OakNucleotide extends OakLeafSubstructure<NucleotideFamily> impleme
     private boolean mutation;
     private NucleotideFamily wildTypeNucleotide;
 
-    public OakNucleotide(LeafIdentifier leafIdentifier, NucleotideFamily family) {
+    public OakNucleotide(PdbLeafIdentifier leafIdentifier, NucleotideFamily family) {
         super(leafIdentifier, family);
     }
 
-    public OakNucleotide(LeafIdentifier identifer, NucleotideFamily nucleotideFamily, String threeLetterCode) {
+    public OakNucleotide(PdbLeafIdentifier identifer, NucleotideFamily nucleotideFamily, String threeLetterCode) {
         super(identifer, nucleotideFamily, threeLetterCode);
     }
 

@@ -45,10 +45,10 @@ public class StructuralMotif implements LeafSubstructureContainer {
      * StructuralMotif}.
      * @return A new {@link StructuralMotif}.
      */
-    public static StructuralMotif fromLeafIdentifiers(Structure structure, List<LeafIdentifier> leafIdentifiers) {
+    public static StructuralMotif fromLeafIdentifiers(Structure structure, List<PdbLeafIdentifier> leafIdentifiers) {
         List<LeafSubstructure<?>> leafSubstructures = new ArrayList<>();
-        for (LeafIdentifier leafIdentifier : leafIdentifiers) {
-            leafIdentifier = new LeafIdentifier(structure.getPdbIdentifier(), leafIdentifier.getModelIdentifier(), leafIdentifier.getChainIdentifier(), leafIdentifier.getSerial(), leafIdentifier.getInsertionCode());
+        for (PdbLeafIdentifier leafIdentifier : leafIdentifiers) {
+            leafIdentifier = new PdbLeafIdentifier(structure.getPdbIdentifier(), leafIdentifier.getModelIdentifier(), leafIdentifier.getChainIdentifier(), leafIdentifier.getSerial(), leafIdentifier.getInsertionCode());
             final Optional<LeafSubstructure<?>> leafSubstructure = structure.getLeafSubstructure(leafIdentifier);
             if (leafSubstructure.isPresent()) {
                 leafSubstructures.add(leafSubstructure.get());
@@ -70,12 +70,9 @@ public class StructuralMotif implements LeafSubstructureContainer {
     }
 
     private static String generateMotifIdentifier(List<LeafSubstructure<?>> substructures) {
-        String pdbIdentifier = substructures.iterator().next().getIdentifier().getPdbIdentifier();
+        String pdbIdentifier = substructures.iterator().next().getIdentifier().getStructureIdentifier();
         return substructures.stream()
-                .map(leafSubstructure -> leafSubstructure.getIdentifier().getChainIdentifier() + "-"
-                        + leafSubstructure.getIdentifier().getSerial()
-                        + (leafSubstructure.getIdentifier().getInsertionCode() == LeafIdentifier.DEFAULT_INSERTION_CODE
-                        ? "" : leafSubstructure.getIdentifier().getInsertionCode()))
+                .map(leafSubstructure -> leafSubstructure.getIdentifier().toString())
                 .collect(Collectors.joining("_", pdbIdentifier + "_", ""));
     }
 

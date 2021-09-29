@@ -2,7 +2,7 @@ package bio.singa.structure.parser.plip;
 
 import bio.singa.mathematics.vectors.Vector3D;
 import bio.singa.structure.model.families.LigandFamily;
-import bio.singa.structure.model.oak.LeafIdentifier;
+import bio.singa.structure.model.oak.PdbLeafIdentifier;
 import bio.singa.structure.model.oak.UniqueAtomIdentifier;
 import bio.singa.structure.model.interfaces.*;
 import bio.singa.structure.model.oak.OakChain;
@@ -354,8 +354,8 @@ public class InteractionContainer {
         if (sourceEntry.isPresent()) {
             // use the atom identifier to remap leaf
             UniqueAtomIdentifier atomIdentifer = sourceEntry.get().getKey();
-            LeafIdentifier leafIdentifier = new LeafIdentifier(atomIdentifer.getPdbIdentifier(), atomIdentifer.getModelIdentifier(),
-                    atomIdentifer.getChainIdentifier(), atomIdentifer.getLeafSerial(), atomIdentifer.getLeafInsertionCode());
+            LeafIdentifier leafIdentifier = new PdbLeafIdentifier(atomIdentifer.getLeafIdentifier().getStructureIdentifier(), atomIdentifer.getLeafIdentifier().getModelIdentifier(),
+                    atomIdentifer.getLeafIdentifier().getChainIdentifier(), atomIdentifer.getLeafIdentifier().getSerial(), atomIdentifer.getLeafIdentifier().getInsertionCode());
             logger.debug("Fixed to leaf identifier {}.", leafIdentifier);
             interaction.setSource(leafIdentifier);
         } else {
@@ -369,8 +369,8 @@ public class InteractionContainer {
         if (targetEntry.isPresent()) {
             // use the atom identifier to remap leaf
             UniqueAtomIdentifier atomIdentifer = targetEntry.get().getKey();
-            LeafIdentifier leafIdentifier = new LeafIdentifier(atomIdentifer.getPdbIdentifier(), atomIdentifer.getModelIdentifier(),
-                    atomIdentifer.getChainIdentifier(), atomIdentifer.getLeafSerial(), atomIdentifer.getLeafInsertionCode());
+            LeafIdentifier leafIdentifier = new PdbLeafIdentifier(atomIdentifer.getLeafIdentifier().getStructureIdentifier(), atomIdentifer.getLeafIdentifier().getModelIdentifier(),
+                    atomIdentifer.getLeafIdentifier().getChainIdentifier(), atomIdentifer.getLeafIdentifier().getSerial(), atomIdentifer.getLeafIdentifier().getInsertionCode());
             logger.debug("Fixed to leaf identifier {}.", leafIdentifier);
             interaction.setTarget(leafIdentifier);
         } else {

@@ -9,12 +9,12 @@ import bio.singa.core.utility.Pair;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.mathematics.vectors.Vector3D;
 import bio.singa.structure.model.families.LigandFamily;
-import bio.singa.structure.model.oak.LeafIdentifier;
 import bio.singa.structure.model.interfaces.Atom;
 import bio.singa.structure.model.interfaces.Ligand;
 import bio.singa.structure.model.oak.OakAtom;
 import bio.singa.structure.model.oak.OakBond;
 import bio.singa.structure.model.oak.OakLigand;
+import bio.singa.structure.model.oak.PdbLeafIdentifier;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -139,7 +139,7 @@ public class MolParser {
     public Ligand parseNextAsLigand() {
         parseNextStructure();
         // create structure;
-        OakLigand ligand = new OakLigand(LeafIdentifier.DEFAULT_LEAF_IDENTIFIER, new LigandFamily("UNK", "?"));
+        OakLigand ligand = new OakLigand(PdbLeafIdentifier.DEFAULT_LEAF_IDENTIFIER, new LigandFamily("UNK", "?"));
         atoms.forEach(ligand::addAtom);
         int bondCounter = 0;
         for (Map.Entry<Pair<Integer>, CovalentBondType> bond : bonds.entrySet()) {

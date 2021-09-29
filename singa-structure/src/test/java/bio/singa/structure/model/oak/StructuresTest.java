@@ -71,8 +71,8 @@ class StructuresTest {
                 .pdbIdentifier("1szi")
                 .chainIdentifier("A")
                 .parse());
-        LeafIdentifier leafIdentifier = new LeafIdentifier("1szi", 1, "A", 206);
-        Map<LeafIdentifier, Integer> renumberingMap = new TreeMap<>();
+        PdbLeafIdentifier leafIdentifier = new PdbLeafIdentifier("1szi", 1, "A", 206);
+        Map<PdbLeafIdentifier, Integer> renumberingMap = new TreeMap<>();
         renumberingMap.put(leafIdentifier, 202);
         Structure renumberStructure = StructureRenumberer.renumberLeaveSubstructuresWithMap(structure, renumberingMap);
         StructureSelector.selectFrom(renumberStructure)

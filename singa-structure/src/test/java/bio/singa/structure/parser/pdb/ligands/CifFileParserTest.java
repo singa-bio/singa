@@ -2,15 +2,15 @@ package bio.singa.structure.parser.pdb.ligands;
 
 import bio.singa.chemistry.model.CovalentBondType;
 import bio.singa.core.utility.Pair;
-import bio.singa.structure.model.oak.LeafIdentifier;
 import bio.singa.structure.model.families.LigandFamily;
 import bio.singa.structure.model.interfaces.Atom;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.interfaces.Structure;
 import bio.singa.structure.model.oak.OakBond;
 import bio.singa.structure.model.oak.OakLigand;
+import bio.singa.structure.model.oak.PdbLeafIdentifier;
 import bio.singa.structure.parser.pdb.structures.StructureParser;
-import bio.singa.structure.parser.pdb.structures.tokens.LeafSkeleton;
+import bio.singa.structure.model.general.LeafSkeleton;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -110,7 +110,7 @@ class CifFileParserTest {
         Structure structure = StructureParser.pdb()
                 .pdbIdentifier("3cjt")
                 .parse();
-        Optional<LeafSubstructure<?>> substructureOptional = structure.getLeafSubstructure(LeafIdentifier.fromString("3cjt-1-I-259"));
+        Optional<LeafSubstructure<?>> substructureOptional = structure.getLeafSubstructure(PdbLeafIdentifier.fromString("3cjt-1-I-259"));
         assertTrue(substructureOptional.isPresent());
         assertTrue(substructureOptional.get().getFamily() instanceof LigandFamily);
     }

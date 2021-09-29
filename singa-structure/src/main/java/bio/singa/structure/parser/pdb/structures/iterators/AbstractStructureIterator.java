@@ -3,7 +3,7 @@ package bio.singa.structure.parser.pdb.structures.iterators;
 import bio.singa.features.identifiers.PDBIdentifier;
 import bio.singa.structure.model.interfaces.Structure;
 import bio.singa.structure.parser.pdb.structures.iterators.sources.SourceIterator;
-import bio.singa.structure.parser.pdb.structures.tokens.LeafSkeleton;
+import bio.singa.structure.model.general.LeafSkeleton;
 
 import java.util.ArrayList;
 import java.util.HashMap;

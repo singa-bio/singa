@@ -10,12 +10,12 @@ import java.util.*;
 /**
  * @author cl
  */
-public abstract class OakLeafSubstructure<FamilyType extends StructuralFamily> implements LeafSubstructure<FamilyType> {
+public abstract class OakLeafSubstructure<FamilyType extends StructuralFamily<FamilyType>> implements LeafSubstructure<FamilyType> {
 
     /**
      * The unique leaf identifer;
      */
-    private final LeafIdentifier leafIdentifier;
+    private final PdbLeafIdentifier leafIdentifier;
 
     /**
      * The structural family of this entity
@@ -49,7 +49,7 @@ public abstract class OakLeafSubstructure<FamilyType extends StructuralFamily> i
      */
     private boolean annotatedAsHetAtom;
 
-    public OakLeafSubstructure(LeafIdentifier leafIdentifier, FamilyType family) {
+    public OakLeafSubstructure(PdbLeafIdentifier leafIdentifier, FamilyType family) {
         this.leafIdentifier = leafIdentifier;
         divergingThreeLetterCode = "";
         this.family = family;
@@ -58,7 +58,7 @@ public abstract class OakLeafSubstructure<FamilyType extends StructuralFamily> i
         exchangeableFamilies = new HashSet<>();
     }
 
-    public OakLeafSubstructure(LeafIdentifier identifer, FamilyType aminoAcidFamily, String threeLetterCode) {
+    public OakLeafSubstructure(PdbLeafIdentifier identifer, FamilyType aminoAcidFamily, String threeLetterCode) {
         leafIdentifier = identifer;
         family = aminoAcidFamily;
         divergingThreeLetterCode = threeLetterCode;
@@ -80,7 +80,7 @@ public abstract class OakLeafSubstructure<FamilyType extends StructuralFamily> i
         this(leafSubstructure, leafSubstructure.leafIdentifier);
     }
 
-    public OakLeafSubstructure(OakLeafSubstructure<FamilyType> leafSubstructure, LeafIdentifier leafIdentifier) {
+    public OakLeafSubstructure(OakLeafSubstructure<FamilyType> leafSubstructure, PdbLeafIdentifier leafIdentifier) {
         // initialize variables
         this(leafIdentifier, leafSubstructure.family, leafSubstructure.divergingThreeLetterCode);
         // copy and add all atoms
@@ -104,7 +104,7 @@ public abstract class OakLeafSubstructure<FamilyType extends StructuralFamily> i
     }
 
     @Override
-    public LeafIdentifier getIdentifier() {
+    public PdbLeafIdentifier getIdentifier() {
         return leafIdentifier;
     }
 

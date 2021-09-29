@@ -1,8 +1,8 @@
 package bio.singa.structure.model.mmtf;
 
 import bio.singa.mathematics.vectors.Vector3D;
-import bio.singa.structure.model.oak.LeafIdentifier;
 import bio.singa.structure.model.interfaces.*;
+import bio.singa.structure.model.oak.PdbLeafIdentifier;
 import bio.singa.structure.parser.pdb.structures.StructureParser;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -33,7 +33,7 @@ class MmtfStructureTest {
     void shouldIgnoreAlternativePosition() throws IOException {
         final Structure mmtfStructure = new MmtfStructure(ReaderUtils.getByteArrayFromUrl("1dlf"));
         final Structure oakStructure = StructureParser.pdb().pdbIdentifier("1dlf").parse();
-        final LeafIdentifier leafIdentifier = new LeafIdentifier("1dlf", 1, "H", 70);
+        final LeafIdentifier leafIdentifier = new PdbLeafIdentifier("1dlf", 1, "H", 70);
 
         LeafSubstructure<?> mmtfLeaf = mmtfStructure.getLeafSubstructure(leafIdentifier).get();
         LeafSubstructure<?> oakLeaf = oakStructure.getLeafSubstructure(leafIdentifier).get();
@@ -104,7 +104,7 @@ class MmtfStructureTest {
 
     @Test
     void getLeafSubstructure() {
-        Optional<LeafSubstructure<?>> leafSubstructure = structure2N5E.getLeafSubstructure(new LeafIdentifier("2N5E", 5, "A", 64));
+        Optional<LeafSubstructure<?>> leafSubstructure = structure2N5E.getLeafSubstructure(new PdbLeafIdentifier("2N5E", 5, "A", 64));
         if (!leafSubstructure.isPresent()) {
             fail("Optional leaf substructure was empty.");
         }
@@ -122,7 +122,7 @@ class MmtfStructureTest {
 
     @Test
     void getAminoAcid() {
-        final Optional<AminoAcid> aminoAcid = structure1C0A.getAminoAcid(new LeafIdentifier("1c0a", 1, "A", 98));
+        final Optional<AminoAcid> aminoAcid = structure1C0A.getAminoAcid(new PdbLeafIdentifier("1c0a", 1, "A", 98));
         if (!aminoAcid.isPresent()) {
             fail("Optional leaf substructure was empty.");
         }
@@ -140,7 +140,7 @@ class MmtfStructureTest {
 
     @Test
     void getNucleotide() {
-        final Optional<Nucleotide> nucleotide = structure1C0A.getNucleotide(new LeafIdentifier("1c0a", 1, "B", 617));
+        final Optional<Nucleotide> nucleotide = structure1C0A.getNucleotide(new PdbLeafIdentifier("1c0a", 1, "B", 617));
         if (!nucleotide.isPresent()) {
             fail("Optional leaf substructure was empty.");
         }
@@ -158,7 +158,7 @@ class MmtfStructureTest {
 
     @Test
     void getLigand() {
-        final Optional<Ligand> nucleotide = structure1C0A.getLigand(new LeafIdentifier("1c0a", 1, "A", 831));
+        final Optional<Ligand> nucleotide = structure1C0A.getLigand(new PdbLeafIdentifier("1c0a", 1, "A", 831));
         if (!nucleotide.isPresent()) {
             fail("Optional leaf substructure was empty.");
         }

@@ -1,11 +1,11 @@
 package bio.singa.structure.parser.pdb.structures;
 
-import bio.singa.structure.model.oak.LeafIdentifier;
 import bio.singa.structure.model.families.StructuralFamily;
 import bio.singa.structure.model.interfaces.*;
 import bio.singa.structure.model.mmtf.MmtfAminoAcid;
 import bio.singa.structure.model.oak.LinkEntry;
 import bio.singa.structure.model.oak.OakStructure;
+import bio.singa.structure.model.oak.PdbLeafIdentifier;
 import bio.singa.structure.model.oak.Structures;
 import org.rcsb.mmtf.dataholders.MmtfStructure;
 import org.rcsb.mmtf.encoder.AdapterToStructureData;
@@ -84,7 +84,7 @@ public class StructureWriter {
 
     public interface OptionsStep extends OutputStep {
 
-        OutputStep renumberSubstructures(Map<LeafIdentifier, Integer> renumberingMap);
+        OutputStep renumberSubstructures(Map<PdbLeafIdentifier, Integer> renumberingMap);
 
         OutputStep settings(StructureRepresentationOptions.Setting... settings);
 
@@ -162,7 +162,7 @@ public class StructureWriter {
         }
 
         @Override
-        public OutputStep renumberSubstructures(Map<LeafIdentifier, Integer> renumberingMap) {
+        public OutputStep renumberSubstructures(Map<PdbLeafIdentifier, Integer> renumberingMap) {
             options.setRenumberingMap(renumberingMap);
             options.setRenumberingSubstructures(true);
             return null;
@@ -196,7 +196,7 @@ public class StructureWriter {
             if (leafSubstructures != null) {
                 if (pdbIdentifier.isEmpty()) {
                     LeafSubstructure<?> leafSubstructure = leafSubstructures.iterator().next();
-                    pdbIdentifier = leafSubstructure.getIdentifier().getPdbIdentifier();
+                    pdbIdentifier = leafSubstructure.getIdentifier().getStructureIdentifier();
                 }
                 structure = Structures.toStructure(leafSubstructures, pdbIdentifier, title);
             }
@@ -364,11 +364,9 @@ public class StructureWriter {
                     structureAdapterInterface.setChainInfo(chain.getChainIdentifier(), chain.getChainIdentifier(), leafSubstructures.size());
                     for (LeafSubstructure<?> leafSubstructure : leafSubstructures) {
                         List<Atom> atoms = leafSubstructure.getAllAtoms();
-                        char insertionCode = leafSubstructure.getInsertionCode();
-                        if (insertionCode == '\u0000') {
-                            insertionCode = org.rcsb.mmtf.dataholders.MmtfStructure.UNAVAILABLE_CHAR_VALUE;
-                        }
-                        StructuralFamily family = leafSubstructure.getFamily();
+
+                        char insertionCode = leafSubstructure.getIdentifier().getInsertionCode();
+                        StructuralFamily<?> family = leafSubstructure.getFamily();
                         char oneLetterCode = family.getOneLetterCode().charAt(0);
                         // TODO correct vocabulary has to be found for polymerType
                         // TODO sequenceIndex corresponds to SEQRES number which we do not consider for the moment

@@ -10,7 +10,7 @@ public class OakLigand extends OakLeafSubstructure<LigandFamily> implements Liga
 
     private String name;
 
-    public OakLigand(LeafIdentifier leafIdentifier, LigandFamily family) {
+    public OakLigand(PdbLeafIdentifier leafIdentifier, LigandFamily family) {
         super(leafIdentifier, family);
     }
 
@@ -18,7 +18,7 @@ public class OakLigand extends OakLeafSubstructure<LigandFamily> implements Liga
         super(oakLigand);
     }
 
-    public OakLigand(OakLigand oakLigand, LeafIdentifier leafIdentifier) {
+    public OakLigand(OakLigand oakLigand, PdbLeafIdentifier leafIdentifier) {
         super(oakLigand, leafIdentifier);
     }
 

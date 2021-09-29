@@ -1,11 +1,11 @@
 package bio.singa.structure.model.mmtf;
 
 import bio.singa.mathematics.vectors.Vector3D;
-import bio.singa.structure.model.oak.LeafIdentifier;
 import bio.singa.structure.model.interfaces.Atom;
 import bio.singa.structure.model.interfaces.Chain;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.interfaces.Structure;
+import bio.singa.structure.model.oak.PdbLeafIdentifier;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.rcsb.mmtf.decoder.ReaderUtils;
@@ -48,7 +48,7 @@ class MmtfChainTest {
         // ATOM    154  N   LEU A  64      13.596   6.125 -14.412  1.00  0.00           N
         // ..
         // ATOM    172 HD23 LEU A  64      11.462   1.727 -16.563  1.00  0.00           H
-        Optional<LeafSubstructure<?>> optionalLeafSubstructure = firstChain.getLeafSubstructure(new LeafIdentifier("2N5E", 1, "A", 64));
+        Optional<LeafSubstructure<?>> optionalLeafSubstructure = firstChain.getLeafSubstructure(new PdbLeafIdentifier("2N5E", 1, "A", 64));
         if (!optionalLeafSubstructure.isPresent()) {
             fail("Optional leaf substructure was empty.");
         }
@@ -64,7 +64,7 @@ class MmtfChainTest {
         // ATOM   4357  N   LEU B 174      -7.551  -8.393 -46.127  1.00  0.00           N
         // ...
         // ATOM   4375 HD23 LEU B 174      -3.489  -6.082 -46.198  1.00  0.00           H
-        final LeafIdentifier leafIdentifier = new LeafIdentifier("2N5E", 1, "B", 174);
+        final PdbLeafIdentifier leafIdentifier = new PdbLeafIdentifier("2N5E", 1, "B", 174);
         Optional<LeafSubstructure<?>> optionalLeafSubstructure = chainToModify.getLeafSubstructure(leafIdentifier);
         if (!optionalLeafSubstructure.isPresent()) {
             fail("Optional leaf substructure was empty.");
@@ -122,7 +122,7 @@ class MmtfChainTest {
         // ATOM   4815  N   SER B 204      27.480   2.711 -26.221  1.00  0.00           N
         // ...
         // ATOM   4825  HG  SER B 204      26.503   5.742 -27.310  1.00  0.00           H
-        final LeafIdentifier leafIdentifier = new LeafIdentifier("2N5E", 1, "B", 204);
+        final PdbLeafIdentifier leafIdentifier = new PdbLeafIdentifier("2N5E", 1, "B", 204);
         // remove a leaf from the copy
         chainCopy.removeLeafSubstructure(leafIdentifier);
         // copy again

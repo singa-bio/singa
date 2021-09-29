@@ -15,11 +15,11 @@ public class OakAminoAcid extends OakLeafSubstructure<AminoAcidFamily> implement
     private boolean mutation;
     private AminoAcidFamily wildTypeResidue;
 
-    public OakAminoAcid(LeafIdentifier leafIdentifier, AminoAcidFamily family) {
+    public OakAminoAcid(PdbLeafIdentifier leafIdentifier, AminoAcidFamily family) {
         super(leafIdentifier, family);
     }
 
-    public OakAminoAcid(LeafIdentifier identifer, AminoAcidFamily aminoAcidFamily, String threeLetterCode) {
+    public OakAminoAcid(PdbLeafIdentifier identifer, AminoAcidFamily aminoAcidFamily, String threeLetterCode) {
         super(identifer, aminoAcidFamily, threeLetterCode);
     }
 

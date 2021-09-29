@@ -1,7 +1,5 @@
 package bio.singa.structure.model.interfaces;
 
-import bio.singa.structure.model.oak.LeafIdentifier;
-
 /**
  * {@link Chain}s that represent one continuous macro molecule (most often the biggest macro molecules and its ligands
  * are collected in one model). Chains contain {@link LeafSubstructure}s that in tun contain {@link Atom}s.
@@ -26,7 +24,7 @@ public interface Chain extends LeafSubstructureContainer {
 
     default String flatToString() {
         final LeafIdentifier identifier = getFirstLeafSubstructure().getIdentifier();
-        return identifier.getPdbIdentifier() + "-" + identifier.getModelIdentifier() + "-" + getChainIdentifier();
+        return identifier.getStructureIdentifier() + "-" + identifier.getModelIdentifier() + "-" + getChainIdentifier();
     }
 
 }

@@ -1,6 +1,8 @@
 package bio.singa.structure.model.oak;
 
+import bio.singa.structure.model.families.StructuralFamily;
 import bio.singa.structure.model.interfaces.*;
+import bio.singa.structure.parser.pfam.PfamParser;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -12,9 +14,9 @@ public class OakChain implements Chain {
 
     private final String identifier;
 
-    private final TreeMap<LeafIdentifier, OakLeafSubstructure<?>> leafSubstructures;
+    private final TreeMap<PdbLeafIdentifier, OakLeafSubstructure<?>> leafSubstructures;
 
-    private final Set<LeafIdentifier> consecutiveIdentifiers;
+    private final Set<PdbLeafIdentifier> consecutiveIdentifiers;
 
     public OakChain(String chainIdentifier) {
         identifier = chainIdentifier;
@@ -107,16 +109,23 @@ public class OakChain implements Chain {
     }
 
     public void connectChainBackbone() {
-        OakLeafSubstructure<?> lastSubstructure = null;
-        for (OakLeafSubstructure<?> currentSubstructure : leafSubstructures.values()) {
-            if (lastSubstructure != null) {
-                if (lastSubstructure instanceof AminoAcid && currentSubstructure instanceof AminoAcid) {
-                    connectPeptideBonds((OakAminoAcid) lastSubstructure, (OakAminoAcid) currentSubstructure);
-                } else if (lastSubstructure instanceof Nucleotide && currentSubstructure instanceof Nucleotide) {
-                    connectNucleotideBonds((OakNucleotide) lastSubstructure, (OakNucleotide) currentSubstructure);
-                }
+        AminoAcid previousAminoAcid = null;
+        for (AminoAcid aminoAcid : getAllAminoAcids()) {
+            if (previousAminoAcid == null) {
+                previousAminoAcid = aminoAcid;
+                continue;
             }
-            lastSubstructure = currentSubstructure;
+            connectPeptideBonds((OakAminoAcid) previousAminoAcid, (OakAminoAcid) aminoAcid);
+            previousAminoAcid = aminoAcid;
+        }
+        Nucleotide previousNucleotide = null;
+        for (Nucleotide nucleotide : getAllNucleotides()) {
+            if (previousNucleotide == null) {
+                previousNucleotide = nucleotide;
+                continue;
+            }
+            connectNucleotideBonds((OakNucleotide) previousNucleotide, (OakNucleotide) nucleotide);
+            previousNucleotide = nucleotide;
         }
     }
 
@@ -145,9 +154,9 @@ public class OakChain implements Chain {
         }
     }
 
-    public List<LeafSubstructure<?>> getConsecutivePart() {
-        List<LeafSubstructure<?>> consecutivePart = new ArrayList<>();
-        for (LeafSubstructure<?> leafSubstructure : leafSubstructures.values()) {
+    public List<OakLeafSubstructure<?>> getConsecutivePart() {
+        List<OakLeafSubstructure<?>> consecutivePart = new ArrayList<>();
+        for (OakLeafSubstructure<?> leafSubstructure : leafSubstructures.values()) {
             if (consecutiveIdentifiers.contains(leafSubstructure.getIdentifier())) {
                 consecutivePart.add(leafSubstructure);
             }
@@ -155,9 +164,9 @@ public class OakChain implements Chain {
         return consecutivePart;
     }
 
-    public List<LeafSubstructure<?>> getNonConsecutivePart() {
-        List<LeafSubstructure<?>> consecutivePart = new ArrayList<>();
-        for (LeafSubstructure<?> leafSubstructure : leafSubstructures.values()) {
+    public List<OakLeafSubstructure<?>> getNonConsecutivePart() {
+        List<OakLeafSubstructure<?>> consecutivePart = new ArrayList<>();
+        for (OakLeafSubstructure<?> leafSubstructure : leafSubstructures.values()) {
             if (!consecutiveIdentifiers.contains(leafSubstructure.getIdentifier())) {
                 consecutivePart.add(leafSubstructure);
             }
@@ -165,9 +174,9 @@ public class OakChain implements Chain {
         return consecutivePart;
     }
 
-    public LeafIdentifier getNextLeafIdentifier() {
-        LeafIdentifier lastLeafIdentifier = leafSubstructures.lastEntry().getKey();
-        return new LeafIdentifier(lastLeafIdentifier.getPdbIdentifier(), lastLeafIdentifier.getModelIdentifier(),
+    public PdbLeafIdentifier getNextLeafIdentifier() {
+        PdbLeafIdentifier lastLeafIdentifier = leafSubstructures.lastEntry().getKey();
+        return new PdbLeafIdentifier(lastLeafIdentifier.getStructureIdentifier(), lastLeafIdentifier.getModelIdentifier(),
                 lastLeafIdentifier.getChainIdentifier(), lastLeafIdentifier.getSerial() + 1);
     }
 

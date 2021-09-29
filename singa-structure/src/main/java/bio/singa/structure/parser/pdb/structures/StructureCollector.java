@@ -2,7 +2,8 @@ package bio.singa.structure.parser.pdb.structures;
 
 import bio.singa.core.utility.DoubleMatcher;
 import bio.singa.core.utility.Pair;
-import bio.singa.structure.model.oak.LeafIdentifier;
+import bio.singa.structure.model.general.LeafSkeleton;
+import bio.singa.structure.model.oak.PdbLeafIdentifier;
 import bio.singa.structure.model.oak.UniqueAtomIdentifier;
 import bio.singa.structure.model.interfaces.Structure;
 import bio.singa.structure.model.oak.*;
@@ -16,7 +17,7 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.regex.Matcher;
 
-import static bio.singa.structure.model.oak.LeafIdentifier.*;
+import static bio.singa.structure.model.oak.PdbLeafIdentifier.*;
 
 /**
  * The actual processing of pdb files. This class collects all required information form the a list of lines from a pdb
@@ -41,15 +42,15 @@ public class StructureCollector {
     /**
      * A cache of all leafs and their three letter codes.
      */
-    private final Map<LeafIdentifier, String> leafCodes;
+    private final Map<PdbLeafIdentifier, String> leafCodes;
     /**
      * Remembers all leafs that have been parsed from HETATM entries.
      */
-    private final Set<LeafIdentifier> hetAtoms;
+    private final Set<PdbLeafIdentifier> hetAtoms;
     /**
      * Remembers all leafs the were part of the consecutive part of the chain.
      */
-    private final Set<LeafIdentifier> notInConsecutiveChain;
+    private final Set<PdbLeafIdentifier> notInConsecutiveChain;
     /**
      * Chains that have already been terminated by a terminate record.
      */
@@ -415,7 +416,7 @@ public class StructureCollector {
                 logger.trace("Collecting leafs for chain {}", chainNode.getIdentifier());
                 OakChain chain = new OakChain(chainNode.getIdentifier());
                 for (ContentTreeNode leafNode : chainNode.getNodesFromLevel(ContentTreeNode.StructureLevel.LEAF)) {
-                    LeafIdentifier leafIdentifier = new LeafIdentifier(currentPDB,
+                    PdbLeafIdentifier leafIdentifier = new PdbLeafIdentifier(currentPDB,
                             model.getModelIdentifier(),
                             chain.getChainIdentifier(),
                             Integer.parseInt(leafNode.getIdentifier()),
@@ -498,9 +499,9 @@ public class StructureCollector {
                 }
                 UniqueAtomIdentifier identifier = createUniqueAtomIdentifier(currentLine);
                 atoms.put(identifier, AtomToken.assembleAtom(currentLine));
-                LeafIdentifier leafIdentifier = new LeafIdentifier(identifier.getPdbIdentifier(),
-                        identifier.getModelIdentifier(), identifier.getChainIdentifier(),
-                        identifier.getLeafSerial(), identifier.getLeafInsertionCode());
+                PdbLeafIdentifier leafIdentifier = new PdbLeafIdentifier(identifier.getLeafIdentifier().getStructureIdentifier(),
+                        identifier.getLeafIdentifier().getModelIdentifier(), identifier.getLeafIdentifier().getChainIdentifier(),
+                        identifier.getLeafIdentifier().getSerial(), identifier.getLeafIdentifier().getInsertionCode());
                 currentChain = leafIdentifier.getChainIdentifier();
                 if (currentRecordType.equals("HETATM")) {
                     hetAtoms.add(leafIdentifier);

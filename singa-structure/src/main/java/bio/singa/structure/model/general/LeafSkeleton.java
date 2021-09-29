@@ -1,8 +1,9 @@
-package bio.singa.structure.parser.pdb.structures.tokens;
+package bio.singa.structure.model.general;
 
 import bio.singa.chemistry.model.CovalentBondType;
 import bio.singa.core.utility.Pair;
-import bio.singa.structure.model.oak.LeafIdentifier;
+import bio.singa.structure.model.interfaces.AminoAcid;
+import bio.singa.structure.model.interfaces.Nucleotide;
 import bio.singa.structure.model.families.AminoAcidFamily;
 import bio.singa.structure.model.families.LigandFamily;
 import bio.singa.structure.model.families.NucleotideFamily;
@@ -101,7 +102,7 @@ public class LeafSkeleton {
         return !bonds.isEmpty();
     }
 
-    public OakLeafSubstructure<?> toRealLeafSubstructure(LeafIdentifier identifer, Map<String, OakAtom> atoms) {
+    public OakLeafSubstructure<?> toRealLeafSubstructure(PdbLeafIdentifier identifer, Map<String, OakAtom> atoms) {
         OakLeafSubstructure<?> substructure;
         switch (assignedFamily) {
             case MODIFIED_AMINO_ACID: {
@@ -139,6 +140,26 @@ public class LeafSkeleton {
 
     public enum AssignedFamily {
         AMINO_ACID, NUCLEOTIDE, MODIFIED_AMINO_ACID, MODIFIED_NUCLEOTIDE, LIGAND
+    }
+
+    /**
+     * Returns whether this molecule can be considered as a {@link Nucleotide}. This checks if the type is either {@code
+     * RNA LINKING} or {@code DNA LINKING}.
+     *
+     * @return True if the entity is a nucleotide.
+     */
+    public static boolean isNucleotide(String type) {
+        return type.equalsIgnoreCase("RNA LINKING") || type.equalsIgnoreCase("DNA LINKING");
+    }
+
+    /**
+     * Returns whether this molecule can be considered as a {@link AminoAcid}. This checks if the type is {@code
+     * L-PEPTIDE LINKING} and a valid parent is specified.
+     *
+     * @return True if entity is amino acid.
+     */
+    public static boolean isAminoAcid(String type) {
+        return type.equalsIgnoreCase("L-PEPTIDE LINKING") || type.equalsIgnoreCase("PEPTIDE LINKING");
     }
 
 }

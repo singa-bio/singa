@@ -1,6 +1,6 @@
 package bio.singa.structure.parser.pdb.structures;
 
-import bio.singa.structure.model.oak.LeafIdentifier;
+import bio.singa.structure.model.oak.PdbLeafIdentifier;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -10,7 +10,7 @@ public class StructureRepresentationOptions {
     private boolean renumberAtoms = false;
     private boolean renumberSubstructures = false;
 
-    private Map<LeafIdentifier, Integer> renumberingMap;
+    private Map<PdbLeafIdentifier, Integer> renumberingMap;
 
     private StructureRepresentationOptions() {
         renumberingMap = new HashMap<>();
@@ -56,11 +56,11 @@ public class StructureRepresentationOptions {
         this.renumberSubstructures = renumberSubstructures;
     }
 
-    public Map<LeafIdentifier, Integer> getRenumberingMap() {
+    public Map<PdbLeafIdentifier, Integer> getRenumberingMap() {
         return renumberingMap;
     }
 
-    public void setRenumberingMap(Map<LeafIdentifier, Integer> renumberingMap) {
+    public void setRenumberingMap(Map<PdbLeafIdentifier, Integer> renumberingMap) {
         this.renumberingMap = renumberingMap;
     }
 

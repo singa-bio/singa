@@ -5,6 +5,7 @@ import bio.singa.structure.model.families.AminoAcidFamily;
 import bio.singa.structure.model.interfaces.Atom;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.interfaces.Structure;
+import bio.singa.structure.model.mmtf.MmtfStructure;
 import bio.singa.structure.parser.pdb.structures.StructureParser;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -25,7 +26,7 @@ class OakChainTest {
 
     @BeforeAll
     static void initialize() {
-        Structure structure2N5E = StructureParser.pdb().pdbIdentifier("2N5E").parse();
+        OakStructure structure2N5E = ((OakStructure) StructureParser.pdb().pdbIdentifier("2N5E").parse());
         firstChain = (OakChain) structure2N5E.getFirstChain();
         chainToModify = (OakChain) structure2N5E.getFirstModel().getChain("B").get();
         anotherChain = (OakChain) StructureParser.pdb().pdbIdentifier("1BRR").parse().getFirstModel().getFirstChain();
@@ -44,11 +45,11 @@ class OakChainTest {
 
     @Test
     void getLeafSubstructure() {
-        Optional<LeafSubstructure<?>> leafSubstructure = firstChain.getLeafSubstructure(new LeafIdentifier("2N5E", 1, "A", 64));
+        Optional<LeafSubstructure<?>> leafSubstructure = firstChain.getLeafSubstructure(new PdbLeafIdentifier("2N5E", 1, "A", 64));
         if (!leafSubstructure.isPresent()) {
             fail("Optional leaf substructure was empty.");
         }
-        final LeafIdentifier identifier = leafSubstructure.get().getIdentifier();
+        PdbLeafIdentifier identifier = ((OakLeafSubstructure<?>) leafSubstructure.get()).getIdentifier();
         assertEquals(1, identifier.getModelIdentifier());
         assertEquals("A", identifier.getChainIdentifier());
         assertEquals(64, identifier.getSerial());
@@ -58,7 +59,7 @@ class OakChainTest {
     @Test
     void addLeafSubstructure() {
         final int expected = chainToModify.getNumberOfLeafSubstructures() + 1;
-        chainToModify.addLeafSubstructure(new OakAminoAcid(new LeafIdentifier("2N5E", 1, "A", 244), AminoAcidFamily.HISTIDINE));
+        chainToModify.addLeafSubstructure(new OakAminoAcid(new PdbLeafIdentifier("2N5E", 1, "A", 244), AminoAcidFamily.HISTIDINE));
         final int actual = chainToModify.getNumberOfLeafSubstructures();
         assertEquals(expected, actual);
     }
@@ -66,7 +67,7 @@ class OakChainTest {
     @Test
     void addLeafSubstructureToConsecutive() {
         final int expected = chainToModify.getNumberOfLeafSubstructures() + 1;
-        final OakAminoAcid newAminoAcid = new OakAminoAcid(new LeafIdentifier("2N5E", 1, "B", 244), AminoAcidFamily.HISTIDINE);
+        final OakAminoAcid newAminoAcid = new OakAminoAcid(new PdbLeafIdentifier("2N5E", 1, "B", 244), AminoAcidFamily.HISTIDINE);
         chainToModify.addLeafSubstructure(newAminoAcid, true);
         final int actual = chainToModify.getNumberOfLeafSubstructures();
         assertEquals(expected, actual);
@@ -76,7 +77,7 @@ class OakChainTest {
     @Test
     void removeLeafSubstructure() {
         final int expected = chainToModify.getNumberOfLeafSubstructures() - 1;
-        final boolean response = chainToModify.removeLeafSubstructure(new OakAminoAcid(new LeafIdentifier("2N5E", 1, "B", 243), AminoAcidFamily.HISTIDINE));
+        final boolean response = chainToModify.removeLeafSubstructure(new OakAminoAcid(new PdbLeafIdentifier("2N5E", 1, "B", 243), AminoAcidFamily.HISTIDINE));
         if (!response) {
             fail("Response was false but should be true if any leaf substructure was removed.");
         }
@@ -106,8 +107,8 @@ class OakChainTest {
     @Test
     void connectChainBackbone() {
         // should have happened at parsing
-        final Optional<LeafSubstructure<?>> first = firstChain.getLeafSubstructure(new LeafIdentifier("2N5E", 1, "A", 108));
-        final Optional<LeafSubstructure<?>> second = firstChain.getLeafSubstructure(new LeafIdentifier("2N5E", 1, "A", 109));
+        final Optional<LeafSubstructure<?>> first = firstChain.getLeafSubstructure(new PdbLeafIdentifier("2N5E", 1, "A", 108));
+        final Optional<LeafSubstructure<?>> second = firstChain.getLeafSubstructure(new PdbLeafIdentifier("2N5E", 1, "A", 109));
         if (!first.isPresent() || !second.isPresent()) {
             fail("Could not retrieve leafs to check connection");
         }
@@ -136,8 +137,8 @@ class OakChainTest {
 
     @Test
     void getNextLeafIdentifier() {
-        final LeafIdentifier actual = anotherChain.getNextLeafIdentifier();
-        assertEquals(new LeafIdentifier("1brr", 1, "A", 1004), actual);
+        final PdbLeafIdentifier actual = anotherChain.getNextLeafIdentifier();
+        assertEquals(new PdbLeafIdentifier("1brr", 1, "A", 1004), actual);
     }
 
     @Test

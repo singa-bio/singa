@@ -1,19 +1,13 @@
 package bio.singa.structure.model.cif;
 
 import bio.singa.structure.model.interfaces.AbstractLeafIdentifier;
+import bio.singa.structure.model.interfaces.LeafIdentifier;
 
-import java.util.Comparator;
+import static bio.singa.structure.model.oak.PdbLeafIdentifier.DEFAULT_INSERTION_CODE;
 
-public class CifLeafIdentifier extends AbstractLeafIdentifier implements Comparable<CifLeafIdentifier> {
+public class CifLeafIdentifier extends AbstractLeafIdentifier {
 
     public int entityIdentifier;
-
-    private static final Comparator<CifLeafIdentifier> leafIdentiferComparator = Comparator
-            .comparing(CifLeafIdentifier::getStructureIdentifier)
-            .thenComparing(CifLeafIdentifier::getEntityIdentifier)
-            .thenComparing(CifLeafIdentifier::getModelIdentifier)
-            .thenComparing(CifLeafIdentifier::getChainIdentifier)
-            .thenComparing(CifLeafIdentifier::getSerial);
 
     public CifLeafIdentifier(String structureIdentifier, int entityIdentifier, int modelIdentifier, String chainIdentifier, int serial) {
         super(structureIdentifier, modelIdentifier, chainIdentifier, serial);
@@ -25,8 +19,18 @@ public class CifLeafIdentifier extends AbstractLeafIdentifier implements Compara
     }
 
     @Override
-    public int compareTo(CifLeafIdentifier o) {
-        return leafIdentiferComparator.compare(this, o);
+    public boolean hasInsertionCode() {
+        return false;
+    }
+
+    @Override
+    public char getInsertionCode() {
+        return DEFAULT_INSERTION_CODE;
+    }
+
+    @Override
+    public int compareTo(LeafIdentifier o) {
+        return LEAF_IDENTIFIER_COMPARATOR.compare(this, o);
     }
 
     @Override

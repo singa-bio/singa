@@ -1,10 +1,7 @@
 package bio.singa.structure.model.mmtf;
 
-import bio.singa.structure.model.oak.LeafIdentifier;
-import bio.singa.structure.model.interfaces.Chain;
-import bio.singa.structure.model.interfaces.LeafSubstructure;
-import bio.singa.structure.model.interfaces.Model;
-import bio.singa.structure.model.interfaces.Structure;
+import bio.singa.structure.model.interfaces.*;
+import bio.singa.structure.model.oak.PdbLeafIdentifier;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.rcsb.mmtf.decoder.ReaderUtils;
@@ -69,7 +66,7 @@ class MmtfModelTest {
 
     @Test
     void getLeafSubstructure() {
-        Optional<LeafSubstructure<?>> leafSubstructure = firstModel.getLeafSubstructure(new LeafIdentifier("2N5E", 1, "B", 64));
+        Optional<LeafSubstructure<?>> leafSubstructure = firstModel.getLeafSubstructure(new PdbLeafIdentifier("2N5E", 1, "B", 64));
         if (!leafSubstructure.isPresent()) {
             fail("Optional leaf substructure was empty.");
         }

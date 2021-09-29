@@ -8,16 +8,16 @@ import bio.singa.structure.parser.pdb.ligands.LigandParserService;
 import bio.singa.structure.parser.pdb.structures.LocalCIFRepository;
 import bio.singa.structure.parser.pdb.structures.StructureParserOptions;
 import bio.singa.structure.parser.pdb.structures.iterators.StructureIterator;
-import bio.singa.structure.parser.pdb.structures.tokens.LeafSkeleton;
+import bio.singa.structure.model.general.LeafSkeleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static bio.singa.structure.model.oak.LeafIdentifier.*;
-import static bio.singa.structure.parser.pdb.structures.tokens.LeafSkeleton.AssignedFamily.MODIFIED_AMINO_ACID;
-import static bio.singa.structure.parser.pdb.structures.tokens.LeafSkeleton.AssignedFamily.MODIFIED_NUCLEOTIDE;
+import static bio.singa.structure.model.general.LeafSkeleton.AssignedFamily.MODIFIED_AMINO_ACID;
+import static bio.singa.structure.model.general.LeafSkeleton.AssignedFamily.MODIFIED_NUCLEOTIDE;
+import static bio.singa.structure.model.oak.PdbLeafIdentifier.*;
 
 public class LeafSubstructureBuilder {
 
@@ -41,7 +41,7 @@ public class LeafSubstructureBuilder {
 
     public interface IdentifierStep {
 
-        AtomStep identifier(LeafIdentifier identifier);
+        AtomStep identifier(PdbLeafIdentifier identifier);
 
         IdentifierModelStep pdb(String pdbIdentifier);
 
@@ -87,7 +87,7 @@ public class LeafSubstructureBuilder {
         private boolean isModified;
         private String name;
 
-        private LeafIdentifier identifier;
+        private PdbLeafIdentifier identifier;
         private String pdbIdentifier = DEFAULT_PDB_IDENTIFIER;
         private int model = DEFAULT_MODEL_IDENTIFIER;
         private String chain = DEFAULT_CHAIN_IDENTIFIER;
@@ -188,7 +188,7 @@ public class LeafSubstructureBuilder {
         }
 
         @Override
-        public AtomStep identifier(LeafIdentifier identifier) {
+        public AtomStep identifier(PdbLeafIdentifier identifier) {
             this.identifier = identifier;
             return this;
         }
@@ -231,7 +231,7 @@ public class LeafSubstructureBuilder {
         }
 
         private void createIdentifier() {
-            identifier = new LeafIdentifier(pdbIdentifier, model, chain, serial, insertionCode);
+            identifier = new PdbLeafIdentifier(pdbIdentifier, model, chain, serial, insertionCode);
         }
 
         @Override

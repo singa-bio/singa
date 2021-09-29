@@ -1,11 +1,11 @@
 package bio.singa.structure.parser.pdb.structures.tokens;
 
 import bio.singa.core.utility.Range;
-import bio.singa.structure.model.oak.LeafIdentifier;
 import bio.singa.structure.model.interfaces.Atom;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.oak.LinkEntry;
 import bio.singa.structure.model.oak.OakStructure;
+import bio.singa.structure.model.oak.PdbLeafIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,7 +57,7 @@ public enum LinkToken implements PDBToken {
         String firstAtomChainIdentifier = FIRST_ATOM_CHAIN_IDENTIFIER.extract(linkLine);
         int firstAtomResidueSerial = Integer.parseInt(FIRST_ATOM_RESIDUE_SERIAL.extract(linkLine));
         String firstAtomInsertionCodeString = FIRST_ATOM_RESIDUE_INSERTION.extract(linkLine);
-        LeafIdentifier firstAtomLeafIdentifier = getLeafIdentifier(oakStructure, firstAtomChainIdentifier, firstAtomResidueSerial, firstAtomInsertionCodeString);
+        PdbLeafIdentifier firstAtomLeafIdentifier = getLeafIdentifier(oakStructure, firstAtomChainIdentifier, firstAtomResidueSerial, firstAtomInsertionCodeString);
         Optional<LeafSubstructure<?>> firstLeafSubstructureOptional = oakStructure.getLeafSubstructure(firstAtomLeafIdentifier);
         if (!firstLeafSubstructureOptional.isPresent()) {
             logger.warn("unable to find {} for link creation", firstAtomLeafIdentifier);
@@ -72,7 +72,7 @@ public enum LinkToken implements PDBToken {
         String secondAtomChainIdentifier = SECOND_ATOM_CHAIN_IDENTIFIER.extract(linkLine);
         int secondAtomResidueSerial = Integer.parseInt(SECOND_ATOM_RESIDUE_SERIAL.extract(linkLine));
         String secondAtomInsertionCodeString = SECOND_ATOM_RESIDUE_INSERTION.extract(linkLine);
-        LeafIdentifier secondAtomLeafIdentifier = getLeafIdentifier(oakStructure, secondAtomChainIdentifier, secondAtomResidueSerial, secondAtomInsertionCodeString);
+        PdbLeafIdentifier secondAtomLeafIdentifier = getLeafIdentifier(oakStructure, secondAtomChainIdentifier, secondAtomResidueSerial, secondAtomInsertionCodeString);
         Optional<LeafSubstructure<?>> secondLeafSubstructureOptional = oakStructure.getLeafSubstructure(secondAtomLeafIdentifier);
         if (!secondLeafSubstructureOptional.isPresent()) {
             logger.warn("unable to find {} for link creation", secondAtomLeafIdentifier);
@@ -96,8 +96,8 @@ public enum LinkToken implements PDBToken {
                 .append(link.getFirstLeafSubstructure().getChainIdentifier())
                 .append(FIRST_ATOM_RESIDUE_SERIAL.createTokenString(String.valueOf(link.getFirstLeafSubstructure().getIdentifier().getSerial())))
                 .append(FIRST_ATOM_RESIDUE_INSERTION.createTokenString(String.valueOf(
-                        link.getFirstLeafSubstructure().getInsertionCode() == LeafIdentifier.DEFAULT_INSERTION_CODE
-                                ? " " : link.getFirstLeafSubstructure().getInsertionCode())))
+                        link.getFirstLeafSubstructure().getIdentifier().getInsertionCode() == PdbLeafIdentifier.DEFAULT_INSERTION_CODE
+                                ? " " : link.getFirstLeafSubstructure().getIdentifier().getInsertionCode())))
                 .append("               ")
                 .append(formatAtomName(link.getSecondAtom()))
                 .append(" ") // ALTERNATE_LOCATION_INDICATOR not yet implemented
@@ -106,14 +106,14 @@ public enum LinkToken implements PDBToken {
                 .append(link.getSecondLeafSubstructure().getChainIdentifier())
                 .append(SECOND_ATOM_RESIDUE_SERIAL.createTokenString(String.valueOf(link.getSecondLeafSubstructure().getIdentifier().getSerial())))
                 .append(SECOND_ATOM_RESIDUE_INSERTION.createTokenString(String.valueOf(
-                        link.getSecondLeafSubstructure().getInsertionCode() == LeafIdentifier.DEFAULT_INSERTION_CODE
-                                ? " " : link.getSecondLeafSubstructure().getInsertionCode())));
+                        link.getSecondLeafSubstructure().getIdentifier().getInsertionCode() == PdbLeafIdentifier.DEFAULT_INSERTION_CODE
+                                ? " " : link.getSecondLeafSubstructure().getIdentifier().getInsertionCode())));
 
 
         return PDBToken.endLine(sb.toString());
     }
 
-    private static Atom getAtom(OakStructure oakStructure, String atomName, LeafIdentifier leafIdentifier) {
+    private static Atom getAtom(OakStructure oakStructure, String atomName, PdbLeafIdentifier leafIdentifier) {
         Optional<LeafSubstructure<?>> leafSubstructureOptional = oakStructure.getLeafSubstructure(leafIdentifier);
         if (!leafSubstructureOptional.isPresent()) {
             logger.warn("unable to find {} for link creation", leafIdentifier);
@@ -127,9 +127,9 @@ public enum LinkToken implements PDBToken {
         return optionalAtom.get();
     }
 
-    private static LeafIdentifier getLeafIdentifier(OakStructure oakStructure, String chainIdentifier, int residueSerial, String insertionCodeString) {
-        char firstAtomInsertionCode = insertionCodeString.isEmpty() ? LeafIdentifier.DEFAULT_INSERTION_CODE : insertionCodeString.charAt(0);
-        return new LeafIdentifier(oakStructure.getPdbIdentifier(), oakStructure.getFirstModel().getModelIdentifier(), chainIdentifier, residueSerial, firstAtomInsertionCode);
+    private static PdbLeafIdentifier getLeafIdentifier(OakStructure oakStructure, String chainIdentifier, int residueSerial, String insertionCodeString) {
+        char firstAtomInsertionCode = insertionCodeString.isEmpty() ? PdbLeafIdentifier.DEFAULT_INSERTION_CODE : insertionCodeString.charAt(0);
+        return new PdbLeafIdentifier(oakStructure.getPdbIdentifier(), oakStructure.getFirstModel().getModelIdentifier(), chainIdentifier, residueSerial, firstAtomInsertionCode);
     }
 
     @Override

@@ -4,10 +4,10 @@ import bio.singa.core.utility.Range;
 import bio.singa.mathematics.vectors.Vector3D;
 import bio.singa.chemistry.model.elements.Element;
 import bio.singa.chemistry.model.elements.ElementProvider;
-import bio.singa.structure.model.oak.LeafIdentifier;
 import bio.singa.structure.model.interfaces.Atom;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.oak.OakAtom;
+import bio.singa.structure.model.oak.PdbLeafIdentifier;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -88,8 +88,8 @@ public enum AtomToken implements PDBToken {
                     .append(leaf.getChainIdentifier())
                     .append(RESIDUE_SERIAL.createTokenString(String.valueOf(leaf.getIdentifier().getSerial())))
                     .append(RESIDUE_INSERTION.createTokenString(String.valueOf(
-                            leaf.getInsertionCode() == LeafIdentifier.DEFAULT_INSERTION_CODE
-                                    ? " " : leaf.getInsertionCode())))
+                            leaf.getIdentifier().getInsertionCode() == PdbLeafIdentifier.DEFAULT_INSERTION_CODE
+                                    ? " " : leaf.getIdentifier().getInsertionCode())))
                     .append(X_COORDINATE.createTokenString(coordinateFormat.format(atom.getPosition().getX())))
                     .append(Y_COORDINATE.createTokenString(coordinateFormat.format(atom.getPosition().getY())))
                     .append(Z_COORDINATE.createTokenString(coordinateFormat.format(atom.getPosition().getZ())))

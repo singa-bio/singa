@@ -1,9 +1,9 @@
 package bio.singa.structure.model.mmtf;
 
 import bio.singa.structure.model.families.StructuralFamily;
-import bio.singa.structure.model.oak.LeafIdentifier;
 import bio.singa.structure.model.interfaces.Atom;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
+import bio.singa.structure.model.oak.PdbLeafIdentifier;
 import org.rcsb.mmtf.api.StructureDataInterface;
 
 import java.util.*;
@@ -14,7 +14,7 @@ import java.util.*;
  *
  * @author cl
  */
-public abstract class MmtfLeafSubstructure<FamilyType extends StructuralFamily> implements LeafSubstructure<FamilyType> {
+public abstract class MmtfLeafSubstructure<FamilyType extends StructuralFamily<FamilyType>> implements LeafSubstructure<FamilyType> {
 
     /**
      * The original bytes kept to copy.
@@ -31,7 +31,7 @@ public abstract class MmtfLeafSubstructure<FamilyType extends StructuralFamily> 
     /**
      * The generated leaf identifier.
      */
-    private final LeafIdentifier leafIdentifier;
+    private final PdbLeafIdentifier leafIdentifier;
     /**
      * The atoms that have already been requested.
      */
@@ -69,7 +69,7 @@ public abstract class MmtfLeafSubstructure<FamilyType extends StructuralFamily> 
      * @param atomStartIndex The index of the first atom that belong to this leaf.
      * @param atomEndIndex The index of the last atom that belong to this leaf.
      */
-    MmtfLeafSubstructure(StructureDataInterface data, byte[] bytes, FamilyType family, LeafIdentifier leafIdentifier, int internalGroupIndex, int atomStartIndex, int atomEndIndex) {
+    MmtfLeafSubstructure(StructureDataInterface data, byte[] bytes, FamilyType family, PdbLeafIdentifier leafIdentifier, int internalGroupIndex, int atomStartIndex, int atomEndIndex) {
         this.data = data;
         this.bytes = bytes;
         this.family = family;
@@ -83,7 +83,7 @@ public abstract class MmtfLeafSubstructure<FamilyType extends StructuralFamily> 
         for (int internalAtomIndex = atomStartIndex; internalAtomIndex <= atomEndIndex; internalAtomIndex++) {
             final char alternativeLocationCode = alternativeLocationCodes[internalAtomIndex];
             // using 'A' to identify the first alternative location might be vulnerable
-            if (alternativeLocationCode != LeafIdentifier.DEFAULT_INSERTION_CODE && alternativeLocationCode != 'A') {
+            if (alternativeLocationCode != PdbLeafIdentifier.DEFAULT_INSERTION_CODE && alternativeLocationCode != 'A') {
                 removedAtoms.add(internalAtomIndex);
             }
         }
@@ -113,7 +113,7 @@ public abstract class MmtfLeafSubstructure<FamilyType extends StructuralFamily> 
     }
 
     @Override
-    public LeafIdentifier getIdentifier() {
+    public PdbLeafIdentifier getIdentifier() {
         return leafIdentifier;
     }
 

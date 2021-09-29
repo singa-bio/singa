@@ -184,18 +184,18 @@ class ContentTreeNode {
         if (children.isEmpty()) {
             switch (level) {
                 case STRUCTURE: {
-                    iterator.add(new ContentTreeNode(String.valueOf(identifer.getModelIdentifier()), MODEL));
-                    logger.trace("Added model {}", identifer.getModelIdentifier());
+                    iterator.add(new ContentTreeNode(String.valueOf(identifer.getLeafIdentifier().getModelIdentifier()), MODEL));
+                    logger.trace("Added model {}", identifer.getLeafIdentifier().getModelIdentifier());
                     break;
                 }
                 case MODEL: {
-                    iterator.add(new ContentTreeNode(identifer.getChainIdentifier(), CHAIN));
-                    logger.trace("Added chain {}", identifer.getChainIdentifier());
+                    iterator.add(new ContentTreeNode(identifer.getLeafIdentifier().getChainIdentifier(), CHAIN));
+                    logger.trace("Added chain {}", identifer.getLeafIdentifier().getChainIdentifier());
                     break;
                 }
                 case CHAIN: {
-                    iterator.add(new ContentTreeNode(String.valueOf(identifer.getLeafSerial()), identifer.getLeafInsertionCode()));
-                    logger.trace("Added leaf {}", identifer.getLeafSerial());
+                    iterator.add(new ContentTreeNode(String.valueOf(identifer.getLeafIdentifier().getSerial()), identifer.getLeafIdentifier().getInsertionCode()));
+                    logger.trace("Added leaf {}", identifer.getLeafIdentifier().getSerial());
                     break;
                 }
                 case LEAF: {
@@ -213,40 +213,40 @@ class ContentTreeNode {
                 case STRUCTURE: {
                     while (iterator.hasNext()) {
                         ContentTreeNode model = iterator.next();
-                        if (model.identifier.equals(String.valueOf(identifer.getModelIdentifier()))) {
+                        if (model.identifier.equals(String.valueOf(identifer.getLeafIdentifier().getModelIdentifier()))) {
                             logger.trace("Already at correct model, going further.");
                             model.appendAtom(atom, identifer);
                             return;
                         }
                     }
-                    iterator.add(new ContentTreeNode(String.valueOf(identifer.getModelIdentifier()), MODEL));
-                    logger.trace("Added model {}", identifer.getModelIdentifier());
+                    iterator.add(new ContentTreeNode(String.valueOf(identifer.getLeafIdentifier().getModelIdentifier()), MODEL));
+                    logger.trace("Added model {}", identifer.getLeafIdentifier().getModelIdentifier());
                     break;
                 }
                 case MODEL: {
                     while (iterator.hasNext()) {
                         ContentTreeNode chain = iterator.next();
-                        if (chain.identifier.equals(String.valueOf(identifer.getChainIdentifier()))) {
+                        if (chain.identifier.equals(String.valueOf(identifer.getLeafIdentifier().getChainIdentifier()))) {
                             logger.trace("Already at correct chain, going further.");
                             chain.appendAtom(atom, identifer);
                             return;
                         }
                     }
-                    iterator.add(new ContentTreeNode(identifer.getChainIdentifier(), CHAIN));
-                    logger.trace("Added chain {}", identifer.getChainIdentifier());
+                    iterator.add(new ContentTreeNode(identifer.getLeafIdentifier().getChainIdentifier(), CHAIN));
+                    logger.trace("Added chain {}", identifer.getLeafIdentifier().getChainIdentifier());
                     break;
                 }
                 case CHAIN: {
                     while (iterator.hasNext()) {
                         ContentTreeNode leaf = iterator.next();
-                        if (leaf.identifier.equals(String.valueOf(identifer.getLeafSerial())) && leaf.insertionCode == identifer.getLeafInsertionCode()) {
+                        if (leaf.identifier.equals(String.valueOf(identifer.getLeafIdentifier().getSerial())) && leaf.insertionCode == identifer.getLeafIdentifier().getInsertionCode()) {
                             logger.trace("Found correct leaf, appending atom {}", identifer.getAtomSerial());
                             leaf.children.add(new ContentTreeNode(String.valueOf(identifer.getAtomSerial()), atom));
                             return;
                         }
                     }
-                    logger.trace("Added leaf {} with initial atom {} ", identifer.getLeafSerial(), identifer.getAtomSerial());
-                    ContentTreeNode leafNode = new ContentTreeNode(String.valueOf(identifer.getLeafSerial()), identifer.getLeafInsertionCode());
+                    logger.trace("Added leaf {} with initial atom {} ", identifer.getLeafIdentifier().getSerial(), identifer.getAtomSerial());
+                    ContentTreeNode leafNode = new ContentTreeNode(String.valueOf(identifer.getLeafIdentifier().getSerial()), identifer.getLeafIdentifier().getInsertionCode());
                     leafNode.children.add(new ContentTreeNode(String.valueOf(identifer.getAtomSerial()), atom));
                     iterator.add(leafNode);
                     break;

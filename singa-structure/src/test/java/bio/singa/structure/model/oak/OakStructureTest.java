@@ -108,7 +108,7 @@ class OakStructureTest {
 
     @Test
     void getLeafSubstructure() {
-        Optional<LeafSubstructure<?>> leafSubstructure = structure2N5E.getLeafSubstructure(new LeafIdentifier("2N5E", 5, "A", 64));
+        Optional<LeafSubstructure<?>> leafSubstructure = structure2N5E.getLeafSubstructure(new PdbLeafIdentifier("2N5E", 5, "A", 64));
         if (!leafSubstructure.isPresent()) {
             fail("Optional leaf substructure was empty.");
         }
@@ -120,7 +120,7 @@ class OakStructureTest {
 
     @Test
     void removeLeafSubstructure() {
-        LeafIdentifier leafIdentifier = new LeafIdentifier("1BRR", 1, "A", 176);
+        LeafIdentifier leafIdentifier = new PdbLeafIdentifier("1BRR", 1, "A", 176);
         Optional<LeafSubstructure<?>> leafSubstructureOptional = structureToModify.getLeafSubstructure(leafIdentifier);
         leafSubstructureOptional.ifPresent(leafSubstructure -> {
             structureToModify.removeLeafSubstructure(leafIdentifier);
@@ -137,7 +137,7 @@ class OakStructureTest {
 
     @Test
     void getAminoAcid() {
-        final Optional<AminoAcid> aminoAcid = structure1C0A.getAminoAcid(new LeafIdentifier("1c0a", 1, "A", 98));
+        final Optional<AminoAcid> aminoAcid = structure1C0A.getAminoAcid(new PdbLeafIdentifier("1c0a", 1, "A", 98));
         if (!aminoAcid.isPresent()) {
             fail("Optional leaf substructure was empty.");
         }
@@ -156,7 +156,7 @@ class OakStructureTest {
 
     @Test
     void getNucleotide() {
-        final Optional<Nucleotide> nucleotide = structure1C0A.getNucleotide(new LeafIdentifier("1c0a", 1, "B", 617));
+        final Optional<Nucleotide> nucleotide = structure1C0A.getNucleotide(new PdbLeafIdentifier("1c0a", 1, "B", 617));
         if (!nucleotide.isPresent()) {
             fail("Optional leaf substructure was empty.");
         }
@@ -174,7 +174,7 @@ class OakStructureTest {
 
     @Test
     void getLigand() {
-        final Optional<Ligand> nucleotide = structure1C0A.getLigand(new LeafIdentifier("1c0a", 1, "A", 831));
+        final Optional<Ligand> nucleotide = structure1C0A.getLigand(new PdbLeafIdentifier("1c0a", 1, "A", 831));
         if (!nucleotide.isPresent()) {
             fail("Optional leaf substructure was empty.");
         }
@@ -207,10 +207,10 @@ class OakStructureTest {
             fail("Optional atom was empty.");
         }
         UniqueAtomIdentifier identifier = atom.get().getKey();
-        assertEquals("1C0A", identifier.getPdbIdentifier());
-        assertEquals(1, identifier.getModelIdentifier());
-        assertEquals("B", identifier.getChainIdentifier());
-        assertEquals(601, identifier.getLeafSerial());
+        assertEquals("1c0a", identifier.getLeafIdentifier().getStructureIdentifier());
+        assertEquals(1, identifier.getLeafIdentifier().getModelIdentifier());
+        assertEquals("B", identifier.getLeafIdentifier().getChainIdentifier());
+        assertEquals(601, identifier.getLeafIdentifier().getSerial());
     }
 
     @Test

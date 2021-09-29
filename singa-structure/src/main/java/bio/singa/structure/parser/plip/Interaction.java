@@ -1,7 +1,7 @@
 package bio.singa.structure.parser.plip;
 
 
-import bio.singa.structure.model.oak.LeafIdentifier;
+import bio.singa.structure.model.interfaces.LeafIdentifier;
 
 import java.util.List;
 

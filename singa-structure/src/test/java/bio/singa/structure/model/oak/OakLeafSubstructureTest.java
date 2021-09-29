@@ -27,15 +27,15 @@ class OakLeafSubstructureTest {
     @BeforeAll
     static void prepareData() {
         Structure structure1C0A = StructureParser.pdb().pdbIdentifier("1C0A").parse();
-        leaf162 = structure1C0A.getLeafSubstructure(new LeafIdentifier("1C0A", 1, "A", 162)).get();
-        leaf620A = structure1C0A.getLeafSubstructure(new LeafIdentifier("1C0A", 1, "B", 620, 'A')).get();
-        leafToModify = (OakAminoAcid) structure1C0A.getLeafSubstructure(new LeafIdentifier("1C0A", 1, "A", 161)).get();
+        leaf162 = structure1C0A.getLeafSubstructure(new PdbLeafIdentifier("1C0A", 1, "A", 162)).get();
+        leaf620A = structure1C0A.getLeafSubstructure(new PdbLeafIdentifier("1C0A", 1, "B", 620, 'A')).get();
+        leafToModify = (OakAminoAcid) structure1C0A.getLeafSubstructure(new PdbLeafIdentifier("1C0A", 1, "A", 161)).get();
     }
 
     @Test
     void getIdentifier() {
-        assertEquals(new LeafIdentifier("1C0A", 1, "A", 162), leaf162.getIdentifier());
-        assertEquals(new LeafIdentifier("1C0A", 1, "B", 620, 'A'), leaf620A.getIdentifier());
+        assertEquals(new PdbLeafIdentifier("1C0A", 1, "A", 162), leaf162.getIdentifier());
+        assertEquals(new PdbLeafIdentifier("1C0A", 1, "B", 620, 'A'), leaf620A.getIdentifier());
     }
 
     @Test

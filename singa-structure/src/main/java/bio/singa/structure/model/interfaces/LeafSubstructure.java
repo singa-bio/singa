@@ -3,10 +3,10 @@ package bio.singa.structure.model.interfaces;
 import bio.singa.mathematics.vectors.Vector3D;
 import bio.singa.mathematics.vectors.Vectors3D;
 import bio.singa.structure.model.families.StructuralFamily;
-import bio.singa.structure.model.oak.LeafIdentifier;
 import bio.singa.structure.model.oak.Exchangeable;
 import bio.singa.structure.parser.pdb.structures.tokens.AtomToken;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
  *
  * @author cl
  */
-public interface LeafSubstructure<FamilyType extends StructuralFamily> extends AtomContainer, Exchangeable<FamilyType> {
+public interface LeafSubstructure<FamilyType extends StructuralFamily<FamilyType>> extends AtomContainer, Exchangeable<FamilyType> {
 
     /**
      * Returns the complete leaf identifier. The leaf identifier consists of the PDB identifer, the model identifier,
@@ -29,7 +29,7 @@ public interface LeafSubstructure<FamilyType extends StructuralFamily> extends A
     LeafIdentifier getIdentifier();
 
     default String getPdbIdentifier() {
-        return getIdentifier().getPdbIdentifier();
+        return getIdentifier().getStructureIdentifier();
     }
 
     default Integer getModelIdentifier() {
@@ -42,10 +42,6 @@ public interface LeafSubstructure<FamilyType extends StructuralFamily> extends A
 
     default Integer getSerial() {
         return getIdentifier().getSerial();
-    }
-
-    default char getInsertionCode() {
-        return getIdentifier().getInsertionCode();
     }
 
     default Vector3D getPosition() {
