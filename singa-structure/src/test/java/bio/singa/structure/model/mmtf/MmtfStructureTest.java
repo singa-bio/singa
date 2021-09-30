@@ -35,8 +35,8 @@ class MmtfStructureTest {
         final Structure oakStructure = StructureParser.pdb().pdbIdentifier("1dlf").parse();
         final LeafIdentifier leafIdentifier = new PdbLeafIdentifier("1dlf", 1, "H", 70);
 
-        LeafSubstructure<?> mmtfLeaf = mmtfStructure.getLeafSubstructure(leafIdentifier).get();
-        LeafSubstructure<?> oakLeaf = oakStructure.getLeafSubstructure(leafIdentifier).get();
+        LeafSubstructure mmtfLeaf = mmtfStructure.getLeafSubstructure(leafIdentifier).get();
+        LeafSubstructure oakLeaf = oakStructure.getLeafSubstructure(leafIdentifier).get();
         mmtfLeaf.getAllAtoms();
         assertEquals(oakLeaf.getAllAtoms().size(), mmtfLeaf.getAllAtoms().size());
 
@@ -98,13 +98,13 @@ class MmtfStructureTest {
 
     @Test
     void getAllLeafSubstructures() {
-        List<LeafSubstructure<?>> leafSubstructures = structure2N5E.getAllLeafSubstructures();
+        List<LeafSubstructure> leafSubstructures = structure2N5E.getAllLeafSubstructures();
         assertEquals(3340, leafSubstructures.size());
     }
 
     @Test
     void getLeafSubstructure() {
-        Optional<LeafSubstructure<?>> leafSubstructure = structure2N5E.getLeafSubstructure(new PdbLeafIdentifier("2N5E", 5, "A", 64));
+        Optional<LeafSubstructure> leafSubstructure = structure2N5E.getLeafSubstructure(new PdbLeafIdentifier("2N5E", 5, "A", 64));
         if (!leafSubstructure.isPresent()) {
             fail("Optional leaf substructure was empty.");
         }

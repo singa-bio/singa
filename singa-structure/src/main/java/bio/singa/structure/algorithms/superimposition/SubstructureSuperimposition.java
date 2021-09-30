@@ -21,21 +21,21 @@ import static bio.singa.structure.model.oak.PdbLeafIdentifier.DEFAULT_INSERTION_
  *
  * @author fk
  */
-public class SubstructureSuperimposition implements Superimposition<LeafSubstructure<?>> {
+public class SubstructureSuperimposition implements Superimposition<LeafSubstructure> {
 
     private final double rmsd;
     private final Vector translation;
     private final Matrix rotation;
-    private final List<LeafSubstructure<?>> reference;
-    private final List<LeafSubstructure<?>> candidate;
-    private final List<LeafSubstructure<?>> mappedCandidate;
-    private final List<LeafSubstructure<?>> mappedFullCandidate;
+    private final List<LeafSubstructure> reference;
+    private final List<LeafSubstructure> candidate;
+    private final List<LeafSubstructure> mappedCandidate;
+    private final List<LeafSubstructure> mappedFullCandidate;
 
     public SubstructureSuperimposition(double rmsd, Vector translation, Matrix rotation,
-                                       List<LeafSubstructure<?>> reference,
-                                       List<LeafSubstructure<?>> candidate,
-                                       List<LeafSubstructure<?>> mappedCandidate,
-                                       List<LeafSubstructure<?>> mappedFullCandidate) {
+                                       List<LeafSubstructure> reference,
+                                       List<LeafSubstructure> candidate,
+                                       List<LeafSubstructure> mappedCandidate,
+                                       List<LeafSubstructure> mappedFullCandidate) {
         this.rmsd = rmsd;
         this.translation = translation;
         this.rotation = rotation;
@@ -46,12 +46,12 @@ public class SubstructureSuperimposition implements Superimposition<LeafSubstruc
     }
 
     @Override
-    public List<LeafSubstructure<?>> getReference() {
+    public List<LeafSubstructure> getReference() {
         return reference;
     }
 
     @Override
-    public List<LeafSubstructure<?>> getCandidate() {
+    public List<LeafSubstructure> getCandidate() {
         return candidate;
     }
 
@@ -96,19 +96,19 @@ public class SubstructureSuperimposition implements Superimposition<LeafSubstruc
     }
 
     @Override
-    public List<LeafSubstructure<?>> getMappedCandidate() {
+    public List<LeafSubstructure> getMappedCandidate() {
         return mappedCandidate;
     }
 
     @Override
-    public List<LeafSubstructure<?>> getMappedFullCandidate() {
+    public List<LeafSubstructure> getMappedFullCandidate() {
         return mappedFullCandidate;
     }
 
     @Override
-    public List<LeafSubstructure<?>> applyTo(List<LeafSubstructure<?>> candidate) {
-        List<LeafSubstructure<?>> copyOfCandidate = new ArrayList<>();
-        for (LeafSubstructure<?> leafSubstructure : candidate) {
+    public List<LeafSubstructure> applyTo(List<LeafSubstructure> candidate) {
+        List<LeafSubstructure> copyOfCandidate = new ArrayList<>();
+        for (LeafSubstructure leafSubstructure : candidate) {
             copyOfCandidate.add(leafSubstructure.getCopy());
         }
 

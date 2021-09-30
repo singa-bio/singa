@@ -14,7 +14,7 @@ import java.util.*;
  *
  * @author cl
  */
-public abstract class MmtfLeafSubstructure<FamilyType extends StructuralFamily<FamilyType>> implements LeafSubstructure<FamilyType> {
+public abstract class MmtfLeafSubstructure implements LeafSubstructure {
 
     /**
      * The original bytes kept to copy.
@@ -52,12 +52,11 @@ public abstract class MmtfLeafSubstructure<FamilyType extends StructuralFamily<F
     /**
      * The structural family of this entity
      */
-    protected FamilyType family;
+    protected StructuralFamily family;
     /**
      * The families to which the {@link LeafSubstructure} can be exchanged.
      */
-    protected Set<FamilyType> exchangeableFamilies;
-
+    protected Set<StructuralFamily> exchangeableFamilies;
 
     /**
      * Creates a new {@link MmtfLeafSubstructure}.
@@ -69,7 +68,7 @@ public abstract class MmtfLeafSubstructure<FamilyType extends StructuralFamily<F
      * @param atomStartIndex The index of the first atom that belong to this leaf.
      * @param atomEndIndex The index of the last atom that belong to this leaf.
      */
-    MmtfLeafSubstructure(StructureDataInterface data, byte[] bytes, FamilyType family, PdbLeafIdentifier leafIdentifier, int internalGroupIndex, int atomStartIndex, int atomEndIndex) {
+    MmtfLeafSubstructure(StructureDataInterface data, byte[] bytes, StructuralFamily family, PdbLeafIdentifier leafIdentifier, int internalGroupIndex, int atomStartIndex, int atomEndIndex) {
         this.data = data;
         this.bytes = bytes;
         this.family = family;
@@ -96,7 +95,7 @@ public abstract class MmtfLeafSubstructure<FamilyType extends StructuralFamily<F
      *
      * @param mmtfLeafSubstructure The {@link MmtfLeafSubstructure} to copy.
      */
-    protected MmtfLeafSubstructure(MmtfLeafSubstructure<?> mmtfLeafSubstructure) {
+    protected MmtfLeafSubstructure(MmtfLeafSubstructure mmtfLeafSubstructure) {
         bytes = mmtfLeafSubstructure.bytes;
         data = mmtfLeafSubstructure.data;
         leafIdentifier = mmtfLeafSubstructure.leafIdentifier;
@@ -193,12 +192,12 @@ public abstract class MmtfLeafSubstructure<FamilyType extends StructuralFamily<F
     }
 
     @Override
-    public FamilyType getFamily() {
+    public StructuralFamily getFamily() {
         return family;
     }
 
     @Override
-    public Set<FamilyType> getExchangeableFamilies() {
+    public Set<StructuralFamily> getExchangeableFamilies() {
         return exchangeableFamilies;
     }
 
@@ -206,7 +205,7 @@ public abstract class MmtfLeafSubstructure<FamilyType extends StructuralFamily<F
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        MmtfLeafSubstructure<?> that = (MmtfLeafSubstructure<?>) o;
+        MmtfLeafSubstructure that = (MmtfLeafSubstructure) o;
         return Objects.equals(family, that.family) &&
                 Objects.equals(leafIdentifier, that.leafIdentifier);
     }

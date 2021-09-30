@@ -18,10 +18,10 @@ class MoleculeRingFinderTest {
 
     @Test
     void findRingsInMolecule() {
-        List<LeafSubstructure<?>> targetLeafSubstructure = StructureParser.local()
+        List<LeafSubstructure> targetLeafSubstructure = StructureParser.local()
                 .fileLocation(Resources.getResourceAsFileLocation("atp.pdb"))
                 .parse().getAllLeafSubstructures();
-        MoleculeGraph moleculeGraph = MoleculeGraphs.createMoleculeGraphFromStructure((OakLeafSubstructure<?>) targetLeafSubstructure.get(0));
+        MoleculeGraph moleculeGraph = MoleculeGraphs.createMoleculeGraphFromStructure((OakLeafSubstructure) targetLeafSubstructure.get(0));
         List<Set<MoleculeAtom>> rings = MoleculeRingFinder.of(moleculeGraph);
         assertEquals(3, rings.size());
         assertEquals(5, rings.get(0).size());

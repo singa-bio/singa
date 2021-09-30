@@ -31,7 +31,7 @@ public class NucleotideSequence extends AbstractSequence<NucleotideFamily> {
         super(sequence);
     }
 
-    public static NucleotideSequence of(List<LeafSubstructure<?>> leafSubstructures) {
+    public static NucleotideSequence of(List<LeafSubstructure> leafSubstructures) {
         List<NucleotideFamily> sequence = leafSubstructures.stream()
                 .filter(Nucleotide.class::isInstance)
                 .map(Nucleotide.class::cast)

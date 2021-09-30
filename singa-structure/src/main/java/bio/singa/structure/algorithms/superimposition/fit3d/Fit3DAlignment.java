@@ -53,11 +53,11 @@ public class Fit3DAlignment implements Fit3D {
     private final boolean filterEnvironments;
     private final double squaredFilterThreshold;
     private Map<Integer, List<Double>> pairwiseQueryMotifDistanceMap;
-    private LabeledSymmetricMatrix<LeafSubstructure<?>> queryMotifSquaredDistanceMatrix;
+    private LabeledSymmetricMatrix<LeafSubstructure> queryMotifSquaredDistanceMatrix;
     private double squaredQueryExtent;
-    private LabeledSymmetricMatrix<LeafSubstructure<?>> squaredDistanceMatrix;
-    private List<List<LeafSubstructure<?>>> environments;
-    private HashMap<List<LeafSubstructure<?>>, List<List<LeafSubstructure<?>>>> candidates;
+    private LabeledSymmetricMatrix<LeafSubstructure> squaredDistanceMatrix;
+    private List<List<LeafSubstructure>> environments;
+    private HashMap<List<LeafSubstructure>, List<List<LeafSubstructure>>> candidates;
     private List<Fit3DMatch> matches;
 
     Fit3DAlignment(Fit3DBuilder.Builder builder) {
@@ -109,8 +109,8 @@ public class Fit3DAlignment implements Fit3D {
             pairwiseQueryMotifDistanceMap = new HashMap<>();
             for (int i = 0; i < queryMotif.getAllLeafSubstructures().size(); i++) {
                 for (int j = i + 1; j < queryMotif.getAllLeafSubstructures().size(); j++) {
-                    LeafSubstructure<?> firstLeafSubstructure = queryMotif.getAllLeafSubstructures().get(j);
-                    LeafSubstructure<?> secondLeafSubstructure = queryMotif.getAllLeafSubstructures().get(i);
+                    LeafSubstructure firstLeafSubstructure = queryMotif.getAllLeafSubstructures().get(j);
+                    LeafSubstructure secondLeafSubstructure = queryMotif.getAllLeafSubstructures().get(i);
 
                     List<StructuralFamily> firstFamilies = new ArrayList<>();
                     firstFamilies.add(firstLeafSubstructure.getFamily());
@@ -147,7 +147,7 @@ public class Fit3DAlignment implements Fit3D {
         mapIdentifiers();
     }
 
-    public static int generateLabelHashCode(StructuralFamily<?> structuralFamily1, StructuralFamily<?> structuralFamily2) {
+    public static int generateLabelHashCode(StructuralFamily structuralFamily1, StructuralFamily structuralFamily2) {
         return structuralFamily1.getThreeLetterCode().hashCode() * structuralFamily2.getThreeLetterCode().hashCode();
     }
 
@@ -249,7 +249,7 @@ public class Fit3DAlignment implements Fit3D {
      *
      * @param candidate the list of {@link LeafSubstructure} candidates for which alignments should be computed.
      */
-    private void computeAlignments(List<LeafSubstructure<?>> candidate) {
+    private void computeAlignments(List<LeafSubstructure> candidate) {
         // check if the match is redundant at residue level
         boolean redundant = matches.stream()
                 .filter(match -> match.getSubstructureSuperimposition() != null)
@@ -292,14 +292,14 @@ public class Fit3DAlignment implements Fit3D {
      * Generates all candidates based on the pre-computed environments.
      */
     private void generateCandidates() {
-        for (List<LeafSubstructure<?>> environment : environments) {
+        for (List<LeafSubstructure> environment : environments) {
             ValidCandidateGenerator validCandidateGenerator;
             if (filterEnvironments) {
                 validCandidateGenerator = new ValidCandidateGenerator(queryMotif.getAllLeafSubstructures(), environment, pairwiseQueryMotifDistanceMap, squaredDistanceMatrix, squaredFilterThreshold);
             } else {
                 validCandidateGenerator = new ValidCandidateGenerator(queryMotif.getAllLeafSubstructures(), environment);
             }
-            List<List<LeafSubstructure<?>>> currentCandidates = validCandidateGenerator.getCandidates();
+            List<List<LeafSubstructure>> currentCandidates = validCandidateGenerator.getCandidates();
             if (!currentCandidates.isEmpty()) {
                 candidates.put(environment, currentCandidates);
             }
@@ -314,7 +314,7 @@ public class Fit3DAlignment implements Fit3D {
         for (LeafSubstructure currentSubstructure : target.getAllLeafSubstructures()) {
             // collect environments within the bounds if the motif extent
             RegularVector distanceToOthers = squaredDistanceMatrix.getColumnByLabel(currentSubstructure);
-            List<LeafSubstructure<?>> environment = new ArrayList<>();
+            List<LeafSubstructure> environment = new ArrayList<>();
             for (int i = 0; i < distanceToOthers.getElements().length; i++) {
                 double currentDistance = distanceToOthers.getElement(i);
                 if (currentDistance <= squaredQueryExtent + squaredDistanceTolerance) {

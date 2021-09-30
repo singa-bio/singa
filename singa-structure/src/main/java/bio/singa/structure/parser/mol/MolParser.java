@@ -8,7 +8,7 @@ import bio.singa.chemistry.model.elements.ElementProvider;
 import bio.singa.core.utility.Pair;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.mathematics.vectors.Vector3D;
-import bio.singa.structure.model.families.LigandFamily;
+import bio.singa.structure.model.families.StructuralFamily;
 import bio.singa.structure.model.interfaces.Atom;
 import bio.singa.structure.model.interfaces.Ligand;
 import bio.singa.structure.model.oak.OakAtom;
@@ -139,7 +139,7 @@ public class MolParser {
     public Ligand parseNextAsLigand() {
         parseNextStructure();
         // create structure;
-        OakLigand ligand = new OakLigand(PdbLeafIdentifier.DEFAULT_LEAF_IDENTIFIER, new LigandFamily("UNK", "?"));
+        OakLigand ligand = new OakLigand(PdbLeafIdentifier.DEFAULT_LEAF_IDENTIFIER, new StructuralFamily("?", "UNK"));
         atoms.forEach(ligand::addAtom);
         int bondCounter = 0;
         for (Map.Entry<Pair<Integer>, CovalentBondType> bond : bonds.entrySet()) {

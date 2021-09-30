@@ -13,7 +13,7 @@ import bio.singa.structure.algorithms.superimposition.fit3d.representations.Repr
 import bio.singa.structure.algorithms.superimposition.scores.PsScore;
 import bio.singa.structure.algorithms.superimposition.scores.SubstitutionMatrix;
 import bio.singa.structure.algorithms.superimposition.scores.XieScore;
-import bio.singa.structure.model.families.AminoAcidFamily;
+import bio.singa.structure.model.families.StructuralFamilies;
 import bio.singa.structure.model.interfaces.Atom;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.oak.StructuralMotif;
@@ -42,8 +42,8 @@ public class Fit3DSiteAlignment implements Fit3D {
     private final StructuralMotif site1;
     private final StructuralMotif site2;
 
-    private final LinkedHashSet<List<LeafSubstructure<?>>> site1Partitions;
-    private final LinkedHashSet<List<LeafSubstructure<?>>> site2Partitions;
+    private final LinkedHashSet<List<LeafSubstructure>> site1Partitions;
+    private final LinkedHashSet<List<LeafSubstructure>> site2Partitions;
 
     private final RepresentationScheme representationScheme;
     private final Predicate<Atom> atomFilter;
@@ -58,24 +58,24 @@ public class Fit3DSiteAlignment implements Fit3D {
     private final double cutoffScore;
     private final List<Fit3DMatch> matches;
     private int currentAlignmentSize;
-    private LabeledRegularMatrix<List<LeafSubstructure<?>>> currentSimilarityMatrix;
-    private Pair<List<LeafSubstructure<?>>> currentBestMatchingPair;
+    private LabeledRegularMatrix<List<LeafSubstructure>> currentSimilarityMatrix;
+    private Pair<List<LeafSubstructure>> currentBestMatchingPair;
     private double currentBestScore;
     private SubstructureSuperimposition currentBestSuperimposition;
     private String alignmentString;
     private boolean cutoffScoreReached;
     private XieScore xieScore;
     private PsScore psScore;
-    private List<Pair<LeafSubstructure<?>>> assignment;
+    private List<Pair<LeafSubstructure>> assignment;
 
     public Fit3DSiteAlignment(Fit3DBuilder.Builder builder) throws SubstructureSuperimpositionException {
         site1 = builder.site1.getCopy();
         site2 = builder.site2.getCopy();
 
         containsNonAminoAcids = site1.getAllLeafSubstructures().stream()
-                .anyMatch(leafSubstructure -> !(leafSubstructure.getFamily() instanceof AminoAcidFamily)) ||
+                .anyMatch(leafSubstructure -> !StructuralFamilies.AminoAcids.isAminoAcid(leafSubstructure.getFamily())) ||
                 site1.getAllLeafSubstructures().stream()
-                        .anyMatch(leafSubstructure -> !(leafSubstructure.getFamily() instanceof AminoAcidFamily));
+                        .anyMatch(leafSubstructure -> !StructuralFamilies.AminoAcids.isAminoAcid(leafSubstructure.getFamily()));
 
         if (containsNonAminoAcids) {
             logger.warn("sites contain non-amino acid residues, no Xie and PS-scores can be calculated");
@@ -242,15 +242,15 @@ public class Fit3DSiteAlignment implements Fit3D {
         site2Partitions.clear();
 
         // create new partitions
-        for (LeafSubstructure<?> leafSubstructure : site1.getAllLeafSubstructures()) {
-            List<LeafSubstructure<?>> site1Partition = new ArrayList<>(currentBestMatchingPair.getFirst());
+        for (LeafSubstructure leafSubstructure : site1.getAllLeafSubstructures()) {
+            List<LeafSubstructure> site1Partition = new ArrayList<>(currentBestMatchingPair.getFirst());
             if (!site1Partition.contains(leafSubstructure)) {
                 site1Partition.add(leafSubstructure);
             }
             if (site1Partition.size() == currentAlignmentSize) {
                 // permute up to exhaustive cutoff to find ideal alignment seed
                 if (currentAlignmentSize <= PERMUTATION_CUTOFF && !exhaustive) {
-                    StreamPermutations.of(site1Partition.toArray(new LeafSubstructure<?>[0]))
+                    StreamPermutations.of(site1Partition.toArray(new LeafSubstructure[0]))
                             .map(s -> s.collect(Collectors.toList()))
                             .forEach(site1Partitions::add);
                 } else {
@@ -258,15 +258,15 @@ public class Fit3DSiteAlignment implements Fit3D {
                 }
             }
         }
-        for (LeafSubstructure<?> leafSubstructure : site2.getAllLeafSubstructures()) {
-            List<LeafSubstructure<?>> site2Partition = new ArrayList<>(currentBestMatchingPair.getSecond());
+        for (LeafSubstructure leafSubstructure : site2.getAllLeafSubstructures()) {
+            List<LeafSubstructure> site2Partition = new ArrayList<>(currentBestMatchingPair.getSecond());
             if (!site2Partition.contains(leafSubstructure)) {
                 site2Partition.add(leafSubstructure);
             }
             if (site2Partition.size() == currentAlignmentSize) {
                 // permute up to exhaustive cutoff to find ideal alignment seed
                 if (currentAlignmentSize <= PERMUTATION_CUTOFF && !exhaustive) {
-                    StreamPermutations.of(site2Partition.toArray(new LeafSubstructure<?>[0]))
+                    StreamPermutations.of(site2Partition.toArray(new LeafSubstructure[0]))
                             .map(s -> s.collect(Collectors.toList()))
                             .forEach(site2Partitions::add);
                 } else {
@@ -290,13 +290,13 @@ public class Fit3DSiteAlignment implements Fit3D {
 
         double[][] temporarySimilarityMatrix = new double[site1Partitions.size()][site2Partitions.size()];
 
-        List<List<LeafSubstructure<?>>> rowLabels = new ArrayList<>();
-        List<List<LeafSubstructure<?>>> columnLabels = new ArrayList<>();
+        List<List<LeafSubstructure>> rowLabels = new ArrayList<>();
+        List<List<LeafSubstructure>> columnLabels = new ArrayList<>();
         int i = 0;
-        for (List<LeafSubstructure<?>> site1Partition : site1Partitions) {
+        for (List<LeafSubstructure> site1Partition : site1Partitions) {
             rowLabels.add(site1Partition);
             int j = 0;
-            for (List<LeafSubstructure<?>> site2Partition : site2Partitions) {
+            for (List<LeafSubstructure> site2Partition : site2Partitions) {
                 if (!columnLabels.contains(site2Partition)) {
                     columnLabels.add(site2Partition);
                 }
@@ -388,8 +388,8 @@ public class Fit3DSiteAlignment implements Fit3D {
         // if the minimal element is ambiguous select the first
         List<Pair<Integer>> minimalScores = Matrices.getPositionsOfMinimalElement(currentSimilarityMatrix);
         if (!minimalScores.isEmpty()) {
-            List<LeafSubstructure<?>> first = currentSimilarityMatrix.getRowLabel(minimalScores.get(0).getFirst());
-            List<LeafSubstructure<?>> second = currentSimilarityMatrix.getColumnLabel(minimalScores.get(0).getSecond());
+            List<LeafSubstructure> first = currentSimilarityMatrix.getRowLabel(minimalScores.get(0).getFirst());
+            List<LeafSubstructure> second = currentSimilarityMatrix.getColumnLabel(minimalScores.get(0).getSecond());
             // if the alignment terminates in the next round do not set new best matching pair and score
             double scoreValue = currentSimilarityMatrix.getValueFromPosition(minimalScores.get(0));
             if (scoreValue > cutoffScore) {
@@ -419,18 +419,18 @@ public class Fit3DSiteAlignment implements Fit3D {
      * @param structuralMotif The {@link StructuralMotif} for which the 2-partitions should be created.
      * @return The generated set of 2-partitions.
      */
-    private LinkedHashSet<List<LeafSubstructure<?>>> createInitialPartitions(StructuralMotif structuralMotif) {
-        LinkedHashSet<List<LeafSubstructure<?>>> partitions = new LinkedHashSet<>();
-        List<LeafSubstructure<?>> leafSubstructures = structuralMotif.getAllLeafSubstructures();
+    private LinkedHashSet<List<LeafSubstructure>> createInitialPartitions(StructuralMotif structuralMotif) {
+        LinkedHashSet<List<LeafSubstructure>> partitions = new LinkedHashSet<>();
+        List<LeafSubstructure> leafSubstructures = structuralMotif.getAllLeafSubstructures();
         for (int i = 0; i < leafSubstructures.size() - 1; i++) {
             for (int j = i + 1; j < leafSubstructures.size(); j++) {
-                List<LeafSubstructure<?>> partition1 = new ArrayList<>();
+                List<LeafSubstructure> partition1 = new ArrayList<>();
                 partition1.add(leafSubstructures.get(i));
                 partition1.add(leafSubstructures.get(j));
                 partitions.add(partition1);
                 if (!exhaustive) {
                     // add first permutation of elements
-                    List<LeafSubstructure<?>> partition2 = new ArrayList<>();
+                    List<LeafSubstructure> partition2 = new ArrayList<>();
                     partition2.add(leafSubstructures.get(j));
                     partition2.add(leafSubstructures.get(i));
                     partitions.add(partition2);
@@ -448,8 +448,8 @@ public class Fit3DSiteAlignment implements Fit3D {
         double[][] costValues = new double[site1.size()][site2.size()];
         for (int i = 0; i < site1.getNumberOfLeafSubstructures(); i++) {
             for (int j = 0; j < site2.getNumberOfLeafSubstructures(); j++) {
-                LeafSubstructure<?> residue1 = site1.getAllLeafSubstructures().get(i);
-                LeafSubstructure<?> residue2 = site2.getAllLeafSubstructures().get(j);
+                LeafSubstructure residue1 = site1.getAllLeafSubstructures().get(i);
+                LeafSubstructure residue2 = site2.getAllLeafSubstructures().get(j);
                 if (restrictToExchanges && residue1.getFamily() != residue2.getFamily()) {
                     // exchanges do not penalize the score
                     if (residue1.getExchangeableFamilies().contains(residue2.getFamily()) ||
@@ -462,11 +462,11 @@ public class Fit3DSiteAlignment implements Fit3D {
                 costValues[i][j] = substitutionMatrix.getMatrix().getValueForLabel(residue1.getFamily(), residue2.getFamily());
             }
         }
-        LabeledMatrix<LeafSubstructure<?>> costMatrix = new LabeledRegularMatrix<>(costValues);
+        LabeledMatrix<LeafSubstructure> costMatrix = new LabeledRegularMatrix<>(costValues);
         costMatrix.setRowLabels(site1.getAllLeafSubstructures());
         costMatrix.setColumnLabels(site2.getAllLeafSubstructures());
 
-        KuhnMunkres<LeafSubstructure<?>> kuhnMunkres = new KuhnMunkres<>(costMatrix);
+        KuhnMunkres<LeafSubstructure> kuhnMunkres = new KuhnMunkres<>(costMatrix);
         assignment = kuhnMunkres.getAssignedPairs();
 
         // remove last assigned pair if strong restriction to exchanges is desired
@@ -486,10 +486,10 @@ public class Fit3DSiteAlignment implements Fit3D {
      * Calculates the alignment of sites based on the Kuhn-Munkres assignment.
      */
     private void calculateAlignment() {
-        List<LeafSubstructure<?>> reference = assignment.stream()
+        List<LeafSubstructure> reference = assignment.stream()
                 .map(Pair::getFirst)
                 .collect(Collectors.toList());
-        List<LeafSubstructure<?>> candidate = assignment.stream()
+        List<LeafSubstructure> candidate = assignment.stream()
                 .map(Pair::getSecond)
                 .collect(Collectors.toList());
         currentAlignmentSize = reference.size();
@@ -514,7 +514,7 @@ public class Fit3DSiteAlignment implements Fit3D {
             throw new Fit3DException("cannot write matches as they are currently empty");
         }
         SubstructureSuperimposition bestSuperimposition = matches.get(0).getSubstructureSuperimposition();
-        List<LeafSubstructure<?>> mappedSite2 = bestSuperimposition.applyTo(site2.getCopy().getAllLeafSubstructures());
+        List<LeafSubstructure> mappedSite2 = bestSuperimposition.applyTo(site2.getCopy().getAllLeafSubstructures());
 
         String site1FileLocation = site1.getAllLeafSubstructures().stream()
                 .sorted(Comparator.comparing(LeafSubstructure::getIdentifier))

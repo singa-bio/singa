@@ -5,9 +5,8 @@ import bio.singa.chemistry.model.elements.Element;
 import bio.singa.chemistry.model.elements.ElementProvider;
 import bio.singa.core.utility.Pair;
 import bio.singa.mathematics.vectors.Vector3D;
-import bio.singa.structure.model.families.AminoAcidFamily;
-import bio.singa.structure.model.families.LigandFamily;
-import bio.singa.structure.model.families.NucleotideFamily;
+import bio.singa.structure.model.families.StructuralFamilies;
+import bio.singa.structure.model.families.StructuralFamily;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.oak.*;
 import bio.singa.structure.model.general.LeafSkeleton;
@@ -46,8 +45,6 @@ public class CifFileParser {
     private String threeLetterCode;
     private String parent;
     private String inchi;
-    private boolean singleAtom;
-    private boolean singleBond;
 
     private CifFileParser(List<String> lines) {
         this.lines = lines;
@@ -60,7 +57,7 @@ public class CifFileParser {
     }
 
 
-    public static LeafSubstructure<?> parseLeafSubstructure(List<String> lines) {
+    public static LeafSubstructure parseLeafSubstructure(List<String> lines) {
         CifFileParser parser = new CifFileParser(lines);
         return parser.parseCompleteLeafSubstructure();
     }
@@ -423,7 +420,7 @@ public class CifFileParser {
      *
      * @return A leaf.
      */
-    private OakLeafSubstructure<?> parseCompleteLeafSubstructure() {
+    private OakLeafSubstructure parseCompleteLeafSubstructure() {
         collectLines();
         extractAtoms();
         extractBonds();
@@ -436,24 +433,24 @@ public class CifFileParser {
      * @param leafIdentifier The identifier this leaf should have.
      * @return A complete {@link LeafSubstructure} using the information collected until the call of this method.
      */
-    private OakLeafSubstructure<?> createLeafSubstructure(PdbLeafIdentifier leafIdentifier) {
-        OakLeafSubstructure<?> leafSubstructure;
+    private OakLeafSubstructure createLeafSubstructure(PdbLeafIdentifier leafIdentifier) {
+        OakLeafSubstructure leafSubstructure;
         if (isNucleotide(type)) {
             // check for nucleotides
-            Optional<NucleotideFamily> nucleotideFamily = NucleotideFamily.getNucleotideByThreeLetterCode(parent);
+            Optional<StructuralFamily> nucleotideFamily = StructuralFamilies.Nucleotides.get(parent);
             leafSubstructure = nucleotideFamily.map(nucleotideFamily1 -> new OakNucleotide(leafIdentifier, nucleotideFamily1, threeLetterCode))
-                    .orElseGet(() -> new OakNucleotide(leafIdentifier, NucleotideFamily.getNucleotideByThreeLetterCode(threeLetterCode).orElseThrow(() ->
+                    .orElseGet(() -> new OakNucleotide(leafIdentifier, StructuralFamilies.Nucleotides.get(threeLetterCode).orElseThrow(() ->
                             new IllegalArgumentException("Could not create Nucleotide with three letter code" + threeLetterCode))));
 
         } else if (isAminoAcid(type)) {
             // check for amino acids
-            Optional<AminoAcidFamily> aminoAcidFamily = AminoAcidFamily.getAminoAcidTypeByThreeLetterCode(parent);
+            Optional<StructuralFamily> aminoAcidFamily = StructuralFamilies.AminoAcids.get(parent);
             leafSubstructure = aminoAcidFamily.map(aminoAcidFamily1 -> new OakAminoAcid(leafIdentifier, aminoAcidFamily1, threeLetterCode))
-                    .orElseGet(() -> new OakAminoAcid(leafIdentifier, AminoAcidFamily.getAminoAcidTypeByThreeLetterCode(threeLetterCode).orElseThrow(() ->
+                    .orElseGet(() -> new OakAminoAcid(leafIdentifier, StructuralFamilies.AminoAcids.get(threeLetterCode).orElseThrow(() ->
                             new IllegalArgumentException("Could not create Nucleotide with three letter code" + threeLetterCode))));
         } else {
             // else this is a ligand
-            OakLigand OakLigand = new OakLigand(leafIdentifier, new LigandFamily(oneLetterCode, threeLetterCode));
+            OakLigand OakLigand = new OakLigand(leafIdentifier, new StructuralFamily(oneLetterCode, threeLetterCode));
             OakLigand.setName(name);
             leafSubstructure = OakLigand;
         }
@@ -544,7 +541,7 @@ public class CifFileParser {
      *
      * @param leafWithAtoms The leaf to connect.
      */
-    private void connectAtoms(OakLeafSubstructure<?> leafWithAtoms) {
+    private void connectAtoms(OakLeafSubstructure leafWithAtoms) {
         int bondCounter = 0;
         for (Map.Entry<Pair<String>, CovalentBondType> bond : bonds.entrySet()) {
             OakBond oakBond = new OakBond(bondCounter++, bond.getValue());

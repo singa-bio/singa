@@ -29,7 +29,7 @@ public class ProteinSequence extends AbstractSequence<AminoAcidFamily> {
         super(sequence);
     }
 
-    public static ProteinSequence of(List<LeafSubstructure<?>> leafSubstructures) {
+    public static ProteinSequence of(List<LeafSubstructure> leafSubstructures) {
         List<AminoAcidFamily> sequence = leafSubstructures.stream()
                 .filter(AminoAcid.class::isInstance)
                 .map(AminoAcid.class::cast)
@@ -48,7 +48,7 @@ public class ProteinSequence extends AbstractSequence<AminoAcidFamily> {
     public static ProteinSequence of(String sequence) {
         List<AminoAcidFamily> aminoAcidList = new ArrayList<>();
         for (char c : sequence.toCharArray()) {
-            aminoAcidList.add(AminoAcidFamily.getAminoAcidTypeByOneLetterCode(c).orElse(AminoAcidFamily.UNKNOWN));
+            aminoAcidList.add(getAminoAcidTypeByOneLetterCode(c).orElse(UNKNOWN));
         }
         return new ProteinSequence(aminoAcidList);
     }

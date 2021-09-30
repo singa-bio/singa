@@ -2,7 +2,7 @@ package bio.singa.structure.algorithms.superimposition.fit3d;
 
 import bio.singa.core.utility.Resources;
 import bio.singa.structure.algorithms.superimposition.scores.SubstitutionMatrix;
-import bio.singa.structure.model.families.MatcherFamily;
+
 import bio.singa.structure.model.interfaces.Structure;
 import bio.singa.structure.model.oak.StructuralEntityFilter;
 import bio.singa.structure.model.oak.StructuralMotif;
@@ -11,6 +11,7 @@ import bio.singa.structure.parser.pdb.structures.StructureParser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import static bio.singa.structure.model.families.StructuralFamilies.Matchers.ALL_GUTTERIDGE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
@@ -66,7 +67,7 @@ class Fit3DSiteAlignmentTest {
     @Test
     void shouldCreateGutteridgeBindingSiteAlignment() {
         // exchanges have only be added for one of the sites because they are transitive
-        StructuralMotifs.assignComplexExchanges(bindingSite1, MatcherFamily.GUTTERIDGE);
+        StructuralMotifs.assignComplexExchanges(bindingSite1, ALL_GUTTERIDGE);
         Fit3D fit3d = Fit3DBuilder.create()
                 .site(bindingSite1)
                 .vs(bindingSite2)

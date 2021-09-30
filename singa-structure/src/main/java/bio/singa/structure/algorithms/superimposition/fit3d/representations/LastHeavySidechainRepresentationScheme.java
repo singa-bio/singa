@@ -3,7 +3,6 @@ package bio.singa.structure.algorithms.superimposition.fit3d.representations;
 import bio.singa.mathematics.matrices.LabeledSymmetricMatrix;
 import bio.singa.mathematics.vectors.Vectors;
 import bio.singa.chemistry.model.elements.ElementProvider;
-import bio.singa.structure.model.families.AminoAcidFamily;
 import bio.singa.structure.model.interfaces.AminoAcid;
 import bio.singa.structure.model.interfaces.Atom;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
@@ -15,6 +14,8 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static bio.singa.structure.model.families.StructuralFamilies.AminoAcids.GLYCINE;
+
 /**
  * An implementation to represent a given {@link LeafSubstructure} by its last heavy sidechain atom (the atom most
  * far from the alpha carbon). This is only available for {@link AminoAcid}s with defined alpha carbons. For
@@ -25,7 +26,7 @@ import java.util.stream.Collectors;
 public class LastHeavySidechainRepresentationScheme extends AbstractRepresentationScheme {
 
     @Override
-    public Atom determineRepresentingAtom(LeafSubstructure<?> leafSubstructure) {
+    public Atom determineRepresentingAtom(LeafSubstructure leafSubstructure) {
         // immediately return atom if part of structure
         final Optional<Atom> optionalLH = leafSubstructure.getAtomByName("LH");
         if (optionalLH.isPresent()) {
@@ -35,7 +36,7 @@ public class LastHeavySidechainRepresentationScheme extends AbstractRepresentati
                 .noneMatch(StructuralEntityFilter.AtomFilter.isAlphaCarbon())) {
             return determineCentroid(leafSubstructure);
         }
-        if (leafSubstructure.getFamily() == AminoAcidFamily.GLYCINE) {
+        if (leafSubstructure.getFamily() == GLYCINE) {
             return new BetaCarbonRepresentationScheme().determineCentroid(leafSubstructure);
         }
         // fallback if no sidechain atoms exist or no alpha carbon is present

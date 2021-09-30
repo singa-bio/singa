@@ -3,7 +3,6 @@ package bio.singa.structure.algorithms.superimposition.consensus;
 
 import bio.singa.core.utility.Resources;
 import bio.singa.structure.algorithms.superimposition.fit3d.representations.RepresentationSchemeType;
-import bio.singa.structure.model.families.AminoAcidFamily;
 import bio.singa.structure.model.interfaces.Structure;
 import bio.singa.structure.model.oak.OakAminoAcid;
 import bio.singa.structure.model.oak.PdbLeafIdentifier;
@@ -22,6 +21,7 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static bio.singa.structure.model.families.StructuralFamilies.AminoAcids.ALANINE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -55,7 +55,7 @@ class ConsensusAlignmentTest {
 
     @Test
     void shouldFailWithInputOfDifferentSize() {
-        input.get(0).addLeafSubstructure(new OakAminoAcid(new PdbLeafIdentifier(PdbLeafIdentifier.DEFAULT_PDB_IDENTIFIER, PdbLeafIdentifier.DEFAULT_MODEL_IDENTIFIER, PdbLeafIdentifier.DEFAULT_CHAIN_IDENTIFIER, 0), AminoAcidFamily.ALANINE));
+        input.get(0).addLeafSubstructure(new OakAminoAcid(new PdbLeafIdentifier(PdbLeafIdentifier.DEFAULT_PDB_IDENTIFIER, PdbLeafIdentifier.DEFAULT_MODEL_IDENTIFIER, PdbLeafIdentifier.DEFAULT_CHAIN_IDENTIFIER, 0), ALANINE));
         assertThrows(ConsensusException.class,
                 () -> ConsensusBuilder.create()
                         .inputStructuralMotifs(input)

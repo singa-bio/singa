@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
  *
  * @author cl
  */
-public interface LeafSubstructure<FamilyType extends StructuralFamily<FamilyType>> extends AtomContainer, Exchangeable<FamilyType> {
+public interface LeafSubstructure extends AtomContainer, Exchangeable {
 
     /**
      * Returns the complete leaf identifier. The leaf identifier consists of the PDB identifer, the model identifier,

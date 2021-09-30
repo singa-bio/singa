@@ -17,11 +17,11 @@ class FragmentSubstructureSuperimposerTest {
     @Test
     void shouldCalculateFragmentSuperimposition() {
 
-        List<LeafSubstructure<?>> referenceLeafSubstructure = StructureParser.local()
+        List<LeafSubstructure> referenceLeafSubstructure = StructureParser.local()
                 .fileLocation(Resources.getResourceAsFileLocation("adenine.pdb"))
                 .everything()
                 .parse().getAllLeafSubstructures();
-        List<LeafSubstructure<?>> candidateLeafSubstructure = StructureParser.local()
+        List<LeafSubstructure> candidateLeafSubstructure = StructureParser.local()
                 .fileLocation(Resources.getResourceAsFileLocation("atp.pdb"))
                 .everything()
                 .parse().getAllLeafSubstructures();

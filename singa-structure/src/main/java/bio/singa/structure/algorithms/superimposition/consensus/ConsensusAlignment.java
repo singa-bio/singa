@@ -336,7 +336,7 @@ public class ConsensusAlignment extends AlignmentMethod {
      */
     private void createConsensus(Map.Entry<SubstructureSuperimposition, Pair<ConsensusContainer>> substructurePair) {
 
-        List<LeafSubstructure<?>> consensusLeaveSubstructures = determineConsensus(substructurePair);
+        List<LeafSubstructure> consensusLeaveSubstructures = determineConsensus(substructurePair);
 
         currentConsensus = new ConsensusContainer(StructuralMotif.fromLeafSubstructures(consensusLeaveSubstructures), true);
 

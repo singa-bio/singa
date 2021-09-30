@@ -59,13 +59,13 @@ class OakModelTest {
 
     @Test
     void getAllLeafSubstructures() {
-        final List<LeafSubstructure<?>> leafSubstructures = secondModel.getAllLeafSubstructures();
+        final List<LeafSubstructure> leafSubstructures = secondModel.getAllLeafSubstructures();
         assertEquals(334, leafSubstructures.size());
     }
 
     @Test
     void getLeafSubstructure() {
-        Optional<LeafSubstructure<?>> leafSubstructure = firstModel.getLeafSubstructure(new PdbLeafIdentifier("2N5E", 1, "B", 64));
+        Optional<LeafSubstructure> leafSubstructure = firstModel.getLeafSubstructure(new PdbLeafIdentifier("2N5E", 1, "B", 64));
         if (!leafSubstructure.isPresent()) {
             fail("Optional leaf substructure was empty.");
         }

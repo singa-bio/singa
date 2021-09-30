@@ -2,7 +2,6 @@ package bio.singa.structure.parser.pdb.structures;
 
 
 import bio.singa.core.utility.Resources;
-import bio.singa.structure.model.families.AminoAcidFamily;
 import bio.singa.structure.model.interfaces.AminoAcid;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.interfaces.Structure;
@@ -24,6 +23,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static bio.singa.structure.model.families.StructuralFamilies.AminoAcids.ALANINE;
 import static bio.singa.structure.model.oak.StructuralEntityFilter.AtomFilter.*;
 import static bio.singa.structure.parser.pdb.structures.StructureParserOptions.Setting.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -135,7 +135,7 @@ class StructureParserTest {
                 .pdbIdentifier("1C0A")
                 .everything()
                 .parse();
-        List<LeafSubstructure<?>> leavesWithInsertionCode = structure.getAllLeafSubstructures().stream()
+        List<LeafSubstructure> leavesWithInsertionCode = structure.getAllLeafSubstructures().stream()
                 .filter(leafSubstructure -> leafSubstructure.getIdentifier().getSerial() == 620)
                 .collect(Collectors.toList());
         assertEquals(2, leavesWithInsertionCode.size());
@@ -149,7 +149,7 @@ class StructureParserTest {
                 .everything()
                 .parse();
         PdbLeafIdentifier leafIdentifier = PdbLeafIdentifier.fromString("6bb4-1-I-82c");
-        List<LeafSubstructure<?>> leavesWithInsertionCode = structure.getAllLeafSubstructures().stream()
+        List<LeafSubstructure> leavesWithInsertionCode = structure.getAllLeafSubstructures().stream()
                 .filter(leafSubstructure -> leafSubstructure.getIdentifier().equals(leafIdentifier))
                 .collect(Collectors.toList());
         assertEquals(1, leavesWithInsertionCode.size());
@@ -183,7 +183,7 @@ class StructureParserTest {
                 .allModels()
                 .chainIdentifier("BA")
                 .parse();
-        List<LeafSubstructure<?>> allLeafSubstructures = structure.getAllLeafSubstructures();
+        List<LeafSubstructure> allLeafSubstructures = structure.getAllLeafSubstructures();
         assertEquals(3229, allLeafSubstructures.size());
     }
 
@@ -194,7 +194,7 @@ class StructureParserTest {
                 .pdbIdentifier("1pqs")
                 .model(3)
                 .parse();
-        List<LeafSubstructure<?>> allLeafSubstructures = structure.getAllLeafSubstructures();
+        List<LeafSubstructure> allLeafSubstructures = structure.getAllLeafSubstructures();
         assertEquals(77, allLeafSubstructures.size());
     }
 
@@ -345,7 +345,7 @@ class StructureParserTest {
         if (aminoAcidOptional.isPresent()) {
             OakAminoAcid aminoAcid = ((OakAminoAcid) aminoAcidOptional.get());
             assertTrue(aminoAcid.isMutated());
-            assertEquals(AminoAcidFamily.ALANINE, aminoAcid.getWildTypeResidue());
+            assertEquals(ALANINE, aminoAcid.getWildTypeResidue());
         } else {
             fail("could not find mutated amino acid");
         }

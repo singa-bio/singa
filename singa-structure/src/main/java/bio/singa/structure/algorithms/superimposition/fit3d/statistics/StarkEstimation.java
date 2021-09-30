@@ -1,7 +1,7 @@
 package bio.singa.structure.algorithms.superimposition.fit3d.statistics;
 
 import bio.singa.structure.algorithms.superimposition.fit3d.Fit3DMatch;
-import bio.singa.structure.model.families.AminoAcidFamily;
+import bio.singa.structure.model.families.StructuralFamily;
 import bio.singa.structure.model.interfaces.AminoAcid;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 import org.slf4j.Logger;
@@ -11,6 +11,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static bio.singa.structure.model.families.StructuralFamilies.AminoAcids.*;
 
 /**
  * @author fk
@@ -27,30 +29,30 @@ public class StarkEstimation implements StatisticalModel {
     private static final double C2 = 0.196;
     private static final double C3 = 0.094;
 
-    private static final Map<AminoAcidFamily, Double> AMINOACID_SCORES;
+    private static final Map<StructuralFamily, Double> AMINO_ACID_SCORES;
 
     static {
-        AMINOACID_SCORES = new HashMap<>();
-        AMINOACID_SCORES.put(AminoAcidFamily.ALANINE, 8.19);
-        AMINOACID_SCORES.put(AminoAcidFamily.ARGININE, 4.62);
-        AMINOACID_SCORES.put(AminoAcidFamily.ASPARAGINE, 4.66);
-        AMINOACID_SCORES.put(AminoAcidFamily.ASPARTIC_ACID, 5.79);
-        AMINOACID_SCORES.put(AminoAcidFamily.CYSTEINE, 1.64);
-        AMINOACID_SCORES.put(AminoAcidFamily.GLUTAMINE, 3.71);
-        AMINOACID_SCORES.put(AminoAcidFamily.GLUTAMIC_ACID, 5.99);
-        AMINOACID_SCORES.put(AminoAcidFamily.GLYCINE, 7.96);
-        AMINOACID_SCORES.put(AminoAcidFamily.HISTIDINE, 2.33);
-        AMINOACID_SCORES.put(AminoAcidFamily.ISOLEUCINE, 5.42);
-        AMINOACID_SCORES.put(AminoAcidFamily.LEUCINE, 8.39);
-        AMINOACID_SCORES.put(AminoAcidFamily.LYSINE, 6.04);
-        AMINOACID_SCORES.put(AminoAcidFamily.METHIONINE, 2.03);
-        AMINOACID_SCORES.put(AminoAcidFamily.PHENYLALANINE, 3.98);
-        AMINOACID_SCORES.put(AminoAcidFamily.PROLINE, 4.59);
-        AMINOACID_SCORES.put(AminoAcidFamily.SERINE, 6.33);
-        AMINOACID_SCORES.put(AminoAcidFamily.THREONINE, 6.15);
-        AMINOACID_SCORES.put(AminoAcidFamily.TRYPTOPHAN, 1.54);
-        AMINOACID_SCORES.put(AminoAcidFamily.TYROSINE, 3.65);
-        AMINOACID_SCORES.put(AminoAcidFamily.VALINE, 7.00);
+        AMINO_ACID_SCORES = new HashMap<>();
+        AMINO_ACID_SCORES.put(ALANINE, 8.19);
+        AMINO_ACID_SCORES.put(ARGININE, 4.62);
+        AMINO_ACID_SCORES.put(ASPARAGINE, 4.66);
+        AMINO_ACID_SCORES.put(ASPARTIC_ACID, 5.79);
+        AMINO_ACID_SCORES.put(CYSTEINE, 1.64);
+        AMINO_ACID_SCORES.put(GLUTAMINE, 3.71);
+        AMINO_ACID_SCORES.put(GLUTAMIC_ACID, 5.99);
+        AMINO_ACID_SCORES.put(GLYCINE, 7.96);
+        AMINO_ACID_SCORES.put(HISTIDINE, 2.33);
+        AMINO_ACID_SCORES.put(ISOLEUCINE, 5.42);
+        AMINO_ACID_SCORES.put(LEUCINE, 8.39);
+        AMINO_ACID_SCORES.put(LYSINE, 6.04);
+        AMINO_ACID_SCORES.put(METHIONINE, 2.03);
+        AMINO_ACID_SCORES.put(PHENYLALANINE, 3.98);
+        AMINO_ACID_SCORES.put(PROLINE, 4.59);
+        AMINO_ACID_SCORES.put(SERINE, 6.33);
+        AMINO_ACID_SCORES.put(THREONINE, 6.15);
+        AMINO_ACID_SCORES.put(TRYPTOPHAN, 1.54);
+        AMINO_ACID_SCORES.put(TYROSINE, 3.65);
+        AMINO_ACID_SCORES.put(VALINE, 7.00);
     }
 
 
@@ -76,14 +78,14 @@ public class StarkEstimation implements StatisticalModel {
                 b = 2.93 * n - 5.88;
 
                 // multiply abundances and calculate correction factors
-                for (LeafSubstructure<?> leafSubstructure : match.getSubstructureSuperimposition().getCandidate()) {
+                for (LeafSubstructure leafSubstructure : match.getSubstructureSuperimposition().getCandidate()) {
 
                     if (!(leafSubstructure instanceof AminoAcid)) {
                         logger.info("ignoring non amino acid when calculating p-value with Stark et al. model");
                         continue;
                     }
 
-                    a = a * (AMINOACID_SCORES.get(((AminoAcid) leafSubstructure).getFamily()));
+                    a = a * AMINO_ACID_SCORES.get(leafSubstructure.getFamily());
 
                     // count number of atoms used for alignment
                     int numberOfAtoms = match.getSubstructureSuperimposition().getMappedCandidate().stream()
@@ -104,7 +106,7 @@ public class StarkEstimation implements StatisticalModel {
                 a = A0 * A2;
                 b = 0.97;
 
-                for (LeafSubstructure<?> leafSubstructure : match.getSubstructureSuperimposition().getCandidate()) {
+                for (LeafSubstructure leafSubstructure : match.getSubstructureSuperimposition().getCandidate()) {
 
                     if (!(leafSubstructure instanceof AminoAcid)) {
                         logger.info("ignoring non amino acid when calculating p-value with Stark et al. model");

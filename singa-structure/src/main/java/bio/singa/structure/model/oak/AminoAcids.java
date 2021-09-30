@@ -2,9 +2,10 @@ package bio.singa.structure.model.oak;
 
 import bio.singa.structure.algorithms.superimposition.fit3d.representations.RepresentationSchemeFactory;
 import bio.singa.structure.algorithms.superimposition.fit3d.representations.RepresentationSchemeType;
-import bio.singa.structure.model.families.AminoAcidFamily;
 import bio.singa.structure.model.interfaces.AminoAcid;
 import bio.singa.structure.model.interfaces.Atom;
+
+import static bio.singa.structure.model.families.StructuralFamilies.AminoAcids.GLYCINE;
 
 /**
  * Utility methods for {@link AminoAcid}s.
@@ -26,11 +27,10 @@ public class AminoAcids {
      * @return The virtual beta carbon of glycine.
      */
     public static Atom createVirtualCBAtom(AminoAcid aminoAcid) {
-        if (aminoAcid.getFamily() != AminoAcidFamily.GLYCINE) {
+        if (aminoAcid.getFamily() != GLYCINE) {
             throw new IllegalArgumentException("virtual beta carbon can only be calculated for glycine");
         }
         return RepresentationSchemeFactory.createRepresentationScheme(RepresentationSchemeType.BETA_CARBON)
                 .determineRepresentingAtom(aminoAcid);
-
     }
 }

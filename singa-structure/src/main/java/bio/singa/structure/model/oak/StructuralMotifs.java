@@ -3,13 +3,15 @@ package bio.singa.structure.model.oak;
 import bio.singa.mathematics.matrices.LabeledSymmetricMatrix;
 import bio.singa.structure.algorithms.superimposition.SubstructureSuperimposer;
 import bio.singa.structure.algorithms.superimposition.SubstructureSuperimposition;
-import bio.singa.structure.model.families.MatcherFamily;
+import bio.singa.structure.model.families.StructuralFamilies;
+import bio.singa.structure.model.families.StructuralFamily;
 import bio.singa.structure.model.interfaces.Atom;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Predicate;
 
 /**
@@ -32,12 +34,11 @@ public class StructuralMotifs {
      * @param structuralMotif The {@link StructuralMotif} to which the exchanges should be assigned.
      * @param familyGroup The group of {@link MatcherFamily} to be assigned.
      */
-    public static void assignComplexExchanges(StructuralMotif structuralMotif, EnumSet<MatcherFamily> familyGroup) {
+    public static void assignComplexExchanges(StructuralMotif structuralMotif, Set<StructuralFamily> familyGroup) {
         for (LeafSubstructure leafSubstructure : structuralMotif.getAllLeafSubstructures()) {
             familyGroup.stream()
-                    .filter(family -> family.getMembers().contains(leafSubstructure.getFamily()))
-                    .forEach(familyMember -> structuralMotif.addExchangeableFamily(leafSubstructure.getIdentifier(),
-                            familyMember));
+                    .filter(family -> StructuralFamilies.Matchers.getMatcherEntities(family).contains(leafSubstructure.getFamily()))
+                    .forEach(familyMember -> structuralMotif.addExchangeableFamily(leafSubstructure.getIdentifier(), familyMember));
         }
     }
 

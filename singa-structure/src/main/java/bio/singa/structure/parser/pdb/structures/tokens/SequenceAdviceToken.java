@@ -1,8 +1,8 @@
 package bio.singa.structure.parser.pdb.structures.tokens;
 
 import bio.singa.core.utility.Range;
-import bio.singa.structure.model.families.AminoAcidFamily;
-import bio.singa.structure.model.families.NucleotideFamily;
+import bio.singa.structure.model.families.StructuralFamilies;
+import bio.singa.structure.model.families.StructuralFamily;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.oak.OakAminoAcid;
 import bio.singa.structure.model.oak.OakNucleotide;
@@ -51,7 +51,7 @@ public enum SequenceAdviceToken implements PDBToken {
         String insertion = STRUCTURE_RESIDUE_INSERTION.extract(line);
         char adviceInsertionCode = insertion.isEmpty() ? DEFAULT_INSERTION_CODE : insertion.charAt(0);
 
-        List<LeafSubstructure<?>> advisableResidues = structure.getAllChains().stream()
+        List<LeafSubstructure> advisableResidues = structure.getAllChains().stream()
                 .filter(chain -> chain.getChainIdentifier().equals(adviceChain))
                 .flatMap(chain -> chain.getAllLeafSubstructures().stream())
                 .filter(leaf -> leaf.getSerial().equals(adviceSerial) && leaf.getIdentifier().getInsertionCode() == adviceInsertionCode)
@@ -64,8 +64,7 @@ public enum SequenceAdviceToken implements PDBToken {
                 .map (OakAminoAcid.class::cast)
                 .forEach(oakAminoAcid -> {
                     oakAminoAcid.setMutation(true);
-                    AminoAcidFamily wildTypeResidue = AminoAcidFamily.getAminoAcidTypeByThreeLetterCode(originalResidueName)
-                            .orElse(AminoAcidFamily.UNKNOWN);
+                    StructuralFamily wildTypeResidue = StructuralFamilies.AminoAcids.getOrUnknown(originalResidueName);
                     oakAminoAcid.setWildTypeResidue(wildTypeResidue);
                 });
 
@@ -74,8 +73,7 @@ public enum SequenceAdviceToken implements PDBToken {
                 .map (OakNucleotide.class::cast)
                 .forEach(oakNucleotide -> {
                     oakNucleotide.setMutation(true);
-                    NucleotideFamily wildTypeNucleotide = NucleotideFamily.getNucleotideByThreeLetterCode(originalResidueName)
-                            .orElse(NucleotideFamily.UNKNOWN);
+                    StructuralFamily wildTypeNucleotide = StructuralFamilies.Nucleotides.getOrUnknown(originalResidueName);
                     oakNucleotide.setWildTypeNucleotide(wildTypeNucleotide);
                 });
 

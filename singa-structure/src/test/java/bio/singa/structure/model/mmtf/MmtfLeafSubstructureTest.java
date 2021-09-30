@@ -23,7 +23,7 @@ class MmtfLeafSubstructureTest {
     private static Structure structure1C0A;
     private static LeafSubstructure leaf162;
     private static LeafSubstructure leaf154;
-    private static LeafSubstructure<?> leaf620A;
+    private static LeafSubstructure leaf620A;
     private static LeafSubstructure leafToModify;
 
     @BeforeAll

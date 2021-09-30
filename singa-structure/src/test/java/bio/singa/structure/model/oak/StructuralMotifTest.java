@@ -30,25 +30,25 @@ class StructuralMotifTest {
 
     @Test
     void shouldRetainSubstructureOrdering() {
-        final List<LeafSubstructure<?>> allLeafSubstructures = motif.getAllLeafSubstructures();
-        LeafSubstructure<?> lower = allLeafSubstructures.get(0);
-        LeafSubstructure<?> higher = allLeafSubstructures.get(allLeafSubstructures.size() - 1);
+        final List<LeafSubstructure> allLeafSubstructures = motif.getAllLeafSubstructures();
+        LeafSubstructure lower = allLeafSubstructures.get(0);
+        LeafSubstructure higher = allLeafSubstructures.get(allLeafSubstructures.size() - 1);
         // switch order in list
-        List<LeafSubstructure<?>> aminoAcids = new ArrayList<>();
+        List<LeafSubstructure> aminoAcids = new ArrayList<>();
         aminoAcids.add(higher);
         aminoAcids.add(lower);
         // create new motif from switched order
         StructuralMotif reorderedMotif = StructuralMotif.fromLeafSubstructures(aminoAcids);
-        final List<LeafSubstructure<?>> motifLeafSubstructures = reorderedMotif.getAllLeafSubstructures();
+        final List<LeafSubstructure> motifLeafSubstructures = reorderedMotif.getAllLeafSubstructures();
         // first entry is higher
-        final LeafSubstructure<?> first = motifLeafSubstructures.get(0);
-        final LeafSubstructure<?> last = motifLeafSubstructures.get(motifLeafSubstructures.size() - 1);
+        final LeafSubstructure first = motifLeafSubstructures.get(0);
+        final LeafSubstructure last = motifLeafSubstructures.get(motifLeafSubstructures.size() - 1);
         assertTrue(first.getIdentifier().getSerial() > last.getIdentifier().getSerial());
         // retain copy order
         StructuralMotif copiedMotif = reorderedMotif.getCopy();
-        final List<LeafSubstructure<?>> copiedMotifLeafSubstructures = copiedMotif.getAllLeafSubstructures();
-        final LeafSubstructure<?> firstCopy = copiedMotifLeafSubstructures.get(0);
-        final LeafSubstructure<?> lastCopy = copiedMotifLeafSubstructures.get(copiedMotifLeafSubstructures.size() - 1);
+        final List<LeafSubstructure> copiedMotifLeafSubstructures = copiedMotif.getAllLeafSubstructures();
+        final LeafSubstructure firstCopy = copiedMotifLeafSubstructures.get(0);
+        final LeafSubstructure lastCopy = copiedMotifLeafSubstructures.get(copiedMotifLeafSubstructures.size() - 1);
         assertTrue(firstCopy.getIdentifier().getSerial() > lastCopy.getIdentifier().getSerial());
     }
 

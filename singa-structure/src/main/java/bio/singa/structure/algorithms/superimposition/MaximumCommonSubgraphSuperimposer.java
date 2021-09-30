@@ -36,19 +36,19 @@ public class MaximumCommonSubgraphSuperimposer extends SubstructureSuperimposer 
     private final BiFunction<MoleculeAtom, MoleculeAtom, Boolean> atomCondition;
     private final BiFunction<MoleculeBond, MoleculeBond, Boolean> bondCondition;
 
-    private MaximumCommonSubgraphSuperimposer(List<LeafSubstructure<?>> reference, List<LeafSubstructure<?>> candidate, BiFunction<MoleculeAtom, MoleculeAtom, Boolean> atomCondition, BiFunction<MoleculeBond, MoleculeBond, Boolean> bondCondition) {
+    private MaximumCommonSubgraphSuperimposer(List<LeafSubstructure> reference, List<LeafSubstructure> candidate, BiFunction<MoleculeAtom, MoleculeAtom, Boolean> atomCondition, BiFunction<MoleculeBond, MoleculeBond, Boolean> bondCondition) {
         super(reference, candidate);
         this.atomCondition = atomCondition;
         this.bondCondition = bondCondition;
     }
 
-    public static SubstructureSuperimposition calculateSubstructureSuperimposition(List<LeafSubstructure<?>> reference,
-                                                                                   List<LeafSubstructure<?>> candidate) throws SubstructureSuperimpositionException {
+    public static SubstructureSuperimposition calculateSubstructureSuperimposition(List<LeafSubstructure> reference,
+                                                                                   List<LeafSubstructure> candidate) throws SubstructureSuperimpositionException {
         return new MaximumCommonSubgraphSuperimposer(reference, candidate, DEFAULT_ATOM_CONDITION, DEFAULT_BOND_CONDITION).calculateSuperimposition();
     }
 
-    public static SubstructureSuperimposition calculateSubstructureSuperimposition(List<LeafSubstructure<?>> reference,
-                                                                                   List<LeafSubstructure<?>> candidate,
+    public static SubstructureSuperimposition calculateSubstructureSuperimposition(List<LeafSubstructure> reference,
+                                                                                   List<LeafSubstructure> candidate,
                                                                                    BiFunction<MoleculeAtom, MoleculeAtom, Boolean> atomCondition,
                                                                                    BiFunction<MoleculeBond, MoleculeBond, Boolean> bondCondition) throws SubstructureSuperimpositionException {
         return new MaximumCommonSubgraphSuperimposer(reference, candidate, atomCondition, bondCondition).calculateSuperimposition();
@@ -59,13 +59,13 @@ public class MaximumCommonSubgraphSuperimposer extends SubstructureSuperimposer 
         List<Atom> referenceAtoms = new ArrayList<>();
         List<Atom> candidateAtoms = new ArrayList<>();
         for (int i = 0; i < reference.size(); i++) {
-            LeafSubstructure<?> referenceLeafSubstructure = reference.get(i);
-            LeafSubstructure<?> candidateLeafSubstructure = candidate.get(i);
+            LeafSubstructure referenceLeafSubstructure = reference.get(i);
+            LeafSubstructure candidateLeafSubstructure = candidate.get(i);
 
             if (referenceLeafSubstructure instanceof OakLeafSubstructure
                     && candidateLeafSubstructure instanceof OakLeafSubstructure) {
-                MoleculeGraph referenceGraph = MoleculeGraphs.createMoleculeGraphFromStructure((OakLeafSubstructure<?>) referenceLeafSubstructure);
-                MoleculeGraph candidateGraph = MoleculeGraphs.createMoleculeGraphFromStructure((OakLeafSubstructure<?>) candidateLeafSubstructure);
+                MoleculeGraph referenceGraph = MoleculeGraphs.createMoleculeGraphFromStructure((OakLeafSubstructure) referenceLeafSubstructure);
+                MoleculeGraph candidateGraph = MoleculeGraphs.createMoleculeGraphFromStructure((OakLeafSubstructure) candidateLeafSubstructure);
 
                 MaximumCommonSubgraphFinder<MoleculeAtom, MoleculeBond, Vector2D, Integer, MoleculeGraph> mcs = new MaximumCommonSubgraphFinder<>(referenceGraph, candidateGraph, atomCondition, bondCondition);
                 List<Set<GenericNode<Pair<MoleculeAtom>>>> maximumCliques = mcs.getMaximumCliques();

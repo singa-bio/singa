@@ -30,7 +30,7 @@ public class StructureRepresentation {
     /**
      * The non-consecutive part of any pdb file.
      */
-    private final List<OakLeafSubstructure<?>> nonConsecutiveLeafs;
+    private final List<OakLeafSubstructure> nonConsecutiveLeafs;
 
     /**
      * Creates a representation of the given chain. For multiple chains, use the {@link Model} to encapsulate them.
@@ -38,7 +38,7 @@ public class StructureRepresentation {
      * @param chain The chain.
      */
     private StructureRepresentation(OakChain chain) {
-        List<OakLeafSubstructure<?>> consecutivePart = chain.getConsecutivePart();
+        List<OakLeafSubstructure> consecutivePart = chain.getConsecutivePart();
         consecutiveRecords = getPdbLines(consecutivePart);
         terminateRecord = consecutivePart.isEmpty() ? "" : ChainTerminatorToken.assemblePDBLine(consecutivePart.get(consecutivePart.size() - 1));
         nonConsecutiveLeafs = chain.getNonConsecutivePart();
@@ -89,7 +89,7 @@ public class StructureRepresentation {
                 .map(StructureRepresentation::new)
                 .collect(Collectors.toList());
         // collect nonconsecutive records for all chains and append consecutive parts to builder
-        List<LeafSubstructure<?>> nonConsecutiveRecords = new ArrayList<>();
+        List<LeafSubstructure> nonConsecutiveRecords = new ArrayList<>();
         for (StructureRepresentation chainRepresentation : chainRepresentations) {
             if (!chainRepresentation.consecutiveRecords.isEmpty()) {
                 sb.append(chainRepresentation.getConsecutiveRepresentation())
@@ -114,7 +114,7 @@ public class StructureRepresentation {
                 .collect(Collectors.toList());
 
         StringBuilder stringBuilder = new StringBuilder();
-        List<LeafSubstructure<?>> nonConsecutiveRecords = new ArrayList<>();
+        List<LeafSubstructure> nonConsecutiveRecords = new ArrayList<>();
         for (StructureRepresentation chainRepresentation : chainRepresentations) {
             stringBuilder.append(chainRepresentation.getConsecutiveRepresentation())
                     .append(chainRepresentation.getTerminateRecord());
@@ -132,7 +132,7 @@ public class StructureRepresentation {
      * @param nonConsecutiveLeafs The leaf substructures to be written.
      * @return A string representing the information of the leaves in pdb format.
      */
-    private static String composePdbRepresentationOfNonConsecutiveRecords(List<LeafSubstructure<?>> nonConsecutiveLeafs) {
+    private static String composePdbRepresentationOfNonConsecutiveRecords(List<LeafSubstructure> nonConsecutiveLeafs) {
         // sorts the leafy by their atom identifier
         if (!nonConsecutiveLeafs.isEmpty()) {
             nonConsecutiveLeafs.sort(Comparator.comparingInt(nonConsecutiveLeaf -> nonConsecutiveLeaf.getAllAtoms().get(0).getAtomIdentifier()));
@@ -172,7 +172,7 @@ public class StructureRepresentation {
      *
      * @return The closing lines.
      */
-    private static String getPostamble(List<LeafSubstructure<?>> leafSubstructures) {
+    private static String getPostamble(List<LeafSubstructure> leafSubstructures) {
         String connectRecords = leafSubstructures.stream()
                 .filter(leafSubstructure -> leafSubstructure.getClass().equals(OakLigand.class))
                 .map(OakLigand.class::cast)
@@ -187,7 +187,7 @@ public class StructureRepresentation {
      * @param leafSubstructures The laves to convertToSpheres.
      * @return A list of atom lines.
      */
-    private List<String> getPdbLines(Collection<OakLeafSubstructure<?>> leafSubstructures) {
+    private List<String> getPdbLines(Collection<OakLeafSubstructure> leafSubstructures) {
         return leafSubstructures.stream()
                 .map(LeafSubstructure::getPdbLines)
                 .flatMap(Collection::stream)
@@ -218,7 +218,7 @@ public class StructureRepresentation {
      *
      * @return The actual leaves of the nonconsecutive part.
      */
-    private List<OakLeafSubstructure<?>> getNonConsecutiveLeafSubstructures() {
+    private List<OakLeafSubstructure> getNonConsecutiveLeafSubstructures() {
         return nonConsecutiveLeafs;
     }
 }

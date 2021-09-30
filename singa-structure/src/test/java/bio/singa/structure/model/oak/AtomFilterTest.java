@@ -1,6 +1,6 @@
 package bio.singa.structure.model.oak;
 
-import bio.singa.structure.model.families.AminoAcidFamily;
+import bio.singa.structure.model.families.StructuralFamilies;
 import bio.singa.structure.model.interfaces.AminoAcid;
 import bio.singa.structure.model.interfaces.Atom;
 import bio.singa.structure.model.interfaces.Structure;
@@ -14,7 +14,6 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author fk
@@ -59,7 +58,7 @@ class AtomFilterTest {
 
     @Test
     void shouldApplyAtomFilterByNames() {
-        AminoAcid aminoAcid = AminoAcidFamily.METHIONINE.getPrototype();
+        AminoAcid aminoAcid = StructuralFamilies.AminoAcids.getPrototype(StructuralFamilies.AminoAcids.METHIONINE);
         Predicate<Atom> atomFilter = StructuralEntityFilter.AtomFilter.hasAtomNames("CA", "SD");
         List<Atom> filteredAtoms = aminoAcid.getAllAtoms().stream()
                 .filter(atomFilter)

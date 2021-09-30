@@ -26,7 +26,7 @@ public class MoleculeGraphs {
 
     public static Rectangle defaultBoundingBox = new Rectangle(100, 100);
 
-    public static MoleculeGraph createMoleculeGraphFromStructure(OakLeafSubstructure<?> leafSubstructure) {
+    public static MoleculeGraph createMoleculeGraphFromStructure(OakLeafSubstructure leafSubstructure) {
         // crate empty graph
         MoleculeGraph graph = new MoleculeGraph();
         // add atoms first

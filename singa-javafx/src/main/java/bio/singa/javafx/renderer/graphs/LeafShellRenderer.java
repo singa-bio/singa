@@ -9,10 +9,10 @@ import bio.singa.structure.model.interfaces.LeafSubstructure;
 /**
  * @author cl
  */
-public class LeafShellRenderer extends GraphRenderer<GenericNode<LeafSubstructure<?>>, GenericEdge<LeafSubstructure<?>>, Integer, GenericGraph<LeafSubstructure<?>>> {
+public class LeafShellRenderer extends GraphRenderer<GenericNode<LeafSubstructure>, GenericEdge<LeafSubstructure>, Integer, GenericGraph<LeafSubstructure>> {
 
     @Override
-    protected void drawNode(GenericNode<LeafSubstructure<?>> node) {
+    protected void drawNode(GenericNode<LeafSubstructure> node) {
         // set color and diameter
         getGraphicsContext().setFill(getRenderingOptions().getNodeColor());
         fillPoint(node.getPosition(), getRenderingOptions().getNodeDiameter());

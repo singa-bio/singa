@@ -48,7 +48,7 @@ class PfamParserTest {
 
     @Test
     void shouldParseDomains() {
-        List<List<LeafSubstructure<?>>> domains = PfamParser.create()
+        List<List<LeafSubstructure>> domains = PfamParser.create()
                 .version(PfamParser.PfamVersion.V31)
                 .pfamIdentifier("PF17480")
                 .all()
@@ -58,7 +58,7 @@ class PfamParserTest {
 
     @Test
     void shouldParseDomainsWithChainList() {
-        List<List<LeafSubstructure<?>>> chains = PfamParser.create()
+        List<List<LeafSubstructure>> chains = PfamParser.create()
                 .version(PfamParser.PfamVersion.V31)
                 .pfamIdentifier("PF00089")
                 .chainList(Paths.get(Resources.getResourceAsFileLocation("chain_list_PF00089.txt")))
@@ -73,7 +73,7 @@ class PfamParserTest {
                 .pfamIdentifier("PF00069")
                 .chainList(Paths.get(Resources.getResourceAsFileLocation("chain_list_PF00069.txt")))
                 .chains();
-        List<List<LeafSubstructure<?>>> domains = PfamParser.create()
+        List<List<LeafSubstructure>> domains = PfamParser.create()
                 .version(PfamParser.PfamVersion.V31)
                 .pfamIdentifier("PF00069")
                 .chainList(Paths.get(Resources.getResourceAsFileLocation("chain_list_PF00069.txt")))

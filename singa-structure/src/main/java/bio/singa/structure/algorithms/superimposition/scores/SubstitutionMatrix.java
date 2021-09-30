@@ -5,7 +5,7 @@ import bio.singa.mathematics.matrices.LabeledSymmetricMatrix;
 import bio.singa.mathematics.matrices.Matrices;
 import bio.singa.mathematics.matrices.Matrix;
 import bio.singa.mathematics.matrices.RegularMatrix;
-import bio.singa.structure.model.families.AminoAcidFamily;
+import bio.singa.structure.model.families.StructuralFamilies;
 import bio.singa.structure.model.families.StructuralFamily;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -111,12 +111,7 @@ public enum SubstitutionMatrix {
         List<StructuralFamily> structuralFamilyLabels = new ArrayList<>();
         assert stringLabeledMatrix != null;
         for (int i = 0; i < stringLabeledMatrix.getRowDimension(); i++) {
-            String matrixLabel = stringLabeledMatrix.getRowLabel(i);
-            if (Arrays.stream(AminoAcidFamily.values())
-                    .map(AminoAcidFamily::name)
-                    .anyMatch(name -> name.equals(matrixLabel))) {
-                structuralFamilyLabels.add(AminoAcidFamily.valueOf(stringLabeledMatrix.getRowLabel(i)));
-            }
+            structuralFamilyLabels.add(StructuralFamilies.AminoAcids.getOrUnknown(stringLabeledMatrix.getRowLabel(i)));
         }
         matrix = new LabeledSymmetricMatrix<>(stringLabeledMatrix.getCompleteElements());
         matrix.setRowLabels(structuralFamilyLabels);
@@ -146,10 +141,8 @@ public enum SubstitutionMatrix {
                         .orElse(Double.NaN);
                 // add minimal element to each value
                 double[][] matrixWithMinimalElement = new double[invertedMatrix.getRowDimension()][invertedMatrix.getColumnDimension()];
-                for (int i = 0; i < matrixWithMinimalElement.length; i++) {
-                    for (int j = 0; j < matrixWithMinimalElement[i].length; j++) {
-                        matrixWithMinimalElement[i][j] = minimalElement;
-                    }
+                for (double[] doubles : matrixWithMinimalElement) {
+                    Arrays.fill(doubles, minimalElement);
                 }
                 RegularMatrix summand = new RegularMatrix(matrixWithMinimalElement);
                 LabeledSymmetricMatrix<StructuralFamily> costMatrix = new LabeledSymmetricMatrix<>(

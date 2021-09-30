@@ -33,7 +33,7 @@ public class GraphViewerPlayground {
 
         Chain chain = structure.getFirstChain();
 
-        LeafSubstructure<?> reference = StructureSelector.selectFrom(chain)
+        LeafSubstructure reference = StructureSelector.selectFrom(chain)
                 .atomContainer(831)
                 .selectAtomContainer();
 
@@ -42,13 +42,13 @@ public class GraphViewerPlayground {
 
         PlipShellGenerator plipShellGenerator = PlipShellGenerator.getInteractionShellsForLigand(chain, reference, interInteractions, ligandInteractions);
 
-        GenericGraph<LeafSubstructure<?>> graph = plipShellGenerator.getGraph();
-        GenericNode<LeafSubstructure<?>> referenceNode = graph.getNodeWithContent(reference).get();
+        GenericGraph<LeafSubstructure> graph = plipShellGenerator.getGraph();
+        GenericNode<LeafSubstructure> referenceNode = graph.getNodeWithContent(reference).get();
 
-        GenericGraph<LeafSubstructure<?>> subgraph = NeighbourhoodExtractor.extractNeighborhood(graph, referenceNode, 3);
-        List<GenericNode<LeafSubstructure<?>>> firstShell = NeighbourhoodExtractor.extractShell(graph, referenceNode, 1);
-        List<GenericNode<LeafSubstructure<?>>> secondShell = NeighbourhoodExtractor.extractShell(graph, referenceNode, 2);
-        List<GenericNode<LeafSubstructure<?>>> thirdShell = NeighbourhoodExtractor.extractShell(graph, referenceNode, 3);
+        GenericGraph<LeafSubstructure> subgraph = NeighbourhoodExtractor.extractNeighborhood(graph, referenceNode, 3);
+        List<GenericNode<LeafSubstructure>> firstShell = NeighbourhoodExtractor.extractShell(graph, referenceNode, 1);
+        List<GenericNode<LeafSubstructure>> secondShell = NeighbourhoodExtractor.extractShell(graph, referenceNode, 2);
+        List<GenericNode<LeafSubstructure>> thirdShell = NeighbourhoodExtractor.extractShell(graph, referenceNode, 3);
         String originalSmiles = "CC(=O)OC1=CC=CC=C1C(=O)O";
         MoleculeGraph moleculeGraph = SmilesParser.parse(originalSmiles);
 

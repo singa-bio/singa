@@ -8,23 +8,23 @@ import bio.singa.structure.model.interfaces.LeafSubstructure;
  */
 public class LinkEntry {
 
-    private LeafSubstructure<?> firstLeafSubstructure;
+    private LeafSubstructure firstLeafSubstructure;
     private Atom firstAtom;
-    private LeafSubstructure<?> secondLeafSubstructure;
+    private LeafSubstructure secondLeafSubstructure;
     private Atom secondAtom;
 
-    public LinkEntry(LeafSubstructure<?> firstLeafSubstructure, Atom firstAtom, LeafSubstructure<?> secondLeafSubstructure, Atom secondAtom) {
+    public LinkEntry(LeafSubstructure firstLeafSubstructure, Atom firstAtom, LeafSubstructure secondLeafSubstructure, Atom secondAtom) {
         this.firstLeafSubstructure = firstLeafSubstructure;
         this.firstAtom = firstAtom;
         this.secondLeafSubstructure = secondLeafSubstructure;
         this.secondAtom = secondAtom;
     }
 
-    public LeafSubstructure<?> getFirstLeafSubstructure() {
+    public LeafSubstructure getFirstLeafSubstructure() {
         return firstLeafSubstructure;
     }
 
-    public void setFirstLeafSubstructure(LeafSubstructure<?> firstLeafSubstructure) {
+    public void setFirstLeafSubstructure(LeafSubstructure firstLeafSubstructure) {
         this.firstLeafSubstructure = firstLeafSubstructure;
     }
 
@@ -36,11 +36,11 @@ public class LinkEntry {
         this.firstAtom = firstAtom;
     }
 
-    public LeafSubstructure<?> getSecondLeafSubstructure() {
+    public LeafSubstructure getSecondLeafSubstructure() {
         return secondLeafSubstructure;
     }
 
-    public void setSecondLeafSubstructure(LeafSubstructure<?> secondLeafSubstructure) {
+    public void setSecondLeafSubstructure(LeafSubstructure secondLeafSubstructure) {
         this.secondLeafSubstructure = secondLeafSubstructure;
     }
 

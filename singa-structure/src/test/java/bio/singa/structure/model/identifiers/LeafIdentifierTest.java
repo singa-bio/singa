@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class LeafIdentifierTest {
 
-    private static LeafSubstructure<?> leaf;
+    private static LeafSubstructure leaf;
     private static Structure structure;
 
     @BeforeAll

@@ -4,7 +4,7 @@ package bio.singa.structure.algorithms.superimposition.fit3d.representations;
 import bio.singa.structure.algorithms.superimposition.SubstructureSuperimposer;
 import bio.singa.structure.algorithms.superimposition.SubstructureSuperimposition;
 import bio.singa.chemistry.model.elements.ElementProvider;
-import bio.singa.structure.model.families.AminoAcidFamily;
+import bio.singa.structure.model.families.StructuralFamilies;
 import bio.singa.structure.model.interfaces.AminoAcid;
 import bio.singa.structure.model.interfaces.Atom;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
@@ -14,6 +14,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static bio.singa.structure.model.families.StructuralFamilies.AminoAcids.ALANINE;
+import static bio.singa.structure.model.families.StructuralFamilies.AminoAcids.GLYCINE;
 import static bio.singa.structure.model.oak.StructuralEntityFilter.AtomFilter;
 
 /**
@@ -25,7 +27,7 @@ import static bio.singa.structure.model.oak.StructuralEntityFilter.AtomFilter;
 public class BetaCarbonRepresentationScheme extends AbstractRepresentationScheme {
 
     @Override
-    public Atom determineRepresentingAtom(LeafSubstructure<?> leafSubstructure) {
+    public Atom determineRepresentingAtom(LeafSubstructure leafSubstructure) {
         // immediately return atom if part of structure
         final Optional<Atom> optionalBetaCarbon = leafSubstructure.getAtomByName("CB");
         if (optionalBetaCarbon.isPresent()) {
@@ -36,10 +38,10 @@ public class BetaCarbonRepresentationScheme extends AbstractRepresentationScheme
             return determineCentroid(leafSubstructure);
         }
         // create virtual beta carbon for glycine
-        if (leafSubstructure.getFamily() == AminoAcidFamily.GLYCINE) {
+        if (leafSubstructure.getFamily() == GLYCINE) {
             // superimpose alanine based on backbone
             // TODO add convenience functionality to superimpose single LeafSubstructures
-            AminoAcid alanine = AminoAcidFamily.ALANINE.getPrototype();
+            AminoAcid alanine = StructuralFamilies.AminoAcids.getPrototype(ALANINE);
             SubstructureSuperimposition superimposition = SubstructureSuperimposer.calculateIdealSubstructureSuperimposition(
                     Stream.of(leafSubstructure).collect(Collectors.toList()),
                     Stream.of(alanine).collect(Collectors.toList()),

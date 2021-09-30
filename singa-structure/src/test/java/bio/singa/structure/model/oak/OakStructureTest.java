@@ -102,13 +102,13 @@ class OakStructureTest {
 
     @Test
     void getAllLeafSubstructures() {
-        List<LeafSubstructure<?>> leafSubstructures = structure2N5E.getAllLeafSubstructures();
+        List<LeafSubstructure> leafSubstructures = structure2N5E.getAllLeafSubstructures();
         assertEquals(3340, leafSubstructures.size());
     }
 
     @Test
     void getLeafSubstructure() {
-        Optional<LeafSubstructure<?>> leafSubstructure = structure2N5E.getLeafSubstructure(new PdbLeafIdentifier("2N5E", 5, "A", 64));
+        Optional<LeafSubstructure> leafSubstructure = structure2N5E.getLeafSubstructure(new PdbLeafIdentifier("2N5E", 5, "A", 64));
         if (!leafSubstructure.isPresent()) {
             fail("Optional leaf substructure was empty.");
         }
@@ -121,10 +121,10 @@ class OakStructureTest {
     @Test
     void removeLeafSubstructure() {
         LeafIdentifier leafIdentifier = new PdbLeafIdentifier("1BRR", 1, "A", 176);
-        Optional<LeafSubstructure<?>> leafSubstructureOptional = structureToModify.getLeafSubstructure(leafIdentifier);
+        Optional<LeafSubstructure> leafSubstructureOptional = structureToModify.getLeafSubstructure(leafIdentifier);
         leafSubstructureOptional.ifPresent(leafSubstructure -> {
             structureToModify.removeLeafSubstructure(leafIdentifier);
-            Optional<LeafSubstructure<?>> removedOptional = structureToModify.getLeafSubstructure(leafIdentifier);
+            Optional<LeafSubstructure> removedOptional = structureToModify.getLeafSubstructure(leafIdentifier);
             removedOptional.ifPresent(leafSubstructureRemoved -> fail("The leaf should have been removed and therefore the optional should be empty."));
         });
     }
@@ -144,7 +144,7 @@ class OakStructureTest {
         final LeafIdentifier identifier = aminoAcid.get().getIdentifier();
         assertEquals("A", identifier.getChainIdentifier());
         assertEquals(98, identifier.getSerial());
-        assertEquals("Ser", aminoAcid.get().getThreeLetterCode());
+        assertEquals("SER", aminoAcid.get().getThreeLetterCode());
     }
 
     @Test

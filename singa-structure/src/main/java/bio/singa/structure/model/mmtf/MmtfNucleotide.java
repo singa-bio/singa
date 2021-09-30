@@ -1,6 +1,6 @@
 package bio.singa.structure.model.mmtf;
 
-import bio.singa.structure.model.families.NucleotideFamily;
+import bio.singa.structure.model.families.StructuralFamily;
 import bio.singa.structure.model.interfaces.Nucleotide;
 import bio.singa.structure.model.oak.PdbLeafIdentifier;
 import org.rcsb.mmtf.api.StructureDataInterface;
@@ -12,19 +12,19 @@ import java.util.HashSet;
  *
  * @author cl
  */
-public class MmtfNucleotide extends MmtfLeafSubstructure<NucleotideFamily> implements Nucleotide {
+public class MmtfNucleotide extends MmtfLeafSubstructure implements Nucleotide {
 
     /**
      * Creates a new {@link MmtfNucleotide}.
      *
      * @param data The original data.
-     * @param family The leaf family (e.g. {@link NucleotideFamily#GUANOSINE}).
+     * @param family The leaf family.
      * @param leafIdentifier The leaf identifier.
      * @param internalGroupIndex The index of this leaf in the data array.
      * @param atomStartIndex The index of the first atom that belong to this leaf.
      * @param atomEndIndex The index of the last atom that belong to this leaf.
      */
-    MmtfNucleotide(StructureDataInterface data, byte[] bytes, NucleotideFamily family, PdbLeafIdentifier leafIdentifier, int internalGroupIndex, int atomStartIndex, int atomEndIndex) {
+    MmtfNucleotide(StructureDataInterface data, byte[] bytes, StructuralFamily family, PdbLeafIdentifier leafIdentifier, int internalGroupIndex, int atomStartIndex, int atomEndIndex) {
         super(data, bytes, family, leafIdentifier, internalGroupIndex, atomStartIndex, atomEndIndex);
     }
 

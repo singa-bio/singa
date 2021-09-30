@@ -12,7 +12,7 @@ import bio.singa.structure.model.interfaces.LeafSubstructure;
 public class CentroidRepresentationScheme extends AbstractRepresentationScheme {
 
     @Override
-    public Atom determineRepresentingAtom(LeafSubstructure<?> leafSubstructure) {
+    public Atom determineRepresentingAtom(LeafSubstructure leafSubstructure) {
         return determineCentroid(leafSubstructure);
     }
 

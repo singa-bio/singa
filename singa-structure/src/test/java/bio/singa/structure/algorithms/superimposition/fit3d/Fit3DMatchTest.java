@@ -1,7 +1,6 @@
 package bio.singa.structure.algorithms.superimposition.fit3d;
 
 import bio.singa.core.utility.Resources;
-import bio.singa.structure.model.families.AminoAcidFamily;
 import bio.singa.structure.model.oak.LeafIdentifiers;
 import bio.singa.structure.model.interfaces.Structure;
 import bio.singa.structure.model.oak.PdbLeafIdentifier;
@@ -14,6 +13,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import static bio.singa.structure.model.families.StructuralFamilies.AminoAcids.GLUTAMIC_ACID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -37,7 +37,7 @@ class Fit3DMatchTest {
                 .parse();
         queryMotif = StructuralMotif.fromLeafIdentifiers(motifContainingStructure,
                 LeafIdentifiers.of("E-57", "E-102", "E-195"));
-        queryMotif.addExchangeableFamily(PdbLeafIdentifier.fromSimpleString("E-57"), AminoAcidFamily.GLUTAMIC_ACID);
+        queryMotif.addExchangeableFamily(PdbLeafIdentifier.fromSimpleString("E-57"), GLUTAMIC_ACID);
     }
 
     @Test

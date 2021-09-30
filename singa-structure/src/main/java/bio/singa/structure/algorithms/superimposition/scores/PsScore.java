@@ -7,12 +7,14 @@ import bio.singa.structure.algorithms.superimposition.SubstructureSuperimpositio
 import bio.singa.structure.algorithms.superimposition.fit3d.representations.RepresentationScheme;
 import bio.singa.structure.algorithms.superimposition.fit3d.representations.RepresentationSchemeFactory;
 import bio.singa.structure.algorithms.superimposition.fit3d.representations.RepresentationSchemeType;
-import bio.singa.structure.model.families.AminoAcidFamily;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
+
+import static bio.singa.structure.model.families.StructuralFamilies.AminoAcids.*;
 
 /**
  * An implementation of the score to assess the similarity of aligned ligand binding site environments:
@@ -25,16 +27,16 @@ import java.util.List;
  */
 public class PsScore {
 
-    private static final List<EnumSet<?>> AMINO_ACID_GROUPS;
+    private static final List<Set<?>> AMINO_ACID_GROUPS;
 
     static {
         AMINO_ACID_GROUPS = new ArrayList<>();
-        AMINO_ACID_GROUPS.add(EnumSet.of(AminoAcidFamily.LEUCINE, AminoAcidFamily.VALINE, AminoAcidFamily.ISOLEUCINE, AminoAcidFamily.METHIONINE, AminoAcidFamily.CYSTEINE));
-        AMINO_ACID_GROUPS.add(EnumSet.of(AminoAcidFamily.ALANINE, AminoAcidFamily.GLYCINE));
-        AMINO_ACID_GROUPS.add(EnumSet.of(AminoAcidFamily.SERINE, AminoAcidFamily.THREONINE));
-        AMINO_ACID_GROUPS.add(EnumSet.of(AminoAcidFamily.PROLINE));
-        AMINO_ACID_GROUPS.add(EnumSet.of(AminoAcidFamily.PHENYLALANINE, AminoAcidFamily.TYROSINE, AminoAcidFamily.TRYPTOPHAN));
-        AMINO_ACID_GROUPS.add(EnumSet.of(AminoAcidFamily.GLUTAMIC_ACID, AminoAcidFamily.ASPARTIC_ACID, AminoAcidFamily.ASPARAGINE, AminoAcidFamily.GLUTAMINE));
+        AMINO_ACID_GROUPS.add(Set.of(LEUCINE, VALINE, ISOLEUCINE, METHIONINE, CYSTEINE));
+        AMINO_ACID_GROUPS.add(Set.of(ALANINE, GLYCINE));
+        AMINO_ACID_GROUPS.add(Set.of(SERINE, THREONINE));
+        AMINO_ACID_GROUPS.add(Set.of(PROLINE));
+        AMINO_ACID_GROUPS.add(Set.of(PHENYLALANINE, TYROSINE, TRYPTOPHAN));
+        AMINO_ACID_GROUPS.add(Set.of(GLUTAMIC_ACID, ASPARTIC_ACID, ASPARAGINE, GLUTAMINE));
     }
 
     private final int referenceLength;
@@ -55,7 +57,7 @@ public class PsScore {
         calculateSignificance();
     }
 
-    private static boolean belongToSameGroup(Pair<LeafSubstructure<?>> leafSubstructurePair) {
+    private static boolean belongToSameGroup(Pair<LeafSubstructure> leafSubstructurePair) {
         return AMINO_ACID_GROUPS.stream()
                 .anyMatch(group -> group.contains(leafSubstructurePair.getFirst().getFamily())
                         && group.contains(leafSubstructurePair.getSecond().getFamily()));
@@ -92,8 +94,8 @@ public class PsScore {
     private double determineS() {
         double sumValue = 0.0;
         for (int i = 0; i < substructureSuperimposition.getReference().size(); i++) {
-            LeafSubstructure<?> referenceLeafSubstructure = substructureSuperimposition.getReference().get(i);
-            LeafSubstructure<?> queryLeafSubstructure = substructureSuperimposition.getMappedCandidate().get(i);
+            LeafSubstructure referenceLeafSubstructure = substructureSuperimposition.getReference().get(i);
+            LeafSubstructure queryLeafSubstructure = substructureSuperimposition.getMappedCandidate().get(i);
 
             double distance = VectorMetricProvider.EUCLIDEAN_METRIC.calculateDistance(referenceLeafSubstructure.getPosition(), queryLeafSubstructure.getPosition());
             double distanceScalingFactor = 0.70 * Math.pow((queryLength - 5), 0.25) - 0.2;
@@ -104,29 +106,29 @@ public class PsScore {
         return (1.0 / queryLength) * sumValue;
     }
 
-    private double calculateR(LeafSubstructure<?> referenceLeafSubstructure, LeafSubstructure<?> querylLeafSubstructure) {
+    private double calculateR(LeafSubstructure referenceLeafSubstructure, LeafSubstructure querylLeafSubstructure) {
         boolean belongToSameGroup = belongToSameGroup(new Pair<>(referenceLeafSubstructure, querylLeafSubstructure));
         return Math.max(0.8, belongToSameGroup ? 1.0 : 0.0);
     }
 
-    private double calculateP(LeafSubstructure<?> referenceLeafSubstructure, LeafSubstructure<?> querylLeafSubstructure) {
-        if (referenceLeafSubstructure.getFamily() != AminoAcidFamily.GLYCINE
-                && querylLeafSubstructure.getFamily() != AminoAcidFamily.GLYCINE) {
+    private double calculateP(LeafSubstructure referenceLeafSubstructure, LeafSubstructure querylLeafSubstructure) {
+        if (referenceLeafSubstructure.getFamily() != GLYCINE
+                && querylLeafSubstructure.getFamily() != GLYCINE) {
             double theta = determineAlphaBetaVector(referenceLeafSubstructure).angleTo(determineAlphaBetaVector(querylLeafSubstructure));
             if (theta <= Math.PI / 3.0) {
                 return 1.0;
             } else {
                 return Math.max(0.1, 0.5 + Math.cos(theta));
             }
-        } else if (referenceLeafSubstructure.getFamily() == AminoAcidFamily.GLYCINE
-                && querylLeafSubstructure.getFamily() != AminoAcidFamily.GLYCINE) {
+        } else if (referenceLeafSubstructure.getFamily() == GLYCINE
+                && querylLeafSubstructure.getFamily() != GLYCINE) {
             return 0.77;
         } else {
             return 1.0;
         }
     }
 
-    private Vector3D determineAlphaBetaVector(LeafSubstructure<?> leafSubstructure) {
+    private Vector3D determineAlphaBetaVector(LeafSubstructure leafSubstructure) {
         return alphaCarbonRepresentation.determineRepresentingAtom(leafSubstructure).getPosition()
                 .subtract(betaCarbonRepresentation.determineRepresentingAtom(leafSubstructure).getPosition());
     }

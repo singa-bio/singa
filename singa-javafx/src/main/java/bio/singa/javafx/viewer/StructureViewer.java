@@ -163,12 +163,12 @@ public class StructureViewer extends Application {
 
     }
 
-    private void addLeafSubstructure(OakLeafSubstructure<?> leafSubstructure) {
+    private void addLeafSubstructure(OakLeafSubstructure leafSubstructure) {
         leafSubstructure.getAllAtoms().forEach(atom -> addAtom(leafSubstructure, atom));
         leafSubstructure.getBonds().forEach(bond -> addLeafBond(leafSubstructure, bond));
     }
 
-    private void addAtom(LeafSubstructure<?> origin, Atom atom) {
+    private void addAtom(LeafSubstructure origin, Atom atom) {
         Sphere atomShape = new Sphere(1.0);
         atomShape.setMaterial(getMaterial(origin, atom));
         atomShape.setTranslateX(atom.getPosition().getX());

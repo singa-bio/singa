@@ -44,11 +44,11 @@ public class StructureWriter {
 
     public interface PDBCoverageStep {
 
-        PDBSubstructureStep substructure(LeafSubstructure<?> leafSubstructure);
+        PDBSubstructureStep substructure(LeafSubstructure leafSubstructure);
 
         PDBSubstructureStep substructure(LeafSubstructureContainer container);
 
-        PDBSubstructureStep substructures(Collection<LeafSubstructure<?>> leafSubstructures);
+        PDBSubstructureStep substructures(Collection<LeafSubstructure> leafSubstructures);
 
         OptionsStep structure(Structure structure);
 
@@ -56,11 +56,11 @@ public class StructureWriter {
 
     public interface XYZCoverageStep {
 
-        OutputStep substructure(LeafSubstructure<?> leafSubstructure);
+        OutputStep substructure(LeafSubstructure leafSubstructure);
 
         OutputStep substructure(LeafSubstructureContainer container);
 
-        OutputStep substructures(Collection<LeafSubstructure<?>> leafSubstructures);
+        OutputStep substructures(Collection<LeafSubstructure> leafSubstructures);
 
         OutputStep structure(Structure structure);
 
@@ -109,7 +109,7 @@ public class StructureWriter {
     static class PDBRepresentationBuilder implements PDBCoverageStep, PDBSubstructureStep, OptionsStep, OutputStep {
 
         private Structure structure;
-        private List<LeafSubstructure<?>> leafSubstructures;
+        private List<LeafSubstructure> leafSubstructures;
         private String title = "";
         private String pdbIdentifier = "";
         private List<LinkEntry> linkEntries;
@@ -122,7 +122,7 @@ public class StructureWriter {
         }
 
         @Override
-        public PDBSubstructureStep substructure(LeafSubstructure<?> leafSubstructure) {
+        public PDBSubstructureStep substructure(LeafSubstructure leafSubstructure) {
             return substructures(Collections.singletonList(leafSubstructure));
         }
 
@@ -132,7 +132,7 @@ public class StructureWriter {
         }
 
         @Override
-        public PDBSubstructureStep substructures(Collection<LeafSubstructure<?>> leafSubstructures) {
+        public PDBSubstructureStep substructures(Collection<LeafSubstructure> leafSubstructures) {
             this.leafSubstructures = new ArrayList<>(leafSubstructures);
             return this;
         }
@@ -195,7 +195,7 @@ public class StructureWriter {
         private void prepareInformationToWrite() {
             if (leafSubstructures != null) {
                 if (pdbIdentifier.isEmpty()) {
-                    LeafSubstructure<?> leafSubstructure = leafSubstructures.iterator().next();
+                    LeafSubstructure leafSubstructure = leafSubstructures.iterator().next();
                     pdbIdentifier = leafSubstructure.getIdentifier().getStructureIdentifier();
                 }
                 structure = Structures.toStructure(leafSubstructures, pdbIdentifier, title);
@@ -238,11 +238,11 @@ public class StructureWriter {
 
         private static final DecimalFormat coordinateFormat = new DecimalFormat("0.00000", new DecimalFormatSymbols(Locale.US));
 
-        private Collection<LeafSubstructure<?>> leafSubstructures;
+        private Collection<LeafSubstructure> leafSubstructures;
         private Path destination;
 
         @Override
-        public OutputStep substructure(LeafSubstructure<?> leafSubstructure) {
+        public OutputStep substructure(LeafSubstructure leafSubstructure) {
             return substructures(Collections.singletonList(leafSubstructure));
         }
 
@@ -252,7 +252,7 @@ public class StructureWriter {
         }
 
         @Override
-        public OutputStep substructures(Collection<LeafSubstructure<?>> leafSubstructures) {
+        public OutputStep substructures(Collection<LeafSubstructure> leafSubstructures) {
             this.leafSubstructures = leafSubstructures;
             return this;
         }
@@ -359,20 +359,20 @@ public class StructureWriter {
                 structureAdapterInterface.setModelInfo(i, allChains.size());
                 // handle all chains
                 for (Chain chain : allChains) {
-                    List<LeafSubstructure<?>> leafSubstructures = chain.getAllLeafSubstructures();
+                    List<LeafSubstructure> leafSubstructures = chain.getAllLeafSubstructures();
                     // TODO here we presumably need a mapping between "real" chain names and internal IDs as first argument
                     structureAdapterInterface.setChainInfo(chain.getChainIdentifier(), chain.getChainIdentifier(), leafSubstructures.size());
-                    for (LeafSubstructure<?> leafSubstructure : leafSubstructures) {
+                    for (LeafSubstructure leafSubstructure : leafSubstructures) {
                         List<Atom> atoms = leafSubstructure.getAllAtoms();
 
                         char insertionCode = leafSubstructure.getIdentifier().getInsertionCode();
-                        StructuralFamily<?> family = leafSubstructure.getFamily();
+                        StructuralFamily family = leafSubstructure.getFamily();
                         char oneLetterCode = family.getOneLetterCode().charAt(0);
                         // TODO correct vocabulary has to be found for polymerType
                         // TODO sequenceIndex corresponds to SEQRES number which we do not consider for the moment
                         // TODO secStrucType is an integer and follows the DSSP numenclature, BioJava: DsspType
                         structureAdapterInterface.setGroupInfo(
-                                leafSubstructure.getThreeLetterCode().toUpperCase(),
+                                leafSubstructure.getThreeLetterCode(),
                                 leafSubstructure.getSerial(),
                                 insertionCode,
                                 "L-peptide linking",

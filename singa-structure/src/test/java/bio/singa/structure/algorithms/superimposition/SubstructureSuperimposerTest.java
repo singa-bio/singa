@@ -66,7 +66,7 @@ class SubstructureSuperimposerTest {
     void shouldCalculateCaSubstructureSuperimposition() {
         SubstructureSuperimposition superimposition = SubstructureSuperimposer
                 .calculateSubstructureSuperimposition(reference, candidate, StructuralEntityFilter.AtomFilter.isAlphaCarbon());
-        List<LeafSubstructure<?>> reconstructedAndMappedCandidate =
+        List<LeafSubstructure> reconstructedAndMappedCandidate =
                 superimposition.applyTo(candidate.getAllLeafSubstructures());
         assertEquals(superimposition.getMappedCandidate().stream()
                 .mapToLong(subStructure -> subStructure.getAllAtoms().size())
@@ -78,7 +78,7 @@ class SubstructureSuperimposerTest {
     void shouldCalculateBackboneSubstructureSuperimposition() {
         SubstructureSuperimposition superimposition = SubstructureSuperimposer
                 .calculateSubstructureSuperimposition(reference, candidate, StructuralEntityFilter.AtomFilter.isBackbone());
-        List<LeafSubstructure<?>> reconstructedAndMappedCandidate =
+        List<LeafSubstructure> reconstructedAndMappedCandidate =
                 superimposition.applyTo(candidate.getAllLeafSubstructures());
         assertEquals(superimposition.getMappedCandidate().stream()
                 .mapToLong(subStructure -> subStructure.getAllAtoms().size())
@@ -90,7 +90,7 @@ class SubstructureSuperimposerTest {
     void shouldCalculateSideChainSubstructureSuperimposition() {
         SubstructureSuperimposition superimposition = SubstructureSuperimposer
                 .calculateSubstructureSuperimposition(reference, candidate, StructuralEntityFilter.AtomFilter.isSideChain());
-        List<LeafSubstructure<?>> reconstructedAndMappedCandidate =
+        List<LeafSubstructure> reconstructedAndMappedCandidate =
                 superimposition.applyTo(candidate.getAllLeafSubstructures());
         assertEquals(12, superimposition.getMappedCandidate().stream()
                 .mapToLong(subStructure -> subStructure.getAllAtoms().size())
@@ -127,7 +127,7 @@ class SubstructureSuperimposerTest {
         SubstructureSuperimposition superimposition = SubstructureSuperimposer
                 .calculateIdealSubstructureSuperimposition(reference, candidate);
         assertEquals(0.6439715367058053, superimposition.getRmsd(), 1E-9);
-        List<LeafSubstructure<?>> mappedCandidate = superimposition.applyTo(candidate.getAllLeafSubstructures());
+        List<LeafSubstructure> mappedCandidate = superimposition.applyTo(candidate.getAllLeafSubstructures());
 
         List<AminoAcid> aminoAcids = candidate.getAllAminoAcids();
         for (int i = 0; i < aminoAcids.size(); i++) {

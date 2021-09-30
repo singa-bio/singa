@@ -1,16 +1,16 @@
 package bio.singa.structure.model.oak;
 
-import bio.singa.structure.model.families.LigandFamily;
+import bio.singa.structure.model.families.StructuralFamily;
 import bio.singa.structure.model.interfaces.Ligand;
 
 /**
  * @author cl
  */
-public class OakLigand extends OakLeafSubstructure<LigandFamily> implements Ligand {
+public class OakLigand extends OakLeafSubstructure implements Ligand {
 
     private String name;
 
-    public OakLigand(PdbLeafIdentifier leafIdentifier, LigandFamily family) {
+    public OakLigand(PdbLeafIdentifier leafIdentifier, StructuralFamily family) {
         super(leafIdentifier, family);
     }
 

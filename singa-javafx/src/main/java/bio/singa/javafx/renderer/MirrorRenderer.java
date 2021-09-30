@@ -8,6 +8,8 @@ import bio.singa.mathematics.vectors.Vector;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.mathematics.vectors.Vector3D;
 import bio.singa.structure.model.families.AminoAcidFamily;
+import bio.singa.structure.model.families.StructuralFamilies;
+import bio.singa.structure.model.families.StructuralFamily;
 import bio.singa.structure.model.interfaces.AminoAcid;
 import bio.singa.structure.model.interfaces.Atom;
 import bio.singa.structure.model.interfaces.Structure;
@@ -31,6 +33,7 @@ import java.util.Optional;
 import static bio.singa.mathematics.vectors.Vectors2D.getDirectionalAngle;
 import static bio.singa.mathematics.vectors.Vectors3D.calculateReflection;
 import static bio.singa.mathematics.vectors.Vectors3D.calculateRotation;
+import static bio.singa.structure.model.families.StructuralFamilies.AminoAcids.ALANINE;
 
 /**
  * @author cl
@@ -141,9 +144,9 @@ public class MirrorRenderer extends Application implements Renderer {
         for (AminoAcid aminoAcid : structure.getAllAminoAcids()) {
             OakAminoAcid nativeAminoAcid = (OakAminoAcid) aminoAcid;
 
-            AminoAcidFamily family = nativeAminoAcid.getFamily();
-            // family.equals(AminoAcidFamily.UNKNOWN) || family.equals(AminoAcidFamily.GLYCINE)
-            if (!family.equals(AminoAcidFamily.ALANINE)) {
+            StructuralFamily family = nativeAminoAcid.getFamily();
+            // family.equals(UNKNOWN) || family.equals(GLYCINE)
+            if (!family.equals(ALANINE)) {
                 continue;
             }
 
@@ -153,7 +156,7 @@ public class MirrorRenderer extends Application implements Renderer {
             nativeAtoms.forEach(atom -> atom.setPosition(calculateReflection(atom.getPosition(), mirror)));
             List<Atom> projectedMirror = newmanProjection(nativeAtoms, "CA", "C");
 
-            List<Atom> referenceAtoms = family.getPrototype().getAllAtoms();
+            List<Atom> referenceAtoms = StructuralFamilies.AminoAcids.getPrototype(family).getAllAtoms();
             List<Atom> projectedReference = newmanProjection(referenceAtoms, "CA", "C");
 
             Superimposition<Vector> nativeSuperimposition = alignPyramid(projectedReference, projectedNative, "CA", "C", "CB");

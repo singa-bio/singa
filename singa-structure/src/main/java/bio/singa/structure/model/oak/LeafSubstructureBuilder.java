@@ -1,8 +1,6 @@
 package bio.singa.structure.model.oak;
 
-import bio.singa.structure.model.families.AminoAcidFamily;
-import bio.singa.structure.model.families.LigandFamily;
-import bio.singa.structure.model.families.NucleotideFamily;
+import bio.singa.structure.model.families.StructuralFamilies;
 import bio.singa.structure.model.families.StructuralFamily;
 import bio.singa.structure.parser.pdb.ligands.LigandParserService;
 import bio.singa.structure.parser.pdb.structures.LocalCIFRepository;
@@ -75,7 +73,7 @@ public class LeafSubstructureBuilder {
 
     public interface BuildStep {
 
-        OakLeafSubstructure<?> build();
+        OakLeafSubstructure build();
 
     }
 
@@ -83,7 +81,7 @@ public class LeafSubstructureBuilder {
 
         private boolean isInConsecutivePart;
 
-        private StructuralFamily<?> family;
+        private StructuralFamily family;
         private boolean isModified;
         private String name;
 
@@ -131,7 +129,7 @@ public class LeafSubstructureBuilder {
         }
 
         private boolean tryAminoAcid(String threeLetterCode) {
-            Optional<AminoAcidFamily> aminoAcidFamilyOptional = AminoAcidFamily.getAminoAcidTypeByThreeLetterCode(threeLetterCode);
+            Optional<StructuralFamily> aminoAcidFamilyOptional = StructuralFamilies.AminoAcids.get(threeLetterCode);
             if (aminoAcidFamilyOptional.isPresent()) {
                 family = aminoAcidFamilyOptional.get();
                 return true;
@@ -140,7 +138,7 @@ public class LeafSubstructureBuilder {
         }
 
         private boolean tryNucleotide(String threeLetterCode) {
-            Optional<NucleotideFamily> nucleotideFamilyOptional = NucleotideFamily.getNucleotideByThreeLetterCode(threeLetterCode);
+            Optional<StructuralFamily> nucleotideFamilyOptional = StructuralFamilies.Nucleotides.get(threeLetterCode);
             if (nucleotideFamilyOptional.isPresent()) {
                 family = nucleotideFamilyOptional.get();
                 return true;
@@ -172,19 +170,17 @@ public class LeafSubstructureBuilder {
             if (leafSkeleton != null && isInConsecutivePart) {
                 // determine modifications
                 if (leafSkeleton.getAssignedFamily().equals(MODIFIED_AMINO_ACID)) {
-                    family = AminoAcidFamily.getAminoAcidTypeByThreeLetterCode(leafSkeleton.getParent())
-                            .orElse(AminoAcidFamily.UNKNOWN);
+                    family = StructuralFamilies.AminoAcids.getOrUnknown(leafSkeleton.getParent());
                     isModified = true;
                     return;
                 } else if (leafSkeleton.getAssignedFamily().equals(MODIFIED_NUCLEOTIDE)) {
-                    family = NucleotideFamily.getNucleotideByThreeLetterCode(leafSkeleton.getParent())
-                            .orElse(NucleotideFamily.UNKNOWN);
+                    family = StructuralFamilies.Nucleotides.getOrUnknown(leafSkeleton.getParent());
                     isModified = true;
                     return;
                 }
             }
             // use default
-            family = new LigandFamily("?", threeLetterCode);
+            family = new StructuralFamily("?", threeLetterCode);
         }
 
         @Override
@@ -265,12 +261,12 @@ public class LeafSubstructureBuilder {
         }
 
         @Override
-        public OakLeafSubstructure<?> build() {
+        public OakLeafSubstructure build() {
             // check whether atom names are distinct
             if (atomMap != null) {
                 // atom names are unique
-                if (family instanceof AminoAcidFamily) {
-                    OakAminoAcid aminoAcid = new OakAminoAcid(identifier, (AminoAcidFamily) family);
+                if (StructuralFamilies.AminoAcids.isAminoAcid(family)) {
+                    OakAminoAcid aminoAcid = new OakAminoAcid(identifier, family);
                     atomSet.forEach(aminoAcid::addAtom);
                     if (!isModified) {
                         LeafSubstructureFactory.connectAminoAcid(aminoAcid, atomMap);
@@ -281,8 +277,8 @@ public class LeafSubstructureBuilder {
                         }
                     }
                     return aminoAcid;
-                } else if (family instanceof NucleotideFamily) {
-                    OakNucleotide nucleotide = new OakNucleotide(identifier, (NucleotideFamily) family);
+                } else if (StructuralFamilies.Nucleotides.isNucleotide(family)) {
+                    OakNucleotide nucleotide = new OakNucleotide(identifier, family);
                     atomSet.forEach(nucleotide::addAtom);
                     if (!isModified) {
                         LeafSubstructureFactory.connectNucleotide(nucleotide, atomMap);
@@ -294,7 +290,7 @@ public class LeafSubstructureBuilder {
                     }
                     return nucleotide;
                 } else {
-                    OakLigand ligand = new OakLigand(identifier, (LigandFamily) family);
+                    OakLigand ligand = new OakLigand(identifier, family);
                     atomSet.forEach(ligand::addAtom);
                     if (leafSkeleton != null) {
                         if (leafSkeleton.hasBonds()) {
@@ -307,16 +303,16 @@ public class LeafSubstructureBuilder {
             } else {
                 // at least one duplicated atom name
                 // connections need to be assigned via CONECT records
-                if (family instanceof AminoAcidFamily) {
-                    OakAminoAcid aminoAcid = new OakAminoAcid(identifier, (AminoAcidFamily) family);
+                if (StructuralFamilies.AminoAcids.isAminoAcid(family)) {
+                    OakAminoAcid aminoAcid = new OakAminoAcid(identifier, family);
                     atomSet.forEach(aminoAcid::addAtom);
                     return aminoAcid;
-                } else if (family instanceof NucleotideFamily) {
-                    OakNucleotide nucleotide = new OakNucleotide(identifier, (NucleotideFamily) family);
+                } else if (StructuralFamilies.Nucleotides.isNucleotide(family)) {
+                    OakNucleotide nucleotide = new OakNucleotide(identifier, family);
                     atomSet.forEach(nucleotide::addAtom);
                     return nucleotide;
                 } else {
-                    OakLigand ligand = new OakLigand(identifier, (LigandFamily) family);
+                    OakLigand ligand = new OakLigand(identifier, family);
                     atomSet.forEach(ligand::addAtom);
                     if (leafSkeleton != null) {
                         ligand.setName(leafSkeleton.getName());

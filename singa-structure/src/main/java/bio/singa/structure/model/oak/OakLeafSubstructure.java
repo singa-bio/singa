@@ -10,7 +10,7 @@ import java.util.*;
 /**
  * @author cl
  */
-public abstract class OakLeafSubstructure<FamilyType extends StructuralFamily<FamilyType>> implements LeafSubstructure<FamilyType> {
+public abstract class OakLeafSubstructure implements LeafSubstructure {
 
     /**
      * The unique leaf identifer;
@@ -20,7 +20,7 @@ public abstract class OakLeafSubstructure<FamilyType extends StructuralFamily<Fa
     /**
      * The structural family of this entity
      */
-    private final FamilyType family;
+    private final StructuralFamily family;
 
     private String divergingThreeLetterCode;
 
@@ -37,7 +37,7 @@ public abstract class OakLeafSubstructure<FamilyType extends StructuralFamily<Fa
     /**
      * The families to which the {@link LeafSubstructure} can be exchanged.
      */
-    private final Set<FamilyType> exchangeableFamilies;
+    private final Set<StructuralFamily> exchangeableFamilies;
 
     /**
      * A iterating variable to add a new edge.
@@ -49,7 +49,7 @@ public abstract class OakLeafSubstructure<FamilyType extends StructuralFamily<Fa
      */
     private boolean annotatedAsHetAtom;
 
-    public OakLeafSubstructure(PdbLeafIdentifier leafIdentifier, FamilyType family) {
+    public OakLeafSubstructure(PdbLeafIdentifier leafIdentifier, StructuralFamily family) {
         this.leafIdentifier = leafIdentifier;
         divergingThreeLetterCode = "";
         this.family = family;
@@ -58,7 +58,7 @@ public abstract class OakLeafSubstructure<FamilyType extends StructuralFamily<Fa
         exchangeableFamilies = new HashSet<>();
     }
 
-    public OakLeafSubstructure(PdbLeafIdentifier identifer, FamilyType aminoAcidFamily, String threeLetterCode) {
+    public OakLeafSubstructure(PdbLeafIdentifier identifer, StructuralFamily aminoAcidFamily, String threeLetterCode) {
         leafIdentifier = identifer;
         family = aminoAcidFamily;
         divergingThreeLetterCode = threeLetterCode;
@@ -76,11 +76,11 @@ public abstract class OakLeafSubstructure<FamilyType extends StructuralFamily<Fa
      *
      * @param leafSubstructure The leaf to copy.
      */
-    public OakLeafSubstructure(OakLeafSubstructure<FamilyType> leafSubstructure) {
+    public OakLeafSubstructure(OakLeafSubstructure leafSubstructure) {
         this(leafSubstructure, leafSubstructure.leafIdentifier);
     }
 
-    public OakLeafSubstructure(OakLeafSubstructure<FamilyType> leafSubstructure, PdbLeafIdentifier leafIdentifier) {
+    public OakLeafSubstructure(OakLeafSubstructure leafSubstructure, PdbLeafIdentifier leafIdentifier) {
         // initialize variables
         this(leafIdentifier, leafSubstructure.family, leafSubstructure.divergingThreeLetterCode);
         // copy and add all atoms
@@ -141,7 +141,7 @@ public abstract class OakLeafSubstructure<FamilyType extends StructuralFamily<Fa
     }
 
     @Override
-    public FamilyType getFamily() {
+    public StructuralFamily getFamily() {
         return family;
     }
 
@@ -223,12 +223,12 @@ public abstract class OakLeafSubstructure<FamilyType extends StructuralFamily<Fa
     }
 
     @Override
-    public Set<FamilyType> getExchangeableFamilies() {
+    public Set<StructuralFamily> getExchangeableFamilies() {
         return exchangeableFamilies;
     }
 
     @Override
-    public void addExchangeableFamily(FamilyType exchangeableType) {
+    public void addExchangeableFamily(StructuralFamily exchangeableType) {
         exchangeableFamilies.add(exchangeableType);
     }
 
@@ -237,7 +237,7 @@ public abstract class OakLeafSubstructure<FamilyType extends StructuralFamily<Fa
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        OakLeafSubstructure<?> that = (OakLeafSubstructure<?>) o;
+        OakLeafSubstructure that = (OakLeafSubstructure) o;
 
         if (leafIdentifier != null ? !leafIdentifier.equals(that.leafIdentifier) : that.leafIdentifier != null)
             return false;

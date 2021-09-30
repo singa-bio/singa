@@ -18,7 +18,7 @@ public interface LeafSubstructureContainer extends AtomContainer {
      *
      * @return All {@link LeafSubstructure}s.
      */
-    List<LeafSubstructure<?>> getAllLeafSubstructures();
+    List<LeafSubstructure> getAllLeafSubstructures();
 
     /**
      * Returns an {@link Optional} of the {@link LeafSubstructure} with the given identifier. If no LeafSubstructure
@@ -27,9 +27,9 @@ public interface LeafSubstructureContainer extends AtomContainer {
      * @param leafIdentifier The identifier of the leaf.
      * @return An {@link Optional} encapsulating the {@link LeafSubstructure}.
      */
-    Optional<LeafSubstructure<?>> getLeafSubstructure(LeafIdentifier leafIdentifier);
+    Optional<LeafSubstructure> getLeafSubstructure(LeafIdentifier leafIdentifier);
 
-    LeafSubstructure<?> getFirstLeafSubstructure();
+    LeafSubstructure getFirstLeafSubstructure();
 
     /**
      * Removes a {@link LeafSubstructure} from this container.
@@ -56,7 +56,7 @@ public interface LeafSubstructureContainer extends AtomContainer {
                 .map(LeafSubstructure::getContainingFamilies)
                 .flatMap(Collection::stream)
                 .collect(Collectors.toSet());
-        List<LeafSubstructure<?>> toBeRemoved = getAllLeafSubstructures().stream()
+        List<LeafSubstructure> toBeRemoved = getAllLeafSubstructures().stream()
                 .filter(leafSubstructure -> !containingTypes.contains(leafSubstructure.getFamily()))
                 .collect(Collectors.toList());
         toBeRemoved.forEach(this::removeLeafSubstructure);
@@ -89,7 +89,7 @@ public interface LeafSubstructureContainer extends AtomContainer {
      * @return An {@link Optional} encapsulating the {@link AminoAcid}.
      */
     default Optional<AminoAcid> getAminoAcid(LeafIdentifier leafIdentifier) {
-        Optional<LeafSubstructure<?>> leafSubstructureOptional = getLeafSubstructure(leafIdentifier);
+        Optional<LeafSubstructure> leafSubstructureOptional = getLeafSubstructure(leafIdentifier);
         if (!leafSubstructureOptional.isPresent()) {
             return Optional.empty();
         }
@@ -123,7 +123,7 @@ public interface LeafSubstructureContainer extends AtomContainer {
      * @return An {@link Optional} encapsulating the {@link Nucleotide}.
      */
     default Optional<Nucleotide> getNucleotide(LeafIdentifier leafIdentifier) {
-        Optional<LeafSubstructure<?>> leafSubstructureOptional = getLeafSubstructure(leafIdentifier);
+        Optional<LeafSubstructure> leafSubstructureOptional = getLeafSubstructure(leafIdentifier);
         if (!leafSubstructureOptional.isPresent()) {
             return Optional.empty();
         }
@@ -157,7 +157,7 @@ public interface LeafSubstructureContainer extends AtomContainer {
      * @return An {@link Optional} encapsulating the {@link Ligand}.
      */
     default Optional<Ligand> getLigand(LeafIdentifier leafIdentifier) {
-        Optional<LeafSubstructure<?>> leafSubstructureOptional = getLeafSubstructure(leafIdentifier);
+        Optional<LeafSubstructure> leafSubstructureOptional = getLeafSubstructure(leafIdentifier);
         if (!leafSubstructureOptional.isPresent()) {
             return Optional.empty();
         }
@@ -175,7 +175,7 @@ public interface LeafSubstructureContainer extends AtomContainer {
      */
     default List<Atom> getAllAtoms() {
         List<Atom> atoms = new ArrayList<>();
-        final List<LeafSubstructure<?>> allLeafSubstructures = getAllLeafSubstructures();
+        final List<LeafSubstructure> allLeafSubstructures = getAllLeafSubstructures();
         for (LeafSubstructure leafSubstructure : allLeafSubstructures) {
             atoms.addAll(leafSubstructure.getAllAtoms());
         }

@@ -25,9 +25,9 @@ public class PlipShellGenerator {
     private final LeafSubstructure reference;
     private final InteractionContainer interChainInteractions;
     private final InteractionContainer referenceInteractions;
-    private final Map<InteractionShell, List<LeafSubstructure<?>>> shells;
+    private final Map<InteractionShell, List<LeafSubstructure>> shells;
 
-    private final GenericGraph<LeafSubstructure<?>> graph;
+    private final GenericGraph<LeafSubstructure> graph;
 
     private PlipShellGenerator(Chain chain, LeafSubstructure reference, InteractionContainer interChainInteractions,
                                InteractionContainer referenceInteractions) {
@@ -41,21 +41,21 @@ public class PlipShellGenerator {
         computeShells();
     }
 
-    public static PlipShellGenerator getInteractionShellsForLigand(Chain chain, LeafSubstructure<?> reference,
+    public static PlipShellGenerator getInteractionShellsForLigand(Chain chain, LeafSubstructure reference,
                                                                    InteractionContainer interChainInteractions,
                                                                    InteractionContainer referenceInteractions) {
         return new PlipShellGenerator(chain, reference, interChainInteractions, referenceInteractions);
     }
 
     private void computeShells() {
-        GenericNode<LeafSubstructure<?>> referenceNode = graph.getNodeWithContent(reference)
+        GenericNode<LeafSubstructure> referenceNode = graph.getNodeWithContent(reference)
                 .orElseThrow(() -> new IllegalArgumentException("No such reference node in interaction graph."));
         for (InteractionShell interactionShell : InteractionShell.values()) {
             shells.put(interactionShell, interactionShell.from(graph, referenceNode));
         }
     }
 
-    public Map<InteractionShell, List<LeafSubstructure<?>>> getShells() {
+    public Map<InteractionShell, List<LeafSubstructure>> getShells() {
         return shells;
     }
 
@@ -78,15 +78,15 @@ public class PlipShellGenerator {
         }
         // generate interaction graph from inter chain interactions
         for (Interaction interaction : interChainInteractions.getAllInteractions()) {
-            Optional<LeafSubstructure<?>> source = chain.getLeafSubstructure(interaction.getSource());
-            Optional<LeafSubstructure<?>> target = chain.getLeafSubstructure(interaction.getTarget());
+            Optional<LeafSubstructure> source = chain.getLeafSubstructure(interaction.getSource());
+            Optional<LeafSubstructure> target = chain.getLeafSubstructure(interaction.getTarget());
             if (source.isPresent() && target.isPresent()) {
                 graph.addEdgeBetween(source.get(), target.get());
             }
         }
     }
 
-    public GenericGraph<LeafSubstructure<?>> getGraph() {
+    public GenericGraph<LeafSubstructure> getGraph() {
         return graph;
     }
 
@@ -94,8 +94,8 @@ public class PlipShellGenerator {
 
         FIRST, SECOND, THIRD;
 
-        public List<LeafSubstructure<?>> from(GenericGraph<LeafSubstructure<?>> graph,
-                                              GenericNode<LeafSubstructure<?>> referenceNode) {
+        public List<LeafSubstructure> from(GenericGraph<LeafSubstructure> graph,
+                                              GenericNode<LeafSubstructure> referenceNode) {
             return NeighbourhoodExtractor.extractShell(graph, referenceNode, ordinal() + 1).stream()
                     .map(GenericNode::getContent)
                     .collect(Collectors.toList());

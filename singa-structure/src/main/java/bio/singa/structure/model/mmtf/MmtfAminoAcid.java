@@ -1,7 +1,7 @@
 package bio.singa.structure.model.mmtf;
 
 import bio.singa.mathematics.vectors.Vector3D;
-import bio.singa.structure.model.families.AminoAcidFamily;
+import bio.singa.structure.model.families.StructuralFamily;
 import bio.singa.structure.model.interfaces.AminoAcid;
 import bio.singa.structure.model.interfaces.Atom;
 import bio.singa.structure.model.oak.AtomName;
@@ -16,7 +16,7 @@ import java.util.Optional;
  *
  * @author cl
  */
-public class MmtfAminoAcid extends MmtfLeafSubstructure<AminoAcidFamily> implements AminoAcid {
+public class MmtfAminoAcid extends MmtfLeafSubstructure implements AminoAcid {
 
     /**
      * The DSSP-annotated secondary structure
@@ -27,13 +27,13 @@ public class MmtfAminoAcid extends MmtfLeafSubstructure<AminoAcidFamily> impleme
      * Creates a new {@link MmtfAminoAcid}.
      *
      * @param data The original data.
-     * @param family The leaf family (e.g. {@link AminoAcidFamily#ALANINE}).
+     * @param family The leaf family.
      * @param leafIdentifier The leaf identifier.
      * @param internalGroupIndex The index of this leaf in the data array.
      * @param atomStartIndex The index of the first atom that belong to this leaf.
      * @param atomEndIndex The index of the last atom that belong to this leaf.
      */
-    MmtfAminoAcid(StructureDataInterface data, byte[] bytes, AminoAcidFamily family, MmtfSecondaryStructure secondaryStructure, PdbLeafIdentifier leafIdentifier, int internalGroupIndex, int atomStartIndex, int atomEndIndex) {
+    MmtfAminoAcid(StructureDataInterface data, byte[] bytes, StructuralFamily family, MmtfSecondaryStructure secondaryStructure, PdbLeafIdentifier leafIdentifier, int internalGroupIndex, int atomStartIndex, int atomEndIndex) {
         super(data, bytes, family, leafIdentifier, internalGroupIndex, atomStartIndex, atomEndIndex);
         this.secondaryStructure = secondaryStructure;
     }

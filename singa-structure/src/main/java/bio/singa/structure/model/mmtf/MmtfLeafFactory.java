@@ -1,8 +1,7 @@
 package bio.singa.structure.model.mmtf;
 
-import bio.singa.structure.model.families.AminoAcidFamily;
-import bio.singa.structure.model.families.LigandFamily;
-import bio.singa.structure.model.families.NucleotideFamily;
+import bio.singa.structure.model.families.StructuralFamilies;
+import bio.singa.structure.model.families.StructuralFamily;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.oak.PdbLeafIdentifier;
 import org.rcsb.mmtf.api.StructureDataInterface;
@@ -20,7 +19,7 @@ class MmtfLeafFactory {
     /**
      * A cache containing the already seen ligand families.
      */
-    private static final HashMap<String, LigandFamily> ligandFamilyCache = new HashMap<>();
+    private static final HashMap<String, StructuralFamily> ligandFamilyCache = new HashMap<>();
 
     /**
      * Prevent external instantiation.
@@ -39,9 +38,9 @@ class MmtfLeafFactory {
      * @param atomEndIndex The index of the last atom that belong to this leaf.
      * @return A instance of {@link LeafSubstructure}.
      */
-    static MmtfLeafSubstructure<?> createLeaf(StructureDataInterface data, byte[] bytes, PdbLeafIdentifier leafIdentifier, int internalGroupIndex, int atomStartIndex, int atomEndIndex) {
+    static MmtfLeafSubstructure createLeaf(StructureDataInterface data, byte[] bytes, PdbLeafIdentifier leafIdentifier, int internalGroupIndex, int atomStartIndex, int atomEndIndex) {
         final String threeLetterCode = data.getGroupName(data.getGroupTypeIndices()[internalGroupIndex]);
-        Optional<AminoAcidFamily> aminoAcidFamily = AminoAcidFamily.getAminoAcidTypeByThreeLetterCode(threeLetterCode);
+        Optional<StructuralFamily> aminoAcidFamily = StructuralFamilies.AminoAcids.get(threeLetterCode);
         if (aminoAcidFamily.isPresent()) {
             int[] secondaryStructureCodes = data.getSecStructList();
             MmtfSecondaryStructure secondaryStructure;
@@ -52,19 +51,19 @@ class MmtfLeafFactory {
             }
             return new MmtfAminoAcid(data, bytes, aminoAcidFamily.get(), secondaryStructure, leafIdentifier, internalGroupIndex, atomStartIndex, atomEndIndex);
         }
-        Optional<NucleotideFamily> nucleotideFamily = NucleotideFamily.getNucleotideByThreeLetterCode(threeLetterCode);
+        Optional<StructuralFamily> nucleotideFamily = StructuralFamilies.Nucleotides.get(threeLetterCode);
         if (nucleotideFamily.isPresent()) {
             return new MmtfNucleotide(data, bytes, nucleotideFamily.get(), leafIdentifier, internalGroupIndex, atomStartIndex, atomEndIndex);
         }
-        LigandFamily ligandFamily = getLigandFamily(threeLetterCode);
+        StructuralFamily ligandFamily = getLigandFamily(threeLetterCode);
         return new MmtfLigand(data, bytes, ligandFamily, leafIdentifier, internalGroupIndex, atomStartIndex, atomEndIndex);
     }
 
-    private static LigandFamily getLigandFamily(String threeLetterCode) {
+    private static StructuralFamily getLigandFamily(String threeLetterCode) {
         if (ligandFamilyCache.containsKey(threeLetterCode)) {
             return ligandFamilyCache.get(threeLetterCode);
         }
-        LigandFamily ligandFamily = new LigandFamily(threeLetterCode);
+        StructuralFamily ligandFamily = new StructuralFamily("?", threeLetterCode);
         ligandFamilyCache.put(threeLetterCode, ligandFamily);
         return ligandFamily;
     }

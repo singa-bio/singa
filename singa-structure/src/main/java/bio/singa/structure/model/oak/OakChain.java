@@ -14,7 +14,7 @@ public class OakChain implements Chain {
 
     private final String identifier;
 
-    private final TreeMap<PdbLeafIdentifier, OakLeafSubstructure<?>> leafSubstructures;
+    private final TreeMap<PdbLeafIdentifier, OakLeafSubstructure> leafSubstructures;
 
     private final Set<PdbLeafIdentifier> consecutiveIdentifiers;
 
@@ -27,7 +27,7 @@ public class OakChain implements Chain {
     public OakChain(OakChain chain) {
         identifier = chain.identifier;
         leafSubstructures = new TreeMap<>();
-        for (OakLeafSubstructure<?> leafSubstructure : chain.leafSubstructures.values()) {
+        for (OakLeafSubstructure leafSubstructure : chain.leafSubstructures.values()) {
             leafSubstructures.put(leafSubstructure.getIdentifier(), leafSubstructure.getCopy());
         }
         consecutiveIdentifiers = new HashSet<>(chain.consecutiveIdentifiers);
@@ -39,12 +39,12 @@ public class OakChain implements Chain {
     }
 
     @Override
-    public List<LeafSubstructure<?>> getAllLeafSubstructures() {
+    public List<LeafSubstructure> getAllLeafSubstructures() {
         return new ArrayList<>(leafSubstructures.values());
     }
 
     @Override
-    public Optional<LeafSubstructure<?>> getLeafSubstructure(LeafIdentifier leafIdentifier) {
+    public Optional<LeafSubstructure> getLeafSubstructure(LeafIdentifier leafIdentifier) {
         if (leafSubstructures.containsKey(leafIdentifier)) {
             return Optional.of(leafSubstructures.get(leafIdentifier));
         }
@@ -53,7 +53,7 @@ public class OakChain implements Chain {
     }
 
     @Override
-    public LeafSubstructure<?> getFirstLeafSubstructure() {
+    public LeafSubstructure getFirstLeafSubstructure() {
         return leafSubstructures.values().iterator().next();
     }
 
@@ -88,7 +88,7 @@ public class OakChain implements Chain {
 
     @Override
     public Optional<Atom> getAtom(Integer atomIdentifier) {
-        for (LeafSubstructure<?> leafSubstructure : leafSubstructures.values()) {
+        for (LeafSubstructure leafSubstructure : leafSubstructures.values()) {
             final Optional<Atom> optionalAtom = leafSubstructure.getAtom(atomIdentifier);
             if (optionalAtom.isPresent()) {
                 return optionalAtom;
@@ -99,7 +99,7 @@ public class OakChain implements Chain {
 
     @Override
     public void removeAtom(Integer atomIdentifier) {
-        for (LeafSubstructure<?> leafSubstructure : leafSubstructures.values()) {
+        for (LeafSubstructure leafSubstructure : leafSubstructures.values()) {
             final Optional<Atom> optionalAtom = leafSubstructure.getAtom(atomIdentifier);
             if (optionalAtom.isPresent()) {
                 leafSubstructure.removeAtom(optionalAtom.get().getAtomIdentifier());
@@ -154,9 +154,9 @@ public class OakChain implements Chain {
         }
     }
 
-    public List<OakLeafSubstructure<?>> getConsecutivePart() {
-        List<OakLeafSubstructure<?>> consecutivePart = new ArrayList<>();
-        for (OakLeafSubstructure<?> leafSubstructure : leafSubstructures.values()) {
+    public List<OakLeafSubstructure> getConsecutivePart() {
+        List<OakLeafSubstructure> consecutivePart = new ArrayList<>();
+        for (OakLeafSubstructure leafSubstructure : leafSubstructures.values()) {
             if (consecutiveIdentifiers.contains(leafSubstructure.getIdentifier())) {
                 consecutivePart.add(leafSubstructure);
             }
@@ -164,9 +164,9 @@ public class OakChain implements Chain {
         return consecutivePart;
     }
 
-    public List<OakLeafSubstructure<?>> getNonConsecutivePart() {
-        List<OakLeafSubstructure<?>> consecutivePart = new ArrayList<>();
-        for (OakLeafSubstructure<?> leafSubstructure : leafSubstructures.values()) {
+    public List<OakLeafSubstructure> getNonConsecutivePart() {
+        List<OakLeafSubstructure> consecutivePart = new ArrayList<>();
+        for (OakLeafSubstructure leafSubstructure : leafSubstructures.values()) {
             if (!consecutiveIdentifiers.contains(leafSubstructure.getIdentifier())) {
                 consecutivePart.add(leafSubstructure);
             }

@@ -19,12 +19,12 @@ public class LigandParserService {
     private static final Logger logger = LoggerFactory.getLogger(LigandParserService.class);
     private static final String CIF_FETCH_URL = "https://files.rcsb.org/ligands/view/%s.cif";
 
-    public static LeafSubstructure<?> parseLeafSubstructureById(String ligandId) throws IOException {
+    public static LeafSubstructure parseLeafSubstructureById(String ligandId) throws IOException {
         logger.debug("parsing structure {}", ligandId);
         return parseLeafSubstructure(new URL(String.format(CIF_FETCH_URL, ligandId)).openStream());
     }
 
-    public static LeafSubstructure<?> parseLeafSubstructure(InputStream inputStream) throws IOException {
+    public static LeafSubstructure parseLeafSubstructure(InputStream inputStream) throws IOException {
         try (InputStreamReader inputStreamReader = new InputStreamReader(inputStream)) {
             try (BufferedReader bufferedReader = new BufferedReader(inputStreamReader)) {
                 return CifFileParser.parseLeafSubstructure(bufferedReader.lines().collect(Collectors.toList()));

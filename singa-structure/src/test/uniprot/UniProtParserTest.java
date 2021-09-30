@@ -113,8 +113,8 @@ class UniProtParserTest {
         expected.setDescription("DOI: 10.1038/ng1285");
         assertEquals(expected, sequenceVariant.getEvidences().iterator().next());
         assertEquals(26, sequenceVariant.getLocation());
-        assertEquals(AminoAcidFamily.GLYCINE, sequenceVariant.getOriginal());
-        assertEquals(AminoAcidFamily.SERINE, sequenceVariant.getVariation());
+        assertEquals(GLYCINE, sequenceVariant.getOriginal());
+        assertEquals(SERINE, sequenceVariant.getVariation());
     }
 
     @Test

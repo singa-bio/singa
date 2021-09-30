@@ -34,7 +34,7 @@ public class Structures {
      * @param leafSubstructureContainer A {@link LeafSubstructureContainer}.
      * @return The distance matrix.
      */
-    public static LabeledSymmetricMatrix<LeafSubstructure<?>> calculateDistanceMatrix(LeafSubstructureContainer leafSubstructureContainer) {
+    public static LabeledSymmetricMatrix<LeafSubstructure> calculateDistanceMatrix(LeafSubstructureContainer leafSubstructureContainer) {
         return VectorMetricProvider.EUCLIDEAN_METRIC.calculateDistancesPairwise(leafSubstructureContainer.getAllLeafSubstructures(), LeafSubstructure::getPosition);
     }
 
@@ -44,7 +44,7 @@ public class Structures {
      * @param leafSubstructureContainer A {@link LeafSubstructureContainer}.
      * @return The squared distance matrix.
      */
-    public static LabeledSymmetricMatrix<LeafSubstructure<?>> calculateSquaredDistanceMatrix(LeafSubstructureContainer leafSubstructureContainer) {
+    public static LabeledSymmetricMatrix<LeafSubstructure> calculateSquaredDistanceMatrix(LeafSubstructureContainer leafSubstructureContainer) {
         return VectorMetricProvider.SQUARED_EUCLIDEAN_METRIC.calculateDistancesPairwise(leafSubstructureContainer.getAllLeafSubstructures(), LeafSubstructure::getPosition);
     }
 
@@ -65,7 +65,7 @@ public class Structures {
      * @return The maximal squared extent.
      */
     public static double calculateSquaredExtent(LeafSubstructureContainer leafSubstructureContainer) {
-        LabeledSymmetricMatrix<LeafSubstructure<?>> queryDistanceMatrix = calculateSquaredDistanceMatrix(leafSubstructureContainer);
+        LabeledSymmetricMatrix<LeafSubstructure> queryDistanceMatrix = calculateSquaredDistanceMatrix(leafSubstructureContainer);
         // position of maximal element is always symmetric, hence we consider the first
         Pair<Integer> positionOfMaximalElement = Matrices.getPositionsOfMaximalElement(queryDistanceMatrix).stream()
                 .findFirst()
@@ -147,11 +147,11 @@ public class Structures {
         return Vectors3D.dihedralAngle(a.getPosition(), b.getPosition(), c.getPosition(), d.getPosition());
     }
 
-    public static OakStructure toStructure(Collection<LeafSubstructure<?>> leafSubstructures, String pdbIdentifier, String title) {
+    public static OakStructure toStructure(Collection<LeafSubstructure> leafSubstructures, String pdbIdentifier, String title) {
         OakStructure renumberedStructure = new OakStructure();
         renumberedStructure.setPdbIdentifier(pdbIdentifier);
         renumberedStructure.setTitle(title);
-        List<LeafSubstructure<?>> sortedOriginal = leafSubstructures.stream()
+        List<LeafSubstructure> sortedOriginal = leafSubstructures.stream()
                 .sorted(Comparator.comparing(LeafSubstructure::getIdentifier))
                 .collect(Collectors.toList());
         // collect distinct models
@@ -162,7 +162,7 @@ public class Structures {
         for (Integer modelIdentifier : modelIdentifiers) {
             OakModel newModel = new OakModel(modelIdentifier);
             renumberedStructure.addModel(newModel);
-            for (LeafSubstructure<?> leafSubstructure : sortedOriginal) {
+            for (LeafSubstructure leafSubstructure : sortedOriginal) {
                 String chainIdentifier = leafSubstructure.getIdentifier().getChainIdentifier();
                 // get chain
                 Optional<Chain> optionalChain = newModel.getChain(chainIdentifier);
@@ -174,7 +174,7 @@ public class Structures {
                     newChain = ((OakChain) optionalChain.get());
                 }
                 // consecutive parts
-                OakLeafSubstructure<?> newLeafSubstructure = leafSubstructure.getCopy();
+                OakLeafSubstructure newLeafSubstructure = leafSubstructure.getCopy();
                 newLeafSubstructure.setAnnotatedAsHetAtom(leafSubstructure.isAnnotatedAsHeteroAtom());
                 newChain.addLeafSubstructure(newLeafSubstructure);
             }

@@ -16,7 +16,7 @@ import java.util.Optional;
 public class AlphaCarbonRepresentationScheme extends AbstractRepresentationScheme {
 
     @Override
-    public Atom determineRepresentingAtom(LeafSubstructure<?> leafSubstructure) {
+    public Atom determineRepresentingAtom(LeafSubstructure leafSubstructure) {
         // immediately return atom if part of structure
         final Optional<Atom> optionalCA = leafSubstructure.getAtomByName("CA");
         if (optionalCA.isPresent()) {

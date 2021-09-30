@@ -1,21 +1,21 @@
 package bio.singa.structure.model.oak;
 
-import bio.singa.structure.model.families.NucleotideFamily;
+import bio.singa.structure.model.families.StructuralFamily;
 import bio.singa.structure.model.interfaces.Nucleotide;
 
 /**
  * @author cl
  */
-public class OakNucleotide extends OakLeafSubstructure<NucleotideFamily> implements Nucleotide {
+public class OakNucleotide extends OakLeafSubstructure implements Nucleotide {
 
     private boolean mutation;
-    private NucleotideFamily wildTypeNucleotide;
+    private StructuralFamily wildTypeNucleotide;
 
-    public OakNucleotide(PdbLeafIdentifier leafIdentifier, NucleotideFamily family) {
+    public OakNucleotide(PdbLeafIdentifier leafIdentifier, StructuralFamily family) {
         super(leafIdentifier, family);
     }
 
-    public OakNucleotide(PdbLeafIdentifier identifer, NucleotideFamily nucleotideFamily, String threeLetterCode) {
+    public OakNucleotide(PdbLeafIdentifier identifer, StructuralFamily nucleotideFamily, String threeLetterCode) {
         super(identifer, nucleotideFamily, threeLetterCode);
     }
 
@@ -38,11 +38,11 @@ public class OakNucleotide extends OakLeafSubstructure<NucleotideFamily> impleme
         this.mutation = mutation;
     }
 
-    public NucleotideFamily getWildTypeNucleotide() {
+    public StructuralFamily getWildTypeNucleotide() {
         return wildTypeNucleotide;
     }
 
-    public void setWildTypeNucleotide(NucleotideFamily wildTypeNucleotide) {
+    public void setWildTypeNucleotide(StructuralFamily wildTypeNucleotide) {
         this.wildTypeNucleotide = wildTypeNucleotide;
     }
 

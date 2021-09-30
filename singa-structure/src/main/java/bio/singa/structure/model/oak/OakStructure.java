@@ -2,7 +2,7 @@ package bio.singa.structure.model.oak;
 
 import bio.singa.chemistry.model.elements.ElementProvider;
 import bio.singa.mathematics.vectors.Vector3D;
-import bio.singa.structure.model.families.LigandFamily;
+import bio.singa.structure.model.families.StructuralFamily;
 import bio.singa.structure.model.interfaces.*;
 
 import java.util.*;
@@ -129,8 +129,8 @@ public class OakStructure implements Structure {
     }
 
     @Override
-    public List<LeafSubstructure<?>> getAllLeafSubstructures() {
-        List<LeafSubstructure<?>> allLeafSubstructures = new ArrayList<>();
+    public List<LeafSubstructure> getAllLeafSubstructures() {
+        List<LeafSubstructure> allLeafSubstructures = new ArrayList<>();
         for (OakModel model : models.values()) {
             allLeafSubstructures.addAll(model.getAllLeafSubstructures());
         }
@@ -138,13 +138,13 @@ public class OakStructure implements Structure {
     }
 
     @Override
-    public Optional<LeafSubstructure<?>> getLeafSubstructure(LeafIdentifier leafIdentifier) {
+    public Optional<LeafSubstructure> getLeafSubstructure(LeafIdentifier leafIdentifier) {
         final Optional<Chain> chainOptional = getChain(leafIdentifier.getModelIdentifier(), leafIdentifier.getChainIdentifier());
         return chainOptional.flatMap(chain -> chain.getLeafSubstructure(leafIdentifier));
     }
 
     @Override
-    public LeafSubstructure<?> getFirstLeafSubstructure() {
+    public LeafSubstructure getFirstLeafSubstructure() {
         return getFirstModel().getFirstChain().getFirstLeafSubstructure();
     }
 
@@ -191,7 +191,7 @@ public class OakStructure implements Structure {
     public Optional<Map.Entry<UniqueAtomIdentifier, Atom>> getAtomByCoordinate(Vector3D coordinate, double eps) {
         for (Model model : getAllModels()) {
             for (Chain chain : model.getAllChains()) {
-                for (LeafSubstructure<?> leafSubstructure : chain.getAllLeafSubstructures()) {
+                for (LeafSubstructure leafSubstructure : chain.getAllLeafSubstructures()) {
                     for (Atom atom : leafSubstructure.getAllAtoms()) {
                         if (atom.getPosition().almostEqual(coordinate, eps)) {
                             UniqueAtomIdentifier identifier = new UniqueAtomIdentifier(leafSubstructure.getIdentifier(), atom.getAtomIdentifier());
@@ -217,7 +217,7 @@ public class OakStructure implements Structure {
         Optional<Chain> optionalChain = getFirstModel().getChain(chainIdentifier);
         if (optionalChain.isPresent()) {
             OakChain chain = (OakChain) optionalChain.get();
-            OakLigand leafSubstructure = new OakLigand(chain.getNextLeafIdentifier(), new LigandFamily(threeLetterCode));
+            OakLigand leafSubstructure = new OakLigand(chain.getNextLeafIdentifier(), new StructuralFamily("?", threeLetterCode));
             lastAddedAtomIdentifier++;
             leafSubstructure.addAtom(new OakAtom(lastAddedAtomIdentifier, ElementProvider.UNKOWN, "CA", position));
             chain.addLeafSubstructure(leafSubstructure);

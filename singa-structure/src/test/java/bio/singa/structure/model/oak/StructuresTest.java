@@ -27,7 +27,7 @@ class StructuresTest {
                 .pdbIdentifier("1HRR")
                 .parse()
                 .getFirstChain();
-        final LabeledSymmetricMatrix<LeafSubstructure<?>> distanceMatrix = Structures.calculateDistanceMatrix(chain);
+        final LabeledSymmetricMatrix<LeafSubstructure> distanceMatrix = Structures.calculateDistanceMatrix(chain);
         assertTrue(distanceMatrix.getMainDiagonal().isZero());
         assertEquals(5.461240152199864, distanceMatrix.getElement(5, 3));
         assertEquals(3.792725405298938, distanceMatrix.getElement(17, 18));

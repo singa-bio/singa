@@ -20,8 +20,8 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class OakLeafSubstructureTest {
 
-    private static LeafSubstructure<?> leaf162;
-    private static LeafSubstructure<?> leaf620A;
+    private static LeafSubstructure leaf162;
+    private static LeafSubstructure leaf620A;
     private static OakAminoAcid leafToModify;
 
     @BeforeAll
@@ -40,7 +40,7 @@ class OakLeafSubstructureTest {
 
     @Test
     void getThreeLetterCode() {
-        assertEquals("Thr", leaf162.getThreeLetterCode());
+        assertEquals("THR", leaf162.getThreeLetterCode());
         assertEquals("H2U", leaf620A.getThreeLetterCode());
     }
 

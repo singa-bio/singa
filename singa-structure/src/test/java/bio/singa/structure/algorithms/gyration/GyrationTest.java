@@ -1,7 +1,5 @@
 package bio.singa.structure.algorithms.gyration;
 
-import bio.singa.structure.model.families.AminoAcidFamily;
-import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.interfaces.Structure;
 import bio.singa.structure.parser.pdb.structures.StructureParser;
 import org.junit.jupiter.api.BeforeAll;
@@ -32,10 +30,4 @@ class GyrationTest {
         assertEquals(22.19, gyration.getRadius(), 1E-2);
     }
 
-    @Test
-    void shouldCalculateGyrationOfLeafSubstructure() {
-        LeafSubstructure alanine = AminoAcidFamily.ALANINE.getPrototype();
-        Gyration gyration = Gyration.of(alanine);
-        assertEquals(1.46, gyration.getRadius(), 1E-2);
-    }
 }

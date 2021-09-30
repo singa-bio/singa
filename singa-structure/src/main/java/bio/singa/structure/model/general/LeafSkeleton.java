@@ -2,11 +2,10 @@ package bio.singa.structure.model.general;
 
 import bio.singa.chemistry.model.CovalentBondType;
 import bio.singa.core.utility.Pair;
+import bio.singa.structure.model.families.StructuralFamilies;
+import bio.singa.structure.model.families.StructuralFamily;
 import bio.singa.structure.model.interfaces.AminoAcid;
 import bio.singa.structure.model.interfaces.Nucleotide;
-import bio.singa.structure.model.families.AminoAcidFamily;
-import bio.singa.structure.model.families.LigandFamily;
-import bio.singa.structure.model.families.NucleotideFamily;
 import bio.singa.structure.model.oak.*;
 
 import java.util.HashMap;
@@ -102,21 +101,19 @@ public class LeafSkeleton {
         return !bonds.isEmpty();
     }
 
-    public OakLeafSubstructure<?> toRealLeafSubstructure(PdbLeafIdentifier identifer, Map<String, OakAtom> atoms) {
-        OakLeafSubstructure<?> substructure;
+    public OakLeafSubstructure toRealLeafSubstructure(PdbLeafIdentifier identifer, Map<String, OakAtom> atoms) {
+        OakLeafSubstructure substructure;
         switch (assignedFamily) {
             case MODIFIED_AMINO_ACID: {
-                substructure = new OakAminoAcid(identifer, AminoAcidFamily.getAminoAcidTypeByThreeLetterCode(parent)
-                        .orElse(AminoAcidFamily.UNKNOWN), threeLetterCode);
+                substructure = new OakAminoAcid(identifer, StructuralFamilies.AminoAcids.getOrUnknown(parent), threeLetterCode);
                 break;
             }
             case MODIFIED_NUCLEOTIDE: {
-                substructure = new OakNucleotide(identifer, NucleotideFamily.getNucleotideByThreeLetterCode(parent)
-                        .orElse(NucleotideFamily.UNKNOWN), threeLetterCode);
+                substructure = new OakNucleotide(identifer, StructuralFamilies.Nucleotides.getOrUnknown(parent), threeLetterCode);
                 break;
             }
             default: {
-                OakLigand ligand = new OakLigand(identifer, new LigandFamily("?", threeLetterCode));
+                OakLigand ligand = new OakLigand(identifer, new StructuralFamily("?", threeLetterCode));
                 ligand.setName(name);
                 substructure = ligand;
                 break;
@@ -131,7 +128,7 @@ public class LeafSkeleton {
         return substructure;
     }
 
-    public void connect(OakLeafSubstructure<?> substructure, Map<String, OakAtom> atomMap) {
+    public void connect(OakLeafSubstructure substructure, Map<String, OakAtom> atomMap) {
         for (Map.Entry<Pair<String>, CovalentBondType> bond : bonds.entrySet()) {
             substructure.addBondBetween(atomMap.get(bond.getKey().getFirst()),
                     atomMap.get(bond.getKey().getSecond()),bond.getValue());

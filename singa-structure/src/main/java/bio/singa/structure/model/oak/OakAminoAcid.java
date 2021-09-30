@@ -1,7 +1,7 @@
 package bio.singa.structure.model.oak;
 
 import bio.singa.mathematics.vectors.Vector3D;
-import bio.singa.structure.model.families.AminoAcidFamily;
+import bio.singa.structure.model.families.StructuralFamily;
 import bio.singa.structure.model.interfaces.AminoAcid;
 import bio.singa.structure.model.interfaces.Atom;
 
@@ -10,16 +10,16 @@ import java.util.Optional;
 /**
  * @author cl
  */
-public class OakAminoAcid extends OakLeafSubstructure<AminoAcidFamily> implements AminoAcid {
+public class OakAminoAcid extends OakLeafSubstructure implements AminoAcid {
 
     private boolean mutation;
-    private AminoAcidFamily wildTypeResidue;
+    private StructuralFamily wildTypeResidue;
 
-    public OakAminoAcid(PdbLeafIdentifier leafIdentifier, AminoAcidFamily family) {
+    public OakAminoAcid(PdbLeafIdentifier leafIdentifier, StructuralFamily family) {
         super(leafIdentifier, family);
     }
 
-    public OakAminoAcid(PdbLeafIdentifier identifer, AminoAcidFamily aminoAcidFamily, String threeLetterCode) {
+    public OakAminoAcid(PdbLeafIdentifier identifer, StructuralFamily aminoAcidFamily, String threeLetterCode) {
         super(identifer, aminoAcidFamily, threeLetterCode);
     }
 
@@ -48,11 +48,11 @@ public class OakAminoAcid extends OakLeafSubstructure<AminoAcidFamily> implement
         this.mutation = mutation;
     }
 
-    public AminoAcidFamily getWildTypeResidue() {
+    public StructuralFamily getWildTypeResidue() {
         return wildTypeResidue;
     }
 
-    public void setWildTypeResidue(AminoAcidFamily wildTypeResidue) {
+    public void setWildTypeResidue(StructuralFamily wildTypeResidue) {
         this.wildTypeResidue = wildTypeResidue;
     }
 

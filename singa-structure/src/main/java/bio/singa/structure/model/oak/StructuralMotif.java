@@ -1,9 +1,8 @@
 package bio.singa.structure.model.oak;
 
-import bio.singa.structure.algorithms.superimposition.fit3d.Fit3DBuilder;
-import bio.singa.structure.model.families.AminoAcidFamily;
-import bio.singa.structure.model.families.MatcherFamily;
-import bio.singa.structure.model.families.NucleotideFamily;
+import bio.singa.structure.model.families.StructuralFamilies;
+import bio.singa.structure.model.families.StructuralFamilies.Matchers;
+import bio.singa.structure.model.families.StructuralFamily;
 import bio.singa.structure.model.interfaces.*;
 
 import java.util.*;
@@ -14,7 +13,7 @@ import java.util.stream.Collectors;
  */
 public class StructuralMotif implements LeafSubstructureContainer {
 
-    public final LinkedHashMap<LeafIdentifier, LeafSubstructure<?>> leafSubstructures;
+    public final LinkedHashMap<LeafIdentifier, LeafSubstructure> leafSubstructures;
     private final String identifier;
 
     private StructuralMotif(String identifier) {
@@ -22,9 +21,9 @@ public class StructuralMotif implements LeafSubstructureContainer {
         leafSubstructures = new LinkedHashMap<>();
     }
 
-    private StructuralMotif(String identifier, List<LeafSubstructure<?>> leafSubstructures) {
+    private StructuralMotif(String identifier, List<LeafSubstructure> leafSubstructures) {
         this(identifier);
-        for (LeafSubstructure<?> leafSubstructure : leafSubstructures) {
+        for (LeafSubstructure leafSubstructure : leafSubstructures) {
             addLeafSubstructure(leafSubstructure);
         }
     }
@@ -46,10 +45,10 @@ public class StructuralMotif implements LeafSubstructureContainer {
      * @return A new {@link StructuralMotif}.
      */
     public static StructuralMotif fromLeafIdentifiers(Structure structure, List<PdbLeafIdentifier> leafIdentifiers) {
-        List<LeafSubstructure<?>> leafSubstructures = new ArrayList<>();
+        List<LeafSubstructure> leafSubstructures = new ArrayList<>();
         for (PdbLeafIdentifier leafIdentifier : leafIdentifiers) {
             leafIdentifier = new PdbLeafIdentifier(structure.getPdbIdentifier(), leafIdentifier.getModelIdentifier(), leafIdentifier.getChainIdentifier(), leafIdentifier.getSerial(), leafIdentifier.getInsertionCode());
-            final Optional<LeafSubstructure<?>> leafSubstructure = structure.getLeafSubstructure(leafIdentifier);
+            final Optional<LeafSubstructure> leafSubstructure = structure.getLeafSubstructure(leafIdentifier);
             if (leafSubstructure.isPresent()) {
                 leafSubstructures.add(leafSubstructure.get());
             } else {
@@ -65,11 +64,11 @@ public class StructuralMotif implements LeafSubstructureContainer {
      * @param leafSubstructures The {@link LeafSubstructure}s that should compose the {@link StructuralMotif}.
      * @return A new {@link StructuralMotif}.
      */
-    public static StructuralMotif fromLeafSubstructures(List<LeafSubstructure<?>> leafSubstructures) {
+    public static StructuralMotif fromLeafSubstructures(List<LeafSubstructure> leafSubstructures) {
         return new StructuralMotif(generateMotifIdentifier(leafSubstructures), leafSubstructures);
     }
 
-    private static String generateMotifIdentifier(List<LeafSubstructure<?>> substructures) {
+    private static String generateMotifIdentifier(List<LeafSubstructure> substructures) {
         String pdbIdentifier = substructures.iterator().next().getIdentifier().getStructureIdentifier();
         return substructures.stream()
                 .map(leafSubstructure -> leafSubstructure.getIdentifier().toString())
@@ -77,13 +76,13 @@ public class StructuralMotif implements LeafSubstructureContainer {
     }
 
     @Override
-    public List<LeafSubstructure<?>> getAllLeafSubstructures() {
+    public List<LeafSubstructure> getAllLeafSubstructures() {
         return new LinkedList<>(leafSubstructures.values());
     }
 
     @Override
-    public Optional<LeafSubstructure<?>> getLeafSubstructure(LeafIdentifier leafIdentifier) {
-        final LeafSubstructure<?> leafSubstructure = leafSubstructures.get(leafIdentifier);
+    public Optional<LeafSubstructure> getLeafSubstructure(LeafIdentifier leafIdentifier) {
+        final LeafSubstructure leafSubstructure = leafSubstructures.get(leafIdentifier);
         if (leafSubstructure != null) {
             return Optional.of(leafSubstructure);
         }
@@ -91,7 +90,7 @@ public class StructuralMotif implements LeafSubstructureContainer {
     }
 
     @Override
-    public LeafSubstructure<?> getFirstLeafSubstructure() {
+    public LeafSubstructure getFirstLeafSubstructure() {
         return leafSubstructures.values().iterator().next();
     }
 
@@ -138,91 +137,40 @@ public class StructuralMotif implements LeafSubstructureContainer {
         }
     }
 
-    /**
-     * For a given {@link LeafIdentifier} a possible exchange is added. This exchange is considered when searching with
-     * {@link Fit3DBuilder Fit3D}. The {@link MatcherFamily} allows exchanges for groups of {@link LeafSubstructure}s
-     * with similar physicochemical attributes.
-     *
-     * @param leafIdentifier The leaf to add the exchange to.
-     * @param matcherFamily The {@link MatcherFamily}.
-     */
-    public void addExchangeableFamily(LeafIdentifier leafIdentifier, MatcherFamily matcherFamily) {
-        matcherFamily.getMembers()
-                .forEach(matcherFamilyMember -> addExchangeableFamily(leafIdentifier, matcherFamilyMember));
+    public void addExchangeableFamily(LeafIdentifier leafIdentifier, StructuralFamily structuralFamily) {
+        if (StructuralFamilies.AminoAcids.isAminoAcid(structuralFamily)) {
+            leafSubstructures.values().stream()
+                    .filter(StructuralEntityFilter.LeafFilter.isAminoAcid())
+                    .filter(aminoAcid -> aminoAcid.getIdentifier().getChainIdentifier().equals(leafIdentifier.getChainIdentifier()))
+                    .filter(aminoAcid -> aminoAcid.getIdentifier().getSerial() == leafIdentifier.getSerial())
+                    .findFirst()
+                    .orElseThrow(NoSuchElementException::new)
+                    .addExchangeableFamily(structuralFamily);
+        } else if (StructuralFamilies.Nucleotides.isNucleotide(structuralFamily)) {
+            leafSubstructures.values().stream()
+                    .filter(StructuralEntityFilter.LeafFilter.isNucleotide())
+                    .filter(aminoAcid -> aminoAcid.getIdentifier().getChainIdentifier().equals(leafIdentifier.getChainIdentifier()))
+                    .filter(aminoAcid -> aminoAcid.getIdentifier().getSerial() == leafIdentifier.getSerial())
+                    .findFirst()
+                    .orElseThrow(NoSuchElementException::new)
+                    .addExchangeableFamily(structuralFamily);
+        } else if (StructuralFamilies.Matchers.isMatcher(structuralFamily)) {
+            Matchers.getMatcherEntities(structuralFamily)
+                    .forEach(matcherFamilyMember -> addExchangeableFamily(leafIdentifier, matcherFamilyMember));
+        }
     }
 
-    /**
-     * For a given {@link LeafIdentifier} a possible exchange is added. This exchange is considered when searching with
-     * {@link Fit3DBuilder Fit3D}.
-     *
-     * @param leafIdentifier The leaf to add the exchange to.
-     * @param nucleotideFamily The {@link Nucleotide} that can be exchanged.
-     */
-    public void addExchangeableFamily(LeafIdentifier leafIdentifier, NucleotideFamily nucleotideFamily) {
-        leafSubstructures.values().stream()
-                .filter(StructuralEntityFilter.LeafFilter.isNucleotide())
-                .map(Nucleotide.class::cast)
-                .filter(nucleotide -> nucleotide.getIdentifier().getChainIdentifier().equals(leafIdentifier.getChainIdentifier()))
-                .filter(nucleotide -> nucleotide.getIdentifier().getSerial() == leafIdentifier.getSerial())
-                .findFirst()
-                .orElseThrow(NoSuchElementException::new)
-                .addExchangeableFamily(nucleotideFamily);
+    public void addExchangeableFamilies(LeafIdentifier leafIdentifier, Set<StructuralFamily> structuralFamily) {
+        structuralFamily.forEach(matcherFamilyMember -> addExchangeableFamily(leafIdentifier, matcherFamilyMember));
     }
 
-    /**
-     * For a given {@link LeafIdentifier} a possible exchange is added. This exchange is considered when searching with
-     * {@link Fit3DBuilder Fit3D}.
-     *
-     * @param leafIdentifier The leaf to add the exchange to.
-     * @param aminoAcidFamily The {@link AminoAcid} that can be exchanged.
-     */
-    public void addExchangeableFamily(LeafIdentifier leafIdentifier, AminoAcidFamily aminoAcidFamily) {
-        leafSubstructures.values().stream()
-                .filter(StructuralEntityFilter.LeafFilter.isAminoAcid())
-                .map(AminoAcid.class::cast)
-                .filter(aminoAcid -> aminoAcid.getIdentifier().getChainIdentifier().equals(leafIdentifier.getChainIdentifier()))
-                .filter(aminoAcid -> aminoAcid.getIdentifier().getSerial() == leafIdentifier.getSerial())
-                .findFirst()
-                .orElseThrow(NoSuchElementException::new)
-                .addExchangeableFamily(aminoAcidFamily);
-    }
-
-    /**
-     * Assigns an {@link AminoAcidFamily} to all members of this motif as exchange.
-     *
-     * @param aminoAcidFamily The {@link AminoAcidFamily} which should be assigned as exchangeable type.
-     */
-    public void addExchangeableFamilyToAll(AminoAcidFamily aminoAcidFamily) {
+    public void addExchangeableFamilyToAll(StructuralFamily aminoAcidFamily) {
         leafSubstructures.values().stream()
                 .filter(StructuralEntityFilter.LeafFilter.isAminoAcid())
                 .map(AminoAcid.class::cast)
                 .forEach(exchangeable -> exchangeable.addExchangeableFamily(aminoAcidFamily));
 
     }
-
-    /**
-     * Assigns an {@link NucleotideFamily} to all members of this motif as exchange.
-     *
-     * @param nucleotideFamily The {@link NucleotideFamily} which should be assigned as exchangeable type.
-     */
-    public void addExchangeableFamilyToAll(NucleotideFamily nucleotideFamily) {
-        leafSubstructures.values().stream()
-                .filter(StructuralEntityFilter.LeafFilter.isNucleotide())
-                .map(Nucleotide.class::cast)
-                .forEach(exchangeable -> exchangeable.addExchangeableFamily(nucleotideFamily));
-    }
-
-    /**
-     * Assigns each member of a {@link MatcherFamily} to all members of this motif as exchange.
-     *
-     * @param matcherFamily The {@link MatcherFamily} that bundles all members which should be assigned as exchangeable
-     * type.
-     */
-    public void addExchangeableFamilyToAll(MatcherFamily matcherFamily) {
-        leafSubstructures.values().forEach(leafSubstructure -> matcherFamily.getMembers()
-                .forEach(matcherFamilyMember -> addExchangeableFamily(leafSubstructure.getIdentifier(), matcherFamilyMember)));
-    }
-
 
     @Override
     public String toString() {

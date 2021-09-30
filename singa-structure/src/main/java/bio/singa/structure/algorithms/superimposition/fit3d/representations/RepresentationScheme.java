@@ -17,7 +17,7 @@ public interface RepresentationScheme {
      * calculated.
      * @return The one-atom representation of the given {@link LeafSubstructure}.
      */
-    Atom determineRepresentingAtom(LeafSubstructure<?> leafSubstructure);
+    Atom determineRepresentingAtom(LeafSubstructure leafSubstructure);
 
     /**
      * Returns the actual {@link RepresentationSchemeType} of this {@link RepresentationScheme}.

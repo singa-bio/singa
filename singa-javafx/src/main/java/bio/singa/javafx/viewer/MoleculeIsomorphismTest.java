@@ -12,8 +12,8 @@ import bio.singa.structure.algorithms.molecules.MoleculeIsomorphismFinder.AtomCo
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.interfaces.Structure;
 import bio.singa.structure.model.molecules.MoleculeGraphs;
-import bio.singa.structure.model.oak.LeafIdentifier;
 import bio.singa.structure.model.oak.OakLeafSubstructure;
+import bio.singa.structure.model.oak.PdbLeafIdentifier;
 import bio.singa.structure.parser.pdb.structures.StructureParser;
 import javafx.application.Application;
 import javafx.scene.paint.Color;
@@ -34,8 +34,8 @@ public class MoleculeIsomorphismTest {
 
         MoleculeGraph phenylAlaninePattern = SmilesParser.parse("C1=CC=C(C=C1)CC(C=O)N");
 
-        Optional<LeafSubstructure<?>> fa5 = structure.getLeafSubstructure(new LeafIdentifier("1jjc", 1, "A", 999));
-        MoleculeGraph fa5Graph = MoleculeGraphs.createMoleculeGraphFromStructure((OakLeafSubstructure<?>) fa5.get());
+        Optional<LeafSubstructure> fa5 = structure.getLeafSubstructure(new PdbLeafIdentifier("1jjc", 1, "A", 999));
+        MoleculeGraph fa5Graph = MoleculeGraphs.createMoleculeGraphFromStructure((OakLeafSubstructure) fa5.get());
 
         MoleculeBond consideredEdge = phenylAlaninePattern.getEdge(7);
         // this is a complex bond condition where only a single bond in the pattern graph is considered regarding its type

@@ -422,7 +422,7 @@ public class StructureCollector {
                             Integer.parseInt(leafNode.getIdentifier()),
                             leafNode.getInsertionCode());
                     boolean isInConsecutivePart = !notInConsecutiveChain.contains(leafIdentifier);
-                    OakLeafSubstructure<?> leafSubstructure = LeafSubstructureBuilder.create(iterator)
+                    OakLeafSubstructure leafSubstructure = LeafSubstructureBuilder.create(iterator)
                             .inConsecutivePart(isInConsecutivePart)
                             .name(leafCodes.get(leafIdentifier))
                             .identifier(leafIdentifier)

@@ -1,14 +1,15 @@
 package bio.singa.structure.model.oak;
 
 import bio.singa.chemistry.model.CovalentBondType;
-import bio.singa.structure.model.families.AminoAcidFamily;
-import bio.singa.structure.model.families.LigandFamily;
-import bio.singa.structure.model.families.NucleotideFamily;
+import bio.singa.structure.model.families.StructuralFamilies;
 import bio.singa.structure.model.families.StructuralFamily;
 import bio.singa.structure.parser.pdb.structures.StructureParserOptions;
 
 import java.util.Map;
 import java.util.Set;
+
+import static bio.singa.structure.model.families.StructuralFamilies.AminoAcids.*;
+import static bio.singa.structure.model.families.StructuralFamilies.Nucleotides.*;
 
 /**
  * The residue factory is used to create residues from a set of AtomFilter with their AtomNames. This also connects the
@@ -21,97 +22,82 @@ public class LeafSubstructureFactory {
 
     }
 
-    public static OakLeafSubstructure<?> createLeafSubstructure(PdbLeafIdentifier leafIdentifier, StructuralFamily<?> family) {
-        if (family instanceof AminoAcidFamily) {
-            return new OakAminoAcid(leafIdentifier, (AminoAcidFamily) family);
-        } else if (family instanceof NucleotideFamily) {
-            return new OakNucleotide(leafIdentifier, (NucleotideFamily) family);
+    public static OakLeafSubstructure createLeafSubstructure(PdbLeafIdentifier leafIdentifier, StructuralFamily family) {
+        if (StructuralFamilies.AminoAcids.isAminoAcid(family)) {
+            return new OakAminoAcid(leafIdentifier, family);
+        } else if (StructuralFamilies.Nucleotides.isNucleotide(family)) {
+            return new OakNucleotide(leafIdentifier, family);
         }
-        return new OakLigand(leafIdentifier, (LigandFamily) family);
+        return new OakLigand(leafIdentifier, family);
+    }
+
+    public static OakLeafSubstructure createLeafSubstructure(PdbLeafIdentifier leafIdentifier, StructuralFamily family, Set<OakAtom> atoms) {
+        OakLeafSubstructure leafSubstructure = createLeafSubstructure(leafIdentifier, family);
+        atoms.forEach(leafSubstructure::addAtom);
+        return leafSubstructure;
     }
 
     public static void connectNucleotide(OakNucleotide nucleotide, Map<String, OakAtom> atoms) {
         connectRibose(nucleotide, atoms);
         connectPhosphateGroup(nucleotide, atoms);
         nucleotide.addBondBetween(atoms.get("P"), atoms.get("O5'"));
-        switch (nucleotide.getFamily()) {
-            case ADENOSINE: {
-                nucleotide.addBondBetween(atoms.get("C2'"), atoms.get("O2'"));
-                connectPurine(nucleotide, atoms);
-                nucleotide.addBondBetween(atoms.get("C6"), atoms.get("N6"));
-                nucleotide.addBondBetween(atoms.get("C1'"), atoms.get("N9"));
-                break;
-            }
-            case CYTIDINE: {
-                nucleotide.addBondBetween(atoms.get("C2'"), atoms.get("O2'"));
-                connectPyrimidin(nucleotide, atoms);
-                nucleotide.addBondBetween(atoms.get("C4"), atoms.get("N4"));
-                nucleotide.addBondBetween(atoms.get("N3"), atoms.get("C4"), CovalentBondType.DOUBLE_BOND);
-                nucleotide.addBondBetween(atoms.get("C1'"), atoms.get("N1"));
-                break;
-            }
-            case DESOXYADENOSINE: {
-                connectPurine(nucleotide, atoms);
-                nucleotide.addBondBetween(atoms.get("C6"), atoms.get("N6"));
-                nucleotide.addBondBetween(atoms.get("C1'"), atoms.get("N9"));
-                break;
-            }
-            case DESOXYCYTIDINE: {
-                connectPyrimidin(nucleotide, atoms);
-                nucleotide.addBondBetween(atoms.get("C4"), atoms.get("N4"));
-                nucleotide.addBondBetween(atoms.get("N3"), atoms.get("C4"), CovalentBondType.DOUBLE_BOND);
-                nucleotide.addBondBetween(atoms.get("C1'"), atoms.get("N1"));
-                break;
-            }
-            case DESOXYGUANOSINE: {
-                connectPurine(nucleotide, atoms);
-                nucleotide.addBondBetween(atoms.get("C6"), atoms.get("N1"));
-                nucleotide.addBondBetween(atoms.get("C6"), atoms.get("O6"), CovalentBondType.DOUBLE_BOND);
-                nucleotide.addBondBetween(atoms.get("C2"), atoms.get("N2"));
-                nucleotide.addBondBetween(atoms.get("C1'"), atoms.get("N9"));
-                break;
-            }
-            case DESOXYTHYMIDINE: {
-                connectPyrimidin(nucleotide, atoms);
-                nucleotide.addBondBetween(atoms.get("C4"), atoms.get("O4"), CovalentBondType.DOUBLE_BOND);
-                nucleotide.addBondBetween(atoms.get("N3"), atoms.get("C4"));
-                nucleotide.addBondBetween(atoms.get("C5"), atoms.get("C7"));
-                nucleotide.addBondBetween(atoms.get("C1'"), atoms.get("N1"));
-                break;
-            }
-            case DESOXYURIDINE: {
-                connectPyrimidin(nucleotide, atoms);
-                nucleotide.addBondBetween(atoms.get("N3"), atoms.get("C4"));
-                nucleotide.addBondBetween(atoms.get("C4"), atoms.get("O4"), CovalentBondType.DOUBLE_BOND);
-                nucleotide.addBondBetween(atoms.get("C1'"), atoms.get("N1"));
-                break;
-            }
-            case GUANOSINE: {
-                nucleotide.addBondBetween(atoms.get("C2'"), atoms.get("O2'"));
-                connectPurine(nucleotide, atoms);
-                nucleotide.addBondBetween(atoms.get("C6"), atoms.get("N1"));
-                nucleotide.addBondBetween(atoms.get("C6"), atoms.get("O6"), CovalentBondType.DOUBLE_BOND);
-                nucleotide.addBondBetween(atoms.get("C2"), atoms.get("N2"));
-                nucleotide.addBondBetween(atoms.get("C1'"), atoms.get("N9"));
-                break;
-            }
-            case THYMIDINE: {
-                nucleotide.addBondBetween(atoms.get("C2'"), atoms.get("O2'"));
-                connectPyrimidin(nucleotide, atoms);
-                nucleotide.addBondBetween(atoms.get("C4"), atoms.get("O4"), CovalentBondType.DOUBLE_BOND);
-                nucleotide.addBondBetween(atoms.get("N3"), atoms.get("C4"));
-                nucleotide.addBondBetween(atoms.get("C5"), atoms.get("C7"));
-                nucleotide.addBondBetween(atoms.get("C1'"), atoms.get("N1"));
-                break;
-            }
-            case URIDINE: {
-                nucleotide.addBondBetween(atoms.get("C2'"), atoms.get("O2'"));
-                connectPyrimidin(nucleotide, atoms);
-                nucleotide.addBondBetween(atoms.get("C4"), atoms.get("O4"), CovalentBondType.DOUBLE_BOND);
-                nucleotide.addBondBetween(atoms.get("N3"), atoms.get("C4"));
-                nucleotide.addBondBetween(atoms.get("C1'"), atoms.get("N1"));
-                break;
-            }
+        if (ADENOSINE.equals(nucleotide.getFamily())) {
+            nucleotide.addBondBetween(atoms.get("C2'"), atoms.get("O2'"));
+            connectPurine(nucleotide, atoms);
+            nucleotide.addBondBetween(atoms.get("C6"), atoms.get("N6"));
+            nucleotide.addBondBetween(atoms.get("C1'"), atoms.get("N9"));
+        } else if (CYTIDINE.equals(nucleotide.getFamily())) {
+            nucleotide.addBondBetween(atoms.get("C2'"), atoms.get("O2'"));
+            connectPyrimidin(nucleotide, atoms);
+            nucleotide.addBondBetween(atoms.get("C4"), atoms.get("N4"));
+            nucleotide.addBondBetween(atoms.get("N3"), atoms.get("C4"), CovalentBondType.DOUBLE_BOND);
+            nucleotide.addBondBetween(atoms.get("C1'"), atoms.get("N1"));
+        } else if (DESOXYADENOSINE.equals(nucleotide.getFamily())) {
+            connectPurine(nucleotide, atoms);
+            nucleotide.addBondBetween(atoms.get("C6"), atoms.get("N6"));
+            nucleotide.addBondBetween(atoms.get("C1'"), atoms.get("N9"));
+        } else if (DESOXYCYTIDINE.equals(nucleotide.getFamily())) {
+            connectPyrimidin(nucleotide, atoms);
+            nucleotide.addBondBetween(atoms.get("C4"), atoms.get("N4"));
+            nucleotide.addBondBetween(atoms.get("N3"), atoms.get("C4"), CovalentBondType.DOUBLE_BOND);
+            nucleotide.addBondBetween(atoms.get("C1'"), atoms.get("N1"));
+        } else if (DESOXYGUANOSINE.equals(nucleotide.getFamily())) {
+            connectPurine(nucleotide, atoms);
+            nucleotide.addBondBetween(atoms.get("C6"), atoms.get("N1"));
+            nucleotide.addBondBetween(atoms.get("C6"), atoms.get("O6"), CovalentBondType.DOUBLE_BOND);
+            nucleotide.addBondBetween(atoms.get("C2"), atoms.get("N2"));
+            nucleotide.addBondBetween(atoms.get("C1'"), atoms.get("N9"));
+        } else if (DESOXYTHYMIDINE.equals(nucleotide.getFamily())) {
+            connectPyrimidin(nucleotide, atoms);
+            nucleotide.addBondBetween(atoms.get("C4"), atoms.get("O4"), CovalentBondType.DOUBLE_BOND);
+            nucleotide.addBondBetween(atoms.get("N3"), atoms.get("C4"));
+            nucleotide.addBondBetween(atoms.get("C5"), atoms.get("C7"));
+            nucleotide.addBondBetween(atoms.get("C1'"), atoms.get("N1"));
+        } else if (DESOXYURIDINE.equals(nucleotide.getFamily())) {
+            connectPyrimidin(nucleotide, atoms);
+            nucleotide.addBondBetween(atoms.get("N3"), atoms.get("C4"));
+            nucleotide.addBondBetween(atoms.get("C4"), atoms.get("O4"), CovalentBondType.DOUBLE_BOND);
+            nucleotide.addBondBetween(atoms.get("C1'"), atoms.get("N1"));
+        } else if (GUANOSINE.equals(nucleotide.getFamily())) {
+            nucleotide.addBondBetween(atoms.get("C2'"), atoms.get("O2'"));
+            connectPurine(nucleotide, atoms);
+            nucleotide.addBondBetween(atoms.get("C6"), atoms.get("N1"));
+            nucleotide.addBondBetween(atoms.get("C6"), atoms.get("O6"), CovalentBondType.DOUBLE_BOND);
+            nucleotide.addBondBetween(atoms.get("C2"), atoms.get("N2"));
+            nucleotide.addBondBetween(atoms.get("C1'"), atoms.get("N9"));
+        } else if (THYMIDINE.equals(nucleotide.getFamily())) {
+            nucleotide.addBondBetween(atoms.get("C2'"), atoms.get("O2'"));
+            connectPyrimidin(nucleotide, atoms);
+            nucleotide.addBondBetween(atoms.get("C4"), atoms.get("O4"), CovalentBondType.DOUBLE_BOND);
+            nucleotide.addBondBetween(atoms.get("N3"), atoms.get("C4"));
+            nucleotide.addBondBetween(atoms.get("C5"), atoms.get("C7"));
+            nucleotide.addBondBetween(atoms.get("C1'"), atoms.get("N1"));
+        } else if (URIDINE.equals(nucleotide.getFamily())) {
+            nucleotide.addBondBetween(atoms.get("C2'"), atoms.get("O2'"));
+            connectPyrimidin(nucleotide, atoms);
+            nucleotide.addBondBetween(atoms.get("C4"), atoms.get("O4"), CovalentBondType.DOUBLE_BOND);
+            nucleotide.addBondBetween(atoms.get("N3"), atoms.get("C4"));
+            nucleotide.addBondBetween(atoms.get("C1'"), atoms.get("N1"));
         }
     }
 
@@ -149,118 +135,58 @@ public class LeafSubstructureFactory {
         nucleotide.addBondBetween(atoms.get("C4"), atoms.get("C5"), CovalentBondType.DOUBLE_BOND);
     }
 
-    public static OakLeafSubstructure<?> createLeafSubstructure(PdbLeafIdentifier leafIdentifier, StructuralFamily<?> family, Set<OakAtom> atoms) {
-        OakLeafSubstructure<?> leafSubstructure;
-        if (family instanceof AminoAcidFamily) {
-            leafSubstructure = new OakAminoAcid(leafIdentifier, (AminoAcidFamily) family);
-        } else if (family instanceof NucleotideFamily) {
-            leafSubstructure = new OakNucleotide(leafIdentifier, (NucleotideFamily) family);
-        } else {
-            leafSubstructure = new OakLigand(leafIdentifier, (LigandFamily) family);
-        }
-        atoms.forEach(leafSubstructure::addAtom);
-        return leafSubstructure;
-    }
-
     public static void connectAminoAcid(OakAminoAcid aminoAcid, Map<String, OakAtom> atoms) {
-            // connect backbone atoms first
-            connectBackboneAtoms(aminoAcid, atoms);
-            // TODO maybe order by relative occurrence to speedup
-            switch (aminoAcid.getFamily()) {
-                case ALANINE: {
-                    aminoAcid.addBondBetween(atoms.get("CA"), atoms.get("CB"));
-                    break;
-                }
-                case ARGININE: {
-                    connectInOrder(aminoAcid, atoms, "CA", "CB", "CG", "CD", "NE", "CZ", "NH1");
-                    aminoAcid.addBondBetween(atoms.get("CZ"), atoms.get("NH2"), CovalentBondType.DOUBLE_BOND);
-                    break;
-                }
-                case ASPARAGINE: {
-                    connectInOrder(aminoAcid, atoms, "CA", "CB", "CG", "ND2");
-                    aminoAcid.addBondBetween(atoms.get("CG"), atoms.get("OD1"), CovalentBondType.DOUBLE_BOND);
-                    break;
-                }
-                case ASPARTIC_ACID: {
-                    connectInOrder(aminoAcid, atoms, "CA", "CB", "CG", "OD2");
-                    aminoAcid.addBondBetween(atoms.get("CG"), atoms.get("OD1"), CovalentBondType.DOUBLE_BOND);
-                    break;
-                }
-                case CYSTEINE: {
-                    connectInOrder(aminoAcid, atoms, "CA", "CB", "SG");
-                    break;
-                }
-                case GLUTAMINE: {
-                    connectInOrder(aminoAcid, atoms, "CA", "CB", "CG", "CD", "NE2");
-                    aminoAcid.addBondBetween(atoms.get("CD"), atoms.get("OE1"), CovalentBondType.DOUBLE_BOND);
-                    break;
-                }
-                case GLUTAMIC_ACID: {
-                    connectInOrder(aminoAcid, atoms, "CA", "CB", "CG", "CD", "OE2");
-                    aminoAcid.addBondBetween(atoms.get("CD"), atoms.get("OE1"), CovalentBondType.DOUBLE_BOND);
-                    break;
-                }
-                case GLYCINE: {
-                    // nothing ...
-                    break;
-                }
-                case HISTIDINE: {
-                    connectHistidine(aminoAcid, atoms);
-                    break;
-                }
-                case ISOLEUCINE: {
-                    connectInOrder(aminoAcid, atoms, "CA", "CB", "CG1", "CD1");
-                    aminoAcid.addBondBetween(atoms.get("CB"), atoms.get("CG2"));
-                    break;
-                }
-                case LEUCINE: {
-                    connectInOrder(aminoAcid, atoms, "CA", "CB", "CG", "CD1");
-                    aminoAcid.addBondBetween(atoms.get("CG"), atoms.get("CD2"));
-                    break;
-                }
-                case LYSINE: {
-                    connectInOrder(aminoAcid, atoms, "CA", "CB", "CG", "CD", "CE", "NZ");
-                    break;
-                }
-                case METHIONINE: {
-                    connectInOrder(aminoAcid, atoms, "CA", "CB", "CG", "SD", "CE");
-                    break;
-                }
-                case PHENYLALANINE: {
-                    connectPhenylalanine(aminoAcid, atoms);
-                    break;
-                }
-                case PROLINE: {
-                    connectInOrder(aminoAcid, atoms, "CA", "CB", "CG", "CD", "N", "CA");
-                    break;
-                }
-                case SERINE: {
-                    connectInOrder(aminoAcid, atoms, "CA", "CB", "OG");
-                    break;
-                }
-                case THREONINE: {
-                    connectInOrder(aminoAcid, atoms, "CA", "CB", "OG1");
-                    aminoAcid.addBondBetween(atoms.get("CB"), atoms.get("CG2"));
-                    break;
-                }
-                case TRYPTOPHAN: {
-                    connectTryptophan(aminoAcid, atoms);
-                    break;
-                }
-                case TYROSINE: {
-                    connectPhenylalanine(aminoAcid, atoms);
-                    aminoAcid.addBondBetween(atoms.get("CZ"), atoms.get("OH"));
-                    break;
-                }
-                case VALINE: {
-                    connectInOrder(aminoAcid, atoms, "CA", "CB", "CG1");
-                    aminoAcid.addBondBetween(atoms.get("CB"), atoms.get("CG2"));
-                    break;
-                }
-                default: {
-                    break;
-                }
-            }
+        // connect backbone atoms first
+        connectBackboneAtoms(aminoAcid, atoms);
+        if (ALANINE.equals(aminoAcid.getFamily())) {
+            aminoAcid.addBondBetween(atoms.get("CA"), atoms.get("CB"));
+        } else if (ARGININE.equals(aminoAcid.getFamily())) {
+            connectInOrder(aminoAcid, atoms, "CA", "CB", "CG", "CD", "NE", "CZ", "NH1");
+            aminoAcid.addBondBetween(atoms.get("CZ"), atoms.get("NH2"), CovalentBondType.DOUBLE_BOND);
+        } else if (ASPARAGINE.equals(aminoAcid.getFamily())) {
+            connectInOrder(aminoAcid, atoms, "CA", "CB", "CG", "ND2");
+            aminoAcid.addBondBetween(atoms.get("CG"), atoms.get("OD1"), CovalentBondType.DOUBLE_BOND);
+        } else if (ASPARTIC_ACID.equals(aminoAcid.getFamily())) {
+            connectInOrder(aminoAcid, atoms, "CA", "CB", "CG", "OD2");
+            aminoAcid.addBondBetween(atoms.get("CG"), atoms.get("OD1"), CovalentBondType.DOUBLE_BOND);
+        } else if (CYSTEINE.equals(aminoAcid.getFamily())) {
+            connectInOrder(aminoAcid, atoms, "CA", "CB", "SG");
+        } else if (GLUTAMINE.equals(aminoAcid.getFamily())) {
+            connectInOrder(aminoAcid, atoms, "CA", "CB", "CG", "CD", "NE2");
+            aminoAcid.addBondBetween(atoms.get("CD"), atoms.get("OE1"), CovalentBondType.DOUBLE_BOND);
+        } else if (GLUTAMIC_ACID.equals(aminoAcid.getFamily())) {
+            connectInOrder(aminoAcid, atoms, "CA", "CB", "CG", "CD", "OE2");
+            aminoAcid.addBondBetween(atoms.get("CD"), atoms.get("OE1"), CovalentBondType.DOUBLE_BOND);
+        } else if (HISTIDINE.equals(aminoAcid.getFamily())) {
+            connectHistidine(aminoAcid, atoms);
+        } else if (ISOLEUCINE.equals(aminoAcid.getFamily())) {
+            connectInOrder(aminoAcid, atoms, "CA", "CB", "CG1", "CD1");
+            aminoAcid.addBondBetween(atoms.get("CB"), atoms.get("CG2"));
+        } else if (LEUCINE.equals(aminoAcid.getFamily())) {
+            connectInOrder(aminoAcid, atoms, "CA", "CB", "CG", "CD1");
+            aminoAcid.addBondBetween(atoms.get("CG"), atoms.get("CD2"));
+        } else if (LYSINE.equals(aminoAcid.getFamily())) {
+            connectInOrder(aminoAcid, atoms, "CA", "CB", "CG", "CD", "CE", "NZ");
+        } else if (METHIONINE.equals(aminoAcid.getFamily())) {
+            connectInOrder(aminoAcid, atoms, "CA", "CB", "CG", "SD", "CE");
+        } else if (PHENYLALANINE.equals(aminoAcid.getFamily())) {
+            connectPhenylalanine(aminoAcid, atoms);
+        } else if (PROLINE.equals(aminoAcid.getFamily())) {
+            connectInOrder(aminoAcid, atoms, "CA", "CB", "CG", "CD", "N", "CA");
+        } else if (SERINE.equals(aminoAcid.getFamily())) {
+            connectInOrder(aminoAcid, atoms, "CA", "CB", "OG");
+        } else if (THREONINE.equals(aminoAcid.getFamily())) {
+            connectInOrder(aminoAcid, atoms, "CA", "CB", "OG1");
+            aminoAcid.addBondBetween(atoms.get("CB"), atoms.get("CG2"));
+        } else if (TRYPTOPHAN.equals(aminoAcid.getFamily())) {
+            connectTryptophan(aminoAcid, atoms);
+        } else if (TYROSINE.equals(aminoAcid.getFamily())) {
+            connectPhenylalanine(aminoAcid, atoms);
+            aminoAcid.addBondBetween(atoms.get("CZ"), atoms.get("OH"));
+        } else if (VALINE.equals(aminoAcid.getFamily())) {
+            connectInOrder(aminoAcid, atoms, "CA", "CB", "CG1");
+            aminoAcid.addBondBetween(atoms.get("CB"), atoms.get("CG2"));
+        }
     }
 
     /**
@@ -270,7 +196,7 @@ public class LeafSubstructureFactory {
      * @param atoms The atoms to take from.
      * @param names The names that should be connected.
      */
-    private static void connectInOrder(OakLeafSubstructure<?> substructure, Map<String, OakAtom> atoms, String... names) {
+    private static void connectInOrder(OakLeafSubstructure substructure, Map<String, OakAtom> atoms, String... names) {
         if (names.length < 2) {
             throw new IllegalArgumentException("Two or more atom names are required in order to connect them.");
         }
@@ -279,7 +205,7 @@ public class LeafSubstructureFactory {
         }
     }
 
-    private static void connectPhenylalanine(OakLeafSubstructure<?> substructure, Map<String, OakAtom> atoms) {
+    private static void connectPhenylalanine(OakLeafSubstructure substructure, Map<String, OakAtom> atoms) {
         substructure.addBondBetween(atoms.get("CA"), atoms.get("CB"));
         substructure.addBondBetween(atoms.get("CB"), atoms.get("CG"));
         substructure.addBondBetween(atoms.get("CG"), atoms.get("CD2"));
@@ -291,7 +217,7 @@ public class LeafSubstructureFactory {
 
     }
 
-    private static void connectTryptophan(OakLeafSubstructure<?> substructure, Map<String, OakAtom> atoms) {
+    private static void connectTryptophan(OakLeafSubstructure substructure, Map<String, OakAtom> atoms) {
         substructure.addBondBetween(atoms.get("CA"), atoms.get("CB"));
         substructure.addBondBetween(atoms.get("CB"), atoms.get("CG"));
         substructure.addBondBetween(atoms.get("CG"), atoms.get("CD2"));
@@ -306,7 +232,7 @@ public class LeafSubstructureFactory {
         substructure.addBondBetween(atoms.get("CD1"), atoms.get("CG"), CovalentBondType.DOUBLE_BOND);
     }
 
-    private static void connectHistidine(OakLeafSubstructure<?> substructure, Map<String, OakAtom> atoms) {
+    private static void connectHistidine(OakLeafSubstructure substructure, Map<String, OakAtom> atoms) {
         substructure.addBondBetween(atoms.get("CA"), atoms.get("CB"));
         substructure.addBondBetween(atoms.get("CB"), atoms.get("CG"));
         substructure.addBondBetween(atoms.get("CG"), atoms.get("CD2"), CovalentBondType.DOUBLE_BOND);
@@ -347,7 +273,7 @@ public class LeafSubstructureFactory {
      * @param aminoAcid The aminoAcid to connect in.
      * @param atoms The atoms to take from.
      */
-    private static void connectCTerminaAtoms(OakAminoAcid aminoAcid, Map<String, OakAtom> atoms, StructureParserOptions options) {
+    private static void connectCTerminalAtoms(OakAminoAcid aminoAcid, Map<String, OakAtom> atoms, StructureParserOptions options) {
         aminoAcid.addBondBetween(atoms.get("C"), atoms.get("OXT"));
         if (!options.isOmittingHydrogen()) {
             aminoAcid.addBondBetween(atoms.get("OXT"), atoms.get("HXT"));

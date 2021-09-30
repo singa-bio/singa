@@ -62,12 +62,12 @@ public enum ConnectionToken implements PDBToken {
             return;
         }
         UniqueAtomIdentifier atomIdentifier = uniqueAtomEntry.getKey();
-        Optional<LeafSubstructure<?>> leafSubstructureOptional = structure.getLeafSubstructure(atomIdentifier.getLeafIdentifier());
+        Optional<LeafSubstructure> leafSubstructureOptional = structure.getLeafSubstructure(atomIdentifier.getLeafIdentifier());
         if (!leafSubstructureOptional.isPresent()) {
             logger.warn("could not add connection for leaf {}, leaf could not be found in the structure", atomIdentifier.getLeafIdentifier());
             return;
         }
-        OakLeafSubstructure<?> leafsubstructure = ((OakLeafSubstructure<?>) leafSubstructureOptional.get());
+        OakLeafSubstructure leafsubstructure = ((OakLeafSubstructure) leafSubstructureOptional.get());
         OakAtom sourceAtom = ((OakAtom) uniqueAtomEntry.getValue());
 
         String firstTargetAtomString = CONNECTION_TARGET_ATOM_1.extract(connectionLine);
@@ -84,7 +84,7 @@ public enum ConnectionToken implements PDBToken {
 
     }
 
-    private static void addBond(OakStructure structure, OakLeafSubstructure<?> leafsubstructure, OakAtom sourceAtom, String targetAtomString) {
+    private static void addBond(OakStructure structure, OakLeafSubstructure leafsubstructure, OakAtom sourceAtom, String targetAtomString) {
         Optional<OakAtom> targetOptional = extractAtom(structure, leafsubstructure, targetAtomString);
         if (targetOptional.isPresent()) {
             OakAtom targetAtom = targetOptional.get();
@@ -94,7 +94,7 @@ public enum ConnectionToken implements PDBToken {
         }
     }
 
-    public static Optional<OakAtom> extractAtom(OakStructure structure, OakLeafSubstructure<?> leafsubstructure, String targetAtomString) {
+    public static Optional<OakAtom> extractAtom(OakStructure structure, OakLeafSubstructure leafsubstructure, String targetAtomString) {
         if (isNumeric(targetAtomString)) {
             // FIXME it is possible the the target of the connection is referenced in another leaf
             int targetAtom = Integer.parseInt(targetAtomString);
@@ -114,7 +114,7 @@ public enum ConnectionToken implements PDBToken {
         }
     }
 
-    public static String assemblePDBLines(OakLeafSubstructure<?> leafsubstructure) {
+    public static String assemblePDBLines(OakLeafSubstructure leafsubstructure) {
         StringBuilder builder = new StringBuilder();
         for (Atom atom : leafsubstructure.getAllAtoms()) {
             OakAtom firstAtom = (OakAtom) atom;

@@ -39,7 +39,7 @@ class MmtfChainTest {
 
     @Test
     void getAllLeafSubstructures() {
-        final List<LeafSubstructure<?>> leafSubstructures = firstChain.getAllLeafSubstructures();
+        final List<LeafSubstructure> leafSubstructures = firstChain.getAllLeafSubstructures();
         assertEquals(167, leafSubstructures.size());
     }
 
@@ -48,11 +48,11 @@ class MmtfChainTest {
         // ATOM    154  N   LEU A  64      13.596   6.125 -14.412  1.00  0.00           N
         // ..
         // ATOM    172 HD23 LEU A  64      11.462   1.727 -16.563  1.00  0.00           H
-        Optional<LeafSubstructure<?>> optionalLeafSubstructure = firstChain.getLeafSubstructure(new PdbLeafIdentifier("2N5E", 1, "A", 64));
+        Optional<LeafSubstructure> optionalLeafSubstructure = firstChain.getLeafSubstructure(new PdbLeafIdentifier("2N5E", 1, "A", 64));
         if (!optionalLeafSubstructure.isPresent()) {
             fail("Optional leaf substructure was empty.");
         }
-        final LeafSubstructure<?> leafSubstructure = optionalLeafSubstructure.get();
+        final LeafSubstructure leafSubstructure = optionalLeafSubstructure.get();
         assertEquals(1, leafSubstructure.getIdentifier().getModelIdentifier());
         assertEquals("A", leafSubstructure.getIdentifier().getChainIdentifier());
         assertEquals("Leu", leafSubstructure.getThreeLetterCode());
@@ -65,11 +65,11 @@ class MmtfChainTest {
         // ...
         // ATOM   4375 HD23 LEU B 174      -3.489  -6.082 -46.198  1.00  0.00           H
         final PdbLeafIdentifier leafIdentifier = new PdbLeafIdentifier("2N5E", 1, "B", 174);
-        Optional<LeafSubstructure<?>> optionalLeafSubstructure = chainToModify.getLeafSubstructure(leafIdentifier);
+        Optional<LeafSubstructure> optionalLeafSubstructure = chainToModify.getLeafSubstructure(leafIdentifier);
         if (!optionalLeafSubstructure.isPresent()) {
             fail("Optional leaf substructure was empty.");
         }
-        final LeafSubstructure<?> leafSubstructure = optionalLeafSubstructure.get();
+        final LeafSubstructure leafSubstructure = optionalLeafSubstructure.get();
         assertEquals("Leu", leafSubstructure.getThreeLetterCode());
         assertEquals(174, leafSubstructure.getIdentifier().getSerial());
         chainToModify.removeLeafSubstructure(leafIdentifier);
@@ -130,7 +130,7 @@ class MmtfChainTest {
         assertEquals(chainCopyCopy, chainCopy);
         assertNotSame(chainCopyCopy, chainCopy);
         // assert that the copy's copy does not contain the leaf
-        Optional<LeafSubstructure<?>> optionalLeafSubstructure = chainCopyCopy.getLeafSubstructure(leafIdentifier);
+        Optional<LeafSubstructure> optionalLeafSubstructure = chainCopyCopy.getLeafSubstructure(leafIdentifier);
         assertFalse(optionalLeafSubstructure.isPresent());
         // but the original does
         optionalLeafSubstructure = chainToModify.getLeafSubstructure(leafIdentifier);

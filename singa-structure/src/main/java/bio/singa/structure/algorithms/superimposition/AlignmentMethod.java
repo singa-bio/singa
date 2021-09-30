@@ -5,7 +5,6 @@ import bio.singa.structure.algorithms.superimposition.consensus.ConsensusContain
 import bio.singa.structure.algorithms.superimposition.fit3d.representations.RepresentationScheme;
 import bio.singa.structure.algorithms.superimposition.fit3d.representations.RepresentationSchemeFactory;
 import bio.singa.structure.algorithms.superimposition.fit3d.representations.RepresentationSchemeType;
-import bio.singa.structure.model.families.AminoAcidFamily;
 import bio.singa.structure.model.families.StructuralFamily;
 import bio.singa.structure.model.interfaces.Atom;
 import bio.singa.structure.model.interfaces.AtomContainer;
@@ -22,6 +21,8 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+
+import static bio.singa.structure.model.families.StructuralFamilies.AminoAcids.UNKNOWN;
 
 /**
  * @author cl
@@ -94,9 +95,9 @@ public class AlignmentMethod {
         return superimposition;
     }
 
-    public List<LeafSubstructure<?>> determineConsensus(Map.Entry<SubstructureSuperimposition, Pair<ConsensusContainer>> substructurePair) {
-        List<LeafSubstructure<?>> reference = substructurePair.getValue().getFirst().getStructuralMotif().getAllLeafSubstructures();
-        List<LeafSubstructure<?>> candidate = substructurePair.getKey().getMappedFullCandidate();
+    public List<LeafSubstructure> determineConsensus(Map.Entry<SubstructureSuperimposition, Pair<ConsensusContainer>> substructurePair) {
+        List<LeafSubstructure> reference = substructurePair.getValue().getFirst().getStructuralMotif().getAllLeafSubstructures();
+        List<LeafSubstructure> candidate = substructurePair.getKey().getMappedFullCandidate();
 
         Map<Pair<LeafSubstructure>, Set<String>> perAtomAlignment = new LinkedHashMap<>();
 
@@ -144,7 +145,7 @@ public class AlignmentMethod {
         }
 
         // create consensus substructures
-        List<LeafSubstructure<?>> consensusLeaveSubstructures = new ArrayList<>();
+        List<LeafSubstructure> consensusLeaveSubstructures = new ArrayList<>();
         int atomCounter = 1;
         int leafCounter = 1;
         for (int i = 0; i < referenceAtoms.size(); i++) {
@@ -169,11 +170,11 @@ public class AlignmentMethod {
             }
             // default to unknown if family type differs
             if (family == null) {
-                family = AminoAcidFamily.UNKNOWN;
+                family = UNKNOWN;
             }
 
             // create new atom container
-            OakLeafSubstructure<?> leafSubstructure = LeafSubstructureFactory.createLeafSubstructure(new PdbLeafIdentifier(PdbLeafIdentifier.DEFAULT_PDB_IDENTIFIER, PdbLeafIdentifier.DEFAULT_MODEL_IDENTIFIER, PdbLeafIdentifier.DEFAULT_CHAIN_IDENTIFIER, leafCounter), family);
+            OakLeafSubstructure leafSubstructure = LeafSubstructureFactory.createLeafSubstructure(new PdbLeafIdentifier(PdbLeafIdentifier.DEFAULT_PDB_IDENTIFIER, PdbLeafIdentifier.DEFAULT_MODEL_IDENTIFIER, PdbLeafIdentifier.DEFAULT_CHAIN_IDENTIFIER, leafCounter), family);
             averagedAtoms.forEach(leafSubstructure::addAtom);
             consensusLeaveSubstructures.add(leafSubstructure);
             leafCounter++;

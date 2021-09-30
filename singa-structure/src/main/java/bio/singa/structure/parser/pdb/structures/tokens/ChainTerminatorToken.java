@@ -42,7 +42,7 @@ public enum ChainTerminatorToken implements PDBToken {
         return "TER   " +
                 String.format("%5d", (lastLeafOfChain.getAllAtoms().get(lastLeafOfChain.getAllAtoms().size() - 1).getAtomIdentifier() + 1)) +
                 "      " +
-                RESIDUE_NAME.createTokenString(lastLeafOfChain.getFamily().getThreeLetterCode().toUpperCase()) +
+                RESIDUE_NAME.createTokenString(lastLeafOfChain.getFamily().getThreeLetterCode()) +
                 " " +
                 lastLeafOfChain.getChainIdentifier() +
                 String.format("%4d", lastLeafOfChain.getSerial()) +
