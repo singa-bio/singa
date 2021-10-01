@@ -65,11 +65,11 @@ public class SubstructureSuperimposition implements Superimposition<LeafSubstruc
      */
     public String getStringRepresentation() {
         return mappedCandidate.stream()
-                .map(leafSubstructure -> leafSubstructure.getChainIdentifier() + "-"
+                .map(leafSubstructure -> leafSubstructure.getIdentifier().getChainIdentifier() + "-"
                         + leafSubstructure.getIdentifier().getSerial()
                         + (leafSubstructure.getIdentifier().getInsertionCode() != DEFAULT_INSERTION_CODE ? leafSubstructure.getIdentifier().getInsertionCode() : ""))
                 .collect(Collectors.joining("_", getFormattedRmsd() + "_"
-                        + mappedCandidate.get(0).getPdbIdentifier()
+                        + mappedCandidate.get(0).getIdentifier().getStructureIdentifier()
                         + "_", ""));
     }
 

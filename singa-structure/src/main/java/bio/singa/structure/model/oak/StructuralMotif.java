@@ -257,7 +257,7 @@ public class StructuralMotif implements LeafSubstructureContainer {
 
         public static Type determine(StructuralMotif structuralMotif) {
             return structuralMotif.getAllLeafSubstructures().stream()
-                    .map(LeafSubstructure::getChainIdentifier)
+                    .map(leafSubstructure -> leafSubstructure.getIdentifier().getChainIdentifier())
                     .distinct()
                     .count() == 1 ? INTRA : INTER;
         }

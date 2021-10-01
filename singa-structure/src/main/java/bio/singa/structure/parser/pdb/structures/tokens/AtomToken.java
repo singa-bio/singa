@@ -85,7 +85,7 @@ public enum AtomToken implements PDBToken {
                     .append(" ") // ALTERNATE_LOCATION_INDICATOR not yet implemented
                     .append(RESIDUE_NAME.createTokenString(leaf.getThreeLetterCode()))
                     .append(" ")
-                    .append(leaf.getChainIdentifier())
+                    .append(leaf.getIdentifier().getChainIdentifier())
                     .append(RESIDUE_SERIAL.createTokenString(String.valueOf(leaf.getIdentifier().getSerial())))
                     .append(RESIDUE_INSERTION.createTokenString(String.valueOf(
                             leaf.getIdentifier().getInsertionCode() == PdbLeafIdentifier.DEFAULT_INSERTION_CODE

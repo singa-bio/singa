@@ -33,22 +33,6 @@ public interface LeafSubstructure extends AtomContainer {
      */
     StructuralFamily getFamily();
 
-    default String getPdbIdentifier() {
-        return getIdentifier().getStructureIdentifier();
-    }
-
-    default Integer getModelIdentifier() {
-        return getIdentifier().getModelIdentifier();
-    }
-
-    default String getChainIdentifier() {
-        return getIdentifier().getChainIdentifier();
-    }
-
-    default Integer getSerial() {
-        return getIdentifier().getSerial();
-    }
-
     default Vector3D getPosition() {
         return Vectors3D.get3DCentroid(getAllAtoms().stream()
                 .map(Atom::getPosition)

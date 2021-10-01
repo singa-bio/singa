@@ -181,9 +181,9 @@ public class Fit3DAlignment implements Fit3D {
                     // filter hollow matches which are used for p-value calculation
                     .filter(match -> match.getSubstructureSuperimposition() != null)
                     .forEach(match -> {
-                        String pdbIdentifier = match.getSubstructureSuperimposition().getCandidate().get(0).getPdbIdentifier();
+                        String pdbIdentifier = match.getSubstructureSuperimposition().getCandidate().get(0).getIdentifier().getStructureIdentifier();
                         List<String> chainIdentifiers = match.getSubstructureSuperimposition().getCandidate().stream()
-                                .map(LeafSubstructure::getChainIdentifier)
+                                .map(leafSubstructure -> leafSubstructure.getIdentifier().getChainIdentifier())
                                 .distinct()
                                 .collect(Collectors.toList());
                         Map<String, UniProtIdentifier> uniProtIdentifiers;

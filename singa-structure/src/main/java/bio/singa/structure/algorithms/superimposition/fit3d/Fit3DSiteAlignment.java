@@ -518,14 +518,14 @@ public class Fit3DSiteAlignment implements Fit3D {
 
         String site1FileLocation = site1.getAllLeafSubstructures().stream()
                 .sorted(Comparator.comparing(LeafSubstructure::getIdentifier))
-                .map(leafSubstructure -> leafSubstructure.getChainIdentifier() + "-" + leafSubstructure.getIdentifier().getSerial())
-                .collect(Collectors.joining("_", bestSuperimposition.getFormattedRmsd() + "_" + site1.getAllLeafSubstructures().get(0).getPdbIdentifier() + "_", ""))
+                .map(leafSubstructure -> leafSubstructure.getIdentifier().getChainIdentifier() + "-" + leafSubstructure.getIdentifier().getSerial())
+                .collect(Collectors.joining("_", bestSuperimposition.getFormattedRmsd() + "_" + site1.getAllLeafSubstructures().get(0).getIdentifier().getStructureIdentifier() + "_", ""))
                 + "_site1.pdb";
 
         String site2FileLocation = site2.getAllLeafSubstructures().stream()
                 .sorted(Comparator.comparing(LeafSubstructure::getIdentifier))
-                .map(leafSubstructure -> leafSubstructure.getChainIdentifier() + "-" + leafSubstructure.getIdentifier().getSerial())
-                .collect(Collectors.joining("_", bestSuperimposition.getFormattedRmsd() + "_" + site2.getAllLeafSubstructures().get(0).getPdbIdentifier() + "_", ""))
+                .map(leafSubstructure -> leafSubstructure.getIdentifier().getChainIdentifier() + "-" + leafSubstructure.getIdentifier().getSerial())
+                .collect(Collectors.joining("_", bestSuperimposition.getFormattedRmsd() + "_" + site2.getAllLeafSubstructures().get(0).getIdentifier().getStructureIdentifier() + "_", ""))
                 + "_site2.pdb";
 
         try {

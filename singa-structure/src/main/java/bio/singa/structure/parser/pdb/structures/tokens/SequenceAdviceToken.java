@@ -54,7 +54,7 @@ public enum SequenceAdviceToken implements PDBToken {
         List<LeafSubstructure> advisableResidues = structure.getAllChains().stream()
                 .filter(chain -> chain.getChainIdentifier().equals(adviceChain))
                 .flatMap(chain -> chain.getAllLeafSubstructures().stream())
-                .filter(leaf -> leaf.getSerial().equals(adviceSerial) && leaf.getIdentifier().getInsertionCode() == adviceInsertionCode)
+                .filter(leaf -> leaf.getIdentifier().getSerial() == adviceSerial && leaf.getIdentifier().getInsertionCode() == adviceInsertionCode)
                 .collect(Collectors.toList());
 
         String originalResidueName = DATABASE_RESIDUE_NAME.extract(line).trim();

@@ -44,8 +44,8 @@ public enum ChainTerminatorToken implements PDBToken {
                 "      " +
                 RESIDUE_NAME.createTokenString(lastLeafOfChain.getFamily().getThreeLetterCode()) +
                 " " +
-                lastLeafOfChain.getChainIdentifier() +
-                String.format("%4d", lastLeafOfChain.getSerial()) +
+                lastLeafOfChain.getIdentifier().getChainIdentifier() +
+                String.format("%4d", lastLeafOfChain.getIdentifier().getSerial()) +
                 (!lastLeafOfChain.getIdentifier().hasInsertionCode() ? "" : lastLeafOfChain.getIdentifier().getInsertionCode());
     }
 

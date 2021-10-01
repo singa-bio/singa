@@ -38,7 +38,7 @@ public class LeafIdentifierTest {
     @Test
     void fromSimpleString() {
         PdbLeafIdentifier leafIdentifier = PdbLeafIdentifier.fromSimpleString("A-27A");
-        assertEquals(leaf.getChainIdentifier(), leafIdentifier.getChainIdentifier());
+        assertEquals(leaf.getIdentifier().getChainIdentifier(), leafIdentifier.getChainIdentifier());
         assertEquals(leaf.getIdentifier().getSerial(), leafIdentifier.getSerial());
         assertEquals(leaf.getIdentifier().getInsertionCode(), leafIdentifier.getInsertionCode());
     }

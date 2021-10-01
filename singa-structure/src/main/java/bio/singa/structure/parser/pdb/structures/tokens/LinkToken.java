@@ -93,7 +93,7 @@ public enum LinkToken implements PDBToken {
                 .append(" ") // ALTERNATE_LOCATION_INDICATOR not yet implemented
                 .append(FIRST_ATOM_RESIDUE_NAME.createTokenString(link.getFirstLeafSubstructure().getThreeLetterCode()))
                 .append(" ")
-                .append(link.getFirstLeafSubstructure().getChainIdentifier())
+                .append(link.getFirstLeafSubstructure().getIdentifier().getChainIdentifier())
                 .append(FIRST_ATOM_RESIDUE_SERIAL.createTokenString(String.valueOf(link.getFirstLeafSubstructure().getIdentifier().getSerial())))
                 .append(FIRST_ATOM_RESIDUE_INSERTION.createTokenString(String.valueOf(
                         link.getFirstLeafSubstructure().getIdentifier().getInsertionCode() == PdbLeafIdentifier.DEFAULT_INSERTION_CODE
@@ -103,7 +103,7 @@ public enum LinkToken implements PDBToken {
                 .append(" ") // ALTERNATE_LOCATION_INDICATOR not yet implemented
                 .append(SECOND_ATOM_RESIDUE_NAME.createTokenString(link.getSecondLeafSubstructure().getThreeLetterCode()))
                 .append(" ")
-                .append(link.getSecondLeafSubstructure().getChainIdentifier())
+                .append(link.getSecondLeafSubstructure().getIdentifier().getChainIdentifier())
                 .append(SECOND_ATOM_RESIDUE_SERIAL.createTokenString(String.valueOf(link.getSecondLeafSubstructure().getIdentifier().getSerial())))
                 .append(SECOND_ATOM_RESIDUE_INSERTION.createTokenString(String.valueOf(
                         link.getSecondLeafSubstructure().getIdentifier().getInsertionCode() == PdbLeafIdentifier.DEFAULT_INSERTION_CODE

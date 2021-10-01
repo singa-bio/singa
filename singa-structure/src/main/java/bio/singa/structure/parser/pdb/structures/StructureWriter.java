@@ -373,13 +373,13 @@ public class StructureWriter {
                         // TODO secStrucType is an integer and follows the DSSP numenclature, BioJava: DsspType
                         structureAdapterInterface.setGroupInfo(
                                 leafSubstructure.getThreeLetterCode(),
-                                leafSubstructure.getSerial(),
+                                leafSubstructure.getIdentifier().getSerial(),
                                 insertionCode,
                                 "L-peptide linking",
                                 leafSubstructure.getAllAtoms().size(),
                                 0,
                                 oneLetterCode,
-                                leafSubstructure.getSerial(),
+                                leafSubstructure.getIdentifier().getSerial(),
                                 leafSubstructure instanceof MmtfAminoAcid ? ((MmtfAminoAcid) leafSubstructure).getSecondaryStructure().getMmtfCode() : -1);
                         for (Atom atom : atoms) {
                             // TODO currently alternate location, and occupancy are ignored
