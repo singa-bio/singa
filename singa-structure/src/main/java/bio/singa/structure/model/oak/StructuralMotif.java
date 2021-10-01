@@ -7,18 +7,33 @@ import bio.singa.structure.model.interfaces.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
+ *  Exchangeable defines an entity that is exchangeable in terms of mapping another label or a set of other labels to
+ *  that entity. <p> <b>This constitutes a surjective mapping of {@link StructuralFamily}s.</b> <p> <b>By default an
+ *  entity is always exchangeable with itself.</b>
+ *
  * @author cl
  */
 public class StructuralMotif implements LeafSubstructureContainer {
 
-    public final LinkedHashMap<LeafIdentifier, LeafSubstructure> leafSubstructures;
     private final String identifier;
+
+    /**
+     * The leaves contained in this motif.
+     */
+    public final LinkedHashMap<LeafIdentifier, LeafSubstructure> leafSubstructures;
+
+    /**
+     * The families to which the {@link LeafSubstructure} can be exchanged.
+     */
+    private final HashMap<LeafSubstructure, Set<StructuralFamily>> exchangeableFamilies;
 
     private StructuralMotif(String identifier) {
         this.identifier = identifier;
         leafSubstructures = new LinkedHashMap<>();
+        exchangeableFamilies = new HashMap<>();
     }
 
     private StructuralMotif(String identifier, List<LeafSubstructure> leafSubstructures) {
@@ -32,6 +47,11 @@ public class StructuralMotif implements LeafSubstructureContainer {
         this(structuralMotif.identifier);
         for (LeafSubstructure leafSubstructure : structuralMotif.leafSubstructures.values()) {
             addLeafSubstructure(leafSubstructure);
+        }
+        for (Map.Entry<LeafSubstructure, Set<StructuralFamily>> entry : structuralMotif.exchangeableFamilies.entrySet()) {
+            for (StructuralFamily structuralFamily : entry.getValue()) {
+                addExchangeableFamily(entry.getKey(), structuralFamily);
+            }
         }
     }
 
@@ -139,21 +159,22 @@ public class StructuralMotif implements LeafSubstructureContainer {
 
     public void addExchangeableFamily(LeafIdentifier leafIdentifier, StructuralFamily structuralFamily) {
         if (StructuralFamilies.AminoAcids.isAminoAcid(structuralFamily)) {
-            leafSubstructures.values().stream()
+            LeafSubstructure leafSubstructure = leafSubstructures.values().stream()
                     .filter(StructuralEntityFilter.LeafFilter.isAminoAcid())
                     .filter(aminoAcid -> aminoAcid.getIdentifier().getChainIdentifier().equals(leafIdentifier.getChainIdentifier()))
                     .filter(aminoAcid -> aminoAcid.getIdentifier().getSerial() == leafIdentifier.getSerial())
                     .findFirst()
-                    .orElseThrow(NoSuchElementException::new)
-                    .addExchangeableFamily(structuralFamily);
+                    .orElseThrow(NoSuchElementException::new);
+            addExchangeableFamily(leafSubstructure, structuralFamily);
         } else if (StructuralFamilies.Nucleotides.isNucleotide(structuralFamily)) {
-            leafSubstructures.values().stream()
+            LeafSubstructure leafSubstructure = leafSubstructures.values().stream()
                     .filter(StructuralEntityFilter.LeafFilter.isNucleotide())
                     .filter(aminoAcid -> aminoAcid.getIdentifier().getChainIdentifier().equals(leafIdentifier.getChainIdentifier()))
                     .filter(aminoAcid -> aminoAcid.getIdentifier().getSerial() == leafIdentifier.getSerial())
                     .findFirst()
-                    .orElseThrow(NoSuchElementException::new)
-                    .addExchangeableFamily(structuralFamily);
+                    .orElseThrow(NoSuchElementException::new);
+
+            addExchangeableFamily(leafSubstructure, structuralFamily);
         } else if (StructuralFamilies.Matchers.isMatcher(structuralFamily)) {
             Matchers.getMatcherEntities(structuralFamily)
                     .forEach(matcherFamilyMember -> addExchangeableFamily(leafIdentifier, matcherFamilyMember));
@@ -168,8 +189,46 @@ public class StructuralMotif implements LeafSubstructureContainer {
         leafSubstructures.values().stream()
                 .filter(StructuralEntityFilter.LeafFilter.isAminoAcid())
                 .map(AminoAcid.class::cast)
-                .forEach(exchangeable -> exchangeable.addExchangeableFamily(aminoAcidFamily));
+                .forEach(exchangeable -> addExchangeableFamily(exchangeable, aminoAcidFamily));
 
+    }
+
+    /**
+     * Returns the {@link StructuralFamily}s to which this entity is exchangeable. By default an entity is always
+     * exchangeable to the same {@link StructuralFamily}.
+     *
+     * @return a set of exchangeable types
+     */
+    public Set<StructuralFamily> getExchangeableFamilies(LeafSubstructure leafSubstructure) {
+        if (!exchangeableFamilies.containsKey(leafSubstructure)) {
+            return Collections.emptySet();
+        }
+        return exchangeableFamilies.get(leafSubstructure);
+    }
+
+    /**
+     * Returns all {@link StructuralFamily} types that are defined, this is the concrete type of the entity itself
+     * <b>plus</b> all exchangeable types.
+     *
+     * @return a set of containing types (own type + exchangeable types)
+     */
+    public Set<StructuralFamily> getContainingFamilies(LeafSubstructure leafSubstructure) {
+        Set<StructuralFamily> types = new HashSet<>();
+        types.add(leafSubstructure.getFamily());
+        types.addAll(getExchangeableFamilies(leafSubstructure));
+        return types;
+    }
+
+    /**
+     * Adds an exchangeable {@link StructuralFamily}.
+     *
+     * @param exchangeableFamily the {@link StructuralFamily} to be added
+     */
+    public void addExchangeableFamily(LeafSubstructure leafSubstructure, StructuralFamily exchangeableFamily) {
+        if (!exchangeableFamilies.containsKey(leafSubstructure)) {
+            exchangeableFamilies.put(leafSubstructure, new HashSet<>());
+        }
+        getExchangeableFamilies(leafSubstructure).add(exchangeableFamily);
     }
 
     @Override

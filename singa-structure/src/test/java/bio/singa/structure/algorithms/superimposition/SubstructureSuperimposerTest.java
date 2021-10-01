@@ -108,7 +108,7 @@ class SubstructureSuperimposerTest {
     @Test
     void shouldCalculateKuhnMunkresSubstructureSuperimposition() {
         SubstructureSuperimposition superimposition = SubstructureSuperimposer
-                .calculateKuhnMunkresSubstructureSuperimposition(reference, candidate, SubstitutionMatrix.BLOSUM_45, true);
+                .calculateKuhnMunkresSubstructureSuperimposition(reference, candidate, SubstitutionMatrix.BLOSUM_45);
         assertEquals(0.6439715367058053, superimposition.getRmsd(), 1E-9);
     }
 

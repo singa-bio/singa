@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
-import static bio.singa.structure.model.families.GAP;
+import static bio.singa.structure.model.families.AminoAcidFamily.GAP;
 
 /**
  * @author cl

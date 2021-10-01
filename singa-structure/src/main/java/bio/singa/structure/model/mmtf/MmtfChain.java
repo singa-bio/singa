@@ -4,6 +4,7 @@ import bio.singa.core.utility.Range;
 import bio.singa.structure.model.families.StructuralFamily;
 import bio.singa.structure.model.interfaces.*;
 import bio.singa.structure.model.oak.PdbLeafIdentifier;
+import bio.singa.structure.model.oak.StructuralMotif;
 import org.rcsb.mmtf.api.StructureDataInterface;
 
 import java.util.*;
@@ -174,13 +175,13 @@ public class MmtfChain implements Chain {
      *
      * @param leafSubstructuresToKeep The leaf structures that are kept.
      */
-    public void removeLeafSubstructuresNotRelevantFor(LeafSubstructureContainer leafSubstructuresToKeep) {
+    public void removeLeafSubstructuresNotRelevantFor(StructuralMotif leafSubstructuresToKeep) {
         // this method is somewhat optimized for speed
         // collect all containing types (own types <b>plus</b> exchangeable types) of the query motif
         Set<String> relevantFamilies = new HashSet<>();
         for (LeafSubstructure leafSubstructure : leafSubstructuresToKeep.getAllLeafSubstructures()) {
             relevantFamilies.add(leafSubstructure.getFamily().getThreeLetterCode());
-            for (StructuralFamily structuralFamily : leafSubstructure.getExchangeableFamilies()) {
+            for (StructuralFamily structuralFamily : leafSubstructuresToKeep.getExchangeableFamilies(leafSubstructure)) {
                 relevantFamilies.add(structuralFamily.getThreeLetterCode());
             }
         }

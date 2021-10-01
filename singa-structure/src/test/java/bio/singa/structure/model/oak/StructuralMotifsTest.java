@@ -41,7 +41,7 @@ class StructuralMotifsTest {
         StructuralMotifs.assignComplexExchanges(structuralMotif, ALL_GUTTERIDGE);
         assertTrue(ALL_GUTTERIDGE.containsAll(structuralMotif.getAllAminoAcids()
                         .stream()
-                        .map(AminoAcid::getExchangeableFamilies)
+                        .map(structuralMotif::getExchangeableFamilies)
                         .flatMap(Collection::stream)
                         .collect(Collectors.toSet())));
     }

@@ -116,48 +116,42 @@ public class SubstructureSuperimposer {
 
     public static SubstructureSuperimposition calculateKuhnMunkresSubstructureSuperimposition(List<LeafSubstructure> reference,
                                                                                               List<LeafSubstructure> candidate,
-                                                                                              SubstitutionMatrix substitutionMatrix,
-                                                                                              boolean considerExchanges) {
-        return new SubstructureSuperimposer(reference, candidate).calculateKuhnMunkresSuperimposition(substitutionMatrix, considerExchanges);
+                                                                                              SubstitutionMatrix substitutionMatrix) {
+        return new SubstructureSuperimposer(reference, candidate).calculateKuhnMunkresSuperimposition(substitutionMatrix);
     }
 
     public static SubstructureSuperimposition calculateKuhnMunkresSubstructureSuperimposition(List<LeafSubstructure> reference,
                                                                                               List<LeafSubstructure> candidate,
                                                                                               Predicate<Atom> atomFilter,
-                                                                                              SubstitutionMatrix substitutionMatrix,
-                                                                                              boolean considerExchanges) {
-        return new SubstructureSuperimposer(reference, candidate, atomFilter, null).calculateKuhnMunkresSuperimposition(substitutionMatrix, considerExchanges);
+                                                                                              SubstitutionMatrix substitutionMatrix) {
+        return new SubstructureSuperimposer(reference, candidate, atomFilter, null).calculateKuhnMunkresSuperimposition(substitutionMatrix);
     }
 
     public static SubstructureSuperimposition calculateKuhnMunkresSubstructureSuperimposition(List<LeafSubstructure> reference,
                                                                                               List<LeafSubstructure> candidate,
                                                                                               RepresentationScheme representationScheme,
-                                                                                              SubstitutionMatrix substitutionMatrix,
-                                                                                              boolean considerExchanges) {
-        return new SubstructureSuperimposer(reference, candidate, DEFAULT_ATOM_FILTER, representationScheme).calculateKuhnMunkresSuperimposition(substitutionMatrix, considerExchanges);
+                                                                                              SubstitutionMatrix substitutionMatrix) {
+        return new SubstructureSuperimposer(reference, candidate, DEFAULT_ATOM_FILTER, representationScheme).calculateKuhnMunkresSuperimposition(substitutionMatrix);
     }
 
     public static SubstructureSuperimposition calculateKuhnMunkresSubstructureSuperimposition(LeafSubstructureContainer reference,
                                                                                               LeafSubstructureContainer candidate,
-                                                                                              SubstitutionMatrix substitutionMatrix,
-                                                                                              boolean considerExchanges) {
-        return new SubstructureSuperimposer(reference, candidate).calculateKuhnMunkresSuperimposition(substitutionMatrix, considerExchanges);
+                                                                                              SubstitutionMatrix substitutionMatrix) {
+        return new SubstructureSuperimposer(reference, candidate).calculateKuhnMunkresSuperimposition(substitutionMatrix);
     }
 
     public static SubstructureSuperimposition calculateKuhnMunkresSubstructureSuperimposition(LeafSubstructureContainer reference,
                                                                                               LeafSubstructureContainer candidate,
                                                                                               Predicate<Atom> atomFilter,
-                                                                                              SubstitutionMatrix substitutionMatrix,
-                                                                                              boolean considerExchanges) {
-        return new SubstructureSuperimposer(reference, candidate, atomFilter, null).calculateKuhnMunkresSuperimposition(substitutionMatrix, considerExchanges);
+                                                                                              SubstitutionMatrix substitutionMatrix) {
+        return new SubstructureSuperimposer(reference, candidate, atomFilter, null).calculateKuhnMunkresSuperimposition(substitutionMatrix);
     }
 
     public static SubstructureSuperimposition calculateKuhnMunkresSubstructureSuperimposition(LeafSubstructureContainer reference,
                                                                                               LeafSubstructureContainer candidate,
                                                                                               RepresentationScheme representationScheme,
-                                                                                              SubstitutionMatrix substitutionMatrix,
-                                                                                              boolean considerExchanges) {
-        return new SubstructureSuperimposer(reference, candidate, DEFAULT_ATOM_FILTER, representationScheme).calculateKuhnMunkresSuperimposition(substitutionMatrix, considerExchanges);
+                                                                                              SubstitutionMatrix substitutionMatrix) {
+        return new SubstructureSuperimposer(reference, candidate, DEFAULT_ATOM_FILTER, representationScheme).calculateKuhnMunkresSuperimposition(substitutionMatrix);
     }
 
 
@@ -390,7 +384,7 @@ public class SubstructureSuperimposer {
         return optionalSuperimposition.orElseThrow(() -> new SubstructureSuperimpositionException("no ideal superimposition found"));
     }
 
-    private SubstructureSuperimposition calculateKuhnMunkresSuperimposition(SubstitutionMatrix substitutionMatrix, boolean considerExchanges) {
+    private SubstructureSuperimposition calculateKuhnMunkresSuperimposition(SubstitutionMatrix substitutionMatrix) {
         // create cost matrix based on substitution matrix
         double[][] costMatrixElements = new double[reference.size()][candidate.size()];
         for (int i = 0; i < reference.size(); i++) {
@@ -400,11 +394,6 @@ public class SubstructureSuperimposer {
                 double substitutionCost = substitutionMatrix.toCostMatrix().getValueForLabel(
                         referenceLeafSubstructure.getFamily(), candidateLeafSubstructure.getFamily());
                 // add penalties to all substructure pairs that should not be exchangeable
-                if (considerExchanges) {
-                    if (!referenceLeafSubstructure.getContainingFamilies().contains(candidateLeafSubstructure.getFamily())) {
-                        substitutionCost = Double.MAX_VALUE;
-                    }
-                }
                 costMatrixElements[i][j] = substitutionCost;
                 costMatrixElements[j][i] = substitutionCost;
             }

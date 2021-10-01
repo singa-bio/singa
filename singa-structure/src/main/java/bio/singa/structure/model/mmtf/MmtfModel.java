@@ -1,6 +1,7 @@
 package bio.singa.structure.model.mmtf;
 
 import bio.singa.structure.model.interfaces.*;
+import bio.singa.structure.model.oak.StructuralMotif;
 import org.rcsb.mmtf.api.StructureDataInterface;
 
 import java.util.*;
@@ -172,7 +173,7 @@ public class MmtfModel implements Model {
     }
 
     @Override
-    public void removeLeafSubstructuresNotRelevantFor(LeafSubstructureContainer leafSubstructuresToKeep) {
+    public void removeLeafSubstructuresNotRelevantFor(StructuralMotif leafSubstructuresToKeep) {
         for (Chain chain : getAllChains()) {
             chain.removeLeafSubstructuresNotRelevantFor(leafSubstructuresToKeep);
         }

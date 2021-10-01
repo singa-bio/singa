@@ -114,11 +114,11 @@ public class Fit3DAlignment implements Fit3D {
 
                     List<StructuralFamily> firstFamilies = new ArrayList<>();
                     firstFamilies.add(firstLeafSubstructure.getFamily());
-                    firstFamilies.addAll(firstLeafSubstructure.getExchangeableFamilies());
+                    firstFamilies.addAll(queryMotif.getExchangeableFamilies(firstLeafSubstructure));
 
                     List<StructuralFamily> secondFamilies = new ArrayList<>();
                     secondFamilies.add(secondLeafSubstructure.getFamily());
-                    secondFamilies.addAll(secondLeafSubstructure.getExchangeableFamilies());
+                    secondFamilies.addAll(queryMotif.getExchangeableFamilies(secondLeafSubstructure));
 
                     for (StructuralFamily firstFamily : firstFamilies) {
                         for (StructuralFamily secondFamily : secondFamilies) {
@@ -295,9 +295,9 @@ public class Fit3DAlignment implements Fit3D {
         for (List<LeafSubstructure> environment : environments) {
             ValidCandidateGenerator validCandidateGenerator;
             if (filterEnvironments) {
-                validCandidateGenerator = new ValidCandidateGenerator(queryMotif.getAllLeafSubstructures(), environment, pairwiseQueryMotifDistanceMap, squaredDistanceMatrix, squaredFilterThreshold);
+                validCandidateGenerator = new ValidCandidateGenerator(queryMotif, environment, pairwiseQueryMotifDistanceMap, squaredDistanceMatrix, squaredFilterThreshold);
             } else {
-                validCandidateGenerator = new ValidCandidateGenerator(queryMotif.getAllLeafSubstructures(), environment);
+                validCandidateGenerator = new ValidCandidateGenerator(queryMotif, environment);
             }
             List<List<LeafSubstructure>> currentCandidates = validCandidateGenerator.getCandidates();
             if (!currentCandidates.isEmpty()) {

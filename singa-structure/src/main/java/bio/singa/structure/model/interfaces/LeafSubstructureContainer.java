@@ -1,6 +1,7 @@
 package bio.singa.structure.model.interfaces;
 
 import bio.singa.structure.model.families.StructuralFamily;
+import bio.singa.structure.model.oak.StructuralMotif;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -50,10 +51,10 @@ public interface LeafSubstructureContainer extends AtomContainer {
      *
      * @param leafSubstructuresToKeep The leaf structures that are kept.
      */
-    default void removeLeafSubstructuresNotRelevantFor(LeafSubstructureContainer leafSubstructuresToKeep) {
+    default void removeLeafSubstructuresNotRelevantFor(StructuralMotif leafSubstructuresToKeep) {
         // collect all containing types (own types <b>plus</b> exchangeable types) of the query motif
         Set<StructuralFamily> containingTypes = leafSubstructuresToKeep.getAllLeafSubstructures().stream()
-                .map(LeafSubstructure::getContainingFamilies)
+                .map(leafSubstructuresToKeep::getContainingFamilies)
                 .flatMap(Collection::stream)
                 .collect(Collectors.toSet());
         List<LeafSubstructure> toBeRemoved = getAllLeafSubstructures().stream()

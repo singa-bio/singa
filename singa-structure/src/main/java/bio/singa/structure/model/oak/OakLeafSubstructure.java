@@ -35,11 +35,6 @@ public abstract class OakLeafSubstructure implements LeafSubstructure {
     private final Map<Integer, OakBond> bonds;
 
     /**
-     * The families to which the {@link LeafSubstructure} can be exchanged.
-     */
-    private final Set<StructuralFamily> exchangeableFamilies;
-
-    /**
      * A iterating variable to add a new edge.
      */
     private int nextEdgeIdentifier = 0;
@@ -55,7 +50,6 @@ public abstract class OakLeafSubstructure implements LeafSubstructure {
         this.family = family;
         atoms = new TreeMap<>();
         bonds = new HashMap<>();
-        exchangeableFamilies = new HashSet<>();
     }
 
     public OakLeafSubstructure(PdbLeafIdentifier identifer, StructuralFamily aminoAcidFamily, String threeLetterCode) {
@@ -64,7 +58,6 @@ public abstract class OakLeafSubstructure implements LeafSubstructure {
         divergingThreeLetterCode = threeLetterCode;
         atoms = new TreeMap<>();
         bonds = new HashMap<>();
-        exchangeableFamilies = new HashSet<>();
     }
 
     /**
@@ -94,8 +87,6 @@ public abstract class OakLeafSubstructure implements LeafSubstructure {
             OakAtom targetCopy = atoms.get(bond.getTarget().getAtomIdentifier());
             addBondBetween(edgeCopy, sourceCopy, targetCopy);
         }
-        // add exchangeable types
-        exchangeableFamilies.addAll(leafSubstructure.getExchangeableFamilies());
         annotatedAsHetAtom = leafSubstructure.annotatedAsHetAtom;
     }
 
@@ -223,16 +214,6 @@ public abstract class OakLeafSubstructure implements LeafSubstructure {
     }
 
     @Override
-    public Set<StructuralFamily> getExchangeableFamilies() {
-        return exchangeableFamilies;
-    }
-
-    @Override
-    public void addExchangeableFamily(StructuralFamily exchangeableType) {
-        exchangeableFamilies.add(exchangeableType);
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -250,7 +231,6 @@ public abstract class OakLeafSubstructure implements LeafSubstructure {
         result = 31 * result + (family != null ? family.hashCode() : 0);
         return result;
     }
-
 
     @Override
     public String toString() {

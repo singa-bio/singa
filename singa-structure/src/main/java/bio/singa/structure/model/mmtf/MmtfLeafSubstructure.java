@@ -197,11 +197,6 @@ public abstract class MmtfLeafSubstructure implements LeafSubstructure {
     }
 
     @Override
-    public Set<StructuralFamily> getExchangeableFamilies() {
-        return exchangeableFamilies;
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;

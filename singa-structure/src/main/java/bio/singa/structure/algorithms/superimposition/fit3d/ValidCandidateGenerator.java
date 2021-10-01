@@ -4,6 +4,7 @@ import bio.singa.mathematics.graphs.model.DirectedGraph;
 import bio.singa.mathematics.graphs.model.GenericNode;
 import bio.singa.mathematics.matrices.LabeledSymmetricMatrix;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
+import bio.singa.structure.model.oak.StructuralMotif;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,7 +23,8 @@ public class ValidCandidateGenerator {
 
     private static final Logger logger = LoggerFactory.getLogger(ValidCandidateGenerator.class);
 
-    private final List<LeafSubstructure> queryMotif;
+    private final StructuralMotif queryMotif;
+    private final List<LeafSubstructure> enumeratedList;
     private final List<LeafSubstructure> environment;
     private final List<List<LeafSubstructure>> candidates;
     private double squaredFilterThreshold;
@@ -30,18 +32,20 @@ public class ValidCandidateGenerator {
     private LabeledSymmetricMatrix<LeafSubstructure> squaredDistanceMatrix;
     private DirectedGraph<GenericNode<LeafSubstructure>> searchSpace;
 
-    public ValidCandidateGenerator(List<LeafSubstructure> queryMotif, List<LeafSubstructure> environment) {
+    public ValidCandidateGenerator(StructuralMotif queryMotif, List<LeafSubstructure> environment) {
         this.queryMotif = queryMotif;
+        enumeratedList = queryMotif.getAllLeafSubstructures();
         this.environment = environment;
         candidates = new ArrayList<>();
         generateCandidates();
     }
 
-    public ValidCandidateGenerator(List<LeafSubstructure> queryMotif, List<LeafSubstructure> environment,
+    public ValidCandidateGenerator(StructuralMotif queryMotif, List<LeafSubstructure> environment,
                                    Map<Integer, List<Double>> pairwiseQueryMotifDistanceMap,
                                    LabeledSymmetricMatrix<LeafSubstructure> squaredDistanceMatrix,
                                    double squaredFilterThreshold) {
         this.queryMotif = queryMotif;
+        enumeratedList = queryMotif.getAllLeafSubstructures();
         this.environment = environment;
         this.pairwiseQueryMotifDistanceMap = pairwiseQueryMotifDistanceMap;
         this.squaredDistanceMatrix = squaredDistanceMatrix;
@@ -57,11 +61,11 @@ public class ValidCandidateGenerator {
      * @param candidateLeafSubstructure The {@link LeafSubstructure} of the candidate ensemble.
      * @return True if labels are compatible.
      */
-    private static boolean checkCompatibility(LeafSubstructure motifLeafSubstructure, LeafSubstructure candidateLeafSubstructure) {
+    private static boolean checkCompatibility(StructuralMotif motif, LeafSubstructure motifLeafSubstructure, LeafSubstructure candidateLeafSubstructure) {
         if (motifLeafSubstructure.getFamily().equals(candidateLeafSubstructure.getFamily())) {
             return true;
         }
-        return motifLeafSubstructure.getExchangeableFamilies().contains(candidateLeafSubstructure.getFamily());
+        return motif.getExchangeableFamilies(motifLeafSubstructure).contains(candidateLeafSubstructure.getFamily());
     }
 
     public List<List<LeafSubstructure>> getCandidates() {
@@ -108,7 +112,7 @@ public class ValidCandidateGenerator {
 
             // (2) second condition:
             // labels of the matched residues must be compatible
-            if (checkCompatibility(queryMotif.get(currentQueryDepth), candidateLeafSubstructure)) {
+            if (checkCompatibility(queryMotif, enumeratedList.get(currentQueryDepth), candidateLeafSubstructure)) {
                 logger.debug("second condition passed for {}", candidateLeafSubstructure);
 
                 // (3) third condition:

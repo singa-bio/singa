@@ -1,6 +1,7 @@
 package bio.singa.structure.model.mmtf;
 
 import bio.singa.structure.model.oak.PdbLeafIdentifier;
+import bio.singa.structure.model.oak.StructuralMotif;
 import bio.singa.structure.model.oak.UniqueAtomIdentifier;
 import bio.singa.structure.model.interfaces.*;
 import org.rcsb.mmtf.api.StructureDataInterface;
@@ -225,7 +226,7 @@ public class MmtfStructure implements Structure {
     }
 
     @Override
-    public void removeLeafSubstructuresNotRelevantFor(LeafSubstructureContainer leafSubstructuresToKeep) {
+    public void removeLeafSubstructuresNotRelevantFor(StructuralMotif leafSubstructuresToKeep) {
         for (Chain chain : getAllChains()) {
             chain.removeLeafSubstructuresNotRelevantFor(leafSubstructuresToKeep);
         }

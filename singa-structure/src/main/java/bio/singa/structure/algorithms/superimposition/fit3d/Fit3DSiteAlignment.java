@@ -120,7 +120,7 @@ public class Fit3DSiteAlignment implements Fit3D {
             extendAlignment();
         } else {
             logger.debug("using Kuhn-Munkres optimization with substitution matrix {} to find alignment", substitutionMatrix);
-            calculateAssignment();
+            calculateAssignment(site1, site2);
             calculateAlignment();
         }
 
@@ -444,7 +444,7 @@ public class Fit3DSiteAlignment implements Fit3D {
     /**
      * Calculates the optimal assignment of the input sites using Kuhn-Munkres optimization and the given {@link SubstitutionMatrix}.
      */
-    private void calculateAssignment() {
+    private void calculateAssignment(StructuralMotif site1, StructuralMotif site2) {
         double[][] costValues = new double[site1.size()][site2.size()];
         for (int i = 0; i < site1.getNumberOfLeafSubstructures(); i++) {
             for (int j = 0; j < site2.getNumberOfLeafSubstructures(); j++) {
@@ -452,8 +452,8 @@ public class Fit3DSiteAlignment implements Fit3D {
                 LeafSubstructure residue2 = site2.getAllLeafSubstructures().get(j);
                 if (restrictToExchanges && residue1.getFamily() != residue2.getFamily()) {
                     // exchanges do not penalize the score
-                    if (residue1.getExchangeableFamilies().contains(residue2.getFamily()) ||
-                            residue2.getExchangeableFamilies().contains(residue1.getFamily())) {
+                    if (site1.getExchangeableFamilies(residue1).contains(residue2.getFamily()) ||
+                            site2.getExchangeableFamilies(residue2).contains(residue1.getFamily())) {
                         continue;
                     }
                     costValues[i][j] = Double.MAX_VALUE;

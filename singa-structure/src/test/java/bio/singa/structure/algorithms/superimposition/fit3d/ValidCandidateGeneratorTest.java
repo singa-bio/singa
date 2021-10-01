@@ -88,7 +88,7 @@ class ValidCandidateGeneratorTest {
                 "A-57",
                 "A-102")).getAllLeafSubstructures();
 
-        ValidCandidateGenerator validCandidateGeneratorGraphBased = new ValidCandidateGenerator(queryMotif.getAllLeafSubstructures(), environment);
+        ValidCandidateGenerator validCandidateGeneratorGraphBased = new ValidCandidateGenerator(queryMotif, environment);
         assertEquals(204, validCandidateGeneratorGraphBased.getCandidates().size());
     }
 }
