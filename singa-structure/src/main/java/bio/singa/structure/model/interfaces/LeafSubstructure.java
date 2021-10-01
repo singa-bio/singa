@@ -3,9 +3,7 @@ package bio.singa.structure.model.interfaces;
 import bio.singa.mathematics.vectors.Vector3D;
 import bio.singa.mathematics.vectors.Vectors3D;
 import bio.singa.structure.model.families.StructuralFamily;
-import bio.singa.structure.parser.pdb.structures.tokens.AtomToken;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -37,10 +35,6 @@ public interface LeafSubstructure extends AtomContainer {
         return Vectors3D.get3DCentroid(getAllAtoms().stream()
                 .map(Atom::getPosition)
                 .collect(Collectors.toList()));
-    }
-
-    default List<String> getPdbLines() {
-        return AtomToken.assemblePDBLine(this);
     }
 
     boolean containsAtomWithName(String atomName);

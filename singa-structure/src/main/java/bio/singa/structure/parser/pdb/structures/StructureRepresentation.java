@@ -135,9 +135,9 @@ public class StructureRepresentation {
     private static String composePdbRepresentationOfNonConsecutiveRecords(List<LeafSubstructure> nonConsecutiveLeafs) {
         // sorts the leafy by their atom identifier
         if (!nonConsecutiveLeafs.isEmpty()) {
-            nonConsecutiveLeafs.sort(Comparator.comparingInt(nonConsecutiveLeaf -> nonConsecutiveLeaf.getAllAtoms().get(0).getAtomIdentifier()));
+            nonConsecutiveLeafs.sort(Comparator.comparingInt(nonConsecutiveLeaf -> nonConsecutiveLeaf.getAllAtoms().iterator().next().getAtomIdentifier()));
             return nonConsecutiveLeafs.stream()
-                    .map(LeafSubstructure::getPdbLines)
+                    .map(AtomToken::assemblePDBLine)
                     .flatMap(Collection::stream)
                     .collect(Collectors.joining(System.lineSeparator(), "", System.lineSeparator()));
         }
@@ -189,7 +189,7 @@ public class StructureRepresentation {
      */
     private List<String> getPdbLines(Collection<OakLeafSubstructure> leafSubstructures) {
         return leafSubstructures.stream()
-                .map(LeafSubstructure::getPdbLines)
+                .map(AtomToken::assemblePDBLine)
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
     }

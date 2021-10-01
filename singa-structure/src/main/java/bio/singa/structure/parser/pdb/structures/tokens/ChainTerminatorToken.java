@@ -1,9 +1,12 @@
 package bio.singa.structure.parser.pdb.structures.tokens;
 
 import bio.singa.core.utility.Range;
+import bio.singa.structure.model.interfaces.Atom;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 
+import java.util.Comparator;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * @author cl
@@ -38,9 +41,14 @@ public enum ChainTerminatorToken implements PDBToken {
      * @return The terminate record.
      */
     public static String assemblePDBLine(LeafSubstructure lastLeafOfChain) {
+        Integer atomIdentifier = lastLeafOfChain.getAllAtoms().stream()
+                .sorted(Comparator.comparingInt(Atom::getAtomIdentifier))
+                .reduce((first, second) -> second)
+                .orElseThrow(() -> new IllegalStateException("unable to get last atom of leaf " + lastLeafOfChain))
+                .getAtomIdentifier();
         // TER     961      ASP A  62
         return "TER   " +
-                String.format("%5d", (lastLeafOfChain.getAllAtoms().get(lastLeafOfChain.getAllAtoms().size() - 1).getAtomIdentifier() + 1)) +
+                String.format("%5d", atomIdentifier) +
                 "      " +
                 RESIDUE_NAME.createTokenString(lastLeafOfChain.getFamily().getThreeLetterCode()) +
                 " " +

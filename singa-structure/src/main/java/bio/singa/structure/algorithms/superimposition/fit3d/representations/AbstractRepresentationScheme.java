@@ -36,7 +36,7 @@ public abstract class AbstractRepresentationScheme implements RepresentationSche
             return optionalCO.get();
         }
         logger.debug("obtaining centroid representation for {}", leafSubstructure);
-        return new OakAtom(leafSubstructure.getAllAtoms().get(0).getAtomIdentifier(),
+        return new OakAtom(leafSubstructure.getAllAtoms().iterator().next().getAtomIdentifier(),
                 ElementProvider.UNKOWN,
                 RepresentationSchemeType.CENTROID.getAtomNameString(),
                 Vectors3D.get3DCentroid(leafSubstructure.getAllAtoms().stream()

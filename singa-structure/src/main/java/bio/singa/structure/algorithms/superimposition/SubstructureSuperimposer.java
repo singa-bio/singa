@@ -240,15 +240,14 @@ public class SubstructureSuperimposer {
         }
 
         // remove all atoms and bonds not part of the alignment
-        List<List<Atom>> atomsToBeRemoved = mappedCandidate.stream()
+        List<List<? extends Atom>> atomsToBeRemoved = mappedCandidate.stream()
                 .map(subStructure -> subStructure.getAllAtoms().stream()
                         .filter(atom -> !positionMapping.containsKey(atom.getAtomIdentifier()))
                         .collect(Collectors.toList()))
                 .collect(Collectors.toList());
 
         for (int i = 0; i < atomsToBeRemoved.size(); i++) {
-            List<Atom> atoms = atomsToBeRemoved.get(i);
-            for (Atom atom : atoms) {
+            for (Atom atom : atomsToBeRemoved.get(i)) {
                 mappedCandidate.get(i).removeAtom(atom.getAtomIdentifier());
             }
         }
@@ -264,7 +263,7 @@ public class SubstructureSuperimposer {
         // apply superimposition to full all-atom copy of the candidate
         mappedFullCandidate.stream()
                 .map(AtomContainer::getAllAtoms)
-                .flatMap(List::stream)
+                .flatMap(Collection::stream)
                 .forEach(atom -> atom.setPosition(rotation
                         .transpose()
                         .multiply(atom.getPosition())

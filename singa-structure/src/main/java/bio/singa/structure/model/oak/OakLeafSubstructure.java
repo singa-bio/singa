@@ -137,8 +137,8 @@ public abstract class OakLeafSubstructure implements LeafSubstructure {
     }
 
     @Override
-    public List<Atom> getAllAtoms() {
-        return new ArrayList<>(atoms.values());
+    public Collection<OakAtom> getAllAtoms() {
+        return atoms.values();
     }
 
     @Override

@@ -5,6 +5,7 @@ import bio.singa.mathematics.vectors.Vectors3D;
 import bio.singa.structure.model.interfaces.Atom;
 import bio.singa.structure.model.interfaces.AtomContainer;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,7 +26,7 @@ public class Gyration {
     /**
      * All atoms.
      */
-    private final List<Atom> atoms;
+    private final Collection<? extends Atom> atoms;
 
     /**
      * The gyration radius.
@@ -41,7 +42,7 @@ public class Gyration {
      * Calculates the gyration with the given list of atoms.
      * @param atoms The atoms.
      */
-    private Gyration(List<Atom> atoms) {
+    private Gyration(Collection<? extends Atom> atoms) {
         this.atoms = atoms;
         calculateRadius();
     }
@@ -59,7 +60,7 @@ public class Gyration {
      * Returns the atoms the gyration has been calculated from.
      * @return The atoms the gyration has been calculated from.
      */
-    public List<Atom> getAtoms() {
+    public Collection<? extends Atom> getAtoms() {
         return atoms;
     }
 

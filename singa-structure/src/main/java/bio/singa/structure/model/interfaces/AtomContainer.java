@@ -1,5 +1,6 @@
 package bio.singa.structure.model.interfaces;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,7 +16,7 @@ public interface AtomContainer {
      *
      * @return All {@link Atom}s.
      */
-    List<Atom> getAllAtoms();
+    Collection<? extends Atom> getAllAtoms();
 
     /**
      * Returns an {@link Optional} of the {@link Atom} with the given identifier. If no Atom with the identifier could

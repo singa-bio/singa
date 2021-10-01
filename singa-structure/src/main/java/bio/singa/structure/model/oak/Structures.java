@@ -82,7 +82,7 @@ public class Structures {
      * @return The squared distance matrix.
      */
     public static LabeledSymmetricMatrix<Atom> calculateAtomDistanceMatrix(AtomContainer atomContainer) {
-        return VectorMetricProvider.EUCLIDEAN_METRIC.calculateDistancesPairwise(atomContainer.getAllAtoms(), Atom::getPosition);
+        return VectorMetricProvider.EUCLIDEAN_METRIC.calculateDistancesPairwise(new ArrayList<>(atomContainer.getAllAtoms()), Atom::getPosition);
     }
 
     /**

@@ -10,6 +10,7 @@ import bio.singa.structure.model.interfaces.LeafSubstructureContainer;
 import bio.singa.structure.model.oak.PdbLeafIdentifier;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -115,7 +116,7 @@ public class SubstructureSuperimposition implements Superimposition<LeafSubstruc
         // apply superimposition to every atom of every substructure of the candidate
         copyOfCandidate.stream()
                 .map(AtomContainer::getAllAtoms)
-                .flatMap(List::stream)
+                .flatMap(Collection::stream)
                 .forEach(atom -> atom.setPosition(rotation.transpose()
                         .multiply(atom.getPosition())
                         .add(translation).as(Vector3D.class)));

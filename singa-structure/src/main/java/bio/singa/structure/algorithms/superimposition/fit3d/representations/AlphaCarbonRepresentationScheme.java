@@ -27,10 +27,13 @@ public class AlphaCarbonRepresentationScheme extends AbstractRepresentationSchem
             return determineCentroid(leafSubstructure);
         }
         // TODO maybe we need copy here
-        return leafSubstructure.getAllAtoms().stream()
+        Optional<? extends Atom> atom = leafSubstructure.getAllAtoms().stream()
                 .filter(StructuralEntityFilter.AtomFilter.isAlphaCarbon())
-                .findAny()
-                .orElseGet(() -> determineCentroid(leafSubstructure));
+                .findAny();
+        if (atom.isPresent()) {
+            return atom.get();
+        }
+        return determineCentroid(leafSubstructure);
     }
 
     @Override

@@ -363,7 +363,7 @@ public class StructureWriter {
                     // TODO here we presumably need a mapping between "real" chain names and internal IDs as first argument
                     structureAdapterInterface.setChainInfo(chain.getChainIdentifier(), chain.getChainIdentifier(), leafSubstructures.size());
                     for (LeafSubstructure leafSubstructure : leafSubstructures) {
-                        List<Atom> atoms = leafSubstructure.getAllAtoms();
+                        Collection<? extends Atom> atoms = leafSubstructure.getAllAtoms();
 
                         char insertionCode = leafSubstructure.getIdentifier().getInsertionCode();
                         StructuralFamily family = leafSubstructure.getFamily();

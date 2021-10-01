@@ -53,7 +53,7 @@ class CifFileParserTest {
             fail("Unable tp parse ligand");
         }
         Collection<OakBond> bonds = leafSubstructure.getBonds();
-        List<Atom> atoms = leafSubstructure.getAllAtoms();
+        Collection<? extends Atom> atoms = leafSubstructure.getAllAtoms();
         assertEquals(0, bonds.size());
         assertEquals(1, atoms.size());
     }
@@ -67,7 +67,7 @@ class CifFileParserTest {
             fail("Unable tp parse ligand");
         }
         Collection<OakBond> bonds = leafSubstructure.getBonds();
-        List<Atom> atoms = leafSubstructure.getAllAtoms();
+        Collection<? extends Atom> atoms = leafSubstructure.getAllAtoms();
     }
 
     @Test
@@ -79,7 +79,7 @@ class CifFileParserTest {
             fail("Unable tp parse ligand");
         }
         Collection<OakBond> bonds = leafSubstructure.getBonds();
-        List<Atom> atoms = leafSubstructure.getAllAtoms();
+        Collection<? extends Atom> atoms = leafSubstructure.getAllAtoms();
     }
 
     @Test

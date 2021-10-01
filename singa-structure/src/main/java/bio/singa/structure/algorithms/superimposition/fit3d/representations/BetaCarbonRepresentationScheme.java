@@ -47,20 +47,23 @@ public class BetaCarbonRepresentationScheme extends AbstractRepresentationScheme
                     Stream.of(alanine).collect(Collectors.toList()),
                     AtomFilter.isBackbone());
             // obtain virtual beta carbon
-            Optional<Atom> optionalVirtualBetaCarbon = superimposition.getMappedFullCandidate().get(0).getAllAtoms().stream()
+            Optional<? extends Atom> optionalVirtualBetaCarbon = superimposition.getMappedFullCandidate().get(0).getAllAtoms().stream()
                     .filter(AtomFilter.isBetaCarbon())
                     .findAny();
             if (optionalVirtualBetaCarbon.isPresent()) {
-                return new OakAtom(leafSubstructure.getAllAtoms().get(0).getAtomIdentifier(),
+                return new OakAtom(leafSubstructure.getAllAtoms().iterator().next().getAtomIdentifier(),
                         ElementProvider.CARBON,
                         RepresentationSchemeType.BETA_CARBON.getAtomNameString(),
                         optionalVirtualBetaCarbon.get().getPosition().getCopy());
             }
         }
-        return leafSubstructure.getAllAtoms().stream()
+        Optional<? extends Atom> atom = leafSubstructure.getAllAtoms().stream()
                 .filter(AtomFilter.isBetaCarbon())
-                .findAny()
-                .orElseGet(() -> determineCentroid(leafSubstructure));
+                .findAny();
+        if (atom.isPresent()) {
+            return atom.get();
+        }
+        return determineCentroid(leafSubstructure);
     }
 
     @Override

@@ -10,6 +10,7 @@ import bio.singa.structure.parser.pdb.structures.StructureParser;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,7 +47,7 @@ class OakLeafSubstructureTest {
 
     @Test
     void getAllAtoms() {
-        final List<Atom> allAtoms = leaf162.getAllAtoms();
+        Collection<? extends Atom> allAtoms = leaf162.getAllAtoms();
         assertEquals(7, allAtoms.size());
     }
 

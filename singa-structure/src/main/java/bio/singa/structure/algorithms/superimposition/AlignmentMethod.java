@@ -111,8 +111,8 @@ public class AlignmentMethod {
                 .forEach(this::defineIntersectingAtoms);
 
         // collect intersecting, filtered and sorted atoms
-        List<List<Atom>> referenceAtoms;
-        List<List<Atom>> candidateAtoms;
+        List<List<? extends Atom>> referenceAtoms;
+        List<List<? extends Atom>> candidateAtoms;
         if (representationScheme == null) {
             referenceAtoms = perAtomAlignment.entrySet().stream()
                     .map(pairSetEntry -> pairSetEntry.getKey().getFirst().getAllAtoms().stream()
@@ -149,8 +149,8 @@ public class AlignmentMethod {
         int atomCounter = 1;
         int leafCounter = 1;
         for (int i = 0; i < referenceAtoms.size(); i++) {
-            List<Atom> currentReferenceAtoms = referenceAtoms.get(i);
-            List<Atom> currentCandidateAtoms = candidateAtoms.get(i);
+            List<? extends Atom> currentReferenceAtoms = referenceAtoms.get(i);
+            List<? extends Atom> currentCandidateAtoms = candidateAtoms.get(i);
             // average atoms
             List<OakAtom> averagedAtoms = new ArrayList<>();
             for (int j = 0; j < currentReferenceAtoms.size(); j++) {

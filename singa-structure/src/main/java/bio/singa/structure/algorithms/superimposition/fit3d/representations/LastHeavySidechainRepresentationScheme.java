@@ -10,6 +10,7 @@ import bio.singa.structure.model.oak.OakAtom;
 import bio.singa.structure.model.oak.StructuralEntityFilter;
 import bio.singa.structure.model.oak.Structures;
 
+import java.util.Comparator;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -53,7 +54,12 @@ public class LastHeavySidechainRepresentationScheme extends AbstractRepresentati
         }
         int maximalElementIndex = Vectors.getIndexWithMaximalElement(atomDistanceMatrix.getRowByLabel(leafSubstructure.getAtomByName("CA").orElseThrow(NoSuchElementException::new)));
         Atom referenceAtom = atomDistanceMatrix.getColumnLabel(maximalElementIndex);
-        return new OakAtom(leafSubstructure.getAllAtoms().get(leafSubstructure.getAllAtoms().size() - 1).getAtomIdentifier(),
+        Integer atomIdentifier = leafSubstructure.getAllAtoms().stream()
+                .sorted(Comparator.comparingInt(Atom::getAtomIdentifier))
+                .reduce((first, second) -> second)
+                .orElseThrow(() -> new IllegalStateException("unable to get last atom of leaf " + leafSubstructure))
+                .getAtomIdentifier();
+        return new OakAtom(atomIdentifier,
                 ElementProvider.UNKOWN,
                 RepresentationSchemeType.LAST_HEAVY_SIDE_CHAIN.getAtomNameString(),
                 referenceAtom.getPosition());
