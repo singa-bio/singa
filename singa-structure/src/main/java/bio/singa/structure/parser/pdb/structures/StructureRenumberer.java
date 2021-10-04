@@ -106,8 +106,8 @@ public class StructureRenumberer {
             return structure;
         }
         for (LinkEntry linkEntry : structure.getLinkEntries()) {
-            Optional<Map.Entry<UniqueAtomIdentifier, Atom>> firstAtomEntry = structure.getUniqueAtomEntry(atomIdentifierMapping.get(linkEntry.getFirstAtom().getAtomIdentifier()));
-            Optional<Map.Entry<UniqueAtomIdentifier, Atom>> secondAtomEntry = structure.getUniqueAtomEntry(atomIdentifierMapping.get(linkEntry.getSecondAtom().getAtomIdentifier()));
+            Optional<Map.Entry<UniqueAtomIdentifier, OakAtom>> firstAtomEntry = structure.getUniqueAtomEntry(atomIdentifierMapping.get(linkEntry.getFirstAtom().getAtomIdentifier()));
+            Optional<Map.Entry<UniqueAtomIdentifier, OakAtom>> secondAtomEntry = structure.getUniqueAtomEntry(atomIdentifierMapping.get(linkEntry.getSecondAtom().getAtomIdentifier()));
             if (firstAtomEntry.isPresent() && secondAtomEntry.isPresent()) {
                 Atom firstAtom = firstAtomEntry.get().getValue();
                 UniqueAtomIdentifier firstUniqueAtomIdentifier = firstAtomEntry.get().getKey();

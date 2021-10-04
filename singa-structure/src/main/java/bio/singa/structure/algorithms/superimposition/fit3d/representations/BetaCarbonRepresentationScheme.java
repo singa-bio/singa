@@ -29,7 +29,7 @@ public class BetaCarbonRepresentationScheme extends AbstractRepresentationScheme
     @Override
     public Atom determineRepresentingAtom(LeafSubstructure leafSubstructure) {
         // immediately return atom if part of structure
-        final Optional<Atom> optionalBetaCarbon = leafSubstructure.getAtomByName("CB");
+        final Optional<? extends Atom> optionalBetaCarbon = leafSubstructure.getAtomByName("CB");
         if (optionalBetaCarbon.isPresent()) {
             return optionalBetaCarbon.get();
         }

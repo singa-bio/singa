@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.rcsb.mmtf.decoder.ReaderUtils;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -56,7 +57,7 @@ class MmtfStructureTest {
 
     @Test
     void getAllModels() {
-        List<Model> allModels = structure2N5E.getAllModels();
+        Collection<? extends Model> allModels = structure2N5E.getAllModels();
         assertEquals(10, allModels.size());
     }
 
@@ -68,7 +69,7 @@ class MmtfStructureTest {
 
     @Test
     void getModel() {
-        Optional<Model> model = structure2N5E.getModel(2);
+        Optional<? extends Model> model = structure2N5E.getModel(2);
         if (!model.isPresent()) {
             fail("Optional model was empty.");
         }
@@ -77,7 +78,7 @@ class MmtfStructureTest {
 
     @Test
     void getAllChains() {
-        List<Chain> allChains = structure2N5E.getAllChains();
+        Collection<? extends Chain> allChains = structure2N5E.getAllChains();
         assertEquals(20, allChains.size());
     }
 
@@ -89,7 +90,7 @@ class MmtfStructureTest {
 
     @Test
     void getChain() {
-        Optional<Chain> chain = structure2N5E.getChain(1, "B");
+        Optional<? extends Chain> chain = structure2N5E.getChain(1, "B");
         if (!chain.isPresent()) {
             fail("Optional chain was empty.");
         }
@@ -98,13 +99,13 @@ class MmtfStructureTest {
 
     @Test
     void getAllLeafSubstructures() {
-        List<LeafSubstructure> leafSubstructures = structure2N5E.getAllLeafSubstructures();
+        Collection<? extends LeafSubstructure> leafSubstructures = structure2N5E.getAllLeafSubstructures();
         assertEquals(3340, leafSubstructures.size());
     }
 
     @Test
     void getLeafSubstructure() {
-        Optional<LeafSubstructure> leafSubstructure = structure2N5E.getLeafSubstructure(new PdbLeafIdentifier("2N5E", 5, "A", 64));
+        Optional<? extends LeafSubstructure> leafSubstructure = structure2N5E.getLeafSubstructure(new PdbLeafIdentifier("2N5E", 5, "A", 64));
         if (!leafSubstructure.isPresent()) {
             fail("Optional leaf substructure was empty.");
         }
@@ -176,7 +177,7 @@ class MmtfStructureTest {
 
     @Test
     void getAtom() {
-        final Optional<Atom> atom = structure1C0A.getAtom(15);
+        final Optional<? extends Atom> atom = structure1C0A.getAtom(15);
         if (!atom.isPresent()) {
             fail("Optional atom was empty.");
         }

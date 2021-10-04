@@ -93,8 +93,8 @@ public class MmtfModel implements Model {
     }
 
     @Override
-    public List<Chain> getAllChains() {
-        List<Chain> chains = new ArrayList<>();
+    public List<MmtfChain> getAllChains() {
+        List<MmtfChain> chains = new ArrayList<>();
         for (String chainIdentifier : chainMap.keySet()) {
             // cache
             if (cachedChains.containsKey(chainIdentifier)) {
@@ -113,7 +113,7 @@ public class MmtfModel implements Model {
     }
 
     @Override
-    public Chain getFirstChain() {
+    public MmtfChain getFirstChain() {
         final Map.Entry<String, List<Integer>> first = chainMap.entrySet().iterator().next();
         String chainIdentifier = first.getKey();
         if (cachedChains.containsKey(chainIdentifier)) {
@@ -126,7 +126,7 @@ public class MmtfModel implements Model {
     }
 
     @Override
-    public Optional<Chain> getChain(String chainIdentifier) {
+    public Optional<MmtfChain> getChain(String chainIdentifier) {
         if (!chainMap.containsKey(chainIdentifier)) {
             return Optional.empty();
         }
@@ -146,10 +146,10 @@ public class MmtfModel implements Model {
     }
 
     @Override
-    public List<LeafSubstructure> getAllLeafSubstructures() {
-        List<LeafSubstructure> leafSubstructures = new ArrayList<>();
-        List<Chain> allChains = getAllChains();
-        for (Chain chain : allChains) {
+    public List<MmtfLeafSubstructure> getAllLeafSubstructures() {
+        List<MmtfLeafSubstructure> leafSubstructures = new ArrayList<>();
+        List<MmtfChain> allChains = getAllChains();
+        for (MmtfChain chain : allChains) {
             leafSubstructures.addAll(chain.getAllLeafSubstructures());
         }
         return leafSubstructures;
@@ -157,7 +157,7 @@ public class MmtfModel implements Model {
 
     @Override
     public Optional<LeafSubstructure> getLeafSubstructure(LeafIdentifier leafIdentifier) {
-        Optional<Chain> chainOptional = getChain(leafIdentifier.getChainIdentifier());
+        Optional<MmtfChain> chainOptional = getChain(leafIdentifier.getChainIdentifier());
         return chainOptional.flatMap(chain -> chain.getLeafSubstructure(leafIdentifier));
     }
 
@@ -168,7 +168,7 @@ public class MmtfModel implements Model {
 
     @Override
     public boolean removeLeafSubstructure(LeafIdentifier leafIdentifier) {
-        final Optional<Chain> chainOptional = getChain(leafIdentifier.getChainIdentifier());
+        final Optional<MmtfChain> chainOptional = getChain(leafIdentifier.getChainIdentifier());
         return chainOptional.map(chain -> chain.removeLeafSubstructure(leafIdentifier)).orElse(false);
     }
 
@@ -189,9 +189,9 @@ public class MmtfModel implements Model {
     }
 
     @Override
-    public Optional<Atom> getAtom(Integer atomIdentifier) {
-        for (LeafSubstructure leafSubstructure : getAllLeafSubstructures()) {
-            final Optional<Atom> optionalAtom = leafSubstructure.getAtom(atomIdentifier);
+    public Optional<MmtfAtom> getAtom(Integer atomIdentifier) {
+        for (MmtfLeafSubstructure leafSubstructure : getAllLeafSubstructures()) {
+            final Optional<MmtfAtom> optionalAtom = leafSubstructure.getAtom(atomIdentifier);
             if (optionalAtom.isPresent()) {
                 return optionalAtom;
             }
@@ -201,8 +201,8 @@ public class MmtfModel implements Model {
 
     @Override
     public void removeAtom(Integer atomIdentifier) {
-        for (LeafSubstructure leafSubstructure : getAllLeafSubstructures()) {
-            final Optional<Atom> optionalAtom = leafSubstructure.getAtom(atomIdentifier);
+        for (MmtfLeafSubstructure leafSubstructure : getAllLeafSubstructures()) {
+            final Optional<MmtfAtom> optionalAtom = leafSubstructure.getAtom(atomIdentifier);
             optionalAtom.ifPresent(atom -> leafSubstructure.removeAtom(atomIdentifier));
         }
     }

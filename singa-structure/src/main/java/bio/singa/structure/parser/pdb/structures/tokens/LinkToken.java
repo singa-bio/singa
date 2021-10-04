@@ -119,7 +119,7 @@ public enum LinkToken implements PDBToken {
             logger.warn("unable to find {} for link creation", leafIdentifier);
             return null;
         }
-        Optional<Atom> optionalAtom = leafSubstructureOptional.get().getAtomByName(atomName);
+        Optional<? extends Atom> optionalAtom = leafSubstructureOptional.get().getAtomByName(atomName);
         if (!optionalAtom.isPresent()) {
             logger.warn("unable to find {} in {} for link creation", atomName, leafIdentifier);
             return null;

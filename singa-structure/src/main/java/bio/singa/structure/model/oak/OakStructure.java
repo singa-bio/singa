@@ -77,8 +77,8 @@ public class OakStructure implements Structure {
     }
 
     @Override
-    public List<Model> getAllModels() {
-        return new ArrayList<>(models.values());
+    public Collection<OakModel> getAllModels() {
+        return models.values();
     }
 
     @Override
@@ -87,7 +87,7 @@ public class OakStructure implements Structure {
     }
 
     @Override
-    public Model getFirstModel() {
+    public OakModel getFirstModel() {
         return models.firstEntry().getValue();
     }
 
@@ -124,13 +124,13 @@ public class OakStructure implements Structure {
     }
 
     @Override
-    public Chain getFirstChain() {
+    public OakChain getFirstChain() {
         return getFirstModel().getFirstChain();
     }
 
     @Override
-    public List<LeafSubstructure> getAllLeafSubstructures() {
-        List<LeafSubstructure> allLeafSubstructures = new ArrayList<>();
+    public List<OakLeafSubstructure> getAllLeafSubstructures() {
+        List<OakLeafSubstructure> allLeafSubstructures = new ArrayList<>();
         for (OakModel model : models.values()) {
             allLeafSubstructures.addAll(model.getAllLeafSubstructures());
         }
@@ -162,9 +162,9 @@ public class OakStructure implements Structure {
     }
 
     @Override
-    public Optional<Atom> getAtom(Integer atomIdentifier) {
-        for (LeafSubstructure leafSubstructure : getAllLeafSubstructures()) {
-            final Optional<Atom> atom = leafSubstructure.getAtom(atomIdentifier);
+    public Optional<OakAtom> getAtom(Integer atomIdentifier) {
+        for (OakLeafSubstructure leafSubstructure : getAllLeafSubstructures()) {
+            final Optional<OakAtom> atom = leafSubstructure.getAtom(atomIdentifier);
             if (atom.isPresent()) {
                 return atom;
             }
@@ -172,12 +172,12 @@ public class OakStructure implements Structure {
         return Optional.empty();
     }
 
-    public Optional<Map.Entry<UniqueAtomIdentifier, Atom>> getUniqueAtomEntry(int atomSerial) {
-        for (Model model : getAllModels()) {
-            for (Chain chain : model.getAllChains()) {
-                for (LeafSubstructure leafSubstructure : chain.getAllLeafSubstructures()) {
-                    for (Atom atom : leafSubstructure.getAllAtoms()) {
-                        if (atom.getAtomIdentifier().equals(atomSerial)) {
+    public Optional<Map.Entry<UniqueAtomIdentifier, OakAtom>> getUniqueAtomEntry(int atomSerial) {
+        for (OakModel model : getAllModels()) {
+            for (OakChain chain : model.getAllChains()) {
+                for (OakLeafSubstructure leafSubstructure : chain.getAllLeafSubstructures()) {
+                    for (OakAtom atom : leafSubstructure.getAllAtoms()) {
+                        if (atom.getAtomIdentifier() == atomSerial) {
                             UniqueAtomIdentifier identifier = new UniqueAtomIdentifier(leafSubstructure.getIdentifier(), atom.getAtomIdentifier());
                             return Optional.of(new AbstractMap.SimpleEntry<>(identifier, atom));
                         }
@@ -214,7 +214,7 @@ public class OakStructure implements Structure {
      * @param position The position of the {@link Atom}.
      */
     public void addAtom(String chainIdentifier, String threeLetterCode, Vector3D position) {
-        Optional<Chain> optionalChain = getFirstModel().getChain(chainIdentifier);
+        Optional<OakChain> optionalChain = getFirstModel().getChain(chainIdentifier);
         if (optionalChain.isPresent()) {
             OakChain chain = (OakChain) optionalChain.get();
             OakLigand leafSubstructure = new OakLigand(chain.getNextLeafIdentifier(), new StructuralFamily("?", threeLetterCode));
@@ -236,8 +236,8 @@ public class OakStructure implements Structure {
 
     @Override
     public void removeAtom(Integer atomIdentifier) {
-        for (LeafSubstructure leafSubstructure : getAllLeafSubstructures()) {
-            final Optional<Atom> atom = leafSubstructure.getAtom(atomIdentifier);
+        for (OakLeafSubstructure leafSubstructure : getAllLeafSubstructures()) {
+            final Optional<OakAtom> atom = leafSubstructure.getAtom(atomIdentifier);
             if (atom.isPresent()) {
                 leafSubstructure.removeAtom(atomIdentifier);
                 return;

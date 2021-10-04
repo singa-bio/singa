@@ -64,7 +64,7 @@ public class MmtfAtom implements Atom {
     }
 
     @Override
-    public Integer getAtomIdentifier() {
+    public int getAtomIdentifier() {
         return internalAtomIndex + 1;
     }
 

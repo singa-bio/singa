@@ -3,6 +3,7 @@ package bio.singa.structure.model.interfaces;
 import bio.singa.features.identifiers.PDBIdentifier;
 import bio.singa.structure.model.oak.UniqueAtomIdentifier;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -38,7 +39,7 @@ public interface Structure extends LeafSubstructureContainer, ChainContainer {
      *
      * @return All models.
      */
-    List<Model> getAllModels();
+    Collection<? extends Model> getAllModels();
 
     /**
      * Returns all model identifiers referenced in the model.
@@ -61,7 +62,7 @@ public interface Structure extends LeafSubstructureContainer, ChainContainer {
      * @param modelIdentifier The identifier of the model.
      * @return An {@link Optional} encapsulating the {@link Model}.
      */
-    Optional<Model> getModel(int modelIdentifier);
+    Optional<? extends Model> getModel(int modelIdentifier);
 
     /**
      * Removes a {@link Model} with the given identifier from the structure.
@@ -78,9 +79,9 @@ public interface Structure extends LeafSubstructureContainer, ChainContainer {
      * @param chainIdentifier The identifier of the chain.
      * @return An {@link Optional} encapsulating the {@link Chain}.
      */
-    Optional<Chain> getChain(int modelIdentifier, String chainIdentifier);
+    Optional<? extends Chain> getChain(int modelIdentifier, String chainIdentifier);
 
-    Optional<Atom> getAtom(UniqueAtomIdentifier atomIdentifier);
+    Optional<? extends Atom> getAtom(UniqueAtomIdentifier atomIdentifier);
 
     double getResolution();
 

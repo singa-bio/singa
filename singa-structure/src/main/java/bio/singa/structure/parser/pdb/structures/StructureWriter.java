@@ -48,7 +48,7 @@ public class StructureWriter {
 
         PDBSubstructureStep substructure(LeafSubstructureContainer container);
 
-        PDBSubstructureStep substructures(Collection<LeafSubstructure> leafSubstructures);
+        PDBSubstructureStep substructures(Collection<? extends LeafSubstructure> leafSubstructures);
 
         OptionsStep structure(Structure structure);
 
@@ -60,7 +60,7 @@ public class StructureWriter {
 
         OutputStep substructure(LeafSubstructureContainer container);
 
-        OutputStep substructures(Collection<LeafSubstructure> leafSubstructures);
+        OutputStep substructures(Collection<? extends LeafSubstructure> leafSubstructures);
 
         OutputStep structure(Structure structure);
 
@@ -132,7 +132,7 @@ public class StructureWriter {
         }
 
         @Override
-        public PDBSubstructureStep substructures(Collection<LeafSubstructure> leafSubstructures) {
+        public PDBSubstructureStep substructures(Collection<? extends LeafSubstructure> leafSubstructures) {
             this.leafSubstructures = new ArrayList<>(leafSubstructures);
             return this;
         }
@@ -238,7 +238,7 @@ public class StructureWriter {
 
         private static final DecimalFormat coordinateFormat = new DecimalFormat("0.00000", new DecimalFormatSymbols(Locale.US));
 
-        private Collection<LeafSubstructure> leafSubstructures;
+        private Collection<? extends LeafSubstructure> leafSubstructures;
         private Path destination;
 
         @Override
@@ -252,7 +252,7 @@ public class StructureWriter {
         }
 
         @Override
-        public OutputStep substructures(Collection<LeafSubstructure> leafSubstructures) {
+        public OutputStep substructures(Collection<? extends LeafSubstructure> leafSubstructures) {
             this.leafSubstructures = leafSubstructures;
             return this;
         }
@@ -352,14 +352,13 @@ public class StructureWriter {
                     new String[]{"xtal"});
 
             // handle all models
-            List<Model> allModels = structure.getAllModels();
-            for (int i = 0; i < allModels.size(); i++) {
-                Model model = allModels.get(i);
-                List<Chain> allChains = model.getAllChains();
-                structureAdapterInterface.setModelInfo(i, allChains.size());
+            Collection<? extends Model> allModels = structure.getAllModels();
+            for (Model model : allModels) {
+                Collection<? extends Chain> allChains = model.getAllChains();
+                structureAdapterInterface.setModelInfo(model.getModelIdentifier() - 1, allChains.size());
                 // handle all chains
                 for (Chain chain : allChains) {
-                    List<LeafSubstructure> leafSubstructures = chain.getAllLeafSubstructures();
+                    Collection<? extends LeafSubstructure> leafSubstructures = chain.getAllLeafSubstructures();
                     // TODO here we presumably need a mapping between "real" chain names and internal IDs as first argument
                     structureAdapterInterface.setChainInfo(chain.getChainIdentifier(), chain.getChainIdentifier(), leafSubstructures.size());
                     for (LeafSubstructure leafSubstructure : leafSubstructures) {

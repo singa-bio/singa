@@ -2,11 +2,8 @@ package bio.singa.structure.parser.plip;
 
 import bio.singa.mathematics.vectors.Vector3D;
 import bio.singa.structure.model.families.StructuralFamilies;
-import bio.singa.structure.model.oak.PdbLeafIdentifier;
-import bio.singa.structure.model.oak.UniqueAtomIdentifier;
+import bio.singa.structure.model.oak.*;
 import bio.singa.structure.model.interfaces.*;
-import bio.singa.structure.model.oak.OakChain;
-import bio.singa.structure.model.oak.OakStructure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -350,7 +347,7 @@ public class InteractionContainer {
     private void fixBrokenSourceIdentifier(Interaction interaction, OakStructure structure) {
         // try to retrieve first referenced atom
         int firstSourceAtom = interaction.getFirstSourceAtom();
-        Optional<Map.Entry<UniqueAtomIdentifier, Atom>> sourceEntry = structure.getUniqueAtomEntry(firstSourceAtom);
+        Optional<Map.Entry<UniqueAtomIdentifier, OakAtom>> sourceEntry = structure.getUniqueAtomEntry(firstSourceAtom);
         if (sourceEntry.isPresent()) {
             // use the atom identifier to remap leaf
             UniqueAtomIdentifier atomIdentifer = sourceEntry.get().getKey();
@@ -365,7 +362,7 @@ public class InteractionContainer {
 
     private void fixBrokenTargetIdentifier(Interaction interaction, OakStructure structure) {
         // try to retrieve first referenced atom
-        Optional<Map.Entry<UniqueAtomIdentifier, Atom>> targetEntry = structure.getUniqueAtomEntry(interaction.getFirstTargetAtom());
+        Optional<Map.Entry<UniqueAtomIdentifier, OakAtom>> targetEntry = structure.getUniqueAtomEntry(interaction.getFirstTargetAtom());
         if (targetEntry.isPresent()) {
             // use the atom identifier to remap leaf
             UniqueAtomIdentifier atomIdentifer = targetEntry.get().getKey();
@@ -380,7 +377,7 @@ public class InteractionContainer {
 
     private boolean determineLigandInteraction(LeafSubstructure leafSubstructure, Structure structure) {
         if (!StructuralFamilies.AminoAcids.isAminoAcid(leafSubstructure.getFamily()) && !StructuralFamilies.Nucleotides.isNucleotide(leafSubstructure.getFamily())) {
-            Optional<Chain> optionalChain = structure.getFirstModel().getChain(leafSubstructure.getIdentifier().getChainIdentifier());
+            Optional<? extends Chain> optionalChain = structure.getFirstModel().getChain(leafSubstructure.getIdentifier().getChainIdentifier());
             if (optionalChain.isPresent()) {
                 OakChain chain = (OakChain) optionalChain.get();
                 if (!chain.getConsecutivePart().contains(leafSubstructure)) {

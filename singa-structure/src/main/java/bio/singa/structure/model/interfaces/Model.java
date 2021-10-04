@@ -31,7 +31,7 @@ public interface Model extends LeafSubstructureContainer, ChainContainer {
      * @param chainIdentifier The identifier of the chain.
      * @return An {@link Optional} encapsulating the {@link Chain}.
      */
-    Optional<Chain> getChain(String chainIdentifier);
+    Optional<? extends Chain> getChain(String chainIdentifier);
 
     /**
      * Removes a {@link Chain} with the given identifier from the structure.

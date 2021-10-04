@@ -20,6 +20,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
@@ -52,7 +53,7 @@ public class PfamParser {
     private final boolean parseChains;
     private final StructureParserOptions structureParserOptions;
 
-    private List<List<LeafSubstructure>> domains;
+    private List<Collection<? extends LeafSubstructure>> domains;
     private List<Chain> chains;
     private List<String> relevantLines;
 
@@ -100,13 +101,13 @@ public class PfamParser {
     }
 
     private void parseDomains() {
-        List<List<LeafSubstructure>> domains = new ArrayList<>();
+        List<Collection<? extends LeafSubstructure>> domains = new ArrayList<>();
         for (String relevantLine : relevantLines) {
             String pdbIdentifier = PfamToken.PDBToken.PDB_IDENTIFIER.extract(relevantLine).toLowerCase();
             String chainIdentifier = PfamToken.PDBToken.CHAIN_IDENTIFIER.extract(relevantLine);
             int startPdb = Integer.parseInt(PfamToken.PDBToken.PDB_RESIDUE_START.extract(relevantLine));
             int endPdb = Integer.parseInt(PfamToken.PDBToken.PDB_RESIDUE_END.extract(relevantLine));
-            List<LeafSubstructure> domain;
+            Collection<? extends LeafSubstructure> domain;
             if (structureParserOptions != null) {
                 domain = StructureParser.pdb()
                         .pdbIdentifier(pdbIdentifier)
@@ -189,7 +190,7 @@ public class PfamParser {
 
     }
 
-    public List<List<LeafSubstructure>> getDomains() {
+    public List<Collection<? extends LeafSubstructure>> getDomains() {
         return domains;
     }
 
@@ -273,7 +274,7 @@ public class PfamParser {
          *
          * @return Pfam domains.
          */
-        List<List<LeafSubstructure>> domains();
+        List<Collection<? extends LeafSubstructure>> domains();
 
         /**
          * Parse all chains carrying one Pfam domain with the desired Pfam-ID.
@@ -335,7 +336,7 @@ public class PfamParser {
         }
 
         @Override
-        public List<List<LeafSubstructure>> domains() {
+        public List<Collection<? extends LeafSubstructure>> domains() {
             return new PfamParser(this).getDomains();
         }
 

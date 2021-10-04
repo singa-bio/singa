@@ -36,7 +36,6 @@ public class MmtfLigand extends MmtfLeafSubstructure implements Ligand {
     private MmtfLigand(MmtfLigand mmtfLeafSubstructure) {
         super(mmtfLeafSubstructure);
         family = mmtfLeafSubstructure.family;
-        exchangeableFamilies = new HashSet<>(mmtfLeafSubstructure.exchangeableFamilies);
     }
 
     @Override

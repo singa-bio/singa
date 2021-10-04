@@ -35,7 +35,7 @@ public class Structures {
      * @return The distance matrix.
      */
     public static LabeledSymmetricMatrix<LeafSubstructure> calculateDistanceMatrix(LeafSubstructureContainer leafSubstructureContainer) {
-        return VectorMetricProvider.EUCLIDEAN_METRIC.calculateDistancesPairwise(leafSubstructureContainer.getAllLeafSubstructures(), LeafSubstructure::getPosition);
+        return VectorMetricProvider.EUCLIDEAN_METRIC.calculateDistancesPairwise(new ArrayList<>(leafSubstructureContainer.getAllLeafSubstructures()), LeafSubstructure::getPosition);
     }
 
     /**
@@ -45,7 +45,7 @@ public class Structures {
      * @return The squared distance matrix.
      */
     public static LabeledSymmetricMatrix<LeafSubstructure> calculateSquaredDistanceMatrix(LeafSubstructureContainer leafSubstructureContainer) {
-        return VectorMetricProvider.SQUARED_EUCLIDEAN_METRIC.calculateDistancesPairwise(leafSubstructureContainer.getAllLeafSubstructures(), LeafSubstructure::getPosition);
+        return VectorMetricProvider.SQUARED_EUCLIDEAN_METRIC.calculateDistancesPairwise(new ArrayList<>(leafSubstructureContainer.getAllLeafSubstructures()), LeafSubstructure::getPosition);
     }
 
     /**
@@ -165,7 +165,7 @@ public class Structures {
             for (LeafSubstructure leafSubstructure : sortedOriginal) {
                 String chainIdentifier = leafSubstructure.getIdentifier().getChainIdentifier();
                 // get chain
-                Optional<Chain> optionalChain = newModel.getChain(chainIdentifier);
+                Optional<? extends Chain> optionalChain = newModel.getChain(chainIdentifier);
                 OakChain newChain;
                 if (!optionalChain.isPresent()) {
                     newChain = new OakChain(chainIdentifier);

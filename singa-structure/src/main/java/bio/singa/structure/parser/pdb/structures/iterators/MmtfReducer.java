@@ -1,6 +1,7 @@
 package bio.singa.structure.parser.pdb.structures.iterators;
 
 import bio.singa.structure.model.interfaces.Model;
+import bio.singa.structure.model.mmtf.MmtfModel;
 import bio.singa.structure.model.mmtf.MmtfStructure;
 
 import java.util.Optional;
@@ -28,9 +29,9 @@ public class MmtfReducer {
     private static void reduceChains(MmtfStructure structure, StructureReducer reducer) {
         if (reducer.isReducingChains()) {
             for (Integer modelIdentifier : structure.getAllModelIdentifiers()) {
-                Optional<Model> optionalModel = structure.getModel(modelIdentifier);
+                Optional<MmtfModel> optionalModel = structure.getModel(modelIdentifier);
                 if (optionalModel.isPresent()) {
-                    Model model = optionalModel.get();
+                    MmtfModel model = optionalModel.get();
                     for (String chainIdentifier : model.getAllChainIdentifiers()) {
                         if (!chainIdentifier.equals(reducer.getChainIdentifier())) {
                             model.removeChain(chainIdentifier);

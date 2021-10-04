@@ -106,8 +106,8 @@ public class MmtfStructure implements Structure {
     }
 
     @Override
-    public List<Model> getAllModels() {
-        List<Model> models = new ArrayList<>();
+    public List<MmtfModel> getAllModels() {
+        List<MmtfModel> models = new ArrayList<>();
         for (int internalModelIndex = 0; internalModelIndex < data.getNumModels(); internalModelIndex++) {
             if (cachedModels.containsKey(internalModelIndex)) {
                 models.add(cachedModels.get(internalModelIndex));
@@ -152,7 +152,7 @@ public class MmtfStructure implements Structure {
     }
 
     @Override
-    public Optional<Model> getModel(int modelIdentifier) {
+    public Optional<MmtfModel> getModel(int modelIdentifier) {
         int internalModelIndex = modelIdentifier - 1;
         if (modelIdentifier < 0 ^ modelIdentifier > data.getNumModels() || removedModels.contains(internalModelIndex)) {
             return Optional.empty();
@@ -174,10 +174,10 @@ public class MmtfStructure implements Structure {
     }
 
     @Override
-    public List<Chain> getAllChains() {
-        List<Chain> chains = new ArrayList<>();
-        List<Model> allModels = getAllModels();
-        for (Model model : allModels) {
+    public List<MmtfChain> getAllChains() {
+        List<MmtfChain> chains = new ArrayList<>();
+        List<MmtfModel> allModels = getAllModels();
+        for (MmtfModel model : allModels) {
             chains.addAll(model.getAllChains());
         }
         return chains;
@@ -189,24 +189,24 @@ public class MmtfStructure implements Structure {
     }
 
     @Override
-    public Optional<Chain> getChain(int modelIdentifier, String chainIdentifier) {
-        Optional<Model> modelOptional = getModel(modelIdentifier);
+    public Optional<MmtfChain> getChain(int modelIdentifier, String chainIdentifier) {
+        Optional<MmtfModel> modelOptional = getModel(modelIdentifier);
         return modelOptional.flatMap(model -> model.getChain(chainIdentifier));
     }
 
     @Override
-    public List<LeafSubstructure> getAllLeafSubstructures() {
-        List<LeafSubstructure> leafSubstructures = new ArrayList<>();
-        List<Chain> allChains = getAllChains();
-        for (Chain chain : allChains) {
+    public List<MmtfLeafSubstructure> getAllLeafSubstructures() {
+        List<MmtfLeafSubstructure> leafSubstructures = new ArrayList<>();
+        List<MmtfChain> allChains = getAllChains();
+        for (MmtfChain chain : allChains) {
             leafSubstructures.addAll(chain.getAllLeafSubstructures());
         }
         return leafSubstructures;
     }
 
     @Override
-    public Optional<LeafSubstructure> getLeafSubstructure(LeafIdentifier leafIdentifier) {
-        Optional<Chain> chainOptional = getChain(leafIdentifier.getModelIdentifier(), leafIdentifier.getChainIdentifier());
+    public Optional<MmtfLeafSubstructure> getLeafSubstructure(LeafIdentifier leafIdentifier) {
+        Optional<MmtfChain> chainOptional = getChain(leafIdentifier.getModelIdentifier(), leafIdentifier.getChainIdentifier());
         return chainOptional.flatMap(chain -> chain.getLeafSubstructure(leafIdentifier));
     }
 
@@ -243,9 +243,9 @@ public class MmtfStructure implements Structure {
     }
 
     @Override
-    public Optional<Atom> getAtom(Integer atomIdentifier) {
-        for (LeafSubstructure leafSubstructure : getAllLeafSubstructures()) {
-            final Optional<Atom> optionalAtom = leafSubstructure.getAtom(atomIdentifier);
+    public Optional<MmtfAtom> getAtom(Integer atomIdentifier) {
+        for (MmtfLeafSubstructure leafSubstructure : getAllLeafSubstructures()) {
+            final Optional<MmtfAtom> optionalAtom = leafSubstructure.getAtom(atomIdentifier);
             if (optionalAtom.isPresent()) {
                 return optionalAtom;
             }
@@ -254,7 +254,7 @@ public class MmtfStructure implements Structure {
     }
 
     @Override
-    public Optional<Atom> getAtom(UniqueAtomIdentifier atomIdentifier) {
+    public Optional<MmtfAtom> getAtom(UniqueAtomIdentifier atomIdentifier) {
         // does actually not compare pdb id
         return getChain(atomIdentifier.getLeafIdentifier().getModelIdentifier(), atomIdentifier.getLeafIdentifier().getChainIdentifier())
                 .flatMap(chain -> chain.getLeafSubstructure(atomIdentifier.getLeafIdentifier()))
@@ -263,8 +263,8 @@ public class MmtfStructure implements Structure {
 
     @Override
     public void removeAtom(Integer atomIdentifier) {
-        for (LeafSubstructure leafSubstructure : getAllLeafSubstructures()) {
-            final Optional<Atom> optionalAtom = leafSubstructure.getAtom(atomIdentifier);
+        for (MmtfLeafSubstructure leafSubstructure : getAllLeafSubstructures()) {
+            final Optional<MmtfAtom> optionalAtom = leafSubstructure.getAtom(atomIdentifier);
             optionalAtom.ifPresent(atom -> leafSubstructure.removeAtom(atomIdentifier));
         }
     }

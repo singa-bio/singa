@@ -6,6 +6,7 @@ import bio.singa.structure.parser.pdb.structures.StructureParser;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,7 +39,7 @@ class OakModelTest {
 
     @Test
     void getAllChains() {
-        final List<Chain> allChains = firstModel.getAllChains();
+        final Collection<OakChain> allChains = firstModel.getAllChains();
         assertEquals(2, allChains.size());
     }
 
@@ -50,7 +51,7 @@ class OakModelTest {
 
     @Test
     void getChain() {
-        final Optional<Chain> chain = firstModel.getChain("B");
+        final Optional<OakChain> chain = firstModel.getChain("B");
         if (!chain.isPresent()) {
             fail("Optional chain was empty.");
         }
@@ -59,13 +60,13 @@ class OakModelTest {
 
     @Test
     void getAllLeafSubstructures() {
-        final List<LeafSubstructure> leafSubstructures = secondModel.getAllLeafSubstructures();
+        final List<OakLeafSubstructure> leafSubstructures = secondModel.getAllLeafSubstructures();
         assertEquals(334, leafSubstructures.size());
     }
 
     @Test
     void getLeafSubstructure() {
-        Optional<LeafSubstructure> leafSubstructure = firstModel.getLeafSubstructure(new PdbLeafIdentifier("2N5E", 1, "B", 64));
+        Optional<OakLeafSubstructure> leafSubstructure = firstModel.getLeafSubstructure(new PdbLeafIdentifier("2N5E", 1, "B", 64));
         if (!leafSubstructure.isPresent()) {
             fail("Optional leaf substructure was empty.");
         }
@@ -99,7 +100,7 @@ class OakModelTest {
     @Test
     void getAtom() {
         // ATOM     17  OG1 THR A  56       5.624   2.561  -0.853  1.00  0.00           O
-        final Optional<Atom> atom = secondModel.getAtom(17);
+        final Optional<OakAtom> atom = secondModel.getAtom(17);
         if (!atom.isPresent()) {
             fail("Optional atom was empty.");
         }

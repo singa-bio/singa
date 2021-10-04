@@ -25,7 +25,7 @@ public interface AtomContainer {
      * @param atomIdentifier The identifier of the atom.
      * @return An {@link Optional} encapsulating the {@link Atom}.
      */
-    Optional<Atom> getAtom(Integer atomIdentifier);
+    Optional<? extends Atom> getAtom(Integer atomIdentifier);
 
     /**
      * Removes an atom from this container.

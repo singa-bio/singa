@@ -1,8 +1,6 @@
 package bio.singa.structure.model.oak;
 
 import bio.singa.core.utility.Resources;
-import bio.singa.structure.model.families.StructuralFamily;
-import bio.singa.structure.model.interfaces.AminoAcid;
 import bio.singa.structure.model.interfaces.Structure;
 import bio.singa.structure.parser.pdb.structures.StructureParser;
 import org.junit.jupiter.api.BeforeAll;
@@ -12,7 +10,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 

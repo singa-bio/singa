@@ -100,11 +100,6 @@ public abstract class OakLeafSubstructure implements LeafSubstructure {
     }
 
     @Override
-    public boolean containsAtomWithName(String atomName) {
-        return getAtomByName(atomName).isPresent();
-    }
-
-    @Override
     public Optional<Atom> getAtomByName(String atomName) {
         for (OakAtom graphAtom : atoms.values()) {
             if (graphAtom.getAtomName().equals(atomName)) {
@@ -142,7 +137,7 @@ public abstract class OakLeafSubstructure implements LeafSubstructure {
     }
 
     @Override
-    public Optional<Atom> getAtom(Integer atomIdentifier) {
+    public Optional<OakAtom> getAtom(Integer atomIdentifier) {
         if (atoms.containsKey(atomIdentifier)) {
             return Optional.of(atoms.get(atomIdentifier));
         }

@@ -37,9 +37,7 @@ public interface LeafSubstructure extends AtomContainer {
                 .collect(Collectors.toList()));
     }
 
-    boolean containsAtomWithName(String atomName);
-
-    Optional<Atom> getAtomByName(String atomName);
+    Optional<? extends Atom> getAtomByName(String atomName);
 
     boolean isAnnotatedAsHeteroAtom();
 

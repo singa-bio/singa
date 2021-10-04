@@ -81,16 +81,16 @@ public class AlignmentMethod {
                             reference,
                             candidate, atomFilter) :
                     SubstructureSuperimposer.calculateSubstructureSuperimposition(
-                            reference.getAllLeafSubstructures(),
-                            candidate.getAllLeafSubstructures(), atomFilter);
+                            new ArrayList<>(reference.getAllLeafSubstructures()),
+                            new ArrayList<>(candidate.getAllLeafSubstructures()), atomFilter);
         } else {
             superimposition = idealSuperimposition ?
                     SubstructureSuperimposer.calculateIdealSubstructureSuperimposition(
                             reference,
                             candidate, representationScheme) :
                     SubstructureSuperimposer.calculateSubstructureSuperimposition(
-                            reference.getAllLeafSubstructures(),
-                            candidate.getAllLeafSubstructures(), representationScheme);
+                            new ArrayList<>(reference.getAllLeafSubstructures()),
+                                    new ArrayList<>(candidate.getAllLeafSubstructures()), representationScheme);
         }
         return superimposition;
     }

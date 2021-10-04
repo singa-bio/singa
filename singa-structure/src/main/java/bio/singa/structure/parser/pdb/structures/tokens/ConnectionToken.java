@@ -49,9 +49,9 @@ public enum ConnectionToken implements PDBToken {
      */
     public static void assignConnections(OakStructure structure, String connectionLine) {
         String sourceAtomString = CONNECTION_SOURCE_ATOM.extract(connectionLine);
-        Map.Entry<UniqueAtomIdentifier, Atom> uniqueAtomEntry;
+        Map.Entry<UniqueAtomIdentifier, OakAtom> uniqueAtomEntry;
         if (isNumeric(sourceAtomString)) {
-            Optional<Map.Entry<UniqueAtomIdentifier, Atom>> uniqueAtomEntryOptional = structure.getUniqueAtomEntry(Integer.parseInt(sourceAtomString));
+            Optional<Map.Entry<UniqueAtomIdentifier, OakAtom>> uniqueAtomEntryOptional = structure.getUniqueAtomEntry(Integer.parseInt(sourceAtomString));
             if (!uniqueAtomEntryOptional.isPresent()) {
                 logger.warn("could not add connection for atom {}, source atom could not be found in the structure", sourceAtomString);
                 return;
@@ -98,9 +98,9 @@ public enum ConnectionToken implements PDBToken {
         if (isNumeric(targetAtomString)) {
             // FIXME it is possible the the target of the connection is referenced in another leaf
             int targetAtom = Integer.parseInt(targetAtomString);
-            Optional<Atom> targetOptionAtom = leafsubstructure.getAtom(targetAtom);
+            Optional<OakAtom> targetOptionAtom = leafsubstructure.getAtom(targetAtom);
             if (!targetOptionAtom.isPresent()) {
-                Optional<Atom> optionalBackupAtom = structure.getAtom(targetAtom);
+                Optional<OakAtom> optionalBackupAtom = structure.getAtom(targetAtom);
                 if (optionalBackupAtom.isPresent()) {
                     return Optional.of(((OakAtom) optionalBackupAtom.get()));
                 }

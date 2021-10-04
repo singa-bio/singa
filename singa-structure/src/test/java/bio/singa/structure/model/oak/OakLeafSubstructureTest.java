@@ -54,7 +54,7 @@ class OakLeafSubstructureTest {
     @Test
     void getAtom() {
         // HETATM  437  OP2 H2U B 620A     63.941  -2.024  30.308  1.00 82.89           O
-        final Optional<Atom> optionalAtom = leaf620A.getAtom(437);
+        final Optional<? extends Atom> optionalAtom = leaf620A.getAtom(437);
         if (!optionalAtom.isPresent()) {
             fail("Optional atom was empty.");
         }
@@ -65,7 +65,7 @@ class OakLeafSubstructureTest {
 
     @Test
     void getAtomByName() {
-        final Optional<Atom> optionalAtom = leaf620A.getAtomByName("OP2");
+        final Optional<? extends Atom> optionalAtom = leaf620A.getAtomByName("OP2");
         if (!optionalAtom.isPresent()) {
             fail("Optional atom was empty.");
         }

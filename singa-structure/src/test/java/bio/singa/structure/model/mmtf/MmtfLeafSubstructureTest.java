@@ -60,13 +60,13 @@ class MmtfLeafSubstructureTest {
     @Test
     void getAtom() {
         int atomIdentifier = 437;
-        Optional<Atom> optionalAtom = leaf620A.getAtom(atomIdentifier);
+        Optional<? extends Atom> optionalAtom = leaf620A.getAtom(atomIdentifier);
         if (!optionalAtom.isPresent()) {
             fail("Optional atom was empty.");
         }
         // one offset to regular pdb file
         Atom atom = optionalAtom.get();
-        assertEquals(atom.getAtomIdentifier().intValue(), atomIdentifier);
+        assertEquals(atom.getAtomIdentifier(), atomIdentifier);
         assertEquals("OP2", atom.getAtomName());
         assertEquals(new Vector3D(63.941001892089844, -2.0239999294281006, 30.308000564575195), atom.getPosition());
     }
@@ -75,12 +75,12 @@ class MmtfLeafSubstructureTest {
     void removeAtom() {
         // ATOM   3208 HH22 ARG B  83      37.797  27.994 -88.269  1.00  0.00           H
         int atomIdentifier = 2974;
-        Optional<Atom> optionalAtom = leafToModify.getAtom(atomIdentifier);
+        Optional<? extends Atom> optionalAtom = leafToModify.getAtom(atomIdentifier);
         if (!optionalAtom.isPresent()) {
             fail("Optional atom was empty.");
         }
         Atom atom = optionalAtom.get();
-        assertEquals(atom.getAtomIdentifier().intValue(), atomIdentifier);
+        assertEquals(atom.getAtomIdentifier(), atomIdentifier);
         leafToModify.removeAtom(atomIdentifier);
         // check if it is present in the leaf
         optionalAtom = leafToModify.getAtom(atomIdentifier);
@@ -93,13 +93,13 @@ class MmtfLeafSubstructureTest {
     @Test
     void getAtomByName() {
         // HETATM  444  C1' H2U B 620A     64.290   3.199  32.742  1.00 78.93           C
-        final Optional<Atom> optionalAtom = leaf620A.getAtomByName("C1'");
+        final Optional<? extends Atom> optionalAtom = leaf620A.getAtomByName("C1'");
         if (!optionalAtom.isPresent()) {
             fail("Optional atom was empty.");
         }
         // one offset to regular pdb file
         final Atom atom = optionalAtom.get();
-        assertEquals(atom.getAtomIdentifier().intValue(), 444);
+        assertEquals(atom.getAtomIdentifier(), 444);
         assertEquals("C1'", atom.getAtomName());
         assertEquals(new Vector3D(64.29000091552734, 3.1989998817443848, 32.742000579833984), atom.getPosition());
     }

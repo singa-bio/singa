@@ -7,6 +7,7 @@ import bio.singa.structure.parser.pdb.structures.StructureParser;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,9 +26,9 @@ class OakChainTest {
     @BeforeAll
     static void initialize() {
         OakStructure structure2N5E = ((OakStructure) StructureParser.pdb().pdbIdentifier("2N5E").parse());
-        firstChain = (OakChain) structure2N5E.getFirstChain();
-        chainToModify = (OakChain) structure2N5E.getFirstModel().getChain("B").get();
-        anotherChain = (OakChain) StructureParser.pdb().pdbIdentifier("1BRR").parse().getFirstModel().getFirstChain();
+        firstChain = structure2N5E.getFirstChain();
+        chainToModify = structure2N5E.getFirstModel().getChain("B").get();
+        anotherChain = ((OakStructure) StructureParser.pdb().pdbIdentifier("1BRR").parse()).getFirstModel().getFirstChain();
     }
 
     @Test
@@ -37,13 +38,13 @@ class OakChainTest {
 
     @Test
     void getAllLeafSubstructures() {
-        final List<LeafSubstructure> leafSubstructures = firstChain.getAllLeafSubstructures();
+        final Collection<OakLeafSubstructure> leafSubstructures = firstChain.getAllLeafSubstructures();
         assertEquals(167, leafSubstructures.size());
     }
 
     @Test
     void getLeafSubstructure() {
-        Optional<LeafSubstructure> leafSubstructure = firstChain.getLeafSubstructure(new PdbLeafIdentifier("2N5E", 1, "A", 64));
+        Optional<OakLeafSubstructure> leafSubstructure = firstChain.getLeafSubstructure(new PdbLeafIdentifier("2N5E", 1, "A", 64));
         if (!leafSubstructure.isPresent()) {
             fail("Optional leaf substructure was empty.");
         }
@@ -86,7 +87,7 @@ class OakChainTest {
     @Test
     void getAtom() {
         // ATOM     17  OG1 THR A  56       5.624   2.561  -0.853  1.00  0.00           O
-        final Optional<Atom> atom = firstChain.getAtom(17);
+        final Optional<OakAtom> atom = firstChain.getAtom(17);
         if (!atom.isPresent()) {
             fail("Optional atom was empty.");
         }
@@ -105,8 +106,8 @@ class OakChainTest {
     @Test
     void connectChainBackbone() {
         // should have happened at parsing
-        final Optional<LeafSubstructure> first = firstChain.getLeafSubstructure(new PdbLeafIdentifier("2N5E", 1, "A", 108));
-        final Optional<LeafSubstructure> second = firstChain.getLeafSubstructure(new PdbLeafIdentifier("2N5E", 1, "A", 109));
+        final Optional<OakLeafSubstructure> first = firstChain.getLeafSubstructure(new PdbLeafIdentifier("2N5E", 1, "A", 108));
+        final Optional<OakLeafSubstructure> second = firstChain.getLeafSubstructure(new PdbLeafIdentifier("2N5E", 1, "A", 109));
         if (!first.isPresent() || !second.isPresent()) {
             fail("Could not retrieve leafs to check connection");
         }

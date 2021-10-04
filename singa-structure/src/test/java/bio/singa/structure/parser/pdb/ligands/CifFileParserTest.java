@@ -110,7 +110,7 @@ class CifFileParserTest {
         Structure structure = StructureParser.pdb()
                 .pdbIdentifier("3cjt")
                 .parse();
-        Optional<LeafSubstructure> substructureOptional = structure.getLeafSubstructure(PdbLeafIdentifier.fromString("3cjt-1-I-259"));
+        Optional<? extends LeafSubstructure> substructureOptional = structure.getLeafSubstructure(PdbLeafIdentifier.fromString("3cjt-1-I-259"));
         assertTrue(substructureOptional.isPresent());
         assertFalse(StructuralFamilies.Nucleotides.isNucleotide(substructureOptional.get().getFamily()));
         assertFalse(StructuralFamilies.AminoAcids.isAminoAcid(substructureOptional.get().getFamily()));

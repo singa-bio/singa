@@ -29,7 +29,7 @@ public class LastHeavySidechainRepresentationScheme extends AbstractRepresentati
     @Override
     public Atom determineRepresentingAtom(LeafSubstructure leafSubstructure) {
         // immediately return atom if part of structure
-        final Optional<Atom> optionalLH = leafSubstructure.getAtomByName("LH");
+        final Optional<? extends Atom> optionalLH = leafSubstructure.getAtomByName("LH");
         if (optionalLH.isPresent()) {
             return optionalLH.get();
         }

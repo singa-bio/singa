@@ -18,7 +18,7 @@ public interface Atom {
      *
      * @return The atom identifier.
      */
-    Integer getAtomIdentifier();
+    int getAtomIdentifier();
 
     /**
      * Returns the position in three dimensional space.

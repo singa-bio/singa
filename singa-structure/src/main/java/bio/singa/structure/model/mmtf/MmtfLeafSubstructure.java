@@ -53,10 +53,6 @@ public abstract class MmtfLeafSubstructure implements LeafSubstructure {
      * The structural family of this entity
      */
     protected StructuralFamily family;
-    /**
-     * The families to which the {@link LeafSubstructure} can be exchanged.
-     */
-    protected Set<StructuralFamily> exchangeableFamilies;
 
     /**
      * Creates a new {@link MmtfLeafSubstructure}.
@@ -86,7 +82,6 @@ public abstract class MmtfLeafSubstructure implements LeafSubstructure {
                 removedAtoms.add(internalAtomIndex);
             }
         }
-        exchangeableFamilies = new HashSet<>();
         cachedAtoms = new HashMap<>();
     }
 
@@ -122,8 +117,8 @@ public abstract class MmtfLeafSubstructure implements LeafSubstructure {
     }
 
     @Override
-    public List<Atom> getAllAtoms() {
-        List<Atom> results = new ArrayList<>();
+    public List<MmtfAtom> getAllAtoms() {
+        List<MmtfAtom> results = new ArrayList<>();
         for (int internalAtomIndex = atomStartIndex; internalAtomIndex <= atomEndIndex; internalAtomIndex++) {
             // skip removed atoms
             if (removedAtoms.contains(internalAtomIndex)) {
@@ -142,7 +137,7 @@ public abstract class MmtfLeafSubstructure implements LeafSubstructure {
     }
 
     @Override
-    public Optional<Atom> getAtom(Integer internalAtomIndex) {
+    public Optional<MmtfAtom> getAtom(Integer internalAtomIndex) {
         // offset between internal and external indices
         internalAtomIndex--;
         if (internalAtomIndex < atomStartIndex || internalAtomIndex > atomEndIndex || removedAtoms.contains(internalAtomIndex)) {
@@ -156,17 +151,7 @@ public abstract class MmtfLeafSubstructure implements LeafSubstructure {
         removedAtoms.add(atomIdentifier - 1);
     }
 
-    @Override
-    public boolean containsAtomWithName(String atomName) {
-        for (Atom atom : getAllAtoms()) {
-            if (atom.getAtomName().equals(atomName)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private Optional<Atom> cacheAtom(int internalAtomIndex) {
+    private Optional<MmtfAtom> cacheAtom(int internalAtomIndex) {
         if (cachedAtoms.containsKey(internalAtomIndex)) {
             return Optional.of(cachedAtoms.get(internalAtomIndex));
         } else {
@@ -177,7 +162,7 @@ public abstract class MmtfLeafSubstructure implements LeafSubstructure {
     }
 
     @Override
-    public Optional<Atom> getAtomByName(String atomName) {
+    public Optional<MmtfAtom> getAtomByName(String atomName) {
         for (int internalAtomIndex = atomStartIndex; internalAtomIndex <= atomEndIndex; internalAtomIndex++) {
             // skip removed atoms
             if (removedAtoms.contains(internalAtomIndex)) {

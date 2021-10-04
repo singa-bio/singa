@@ -172,7 +172,7 @@ public class StructureRepresentation {
      *
      * @return The closing lines.
      */
-    private static String getPostamble(List<LeafSubstructure> leafSubstructures) {
+    private static String getPostamble(Collection<? extends LeafSubstructure> leafSubstructures) {
         String connectRecords = leafSubstructures.stream()
                 .filter(leafSubstructure -> leafSubstructure.getClass().equals(OakLigand.class))
                 .map(OakLigand.class::cast)

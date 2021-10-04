@@ -47,7 +47,6 @@ public class MmtfAminoAcid extends MmtfLeafSubstructure implements AminoAcid {
         super(mmtfLeafSubstructure);
         family = mmtfLeafSubstructure.family;
         secondaryStructure = mmtfLeafSubstructure.secondaryStructure;
-        exchangeableFamilies = new HashSet<>(mmtfLeafSubstructure.exchangeableFamilies);
     }
 
     @Override
@@ -61,7 +60,7 @@ public class MmtfAminoAcid extends MmtfLeafSubstructure implements AminoAcid {
 
     @Override
     public Vector3D getPosition() {
-        Optional<Atom> optionalAlphaCarbon = getAtomByName(AtomName.CA.getName());
+        Optional<MmtfAtom> optionalAlphaCarbon = getAtomByName(AtomName.CA.getName());
         return optionalAlphaCarbon.map(Atom::getPosition).orElseGet(super::getPosition);
     }
 

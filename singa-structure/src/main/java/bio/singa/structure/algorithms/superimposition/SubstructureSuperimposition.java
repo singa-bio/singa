@@ -27,8 +27,8 @@ public class SubstructureSuperimposition implements Superimposition<LeafSubstruc
     private final double rmsd;
     private final Vector translation;
     private final Matrix rotation;
-    private final List<LeafSubstructure> reference;
-    private final List<LeafSubstructure> candidate;
+    private final Collection<LeafSubstructure> reference;
+    private final Collection<LeafSubstructure> candidate;
     private final List<LeafSubstructure> mappedCandidate;
     private final List<LeafSubstructure> mappedFullCandidate;
 
@@ -48,12 +48,12 @@ public class SubstructureSuperimposition implements Superimposition<LeafSubstruc
 
     @Override
     public List<LeafSubstructure> getReference() {
-        return reference;
+        return new ArrayList<>(reference);
     }
 
     @Override
     public List<LeafSubstructure> getCandidate() {
-        return candidate;
+        return new ArrayList<>(candidate);
     }
 
     /**

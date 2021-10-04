@@ -1,5 +1,6 @@
 package bio.singa.structure.model.interfaces;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -14,7 +15,7 @@ public interface ChainContainer {
      *
      * @return All {@link Chain}s.
      */
-    List<Chain> getAllChains();
+    Collection<? extends Chain> getAllChains();
 
     /**
      * Returns the first {@link Chain}.

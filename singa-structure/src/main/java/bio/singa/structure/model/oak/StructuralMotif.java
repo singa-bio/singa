@@ -36,7 +36,7 @@ public class StructuralMotif implements LeafSubstructureContainer {
         exchangeableFamilies = new HashMap<>();
     }
 
-    private StructuralMotif(String identifier, List<LeafSubstructure> leafSubstructures) {
+    private StructuralMotif(String identifier, Collection<? extends LeafSubstructure> leafSubstructures) {
         this(identifier);
         for (LeafSubstructure leafSubstructure : leafSubstructures) {
             addLeafSubstructure(leafSubstructure);
@@ -68,7 +68,7 @@ public class StructuralMotif implements LeafSubstructureContainer {
         List<LeafSubstructure> leafSubstructures = new ArrayList<>();
         for (PdbLeafIdentifier leafIdentifier : leafIdentifiers) {
             leafIdentifier = new PdbLeafIdentifier(structure.getPdbIdentifier(), leafIdentifier.getModelIdentifier(), leafIdentifier.getChainIdentifier(), leafIdentifier.getSerial(), leafIdentifier.getInsertionCode());
-            final Optional<LeafSubstructure> leafSubstructure = structure.getLeafSubstructure(leafIdentifier);
+            final Optional<? extends LeafSubstructure> leafSubstructure = structure.getLeafSubstructure(leafIdentifier);
             if (leafSubstructure.isPresent()) {
                 leafSubstructures.add(leafSubstructure.get());
             } else {
@@ -84,11 +84,11 @@ public class StructuralMotif implements LeafSubstructureContainer {
      * @param leafSubstructures The {@link LeafSubstructure}s that should compose the {@link StructuralMotif}.
      * @return A new {@link StructuralMotif}.
      */
-    public static StructuralMotif fromLeafSubstructures(List<LeafSubstructure> leafSubstructures) {
+    public static StructuralMotif fromLeafSubstructures(Collection<? extends LeafSubstructure> leafSubstructures) {
         return new StructuralMotif(generateMotifIdentifier(leafSubstructures), leafSubstructures);
     }
 
-    private static String generateMotifIdentifier(List<LeafSubstructure> substructures) {
+    private static String generateMotifIdentifier(Collection<? extends LeafSubstructure> substructures) {
         String pdbIdentifier = substructures.iterator().next().getIdentifier().getStructureIdentifier();
         return substructures.stream()
                 .map(leafSubstructure -> leafSubstructure.getIdentifier().toString())
@@ -136,9 +136,9 @@ public class StructuralMotif implements LeafSubstructureContainer {
     }
 
     @Override
-    public Optional<Atom> getAtom(Integer atomIdentifier) {
+    public Optional<? extends Atom> getAtom(Integer atomIdentifier) {
         for (LeafSubstructure leafSubstructure : leafSubstructures.values()) {
-            final Optional<Atom> optionalAtom = leafSubstructure.getAtom(atomIdentifier);
+            final Optional<? extends Atom> optionalAtom = leafSubstructure.getAtom(atomIdentifier);
             if (optionalAtom.isPresent()) {
                 return optionalAtom;
             }
@@ -149,7 +149,7 @@ public class StructuralMotif implements LeafSubstructureContainer {
     @Override
     public void removeAtom(Integer atomIdentifier) {
         for (LeafSubstructure leafSubstructure : leafSubstructures.values()) {
-            final Optional<Atom> optionalAtom = leafSubstructure.getAtom(atomIdentifier);
+            final Optional<? extends Atom> optionalAtom = leafSubstructure.getAtom(atomIdentifier);
             if (optionalAtom.isPresent()) {
                 leafSubstructure.removeAtom(atomIdentifier);
                 return;

@@ -6,6 +6,7 @@ import bio.singa.structure.parser.pdb.structures.StructureParser;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -53,7 +54,7 @@ class OakStructureTest {
 
     @Test
     void getAllModels() {
-        List<Model> allModels = structure2N5E.getAllModels();
+        Collection<OakModel> allModels = structure2N5E.getAllModels();
         assertEquals(10, allModels.size());
     }
 
@@ -102,7 +103,7 @@ class OakStructureTest {
 
     @Test
     void getAllLeafSubstructures() {
-        List<LeafSubstructure> leafSubstructures = structure2N5E.getAllLeafSubstructures();
+        List<OakLeafSubstructure> leafSubstructures = structure2N5E.getAllLeafSubstructures();
         assertEquals(3340, leafSubstructures.size());
     }
 
@@ -192,7 +193,7 @@ class OakStructureTest {
 
     @Test
     void getAtom() {
-        final Optional<Atom> atom = structure1C0A.getAtom(15);
+        final Optional<OakAtom> atom = structure1C0A.getAtom(15);
         if (!atom.isPresent()) {
             fail("Optional atom was empty.");
         }
@@ -202,7 +203,7 @@ class OakStructureTest {
 
     @Test
     void getUniqueAtomEntry() {
-        final Optional<Map.Entry<UniqueAtomIdentifier, Atom>> atom = structure1C0A.getUniqueAtomEntry(15);
+        final Optional<Map.Entry<UniqueAtomIdentifier, OakAtom>> atom = structure1C0A.getUniqueAtomEntry(15);
         if (!atom.isPresent()) {
             fail("Optional atom was empty.");
         }

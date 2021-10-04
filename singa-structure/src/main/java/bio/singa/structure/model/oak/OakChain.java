@@ -39,12 +39,12 @@ public class OakChain implements Chain {
     }
 
     @Override
-    public List<LeafSubstructure> getAllLeafSubstructures() {
-        return new ArrayList<>(leafSubstructures.values());
+    public Collection<OakLeafSubstructure> getAllLeafSubstructures() {
+        return leafSubstructures.values();
     }
 
     @Override
-    public Optional<LeafSubstructure> getLeafSubstructure(LeafIdentifier leafIdentifier) {
+    public Optional<OakLeafSubstructure> getLeafSubstructure(LeafIdentifier leafIdentifier) {
         if (leafSubstructures.containsKey(leafIdentifier)) {
             return Optional.of(leafSubstructures.get(leafIdentifier));
         }
@@ -87,9 +87,9 @@ public class OakChain implements Chain {
     }
 
     @Override
-    public Optional<Atom> getAtom(Integer atomIdentifier) {
-        for (LeafSubstructure leafSubstructure : leafSubstructures.values()) {
-            final Optional<Atom> optionalAtom = leafSubstructure.getAtom(atomIdentifier);
+    public Optional<OakAtom> getAtom(Integer atomIdentifier) {
+        for (OakLeafSubstructure leafSubstructure : leafSubstructures.values()) {
+            final Optional<OakAtom> optionalAtom = leafSubstructure.getAtom(atomIdentifier);
             if (optionalAtom.isPresent()) {
                 return optionalAtom;
             }
@@ -99,8 +99,8 @@ public class OakChain implements Chain {
 
     @Override
     public void removeAtom(Integer atomIdentifier) {
-        for (LeafSubstructure leafSubstructure : leafSubstructures.values()) {
-            final Optional<Atom> optionalAtom = leafSubstructure.getAtom(atomIdentifier);
+        for (OakLeafSubstructure leafSubstructure : leafSubstructures.values()) {
+            final Optional<OakAtom> optionalAtom = leafSubstructure.getAtom(atomIdentifier);
             if (optionalAtom.isPresent()) {
                 leafSubstructure.removeAtom(optionalAtom.get().getAtomIdentifier());
                 return;

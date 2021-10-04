@@ -20,9 +20,9 @@ class MoleculeGraphsTest {
                 .pdbIdentifier("1C0A")
                 .parse();
 
-        Optional<LeafSubstructure> arginine = structure.getLeafSubstructure(new PdbLeafIdentifier("1C0A", 1, "A", 1));
-        Optional<LeafSubstructure> amp = structure.getLeafSubstructure(new PdbLeafIdentifier("1C0A", 1, "A", 800));
-        Optional<LeafSubstructure> a = structure.getLeafSubstructure(new PdbLeafIdentifier("1C0A", 1, "B", 1));
+        Optional<? extends LeafSubstructure> arginine = structure.getLeafSubstructure(new PdbLeafIdentifier("1C0A", 1, "A", 1));
+        Optional<? extends LeafSubstructure> amp = structure.getLeafSubstructure(new PdbLeafIdentifier("1C0A", 1, "A", 800));
+        Optional<? extends LeafSubstructure> a = structure.getLeafSubstructure(new PdbLeafIdentifier("1C0A", 1, "B", 1));
     }
 
 }

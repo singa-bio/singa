@@ -53,7 +53,7 @@ class Fit3DAlignmentTest {
     void shouldRunFit3DAlignment() {
         Fit3D fit3d = Fit3DBuilder.create()
                 .query(queryMotif)
-                .target(target.getAllChains().get(0))
+                .target(target.getFirstChain())
                 .run();
         List<Fit3DMatch> matches = fit3d.getMatches();
         assertEquals(0.0005, matches.get(0).getRmsd(), 1E-4);
@@ -64,7 +64,7 @@ class Fit3DAlignmentTest {
         queryMotif.addExchangeableFamilies(PdbLeafIdentifier.fromSimpleString("E-57"), ALL);
         Fit3D fit3d = Fit3DBuilder.create()
                 .query(queryMotif)
-                .target(target.getAllChains().get(0))
+                .target(target.getFirstChain())
                 .atomFilter(StructuralEntityFilter.AtomFilter.isArbitrary())
                 .rmsdCutoff(1.0)
                 .run();
@@ -239,7 +239,7 @@ class Fit3DAlignmentTest {
         nucleotideMotif.addExchangeableFamily(PdbLeafIdentifier.fromSimpleString("A-74"), URIDINE);
         Fit3D fit3d = Fit3DBuilder.create()
                 .query(nucleotideMotif)
-                .target(nucleotideTarget.getAllChains().get(0))
+                .target(nucleotideTarget.getFirstChain())
                 .run();
         List<Fit3DMatch> matches = fit3d.getMatches();
         assertEquals(0.0, matches.get(0).getRmsd(), 1E-6);
@@ -256,7 +256,7 @@ class Fit3DAlignmentTest {
 
         Fit3D fit3d = Fit3DBuilder.create()
                 .query(queryMotif)
-                .target(queryStructure.getAllModels().get(0))
+                .target(queryStructure.getFirstModel())
                 .run();
 
         List<Fit3DMatch> matches = fit3d.getMatches();
@@ -381,7 +381,7 @@ class Fit3DAlignmentTest {
     void shouldAnnotateIdentifiers() {
         Fit3D fit3d = Fit3DBuilder.create()
                 .query(queryMotif)
-                .target(target.getAllChains().get(0))
+                .target(target.getFirstChain())
                 .atomFilter(StructuralEntityFilter.AtomFilter.isArbitrary())
                 .mapUniProtIdentifiers()
                 .mapPfamIdentifiers()

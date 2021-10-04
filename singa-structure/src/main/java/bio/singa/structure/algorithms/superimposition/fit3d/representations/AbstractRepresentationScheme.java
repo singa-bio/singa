@@ -30,7 +30,7 @@ public abstract class AbstractRepresentationScheme implements RepresentationSche
      * @return The centroid as an {@link Atom}.
      */
     Atom determineCentroid(LeafSubstructure leafSubstructure) {
-        final Optional<Atom> optionalCO = leafSubstructure.getAtomByName("CO");
+        final Optional<? extends Atom> optionalCO = leafSubstructure.getAtomByName("CO");
         // immediately return atom if part of structure
         if (optionalCO.isPresent()) {
             return optionalCO.get();

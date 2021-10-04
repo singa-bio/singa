@@ -17,10 +17,7 @@ import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static bio.singa.structure.model.families.StructuralFamilies.AminoAcids.ALANINE;
@@ -183,7 +180,7 @@ class StructureParserTest {
                 .allModels()
                 .chainIdentifier("BA")
                 .parse();
-        List<LeafSubstructure> allLeafSubstructures = structure.getAllLeafSubstructures();
+        Collection<? extends LeafSubstructure> allLeafSubstructures = structure.getAllLeafSubstructures();
         assertEquals(3229, allLeafSubstructures.size());
     }
 
@@ -194,7 +191,7 @@ class StructureParserTest {
                 .pdbIdentifier("1pqs")
                 .model(3)
                 .parse();
-        List<LeafSubstructure> allLeafSubstructures = structure.getAllLeafSubstructures();
+        Collection<? extends LeafSubstructure> allLeafSubstructures = structure.getAllLeafSubstructures();
         assertEquals(77, allLeafSubstructures.size());
     }
 

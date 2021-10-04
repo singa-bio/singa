@@ -26,7 +26,7 @@ public class SideChainCentroidRepresentationScheme extends AbstractRepresentatio
     @Override
     public Atom determineRepresentingAtom(LeafSubstructure leafSubstructure) {
         // immediately return atom if part of structure
-        final Optional<Atom> optionalSC = leafSubstructure.getAtomByName("SC");
+        final Optional<? extends Atom> optionalSC = leafSubstructure.getAtomByName("SC");
         if (optionalSC.isPresent()) {
             return optionalSC.get();
         }

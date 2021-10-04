@@ -117,8 +117,8 @@ public class MmtfChain implements Chain {
     }
 
     @Override
-    public List<LeafSubstructure> getAllLeafSubstructures() {
-        List<LeafSubstructure> results = new ArrayList<>();
+    public List<MmtfLeafSubstructure> getAllLeafSubstructures() {
+        List<MmtfLeafSubstructure> results = new ArrayList<>();
         for (Integer relevantGroup : relevantGroups) {
             if (cachedLeaves.containsKey(relevantGroup)) {
                 results.add(cachedLeaves.get(relevantGroup));
@@ -133,7 +133,7 @@ public class MmtfChain implements Chain {
     }
 
     @Override
-    public Optional<LeafSubstructure> getLeafSubstructure(LeafIdentifier leafIdentifier) {
+    public Optional<MmtfLeafSubstructure> getLeafSubstructure(LeafIdentifier leafIdentifier) {
         final int internalIndex = getInternalIndexForLeafIdentifier(leafIdentifier);
         if (internalIndex == -1) {
             return Optional.empty();
@@ -149,7 +149,7 @@ public class MmtfChain implements Chain {
     }
 
     @Override
-    public LeafSubstructure getFirstLeafSubstructure() {
+    public MmtfLeafSubstructure getFirstLeafSubstructure() {
         return getLeafSubstructure(leafIdentifiers.values().iterator().next()).orElseThrow(NoSuchElementException::new);
     }
 
@@ -213,9 +213,9 @@ public class MmtfChain implements Chain {
     }
 
     @Override
-    public Optional<Atom> getAtom(Integer atomIdentifier) {
-        for (LeafSubstructure leafSubstructure : getAllLeafSubstructures()) {
-            final Optional<Atom> atomOptional = leafSubstructure.getAtom(atomIdentifier);
+    public Optional<MmtfAtom> getAtom(Integer atomIdentifier) {
+        for (MmtfLeafSubstructure leafSubstructure : getAllLeafSubstructures()) {
+            final Optional<MmtfAtom> atomOptional = leafSubstructure.getAtom(atomIdentifier);
             if (atomOptional.isPresent()) {
                 return atomOptional;
             }
@@ -225,8 +225,8 @@ public class MmtfChain implements Chain {
 
     @Override
     public void removeAtom(Integer atomIdentifier) {
-        for (LeafSubstructure leafSubstructure : getAllLeafSubstructures()) {
-            final Optional<Atom> atomOptional = leafSubstructure.getAtom(atomIdentifier);
+        for (MmtfLeafSubstructure leafSubstructure : getAllLeafSubstructures()) {
+            final Optional<MmtfAtom> atomOptional = leafSubstructure.getAtom(atomIdentifier);
             atomOptional.ifPresent(atom -> leafSubstructure.removeAtom(atomIdentifier));
         }
     }

@@ -11,6 +11,7 @@ import bio.singa.structure.parser.pdb.structures.StructureParser;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -28,10 +29,10 @@ class MoleculeIsomorphismFinderTest {
 
     @BeforeAll
     static void initialize() {
-        List<LeafSubstructure> targetLeafSubstructure = StructureParser.local()
+        Collection<? extends LeafSubstructure> targetLeafSubstructure = StructureParser.local()
                 .fileLocation(Resources.getResourceAsFileLocation("atp.pdb"))
                 .parse().getAllLeafSubstructures();
-        targetGraph = MoleculeGraphs.createMoleculeGraphFromStructure((OakLeafSubstructure) targetLeafSubstructure.get(0));
+        targetGraph = MoleculeGraphs.createMoleculeGraphFromStructure((OakLeafSubstructure) targetLeafSubstructure.iterator().next());
     }
 
     @Test
@@ -40,12 +41,12 @@ class MoleculeIsomorphismFinderTest {
         Set<Integer> correctIdentifiers = Stream.of(31, 30, 29, 26, 25, 21, 17, 13, 27, 28)
                 .collect(Collectors.toSet());
 
-        List<LeafSubstructure> patternLeafSubstructure = StructureParser.local()
+        Collection<? extends LeafSubstructure> patternLeafSubstructure = StructureParser.local()
                 .fileLocation(Resources.getResourceAsFileLocation("adenine.pdb"))
                 .everything()
                 .parse().getAllLeafSubstructures();
 
-        MoleculeGraph patternGraph = MoleculeGraphs.createMoleculeGraphFromStructure((OakLeafSubstructure) patternLeafSubstructure.get(0));
+        MoleculeGraph patternGraph = MoleculeGraphs.createMoleculeGraphFromStructure((OakLeafSubstructure) patternLeafSubstructure.iterator().next());
 
         MoleculeIsomorphism moleculeIsomorphism = MoleculeIsomorphismFinder.of(patternGraph, targetGraph);
 
@@ -69,12 +70,12 @@ class MoleculeIsomorphismFinderTest {
         Set<Integer> correctIdentifiers = Stream.of(31, 30, 29, 26, 25, 21, 17, 13, 27, 28, 12)
                 .collect(Collectors.toSet());
 
-        List<LeafSubstructure> patternLeafSubstructure = StructureParser.local()
+        Collection<? extends LeafSubstructure> patternLeafSubstructure = StructureParser.local()
                 .fileLocation(Resources.getResourceAsFileLocation("adenine_1.pdb"))
                 .everything()
                 .parse().getAllLeafSubstructures();
 
-        MoleculeGraph patternGraph = MoleculeGraphs.createMoleculeGraphFromStructure((OakLeafSubstructure) patternLeafSubstructure.get(0));
+        MoleculeGraph patternGraph = MoleculeGraphs.createMoleculeGraphFromStructure((OakLeafSubstructure) patternLeafSubstructure.iterator().next());
 
         MoleculeIsomorphism moleculeIsomorphism = MoleculeIsomorphismFinder.of(patternGraph, targetGraph);
 
@@ -96,12 +97,12 @@ class MoleculeIsomorphismFinderTest {
         Set<Integer> correctIdentifiers2 = Stream.of(21, 25, 26, 27, 13, 17, 28)
                 .collect(Collectors.toSet());
 
-        List<LeafSubstructure> patternLeafSubstructure = StructureParser.local()
+        Collection<? extends LeafSubstructure> patternLeafSubstructure = StructureParser.local()
                 .fileLocation(Resources.getResourceAsFileLocation("adenine_2.pdb"))
                 .everything()
                 .parse().getAllLeafSubstructures();
 
-        MoleculeGraph patternGraph = MoleculeGraphs.createMoleculeGraphFromStructure((OakLeafSubstructure) patternLeafSubstructure.get(0));
+        MoleculeGraph patternGraph = MoleculeGraphs.createMoleculeGraphFromStructure((OakLeafSubstructure) patternLeafSubstructure.iterator().next());
 
         MoleculeIsomorphism moleculeIsomorphism = MoleculeIsomorphismFinder.of(patternGraph, targetGraph, MoleculeIsomorphismFinder.AtomConditions.isSameElement(), (a, b) -> true);
 

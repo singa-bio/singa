@@ -52,8 +52,8 @@ public class SubstructureSuperimposer {
 
     private SubstructureSuperimposer(LeafSubstructureContainer reference, LeafSubstructureContainer candidate, Predicate<Atom> atomFilter,
                                      RepresentationScheme representationScheme) {
-        this.reference = reference.getAllLeafSubstructures();
-        this.candidate = candidate.getAllLeafSubstructures();
+        this.reference = new ArrayList<>(reference.getAllLeafSubstructures());
+        this.candidate = new ArrayList<>(candidate.getAllLeafSubstructures());
         this.atomFilter = atomFilter;
         this.representationScheme = representationScheme;
 

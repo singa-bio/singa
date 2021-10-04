@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.rcsb.mmtf.decoder.ReaderUtils;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 
@@ -39,7 +39,7 @@ class MmtfModelTest {
 
     @Test
     void getAllChains() {
-        final List<Chain> allChains = firstModel.getAllChains();
+        final Collection<? extends Chain> allChains = firstModel.getAllChains();
         assertEquals(2, allChains.size());
     }
 
@@ -51,7 +51,7 @@ class MmtfModelTest {
 
     @Test
     void getChain() {
-        final Optional<Chain> chain = firstModel.getChain("B");
+        final Optional<? extends Chain> chain = firstModel.getChain("B");
         if (!chain.isPresent()) {
             fail("Optional chain was empty.");
         }
@@ -60,13 +60,13 @@ class MmtfModelTest {
 
     @Test
     void getAllLeafSubstructures() {
-        final List<LeafSubstructure> leafSubstructures = secondModel.getAllLeafSubstructures();
+        final Collection<? extends LeafSubstructure> leafSubstructures = secondModel.getAllLeafSubstructures();
         assertEquals(334, leafSubstructures.size());
     }
 
     @Test
     void getLeafSubstructure() {
-        Optional<LeafSubstructure> leafSubstructure = firstModel.getLeafSubstructure(new PdbLeafIdentifier("2N5E", 1, "B", 64));
+        Optional<? extends LeafSubstructure> leafSubstructure = firstModel.getLeafSubstructure(new PdbLeafIdentifier("2N5E", 1, "B", 64));
         if (!leafSubstructure.isPresent()) {
             fail("Optional leaf substructure was empty.");
         }

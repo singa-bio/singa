@@ -138,7 +138,7 @@ public class Fit3DAlignment implements Fit3D {
         }
 
         // calculate squared distance matrix
-        squaredDistanceMatrix = SQUARED_EUCLIDEAN_METRIC.calculateDistancesPairwise(target.getAllLeafSubstructures(), LeafSubstructure::getPosition);
+        squaredDistanceMatrix = SQUARED_EUCLIDEAN_METRIC.calculateDistancesPairwise(new ArrayList<>(target.getAllLeafSubstructures()), LeafSubstructure::getPosition);
 
         composeEnvironments();
         generateCandidates();

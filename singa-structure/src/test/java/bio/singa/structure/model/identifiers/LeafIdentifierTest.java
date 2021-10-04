@@ -20,7 +20,9 @@ public class LeafIdentifierTest {
         structure = StructureParser.pdb()
                 .pdbIdentifier("2w0l")
                 .parse();
-        leaf = structure.getAllLeafSubstructures().get(26);
+        leaf = structure.getAllLeafSubstructures().stream()
+                .filter(leafSubstructure -> leafSubstructure.getIdentifier().getSerial() == 27 && leafSubstructure.getIdentifier().getInsertionCode() == 'A')
+                .findAny().orElseThrow(() -> new IllegalStateException("unable to find requested leaf"));
     }
 
     @Test

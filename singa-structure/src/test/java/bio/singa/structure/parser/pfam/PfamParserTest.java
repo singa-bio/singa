@@ -6,6 +6,7 @@ import bio.singa.structure.model.interfaces.LeafSubstructure;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Paths;
+import java.util.Collection;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -48,7 +49,7 @@ class PfamParserTest {
 
     @Test
     void shouldParseDomains() {
-        List<List<LeafSubstructure>> domains = PfamParser.create()
+        List<Collection<? extends LeafSubstructure>> domains = PfamParser.create()
                 .version(PfamParser.PfamVersion.V31)
                 .pfamIdentifier("PF17480")
                 .all()
@@ -58,7 +59,7 @@ class PfamParserTest {
 
     @Test
     void shouldParseDomainsWithChainList() {
-        List<List<LeafSubstructure>> chains = PfamParser.create()
+        List<Collection<? extends LeafSubstructure>> chains = PfamParser.create()
                 .version(PfamParser.PfamVersion.V31)
                 .pfamIdentifier("PF00089")
                 .chainList(Paths.get(Resources.getResourceAsFileLocation("chain_list_PF00089.txt")))
@@ -73,7 +74,7 @@ class PfamParserTest {
                 .pfamIdentifier("PF00069")
                 .chainList(Paths.get(Resources.getResourceAsFileLocation("chain_list_PF00069.txt")))
                 .chains();
-        List<List<LeafSubstructure>> domains = PfamParser.create()
+        List<Collection<? extends LeafSubstructure>> domains = PfamParser.create()
                 .version(PfamParser.PfamVersion.V31)
                 .pfamIdentifier("PF00069")
                 .chainList(Paths.get(Resources.getResourceAsFileLocation("chain_list_PF00069.txt")))

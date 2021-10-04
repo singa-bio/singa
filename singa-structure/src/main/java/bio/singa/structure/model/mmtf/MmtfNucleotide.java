@@ -36,7 +36,6 @@ public class MmtfNucleotide extends MmtfLeafSubstructure implements Nucleotide {
     private MmtfNucleotide(MmtfNucleotide mmtfLeafSubstructure) {
         super(mmtfLeafSubstructure);
         family = mmtfLeafSubstructure.family;
-        exchangeableFamilies = new HashSet<>(mmtfLeafSubstructure.exchangeableFamilies);
     }
 
     @Override
