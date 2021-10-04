@@ -7,14 +7,14 @@ import bio.singa.mathematics.vectors.Vector3D;
 import bio.singa.structure.model.interfaces.AtomContainer;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.interfaces.LeafSubstructureContainer;
-import bio.singa.structure.model.oak.PdbLeafIdentifier;
+import bio.singa.structure.model.pdb.PdbLeafIdentifier;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static bio.singa.structure.model.oak.PdbLeafIdentifier.DEFAULT_INSERTION_CODE;
+import static bio.singa.structure.model.pdb.PdbLeafIdentifier.DEFAULT_INSERTION_CODE;
 
 
 /**

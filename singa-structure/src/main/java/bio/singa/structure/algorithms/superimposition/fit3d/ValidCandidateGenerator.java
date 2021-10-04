@@ -4,7 +4,7 @@ import bio.singa.mathematics.graphs.model.DirectedGraph;
 import bio.singa.mathematics.graphs.model.GenericNode;
 import bio.singa.mathematics.matrices.LabeledSymmetricMatrix;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
-import bio.singa.structure.model.oak.StructuralMotif;
+import bio.singa.structure.model.general.StructuralMotif;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

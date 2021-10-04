@@ -1,7 +1,7 @@
 package bio.singa.structure.parser.pdb.structures;
 
-import bio.singa.structure.model.oak.UniqueAtomIdentifier;
-import bio.singa.structure.model.oak.OakAtom;
+import bio.singa.structure.model.general.UniqueAtomIdentifier;
+import bio.singa.structure.model.pdb.PdbAtom;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,7 +35,7 @@ class ContentTreeNode {
     /**
      * The actual atom.
      */
-    private OakAtom atom;
+    private PdbAtom atom;
     /**
      * The children of this node.
      */
@@ -59,7 +59,7 @@ class ContentTreeNode {
      * @param identifier The identifier.
      * @param atom The atom.
      */
-    private ContentTreeNode(String identifier, OakAtom atom) {
+    private ContentTreeNode(String identifier, PdbAtom atom) {
         this.identifier = identifier;
         level = ATOM;
         this.atom = atom;
@@ -108,7 +108,7 @@ class ContentTreeNode {
      *
      * @return The atom associated to this node.
      */
-    public OakAtom getAtom() {
+    public PdbAtom getAtom() {
         return atom;
     }
 
@@ -117,7 +117,7 @@ class ContentTreeNode {
      *
      * @param atom The atom.
      */
-    public void setAtom(OakAtom atom) {
+    public void setAtom(PdbAtom atom) {
         this.atom = atom;
     }
 
@@ -151,9 +151,9 @@ class ContentTreeNode {
      *
      * @return All atoms from this node
      */
-    public Map<String, OakAtom> getAtomMap() {
+    public Map<String, PdbAtom> getAtomMap() {
         if (getLevel() == LEAF) {
-            Map<String, OakAtom> atoms = new HashMap<>();
+            Map<String, PdbAtom> atoms = new HashMap<>();
             for (ContentTreeNode node : children) {
                 atoms.put(node.getAtom().getAtomName(), node.getAtom());
             }
@@ -162,9 +162,9 @@ class ContentTreeNode {
         return null;
     }
 
-    public Set<OakAtom> getAtoms(){
+    public Set<PdbAtom> getAtoms(){
         if (getLevel() == LEAF) {
-            Set<OakAtom> atoms = new HashSet<>();
+            Set<PdbAtom> atoms = new HashSet<>();
             for (ContentTreeNode node : children) {
                 atoms.add(node.getAtom());
             }
@@ -179,7 +179,7 @@ class ContentTreeNode {
      * @param atom The atom to add.
      * @param identifer Its identifier.
      */
-    public void appendAtom(OakAtom atom, UniqueAtomIdentifier identifer) {
+    public void appendAtom(PdbAtom atom, UniqueAtomIdentifier identifer) {
         ListIterator<ContentTreeNode> iterator = children.listIterator();
         if (children.isEmpty()) {
             switch (level) {

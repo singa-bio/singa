@@ -1,7 +1,5 @@
 package bio.singa.structure.model.interfaces;
 
-import bio.singa.structure.model.oak.PdbLeafIdentifier;
-
 import java.util.Comparator;
 
 public interface LeafIdentifier extends Comparable<LeafIdentifier> {

@@ -4,11 +4,10 @@ import bio.singa.mathematics.vectors.Vector3D;
 import bio.singa.structure.model.families.StructuralFamily;
 import bio.singa.structure.model.interfaces.AminoAcid;
 import bio.singa.structure.model.interfaces.Atom;
-import bio.singa.structure.model.oak.AtomName;
-import bio.singa.structure.model.oak.PdbLeafIdentifier;
+import bio.singa.structure.model.families.AtomName;
+import bio.singa.structure.model.pdb.PdbLeafIdentifier;
 import org.rcsb.mmtf.api.StructureDataInterface;
 
-import java.util.HashSet;
 import java.util.Optional;
 
 /**

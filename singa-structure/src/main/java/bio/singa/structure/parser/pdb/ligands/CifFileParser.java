@@ -8,7 +8,7 @@ import bio.singa.mathematics.vectors.Vector3D;
 import bio.singa.structure.model.families.StructuralFamilies;
 import bio.singa.structure.model.families.StructuralFamily;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
-import bio.singa.structure.model.oak.*;
+import bio.singa.structure.model.pdb.*;
 import bio.singa.structure.model.general.LeafSkeleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +33,7 @@ public class CifFileParser {
     private final List<String> atomLines;
     private final List<String> bondLines;
 
-    private final Map<String, OakAtom> atoms;
+    private final Map<String, PdbAtom> atoms;
     private final Map<String, Vector3D> defaultCoordinates;
     private final Map<String, Vector3D> idealCoordinates;
     private final Map<Pair<String>, CovalentBondType> bonds;
@@ -291,7 +291,7 @@ public class CifFileParser {
             element.asIon(Integer.parseInt(charge));
         }
         String atomName = atomNameString.replace("\"", "");
-        OakAtom atom = new OakAtom(Integer.parseInt(indexString), element, atomName);
+        PdbAtom atom = new PdbAtom(Integer.parseInt(indexString), element, atomName);
         atoms.put(atomName, atom);
     }
 
@@ -420,7 +420,7 @@ public class CifFileParser {
      *
      * @return A leaf.
      */
-    private OakLeafSubstructure parseCompleteLeafSubstructure() {
+    private PdbLeafSubstructure parseCompleteLeafSubstructure() {
         collectLines();
         extractAtoms();
         extractBonds();
@@ -433,47 +433,47 @@ public class CifFileParser {
      * @param leafIdentifier The identifier this leaf should have.
      * @return A complete {@link LeafSubstructure} using the information collected until the call of this method.
      */
-    private OakLeafSubstructure createLeafSubstructure(PdbLeafIdentifier leafIdentifier) {
-        OakLeafSubstructure leafSubstructure;
+    private PdbLeafSubstructure createLeafSubstructure(PdbLeafIdentifier leafIdentifier) {
+        PdbLeafSubstructure leafSubstructure;
         if (isNucleotide(type)) {
             // check for nucleotides
             Optional<StructuralFamily> nucleotideFamily = StructuralFamilies.Nucleotides.get(parent);
-            leafSubstructure = nucleotideFamily.map(nucleotideFamily1 -> new OakNucleotide(leafIdentifier, nucleotideFamily1, threeLetterCode))
-                    .orElseGet(() -> new OakNucleotide(leafIdentifier, StructuralFamilies.Nucleotides.get(threeLetterCode).orElseThrow(() ->
+            leafSubstructure = nucleotideFamily.map(nucleotideFamily1 -> new PdbNucleotide(leafIdentifier, nucleotideFamily1, threeLetterCode))
+                    .orElseGet(() -> new PdbNucleotide(leafIdentifier, StructuralFamilies.Nucleotides.get(threeLetterCode).orElseThrow(() ->
                             new IllegalArgumentException("Could not create Nucleotide with three letter code" + threeLetterCode))));
 
         } else if (isAminoAcid(type)) {
             // check for amino acids
             Optional<StructuralFamily> aminoAcidFamily = StructuralFamilies.AminoAcids.get(parent);
-            leafSubstructure = aminoAcidFamily.map(aminoAcidFamily1 -> new OakAminoAcid(leafIdentifier, aminoAcidFamily1, threeLetterCode))
-                    .orElseGet(() -> new OakAminoAcid(leafIdentifier, StructuralFamilies.AminoAcids.get(threeLetterCode).orElseThrow(() ->
+            leafSubstructure = aminoAcidFamily.map(aminoAcidFamily1 -> new PdbAminoAcid(leafIdentifier, aminoAcidFamily1, threeLetterCode))
+                    .orElseGet(() -> new PdbAminoAcid(leafIdentifier, StructuralFamilies.AminoAcids.get(threeLetterCode).orElseThrow(() ->
                             new IllegalArgumentException("Could not create Nucleotide with three letter code" + threeLetterCode))));
         } else {
             // else this is a ligand
-            OakLigand OakLigand = new OakLigand(leafIdentifier, new StructuralFamily(oneLetterCode, threeLetterCode));
+            PdbLigand OakLigand = new PdbLigand(leafIdentifier, new StructuralFamily(oneLetterCode, threeLetterCode));
             OakLigand.setName(name);
             leafSubstructure = OakLigand;
         }
 
         if (!idealIncomplete) {
-            for (Map.Entry<String, OakAtom> entry : atoms.entrySet()) {
+            for (Map.Entry<String, PdbAtom> entry : atoms.entrySet()) {
                 String name = entry.getKey();
-                OakAtom atom = entry.getValue();
+                PdbAtom atom = entry.getValue();
                 atom.setPosition(idealCoordinates.get(name));
             }
         } else if (!defaultIncomplete) {
             logger.warn("unable to assign ideal coordinates to ligand {}, using default coordinates.", threeLetterCode);
-            for (Map.Entry<String, OakAtom> entry : atoms.entrySet()) {
+            for (Map.Entry<String, PdbAtom> entry : atoms.entrySet()) {
                 String name = entry.getKey();
-                OakAtom atom = entry.getValue();
+                PdbAtom atom = entry.getValue();
                 atom.setPosition(defaultCoordinates.get(name));
             }
         } else {
             // both are incomplete
             logger.warn("unable to assign full coordinates to ligand {}", threeLetterCode);
-            for (Map.Entry<String, OakAtom> entry : atoms.entrySet()) {
+            for (Map.Entry<String, PdbAtom> entry : atoms.entrySet()) {
                 String name = entry.getKey();
-                OakAtom atom = entry.getValue();
+                PdbAtom atom = entry.getValue();
                 Vector3D idealPosition = idealCoordinates.get(name);
                 if (idealPosition != null) {
                     atom.setPosition(idealPosition);
@@ -541,11 +541,11 @@ public class CifFileParser {
      *
      * @param leafWithAtoms The leaf to connect.
      */
-    private void connectAtoms(OakLeafSubstructure leafWithAtoms) {
+    private void connectAtoms(PdbLeafSubstructure leafWithAtoms) {
         int bondCounter = 0;
         for (Map.Entry<Pair<String>, CovalentBondType> bond : bonds.entrySet()) {
-            OakBond oakBond = new OakBond(bondCounter++, bond.getValue());
-            leafWithAtoms.addBondBetween(oakBond, atoms.get(bond.getKey().getFirst()),
+            PdbBond pdbBond = new PdbBond(bondCounter++, bond.getValue());
+            leafWithAtoms.addBondBetween(pdbBond, atoms.get(bond.getKey().getFirst()),
                     atoms.get(bond.getKey().getSecond()));
         }
     }

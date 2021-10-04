@@ -25,7 +25,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static bio.singa.structure.model.oak.StructuralEntityFilter.AtomFilter;
+import static bio.singa.structure.model.general.StructuralEntityFilter.AtomFilter;
 
 /**
  * Calculates the various {@link Superimposition}s for structures.

@@ -3,8 +3,8 @@ package bio.singa.structure.model.mmtf;
 import bio.singa.core.utility.Range;
 import bio.singa.structure.model.families.StructuralFamily;
 import bio.singa.structure.model.interfaces.*;
-import bio.singa.structure.model.oak.PdbLeafIdentifier;
-import bio.singa.structure.model.oak.StructuralMotif;
+import bio.singa.structure.model.pdb.PdbLeafIdentifier;
+import bio.singa.structure.model.general.StructuralMotif;
 import org.rcsb.mmtf.api.StructureDataInterface;
 
 import java.util.*;

@@ -10,9 +10,9 @@ import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.mathematics.vectors.Vectors2D;
 import bio.singa.structure.algorithms.molecules.MoleculePathFinder;
 import bio.singa.structure.model.interfaces.Atom;
-import bio.singa.structure.model.oak.OakAtom;
-import bio.singa.structure.model.oak.OakBond;
-import bio.singa.structure.model.oak.OakLeafSubstructure;
+import bio.singa.structure.model.pdb.PdbAtom;
+import bio.singa.structure.model.pdb.PdbBond;
+import bio.singa.structure.model.pdb.PdbLeafSubstructure;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -26,7 +26,7 @@ public class MoleculeGraphs {
 
     public static Rectangle defaultBoundingBox = new Rectangle(100, 100);
 
-    public static MoleculeGraph createMoleculeGraphFromStructure(OakLeafSubstructure leafSubstructure) {
+    public static MoleculeGraph createMoleculeGraphFromStructure(PdbLeafSubstructure leafSubstructure) {
         // crate empty graph
         MoleculeGraph graph = new MoleculeGraph();
         // add atoms first
@@ -43,10 +43,10 @@ public class MoleculeGraphs {
             graph.addNode(moleculeAtom);
         }
         // then add bonds
-        for (OakBond bond : leafSubstructure.getBonds()) {
+        for (PdbBond bond : leafSubstructure.getBonds()) {
             // only use bonds connecting the leaf internally
-            OakAtom source = bond.getSource();
-            OakAtom target = bond.getTarget();
+            PdbAtom source = bond.getSource();
+            PdbAtom target = bond.getTarget();
             if (graph.getNode(source.getAtomIdentifier()) != null && graph.getNode(target.getAtomIdentifier()) != null) {
                 graph.addEdgeBetween(bond.getIdentifier(), source.getAtomIdentifier(), target.getAtomIdentifier(), bond.getBondType());
             }

@@ -11,10 +11,10 @@ import bio.singa.mathematics.vectors.Vector3D;
 import bio.singa.structure.model.families.StructuralFamily;
 import bio.singa.structure.model.interfaces.Atom;
 import bio.singa.structure.model.interfaces.Ligand;
-import bio.singa.structure.model.oak.OakAtom;
-import bio.singa.structure.model.oak.OakBond;
-import bio.singa.structure.model.oak.OakLigand;
-import bio.singa.structure.model.oak.PdbLeafIdentifier;
+import bio.singa.structure.model.pdb.PdbAtom;
+import bio.singa.structure.model.pdb.PdbBond;
+import bio.singa.structure.model.pdb.PdbLigand;
+import bio.singa.structure.model.pdb.PdbLeafIdentifier;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -35,7 +35,7 @@ public class MolParser {
     private int atomCount;
     private int bondCount;
 
-    private List<OakAtom> atoms;
+    private List<PdbAtom> atoms;
     private Map<Pair<Integer>, CovalentBondType> bonds;
     private List<Integer> skippedAtoms;
 
@@ -95,7 +95,7 @@ public class MolParser {
                 skippedAtoms.add(blockIndex + 1);
                 continue;
             }
-            final OakAtom atom = new OakAtom(blockIndex - skippedAtoms.size(), element.asIon(charge), element.getSymbol(), new Vector3D(x, y, z));
+            final PdbAtom atom = new PdbAtom(blockIndex - skippedAtoms.size(), element.asIon(charge), element.getSymbol(), new Vector3D(x, y, z));
             atoms.add(atom);
         }
     }
@@ -139,11 +139,11 @@ public class MolParser {
     public Ligand parseNextAsLigand() {
         parseNextStructure();
         // create structure;
-        OakLigand ligand = new OakLigand(PdbLeafIdentifier.DEFAULT_LEAF_IDENTIFIER, new StructuralFamily("?", "UNK"));
+        PdbLigand ligand = new PdbLigand(PdbLeafIdentifier.DEFAULT_LEAF_IDENTIFIER, new StructuralFamily("?", "UNK"));
         atoms.forEach(ligand::addAtom);
         int bondCounter = 0;
         for (Map.Entry<Pair<Integer>, CovalentBondType> bond : bonds.entrySet()) {
-            ligand.addBondBetween(new OakBond(bondCounter, bond.getValue()), atoms.get(bond.getKey().getFirst() - 1),
+            ligand.addBondBetween(new PdbBond(bondCounter, bond.getValue()), atoms.get(bond.getKey().getFirst() - 1),
                     atoms.get(bond.getKey().getSecond() - 1));
             bondCounter++;
         }

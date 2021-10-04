@@ -5,8 +5,8 @@ import bio.singa.mathematics.vectors.Vectors3D;
 import bio.singa.chemistry.model.elements.ElementProvider;
 import bio.singa.structure.model.interfaces.Atom;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
-import bio.singa.structure.model.oak.OakAtom;
-import bio.singa.structure.model.oak.StructuralEntityFilter;
+import bio.singa.structure.model.pdb.PdbAtom;
+import bio.singa.structure.model.general.StructuralEntityFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +36,7 @@ public abstract class AbstractRepresentationScheme implements RepresentationSche
             return optionalCO.get();
         }
         logger.debug("obtaining centroid representation for {}", leafSubstructure);
-        return new OakAtom(leafSubstructure.getAllAtoms().iterator().next().getAtomIdentifier(),
+        return new PdbAtom(leafSubstructure.getAllAtoms().iterator().next().getAtomIdentifier(),
                 ElementProvider.UNKOWN,
                 RepresentationSchemeType.CENTROID.getAtomNameString(),
                 Vectors3D.get3DCentroid(leafSubstructure.getAllAtoms().stream()

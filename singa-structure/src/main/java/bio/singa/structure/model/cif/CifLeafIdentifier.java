@@ -3,7 +3,7 @@ package bio.singa.structure.model.cif;
 import bio.singa.structure.model.interfaces.AbstractLeafIdentifier;
 import bio.singa.structure.model.interfaces.LeafIdentifier;
 
-import static bio.singa.structure.model.oak.PdbLeafIdentifier.DEFAULT_INSERTION_CODE;
+import static bio.singa.structure.model.pdb.PdbLeafIdentifier.DEFAULT_INSERTION_CODE;
 
 public class CifLeafIdentifier extends AbstractLeafIdentifier {
 

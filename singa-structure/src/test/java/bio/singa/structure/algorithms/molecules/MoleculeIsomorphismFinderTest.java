@@ -6,7 +6,7 @@ import bio.singa.core.utility.Pair;
 import bio.singa.core.utility.Resources;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.molecules.MoleculeGraphs;
-import bio.singa.structure.model.oak.OakLeafSubstructure;
+import bio.singa.structure.model.pdb.PdbLeafSubstructure;
 import bio.singa.structure.parser.pdb.structures.StructureParser;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -32,7 +32,7 @@ class MoleculeIsomorphismFinderTest {
         Collection<? extends LeafSubstructure> targetLeafSubstructure = StructureParser.local()
                 .fileLocation(Resources.getResourceAsFileLocation("atp.pdb"))
                 .parse().getAllLeafSubstructures();
-        targetGraph = MoleculeGraphs.createMoleculeGraphFromStructure((OakLeafSubstructure) targetLeafSubstructure.iterator().next());
+        targetGraph = MoleculeGraphs.createMoleculeGraphFromStructure((PdbLeafSubstructure) targetLeafSubstructure.iterator().next());
     }
 
     @Test
@@ -46,7 +46,7 @@ class MoleculeIsomorphismFinderTest {
                 .everything()
                 .parse().getAllLeafSubstructures();
 
-        MoleculeGraph patternGraph = MoleculeGraphs.createMoleculeGraphFromStructure((OakLeafSubstructure) patternLeafSubstructure.iterator().next());
+        MoleculeGraph patternGraph = MoleculeGraphs.createMoleculeGraphFromStructure((PdbLeafSubstructure) patternLeafSubstructure.iterator().next());
 
         MoleculeIsomorphism moleculeIsomorphism = MoleculeIsomorphismFinder.of(patternGraph, targetGraph);
 
@@ -75,7 +75,7 @@ class MoleculeIsomorphismFinderTest {
                 .everything()
                 .parse().getAllLeafSubstructures();
 
-        MoleculeGraph patternGraph = MoleculeGraphs.createMoleculeGraphFromStructure((OakLeafSubstructure) patternLeafSubstructure.iterator().next());
+        MoleculeGraph patternGraph = MoleculeGraphs.createMoleculeGraphFromStructure((PdbLeafSubstructure) patternLeafSubstructure.iterator().next());
 
         MoleculeIsomorphism moleculeIsomorphism = MoleculeIsomorphismFinder.of(patternGraph, targetGraph);
 
@@ -102,7 +102,7 @@ class MoleculeIsomorphismFinderTest {
                 .everything()
                 .parse().getAllLeafSubstructures();
 
-        MoleculeGraph patternGraph = MoleculeGraphs.createMoleculeGraphFromStructure((OakLeafSubstructure) patternLeafSubstructure.iterator().next());
+        MoleculeGraph patternGraph = MoleculeGraphs.createMoleculeGraphFromStructure((PdbLeafSubstructure) patternLeafSubstructure.iterator().next());
 
         MoleculeIsomorphism moleculeIsomorphism = MoleculeIsomorphismFinder.of(patternGraph, targetGraph, MoleculeIsomorphismFinder.AtomConditions.isSameElement(), (a, b) -> true);
 

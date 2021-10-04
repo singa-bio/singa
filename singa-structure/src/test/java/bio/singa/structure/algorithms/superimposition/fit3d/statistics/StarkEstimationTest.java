@@ -3,10 +3,10 @@ package bio.singa.structure.algorithms.superimposition.fit3d.statistics;
 import bio.singa.core.utility.Resources;
 import bio.singa.structure.algorithms.superimposition.fit3d.Fit3D;
 import bio.singa.structure.algorithms.superimposition.fit3d.Fit3DBuilder;
-import bio.singa.structure.model.oak.LeafIdentifiers;
 import bio.singa.structure.model.interfaces.Structure;
-import bio.singa.structure.model.oak.StructuralEntityFilter;
-import bio.singa.structure.model.oak.StructuralMotif;
+import bio.singa.structure.model.general.StructuralEntityFilter;
+import bio.singa.structure.model.general.StructuralMotif;
+import bio.singa.structure.model.pdb.PdbLeafIdentifier;
 import bio.singa.structure.parser.pdb.structures.StructureParser;
 import bio.singa.structure.parser.pdb.structures.StructureParserOptions;
 import bio.singa.structure.parser.pdb.structures.iterators.StructureIterator;
@@ -31,7 +31,7 @@ class StarkEstimationTest {
                 .fileLocation(Resources.getResourceAsFileLocation("1GL0_HDS_intra_E-H57_E-D102_E-S195.pdb"))
                 .parse();
         queryMotif = StructuralMotif.fromLeafIdentifiers(motifContainingStructure,
-                LeafIdentifiers.of("E-57", "E-102", "E-195"));
+                PdbLeafIdentifier.of("E-57", "E-102", "E-195"));
         structureParserOptions = StructureParserOptions.withSettings(
                 StructureParserOptions.Setting.OMIT_EDGES,
                 StructureParserOptions.Setting.OMIT_HYDROGENS,

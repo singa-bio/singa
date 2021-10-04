@@ -2,9 +2,9 @@ package bio.singa.structure.algorithms.superimposition.affinity;
 
 import bio.singa.core.utility.Resources;
 import bio.singa.structure.model.interfaces.Structure;
-import bio.singa.structure.model.oak.OakAminoAcid;
-import bio.singa.structure.model.oak.PdbLeafIdentifier;
-import bio.singa.structure.model.oak.StructuralMotif;
+import bio.singa.structure.model.pdb.PdbAminoAcid;
+import bio.singa.structure.model.pdb.PdbLeafIdentifier;
+import bio.singa.structure.model.general.StructuralMotif;
 import bio.singa.structure.parser.pdb.structures.StructureParser;
 import bio.singa.structure.parser.pdb.structures.StructureParserOptions;
 import org.junit.jupiter.api.BeforeEach;
@@ -55,7 +55,7 @@ class AffinityAlignmentTest {
 
     @Test
     void shouldFailWithInputOfDifferentSize() {
-        input.get(0).addLeafSubstructure(new OakAminoAcid(new PdbLeafIdentifier(PdbLeafIdentifier.DEFAULT_PDB_IDENTIFIER, PdbLeafIdentifier.DEFAULT_MODEL_IDENTIFIER, PdbLeafIdentifier.DEFAULT_CHAIN_IDENTIFIER, 0), ALANINE));
+        input.get(0).addLeafSubstructure(new PdbAminoAcid(new PdbLeafIdentifier(PdbLeafIdentifier.DEFAULT_PDB_IDENTIFIER, PdbLeafIdentifier.DEFAULT_MODEL_IDENTIFIER, PdbLeafIdentifier.DEFAULT_CHAIN_IDENTIFIER, 0), ALANINE));
         assertThrows(IllegalArgumentException.class,
                 () -> AffinityAlignment.create()
                         .inputStructuralMotifs(input)

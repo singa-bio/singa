@@ -1,8 +1,7 @@
 package bio.singa.structure.model.mmtf;
 
-import bio.singa.structure.model.oak.PdbLeafIdentifier;
-import bio.singa.structure.model.oak.StructuralMotif;
-import bio.singa.structure.model.oak.UniqueAtomIdentifier;
+import bio.singa.structure.model.general.StructuralMotif;
+import bio.singa.structure.model.general.UniqueAtomIdentifier;
 import bio.singa.structure.model.interfaces.*;
 import org.rcsb.mmtf.api.StructureDataInterface;
 import org.rcsb.mmtf.decoder.GenericDecoder;

@@ -8,7 +8,7 @@ import bio.singa.structure.model.families.StructuralFamilies;
 import bio.singa.structure.model.interfaces.AminoAcid;
 import bio.singa.structure.model.interfaces.Atom;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
-import bio.singa.structure.model.oak.OakAtom;
+import bio.singa.structure.model.pdb.PdbAtom;
 
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -16,7 +16,7 @@ import java.util.stream.Stream;
 
 import static bio.singa.structure.model.families.StructuralFamilies.AminoAcids.ALANINE;
 import static bio.singa.structure.model.families.StructuralFamilies.AminoAcids.GLYCINE;
-import static bio.singa.structure.model.oak.StructuralEntityFilter.AtomFilter;
+import static bio.singa.structure.model.general.StructuralEntityFilter.AtomFilter;
 
 /**
  * An implementation to represent a given {@link LeafSubstructure} by its beta carbon. This is only available for {@link
@@ -51,7 +51,7 @@ public class BetaCarbonRepresentationScheme extends AbstractRepresentationScheme
                     .filter(AtomFilter.isBetaCarbon())
                     .findAny();
             if (optionalVirtualBetaCarbon.isPresent()) {
-                return new OakAtom(leafSubstructure.getAllAtoms().iterator().next().getAtomIdentifier(),
+                return new PdbAtom(leafSubstructure.getAllAtoms().iterator().next().getAtomIdentifier(),
                         ElementProvider.CARBON,
                         RepresentationSchemeType.BETA_CARBON.getAtomNameString(),
                         optionalVirtualBetaCarbon.get().getPosition().getCopy());

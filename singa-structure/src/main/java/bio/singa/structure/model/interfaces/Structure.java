@@ -1,10 +1,9 @@
 package bio.singa.structure.model.interfaces;
 
 import bio.singa.features.identifiers.PDBIdentifier;
-import bio.singa.structure.model.oak.UniqueAtomIdentifier;
+import bio.singa.structure.model.general.UniqueAtomIdentifier;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 

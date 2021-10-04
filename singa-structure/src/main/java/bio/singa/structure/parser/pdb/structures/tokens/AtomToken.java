@@ -6,8 +6,8 @@ import bio.singa.chemistry.model.elements.Element;
 import bio.singa.chemistry.model.elements.ElementProvider;
 import bio.singa.structure.model.interfaces.Atom;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
-import bio.singa.structure.model.oak.OakAtom;
-import bio.singa.structure.model.oak.PdbLeafIdentifier;
+import bio.singa.structure.model.pdb.PdbAtom;
+import bio.singa.structure.model.pdb.PdbLeafIdentifier;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -50,7 +50,7 @@ public enum AtomToken implements PDBToken {
         this.justification = justification;
     }
 
-    public static OakAtom assembleAtom(String atomLine) {
+    public static PdbAtom assembleAtom(String atomLine) {
         // coordinates
         double x = Double.parseDouble(X_COORDINATE.extract(atomLine));
         double y = Double.parseDouble(Y_COORDINATE.extract(atomLine));
@@ -65,7 +65,7 @@ public enum AtomToken implements PDBToken {
                 .orElse(ElementProvider.UNKOWN);
         // bfactor
         double bFactor = Double.parseDouble(TEMPERATURE_FACTOR.extract(atomLine));
-        OakAtom atom = new OakAtom(atomSerial, element, atomName, coordinates);
+        PdbAtom atom = new PdbAtom(atomSerial, element, atomName, coordinates);
         atom.setBFactor(bFactor);
         return atom;
     }

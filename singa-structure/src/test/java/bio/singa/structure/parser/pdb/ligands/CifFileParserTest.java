@@ -6,16 +6,15 @@ import bio.singa.structure.model.families.StructuralFamilies;
 import bio.singa.structure.model.interfaces.Atom;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.interfaces.Structure;
-import bio.singa.structure.model.oak.OakBond;
-import bio.singa.structure.model.oak.OakLigand;
-import bio.singa.structure.model.oak.PdbLeafIdentifier;
+import bio.singa.structure.model.pdb.PdbBond;
+import bio.singa.structure.model.pdb.PdbLigand;
+import bio.singa.structure.model.pdb.PdbLeafIdentifier;
 import bio.singa.structure.parser.pdb.structures.StructureParser;
 import bio.singa.structure.model.general.LeafSkeleton;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -46,13 +45,13 @@ class CifFileParserTest {
 
     @Test
     void shouldParseSingleAtomLigandStructure() {
-        OakLigand leafSubstructure = null;
+        PdbLigand leafSubstructure = null;
         try {
-            leafSubstructure = ((OakLigand) LigandParserService.parseLeafSubstructureById("MG"));
+            leafSubstructure = ((PdbLigand) LigandParserService.parseLeafSubstructureById("MG"));
         } catch (IOException e) {
             fail("Unable tp parse ligand");
         }
-        Collection<OakBond> bonds = leafSubstructure.getBonds();
+        Collection<PdbBond> bonds = leafSubstructure.getBonds();
         Collection<? extends Atom> atoms = leafSubstructure.getAllAtoms();
         assertEquals(0, bonds.size());
         assertEquals(1, atoms.size());
@@ -60,25 +59,25 @@ class CifFileParserTest {
 
     @Test
     void shouldParseSugarLigandStructure() {
-        OakLigand leafSubstructure = null;
+        PdbLigand leafSubstructure = null;
         try {
-            leafSubstructure = ((OakLigand) LigandParserService.parseLeafSubstructureById("LAT"));
+            leafSubstructure = ((PdbLigand) LigandParserService.parseLeafSubstructureById("LAT"));
         } catch (IOException e) {
             fail("Unable tp parse ligand");
         }
-        Collection<OakBond> bonds = leafSubstructure.getBonds();
+        Collection<PdbBond> bonds = leafSubstructure.getBonds();
         Collection<? extends Atom> atoms = leafSubstructure.getAllAtoms();
     }
 
     @Test
     void shouldIgnoreQuestionMark() {
-        OakLigand leafSubstructure = null;
+        PdbLigand leafSubstructure = null;
         try {
-            leafSubstructure = ((OakLigand) LigandParserService.parseLeafSubstructureById("HGB"));
+            leafSubstructure = ((PdbLigand) LigandParserService.parseLeafSubstructureById("HGB"));
         } catch (IOException e) {
             fail("Unable tp parse ligand");
         }
-        Collection<OakBond> bonds = leafSubstructure.getBonds();
+        Collection<PdbBond> bonds = leafSubstructure.getBonds();
         Collection<? extends Atom> atoms = leafSubstructure.getAllAtoms();
     }
 

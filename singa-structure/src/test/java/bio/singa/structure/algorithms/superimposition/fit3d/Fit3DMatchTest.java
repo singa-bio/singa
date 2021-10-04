@@ -1,10 +1,9 @@
 package bio.singa.structure.algorithms.superimposition.fit3d;
 
 import bio.singa.core.utility.Resources;
-import bio.singa.structure.model.oak.LeafIdentifiers;
 import bio.singa.structure.model.interfaces.Structure;
-import bio.singa.structure.model.oak.PdbLeafIdentifier;
-import bio.singa.structure.model.oak.StructuralMotif;
+import bio.singa.structure.model.pdb.PdbLeafIdentifier;
+import bio.singa.structure.model.general.StructuralMotif;
 import bio.singa.structure.parser.pdb.structures.StructureParser;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -36,7 +35,7 @@ class Fit3DMatchTest {
                 .fileLocation(Resources.getResourceAsFileLocation("1GL0_HDS_intra_E-H57_E-D102_E-S195.pdb"))
                 .parse();
         queryMotif = StructuralMotif.fromLeafIdentifiers(motifContainingStructure,
-                LeafIdentifiers.of("E-57", "E-102", "E-195"));
+                PdbLeafIdentifier.of("E-57", "E-102", "E-195"));
         queryMotif.addExchangeableFamily(PdbLeafIdentifier.fromSimpleString("E-57"), GLUTAMIC_ACID);
     }
 

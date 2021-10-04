@@ -2,7 +2,7 @@ package bio.singa.structure.parser.pdb.structures;
 
 
 import bio.singa.structure.model.interfaces.*;
-import bio.singa.structure.model.oak.StructuralMotif;
+import bio.singa.structure.model.general.StructuralMotif;
 
 import java.util.NoSuchElementException;
 

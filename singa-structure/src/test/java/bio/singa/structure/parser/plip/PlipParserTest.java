@@ -1,12 +1,10 @@
 package bio.singa.structure.parser.plip;
 
 import bio.singa.core.utility.Resources;
-import bio.singa.structure.model.oak.OakStructure;
+import bio.singa.structure.model.pdb.PdbStructure;
 import bio.singa.structure.parser.pdb.structures.StructureParser;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
 import java.util.List;
@@ -25,7 +23,7 @@ class PlipParserTest {
     void shouldParseIntraChainInteractions() {
         InputStream inputStream = getResourceAsStream("plip/1c0a.xml");
         InteractionContainer interactionContainer = PlipParser.parse("1c0a", inputStream);
-        OakStructure structure = (OakStructure) StructureParser.pdb()
+        PdbStructure structure = (PdbStructure) StructureParser.pdb()
                 .pdbIdentifier("1c0a")
                 .chainIdentifier("A")
                 .parse();
@@ -71,7 +69,7 @@ class PlipParserTest {
     void shouldParseInteractionsWithInsertionCodes() {
         InputStream inputStream = getResourceAsStream("plip/1k1i.xml");
         InteractionContainer interactionContainer = PlipParser.parse("1k1i", inputStream);
-        OakStructure structure = (OakStructure) StructureParser.pdb()
+        PdbStructure structure = (PdbStructure) StructureParser.pdb()
                 .pdbIdentifier("1k1i")
                 .chainIdentifier("A")
                 .parse();
@@ -83,7 +81,7 @@ class PlipParserTest {
     void plipCountFingerPrint() {
         InputStream inputStream = getResourceAsStream("plip/1c0a_ligand.xml");
         InteractionContainer interactionContainer = PlipParser.parse("1c0a", inputStream);
-        OakStructure structure = (OakStructure) StructureParser.pdb()
+        PdbStructure structure = (PdbStructure) StructureParser.pdb()
                 .pdbIdentifier("1c0a")
                 .chainIdentifier("A")
                 .parse();

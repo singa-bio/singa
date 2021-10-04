@@ -6,9 +6,9 @@ import bio.singa.chemistry.model.elements.ElementProvider;
 import bio.singa.structure.model.interfaces.AminoAcid;
 import bio.singa.structure.model.interfaces.Atom;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
-import bio.singa.structure.model.oak.OakAtom;
-import bio.singa.structure.model.oak.StructuralEntityFilter;
-import bio.singa.structure.model.oak.Structures;
+import bio.singa.structure.model.pdb.PdbAtom;
+import bio.singa.structure.model.general.StructuralEntityFilter;
+import bio.singa.structure.model.general.Structures;
 
 import java.util.Comparator;
 import java.util.NoSuchElementException;
@@ -59,7 +59,7 @@ public class LastHeavySidechainRepresentationScheme extends AbstractRepresentati
                 .reduce((first, second) -> second)
                 .orElseThrow(() -> new IllegalStateException("unable to get last atom of leaf " + leafSubstructure))
                 .getAtomIdentifier();
-        return new OakAtom(atomIdentifier,
+        return new PdbAtom(atomIdentifier,
                 ElementProvider.UNKOWN,
                 RepresentationSchemeType.LAST_HEAVY_SIDE_CHAIN.getAtomNameString(),
                 referenceAtom.getPosition());

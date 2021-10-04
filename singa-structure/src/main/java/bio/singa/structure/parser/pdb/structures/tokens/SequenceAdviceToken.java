@@ -4,15 +4,15 @@ import bio.singa.core.utility.Range;
 import bio.singa.structure.model.families.StructuralFamilies;
 import bio.singa.structure.model.families.StructuralFamily;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
-import bio.singa.structure.model.oak.OakAminoAcid;
-import bio.singa.structure.model.oak.OakNucleotide;
-import bio.singa.structure.model.oak.OakStructure;
+import bio.singa.structure.model.pdb.PdbAminoAcid;
+import bio.singa.structure.model.pdb.PdbNucleotide;
+import bio.singa.structure.model.pdb.PdbStructure;
 
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static bio.singa.structure.model.oak.PdbLeafIdentifier.DEFAULT_INSERTION_CODE;
+import static bio.singa.structure.model.pdb.PdbLeafIdentifier.DEFAULT_INSERTION_CODE;
 
 public enum SequenceAdviceToken implements PDBToken {
 
@@ -38,7 +38,7 @@ public enum SequenceAdviceToken implements PDBToken {
         this.justification = justification;
     }
 
-    public static void assignSequenceAdvice(OakStructure structure, String line) {
+    public static void assignSequenceAdvice(PdbStructure structure, String line) {
         String conflictComment = CONFLICT_COMMENT.extract(line).trim().toUpperCase();
 
         // TODO also possible to determine expression tags, poly A, etc.
@@ -60,8 +60,8 @@ public enum SequenceAdviceToken implements PDBToken {
         String originalResidueName = DATABASE_RESIDUE_NAME.extract(line).trim();
         // assign aminoacids
         advisableResidues.stream()
-                .filter(OakAminoAcid.class::isInstance)
-                .map (OakAminoAcid.class::cast)
+                .filter(PdbAminoAcid.class::isInstance)
+                .map (PdbAminoAcid.class::cast)
                 .forEach(oakAminoAcid -> {
                     oakAminoAcid.setMutation(true);
                     StructuralFamily wildTypeResidue = StructuralFamilies.AminoAcids.getOrUnknown(originalResidueName);
@@ -69,8 +69,8 @@ public enum SequenceAdviceToken implements PDBToken {
                 });
 
         advisableResidues.stream()
-                .filter(OakNucleotide.class::isInstance)
-                .map (OakNucleotide.class::cast)
+                .filter(PdbNucleotide.class::isInstance)
+                .map (PdbNucleotide.class::cast)
                 .forEach(oakNucleotide -> {
                     oakNucleotide.setMutation(true);
                     StructuralFamily wildTypeNucleotide = StructuralFamilies.Nucleotides.getOrUnknown(originalResidueName);

@@ -6,7 +6,7 @@ import bio.singa.structure.model.families.StructuralFamilies;
 import bio.singa.structure.model.families.StructuralFamily;
 import bio.singa.structure.model.interfaces.AminoAcid;
 import bio.singa.structure.model.interfaces.Nucleotide;
-import bio.singa.structure.model.oak.*;
+import bio.singa.structure.model.pdb.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,7 +24,7 @@ public class LeafSkeleton {
     private String name;
     private AssignedFamily assignedFamily;
     private Map<Pair<String>, CovalentBondType> bonds;
-    private Map<String, OakAtom> atoms;
+    private Map<String, PdbAtom> atoms;
 
     public LeafSkeleton(String threeLetterCode, String parent, AssignedFamily assignedFamily, Map<Pair<String>, CovalentBondType> bonds) {
         this.threeLetterCode = threeLetterCode;
@@ -41,11 +41,11 @@ public class LeafSkeleton {
         atoms = new HashMap<>();
     }
 
-    public Map<String, OakAtom> getAtoms() {
+    public Map<String, PdbAtom> getAtoms() {
         return atoms;
     }
 
-    public void setAtoms(Map<String, OakAtom> atoms) {
+    public void setAtoms(Map<String, PdbAtom> atoms) {
         this.atoms = atoms;
     }
 
@@ -101,19 +101,19 @@ public class LeafSkeleton {
         return !bonds.isEmpty();
     }
 
-    public OakLeafSubstructure toRealLeafSubstructure(PdbLeafIdentifier identifer, Map<String, OakAtom> atoms) {
-        OakLeafSubstructure substructure;
+    public PdbLeafSubstructure toRealLeafSubstructure(PdbLeafIdentifier identifer, Map<String, PdbAtom> atoms) {
+        PdbLeafSubstructure substructure;
         switch (assignedFamily) {
             case MODIFIED_AMINO_ACID: {
-                substructure = new OakAminoAcid(identifer, StructuralFamilies.AminoAcids.getOrUnknown(parent), threeLetterCode);
+                substructure = new PdbAminoAcid(identifer, StructuralFamilies.AminoAcids.getOrUnknown(parent), threeLetterCode);
                 break;
             }
             case MODIFIED_NUCLEOTIDE: {
-                substructure = new OakNucleotide(identifer, StructuralFamilies.Nucleotides.getOrUnknown(parent), threeLetterCode);
+                substructure = new PdbNucleotide(identifer, StructuralFamilies.Nucleotides.getOrUnknown(parent), threeLetterCode);
                 break;
             }
             default: {
-                OakLigand ligand = new OakLigand(identifer, new StructuralFamily("?", threeLetterCode));
+                PdbLigand ligand = new PdbLigand(identifer, new StructuralFamily("?", threeLetterCode));
                 ligand.setName(name);
                 substructure = ligand;
                 break;
@@ -128,7 +128,7 @@ public class LeafSkeleton {
         return substructure;
     }
 
-    public void connect(OakLeafSubstructure substructure, Map<String, OakAtom> atomMap) {
+    public void connect(PdbLeafSubstructure substructure, Map<String, PdbAtom> atomMap) {
         for (Map.Entry<Pair<String>, CovalentBondType> bond : bonds.entrySet()) {
             substructure.addBondBetween(atomMap.get(bond.getKey().getFirst()),
                     atomMap.get(bond.getKey().getSecond()),bond.getValue());

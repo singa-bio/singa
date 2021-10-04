@@ -18,7 +18,7 @@ import bio.singa.structure.model.interfaces.Atom;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.interfaces.LeafSubstructureContainer;
 import bio.singa.structure.model.interfaces.Structure;
-import bio.singa.structure.model.oak.StructuralMotif;
+import bio.singa.structure.model.general.StructuralMotif;
 import bio.singa.structure.parser.sifts.PDBEnzymeMapper;
 import bio.singa.structure.parser.sifts.PDBPfamMapper;
 import bio.singa.structure.parser.sifts.PDBUniProtMapper;

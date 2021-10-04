@@ -1,6 +1,6 @@
 package bio.singa.structure.parser.pdb.structures;
 
-import bio.singa.structure.model.oak.PdbLeafIdentifier;
+import bio.singa.structure.model.pdb.PdbLeafIdentifier;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -13,7 +13,7 @@ import bio.singa.structure.model.families.StructuralFamily;
 import bio.singa.structure.model.interfaces.AminoAcid;
 import bio.singa.structure.model.interfaces.Atom;
 import bio.singa.structure.model.interfaces.Structure;
-import bio.singa.structure.model.oak.OakAminoAcid;
+import bio.singa.structure.model.pdb.PdbAminoAcid;
 import bio.singa.structure.parser.pdb.structures.StructureParser;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -142,7 +142,7 @@ public class MirrorRenderer extends Application implements Renderer {
                 .parse();
 
         for (AminoAcid aminoAcid : structure.getAllAminoAcids()) {
-            OakAminoAcid nativeAminoAcid = (OakAminoAcid) aminoAcid;
+            PdbAminoAcid nativeAminoAcid = (PdbAminoAcid) aminoAcid;
 
             StructuralFamily family = nativeAminoAcid.getFamily();
             // family.equals(UNKNOWN) || family.equals(GLYCINE)

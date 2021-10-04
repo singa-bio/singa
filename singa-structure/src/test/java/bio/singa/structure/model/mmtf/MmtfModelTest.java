@@ -1,12 +1,11 @@
 package bio.singa.structure.model.mmtf;
 
 import bio.singa.structure.model.interfaces.*;
-import bio.singa.structure.model.oak.PdbLeafIdentifier;
+import bio.singa.structure.model.pdb.PdbLeafIdentifier;
+import bio.singa.structure.parser.pdb.structures.StructureParser;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.rcsb.mmtf.decoder.ReaderUtils;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
@@ -24,8 +23,10 @@ class MmtfModelTest {
     private static Model modelToModify;
 
     @BeforeAll
-    static void initialize() throws IOException {
-        Structure structure2N5E = new MmtfStructure(ReaderUtils.getByteArrayFromUrl("2N5E"));
+    static void initialize() {
+        Structure structure2N5E = StructureParser.mmtf()
+                .pdbIdentifier("2N5E")
+                .everything().parse();
         firstModel = structure2N5E.getFirstModel();
         secondModel = structure2N5E.getModel(2).get();
         modelToModify = structure2N5E.getModel(3).get();

@@ -5,7 +5,7 @@ import bio.singa.features.identifiers.ECNumber;
 import bio.singa.features.identifiers.PfamIdentifier;
 import bio.singa.features.identifiers.UniProtIdentifier;
 import bio.singa.structure.algorithms.superimposition.SubstructureSuperimposition;
-import bio.singa.structure.model.oak.StructuralMotif;
+import bio.singa.structure.model.general.StructuralMotif;
 
 import java.util.Map;
 import java.util.Optional;

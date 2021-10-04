@@ -1,7 +1,7 @@
 package bio.singa.structure.parser.sifts;
 
 import bio.singa.features.identifiers.UniProtIdentifier;
-import bio.singa.structure.model.oak.PdbLeafIdentifier;
+import bio.singa.structure.model.pdb.PdbLeafIdentifier;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.Locator;

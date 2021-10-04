@@ -10,10 +10,10 @@ import bio.singa.structure.model.interfaces.Atom;
 import bio.singa.structure.model.interfaces.AtomContainer;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.interfaces.LeafSubstructureContainer;
-import bio.singa.structure.model.oak.LeafSubstructureFactory;
-import bio.singa.structure.model.oak.OakAtom;
-import bio.singa.structure.model.oak.OakLeafSubstructure;
-import bio.singa.structure.model.oak.PdbLeafIdentifier;
+import bio.singa.structure.model.pdb.PdbLeafSubstructureFactory;
+import bio.singa.structure.model.pdb.PdbAtom;
+import bio.singa.structure.model.pdb.PdbLeafSubstructure;
+import bio.singa.structure.model.pdb.PdbLeafIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -152,12 +152,12 @@ public class AlignmentMethod {
             List<? extends Atom> currentReferenceAtoms = referenceAtoms.get(i);
             List<? extends Atom> currentCandidateAtoms = candidateAtoms.get(i);
             // average atoms
-            List<OakAtom> averagedAtoms = new ArrayList<>();
+            List<PdbAtom> averagedAtoms = new ArrayList<>();
             for (int j = 0; j < currentReferenceAtoms.size(); j++) {
                 Atom referenceAtom = currentReferenceAtoms.get(j);
                 Atom candidateAtom = currentCandidateAtoms.get(j);
                 // calculate average atom
-                averagedAtoms.add(new OakAtom(atomCounter,
+                averagedAtoms.add(new PdbAtom(atomCounter,
                         referenceAtom.getElement(), referenceAtom.getAtomName(),
                         referenceAtom.getPosition().add(candidateAtom.getPosition()).divide(2.0)));
                 atomCounter++;
@@ -174,7 +174,7 @@ public class AlignmentMethod {
             }
 
             // create new atom container
-            OakLeafSubstructure leafSubstructure = LeafSubstructureFactory.createLeafSubstructure(new PdbLeafIdentifier(PdbLeafIdentifier.DEFAULT_PDB_IDENTIFIER, PdbLeafIdentifier.DEFAULT_MODEL_IDENTIFIER, PdbLeafIdentifier.DEFAULT_CHAIN_IDENTIFIER, leafCounter), family);
+            PdbLeafSubstructure leafSubstructure = PdbLeafSubstructureFactory.createLeafSubstructure(new PdbLeafIdentifier(PdbLeafIdentifier.DEFAULT_PDB_IDENTIFIER, PdbLeafIdentifier.DEFAULT_MODEL_IDENTIFIER, PdbLeafIdentifier.DEFAULT_CHAIN_IDENTIFIER, leafCounter), family);
             averagedAtoms.forEach(leafSubstructure::addAtom);
             consensusLeaveSubstructures.add(leafSubstructure);
             leafCounter++;

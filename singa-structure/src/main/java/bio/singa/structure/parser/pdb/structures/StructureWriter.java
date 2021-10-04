@@ -3,10 +3,10 @@ package bio.singa.structure.parser.pdb.structures;
 import bio.singa.structure.model.families.StructuralFamily;
 import bio.singa.structure.model.interfaces.*;
 import bio.singa.structure.model.mmtf.MmtfAminoAcid;
-import bio.singa.structure.model.oak.LinkEntry;
-import bio.singa.structure.model.oak.OakStructure;
-import bio.singa.structure.model.oak.PdbLeafIdentifier;
-import bio.singa.structure.model.oak.Structures;
+import bio.singa.structure.model.pdb.PdbLinkEntry;
+import bio.singa.structure.model.pdb.PdbStructure;
+import bio.singa.structure.model.pdb.PdbLeafIdentifier;
+import bio.singa.structure.model.general.Structures;
 import org.rcsb.mmtf.dataholders.MmtfStructure;
 import org.rcsb.mmtf.encoder.AdapterToStructureData;
 import org.rcsb.mmtf.encoder.WriterUtils;
@@ -78,7 +78,7 @@ public class StructureWriter {
 
         PDBSubstructureStep pdbIdentifier(String pdbIdentifier);
 
-        PDBSubstructureStep links(Collection<LinkEntry> linkEntries);
+        PDBSubstructureStep links(Collection<PdbLinkEntry> linkEntries);
 
     }
 
@@ -112,7 +112,7 @@ public class StructureWriter {
         private List<LeafSubstructure> leafSubstructures;
         private String title = "";
         private String pdbIdentifier = "";
-        private List<LinkEntry> linkEntries;
+        private List<PdbLinkEntry> linkEntries;
 
         private StructureRepresentationOptions options;
         private Path destination;
@@ -156,7 +156,7 @@ public class StructureWriter {
         }
 
         @Override
-        public PDBSubstructureStep links(Collection<LinkEntry> linkEntries) {
+        public PDBSubstructureStep links(Collection<PdbLinkEntry> linkEntries) {
             this.linkEntries = reduceToRelevantLinks(linkEntries);
             return this;
         }
@@ -201,7 +201,7 @@ public class StructureWriter {
                 structure = Structures.toStructure(leafSubstructures, pdbIdentifier, title);
             }
             if (linkEntries != null) {
-                linkEntries.forEach(linkEntry -> ((OakStructure) structure).addLinkEntry(linkEntry));
+                linkEntries.forEach(linkEntry -> ((PdbStructure) structure).addLinkEntry(linkEntry));
             }
         }
 
@@ -222,9 +222,9 @@ public class StructureWriter {
             }
         }
 
-        private List<LinkEntry> reduceToRelevantLinks(Collection<LinkEntry> linkEntries) {
-            ArrayList<LinkEntry> reducedLinkEntries = new ArrayList<>();
-            for (LinkEntry linkEntry : linkEntries) {
+        private List<PdbLinkEntry> reduceToRelevantLinks(Collection<PdbLinkEntry> linkEntries) {
+            ArrayList<PdbLinkEntry> reducedLinkEntries = new ArrayList<>();
+            for (PdbLinkEntry linkEntry : linkEntries) {
                 if (leafSubstructures.contains(linkEntry.getFirstLeafSubstructure()) && leafSubstructures.contains(linkEntry.getSecondLeafSubstructure())) {
                     reducedLinkEntries.add(linkEntry);
                 }

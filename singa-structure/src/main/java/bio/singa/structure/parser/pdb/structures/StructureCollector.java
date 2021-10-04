@@ -3,10 +3,10 @@ package bio.singa.structure.parser.pdb.structures;
 import bio.singa.core.utility.DoubleMatcher;
 import bio.singa.core.utility.Pair;
 import bio.singa.structure.model.general.LeafSkeleton;
-import bio.singa.structure.model.oak.PdbLeafIdentifier;
-import bio.singa.structure.model.oak.UniqueAtomIdentifier;
+import bio.singa.structure.model.pdb.PdbLeafIdentifier;
+import bio.singa.structure.model.general.UniqueAtomIdentifier;
 import bio.singa.structure.model.interfaces.Structure;
-import bio.singa.structure.model.oak.*;
+import bio.singa.structure.model.pdb.*;
 import bio.singa.structure.parser.pdb.structures.iterators.StructureIterator;
 import bio.singa.structure.parser.pdb.structures.iterators.StructureReducer;
 import bio.singa.structure.parser.pdb.structures.tokens.*;
@@ -17,7 +17,7 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.regex.Matcher;
 
-import static bio.singa.structure.model.oak.PdbLeafIdentifier.*;
+import static bio.singa.structure.model.pdb.PdbLeafIdentifier.*;
 
 /**
  * The actual processing of pdb files. This class collects all required information form the a list of lines from a pdb
@@ -38,7 +38,7 @@ public class StructureCollector {
     /**
      * A cache of all atoms identified by unique atom identifiers.
      */
-    private final Map<UniqueAtomIdentifier, OakAtom> atoms;
+    private final Map<UniqueAtomIdentifier, PdbAtom> atoms;
     /**
      * A cache of all leafs and their three letter codes.
      */
@@ -402,7 +402,7 @@ public class StructureCollector {
 
         logger.debug("Creating structure for {}", contentTree.getIdentifier());
 
-        OakStructure structure = new OakStructure();
+        PdbStructure structure = new PdbStructure();
         if (contentTree.getIdentifier().isEmpty()) {
             contentTree.setIdentifier(DEFAULT_PDB_IDENTIFIER);
         }
@@ -411,10 +411,10 @@ public class StructureCollector {
         structure.setResolution(resolution);
         for (ContentTreeNode modelNode : contentTree.getNodesFromLevel(ContentTreeNode.StructureLevel.MODEL)) {
             logger.debug("Collecting chains for model {}", modelNode.getIdentifier());
-            OakModel model = new OakModel(Integer.parseInt(modelNode.getIdentifier()));
+            PdbModel model = new PdbModel(Integer.parseInt(modelNode.getIdentifier()));
             for (ContentTreeNode chainNode : modelNode.getNodesFromLevel(ContentTreeNode.StructureLevel.CHAIN)) {
                 logger.trace("Collecting leafs for chain {}", chainNode.getIdentifier());
-                OakChain chain = new OakChain(chainNode.getIdentifier());
+                PdbChain chain = new PdbChain(chainNode.getIdentifier());
                 for (ContentTreeNode leafNode : chainNode.getNodesFromLevel(ContentTreeNode.StructureLevel.LEAF)) {
                     PdbLeafIdentifier leafIdentifier = new PdbLeafIdentifier(currentPDB,
                             model.getModelIdentifier(),
@@ -422,7 +422,7 @@ public class StructureCollector {
                             Integer.parseInt(leafNode.getIdentifier()),
                             leafNode.getInsertionCode());
                     boolean isInConsecutivePart = !notInConsecutiveChain.contains(leafIdentifier);
-                    OakLeafSubstructure leafSubstructure = LeafSubstructureBuilder.create(iterator)
+                    PdbLeafSubstructure leafSubstructure = PdbLeafSubstructureBuilder.create(iterator)
                             .inConsecutivePart(isInConsecutivePart)
                             .name(leafCodes.get(leafIdentifier))
                             .identifier(leafIdentifier)
@@ -440,7 +440,7 @@ public class StructureCollector {
         // connect backbone
         if (iterator.getReducer().getOptions().isCreatingEdges()) {
             structure.getAllChains().stream()
-                    .map(OakChain.class::cast).forEach(OakChain::connectChainBackbone);
+                    .map(PdbChain.class::cast).forEach(PdbChain::connectChainBackbone);
         }
         // process link entries
         if (iterator.getReducer().getOptions().enforceConnection()) {
@@ -460,22 +460,22 @@ public class StructureCollector {
      *
      * @param structure The structure to be annotated.
      */
-    private void annotateLinks(OakStructure structure) {
+    private void annotateLinks(PdbStructure structure) {
         for (String linkLine : linkLines) {
-            LinkEntry linkEntry = LinkToken.assembleLinkEntry(structure, linkLine);
+            PdbLinkEntry linkEntry = LinkToken.assembleLinkEntry(structure, linkLine);
             if (linkEntry != null) {
                 structure.addLinkEntry(linkEntry);
             }
         }
     }
 
-    private void annotateConnections(OakStructure structure) {
+    private void annotateConnections(PdbStructure structure) {
         for (String connectionLine : connectionLines) {
             ConnectionToken.assignConnections(structure, connectionLine);
         }
     }
 
-    private void annotateSeqenceAdvice(OakStructure structure) {
+    private void annotateSeqenceAdvice(PdbStructure structure) {
         for (String connectionLine : sequenceAdviceLines) {
             SequenceAdviceToken.assignSequenceAdvice(structure, connectionLine);
         }

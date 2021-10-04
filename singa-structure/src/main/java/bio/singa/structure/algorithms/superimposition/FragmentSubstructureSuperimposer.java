@@ -9,7 +9,7 @@ import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.structure.model.interfaces.Atom;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.molecules.MoleculeGraphs;
-import bio.singa.structure.model.oak.OakLeafSubstructure;
+import bio.singa.structure.model.pdb.PdbLeafSubstructure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,10 +59,10 @@ public class FragmentSubstructureSuperimposer extends SubstructureSuperimposer {
             LeafSubstructure referenceLeafSubstructure = reference.get(i);
             LeafSubstructure candidateLeafSubstructure = candidate.get(i);
 
-            if (referenceLeafSubstructure instanceof OakLeafSubstructure
-                    && candidateLeafSubstructure instanceof OakLeafSubstructure) {
-                MoleculeGraph referenceGraph = MoleculeGraphs.createMoleculeGraphFromStructure((OakLeafSubstructure) referenceLeafSubstructure);
-                MoleculeGraph candidateGraph = MoleculeGraphs.createMoleculeGraphFromStructure((OakLeafSubstructure) candidateLeafSubstructure);
+            if (referenceLeafSubstructure instanceof PdbLeafSubstructure
+                    && candidateLeafSubstructure instanceof PdbLeafSubstructure) {
+                MoleculeGraph referenceGraph = MoleculeGraphs.createMoleculeGraphFromStructure((PdbLeafSubstructure) referenceLeafSubstructure);
+                MoleculeGraph candidateGraph = MoleculeGraphs.createMoleculeGraphFromStructure((PdbLeafSubstructure) candidateLeafSubstructure);
 
                 RISubgraphFinder<MoleculeAtom, MoleculeBond, Vector2D, Integer, MoleculeGraph> subGraphFinder;
 

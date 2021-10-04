@@ -1,7 +1,7 @@
 package bio.singa.structure.model.mmtf;
 
 import bio.singa.structure.model.interfaces.*;
-import bio.singa.structure.model.oak.StructuralMotif;
+import bio.singa.structure.model.general.StructuralMotif;
 import org.rcsb.mmtf.api.StructureDataInterface;
 
 import java.util.*;

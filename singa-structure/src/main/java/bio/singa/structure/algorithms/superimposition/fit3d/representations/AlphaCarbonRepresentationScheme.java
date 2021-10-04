@@ -3,7 +3,7 @@ package bio.singa.structure.algorithms.superimposition.fit3d.representations;
 import bio.singa.structure.model.interfaces.AminoAcid;
 import bio.singa.structure.model.interfaces.Atom;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
-import bio.singa.structure.model.oak.StructuralEntityFilter;
+import bio.singa.structure.model.general.StructuralEntityFilter;
 
 import java.util.Optional;
 

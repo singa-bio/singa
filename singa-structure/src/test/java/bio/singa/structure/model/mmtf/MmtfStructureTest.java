@@ -2,11 +2,10 @@ package bio.singa.structure.model.mmtf;
 
 import bio.singa.mathematics.vectors.Vector3D;
 import bio.singa.structure.model.interfaces.*;
-import bio.singa.structure.model.oak.PdbLeafIdentifier;
+import bio.singa.structure.model.pdb.PdbLeafIdentifier;
 import bio.singa.structure.parser.pdb.structures.StructureParser;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.rcsb.mmtf.decoder.ReaderUtils;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -25,14 +24,20 @@ class MmtfStructureTest {
     private static Structure structure1C0A;
 
     @BeforeAll
-    static void initialize() throws IOException {
-        structure2N5E = new MmtfStructure(ReaderUtils.getByteArrayFromUrl("2N5E"));
-        structure1C0A = new MmtfStructure(ReaderUtils.getByteArrayFromUrl("1C0A"));
+    static void initialize() {
+        structure2N5E = StructureParser.mmtf()
+                .pdbIdentifier("2N5E")
+                .everything().parse();
+        structure1C0A = StructureParser.mmtf()
+                .pdbIdentifier("1C0A")
+                .everything().parse();
     }
 
     @Test
     void shouldIgnoreAlternativePosition() throws IOException {
-        final Structure mmtfStructure = new MmtfStructure(ReaderUtils.getByteArrayFromUrl("1dlf"));
+        final Structure mmtfStructure = StructureParser.mmtf()
+                .pdbIdentifier("1dlf")
+                .everything().parse();
         final Structure oakStructure = StructureParser.pdb().pdbIdentifier("1dlf").parse();
         final LeafIdentifier leafIdentifier = new PdbLeafIdentifier("1dlf", 1, "H", 70);
 
@@ -130,7 +135,7 @@ class MmtfStructureTest {
         final LeafIdentifier identifier = aminoAcid.get().getIdentifier();
         assertEquals("A", identifier.getChainIdentifier());
         assertEquals(98, identifier.getSerial());
-        assertEquals("Ser", aminoAcid.get().getThreeLetterCode());
+        assertEquals("SER", aminoAcid.get().getThreeLetterCode());
     }
 
     @Test

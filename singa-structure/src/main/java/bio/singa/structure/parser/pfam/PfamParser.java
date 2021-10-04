@@ -4,7 +4,7 @@ import bio.singa.features.identifiers.PfamIdentifier;
 import bio.singa.structure.model.interfaces.AminoAcid;
 import bio.singa.structure.model.interfaces.Chain;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
-import bio.singa.structure.model.oak.StructuralEntityFilter;
+import bio.singa.structure.model.general.StructuralEntityFilter;
 import bio.singa.structure.parser.pdb.structures.StructureParser;
 import bio.singa.structure.parser.pdb.structures.StructureParserOptions;
 import bio.singa.structure.parser.pfam.tokens.PfamToken;

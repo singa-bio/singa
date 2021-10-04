@@ -11,8 +11,8 @@ import bio.singa.structure.algorithms.superimposition.fit3d.statistics.Statistic
 import bio.singa.structure.algorithms.superimposition.scores.SubstitutionMatrix;
 import bio.singa.structure.model.interfaces.Atom;
 import bio.singa.structure.model.interfaces.LeafSubstructureContainer;
-import bio.singa.structure.model.oak.StructuralEntityFilter;
-import bio.singa.structure.model.oak.StructuralMotif;
+import bio.singa.structure.model.general.StructuralEntityFilter;
+import bio.singa.structure.model.general.StructuralMotif;
 import bio.singa.structure.parser.pdb.structures.iterators.StructureIterator;
 
 import java.util.List;

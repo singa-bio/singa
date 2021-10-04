@@ -6,8 +6,8 @@ import bio.singa.chemistry.model.elements.ElementProvider;
 import bio.singa.structure.model.interfaces.AminoAcid;
 import bio.singa.structure.model.interfaces.Atom;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
-import bio.singa.structure.model.oak.OakAtom;
-import bio.singa.structure.model.oak.StructuralEntityFilter;
+import bio.singa.structure.model.pdb.PdbAtom;
+import bio.singa.structure.model.general.StructuralEntityFilter;
 
 import java.util.List;
 import java.util.Optional;
@@ -45,7 +45,7 @@ public class SideChainCentroidRepresentationScheme extends AbstractRepresentatio
                         .negate()))
                 .map(Atom::getPosition)
                 .collect(Collectors.toList());
-        return new OakAtom(leafSubstructure.getAllAtoms().iterator().next().getAtomIdentifier(),
+        return new PdbAtom(leafSubstructure.getAllAtoms().iterator().next().getAtomIdentifier(),
                 ElementProvider.UNKOWN,
                 RepresentationSchemeType.SIDE_CHAIN_CENTROID.getAtomNameString(),
                 Vectors3D.get3DCentroid(atomPositions));

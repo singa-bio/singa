@@ -3,8 +3,9 @@ package bio.singa.structure.algorithms.superimposition.fit3d;
 import bio.singa.core.utility.Resources;
 import bio.singa.mathematics.combinatorics.StreamCombinations;
 import bio.singa.structure.algorithms.superimposition.SubstructureSuperimposition;
-import bio.singa.structure.model.families.StructuralFamilies;
-import bio.singa.structure.model.oak.*;
+import bio.singa.structure.model.general.StructuralEntityFilter;
+import bio.singa.structure.model.general.StructuralMotif;
+import bio.singa.structure.model.pdb.*;
 import bio.singa.structure.model.interfaces.Structure;
 import bio.singa.structure.parser.pdb.structures.StructureParser;
 import bio.singa.structure.parser.pdb.structures.iterators.StructureIterator;
@@ -45,7 +46,7 @@ class Fit3DAlignmentTest {
                 .fileLocation(Resources.getResourceAsFileLocation("1GL0_HDS_intra_E-H57_E-D102_E-S195.pdb"))
                 .parse();
         queryMotif = StructuralMotif.fromLeafIdentifiers(motifContainingStructure,
-                LeafIdentifiers.of("E-57", "E-102", "E-195"));
+                PdbLeafIdentifier.of("E-57", "E-102", "E-195"));
         queryMotif.addExchangeableFamily(PdbLeafIdentifier.fromSimpleString("E-57"), GLUTAMIC_ACID);
     }
 
@@ -79,7 +80,7 @@ class Fit3DAlignmentTest {
                 .chainIdentifier("A")
                 .parse();
         StructuralMotif nucleotideMotif = StructuralMotif.fromLeafIdentifiers(nucleotideTarget,
-                LeafIdentifiers.of("A-22", "A-51", "A-52", "A-74"));
+                PdbLeafIdentifier.of("A-22", "A-51", "A-52", "A-74"));
         nucleotideMotif.addExchangeableFamily(PdbLeafIdentifier.fromSimpleString("A-74"), URIDINE);
         List<Path> targetStructures = Files.list(
                 Paths.get(Resources.getResourceAsFileLocation("RF00167")))
@@ -104,7 +105,7 @@ class Fit3DAlignmentTest {
                 .everything()
                 .parse();
         StructuralMotif queryMotif = StructuralMotif.fromLeafIdentifiers(target,
-                LeafIdentifiers.of("B-57", "B-102", "C-195"));
+                PdbLeafIdentifier.of("B-57", "B-102", "C-195"));
         Fit3D fit3d = Fit3DBuilder.create()
                 .query(queryMotif)
                 .target(target.getFirstModel())
@@ -198,7 +199,7 @@ class Fit3DAlignmentTest {
                 .everything()
                 .parse();
         StructuralMotif queryMotif = StructuralMotif.fromLeafIdentifiers(target,
-                LeafIdentifiers.of("B-57", "B-102", "C-195"));
+                PdbLeafIdentifier.of("B-57", "B-102", "C-195"));
         Fit3D fit3d = Fit3DBuilder.create()
                 .query(queryMotif)
                 .target(target.getFirstModel())
@@ -214,7 +215,7 @@ class Fit3DAlignmentTest {
                 .everything()
                 .parse();
         StructuralMotif queryMotif = StructuralMotif.fromLeafIdentifiers(target,
-                LeafIdentifiers.of("B-57", "B-102", "C-195"));
+                PdbLeafIdentifier.of("B-57", "B-102", "C-195"));
         Fit3D fit3d = Fit3DBuilder.create()
                 .query(queryMotif)
                 .target(target.getFirstModel())
@@ -235,7 +236,7 @@ class Fit3DAlignmentTest {
                 .chainIdentifier("A")
                 .parse();
         StructuralMotif nucleotideMotif = StructuralMotif.fromLeafIdentifiers(nucleotideTarget,
-                LeafIdentifiers.of("A-22", "A-51", "A-52", "A-74"));
+                PdbLeafIdentifier.of("A-22", "A-51", "A-52", "A-74"));
         nucleotideMotif.addExchangeableFamily(PdbLeafIdentifier.fromSimpleString("A-74"), URIDINE);
         Fit3D fit3d = Fit3DBuilder.create()
                 .query(nucleotideMotif)
@@ -252,7 +253,7 @@ class Fit3DAlignmentTest {
                 .everything()
                 .parse();
 
-        StructuralMotif queryMotif = StructuralMotif.fromLeafIdentifiers(queryStructure, LeafIdentifiers.of("A-84", "A-330", "A-999"));
+        StructuralMotif queryMotif = StructuralMotif.fromLeafIdentifiers(queryStructure, PdbLeafIdentifier.of("A-84", "A-330", "A-999"));
 
         Fit3D fit3d = Fit3DBuilder.create()
                 .query(queryMotif)
@@ -309,8 +310,8 @@ class Fit3DAlignmentTest {
                 .pdbIdentifier("1k1i")
                 .chainIdentifier("A")
                 .parse();
-        interactionContainer.validateWithStructure((OakStructure) structure);
-        interactionContainer.mapToPseudoAtoms((OakStructure) structure);
+        interactionContainer.validateWithStructure((PdbStructure) structure);
+        interactionContainer.mapToPseudoAtoms((PdbStructure) structure);
         StructuralMotif interactionMotif = StructuralMotif.fromLeafSubstructures(StructureParser.local()
                 .inputStream(Resources.getResourceAsStream("1k1i_interaction_motif.pdb"))
                 .parse()
@@ -331,7 +332,7 @@ class Fit3DAlignmentTest {
                 .pdbIdentifier("2w0l")
                 .parse();
 
-        List<PdbLeafIdentifier> leafIdentifiers = LeafIdentifiers.of("A-95A", "A-98", "A-100");
+        List<PdbLeafIdentifier> leafIdentifiers = PdbLeafIdentifier.of("A-95A", "A-98", "A-100");
         StructuralMotif structuralMotif = StructuralMotif.fromLeafIdentifiers(structure, leafIdentifiers);
 
         Fit3D fit3d = Fit3DBuilder.create()
@@ -340,7 +341,7 @@ class Fit3DAlignmentTest {
                 .run();
         assertEquals(0.00, fit3d.getMatches().get(0).getRmsd(), 1E-6);
 
-        leafIdentifiers = LeafIdentifiers.of("A-95", "A-98", "A-100");
+        leafIdentifiers = PdbLeafIdentifier.of("A-95", "A-98", "A-100");
         structuralMotif = StructuralMotif.fromLeafIdentifiers(structure, leafIdentifiers);
         fit3d = Fit3DBuilder.create()
                 .query(structuralMotif)
@@ -359,7 +360,7 @@ class Fit3DAlignmentTest {
                 .pdbIdentifier("1m9u")
                 .parse();
 
-        List<PdbLeafIdentifier> leafIdentifiers = LeafIdentifiers.of("A-57", "A-102", "A-193", "A-195");
+        List<PdbLeafIdentifier> leafIdentifiers = PdbLeafIdentifier.of("A-57", "A-102", "A-193", "A-195");
         StructuralMotif structuralMotif = StructuralMotif.fromLeafIdentifiers(structure, leafIdentifiers);
 
         Fit3D fit3d = Fit3DBuilder.create()

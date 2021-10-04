@@ -5,7 +5,7 @@ import bio.singa.chemistry.model.MoleculeGraph;
 import bio.singa.core.utility.Resources;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.molecules.MoleculeGraphs;
-import bio.singa.structure.model.oak.OakLeafSubstructure;
+import bio.singa.structure.model.pdb.PdbLeafSubstructure;
 import bio.singa.structure.parser.pdb.structures.StructureParser;
 import org.junit.jupiter.api.Test;
 
@@ -22,7 +22,7 @@ class MoleculeRingFinderTest {
         Collection<? extends LeafSubstructure> targetLeafSubstructure = StructureParser.local()
                 .fileLocation(Resources.getResourceAsFileLocation("atp.pdb"))
                 .parse().getAllLeafSubstructures();
-        MoleculeGraph moleculeGraph = MoleculeGraphs.createMoleculeGraphFromStructure((OakLeafSubstructure) targetLeafSubstructure.iterator().next());
+        MoleculeGraph moleculeGraph = MoleculeGraphs.createMoleculeGraphFromStructure((PdbLeafSubstructure) targetLeafSubstructure.iterator().next());
         List<Set<MoleculeAtom>> rings = MoleculeRingFinder.of(moleculeGraph);
         assertEquals(3, rings.size());
         assertEquals(5, rings.get(0).size());

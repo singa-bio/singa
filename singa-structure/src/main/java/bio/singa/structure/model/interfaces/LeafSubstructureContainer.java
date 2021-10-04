@@ -1,7 +1,7 @@
 package bio.singa.structure.model.interfaces;
 
 import bio.singa.structure.model.families.StructuralFamily;
-import bio.singa.structure.model.oak.StructuralMotif;
+import bio.singa.structure.model.general.StructuralMotif;
 
 import java.util.*;
 import java.util.stream.Collectors;

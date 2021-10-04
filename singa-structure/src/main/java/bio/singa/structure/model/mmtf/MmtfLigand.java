@@ -2,10 +2,8 @@ package bio.singa.structure.model.mmtf;
 
 import bio.singa.structure.model.families.StructuralFamily;
 import bio.singa.structure.model.interfaces.Ligand;
-import bio.singa.structure.model.oak.PdbLeafIdentifier;
+import bio.singa.structure.model.pdb.PdbLeafIdentifier;
 import org.rcsb.mmtf.api.StructureDataInterface;
-
-import java.util.HashSet;
 
 /**
  * The implementation of {@link Ligand}s for mmtf structures.

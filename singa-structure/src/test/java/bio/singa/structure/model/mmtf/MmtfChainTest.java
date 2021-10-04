@@ -5,14 +5,12 @@ import bio.singa.structure.model.interfaces.Atom;
 import bio.singa.structure.model.interfaces.Chain;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.interfaces.Structure;
-import bio.singa.structure.model.oak.PdbLeafIdentifier;
+import bio.singa.structure.model.pdb.PdbLeafIdentifier;
+import bio.singa.structure.parser.pdb.structures.StructureParser;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.rcsb.mmtf.decoder.ReaderUtils;
 
-import java.io.IOException;
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -27,8 +25,10 @@ class MmtfChainTest {
     private static Structure structure2N5E;
 
     @BeforeAll
-    static void initialize() throws IOException {
-        structure2N5E = new MmtfStructure(ReaderUtils.getByteArrayFromUrl("2N5E"));
+    static void initialize() {
+        structure2N5E = StructureParser.mmtf()
+                .pdbIdentifier("2n5e")
+                .everything().parse();
         firstChain = structure2N5E.getFirstChain();
         chainToModify = structure2N5E.getChain(1, "B").get();
     }
@@ -56,7 +56,7 @@ class MmtfChainTest {
         final LeafSubstructure leafSubstructure = optionalLeafSubstructure.get();
         assertEquals(1, leafSubstructure.getIdentifier().getModelIdentifier());
         assertEquals("A", leafSubstructure.getIdentifier().getChainIdentifier());
-        assertEquals("Leu", leafSubstructure.getThreeLetterCode());
+        assertEquals("LEU", leafSubstructure.getThreeLetterCode());
         assertEquals(64, leafSubstructure.getIdentifier().getSerial());
     }
 
@@ -71,7 +71,7 @@ class MmtfChainTest {
             fail("Optional leaf substructure was empty.");
         }
         final LeafSubstructure leafSubstructure = optionalLeafSubstructure.get();
-        assertEquals("Leu", leafSubstructure.getThreeLetterCode());
+        assertEquals("LEU", leafSubstructure.getThreeLetterCode());
         assertEquals(174, leafSubstructure.getIdentifier().getSerial());
         chainToModify.removeLeafSubstructure(leafIdentifier);
         // check if it is present in the chain

@@ -4,7 +4,7 @@ package bio.singa.structure.parser.plip;
 import bio.singa.structure.model.interfaces.Chain;
 import bio.singa.structure.model.interfaces.Ligand;
 import bio.singa.structure.model.interfaces.Structure;
-import bio.singa.structure.model.oak.OakStructure;
+import bio.singa.structure.model.pdb.PdbStructure;
 import bio.singa.structure.parser.pdb.structures.StructureParser;
 import bio.singa.structure.parser.pdb.structures.StructureSelector;
 import bio.singa.structure.parser.plip.PlipShellGenerator.InteractionShell;
@@ -30,10 +30,10 @@ class PlipShellGeneratorTest {
 
 
         InteractionContainer interInteractions = PlipParser.parse("1c0a", getResourceAsStream("plip/1c0a.xml"));
-        interInteractions.validateWithStructure((OakStructure) structure);
+        interInteractions.validateWithStructure((PdbStructure) structure);
 
         InteractionContainer ligandInteractions = PlipParser.parse("1c0a", getResourceAsStream("plip/1c0a_ligand.xml"));
-        ligandInteractions.validateWithStructure((OakStructure) structure);
+        ligandInteractions.validateWithStructure((PdbStructure) structure);
 
         PlipShellGenerator interactionShellsForLigand = PlipShellGenerator.getInteractionShellsForLigand(chain, reference, interInteractions, ligandInteractions);
         assertEquals(16, interactionShellsForLigand.getShells().get(InteractionShell.FIRST).size());

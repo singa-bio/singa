@@ -5,7 +5,7 @@ import bio.singa.mathematics.vectors.RegularVector;
 import bio.singa.mathematics.vectors.Vector;
 import bio.singa.structure.algorithms.superimposition.fit3d.Fit3D;
 import bio.singa.structure.algorithms.superimposition.fit3d.Fit3DMatch;
-import bio.singa.structure.model.oak.StructuralMotif;
+import bio.singa.structure.model.general.StructuralMotif;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

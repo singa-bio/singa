@@ -4,9 +4,9 @@ import bio.singa.core.utility.Resources;
 import bio.singa.structure.algorithms.superimposition.scores.SubstitutionMatrix;
 
 import bio.singa.structure.model.interfaces.Structure;
-import bio.singa.structure.model.oak.StructuralEntityFilter;
-import bio.singa.structure.model.oak.StructuralMotif;
-import bio.singa.structure.model.oak.StructuralMotifs;
+import bio.singa.structure.model.general.StructuralEntityFilter;
+import bio.singa.structure.model.general.StructuralMotif;
+import bio.singa.structure.model.general.StructuralMotifs;
 import bio.singa.structure.parser.pdb.structures.StructureParser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

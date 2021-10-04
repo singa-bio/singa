@@ -4,7 +4,7 @@ import bio.singa.structure.model.interfaces.AtomContainer;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.interfaces.Model;
 import bio.singa.structure.model.interfaces.Structure;
-import bio.singa.structure.model.oak.*;
+import bio.singa.structure.model.pdb.*;
 import bio.singa.structure.parser.pdb.structures.tokens.*;
 
 import java.util.*;
@@ -30,17 +30,17 @@ public class StructureRepresentation {
     /**
      * The non-consecutive part of any pdb file.
      */
-    private final List<OakLeafSubstructure> nonConsecutiveLeafs;
+    private final List<PdbLeafSubstructure> nonConsecutiveLeafs;
 
     /**
      * Creates a representation of the given chain. For multiple chains, use the {@link Model} to encapsulate them.
      *
      * @param chain The chain.
      */
-    private StructureRepresentation(OakChain chain) {
-        List<OakLeafSubstructure> consecutivePart = chain.getConsecutivePart();
+    private StructureRepresentation(PdbChain chain) {
+        List<PdbLeafSubstructure> consecutivePart = chain.getConsecutivePart();
         consecutiveRecords = getPdbLines(consecutivePart);
-        terminateRecord = consecutivePart.isEmpty() ? "" : ChainTerminatorToken.assemblePDBLine(consecutivePart.get(consecutivePart.size() - 1));
+        terminateRecord = consecutivePart.isEmpty() ? "" : ChainTerminatorToken.assemblePDBLine(consecutivePart.get(consecutivePart.size()));
         nonConsecutiveLeafs = chain.getNonConsecutivePart();
     }
 
@@ -53,18 +53,18 @@ public class StructureRepresentation {
     public static String composePdbRepresentation(Structure structure) {
         StringBuilder sb = new StringBuilder();
         // add preamble
-        sb.append(getPreamble(structure.getPdbIdentifier(), structure.getTitle(), ((OakStructure) structure).getLinkEntries()));
+        sb.append(getPreamble(structure.getPdbIdentifier(), structure.getTitle(), ((PdbStructure) structure).getLinkEntries()));
         // get all models
-        List<OakModel> allModels = structure.getAllModels().stream()
-                .map(OakModel.class::cast)
+        List<PdbModel> allModels = structure.getAllModels().stream()
+                .map(PdbModel.class::cast)
                 .collect(Collectors.toList());
         // if there is only one model
         if (allModels.size() == 1) {
             // get it
-            OakModel structuralModel = allModels.iterator().next();
+            PdbModel structuralModel = allModels.iterator().next();
             appendChainRepresentations(sb, structuralModel);
         } else {
-            for (OakModel model : allModels) {
+            for (PdbModel model : allModels) {
                 sb.append("MODEL ").append(String.format("%5d", model.getModelIdentifier())).append(System.lineSeparator());
                 appendChainRepresentations(sb, model);
                 sb.append("ENDMDL").append(System.lineSeparator());
@@ -81,10 +81,10 @@ public class StructureRepresentation {
      * @param sb The string builder to append to.
      * @param structuralModel The model to be appended.
      */
-    private static void appendChainRepresentations(StringBuilder sb, OakModel structuralModel) {
+    private static void appendChainRepresentations(StringBuilder sb, PdbModel structuralModel) {
         // create chain representations
         List<StructureRepresentation> chainRepresentations = structuralModel.getAllChains().stream()
-                .map(OakChain.class::cast)
+                .map(PdbChain.class::cast)
                 .filter(oakChain -> !oakChain.getAllLeafSubstructures().isEmpty())
                 .map(StructureRepresentation::new)
                 .collect(Collectors.toList());
@@ -107,9 +107,9 @@ public class StructureRepresentation {
      * @param structuralModel The model.
      * @return A string representing the information of the structure in pdb format.
      */
-    public static String composePdbRepresentation(OakModel structuralModel) {
+    public static String composePdbRepresentation(PdbModel structuralModel) {
         List<StructureRepresentation> chainRepresentations = structuralModel.getAllChains().stream()
-                .map(OakChain.class::cast)
+                .map(PdbChain.class::cast)
                 .map(StructureRepresentation::new)
                 .collect(Collectors.toList());
 
@@ -149,7 +149,7 @@ public class StructureRepresentation {
      *
      * @return The title and header line for this structure.
      */
-    private static String getPreamble(String pdbIdentifier, String title, List<LinkEntry> linkEntries) {
+    private static String getPreamble(String pdbIdentifier, String title, List<PdbLinkEntry> linkEntries) {
         StringBuilder sb = new StringBuilder();
         if (pdbIdentifier != null && !pdbIdentifier.equals(PdbLeafIdentifier.DEFAULT_PDB_IDENTIFIER)) {
             sb.append(HeaderToken.assemblePDBLine(pdbIdentifier));
@@ -161,7 +161,7 @@ public class StructureRepresentation {
                 sb.append(System.lineSeparator());
             }
         }
-        for (LinkEntry linkEntry : linkEntries) {
+        for (PdbLinkEntry linkEntry : linkEntries) {
             sb.append(LinkToken.assemblePDBLine(linkEntry));
         }
         return sb.toString();
@@ -174,8 +174,8 @@ public class StructureRepresentation {
      */
     private static String getPostamble(Collection<? extends LeafSubstructure> leafSubstructures) {
         String connectRecords = leafSubstructures.stream()
-                .filter(leafSubstructure -> leafSubstructure.getClass().equals(OakLigand.class))
-                .map(OakLigand.class::cast)
+                .filter(leafSubstructure -> leafSubstructure.getClass().equals(PdbLigand.class))
+                .map(PdbLigand.class::cast)
                 .map(ConnectionToken::assemblePDBLines)
                 .collect(Collectors.joining());
         return connectRecords + "END" + System.lineSeparator() + System.lineSeparator();
@@ -187,7 +187,7 @@ public class StructureRepresentation {
      * @param leafSubstructures The laves to convertToSpheres.
      * @return A list of atom lines.
      */
-    private List<String> getPdbLines(Collection<OakLeafSubstructure> leafSubstructures) {
+    private List<String> getPdbLines(Collection<PdbLeafSubstructure> leafSubstructures) {
         return leafSubstructures.stream()
                 .map(AtomToken::assemblePDBLine)
                 .flatMap(Collection::stream)
@@ -218,7 +218,7 @@ public class StructureRepresentation {
      *
      * @return The actual leaves of the nonconsecutive part.
      */
-    private List<OakLeafSubstructure> getNonConsecutiveLeafSubstructures() {
+    private List<PdbLeafSubstructure> getNonConsecutiveLeafSubstructures() {
         return nonConsecutiveLeafs;
     }
 }

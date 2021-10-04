@@ -2,7 +2,8 @@ package bio.singa.structure.parser.plip;
 
 import bio.singa.mathematics.vectors.Vector3D;
 import bio.singa.structure.model.families.StructuralFamilies;
-import bio.singa.structure.model.oak.*;
+import bio.singa.structure.model.general.UniqueAtomIdentifier;
+import bio.singa.structure.model.pdb.*;
 import bio.singa.structure.model.interfaces.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -95,7 +96,7 @@ public class InteractionContainer {
      *
      * @param structure The structure to assign the interaction to.
      */
-    public void mapToPseudoAtoms(OakStructure structure) {
+    public void mapToPseudoAtoms(PdbStructure structure) {
         Stream.concat(interactions.stream(), ligandInteractions.stream())
                 .forEach(interaction -> {
                     Vector3D centroid = new Vector3D(interaction.getLigandCoordinate()).add(new Vector3D(interaction.getProteinCoordinate())).multiply(0.5);
@@ -104,7 +105,7 @@ public class InteractionContainer {
     }
 
     /**
-     * Returns all interactions from this container, irrespective if {@link InteractionContainer#validateWithStructure(OakStructure)}
+     * Returns all interactions from this container, irrespective if {@link InteractionContainer#validateWithStructure(PdbStructure)}
      * was invoked or not.
      *
      * @return All interactions.
@@ -115,11 +116,11 @@ public class InteractionContainer {
     }
 
     /**
-     * If called before {@link InteractionContainer#validateWithStructure(OakStructure)} this corresponds to all
-     * interactions. If called after invocation of {@link InteractionContainer#validateWithStructure(OakStructure)},
+     * If called before {@link InteractionContainer#validateWithStructure(PdbStructure)} this corresponds to all
+     * interactions. If called after invocation of {@link InteractionContainer#validateWithStructure(PdbStructure)},
      * only non-ligand interactions should be contained.
      *
-     * @return All {@link Interaction}s if {@link InteractionContainer#validateWithStructure(OakStructure)} was not
+     * @return All {@link Interaction}s if {@link InteractionContainer#validateWithStructure(PdbStructure)} was not
      * invoked, otherwise only non-ligand interactions.
      */
     public List<Interaction> getInteractions() {
@@ -127,10 +128,10 @@ public class InteractionContainer {
     }
 
     /**
-     * {@link InteractionContainer#validateWithStructure(OakStructure)} must be called in order to discriminate ligand
+     * {@link InteractionContainer#validateWithStructure(PdbStructure)} must be called in order to discriminate ligand
      * interactions from non-ligand interactions. Otherwise this is empty.
      *
-     * @return All {@link Interaction}s with ligands if {@link InteractionContainer#validateWithStructure(OakStructure)}
+     * @return All {@link Interaction}s with ligands if {@link InteractionContainer#validateWithStructure(PdbStructure)}
      * was invoked, empty otherwise.
      */
     public List<Interaction> getLigandInteractions() {
@@ -288,7 +289,7 @@ public class InteractionContainer {
 
     }
 
-    public void validateWithStructure(OakStructure structure) {
+    public void validateWithStructure(PdbStructure structure) {
 
         ListIterator<Interaction> interactionListIterator = interactions.listIterator();
 
@@ -344,10 +345,10 @@ public class InteractionContainer {
         ligandInteractionMap.get(ligand).add(interaction);
     }
 
-    private void fixBrokenSourceIdentifier(Interaction interaction, OakStructure structure) {
+    private void fixBrokenSourceIdentifier(Interaction interaction, PdbStructure structure) {
         // try to retrieve first referenced atom
         int firstSourceAtom = interaction.getFirstSourceAtom();
-        Optional<Map.Entry<UniqueAtomIdentifier, OakAtom>> sourceEntry = structure.getUniqueAtomEntry(firstSourceAtom);
+        Optional<Map.Entry<UniqueAtomIdentifier, PdbAtom>> sourceEntry = structure.getUniqueAtomEntry(firstSourceAtom);
         if (sourceEntry.isPresent()) {
             // use the atom identifier to remap leaf
             UniqueAtomIdentifier atomIdentifer = sourceEntry.get().getKey();
@@ -360,9 +361,9 @@ public class InteractionContainer {
         }
     }
 
-    private void fixBrokenTargetIdentifier(Interaction interaction, OakStructure structure) {
+    private void fixBrokenTargetIdentifier(Interaction interaction, PdbStructure structure) {
         // try to retrieve first referenced atom
-        Optional<Map.Entry<UniqueAtomIdentifier, OakAtom>> targetEntry = structure.getUniqueAtomEntry(interaction.getFirstTargetAtom());
+        Optional<Map.Entry<UniqueAtomIdentifier, PdbAtom>> targetEntry = structure.getUniqueAtomEntry(interaction.getFirstTargetAtom());
         if (targetEntry.isPresent()) {
             // use the atom identifier to remap leaf
             UniqueAtomIdentifier atomIdentifer = targetEntry.get().getKey();
@@ -379,7 +380,7 @@ public class InteractionContainer {
         if (!StructuralFamilies.AminoAcids.isAminoAcid(leafSubstructure.getFamily()) && !StructuralFamilies.Nucleotides.isNucleotide(leafSubstructure.getFamily())) {
             Optional<? extends Chain> optionalChain = structure.getFirstModel().getChain(leafSubstructure.getIdentifier().getChainIdentifier());
             if (optionalChain.isPresent()) {
-                OakChain chain = (OakChain) optionalChain.get();
+                PdbChain chain = (PdbChain) optionalChain.get();
                 if (!chain.getConsecutivePart().contains(leafSubstructure)) {
                     logger.debug("{} is an interaction to a ligand", leafSubstructure);
                     return true;

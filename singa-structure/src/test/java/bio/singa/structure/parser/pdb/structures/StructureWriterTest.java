@@ -1,7 +1,7 @@
 package bio.singa.structure.parser.pdb.structures;
 
 import bio.singa.structure.model.interfaces.Structure;
-import bio.singa.structure.model.oak.OakStructure;
+import bio.singa.structure.model.pdb.PdbStructure;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -20,7 +20,7 @@ class StructureWriterTest {
         LocalPDBRepository localPDB = new LocalPDBRepository("/tmp/pdb", SourceLocation.OFFLINE_MMTF);
         Path path = localPDB.getPathForPdbIdentifier("1acj");
 
-        OakStructure structure = (OakStructure) StructureParser.pdb()
+        PdbStructure structure = (PdbStructure) StructureParser.pdb()
                 .pdbIdentifier("1acj")
                 .parse();
 

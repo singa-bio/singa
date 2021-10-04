@@ -1,10 +1,9 @@
 package bio.singa.structure.algorithms.superimposition.fit3d;
 
-import bio.singa.structure.model.oak.LeafIdentifiers;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.interfaces.Structure;
-import bio.singa.structure.model.oak.PdbLeafIdentifier;
-import bio.singa.structure.model.oak.StructuralMotif;
+import bio.singa.structure.model.pdb.PdbLeafIdentifier;
+import bio.singa.structure.model.general.StructuralMotif;
 import bio.singa.structure.parser.pdb.structures.StructureParser;
 import org.junit.jupiter.api.Test;
 
@@ -26,7 +25,7 @@ class ValidCandidateGeneratorTest {
                 .pdbIdentifier("1a0j")
                 .parse();
 
-        StructuralMotif queryMotif = StructuralMotif.fromLeafIdentifiers(structure, LeafIdentifiers.of(
+        StructuralMotif queryMotif = StructuralMotif.fromLeafIdentifiers(structure, PdbLeafIdentifier.of(
                 "A-57",
                 "A-102",
                 "A-195"));
@@ -35,7 +34,7 @@ class ValidCandidateGeneratorTest {
         queryMotif.addExchangeableFamily(PdbLeafIdentifier.fromSimpleString("A-57"), VALINE);
         queryMotif.addExchangeableFamily(PdbLeafIdentifier.fromSimpleString("A-102"), VALINE);
 
-        List<LeafSubstructure> environment = StructuralMotif.fromLeafIdentifiers(structure, LeafIdentifiers.of(
+        List<LeafSubstructure> environment = StructuralMotif.fromLeafIdentifiers(structure, PdbLeafIdentifier.of(
                 "A-104",
                 "A-138",
                 "A-139",

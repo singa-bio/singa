@@ -10,7 +10,7 @@ import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.structure.model.interfaces.Atom;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.molecules.MoleculeGraphs;
-import bio.singa.structure.model.oak.OakLeafSubstructure;
+import bio.singa.structure.model.pdb.PdbLeafSubstructure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,10 +62,10 @@ public class MaximumCommonSubgraphSuperimposer extends SubstructureSuperimposer 
             LeafSubstructure referenceLeafSubstructure = reference.get(i);
             LeafSubstructure candidateLeafSubstructure = candidate.get(i);
 
-            if (referenceLeafSubstructure instanceof OakLeafSubstructure
-                    && candidateLeafSubstructure instanceof OakLeafSubstructure) {
-                MoleculeGraph referenceGraph = MoleculeGraphs.createMoleculeGraphFromStructure((OakLeafSubstructure) referenceLeafSubstructure);
-                MoleculeGraph candidateGraph = MoleculeGraphs.createMoleculeGraphFromStructure((OakLeafSubstructure) candidateLeafSubstructure);
+            if (referenceLeafSubstructure instanceof PdbLeafSubstructure
+                    && candidateLeafSubstructure instanceof PdbLeafSubstructure) {
+                MoleculeGraph referenceGraph = MoleculeGraphs.createMoleculeGraphFromStructure((PdbLeafSubstructure) referenceLeafSubstructure);
+                MoleculeGraph candidateGraph = MoleculeGraphs.createMoleculeGraphFromStructure((PdbLeafSubstructure) candidateLeafSubstructure);
 
                 MaximumCommonSubgraphFinder<MoleculeAtom, MoleculeBond, Vector2D, Integer, MoleculeGraph> mcs = new MaximumCommonSubgraphFinder<>(referenceGraph, candidateGraph, atomCondition, bondCondition);
                 List<Set<GenericNode<Pair<MoleculeAtom>>>> maximumCliques = mcs.getMaximumCliques();

@@ -4,14 +4,12 @@ import bio.singa.mathematics.vectors.Vector3D;
 import bio.singa.structure.model.interfaces.Atom;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.interfaces.Structure;
-import bio.singa.structure.model.oak.PdbLeafIdentifier;
+import bio.singa.structure.model.pdb.PdbLeafIdentifier;
+import bio.singa.structure.parser.pdb.structures.StructureParser;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.rcsb.mmtf.decoder.ReaderUtils;
 
-import java.io.IOException;
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -28,8 +26,10 @@ class MmtfLeafSubstructureTest {
     private static LeafSubstructure leafToModify;
 
     @BeforeAll
-    static void prepareData() throws IOException {
-        structure1C0A = new MmtfStructure(ReaderUtils.getByteArrayFromUrl("1C0A"));
+    static void prepareData() {
+        structure1C0A = StructureParser.mmtf()
+                .pdbIdentifier("1C0A")
+                .everything().parse();
         // ATOM   2967  N   THR A 162      44.461  51.348  -6.215  1.00 13.02           N
         // ...
         // ATOM   2973  CG2 THR A 162      44.646  50.871  -9.169  1.00 11.44           C
@@ -47,7 +47,7 @@ class MmtfLeafSubstructureTest {
 
     @Test
     void getThreeLetterCode() {
-        assertEquals("Thr", leaf162.getThreeLetterCode());
+        assertEquals("THR", leaf162.getThreeLetterCode());
         assertEquals("H2U", leaf620A.getThreeLetterCode());
     }
 

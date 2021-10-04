@@ -3,12 +3,12 @@ package bio.singa.structure.algorithms.superimposition.consensus;
 
 import bio.singa.structure.algorithms.superimposition.fit3d.representations.RepresentationSchemeType;
 import bio.singa.structure.model.interfaces.Atom;
-import bio.singa.structure.model.oak.StructuralMotif;
+import bio.singa.structure.model.general.StructuralMotif;
 
 import java.util.List;
 import java.util.function.Predicate;
 
-import static bio.singa.structure.model.oak.StructuralEntityFilter.AtomFilter;
+import static bio.singa.structure.model.general.StructuralEntityFilter.AtomFilter;
 
 /**
  * A builder that guides through the creation of a {@link ConsensusAlignment}.

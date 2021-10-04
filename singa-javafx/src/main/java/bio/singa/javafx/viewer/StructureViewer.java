@@ -7,7 +7,7 @@ import bio.singa.structure.model.interfaces.Atom;
 import bio.singa.structure.model.interfaces.Chain;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.interfaces.Model;
-import bio.singa.structure.model.oak.*;
+import bio.singa.structure.model.pdb.*;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.scene.*;
@@ -45,7 +45,7 @@ public class StructureViewer extends Application {
     private static final double ROTATION_SPEED = 2.0;
     private static final double TRACK_SPEED = 0.3;
 
-    public static OakStructure structure;
+    public static PdbStructure structure;
     public static List<bio.singa.mathematics.geometry.bodies.Sphere> spheres;
     public static List<Cube> cubes;
 
@@ -55,7 +55,7 @@ public class StructureViewer extends Application {
     private final XForm XYRotate = new XForm();
     private final XForm XYTranslate = new XForm();
     private final XForm ZRotate = new XForm();
-    private OakStructure displayStructure;
+    private PdbStructure displayStructure;
     private Map<String, PhongMaterial> chainMaterials;
     private XForm world = new XForm();
     private XForm moleculeGroup = new XForm();
@@ -92,8 +92,8 @@ public class StructureViewer extends Application {
         if (structure != null) {
             if (structure.getAllModels().size() > 1) {
                 // add leafs
-                displayStructure = new OakStructure();
-                displayStructure.addModel((OakModel) structure.getAllModels().get(0));
+                displayStructure = new PdbStructure();
+                displayStructure.addModel((PdbModel) structure.getAllModels().get(0));
             } else {
                 displayStructure = structure;
             }
@@ -156,14 +156,14 @@ public class StructureViewer extends Application {
     private void buildDisplayedStructure() {
         // add leafs
         displayStructure.getAllLeafSubstructures().stream()
-                .map(OakLeafSubstructure.class::cast)
+                .map(PdbLeafSubstructure.class::cast)
                 .forEach(this::addLeafSubstructure);
         // add the created molecule to the world
         world.getChildren().addAll(moleculeGroup);
 
     }
 
-    private void addLeafSubstructure(OakLeafSubstructure leafSubstructure) {
+    private void addLeafSubstructure(PdbLeafSubstructure leafSubstructure) {
         leafSubstructure.getAllAtoms().forEach(atom -> addAtom(leafSubstructure, atom));
         leafSubstructure.getBonds().forEach(bond -> addLeafBond(leafSubstructure, bond));
     }
@@ -209,24 +209,24 @@ public class StructureViewer extends Application {
     }
 
     private void displayModel(final String identifier) {
-        displayStructure = new OakStructure();
+        displayStructure = new PdbStructure();
         world = new XForm();
         moleculeGroup = new XForm();
-        displayStructure.addModel((OakModel) structure.getModel(Integer.valueOf(identifier.replace("Model: ", ""))).get());
+        displayStructure.addModel((PdbModel) structure.getModel(Integer.valueOf(identifier.replace("Model: ", ""))).get());
         buildDisplayedStructure();
         displayGroup.getChildren().retainAll();
         displayGroup.getChildren().add(world);
     }
 
     private void displayChain(final String identifier) {
-        displayStructure = new OakStructure();
+        displayStructure = new PdbStructure();
         world = new XForm();
         moleculeGroup = new XForm();
-        OakChain chain = (OakChain) structure.getAllChains().stream()
+        PdbChain chain = (PdbChain) structure.getAllChains().stream()
                 .filter(aChain -> aChain.getChainIdentifier().equals(identifier.replace("Chain: ", "")))
                 .findAny()
                 .orElseThrow(() -> new IllegalStateException("Chould not retrieve chainIdentifier " + identifier.replace("Chain: ", "")));
-        final OakModel model = new OakModel(1);
+        final PdbModel model = new PdbModel(1);
         model.addChain(chain);
         displayStructure.addModel(model);
         buildDisplayedStructure();
@@ -234,13 +234,13 @@ public class StructureViewer extends Application {
         displayGroup.getChildren().add(world);
     }
 
-    private void addLeafBond(LeafSubstructure origin, OakBond bond) {
+    private void addLeafBond(LeafSubstructure origin, PdbBond bond) {
         Cylinder bondShape = createCylinderConnecting(bond.getSource().getPosition(), bond.getTarget().getPosition());
         bondShape.setMaterial(getMaterial(origin, bond));
         moleculeGroup.getChildren().add(bondShape);
     }
 
-    private void addChainBond(Chain origin, OakBond bond) {
+    private void addChainBond(Chain origin, PdbBond bond) {
         Cylinder bondShape = createCylinderConnecting(bond.getSource().getPosition(), bond.getTarget().getPosition());
         bondShape.setMaterial(getMaterial(origin, bond));
         moleculeGroup.getChildren().add(bondShape);
@@ -283,7 +283,7 @@ public class StructureViewer extends Application {
 
     }
 
-    private PhongMaterial getMaterial(LeafSubstructure origin, OakBond edge) {
+    private PhongMaterial getMaterial(LeafSubstructure origin, PdbBond edge) {
         switch (colorScheme) {
             case BY_ELEMENT:
                 return MaterialProvider.CARBON;
@@ -294,7 +294,7 @@ public class StructureViewer extends Application {
         }
     }
 
-    private PhongMaterial getMaterial(Chain origin, OakBond edge) {
+    private PhongMaterial getMaterial(Chain origin, PdbBond edge) {
         if (colorScheme == ColorScheme.BY_ELEMENT) {
             return MaterialProvider.CARBON;
         } else {

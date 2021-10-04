@@ -1,12 +1,12 @@
 package bio.singa.structure.parser.pdb.structures.tokens;
 
 import bio.singa.core.utility.Range;
-import bio.singa.structure.model.oak.UniqueAtomIdentifier;
+import bio.singa.structure.model.general.UniqueAtomIdentifier;
 import bio.singa.structure.model.interfaces.Atom;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
-import bio.singa.structure.model.oak.OakAtom;
-import bio.singa.structure.model.oak.OakLeafSubstructure;
-import bio.singa.structure.model.oak.OakStructure;
+import bio.singa.structure.model.pdb.PdbAtom;
+import bio.singa.structure.model.pdb.PdbLeafSubstructure;
+import bio.singa.structure.model.pdb.PdbStructure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,11 +47,11 @@ public enum ConnectionToken implements PDBToken {
      * @param connectionLine
      * @param structure
      */
-    public static void assignConnections(OakStructure structure, String connectionLine) {
+    public static void assignConnections(PdbStructure structure, String connectionLine) {
         String sourceAtomString = CONNECTION_SOURCE_ATOM.extract(connectionLine);
-        Map.Entry<UniqueAtomIdentifier, OakAtom> uniqueAtomEntry;
+        Map.Entry<UniqueAtomIdentifier, PdbAtom> uniqueAtomEntry;
         if (isNumeric(sourceAtomString)) {
-            Optional<Map.Entry<UniqueAtomIdentifier, OakAtom>> uniqueAtomEntryOptional = structure.getUniqueAtomEntry(Integer.parseInt(sourceAtomString));
+            Optional<Map.Entry<UniqueAtomIdentifier, PdbAtom>> uniqueAtomEntryOptional = structure.getUniqueAtomEntry(Integer.parseInt(sourceAtomString));
             if (!uniqueAtomEntryOptional.isPresent()) {
                 logger.warn("could not add connection for atom {}, source atom could not be found in the structure", sourceAtomString);
                 return;
@@ -67,8 +67,8 @@ public enum ConnectionToken implements PDBToken {
             logger.warn("could not add connection for leaf {}, leaf could not be found in the structure", atomIdentifier.getLeafIdentifier());
             return;
         }
-        OakLeafSubstructure leafsubstructure = ((OakLeafSubstructure) leafSubstructureOptional.get());
-        OakAtom sourceAtom = ((OakAtom) uniqueAtomEntry.getValue());
+        PdbLeafSubstructure leafsubstructure = ((PdbLeafSubstructure) leafSubstructureOptional.get());
+        PdbAtom sourceAtom = ((PdbAtom) uniqueAtomEntry.getValue());
 
         String firstTargetAtomString = CONNECTION_TARGET_ATOM_1.extract(connectionLine);
         addBond(structure, leafsubstructure, sourceAtom, firstTargetAtomString);
@@ -84,41 +84,41 @@ public enum ConnectionToken implements PDBToken {
 
     }
 
-    private static void addBond(OakStructure structure, OakLeafSubstructure leafsubstructure, OakAtom sourceAtom, String targetAtomString) {
-        Optional<OakAtom> targetOptional = extractAtom(structure, leafsubstructure, targetAtomString);
+    private static void addBond(PdbStructure structure, PdbLeafSubstructure leafsubstructure, PdbAtom sourceAtom, String targetAtomString) {
+        Optional<PdbAtom> targetOptional = extractAtom(structure, leafsubstructure, targetAtomString);
         if (targetOptional.isPresent()) {
-            OakAtom targetAtom = targetOptional.get();
+            PdbAtom targetAtom = targetOptional.get();
             if (!leafsubstructure.hasBond(sourceAtom, targetAtom)) {
                 leafsubstructure.addBondBetween(sourceAtom, targetAtom);
             }
         }
     }
 
-    public static Optional<OakAtom> extractAtom(OakStructure structure, OakLeafSubstructure leafsubstructure, String targetAtomString) {
+    public static Optional<PdbAtom> extractAtom(PdbStructure structure, PdbLeafSubstructure leafsubstructure, String targetAtomString) {
         if (isNumeric(targetAtomString)) {
             // FIXME it is possible the the target of the connection is referenced in another leaf
             int targetAtom = Integer.parseInt(targetAtomString);
-            Optional<OakAtom> targetOptionAtom = leafsubstructure.getAtom(targetAtom);
+            Optional<PdbAtom> targetOptionAtom = leafsubstructure.getAtom(targetAtom);
             if (!targetOptionAtom.isPresent()) {
-                Optional<OakAtom> optionalBackupAtom = structure.getAtom(targetAtom);
+                Optional<PdbAtom> optionalBackupAtom = structure.getAtom(targetAtom);
                 if (optionalBackupAtom.isPresent()) {
-                    return Optional.of(((OakAtom) optionalBackupAtom.get()));
+                    return Optional.of(((PdbAtom) optionalBackupAtom.get()));
                 }
                 logger.warn("could not add connection for atom {}, target atom could not be found in the structure", targetAtomString);
                 return Optional.empty();
             } else {
-                return Optional.of(((OakAtom) targetOptionAtom.get()));
+                return Optional.of(((PdbAtom) targetOptionAtom.get()));
             }
         } else {
             return Optional.empty();
         }
     }
 
-    public static String assemblePDBLines(OakLeafSubstructure leafsubstructure) {
+    public static String assemblePDBLines(PdbLeafSubstructure leafsubstructure) {
         StringBuilder builder = new StringBuilder();
         for (Atom atom : leafsubstructure.getAllAtoms()) {
-            OakAtom firstAtom = (OakAtom) atom;
-            List<OakAtom> connectedAtoms = leafsubstructure.getBonds().stream()
+            PdbAtom firstAtom = (PdbAtom) atom;
+            List<PdbAtom> connectedAtoms = leafsubstructure.getBonds().stream()
                     // determine all bonds where the atom is involved in
                     .filter(oakBond -> oakBond.getSource().equals(firstAtom) || oakBond.getTarget().equals(firstAtom))
                     // determine the atoms that are NOT the source atom
@@ -128,7 +128,7 @@ public enum ConnectionToken implements PDBToken {
                         } else {
                             return oakBond.getSource();
                         }
-                    }).sorted(Comparator.comparingInt(OakAtom::getAtomIdentifier))
+                    }).sorted(Comparator.comparingInt(PdbAtom::getAtomIdentifier))
                     .collect(Collectors.toList());
             if (connectedAtoms.isEmpty()) {
                 // FIXME this will skip entire CONECT atom record generation of a single dangling atom is in the ligand, e.g. terminal OXT for MD-derived peptides

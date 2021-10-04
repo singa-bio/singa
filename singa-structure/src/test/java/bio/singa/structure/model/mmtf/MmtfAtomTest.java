@@ -1,14 +1,12 @@
 package bio.singa.structure.model.mmtf;
 
-import bio.singa.mathematics.vectors.Vector3D;
 import bio.singa.chemistry.model.elements.ElementProvider;
+import bio.singa.mathematics.vectors.Vector3D;
 import bio.singa.structure.model.interfaces.Atom;
 import bio.singa.structure.model.interfaces.Structure;
+import bio.singa.structure.parser.pdb.structures.StructureParser;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.rcsb.mmtf.decoder.ReaderUtils;
-
-import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -23,8 +21,10 @@ class MmtfAtomTest {
     private static Atom atomToModify;
 
     @BeforeAll
-    static void initialize() throws IOException {
-        structure1C0A = new MmtfStructure(ReaderUtils.getByteArrayFromUrl("1C0A", true, false));
+    static void initialize() {
+        structure1C0A = StructureParser.mmtf()
+                .pdbIdentifier("1C0A")
+                .everything().parse();
         // no offset to regular pdb file
         atom412 = structure1C0A.getAtom(412).get();
         // one offset to regular pdb file
