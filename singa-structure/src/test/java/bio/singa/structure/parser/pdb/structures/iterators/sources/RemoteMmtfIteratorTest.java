@@ -31,7 +31,7 @@ class RemoteMmtfIteratorTest {
             assertTrue(PDBIdentifier.PATTERN.matcher(nextPdbIdentifier).matches());
             byte[] content = onlinePdbIterator.getContent(nextPdbIdentifier);
             MmtfStructure mmtfStructure = new MmtfStructure(content);
-            String pdbIdentifier = mmtfStructure.getPdbIdentifier();
+            String pdbIdentifier = mmtfStructure.getStructureIdentifier();
             assertTrue(pdbIdentifier.equalsIgnoreCase(nextPdbIdentifier));
         }
 
@@ -47,7 +47,7 @@ class RemoteMmtfIteratorTest {
             assertTrue(onlineMmtfIterator.hasChain());
             byte[] content = onlineMmtfIterator.getContent(nextPdbIdentifier);
             MmtfStructure mmtfStructure = new MmtfStructure(content);
-            String pdbIdentifier = mmtfStructure.getPdbIdentifier();
+            String pdbIdentifier = mmtfStructure.getStructureIdentifier();
             assertTrue(pdbIdentifier.equalsIgnoreCase(nextPdbIdentifier));
         }
     }

@@ -56,7 +56,7 @@ public class PdbModel implements Model {
 
     @Override
     public Set<String> getAllChainIdentifiers() {
-        return new HashSet<>(chains.keySet());
+        return chains.keySet();
     }
 
     @Override

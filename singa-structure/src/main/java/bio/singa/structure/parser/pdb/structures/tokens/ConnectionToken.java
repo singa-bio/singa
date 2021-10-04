@@ -62,13 +62,13 @@ public enum ConnectionToken implements PDBToken {
             return;
         }
         UniqueAtomIdentifier atomIdentifier = uniqueAtomEntry.getKey();
-        Optional<LeafSubstructure> leafSubstructureOptional = structure.getLeafSubstructure(atomIdentifier.getLeafIdentifier());
+        Optional<PdbLeafSubstructure> leafSubstructureOptional = structure.getLeafSubstructure(atomIdentifier.getLeafIdentifier());
         if (!leafSubstructureOptional.isPresent()) {
             logger.warn("could not add connection for leaf {}, leaf could not be found in the structure", atomIdentifier.getLeafIdentifier());
             return;
         }
-        PdbLeafSubstructure leafsubstructure = ((PdbLeafSubstructure) leafSubstructureOptional.get());
-        PdbAtom sourceAtom = ((PdbAtom) uniqueAtomEntry.getValue());
+        PdbLeafSubstructure leafsubstructure = leafSubstructureOptional.get();
+        PdbAtom sourceAtom = uniqueAtomEntry.getValue();
 
         String firstTargetAtomString = CONNECTION_TARGET_ATOM_1.extract(connectionLine);
         addBond(structure, leafsubstructure, sourceAtom, firstTargetAtomString);

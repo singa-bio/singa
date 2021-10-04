@@ -42,7 +42,7 @@ class StructureParserTest {
         Structure hemoglobin = StructureParser.pdb()
                 .pdbIdentifier("1BUW")
                 .parse();
-        assertEquals("1buw", hemoglobin.getPdbIdentifier());
+        assertEquals("1buw", hemoglobin.getStructureIdentifier());
     }
 
     @Test
@@ -232,7 +232,7 @@ class StructureParserTest {
                 .parse();
 
         assertEquals("1GL0_HDS_intra_E-H57_E-D102_E-S195", structure.getTitle());
-        assertEquals("1gl0", structure.getPdbIdentifier());
+        assertEquals("1gl0", structure.getStructureIdentifier());
     }
 
     @Test

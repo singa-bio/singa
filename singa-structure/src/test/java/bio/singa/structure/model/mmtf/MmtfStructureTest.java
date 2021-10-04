@@ -50,7 +50,7 @@ class MmtfStructureTest {
 
     @Test
     void getPdbIdentifier() {
-        String actual = structure2N5E.getPdbIdentifier();
+        String actual = structure2N5E.getStructureIdentifier();
         assertEquals("2n5e", actual);
     }
 

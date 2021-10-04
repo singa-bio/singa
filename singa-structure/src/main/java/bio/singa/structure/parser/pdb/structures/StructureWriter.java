@@ -337,7 +337,7 @@ public class StructureWriter {
                     structure.getAllLeafSubstructures().size(),
                     structure.getAllChains().size(),
                     structure.getAllModels().size(),
-                    structure.getPdbIdentifier().toLowerCase());
+                    structure.getStructureIdentifier().toLowerCase());
             structureAdapterInterface.setMmtfProducer("SiNGA");
 
             // TODO currently we do not consider header information

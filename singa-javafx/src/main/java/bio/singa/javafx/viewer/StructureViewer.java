@@ -184,7 +184,7 @@ public class StructureViewer extends Application {
     }
 
     private void fillTree() {
-        TreeItem<String> rootItem = new TreeItem<>(structure.getPdbIdentifier());
+        TreeItem<String> rootItem = new TreeItem<>(structure.getStructureIdentifier());
 
         for (Model model : structure.getAllModels()) {
             TreeItem<String> modelNode = new TreeItem<>("Model: " + String.valueOf(model.getModelIdentifier()));

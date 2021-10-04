@@ -116,7 +116,7 @@ class LocalSourceIteratorTest {
             assertTrue(content instanceof byte[]);
             byte[] bytes = (byte[]) content;
             MmtfStructure mmtfStructure = new MmtfStructure(bytes, false);
-            String pdbIdentifier = mmtfStructure.getPdbIdentifier();
+            String pdbIdentifier = mmtfStructure.getStructureIdentifier();
             assertTrue(pdbIdentifier.equalsIgnoreCase(nextPdbIdentifier));
         }
 
@@ -135,7 +135,7 @@ class LocalSourceIteratorTest {
             assertTrue(content instanceof byte[]);
             byte[] bytes = (byte[]) content;
             MmtfStructure mmtfStructure = new MmtfStructure(bytes, false);
-            String pdbIdentifier = mmtfStructure.getPdbIdentifier();
+            String pdbIdentifier = mmtfStructure.getStructureIdentifier();
             assertTrue(pdbIdentifier.equalsIgnoreCase(nextPdbIdentifier));
         }
     }

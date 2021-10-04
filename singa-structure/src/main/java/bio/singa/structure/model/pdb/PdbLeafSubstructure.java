@@ -232,7 +232,6 @@ public abstract class PdbLeafSubstructure implements LeafSubstructure {
         return flatToString();
     }
 
-
     public int getNextEdgeIdentifier() {
         return nextEdgeIdentifier++;
     }

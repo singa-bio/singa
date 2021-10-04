@@ -20,6 +20,10 @@ public class CifAtom implements Atom {
         element = cifAtom.element;
     }
 
+    public CifAtom(int atomIdentifier) {
+        this.atomIdentifier = atomIdentifier;
+    }
+
     @Override
     public int getAtomIdentifier() {
         return atomIdentifier;
@@ -68,7 +72,7 @@ public class CifAtom implements Atom {
     }
 
     @Override
-    public Atom getCopy() {
+    public CifAtom getCopy() {
         return new CifAtom(this);
     }
 
@@ -79,12 +83,16 @@ public class CifAtom implements Atom {
 
         CifAtom cifAtom = (CifAtom) o;
 
-        return atomIdentifier == cifAtom.atomIdentifier;
+        if (atomIdentifier != cifAtom.atomIdentifier) return false;
+        if (atomName != null ? !atomName.equals(cifAtom.atomName) : cifAtom.atomName != null) return false;
+        return position != null ? position.equals(cifAtom.position) : cifAtom.position == null;
     }
 
     @Override
     public int hashCode() {
-        return atomIdentifier;
+        int result = atomIdentifier;
+        result = 31 * result + (atomName != null ? atomName.hashCode() : 0);
+        result = 31 * result + (position != null ? position.hashCode() : 0);
+        return result;
     }
-
 }

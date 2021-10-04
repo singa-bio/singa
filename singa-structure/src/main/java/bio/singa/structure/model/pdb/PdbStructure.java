@@ -43,7 +43,7 @@ public class PdbStructure implements Structure {
     }
 
     public PdbStructure(PdbStructure structure) {
-        pdbIdentifier = structure.getPdbIdentifier();
+        pdbIdentifier = structure.getStructureIdentifier();
         title = structure.title;
         resolution = structure.resolution;
         models = new TreeMap<>();
@@ -57,7 +57,7 @@ public class PdbStructure implements Structure {
     }
 
     @Override
-    public String getPdbIdentifier() {
+    public String getStructureIdentifier() {
         return pdbIdentifier;
     }
 
@@ -93,7 +93,7 @@ public class PdbStructure implements Structure {
     }
 
     @Override
-    public Optional<Model> getModel(int modelIdentifier) {
+    public Optional<PdbModel> getModel(int modelIdentifier) {
         if (models.containsKey(modelIdentifier)) {
             return Optional.of(models.get(modelIdentifier));
         }
@@ -110,14 +110,14 @@ public class PdbStructure implements Structure {
     }
 
     @Override
-    public Optional<Chain> getChain(int modelIdentifier, String chainIdentifier) {
-        final Optional<Model> optionalModel = getModel(modelIdentifier);
+    public Optional<PdbChain> getChain(int modelIdentifier, String chainIdentifier) {
+        final Optional<PdbModel> optionalModel = getModel(modelIdentifier);
         return optionalModel.flatMap(model -> model.getChain(chainIdentifier));
     }
 
     @Override
-    public List<Chain> getAllChains() {
-        List<Chain> allChains = new ArrayList<>();
+    public List<PdbChain> getAllChains() {
+        List<PdbChain> allChains = new ArrayList<>();
         for (PdbModel model : models.values()) {
             allChains.addAll(model.getAllChains());
         }
@@ -139,8 +139,8 @@ public class PdbStructure implements Structure {
     }
 
     @Override
-    public Optional<LeafSubstructure> getLeafSubstructure(LeafIdentifier leafIdentifier) {
-        final Optional<Chain> chainOptional = getChain(leafIdentifier.getModelIdentifier(), leafIdentifier.getChainIdentifier());
+    public Optional<PdbLeafSubstructure> getLeafSubstructure(LeafIdentifier leafIdentifier) {
+        final Optional<PdbChain> chainOptional = getChain(leafIdentifier.getModelIdentifier(), leafIdentifier.getChainIdentifier());
         return chainOptional.flatMap(chain -> chain.getLeafSubstructure(leafIdentifier));
     }
 
@@ -151,14 +151,13 @@ public class PdbStructure implements Structure {
 
     @Override
     public boolean removeLeafSubstructure(LeafIdentifier leafIdentifier) {
-        final Optional<Chain> chain = getChain(leafIdentifier.getModelIdentifier(), leafIdentifier.getChainIdentifier());
+        final Optional<PdbChain> chain = getChain(leafIdentifier.getModelIdentifier(), leafIdentifier.getChainIdentifier());
         if (chain.isPresent()) {
             if (chain.get().getLeafSubstructure(leafIdentifier).isPresent()) {
                 chain.get().removeLeafSubstructure(leafIdentifier);
                 return true;
             }
         }
-        getAllAtoms();
         return false;
     }
 
@@ -189,11 +188,11 @@ public class PdbStructure implements Structure {
         return Optional.empty();
     }
 
-    public Optional<Map.Entry<UniqueAtomIdentifier, Atom>> getAtomByCoordinate(Vector3D coordinate, double eps) {
-        for (Model model : getAllModels()) {
-            for (Chain chain : model.getAllChains()) {
-                for (LeafSubstructure leafSubstructure : chain.getAllLeafSubstructures()) {
-                    for (Atom atom : leafSubstructure.getAllAtoms()) {
+    public Optional<Map.Entry<UniqueAtomIdentifier, PdbAtom>> getAtomByCoordinate(Vector3D coordinate, double eps) {
+        for (PdbModel model : getAllModels()) {
+            for (PdbChain chain : model.getAllChains()) {
+                for (PdbLeafSubstructure leafSubstructure : chain.getAllLeafSubstructures()) {
+                    for (PdbAtom atom : leafSubstructure.getAllAtoms()) {
                         if (atom.getPosition().almostEqual(coordinate, eps)) {
                             UniqueAtomIdentifier identifier = new UniqueAtomIdentifier(leafSubstructure.getIdentifier(), atom.getAtomIdentifier());
                             return Optional.of(new AbstractMap.SimpleEntry<>(identifier, atom));
@@ -217,7 +216,7 @@ public class PdbStructure implements Structure {
     public void addAtom(String chainIdentifier, String threeLetterCode, Vector3D position) {
         Optional<PdbChain> optionalChain = getFirstModel().getChain(chainIdentifier);
         if (optionalChain.isPresent()) {
-            PdbChain chain = (PdbChain) optionalChain.get();
+            PdbChain chain = optionalChain.get();
             PdbLigand leafSubstructure = new PdbLigand(chain.getNextLeafIdentifier(), new StructuralFamily("?", threeLetterCode));
             lastAddedAtomIdentifier++;
             leafSubstructure.addAtom(new PdbAtom(lastAddedAtomIdentifier, ElementProvider.UNKOWN, "CA", position));

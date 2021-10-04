@@ -24,7 +24,7 @@ public interface Structure extends LeafSubstructureContainer, ChainContainer {
      * @return The PDB identifier.
      * @see PDBIdentifier
      */
-    String getPdbIdentifier();
+    String getStructureIdentifier();
 
     /**
      * Returns the title.
@@ -92,7 +92,7 @@ public interface Structure extends LeafSubstructureContainer, ChainContainer {
     Structure getCopy();
 
     default String flatToString() {
-        return getPdbIdentifier();
+        return getStructureIdentifier();
     }
 
 }

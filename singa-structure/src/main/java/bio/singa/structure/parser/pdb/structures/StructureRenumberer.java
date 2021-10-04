@@ -49,7 +49,7 @@ public class StructureRenumberer {
     private PdbStructure renumberAtoms(PdbStructure structure) {
         logger.debug("Renumbering structure {} consecutively.", structure);
         PdbStructure renumberedStructure = new PdbStructure();
-        renumberedStructure.setPdbIdentifier(structure.getPdbIdentifier());
+        renumberedStructure.setPdbIdentifier(structure.getStructureIdentifier());
         renumberedStructure.setTitle(structure.getTitle());
         for (Model model : structure.getAllModels()) {
             PdbModel renumberedModel = new PdbModel(model.getModelIdentifier());
@@ -123,7 +123,7 @@ public class StructureRenumberer {
 
     private PdbStructure renumberLeafSubstructures(PdbStructure structure, Map<PdbLeafIdentifier, Integer> renumberingMap) {
         PdbStructure renumberedStructure = new PdbStructure();
-        renumberedStructure.setPdbIdentifier(structure.getPdbIdentifier());
+        renumberedStructure.setPdbIdentifier(structure.getStructureIdentifier());
         for (Model model : structure.getAllModels()) {
             PdbModel renumberedModel = new PdbModel(model.getModelIdentifier());
             renumberedStructure.addModel(renumberedModel);

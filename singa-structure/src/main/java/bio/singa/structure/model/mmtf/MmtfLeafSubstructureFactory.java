@@ -14,7 +14,7 @@ import java.util.Optional;
  *
  * @author cl
  */
-class MmtfLeafFactory {
+class MmtfLeafSubstructureFactory {
 
     /**
      * A cache containing the already seen ligand families.
@@ -24,7 +24,7 @@ class MmtfLeafFactory {
     /**
      * Prevent external instantiation.
      */
-    private MmtfLeafFactory() {
+    private MmtfLeafSubstructureFactory() {
 
     }
 

@@ -53,7 +53,7 @@ public class StructureRepresentation {
     public static String composePdbRepresentation(Structure structure) {
         StringBuilder sb = new StringBuilder();
         // add preamble
-        sb.append(getPreamble(structure.getPdbIdentifier(), structure.getTitle(), ((PdbStructure) structure).getLinkEntries()));
+        sb.append(getPreamble(structure.getStructureIdentifier(), structure.getTitle(), ((PdbStructure) structure).getLinkEntries()));
         // get all models
         List<PdbModel> allModels = structure.getAllModels().stream()
                 .map(PdbModel.class::cast)

@@ -29,14 +29,14 @@ class PdbStructureTest {
 
     @Test
     void getPdbIdentifier() {
-        String actual = structure2N5E.getPdbIdentifier();
+        String actual = structure2N5E.getStructureIdentifier();
         assertEquals("2n5e", actual);
     }
 
     @Test
     void setPdbIdentifier() {
         structureToModify.setPdbIdentifier("5ING");
-        String actual = structureToModify.getPdbIdentifier();
+        String actual = structureToModify.getStructureIdentifier();
         assertEquals("5ing", actual);
     }
 
@@ -67,7 +67,7 @@ class PdbStructureTest {
 
     @Test
     void getModel() {
-        Optional<Model> model = structure2N5E.getModel(2);
+        Optional<PdbModel> model = structure2N5E.getModel(2);
         if (!model.isPresent()) {
             fail("Optional model was empty.");
         }
@@ -83,7 +83,7 @@ class PdbStructureTest {
 
     @Test
     void getAllChains() {
-        List<Chain> allChains = structure2N5E.getAllChains();
+        List<PdbChain> allChains = structure2N5E.getAllChains();
         assertEquals(20, allChains.size());
     }
 
@@ -95,7 +95,7 @@ class PdbStructureTest {
 
     @Test
     void getChain() {
-        Optional<Chain> chain = structure2N5E.getChain(1, "B");
+        Optional<PdbChain> chain = structure2N5E.getChain(1, "B");
         if (!chain.isPresent()) {
             fail("Optional chain was empty.");
         }
@@ -110,7 +110,7 @@ class PdbStructureTest {
 
     @Test
     void getLeafSubstructure() {
-        Optional<LeafSubstructure> leafSubstructure = structure2N5E.getLeafSubstructure(new PdbLeafIdentifier("2N5E", 5, "A", 64));
+        Optional<PdbLeafSubstructure> leafSubstructure = structure2N5E.getLeafSubstructure(new PdbLeafIdentifier("2N5E", 5, "A", 64));
         if (!leafSubstructure.isPresent()) {
             fail("Optional leaf substructure was empty.");
         }
@@ -123,10 +123,10 @@ class PdbStructureTest {
     @Test
     void removeLeafSubstructure() {
         LeafIdentifier leafIdentifier = new PdbLeafIdentifier("1BRR", 1, "A", 176);
-        Optional<LeafSubstructure> leafSubstructureOptional = structureToModify.getLeafSubstructure(leafIdentifier);
+        Optional<PdbLeafSubstructure> leafSubstructureOptional = structureToModify.getLeafSubstructure(leafIdentifier);
         leafSubstructureOptional.ifPresent(leafSubstructure -> {
             structureToModify.removeLeafSubstructure(leafIdentifier);
-            Optional<LeafSubstructure> removedOptional = structureToModify.getLeafSubstructure(leafIdentifier);
+            Optional<PdbLeafSubstructure> removedOptional = structureToModify.getLeafSubstructure(leafIdentifier);
             removedOptional.ifPresent(leafSubstructureRemoved -> fail("The leaf should have been removed and therefore the optional should be empty."));
         });
     }

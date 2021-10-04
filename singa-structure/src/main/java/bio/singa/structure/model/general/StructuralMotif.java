@@ -67,12 +67,12 @@ public class StructuralMotif implements LeafSubstructureContainer {
     public static StructuralMotif fromLeafIdentifiers(Structure structure, List<PdbLeafIdentifier> leafIdentifiers) {
         List<LeafSubstructure> leafSubstructures = new ArrayList<>();
         for (PdbLeafIdentifier leafIdentifier : leafIdentifiers) {
-            leafIdentifier = new PdbLeafIdentifier(structure.getPdbIdentifier(), leafIdentifier.getModelIdentifier(), leafIdentifier.getChainIdentifier(), leafIdentifier.getSerial(), leafIdentifier.getInsertionCode());
+            leafIdentifier = new PdbLeafIdentifier(structure.getStructureIdentifier(), leafIdentifier.getModelIdentifier(), leafIdentifier.getChainIdentifier(), leafIdentifier.getSerial(), leafIdentifier.getInsertionCode());
             final Optional<? extends LeafSubstructure> leafSubstructure = structure.getLeafSubstructure(leafIdentifier);
             if (leafSubstructure.isPresent()) {
                 leafSubstructures.add(leafSubstructure.get());
             } else {
-                throw new NoSuchElementException("Unable to add leaf substructure with identifier " + leafIdentifier + " from structure " + structure.getPdbIdentifier());
+                throw new NoSuchElementException("Unable to add leaf substructure with identifier " + leafIdentifier + " from structure " + structure.getStructureIdentifier());
             }
         }
         return new StructuralMotif(generateMotifIdentifier(leafSubstructures), leafSubstructures);

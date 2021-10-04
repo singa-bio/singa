@@ -90,7 +90,7 @@ public class MmtfStructure implements Structure {
     }
 
     @Override
-    public String getPdbIdentifier() {
+    public String getStructureIdentifier() {
         return data.getStructureId().toLowerCase();
     }
 

@@ -299,7 +299,7 @@ public class InteractionContainer {
             boolean targetIsLigand = false;
             // handle insertion codes for source
             LeafIdentifier source = interaction.getSource();
-            Optional<LeafSubstructure> optionalSourceLeaf = structure.getLeafSubstructure(source);
+            Optional<PdbLeafSubstructure> optionalSourceLeaf = structure.getLeafSubstructure(source);
             if (!optionalSourceLeaf.isPresent()) {
                 // source could not be retrieved
                 logger.debug("Bad leaf reference for source {} in {}.", source, interaction);
@@ -313,7 +313,7 @@ public class InteractionContainer {
 
             // handle insertion codes for target
             LeafIdentifier target = interaction.getTarget();
-            Optional<LeafSubstructure> optionalTargetLeaf = structure.getLeafSubstructure(target);
+            Optional<PdbLeafSubstructure> optionalTargetLeaf = structure.getLeafSubstructure(target);
             if (!optionalTargetLeaf.isPresent()) {
                 // target could not be retrieved
                 logger.debug("Bad leaf reference for target {} in {}.", target, interaction);

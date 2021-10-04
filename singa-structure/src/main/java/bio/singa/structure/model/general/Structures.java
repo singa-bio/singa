@@ -233,9 +233,9 @@ public class Structures {
         PdbStructure oakStructure = (PdbStructure) structure;
         HashMap<Vector3D, UniqueAtomIdentifier> map = new HashMap<>();
         for (Vector3D coordinate : coordinates) {
-            Optional<Map.Entry<UniqueAtomIdentifier, Atom>> optionalAtom = oakStructure.getAtomByCoordinate(coordinate, eps);
+            Optional<Map.Entry<UniqueAtomIdentifier, PdbAtom>> optionalAtom = oakStructure.getAtomByCoordinate(coordinate, eps);
             if (optionalAtom.isPresent()) {
-                Map.Entry<UniqueAtomIdentifier, Atom> entry = optionalAtom.get();
+                Map.Entry<UniqueAtomIdentifier, PdbAtom> entry = optionalAtom.get();
                 map.put(coordinate, entry.getKey());
             }
         }

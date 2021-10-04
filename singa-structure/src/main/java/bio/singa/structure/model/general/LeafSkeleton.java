@@ -23,6 +23,7 @@ public class LeafSkeleton {
     private String inchi;
     private String name;
     private AssignedFamily assignedFamily;
+    private StructuralFamily structuralFamily;
     private Map<Pair<String>, CovalentBondType> bonds;
     private Map<String, PdbAtom> atoms;
 
@@ -87,6 +88,14 @@ public class LeafSkeleton {
 
     public void setAssignedFamily(AssignedFamily assignedFamily) {
         this.assignedFamily = assignedFamily;
+    }
+
+    public StructuralFamily getStructuralFamily() {
+        return structuralFamily;
+    }
+
+    public void setStructuralFamily(StructuralFamily structuralFamily) {
+        this.structuralFamily = structuralFamily;
     }
 
     public Map<Pair<String>, CovalentBondType> getBonds() {
