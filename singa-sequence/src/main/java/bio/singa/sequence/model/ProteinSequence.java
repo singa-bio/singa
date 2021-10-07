@@ -3,6 +3,8 @@ package bio.singa.sequence.model;
 import bio.singa.features.identifiers.UniProtIdentifier;
 import bio.singa.features.model.Feature;
 import bio.singa.structure.model.families.AminoAcidFamily;
+import bio.singa.structure.model.families.StructuralFamilies;
+import bio.singa.structure.model.families.StructuralFamily;
 import bio.singa.structure.model.interfaces.AminoAcid;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.interfaces.LeafSubstructureContainer;
@@ -48,7 +50,7 @@ public class ProteinSequence extends AbstractSequence<AminoAcidFamily> {
     public static ProteinSequence of(String sequence) {
         List<AminoAcidFamily> aminoAcidList = new ArrayList<>();
         for (char c : sequence.toCharArray()) {
-            aminoAcidList.add(getAminoAcidTypeByOneLetterCode(c).orElse(UNKNOWN));
+            aminoAcidList.add(StructuralFamilies.AminoAcids.getOrUnknown());
         }
         return new ProteinSequence(aminoAcidList);
     }

@@ -91,9 +91,9 @@ public class StructureViewer extends Application {
 
         if (structure != null) {
             if (structure.getAllModels().size() > 1) {
-                // add leafs
+                // add leaves
                 displayStructure = new PdbStructure();
-                displayStructure.addModel((PdbModel) structure.getAllModels().get(0));
+                displayStructure.addModel(structure.getFirstModel());
             } else {
                 displayStructure = structure;
             }
@@ -212,7 +212,7 @@ public class StructureViewer extends Application {
         displayStructure = new PdbStructure();
         world = new XForm();
         moleculeGroup = new XForm();
-        displayStructure.addModel((PdbModel) structure.getModel(Integer.valueOf(identifier.replace("Model: ", ""))).get());
+        displayStructure.addModel(structure.getModel(Integer.parseInt(identifier.replace("Model: ", ""))).get());
         buildDisplayedStructure();
         displayGroup.getChildren().retainAll();
         displayGroup.getChildren().add(world);
@@ -222,7 +222,7 @@ public class StructureViewer extends Application {
         displayStructure = new PdbStructure();
         world = new XForm();
         moleculeGroup = new XForm();
-        PdbChain chain = (PdbChain) structure.getAllChains().stream()
+        PdbChain chain = structure.getAllChains().stream()
                 .filter(aChain -> aChain.getChainIdentifier().equals(identifier.replace("Chain: ", "")))
                 .findAny()
                 .orElseThrow(() -> new IllegalStateException("Chould not retrieve chainIdentifier " + identifier.replace("Chain: ", "")));

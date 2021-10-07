@@ -1,6 +1,8 @@
 package bio.singa.structure.parser.pdb.structures.iterators.converters;
 
 import bio.singa.structure.parser.pdb.structures.StructureParserException;
+import org.rcsb.cif.CifIO;
+import org.rcsb.cif.CifOptions;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -12,7 +14,8 @@ import java.nio.file.Path;
  */
 public class PathToObjectConverter implements ContentConverter<Path, Object> {
 
-    private static PathToObjectConverter instance = new PathToObjectConverter();
+    private static final PathToObjectConverter instance = new PathToObjectConverter();
+
 
     private PathToObjectConverter() {
 
@@ -38,17 +41,59 @@ public class PathToObjectConverter implements ContentConverter<Path, Object> {
             try {
                 return fetchLines(readPacked(content));
             } catch (IOException e) {
-                throw new UncheckedIOException("unable to read packed pdb" + content, e);
+                throw new UncheckedIOException("unable to read packed pdb file" + content, e);
             }
         }
+
+        if (fileName.endsWith(".pdb.gz")) {
+            try {
+                return fetchLines(readPacked(content));
+            } catch (IOException e) {
+                throw new UncheckedIOException("unable to read packed pdb file" + content, e);
+            }
+        }
+
         if (fileName.endsWith(".pdb")) {
             try {
                 return fetchLines(Files.newInputStream(content));
             } catch (IOException e) {
-                throw new UncheckedIOException("unable to read pdb" + content, e);
+                throw new UncheckedIOException("unable to read pdb file" + content, e);
             }
         }
-        throw new StructureParserException("Unable to determine file type of "+content);
+
+        if (fileName.endsWith(".bcif")) {
+            try {
+                return CifIO.readFromPath(content, CifStaticOptions.BCIF_PLAIN);
+            } catch (IOException e) {
+                throw new UncheckedIOException("unable to read bcif file" + content, e);
+            }
+        }
+
+        if (fileName.endsWith(".bcif.gz")) {
+            try {
+                return CifIO.readFromPath(content, CifStaticOptions.BCIF_GZIPPED);
+            } catch (IOException e) {
+                throw new UncheckedIOException("unable to read bcif file" + content, e);
+            }
+        }
+
+        if (fileName.endsWith(".cif")) {
+            try {
+                return CifIO.readFromPath(content, CifStaticOptions.CIF_PLAIN);
+            } catch (IOException e) {
+                throw new UncheckedIOException("unable to read bcif file" + content, e);
+            }
+        }
+
+        if (fileName.endsWith(".cif.gz")) {
+            try {
+                return CifIO.readFromPath(content, CifStaticOptions.CIF_GZIPPED);
+            } catch (IOException e) {
+                throw new UncheckedIOException("unable to read bcif file" + content, e);
+            }
+        }
+
+        throw new StructureParserException("Unable to determine file type of " + content);
     }
 
 }

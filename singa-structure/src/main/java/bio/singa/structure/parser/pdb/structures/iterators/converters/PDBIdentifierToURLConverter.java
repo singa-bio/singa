@@ -8,7 +8,7 @@ import java.net.URL;
  */
 public class PDBIdentifierToURLConverter implements ContentConverter<String, URL> {
 
-    private static PDBIdentifierToURLConverter instance = new PDBIdentifierToURLConverter();
+    private static final PDBIdentifierToURLConverter instance = new PDBIdentifierToURLConverter();
 
     public static PDBIdentifierToURLConverter get() {
         return instance;
