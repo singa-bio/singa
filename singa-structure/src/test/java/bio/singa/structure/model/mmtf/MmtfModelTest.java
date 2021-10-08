@@ -2,7 +2,7 @@ package bio.singa.structure.model.mmtf;
 
 import bio.singa.structure.model.interfaces.*;
 import bio.singa.structure.model.pdb.PdbLeafIdentifier;
-import bio.singa.structure.parser.pdb.structures.StructureParser;
+import bio.singa.structure.io.general.StructureParser;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 

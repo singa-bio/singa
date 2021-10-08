@@ -14,6 +14,14 @@ public class CifAminoAcid extends CifLeafSubstructure implements AminoAcid {
         super(cifAminoAcid);
     }
 
+    @Override
+    public String getThreeLetterCode() {
+        if (divergingThreeLetterCode != null) {
+            return divergingThreeLetterCode;
+        }
+        return super.getThreeLetterCode();
+    }
+
     public String getDivergingThreeLetterCode() {
         return divergingThreeLetterCode;
     }

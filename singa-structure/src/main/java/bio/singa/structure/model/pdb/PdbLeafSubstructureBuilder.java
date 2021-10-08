@@ -2,10 +2,10 @@ package bio.singa.structure.model.pdb;
 
 import bio.singa.structure.model.families.StructuralFamilies;
 import bio.singa.structure.model.families.StructuralFamily;
-import bio.singa.structure.parser.pdb.ligands.LigandParserService;
-import bio.singa.structure.parser.pdb.structures.LocalCIFRepository;
-import bio.singa.structure.parser.pdb.structures.StructureParserOptions;
-import bio.singa.structure.parser.pdb.structures.iterators.StructureIterator;
+import bio.singa.structure.io.ccd.LigandParserService;
+import bio.singa.structure.io.general.LocalCcdRepository;
+import bio.singa.structure.io.general.StructureParserOptions;
+import bio.singa.structure.io.general.iterators.StructureIterator;
 import bio.singa.structure.model.general.LeafSkeleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -96,15 +96,15 @@ public class PdbLeafSubstructureBuilder {
         private Map<String, PdbAtom> atomMap;
 
         private final StructureParserOptions options;
-        private final LocalCIFRepository cifRepository;
+        private final LocalCcdRepository cifRepository;
         private final Map<String, LeafSkeleton> leafSkeletons;
         private LeafSkeleton leafSkeleton;
 
 
         public GeneralLeafSubstructureBuilder(StructureIterator iterator) {
-            options = iterator.getReducer().getOptions();
+            options = iterator.getOptions();
             leafSkeletons = iterator.getSkeletons();
-            cifRepository = iterator.getReducer().getLocalCIFRepository();
+            cifRepository = iterator.getLocalCIFRepository();
         }
 
         @Override

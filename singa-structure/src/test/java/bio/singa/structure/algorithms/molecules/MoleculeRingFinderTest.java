@@ -6,7 +6,7 @@ import bio.singa.core.utility.Resources;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.molecules.MoleculeGraphs;
 import bio.singa.structure.model.pdb.PdbLeafSubstructure;
-import bio.singa.structure.parser.pdb.structures.StructureParser;
+import bio.singa.structure.io.general.StructureParser;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;

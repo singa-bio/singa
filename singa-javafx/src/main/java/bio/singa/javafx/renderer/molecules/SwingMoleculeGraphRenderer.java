@@ -8,7 +8,7 @@ import bio.singa.javafx.renderer.graphs.GraphRenderOptions;
 import bio.singa.mathematics.geometry.edges.Line;
 import bio.singa.mathematics.geometry.edges.SimpleLineSegment;
 import bio.singa.mathematics.vectors.Vector2D;
-import bio.singa.structure.parser.plip.Interaction;
+import bio.singa.structure.io.plip.Interaction;
 
 import java.awt.*;
 import java.util.ArrayList;

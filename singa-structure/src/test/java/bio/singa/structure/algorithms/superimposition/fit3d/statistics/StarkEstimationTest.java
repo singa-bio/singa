@@ -7,9 +7,9 @@ import bio.singa.structure.model.interfaces.Structure;
 import bio.singa.structure.model.general.StructuralEntityFilter;
 import bio.singa.structure.model.general.StructuralMotif;
 import bio.singa.structure.model.pdb.PdbLeafIdentifier;
-import bio.singa.structure.parser.pdb.structures.StructureParser;
-import bio.singa.structure.parser.pdb.structures.StructureParserOptions;
-import bio.singa.structure.parser.pdb.structures.iterators.StructureIterator;
+import bio.singa.structure.io.general.StructureParser;
+import bio.singa.structure.io.general.StructureParserOptions;
+import bio.singa.structure.io.general.iterators.StructureIterator;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -45,7 +45,7 @@ class StarkEstimationTest {
         StructureIterator multiParser = StructureParser.mmtf()
                 .chainList(Paths.get(Resources.getResourceAsFileLocation("nrpdb_BLAST_10e80_100.txt")), "_")
                 .everything();
-        multiParser.getReducer().setOptions(structureParserOptions);
+        multiParser.setOptions(structureParserOptions);
         Fit3D fit3dBatch = Fit3DBuilder.create()
                 .query(queryMotif)
                 .targets(multiParser)

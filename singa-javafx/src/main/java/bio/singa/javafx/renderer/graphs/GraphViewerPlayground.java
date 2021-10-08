@@ -9,11 +9,11 @@ import bio.singa.mathematics.graphs.model.GenericNode;
 import bio.singa.structure.model.interfaces.Chain;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.interfaces.Structure;
-import bio.singa.structure.parser.pdb.structures.StructureParser;
-import bio.singa.structure.parser.pdb.structures.StructureSelector;
-import bio.singa.structure.parser.plip.InteractionContainer;
-import bio.singa.structure.parser.plip.PlipParser;
-import bio.singa.structure.parser.plip.PlipShellGenerator;
+import bio.singa.structure.io.general.StructureParser;
+import bio.singa.structure.io.general.StructureSelector;
+import bio.singa.structure.io.plip.InteractionContainer;
+import bio.singa.structure.io.plip.PlipParser;
+import bio.singa.structure.io.plip.PlipShellGenerator;
 import javafx.application.Application;
 
 import java.util.List;

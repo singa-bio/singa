@@ -7,7 +7,7 @@ import bio.singa.structure.model.interfaces.Model;
 import bio.singa.structure.model.interfaces.Structure;
 import bio.singa.structure.model.general.StructuralMotif;
 import bio.singa.structure.model.general.Structures;
-import bio.singa.structure.parser.pdb.structures.iterators.StructureIterator;
+import bio.singa.structure.io.general.iterators.StructureIterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

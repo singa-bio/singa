@@ -1,8 +1,8 @@
 package bio.singa.javafx.viewer;
 
 import bio.singa.structure.model.pdb.PdbStructure;
-import bio.singa.structure.parser.pdb.structures.StructureParser;
-import bio.singa.structure.parser.pdb.structures.StructureParserOptions;
+import bio.singa.structure.io.general.StructureParser;
+import bio.singa.structure.io.general.StructureParserOptions;
 import javafx.application.Application;
 
 /**

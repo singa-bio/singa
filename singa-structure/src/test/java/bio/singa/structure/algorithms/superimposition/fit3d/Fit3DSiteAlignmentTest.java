@@ -7,7 +7,7 @@ import bio.singa.structure.model.interfaces.Structure;
 import bio.singa.structure.model.general.StructuralEntityFilter;
 import bio.singa.structure.model.general.StructuralMotif;
 import bio.singa.structure.model.general.StructuralMotifs;
-import bio.singa.structure.parser.pdb.structures.StructureParser;
+import bio.singa.structure.io.general.StructureParser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

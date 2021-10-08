@@ -4,7 +4,7 @@ import bio.singa.mathematics.vectors.Vector3D;
 import bio.singa.chemistry.model.elements.ElementProvider;
 import bio.singa.structure.model.interfaces.Atom;
 import bio.singa.structure.model.interfaces.Structure;
-import bio.singa.structure.parser.pdb.structures.StructureParser;
+import bio.singa.structure.io.general.StructureParser;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 

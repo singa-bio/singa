@@ -7,14 +7,17 @@ import bio.singa.structure.model.interfaces.Structure;
 import bio.singa.structure.model.general.StructuralEntityFilter;
 import bio.singa.structure.model.general.StructuralMotif;
 import bio.singa.structure.model.pdb.PdbLeafIdentifier;
-import bio.singa.structure.parser.pdb.structures.StructureParser;
-import bio.singa.structure.parser.pdb.structures.StructureParserOptions;
-import bio.singa.structure.parser.pdb.structures.iterators.StructureIterator;
+import bio.singa.structure.io.general.StructureParser;
+import bio.singa.structure.io.general.StructureParserOptions;
+import bio.singa.structure.io.general.iterators.StructureIterator;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Paths;
+import java.util.Set;
 
+import static bio.singa.structure.io.general.StructureParserOptions.Setting.*;
+import static bio.singa.structure.io.general.StructureParserOptions.Setting.OMIT_EDGES;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -23,7 +26,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class FofanovEstimationTest {
 
     private static StructuralMotif queryMotif;
-    private static StructureParserOptions structureParserOptions;
 
     @BeforeAll
     static void initialize() {
@@ -32,11 +34,6 @@ class FofanovEstimationTest {
                 .parse();
         queryMotif = StructuralMotif.fromLeafIdentifiers(motifContainingStructure,
                 PdbLeafIdentifier.of("E-57", "E-102", "E-195"));
-        structureParserOptions = StructureParserOptions.withSettings(
-                StructureParserOptions.Setting.OMIT_EDGES,
-                StructureParserOptions.Setting.OMIT_HYDROGENS,
-                StructureParserOptions.Setting.OMIT_LIGAND_INFORMATION,
-                StructureParserOptions.Setting.GET_IDENTIFIER_FROM_FILENAME);
     }
 
     @Test
@@ -44,8 +41,8 @@ class FofanovEstimationTest {
         FofanovEstimation fofanovEstimation = new FofanovEstimation(2.5);
         StructureIterator multiParser = StructureParser.mmtf()
                 .chainList(Paths.get(Resources.getResourceAsFileLocation("nrpdb_BLAST_10e80_100.txt")), "_")
+                .settings(OMIT_EDGES, OMIT_HYDROGENS, OMIT_LIGAND_INFORMATION, GET_IDENTIFIER_FROM_FILENAME)
                 .everything();
-        multiParser.getReducer().setOptions(structureParserOptions);
         Fit3D fit3dBatch = Fit3DBuilder.create()
                 .query(queryMotif)
                 .targets(multiParser)
@@ -66,8 +63,8 @@ class FofanovEstimationTest {
         FofanovEstimation fofanovEstimation = new FofanovEstimation(epsilon, FofanovEstimation.DEFAULT_REFERENCE_SIZE, modelCorrectnessCutoff);
         StructureIterator multiParser = StructureParser.mmtf()
                 .chainList(Paths.get(Resources.getResourceAsFileLocation("nrpdb_BLAST_10e80_100.txt")), "_")
+                .settings(OMIT_EDGES, OMIT_HYDROGENS, OMIT_LIGAND_INFORMATION, GET_IDENTIFIER_FROM_FILENAME)
                 .everything();
-        multiParser.getReducer().setOptions(structureParserOptions);
         Fit3D fit3dBatch = Fit3DBuilder.create()
                 .query(queryMotif)
                 .targets(multiParser)

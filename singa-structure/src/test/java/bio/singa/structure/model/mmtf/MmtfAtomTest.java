@@ -4,7 +4,7 @@ import bio.singa.chemistry.model.elements.ElementProvider;
 import bio.singa.mathematics.vectors.Vector3D;
 import bio.singa.structure.model.interfaces.Atom;
 import bio.singa.structure.model.interfaces.Structure;
-import bio.singa.structure.parser.pdb.structures.StructureParser;
+import bio.singa.structure.io.general.StructureParser;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -35,8 +35,8 @@ class MmtfAtomTest {
 
     @Test
     void getIdentifier() {
-        assertEquals(412, (int) atom412.getAtomIdentifier());
-        assertEquals(5444, (int) atom5444.getAtomIdentifier());
+        assertEquals(412, atom412.getAtomIdentifier());
+        assertEquals(5444, atom5444.getAtomIdentifier());
     }
 
     @Test

@@ -29,10 +29,10 @@ public class StructuralMotifs {
     }
 
     /**
-     * Assigns the given {@link EnumSet} of exchanges to the specified {@link StructuralMotif}.
+     * Assigns the given set of exchanges to the specified {@link StructuralMotif}.
      *
      * @param structuralMotif The {@link StructuralMotif} to which the exchanges should be assigned.
-     * @param familyGroup The group of {@link MatcherFamily} to be assigned.
+     * @param familyGroup The group of {@link StructuralFamily} to be assigned.
      */
     public static void assignComplexExchanges(StructuralMotif structuralMotif, Set<StructuralFamily> familyGroup) {
         for (LeafSubstructure leafSubstructure : structuralMotif.getAllLeafSubstructures()) {

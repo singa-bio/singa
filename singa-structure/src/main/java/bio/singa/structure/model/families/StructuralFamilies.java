@@ -2,8 +2,8 @@ package bio.singa.structure.model.families;
 
 import bio.singa.core.utility.Resources;
 import bio.singa.structure.model.interfaces.AminoAcid;
-import bio.singa.structure.parser.pdb.structures.StructureParser;
-import bio.singa.structure.parser.pdb.structures.StructureParserOptions;
+import bio.singa.structure.io.general.StructureParser;
+import bio.singa.structure.io.general.StructureParserOptions;
 
 import java.util.*;
 
@@ -99,9 +99,7 @@ public class StructuralFamilies {
         public static AminoAcid getPrototype(StructuralFamily structuralFamily) {
             return StructureParser.local()
                     .inputStream(Resources.getResourceAsStream(RESIDUE_PROTOTYPES_BASE_DIR +structuralFamily.getThreeLetterCode() + ".pdb"))
-                    .allModels()
-                    .allChains()
-                    .setOptions(StructureParserOptions.withSettings(StructureParserOptions.Setting.OMIT_HYDROGENS))
+                    .settings(StructureParserOptions.Setting.OMIT_HYDROGENS)
                     .parse()
                     .getAllAminoAcids()
                     .get(0);

@@ -7,9 +7,9 @@ import bio.singa.mathematics.vectors.Vector3D;
 import bio.singa.structure.model.general.Structures;
 import bio.singa.structure.model.general.UniqueAtomIdentifier;
 import bio.singa.structure.model.interfaces.*;
-import bio.singa.structure.parser.pdb.structures.StructureParser;
-import bio.singa.structure.parser.pdb.structures.StructureRenumberer;
-import bio.singa.structure.parser.pdb.structures.StructureSelector;
+import bio.singa.structure.io.general.StructureParser;
+import bio.singa.structure.io.general.StructureRenumberer;
+import bio.singa.structure.io.general.StructureSelector;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
@@ -40,9 +40,8 @@ class StructuresTest {
     void calculateAtomDistanceMatrix() {
         Structure structure = StructureParser.pdb()
                 .pdbIdentifier("5kqr")
-                .chainIdentifier("A")
                 .parse();
-        List<Atom> atoms = structure.getAllLeafSubstructures().stream().filter(AminoAcid.class::isInstance)
+        List<Atom> atoms = structure.getFirstChain().getAllLeafSubstructures().stream().filter(AminoAcid.class::isInstance)
                 .map(LeafSubstructure::getAllAtoms)
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
@@ -71,7 +70,6 @@ class StructuresTest {
     void renumberStructure() {
         PdbStructure structure = ((PdbStructure) StructureParser.pdb()
                 .pdbIdentifier("1szi")
-                .chainIdentifier("A")
                 .parse());
         PdbLeafIdentifier leafIdentifier = new PdbLeafIdentifier("1szi", 1, "A", 206);
         Map<PdbLeafIdentifier, Integer> renumberingMap = new TreeMap<>();
@@ -88,7 +86,6 @@ class StructuresTest {
     void shouldFindAtoms() {
         PdbStructure structure = ((PdbStructure) StructureParser.pdb()
                 .pdbIdentifier("1szi")
-                .chainIdentifier("A")
                 .parse());
         Vector3D atomCoordinate = new Vector3D(51.172, 37.528, -36.507);
         Optional<Map.Entry<UniqueAtomIdentifier, PdbAtom>> atomByCoordinate = structure.getAtomByCoordinate(atomCoordinate, 0.1);

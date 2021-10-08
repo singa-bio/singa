@@ -13,7 +13,7 @@ import bio.singa.structure.model.interfaces.Atom;
 import bio.singa.structure.model.interfaces.LeafSubstructureContainer;
 import bio.singa.structure.model.general.StructuralEntityFilter;
 import bio.singa.structure.model.general.StructuralMotif;
-import bio.singa.structure.parser.pdb.structures.iterators.StructureIterator;
+import bio.singa.structure.io.general.iterators.StructureIterator;
 
 import java.util.List;
 import java.util.Objects;

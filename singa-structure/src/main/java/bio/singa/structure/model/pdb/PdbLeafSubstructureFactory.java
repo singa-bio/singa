@@ -3,7 +3,7 @@ package bio.singa.structure.model.pdb;
 import bio.singa.chemistry.model.CovalentBondType;
 import bio.singa.structure.model.families.StructuralFamilies;
 import bio.singa.structure.model.families.StructuralFamily;
-import bio.singa.structure.parser.pdb.structures.StructureParserOptions;
+import bio.singa.structure.io.general.StructureParserOptions;
 
 import java.util.Map;
 import java.util.Set;

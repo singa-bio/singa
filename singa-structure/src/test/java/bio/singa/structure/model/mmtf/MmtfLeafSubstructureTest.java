@@ -5,7 +5,7 @@ import bio.singa.structure.model.interfaces.Atom;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.interfaces.Structure;
 import bio.singa.structure.model.pdb.PdbLeafIdentifier;
-import bio.singa.structure.parser.pdb.structures.StructureParser;
+import bio.singa.structure.io.general.StructureParser;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -38,6 +38,8 @@ class MmtfLeafSubstructureTest {
         leaf620A = structure1C0A.getLeafSubstructure(new PdbLeafIdentifier("1C0A", 1, "B", 620, 'A')).get();
         leafToModify = structure1C0A.getLeafSubstructure(new PdbLeafIdentifier("1C0A", 1, "A", 163)).get();
     }
+
+
 
     @Test
     void getIdentifier() {
@@ -84,10 +86,10 @@ class MmtfLeafSubstructureTest {
         leafToModify.removeAtom(atomIdentifier);
         // check if it is present in the leaf
         optionalAtom = leafToModify.getAtom(atomIdentifier);
-        assertTrue(!optionalAtom.isPresent());
+        assertFalse(optionalAtom.isPresent());
         // check if it is present in the structure
-        optionalAtom = structure1C0A.getModel(1).get().getAtom(atomIdentifier);
-        assertTrue(!optionalAtom.isPresent());
+        optionalAtom = structure1C0A.getFirstModel().getAtom(atomIdentifier);
+        assertFalse(optionalAtom.isPresent());
     }
 
     @Test

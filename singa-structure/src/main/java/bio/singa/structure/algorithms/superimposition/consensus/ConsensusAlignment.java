@@ -8,7 +8,7 @@ import bio.singa.structure.algorithms.superimposition.AlignmentMethod;
 import bio.singa.structure.algorithms.superimposition.SubstructureSuperimposition;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.general.StructuralMotif;
-import bio.singa.structure.parser.pdb.structures.StructureWriter;
+import bio.singa.structure.io.general.StructureWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

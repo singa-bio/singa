@@ -7,11 +7,17 @@ import static bio.singa.structure.model.pdb.PdbLeafIdentifier.DEFAULT_INSERTION_
 
 public class CifLeafIdentifier extends AbstractLeafIdentifier {
 
+    private static final int DEFAULT_ENTITY_IDENTIFIER = 0;
     public int entityIdentifier;
 
     public CifLeafIdentifier(String structureIdentifier, int entityIdentifier, int modelIdentifier, String chainIdentifier, int serial) {
         super(structureIdentifier, modelIdentifier, chainIdentifier, serial);
         this.entityIdentifier = entityIdentifier;
+    }
+
+    public CifLeafIdentifier(String structureIdentifier, int modelIdentifier, String chainIdentifier, int serial) {
+        super(structureIdentifier, modelIdentifier, chainIdentifier, serial);
+        entityIdentifier = DEFAULT_ENTITY_IDENTIFIER;
     }
 
     public int getEntityIdentifier() {
@@ -35,7 +41,7 @@ public class CifLeafIdentifier extends AbstractLeafIdentifier {
 
     @Override
     public String toString() {
-        return getStructureIdentifier() + "-" + entityIdentifier + "-" + getModelIdentifier() + "-" + getChainIdentifier() + "-" + getSerial();
+        return getStructureIdentifier() + "-" + (entityIdentifier != DEFAULT_ENTITY_IDENTIFIER ? entityIdentifier+"-" : "") + getModelIdentifier() + "-" + getChainIdentifier() + "-" + getSerial();
     }
 
     @Override

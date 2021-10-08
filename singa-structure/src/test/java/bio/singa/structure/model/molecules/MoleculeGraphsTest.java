@@ -3,7 +3,7 @@ package bio.singa.structure.model.molecules;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.interfaces.Structure;
 import bio.singa.structure.model.pdb.PdbLeafIdentifier;
-import bio.singa.structure.parser.pdb.structures.StructureParser;
+import bio.singa.structure.io.general.StructureParser;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;

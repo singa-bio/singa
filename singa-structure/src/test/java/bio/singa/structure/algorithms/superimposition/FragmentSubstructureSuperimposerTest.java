@@ -2,12 +2,11 @@ package bio.singa.structure.algorithms.superimposition;
 
 import bio.singa.core.utility.Resources;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
-import bio.singa.structure.parser.pdb.structures.StructureParser;
+import bio.singa.structure.io.general.StructureParser;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

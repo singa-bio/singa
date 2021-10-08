@@ -14,7 +14,7 @@ import bio.singa.structure.model.interfaces.AminoAcid;
 import bio.singa.structure.model.interfaces.Atom;
 import bio.singa.structure.model.interfaces.Structure;
 import bio.singa.structure.model.pdb.PdbAminoAcid;
-import bio.singa.structure.parser.pdb.structures.StructureParser;
+import bio.singa.structure.io.general.StructureParser;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;

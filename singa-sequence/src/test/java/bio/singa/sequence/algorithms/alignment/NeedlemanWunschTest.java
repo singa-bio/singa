@@ -3,7 +3,7 @@ package bio.singa.sequence.algorithms.alignment;
 import bio.singa.sequence.model.ProteinSequence;
 import bio.singa.structure.algorithms.superimposition.scores.SubstitutionMatrix;
 import bio.singa.structure.model.interfaces.Structure;
-import bio.singa.structure.parser.pdb.structures.StructureParser;
+import bio.singa.structure.io.general.StructureParser;
 import org.junit.jupiter.api.Test;
 
 /**

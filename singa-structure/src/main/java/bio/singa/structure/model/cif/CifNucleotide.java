@@ -14,6 +14,14 @@ public class CifNucleotide extends CifLeafSubstructure implements Nucleotide {
         super(cifNucleotide);
     }
 
+    @Override
+    public String getThreeLetterCode() {
+        if (divergingThreeLetterCode != null) {
+            return divergingThreeLetterCode;
+        }
+        return super.getThreeLetterCode();
+    }
+
     public String getDivergingThreeLetterCode() {
         return divergingThreeLetterCode;
     }

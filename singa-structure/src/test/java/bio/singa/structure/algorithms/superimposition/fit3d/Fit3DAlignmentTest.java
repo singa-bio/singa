@@ -7,10 +7,10 @@ import bio.singa.structure.model.general.StructuralEntityFilter;
 import bio.singa.structure.model.general.StructuralMotif;
 import bio.singa.structure.model.pdb.*;
 import bio.singa.structure.model.interfaces.Structure;
-import bio.singa.structure.parser.pdb.structures.StructureParser;
-import bio.singa.structure.parser.pdb.structures.iterators.StructureIterator;
-import bio.singa.structure.parser.plip.InteractionContainer;
-import bio.singa.structure.parser.plip.PlipParser;
+import bio.singa.structure.io.general.StructureParser;
+import bio.singa.structure.io.general.iterators.StructureIterator;
+import bio.singa.structure.io.plip.InteractionContainer;
+import bio.singa.structure.io.plip.PlipParser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -77,7 +77,6 @@ class Fit3DAlignmentTest {
     void shouldRunFit3DAlignmentBatch() throws IOException {
         Structure nucleotideTarget = StructureParser.pdb()
                 .pdbIdentifier("2EES")
-                .chainIdentifier("A")
                 .parse();
         StructuralMotif nucleotideMotif = StructuralMotif.fromLeafIdentifiers(nucleotideTarget,
                 PdbLeafIdentifier.of("A-22", "A-51", "A-52", "A-74"));
@@ -233,7 +232,6 @@ class Fit3DAlignmentTest {
     void shouldAlignNucleotideMotif() {
         Structure nucleotideTarget = StructureParser.pdb()
                 .pdbIdentifier("2EES")
-                .chainIdentifier("A")
                 .parse();
         StructuralMotif nucleotideMotif = StructuralMotif.fromLeafIdentifiers(nucleotideTarget,
                 PdbLeafIdentifier.of("A-22", "A-51", "A-52", "A-74"));
@@ -308,7 +306,6 @@ class Fit3DAlignmentTest {
                 Resources.getResourceAsStream("plip/1k1i.xml"));
         Structure structure = StructureParser.pdb()
                 .pdbIdentifier("1k1i")
-                .chainIdentifier("A")
                 .parse();
         interactionContainer.validateWithStructure((PdbStructure) structure);
         interactionContainer.mapToPseudoAtoms((PdbStructure) structure);

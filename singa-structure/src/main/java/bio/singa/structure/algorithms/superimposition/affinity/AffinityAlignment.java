@@ -11,7 +11,7 @@ import bio.singa.structure.algorithms.superimposition.fit3d.representations.Repr
 import bio.singa.structure.model.interfaces.Atom;
 import bio.singa.structure.model.general.StructuralEntityFilter;
 import bio.singa.structure.model.general.StructuralMotif;
-import bio.singa.structure.parser.pdb.structures.StructureWriter;
+import bio.singa.structure.io.general.StructureWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
