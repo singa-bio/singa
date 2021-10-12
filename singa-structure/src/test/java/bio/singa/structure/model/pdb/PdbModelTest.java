@@ -24,17 +24,17 @@ class PdbModelTest {
 
     @BeforeAll
     static void prepareData() {
-        Structure structure2N5E = StructureParser.pdb().pdbIdentifier("2N5E").parse();
-        firstModel = (PdbModel) structure2N5E.getFirstModel();
-        secondModel = (PdbModel) structure2N5E.getModel(2).get();
-        modelToModify = (PdbModel) structure2N5E.getModel(3).get();
-        anotherModelToModify = structure2N5E.getModel(4).get();
+        PdbStructure structure2n5e = (PdbStructure) StructureParser.pdb().pdbIdentifier("2n5e").parse();
+        firstModel = structure2n5e.getFirstModel();
+        secondModel = structure2n5e.getModel(2).get();
+        modelToModify = structure2n5e.getModel(3).get();
+        anotherModelToModify = structure2n5e.getModel(4).get();
     }
 
     @Test
     void getIdentifier() {
-        assertEquals(1, (int) firstModel.getModelIdentifier());
-        assertEquals(2, (int) secondModel.getModelIdentifier());
+        assertEquals(1, firstModel.getModelIdentifier());
+        assertEquals(2, secondModel.getModelIdentifier());
     }
 
     @Test
@@ -66,7 +66,7 @@ class PdbModelTest {
 
     @Test
     void getLeafSubstructure() {
-        Optional<PdbLeafSubstructure> leafSubstructure = firstModel.getLeafSubstructure(new PdbLeafIdentifier("2N5E", 1, "B", 64));
+        Optional<PdbLeafSubstructure> leafSubstructure = firstModel.getLeafSubstructure(new PdbLeafIdentifier("2n5e", 1, "B", 64));
         if (!leafSubstructure.isPresent()) {
             fail("Optional leaf substructure was empty.");
         }
@@ -89,7 +89,7 @@ class PdbModelTest {
     @Test
     void removeLeafSubstructure() {
         final int expected = modelToModify.getNumberOfLeafSubstructures() - 1;
-        final boolean response = modelToModify.removeLeafSubstructure(new PdbLeafIdentifier("2N5E", 3, "B", 64));
+        final boolean response = modelToModify.removeLeafSubstructure(new PdbLeafIdentifier("2n5e", 3, "B", 64));
         if (!response) {
             fail("Response was false but should be true if any leaf substructure was removed.");
         }

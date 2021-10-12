@@ -88,7 +88,7 @@ public class MmtfModel implements Model {
     }
 
     @Override
-    public Integer getModelIdentifier() {
+    public int getModelIdentifier() {
         return modelIndex + 1;
     }
 

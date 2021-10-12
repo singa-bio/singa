@@ -1,8 +1,8 @@
-package bio.singa.structure.model.mmtf;
+package bio.singa.structure.model.cif;
 
+import bio.singa.structure.io.general.StructureParser;
 import bio.singa.structure.model.interfaces.*;
 import bio.singa.structure.model.pdb.PdbLeafIdentifier;
-import bio.singa.structure.io.general.StructureParser;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 /**
  * @author cl
  */
-class MmtfModelTest {
+class CifModelTest {
 
     private static Model firstModel;
     private static Model secondModel;
@@ -24,9 +24,9 @@ class MmtfModelTest {
 
     @BeforeAll
     static void initialize() {
-        Structure structure2n5e = StructureParser.mmtf()
+        Structure structure2n5e = StructureParser.cif()
                 .pdbIdentifier("2n5e")
-                .parse();
+                .everything().parse();
         firstModel = structure2n5e.getFirstModel();
         secondModel = structure2n5e.getModel(2).get();
         modelToModify = structure2n5e.getModel(3).get();
@@ -67,14 +67,14 @@ class MmtfModelTest {
 
     @Test
     void getLeafSubstructure() {
-        Optional<? extends LeafSubstructure> leafSubstructure = firstModel.getLeafSubstructure(new PdbLeafIdentifier("2n5e", 1, "B", 64));
+        Optional<? extends LeafSubstructure> leafSubstructure = firstModel.getLeafSubstructure(new CifLeafIdentifier("2n5e", 1, "B", 10));
         if (!leafSubstructure.isPresent()) {
             fail("Optional leaf substructure was empty.");
         }
         final LeafIdentifier identifier = leafSubstructure.get().getIdentifier();
         assertEquals(1, identifier.getModelIdentifier());
         assertEquals("B", identifier.getChainIdentifier());
-        assertEquals(64, identifier.getSerial());
+        assertEquals(10, identifier.getSerial());
     }
 
     @Test

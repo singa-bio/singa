@@ -18,25 +18,25 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class CifLeafSubstructureTest {
 
-    private static Structure structure1C0A;
+    private static Structure structure1c0a;
     private static LeafSubstructure leaf162;
     private static LeafSubstructure leaf21;
     private static LeafSubstructure leafToModify;
 
     @BeforeAll
     static void prepareData() {
-        structure1C0A = StructureParser.cif()
-                .pdbIdentifier("1C0A")
+        structure1c0a = StructureParser.cif()
+                .pdbIdentifier("1c0a")
                 .everything().parse();
-        leaf162 = structure1C0A.getLeafSubstructure(new CifLeafIdentifier("1C0A", 1,"B", 162)).get();
-        leaf21 = structure1C0A.getLeafSubstructure(new CifLeafIdentifier("1C0A",  1,"A", 21)).get();
-        leafToModify = structure1C0A.getLeafSubstructure(new CifLeafIdentifier("1C0A",  1,"B", 163)).get();
+        leaf162 = structure1c0a.getLeafSubstructure(new CifLeafIdentifier("1c0a", 1,"B", 162)).get();
+        leaf21 = structure1c0a.getLeafSubstructure(new CifLeafIdentifier("1c0a",  1,"A", 21)).get();
+        leafToModify = structure1c0a.getLeafSubstructure(new CifLeafIdentifier("1c0a",  1,"B", 163)).get();
     }
 
     @Test
     void getIdentifier() {
-        assertEquals(new CifLeafIdentifier("1C0A", 2, 1, "B", 162), leaf162.getIdentifier());
-        assertEquals(new CifLeafIdentifier("1C0A", 1,1, "A", 21), leaf21.getIdentifier());
+        assertEquals(new CifLeafIdentifier("1c0a", 2, 1, "B", 162), leaf162.getIdentifier());
+        assertEquals(new CifLeafIdentifier("1c0a", 1,1, "A", 21), leaf21.getIdentifier());
     }
 
     @Test
@@ -80,7 +80,7 @@ class CifLeafSubstructureTest {
         optionalAtom = leafToModify.getAtom(atomIdentifier);
         assertFalse(optionalAtom.isPresent());
         // check if it is present in the structure
-        optionalAtom = structure1C0A.getFirstModel().getAtom(atomIdentifier);
+        optionalAtom = structure1c0a.getFirstModel().getAtom(atomIdentifier);
         assertFalse(optionalAtom.isPresent());
     }
 

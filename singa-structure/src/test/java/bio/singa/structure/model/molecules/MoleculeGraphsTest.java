@@ -17,12 +17,12 @@ class MoleculeGraphsTest {
     void shouldConvertStructureGraphToMoleculeGraph() {
 
         Structure structure = StructureParser.pdb()
-                .pdbIdentifier("1C0A")
+                .pdbIdentifier("1c0a")
                 .parse();
 
-        Optional<? extends LeafSubstructure> arginine = structure.getLeafSubstructure(new PdbLeafIdentifier("1C0A", 1, "A", 1));
-        Optional<? extends LeafSubstructure> amp = structure.getLeafSubstructure(new PdbLeafIdentifier("1C0A", 1, "A", 800));
-        Optional<? extends LeafSubstructure> a = structure.getLeafSubstructure(new PdbLeafIdentifier("1C0A", 1, "B", 1));
+        Optional<? extends LeafSubstructure> arginine = structure.getLeafSubstructure(new PdbLeafIdentifier("1c0a", 1, "A", 1));
+        Optional<? extends LeafSubstructure> amp = structure.getLeafSubstructure(new PdbLeafIdentifier("1c0a", 1, "A", 800));
+        Optional<? extends LeafSubstructure> a = structure.getLeafSubstructure(new PdbLeafIdentifier("1c0a", 1, "B", 1));
     }
 
 }

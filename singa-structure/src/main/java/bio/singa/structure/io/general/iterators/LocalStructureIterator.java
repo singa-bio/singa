@@ -3,7 +3,7 @@ package bio.singa.structure.io.general.iterators;
 import bio.singa.structure.io.general.sources.LocalSourceIterator;
 import bio.singa.structure.model.interfaces.Structure;
 import bio.singa.structure.model.mmtf.MmtfStructure;
-import bio.singa.structure.io.cif.CifConverter;
+import bio.singa.structure.model.cif.CifConverter;
 import bio.singa.structure.io.pdb.PdbStructureParser;
 import org.rcsb.cif.model.CifFile;
 import org.rcsb.cif.schema.StandardSchemata;

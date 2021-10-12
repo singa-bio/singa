@@ -38,7 +38,7 @@ public class PdbModel implements Model {
     }
 
     @Override
-    public Integer getModelIdentifier() {
+    public int getModelIdentifier() {
         return identifier;
     }
 

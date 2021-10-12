@@ -81,7 +81,7 @@ class StructureParserTest {
     @DisplayName("pdb parsing - correct default insertion code handling")
     void shouldParseStructureWithInsertionCodes() {
         Structure structure = StructureParser.pdb()
-                .pdbIdentifier("1C0A")
+                .pdbIdentifier("1c0a")
                 .everything()
                 .parse();
         List<LeafSubstructure> leavesWithInsertionCode = structure.getAllLeafSubstructures().stream()
@@ -109,7 +109,7 @@ class StructureParserTest {
     void shouldParseFromLocalPDB() {
         Structure structure = StructureParser.local()
                 .localStructureRepository(localPdb)
-                .pdbIdentifier("1C0A")
+                .pdbIdentifier("1c0a")
                 .parse();
         assertNotNull(structure);
     }
@@ -119,7 +119,7 @@ class StructureParserTest {
     void shouldParseFromLocalMMTF() {
         Structure structure = StructureParser.local()
                 .localStructureRepository(localMmtf)
-                .pdbIdentifier("1C0A")
+                .pdbIdentifier("1c0a")
                 .parse();
         assertNotNull(structure);
     }
@@ -148,7 +148,7 @@ class StructureParserTest {
     @Test
     @DisplayName("pdb parsing - correct local repository resolving handling")
     void shouldRetrievePathOfLocalPDB() {
-        assertTrue(localPdb.getPathForPdbIdentifier("1C0A").endsWith("pdb/data/structures/divided/pdb/c0/pdb1c0a.ent.gz"));
+        assertTrue(localPdb.getPathForPdbIdentifier("1c0a").endsWith("pdb/data/structures/divided/pdb/c0/pdb1c0a.ent.gz"));
     }
 
     @Test

@@ -1,8 +1,7 @@
-package bio.singa.structure.io.cif;
+package bio.singa.structure.model.cif;
 
 import bio.singa.chemistry.model.elements.ElementProvider;
 import bio.singa.mathematics.vectors.Vector3D;
-import bio.singa.structure.model.cif.*;
 import bio.singa.structure.model.families.StructuralFamilies;
 import bio.singa.structure.model.families.StructuralFamily;
 import bio.singa.structure.model.general.LeafSkeleton;
@@ -12,35 +11,30 @@ import org.rcsb.cif.model.IntColumn;
 import org.rcsb.cif.model.StrColumn;
 import org.rcsb.cif.schema.mm.*;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 
 public class CifConverter {
 
     private boolean createPdbReference;
 
-    private MmCifFile mmCifFile;
+    private final MmCifFile mmcifFile;
     private Map<String, LeafSkeleton> compoundMap;
-    private Map<Integer, String> entityNameMap;
+    private Map<Integer, CifEntity> entityMap;
     private Map<CifLeafIdentifier, PdbLeafIdentifier> pdbReferenceMap;
 
     private CifStructure structure;
     private String pdbId;
 
-    public CifConverter(MmCifFile mmCifFile) {
-        this.mmCifFile = mmCifFile;
-        createPdbReference = false;
-        compoundMap = new HashMap<>();
-        entityNameMap = new HashMap<>();
-        pdbReferenceMap = new HashMap<>();
+    public CifConverter(MmCifFile mmcifFile) {
+        this(mmcifFile, false);
     }
 
-    public CifConverter(MmCifFile mmCifFile, boolean createPdbReference) {
-        this.mmCifFile = mmCifFile;
+    public CifConverter(MmCifFile mmcifFile, boolean createPdbReference) {
+        this.mmcifFile = mmcifFile;
         this.createPdbReference = createPdbReference;
         compoundMap = new HashMap<>();
-        entityNameMap = new HashMap<>();
+        entityMap = new HashMap<>();
         pdbReferenceMap = new HashMap<>();
     }
 
@@ -77,10 +71,10 @@ public class CifConverter {
     }
 
     private CifStructure convert() {
-        MmCifBlock data = mmCifFile.getFirstBlock();
+        MmCifBlock data = mmcifFile.getFirstBlock();
         extractMetaData(data);
         extractCompoundInformation(data);
-        extractEntityNames(data);
+        extractEntityInformation(data);
         extractAtomInformation(data);
         if (createPdbReference) {
             extractPolymerReferenceInformation(data);
@@ -103,6 +97,8 @@ public class CifConverter {
         StrColumn groupPdbColumn = atomSite.getGroupPDB();
         // three letter code
         StrColumn threeLetterCodeColumn = atomSite.getLabelCompId();
+        // alternative conformations
+        StrColumn alternativePositionColumn = atomSite.getLabelAltId();
 
         // atom serial
         IntColumn atomSerialColumn = atomSite.getId();
@@ -119,6 +115,8 @@ public class CifConverter {
         // b factor
         FloatColumn bFactorColumn = atomSite.getBIsoOrEquiv();
 
+        Set<CifLeafSubstructure> leavesWithAlternativeConfirmations = new HashSet<>();
+
         for (int row = 0; row < atomSite.getRowCount(); row++) {
 
             // todo could possibly be more efficient by checking if the identifier changed compared to previous id
@@ -130,6 +128,7 @@ public class CifConverter {
             CifLeafIdentifier cifLeafIdentifier = new CifLeafIdentifier(pdbId, entityIdentifier, modelIdentifier, chainIdentifier, cifSerial);
             String threeLetterCode = threeLetterCodeColumn.get(row);
             String leafIsHetAtomString = groupPdbColumn.get(row);
+            String alternativeConformation = alternativePositionColumn.get(row);
 
             // lazily initialize structures
             CifModel model = structure.getModel(modelIdentifier)
@@ -150,16 +149,33 @@ public class CifConverter {
             cifAtom.setElement(ElementProvider.getElementBySymbol(elementColumn.get(row)).orElse(ElementProvider.UNKOWN));
             cifAtom.setPosition(new Vector3D(xCoordinateColumn.get(row), yCoordinateColumn.get(row), zCoordinateColumn.get(row)));
 
-            leafSubstructure.addAtom(cifAtom);
+            leafSubstructure.addAtom(alternativeConformation, cifAtom);
+
+            if (!alternativeConformation.equals(CifConformation.DEFAULT_CONFORMATION_IDENTIFIER)) {
+                leavesWithAlternativeConfirmations.add(leafSubstructure);
+            }
         }
+
+        // postprocess leaves with alternative conformations
+        for (CifLeafSubstructure leaf : leavesWithAlternativeConfirmations) {
+            leaf.postProcessConformations();
+        }
+
     }
 
-    private void extractEntityNames(MmCifBlock data) {
+    private void extractEntityInformation(MmCifBlock data) {
         Entity entityColumn = data.getEntity();
         StrColumn entityId = entityColumn.getId();
         StrColumn entityNameColumn = entityColumn.getPdbxDescription();
+        StrColumn entityTypeColumn = entityColumn.getType();
         for (int row = 0; row < entityColumn.getRowCount(); row++) {
-            entityNameMap.put(Integer.parseInt(entityId.get(row)), entityNameColumn.get(row));
+            int entityIdentifier = Integer.parseInt(entityId.get(row));
+            CifEntity entity = new CifEntity(entityIdentifier);
+            CifEntityType type = CifEntityType.getTypeForString(entityTypeColumn.get(row))
+                    .orElseThrow(() -> new IllegalArgumentException("unable to determine entity type"));
+            entity.setCifEntityType(type);
+            entity.setName(entityNameColumn.get(row));
+            entityMap.put(entityIdentifier, entity);
         }
     }
 
@@ -291,8 +307,7 @@ public class CifConverter {
     }
 
     private CifEntity appendEntity(int entityIdentifier) {
-        CifEntity cifEntity = new CifEntity(entityIdentifier);
-        cifEntity.setName(entityNameMap.get(entityIdentifier));
+        CifEntity cifEntity = entityMap.get(entityIdentifier);
         structure.addEntity(cifEntity);
         return cifEntity;
     }

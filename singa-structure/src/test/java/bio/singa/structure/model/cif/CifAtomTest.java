@@ -12,22 +12,22 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class CifAtomTest {
 
-    private static Structure structure1C0A;
+    private static Structure structure1c0a;
     private static Atom atom412;
     private static Atom atom5444;
     private static Atom atomToModify;
 
     @BeforeAll
     static void initialize() {
-        structure1C0A = StructureParser.cif()
-                .pdbIdentifier("1C0A")
+        structure1c0a = StructureParser.cif()
+                .pdbIdentifier("1c0a")
                 .everything().parse();
         // no offset to regular pdb file
-        atom412 = structure1C0A.getAtom(412).get();
+        atom412 = structure1c0a.getAtom(412).get();
         // one offset to regular pdb file
-        atom5444 = structure1C0A.getAtom(5444).get();
+        atom5444 = structure1c0a.getAtom(5444).get();
 
-        atomToModify = structure1C0A.getAtom(600).get();
+        atomToModify = structure1c0a.getAtom(600).get();
     }
 
     @Test
@@ -55,7 +55,7 @@ class CifAtomTest {
         // state change
         assertEquals(new Vector3D(1.0, 1.0, 1.0), atomToModify.getPosition());
         // get it again from the structure
-        atomToModify = structure1C0A.getAtom(600).get();
+        atomToModify = structure1c0a.getAtom(600).get();
         assertEquals(new Vector3D(1.0, 1.0, 1.0), atomToModify.getPosition());
     }
 

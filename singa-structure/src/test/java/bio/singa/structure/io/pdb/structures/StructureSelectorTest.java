@@ -53,7 +53,7 @@ class StructureSelectorTest {
     @Test
     void shouldSelectNucleotideFromStructure() {
         Structure structure = StructureParser.pdb()
-                .pdbIdentifier("1C0A")
+                .pdbIdentifier("1c0a")
                 .parse();
         Nucleotide nucleotide = StructureSelector.selectFrom(structure)
                 .model(1)
@@ -66,7 +66,7 @@ class StructureSelectorTest {
     @Test
     void shouldSelectAtomFromStructure() {
         Structure structure = StructureParser.pdb()
-                .pdbIdentifier("1C0A")
+                .pdbIdentifier("1c0a")
                 .parse();
         Atom atom = StructureSelector.selectFrom(structure)
                 .model(1)

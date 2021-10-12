@@ -16,20 +16,20 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class PdbStructureTest {
 
-    private static PdbStructure structure2N5E;
-    private static PdbStructure structure1C0A;
+    private static PdbStructure structure2n5e;
+    private static PdbStructure structure1c0a;
     private static PdbStructure structureToModify;
 
     @BeforeAll
     static void initialize() {
-        structure2N5E = (PdbStructure) StructureParser.pdb().pdbIdentifier("2N5E").parse();
-        structure1C0A = (PdbStructure) StructureParser.pdb().pdbIdentifier("1C0A").parse();
+        structure2n5e = (PdbStructure) StructureParser.pdb().pdbIdentifier("2n5e").parse();
+        structure1c0a = (PdbStructure) StructureParser.pdb().pdbIdentifier("1c0a").parse();
         structureToModify = (PdbStructure) StructureParser.pdb().pdbIdentifier("1BRR").parse();
     }
 
     @Test
     void getPdbIdentifier() {
-        String actual = structure2N5E.getStructureIdentifier();
+        String actual = structure2n5e.getStructureIdentifier();
         assertEquals("2n5e", actual);
     }
 
@@ -42,7 +42,7 @@ class PdbStructureTest {
 
     @Test
     void getTitle() {
-        String actual = structure2N5E.getTitle();
+        String actual = structure2n5e.getTitle();
         assertEquals("THE 3D SOLUTION STRUCTURE OF DISCOIDAL HIGH-DENSITY LIPOPROTEIN PARTICLES", actual);
     }
 
@@ -55,19 +55,19 @@ class PdbStructureTest {
 
     @Test
     void getAllModels() {
-        Collection<PdbModel> allModels = structure2N5E.getAllModels();
+        Collection<PdbModel> allModels = structure2n5e.getAllModels();
         assertEquals(10, allModels.size());
     }
 
     @Test
     void getFirstModel() {
-        Model model = structure2N5E.getFirstModel();
+        Model model = structure2n5e.getFirstModel();
         assertEquals(1, (int) model.getModelIdentifier());
     }
 
     @Test
     void getModel() {
-        Optional<PdbModel> model = structure2N5E.getModel(2);
+        Optional<PdbModel> model = structure2n5e.getModel(2);
         if (!model.isPresent()) {
             fail("Optional model was empty.");
         }
@@ -83,19 +83,19 @@ class PdbStructureTest {
 
     @Test
     void getAllChains() {
-        List<PdbChain> allChains = structure2N5E.getAllChains();
+        List<PdbChain> allChains = structure2n5e.getAllChains();
         assertEquals(20, allChains.size());
     }
 
     @Test
     void getFirstChain() {
-        Chain firstChain = structure2N5E.getFirstChain();
+        Chain firstChain = structure2n5e.getFirstChain();
         assertEquals("A", firstChain.getChainIdentifier());
     }
 
     @Test
     void getChain() {
-        Optional<PdbChain> chain = structure2N5E.getChain(1, "B");
+        Optional<PdbChain> chain = structure2n5e.getChain(1, "B");
         if (!chain.isPresent()) {
             fail("Optional chain was empty.");
         }
@@ -104,13 +104,13 @@ class PdbStructureTest {
 
     @Test
     void getAllLeafSubstructures() {
-        List<PdbLeafSubstructure> leafSubstructures = structure2N5E.getAllLeafSubstructures();
+        List<PdbLeafSubstructure> leafSubstructures = structure2n5e.getAllLeafSubstructures();
         assertEquals(3340, leafSubstructures.size());
     }
 
     @Test
     void getLeafSubstructure() {
-        Optional<PdbLeafSubstructure> leafSubstructure = structure2N5E.getLeafSubstructure(new PdbLeafIdentifier("2N5E", 5, "A", 64));
+        Optional<PdbLeafSubstructure> leafSubstructure = structure2n5e.getLeafSubstructure(new PdbLeafIdentifier("2n5e", 5, "A", 64));
         if (!leafSubstructure.isPresent()) {
             fail("Optional leaf substructure was empty.");
         }
@@ -133,13 +133,13 @@ class PdbStructureTest {
 
     @Test
     void getAllAminoAcids() {
-        final List<AminoAcid> aminoAcids = structure1C0A.getAllAminoAcids();
+        final List<AminoAcid> aminoAcids = structure1c0a.getAllAminoAcids();
         assertEquals(585, aminoAcids.size());
     }
 
     @Test
     void getAminoAcid() {
-        final Optional<AminoAcid> aminoAcid = structure1C0A.getAminoAcid(new PdbLeafIdentifier("1c0a", 1, "A", 98));
+        final Optional<AminoAcid> aminoAcid = structure1c0a.getAminoAcid(new PdbLeafIdentifier("1c0a", 1, "A", 98));
         if (!aminoAcid.isPresent()) {
             fail("Optional leaf substructure was empty.");
         }
@@ -151,14 +151,14 @@ class PdbStructureTest {
 
     @Test
     void getAllNucleotides() {
-        final List<Nucleotide> nucleotides = structure1C0A.getAllNucleotides();
+        final List<Nucleotide> nucleotides = structure1c0a.getAllNucleotides();
         // recognizes modified nucleotides as nucleotides nevertheless
         assertEquals(77, nucleotides.size());
     }
 
     @Test
     void getNucleotide() {
-        final Optional<Nucleotide> nucleotide = structure1C0A.getNucleotide(new PdbLeafIdentifier("1c0a", 1, "B", 617));
+        final Optional<Nucleotide> nucleotide = structure1c0a.getNucleotide(new PdbLeafIdentifier("1c0a", 1, "B", 617));
         if (!nucleotide.isPresent()) {
             fail("Optional leaf substructure was empty.");
         }
@@ -170,13 +170,13 @@ class PdbStructureTest {
 
     @Test
     void getAllLigands() {
-        final List<Ligand> ligands = structure1C0A.getAllLigands();
+        final List<Ligand> ligands = structure1c0a.getAllLigands();
         assertEquals(517, ligands.size());
     }
 
     @Test
     void getLigand() {
-        final Optional<Ligand> nucleotide = structure1C0A.getLigand(new PdbLeafIdentifier("1c0a", 1, "A", 831));
+        final Optional<Ligand> nucleotide = structure1c0a.getLigand(new PdbLeafIdentifier("1c0a", 1, "A", 831));
         if (!nucleotide.isPresent()) {
             fail("Optional leaf substructure was empty.");
         }
@@ -188,13 +188,13 @@ class PdbStructureTest {
 
     @Test
     void getAllAtoms() {
-        final List<Atom> atoms = structure1C0A.getAllAtoms();
+        final List<Atom> atoms = structure1c0a.getAllAtoms();
         assertEquals(6820, atoms.size());
     }
 
     @Test
     void getAtom() {
-        final Optional<PdbAtom> atom = structure1C0A.getAtom(15);
+        final Optional<PdbAtom> atom = structure1c0a.getAtom(15);
         if (!atom.isPresent()) {
             fail("Optional atom was empty.");
         }
@@ -204,7 +204,7 @@ class PdbStructureTest {
 
     @Test
     void getUniqueAtomEntry() {
-        final Optional<Map.Entry<UniqueAtomIdentifier, PdbAtom>> atom = structure1C0A.getUniqueAtomEntry(15);
+        final Optional<Map.Entry<UniqueAtomIdentifier, PdbAtom>> atom = structure1c0a.getUniqueAtomEntry(15);
         if (!atom.isPresent()) {
             fail("Optional atom was empty.");
         }
@@ -233,15 +233,15 @@ class PdbStructureTest {
 
     @Test
     void getLastAddedAtomIdentifier() {
-        final int lastAddedAtomIdentifier = structure1C0A.getLastAddedAtomIdentifier();
+        final int lastAddedAtomIdentifier = structure1c0a.getLastAddedAtomIdentifier();
         assertEquals(6822, lastAddedAtomIdentifier);
     }
 
     @Test
     void getCopy() {
-        final Structure structure2N5ECopy = structure2N5E.getCopy();
-        assertNotSame(structure2N5E, structure2N5ECopy);
-        assertEquals(structure2N5E, structure2N5ECopy);
+        final Structure structure2n5eCopy = structure2n5e.getCopy();
+        assertNotSame(structure2n5e, structure2n5eCopy);
+        assertEquals(structure2n5e, structure2n5eCopy);
     }
 
 }

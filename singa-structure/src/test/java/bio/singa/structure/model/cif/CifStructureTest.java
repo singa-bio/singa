@@ -1,36 +1,41 @@
-package bio.singa.structure.model.mmtf;
+package bio.singa.structure.model.cif;
 
 import bio.singa.mathematics.vectors.Vector3D;
-import bio.singa.structure.model.interfaces.*;
-import bio.singa.structure.model.pdb.PdbLeafIdentifier;
 import bio.singa.structure.io.general.StructureParser;
+import bio.singa.structure.model.interfaces.*;
+import bio.singa.structure.model.mmtf.MmtfStructure;
+import bio.singa.structure.model.pdb.PdbLeafIdentifier;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author cl
  */
-class MmtfStructureTest {
+class CifStructureTest {
 
     private static Structure structure2n5e;
     private static Structure structure1c0a;
+    private static CifStructure structure7l7y;
 
     @BeforeAll
     static void initialize() {
-        structure2n5e = StructureParser.mmtf()
+        structure2n5e = StructureParser.cif()
                 .pdbIdentifier("2n5e")
-                .everything().parse();
-        structure1c0a = StructureParser.mmtf()
+                .parse();
+        structure1c0a = StructureParser.cif()
                 .pdbIdentifier("1c0a")
-                .everything().parse();
+                .parse();
+        // only available as cif
+        structure7l7y = ((CifStructure) StructureParser.cif()
+                .pdbIdentifier("7l7y")
+                .parse());
     }
 
     @Test
@@ -51,7 +56,7 @@ class MmtfStructureTest {
     @Test
     void getPdbIdentifier() {
         String actual = structure2n5e.getStructureIdentifier();
-        assertEquals("2n5e", actual);
+        assertTrue("2n5e".equalsIgnoreCase(actual));
     }
 
     @Test
@@ -110,14 +115,14 @@ class MmtfStructureTest {
 
     @Test
     void getLeafSubstructure() {
-        Optional<? extends LeafSubstructure> leafSubstructure = structure2n5e.getLeafSubstructure(new PdbLeafIdentifier("2n5e", 5, "A", 64));
+        Optional<? extends LeafSubstructure> leafSubstructure = structure2n5e.getLeafSubstructure(new CifLeafIdentifier("2n5e", 5, "A", 10));
         if (!leafSubstructure.isPresent()) {
             fail("Optional leaf substructure was empty.");
         }
         final LeafIdentifier identifier = leafSubstructure.get().getIdentifier();
         assertEquals(5, identifier.getModelIdentifier());
         assertEquals("A", identifier.getChainIdentifier());
-        assertEquals(64, identifier.getSerial());
+        assertEquals(10, identifier.getSerial());
     }
 
     @Test
@@ -128,50 +133,80 @@ class MmtfStructureTest {
 
     @Test
     void getAminoAcid() {
-        final Optional<AminoAcid> aminoAcid = structure1c0a.getAminoAcid(new PdbLeafIdentifier("1c0a", 1, "A", 98));
+        final Optional<AminoAcid> aminoAcid = structure1c0a.getAminoAcid(new CifLeafIdentifier("1c0a", 1, "B", 58));
         if (!aminoAcid.isPresent()) {
             fail("Optional leaf substructure was empty.");
         }
         final LeafIdentifier identifier = aminoAcid.get().getIdentifier();
-        assertEquals("A", identifier.getChainIdentifier());
-        assertEquals(98, identifier.getSerial());
-        assertEquals("SER", aminoAcid.get().getThreeLetterCode());
+        assertEquals("B", identifier.getChainIdentifier());
+        assertEquals(58, identifier.getSerial());
+        assertEquals("LYS", aminoAcid.get().getThreeLetterCode());
     }
 
     @Test
     void getAllNucleotides() {
         final List<Nucleotide> nucleotides = structure1c0a.getAllNucleotides();
-        assertEquals(68, nucleotides.size());
+        assertEquals(77, nucleotides.size());
     }
 
     @Test
     void getNucleotide() {
-        final Optional<Nucleotide> nucleotide = structure1c0a.getNucleotide(new PdbLeafIdentifier("1c0a", 1, "B", 617));
-        if (!nucleotide.isPresent()) {
-            fail("Optional leaf substructure was empty.");
-        }
-        final LeafIdentifier identifier = nucleotide.get().getIdentifier();
-        assertEquals("B", identifier.getChainIdentifier());
-        assertEquals(617, identifier.getSerial());
-        assertEquals("C", nucleotide.get().getThreeLetterCode());
-    }
-
-    @Test
-    void getAllLigands() {
-        final List<Ligand> ligands = structure1c0a.getAllLigands();
-        assertEquals(526, ligands.size());
-    }
-
-    @Test
-    void getLigand() {
-        final Optional<Ligand> nucleotide = structure1c0a.getLigand(new PdbLeafIdentifier("1c0a", 1, "A", 831));
+        final Optional<Nucleotide> nucleotide = structure1c0a.getNucleotide(new CifLeafIdentifier("1c0a", 1, "A", 10));
         if (!nucleotide.isPresent()) {
             fail("Optional leaf substructure was empty.");
         }
         final LeafIdentifier identifier = nucleotide.get().getIdentifier();
         assertEquals("A", identifier.getChainIdentifier());
-        assertEquals(831, identifier.getSerial());
-        assertEquals("AMO", nucleotide.get().getThreeLetterCode());
+        assertEquals(10, identifier.getSerial());
+        assertEquals("G", nucleotide.get().getThreeLetterCode());
+    }
+
+    @Test
+    void getAllLigands() {
+        final List<Ligand> ligands = structure7l7y.getAllLigands();
+        assertEquals(5, ligands.size());
+    }
+
+    @Test
+    void getNonPolymerEntities() {
+        Collection<CifEntity> nonPolymerEntities = structure7l7y.getAllNonPolymerEntities();
+        assertEquals(4, nonPolymerEntities.size());
+        Optional<CifLeafSubstructure> udp = nonPolymerEntities.stream()
+                .flatMap(entity -> entity.getAllLeafSubstructures().stream())
+                .filter(leaf -> leaf.getThreeLetterCode().equals("UDP"))
+                .findAny();
+        assertTrue(udp.isPresent());
+    }
+
+    @Test
+    void useCorrectConformer() {
+        Optional<CifLeafSubstructure> udpOptional = structure7l7y.getAllNonPolymerEntities().stream()
+                .flatMap(entity -> entity.getAllLeafSubstructures().stream())
+                .filter(leaf -> leaf.getThreeLetterCode().equals("UDP"))
+                .findAny();
+        if (!udpOptional.isPresent()) {
+            fail("unable to find leaf with required three letter code");
+        }
+        CifLeafSubstructure udp = udpOptional.get();
+        Optional<CifConformation> conformationA = udp.getConformation("A");
+        assertTrue(conformationA.isPresent());
+        Optional<CifConformation> conformationB = udp.getConformation("B");
+        assertTrue(conformationB.isPresent());
+        assertEquals(conformationA.get().getAllAtoms().size(), 25);
+        assertEquals(conformationB.get().getAllAtoms().size(), 25);
+
+    }
+
+    @Test
+    void getLigand() {
+        final Optional<Ligand> nucleotide = structure1c0a.getLigand(new CifLeafIdentifier("1c0a", 1, "D", 0));
+        if (!nucleotide.isPresent()) {
+            fail("Optional leaf substructure was empty.");
+        }
+        final LeafIdentifier identifier = nucleotide.get().getIdentifier();
+        assertEquals("D", identifier.getChainIdentifier());
+        assertEquals(0, identifier.getSerial());
+        assertEquals("AMP", nucleotide.get().getThreeLetterCode());
     }
 
     @Test
@@ -187,7 +222,7 @@ class MmtfStructureTest {
             fail("Optional atom was empty.");
         }
         assertEquals("C8", atom.get().getAtomName());
-        assertEquals(new Vector3D(46.50600051879883, 18.077999114990234, -5.64900016784668), atom.get().getPosition());
+        assertEquals(new Vector3D(46.506, 18.078, -5.649), atom.get().getPosition());
     }
 
 }

@@ -16,7 +16,7 @@ public interface Model extends LeafSubstructureContainer, ChainContainer {
      *
      * @return The model identifier.
      */
-    Integer getModelIdentifier();
+    int getModelIdentifier();
 
     /**
      * Returns A set of all chin identifiers referenced in th model.

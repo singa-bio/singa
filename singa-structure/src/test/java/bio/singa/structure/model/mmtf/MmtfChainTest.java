@@ -22,15 +22,15 @@ class MmtfChainTest {
 
     private static Chain firstChain;
     private static Chain chainToModify;
-    private static Structure structure2N5E;
+    private static Structure structure2n5e;
 
     @BeforeAll
     static void initialize() {
-        structure2N5E = StructureParser.mmtf()
+        structure2n5e = StructureParser.mmtf()
                 .pdbIdentifier("2n5e")
-                .everything().parse();
-        firstChain = structure2N5E.getFirstChain();
-        chainToModify = structure2N5E.getChain(1, "B").get();
+                .parse();
+        firstChain = structure2n5e.getFirstChain();
+        chainToModify = structure2n5e.getChain(1, "B").get();
     }
 
     @Test
@@ -49,7 +49,7 @@ class MmtfChainTest {
         // ATOM    154  N   LEU A  64      13.596   6.125 -14.412  1.00  0.00           N
         // ..
         // ATOM    172 HD23 LEU A  64      11.462   1.727 -16.563  1.00  0.00           H
-        Optional<? extends LeafSubstructure> optionalLeafSubstructure = firstChain.getLeafSubstructure(new PdbLeafIdentifier("2N5E", 1, "A", 64));
+        Optional<? extends LeafSubstructure> optionalLeafSubstructure = firstChain.getLeafSubstructure(new PdbLeafIdentifier("2n5e", 1, "A", 64));
         if (!optionalLeafSubstructure.isPresent()) {
             fail("Optional leaf substructure was empty.");
         }
@@ -65,7 +65,7 @@ class MmtfChainTest {
         // ATOM   4357  N   LEU B 174      -7.551  -8.393 -46.127  1.00  0.00           N
         // ...
         // ATOM   4375 HD23 LEU B 174      -3.489  -6.082 -46.198  1.00  0.00           H
-        final PdbLeafIdentifier leafIdentifier = new PdbLeafIdentifier("2N5E", 1, "B", 174);
+        final PdbLeafIdentifier leafIdentifier = new PdbLeafIdentifier("2n5e", 1, "B", 174);
         Optional<? extends LeafSubstructure> optionalLeafSubstructure = chainToModify.getLeafSubstructure(leafIdentifier);
         if (!optionalLeafSubstructure.isPresent()) {
             fail("Optional leaf substructure was empty.");
@@ -78,7 +78,7 @@ class MmtfChainTest {
         optionalLeafSubstructure = chainToModify.getLeafSubstructure(leafIdentifier);
         assertTrue(!optionalLeafSubstructure.isPresent());
         // check if it is present in the structure
-        optionalLeafSubstructure = structure2N5E.getLeafSubstructure(leafIdentifier);
+        optionalLeafSubstructure = structure2n5e.getLeafSubstructure(leafIdentifier);
         assertTrue(!optionalLeafSubstructure.isPresent());
     }
 
@@ -111,7 +111,7 @@ class MmtfChainTest {
         assertTrue(!optionalAtom.isPresent());
         // check if it is present in the structure
         // keep ini mind: get atom returns the first atom with id 3208 that is found (the one not removed in model 2)
-        optionalAtom = structure2N5E.getModel(1).get().getAtom(atomIdentifier);
+        optionalAtom = structure2n5e.getModel(1).get().getAtom(atomIdentifier);
         assertTrue(!optionalAtom.isPresent());
     }
 
@@ -123,7 +123,7 @@ class MmtfChainTest {
         // ATOM   4815  N   SER B 204      27.480   2.711 -26.221  1.00  0.00           N
         // ...
         // ATOM   4825  HG  SER B 204      26.503   5.742 -27.310  1.00  0.00           H
-        final PdbLeafIdentifier leafIdentifier = new PdbLeafIdentifier("2N5E", 1, "B", 204);
+        final PdbLeafIdentifier leafIdentifier = new PdbLeafIdentifier("2n5e", 1, "B", 204);
         // remove a leaf from the copy
         chainCopy.removeLeafSubstructure(leafIdentifier);
         // copy again

@@ -23,9 +23,9 @@ class PdbChainTest {
 
     @BeforeAll
     static void initialize() {
-        PdbStructure structure2N5E = ((PdbStructure) StructureParser.pdb().pdbIdentifier("2N5E").parse());
-        firstChain = structure2N5E.getFirstChain();
-        chainToModify = structure2N5E.getFirstModel().getChain("B").get();
+        PdbStructure structure2n5e = ((PdbStructure) StructureParser.pdb().pdbIdentifier("2n5e").parse());
+        firstChain = structure2n5e.getFirstChain();
+        chainToModify = structure2n5e.getFirstModel().getChain("B").get();
         anotherChain = ((PdbStructure) StructureParser.pdb().pdbIdentifier("1BRR").parse()).getFirstModel().getFirstChain();
     }
 
@@ -42,7 +42,7 @@ class PdbChainTest {
 
     @Test
     void getLeafSubstructure() {
-        Optional<PdbLeafSubstructure> leafSubstructure = firstChain.getLeafSubstructure(new PdbLeafIdentifier("2N5E", 1, "A", 64));
+        Optional<PdbLeafSubstructure> leafSubstructure = firstChain.getLeafSubstructure(new PdbLeafIdentifier("2n5e", 1, "A", 64));
         if (!leafSubstructure.isPresent()) {
             fail("Optional leaf substructure was empty.");
         }
@@ -56,7 +56,7 @@ class PdbChainTest {
     @Test
     void addLeafSubstructure() {
         final int expected = chainToModify.getNumberOfLeafSubstructures() + 1;
-        chainToModify.addLeafSubstructure(new PdbAminoAcid(new PdbLeafIdentifier("2N5E", 1, "A", 244), HISTIDINE));
+        chainToModify.addLeafSubstructure(new PdbAminoAcid(new PdbLeafIdentifier("2n5e", 1, "A", 244), HISTIDINE));
         final int actual = chainToModify.getNumberOfLeafSubstructures();
         assertEquals(expected, actual);
     }
@@ -64,7 +64,7 @@ class PdbChainTest {
     @Test
     void addLeafSubstructureToConsecutive() {
         final int expected = chainToModify.getNumberOfLeafSubstructures() + 1;
-        final PdbAminoAcid newAminoAcid = new PdbAminoAcid(new PdbLeafIdentifier("2N5E", 1, "B", 244), HISTIDINE);
+        final PdbAminoAcid newAminoAcid = new PdbAminoAcid(new PdbLeafIdentifier("2n5e", 1, "B", 244), HISTIDINE);
         chainToModify.addLeafSubstructure(newAminoAcid, true);
         final int actual = chainToModify.getNumberOfLeafSubstructures();
         assertEquals(expected, actual);
@@ -74,7 +74,7 @@ class PdbChainTest {
     @Test
     void removeLeafSubstructure() {
         final int expected = chainToModify.getNumberOfLeafSubstructures() - 1;
-        final boolean response = chainToModify.removeLeafSubstructure(new PdbAminoAcid(new PdbLeafIdentifier("2N5E", 1, "B", 243), HISTIDINE));
+        final boolean response = chainToModify.removeLeafSubstructure(new PdbAminoAcid(new PdbLeafIdentifier("2n5e", 1, "B", 243), HISTIDINE));
         if (!response) {
             fail("Response was false but should be true if any leaf substructure was removed.");
         }
@@ -104,8 +104,8 @@ class PdbChainTest {
     @Test
     void connectChainBackbone() {
         // should have happened at parsing
-        final Optional<PdbLeafSubstructure> first = firstChain.getLeafSubstructure(new PdbLeafIdentifier("2N5E", 1, "A", 108));
-        final Optional<PdbLeafSubstructure> second = firstChain.getLeafSubstructure(new PdbLeafIdentifier("2N5E", 1, "A", 109));
+        final Optional<PdbLeafSubstructure> first = firstChain.getLeafSubstructure(new PdbLeafIdentifier("2n5e", 1, "A", 108));
+        final Optional<PdbLeafSubstructure> second = firstChain.getLeafSubstructure(new PdbLeafIdentifier("2n5e", 1, "A", 109));
         if (!first.isPresent() || !second.isPresent()) {
             fail("Could not retrieve leafs to check connection");
         }

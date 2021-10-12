@@ -5,6 +5,7 @@ import bio.singa.structure.model.interfaces.*;
 import bio.singa.structure.model.pdb.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class CifStructure implements Structure {
 
@@ -79,6 +80,12 @@ public class CifStructure implements Structure {
     @Override
     public Chain getFirstChain() {
         return getFirstModel().getFirstChain();
+    }
+
+    public Collection<CifEntity> getAllNonPolymerEntities() {
+        return entities.values().stream()
+                .filter(cifEntity -> cifEntity.getCifEntityType().equals(CifEntityType.NON_POLYMER))
+                .collect(Collectors.toSet());
     }
 
     @Override

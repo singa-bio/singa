@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class MmtfLeafSubstructureTest {
 
-    private static Structure structure1C0A;
+    private static Structure structure1c0a;
     private static LeafSubstructure leaf162;
     private static LeafSubstructure leaf154;
     private static LeafSubstructure leaf620A;
@@ -27,24 +27,24 @@ class MmtfLeafSubstructureTest {
 
     @BeforeAll
     static void prepareData() {
-        structure1C0A = StructureParser.mmtf()
-                .pdbIdentifier("1C0A")
+        structure1c0a = StructureParser.mmtf()
+                .pdbIdentifier("1c0a")
                 .everything().parse();
         // ATOM   2967  N   THR A 162      44.461  51.348  -6.215  1.00 13.02           N
         // ...
         // ATOM   2973  CG2 THR A 162      44.646  50.871  -9.169  1.00 11.44           C
-        leaf162 = structure1C0A.getLeafSubstructure(new PdbLeafIdentifier("1C0A", 1, "A", 162)).get();
-        leaf154 = structure1C0A.getLeafSubstructure(new PdbLeafIdentifier("1C0A", 1, "A", 154)).get();
-        leaf620A = structure1C0A.getLeafSubstructure(new PdbLeafIdentifier("1C0A", 1, "B", 620, 'A')).get();
-        leafToModify = structure1C0A.getLeafSubstructure(new PdbLeafIdentifier("1C0A", 1, "A", 163)).get();
+        leaf162 = structure1c0a.getLeafSubstructure(new PdbLeafIdentifier("1c0a", 1, "A", 162)).get();
+        leaf154 = structure1c0a.getLeafSubstructure(new PdbLeafIdentifier("1c0a", 1, "A", 154)).get();
+        leaf620A = structure1c0a.getLeafSubstructure(new PdbLeafIdentifier("1c0a", 1, "B", 620, 'A')).get();
+        leafToModify = structure1c0a.getLeafSubstructure(new PdbLeafIdentifier("1c0a", 1, "A", 163)).get();
     }
 
 
 
     @Test
     void getIdentifier() {
-        assertEquals(new PdbLeafIdentifier("1C0A", 1, "A", 162), leaf162.getIdentifier());
-        assertEquals(new PdbLeafIdentifier("1C0A", 1, "B", 620, 'A'), leaf620A.getIdentifier());
+        assertEquals(new PdbLeafIdentifier("1c0a", 1, "A", 162), leaf162.getIdentifier());
+        assertEquals(new PdbLeafIdentifier("1c0a", 1, "B", 620, 'A'), leaf620A.getIdentifier());
     }
 
     @Test
@@ -88,7 +88,7 @@ class MmtfLeafSubstructureTest {
         optionalAtom = leafToModify.getAtom(atomIdentifier);
         assertFalse(optionalAtom.isPresent());
         // check if it is present in the structure
-        optionalAtom = structure1C0A.getFirstModel().getAtom(atomIdentifier);
+        optionalAtom = structure1c0a.getFirstModel().getAtom(atomIdentifier);
         assertFalse(optionalAtom.isPresent());
     }
 
@@ -112,7 +112,7 @@ class MmtfLeafSubstructureTest {
         assertEquals(MmtfSecondaryStructure.ALPHA_HELIX, secondaryStructure);
         secondaryStructure = ((MmtfAminoAcid) leaf162).getSecondaryStructure();
         assertEquals(MmtfSecondaryStructure.COIL, secondaryStructure);
-        assertTrue(structure1C0A.getAllAminoAcids().stream()
+        assertTrue(structure1c0a.getAllAminoAcids().stream()
                 .map(MmtfAminoAcid.class::cast)
                 .noneMatch(aminoAcid -> aminoAcid.getSecondaryStructure() == MmtfSecondaryStructure.UNDEFINED));
     }

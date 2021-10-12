@@ -22,16 +22,15 @@ class CifChainTest {
 
     private static Chain firstChain;
     private static Chain chainToModify;
-    private static Structure structure2N5E;
+    private static Structure structure2n5e;
 
     @BeforeAll
     static void initialize() {
-        structure2N5E = StructureParser.cif()
+        structure2n5e = StructureParser.cif()
                 .pdbIdentifier("2n5e")
-                .everything()
                 .parse();
-        firstChain = structure2N5E.getFirstChain();
-        chainToModify = structure2N5E.getFirstModel().getChain("B").get();
+        firstChain = structure2n5e.getFirstChain();
+        chainToModify = structure2n5e.getFirstModel().getChain("B").get();
     }
 
     @Test
@@ -47,7 +46,7 @@ class CifChainTest {
 
     @Test
     void getLeafSubstructure() {
-        Optional<? extends LeafSubstructure> optionalLeafSubstructure = firstChain.getLeafSubstructure(new CifLeafIdentifier("2N5E", 1, "A", 10));
+        Optional<? extends LeafSubstructure> optionalLeafSubstructure = firstChain.getLeafSubstructure(new CifLeafIdentifier("2n5e", 1, "A", 10));
         if (!optionalLeafSubstructure.isPresent()) {
             fail("Optional leaf substructure was empty.");
         }
@@ -63,7 +62,7 @@ class CifChainTest {
         // ATOM   4357  N   LEU B 174      -7.551  -8.393 -46.127  1.00  0.00           N
         // ...
         // ATOM   4375 HD23 LEU B 174      -3.489  -6.082 -46.198  1.00  0.00           H
-        final CifLeafIdentifier leafIdentifier = new CifLeafIdentifier("2N5E", 1, "B", 98);
+        final CifLeafIdentifier leafIdentifier = new CifLeafIdentifier("2n5e", 1, "B", 98);
         Optional<? extends LeafSubstructure> optionalLeafSubstructure = chainToModify.getLeafSubstructure(leafIdentifier);
         if (!optionalLeafSubstructure.isPresent()) {
             fail("Optional leaf substructure was empty.");
@@ -76,7 +75,7 @@ class CifChainTest {
         optionalLeafSubstructure = chainToModify.getLeafSubstructure(leafIdentifier);
         assertFalse(optionalLeafSubstructure.isPresent());
         // check if it is present in the structure
-        optionalLeafSubstructure = structure2N5E.getLeafSubstructure(leafIdentifier);
+        optionalLeafSubstructure = structure2n5e.getLeafSubstructure(leafIdentifier);
         assertFalse(optionalLeafSubstructure.isPresent());
     }
 
@@ -109,7 +108,7 @@ class CifChainTest {
         assertFalse(optionalAtom.isPresent());
         // check if it is present in the structure
         // keep ini mind: get atom returns the first atom with id 3208 that is found (the one not removed in model 2)
-        optionalAtom = structure2N5E.getFirstModel().getAtom(atomIdentifier);
+        optionalAtom = structure2n5e.getFirstModel().getAtom(atomIdentifier);
         assertFalse(optionalAtom.isPresent());
     }
 
@@ -118,7 +117,7 @@ class CifChainTest {
         final Chain chainCopy = chainToModify.getCopy();
         assertEquals(chainCopy, chainToModify);
         assertNotSame(chainCopy, chainToModify);
-        final CifLeafIdentifier leafIdentifier = new CifLeafIdentifier("2N5E", 1, "B", 128);
+        final CifLeafIdentifier leafIdentifier = new CifLeafIdentifier("2n5e", 1, "B", 128);
         // remove a leaf from the copy
         boolean wasRemoved = chainCopy.removeLeafSubstructure(leafIdentifier);
         assertTrue(wasRemoved);

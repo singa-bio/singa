@@ -43,4 +43,9 @@ public class StructuralFamily implements Comparable<StructuralFamily> {
     public int hashCode() {
         return threeLetterCode != null ? threeLetterCode.hashCode() : 0;
     }
+
+    @Override
+    public String toString() {
+        return threeLetterCode;
+    }
 }

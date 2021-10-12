@@ -24,18 +24,20 @@ class PdbAtomTest {
 
     @BeforeAll
     static void initialize() {
-        Structure structure1C0A = StructureParser.pdb().pdbIdentifier("1C0A").parse();
+        PdbStructure structure1c0a = (PdbStructure) StructureParser.pdb()
+                .pdbIdentifier("1c0a")
+                .parse();
         // no offset to regular pdb file
-        atom412 = (PdbAtom) structure1C0A.getAtom(412).get();
+        atom412 = structure1c0a.getAtom(412).get();
         // one offset to regular pdb file
-        atom5444 = (PdbAtom) structure1C0A.getAtom(5444).get();
-        atomToModify = (PdbAtom) structure1C0A.getAtom(1000).get();
+        atom5444 = structure1c0a.getAtom(5444).get();
+        atomToModify = structure1c0a.getAtom(1000).get();
     }
 
     @Test
     void getIdentifier() {
-        assertEquals(412, (int) atom412.getAtomIdentifier());
-        assertEquals(5444, (int) atom5444.getAtomIdentifier());
+        assertEquals(412, atom412.getAtomIdentifier());
+        assertEquals(5444, atom5444.getAtomIdentifier());
     }
 
     @Test

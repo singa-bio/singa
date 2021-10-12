@@ -63,9 +63,9 @@ public interface LeafSubstructure extends AtomContainer {
      * </pre>
      * For example:
      * <pre>
-     *     1C0A-1-B-631 C
-     *     1C0A-1-A-78 ARG
-     *     1C0A-1-A-1048 HOH
+     *     1c0a-1-B-631 C
+     *     1c0a-1-A-78 ARG
+     *     1c0a-1-A-1048 HOH
      * </pre>
      *
      * @return The flat String representation of this leaf substructure.

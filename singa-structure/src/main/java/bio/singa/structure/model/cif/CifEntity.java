@@ -10,6 +10,8 @@ public class CifEntity implements LeafSubstructureContainer, ChainContainer {
 
     private String name;
 
+    private CifEntityType cifEntityType;
+
     private final TreeMap<String, CifChain> chains;
 
     public CifEntity(int identifier) {
@@ -31,6 +33,14 @@ public class CifEntity implements LeafSubstructureContainer, ChainContainer {
 
     public void setEntityIdentifier(int entityIdentifier) {
         this.entityIdentifier = entityIdentifier;
+    }
+
+    public CifEntityType getCifEntityType() {
+        return cifEntityType;
+    }
+
+    void setCifEntityType(CifEntityType cifEntityType) {
+        this.cifEntityType = cifEntityType;
     }
 
     public String getName() {

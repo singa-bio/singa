@@ -3,6 +3,8 @@ package bio.singa.structure.model.cif;
 import bio.singa.structure.model.interfaces.AbstractLeafIdentifier;
 import bio.singa.structure.model.interfaces.LeafIdentifier;
 
+import java.util.Locale;
+
 import static bio.singa.structure.model.pdb.PdbLeafIdentifier.DEFAULT_INSERTION_CODE;
 
 public class CifLeafIdentifier extends AbstractLeafIdentifier {
@@ -11,12 +13,12 @@ public class CifLeafIdentifier extends AbstractLeafIdentifier {
     public int entityIdentifier;
 
     public CifLeafIdentifier(String structureIdentifier, int entityIdentifier, int modelIdentifier, String chainIdentifier, int serial) {
-        super(structureIdentifier, modelIdentifier, chainIdentifier, serial);
+        super(structureIdentifier.toLowerCase(), modelIdentifier, chainIdentifier, serial);
         this.entityIdentifier = entityIdentifier;
     }
 
     public CifLeafIdentifier(String structureIdentifier, int modelIdentifier, String chainIdentifier, int serial) {
-        super(structureIdentifier, modelIdentifier, chainIdentifier, serial);
+        super(structureIdentifier.toLowerCase(), modelIdentifier, chainIdentifier, serial);
         entityIdentifier = DEFAULT_ENTITY_IDENTIFIER;
     }
 
@@ -44,22 +46,6 @@ public class CifLeafIdentifier extends AbstractLeafIdentifier {
         return getStructureIdentifier() + "-" + (entityIdentifier != DEFAULT_ENTITY_IDENTIFIER ? entityIdentifier+"-" : "") + getModelIdentifier() + "-" + getChainIdentifier() + "-" + getSerial();
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
 
-        CifLeafIdentifier that = (CifLeafIdentifier) o;
-
-        return entityIdentifier == that.entityIdentifier;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = super.hashCode();
-        result = 31 * result + entityIdentifier;
-        return result;
-    }
 
 }

@@ -2,13 +2,10 @@ package bio.singa.structure.model.cif;
 
 import bio.singa.structure.model.families.StructuralFamily;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
-import bio.singa.structure.model.pdb.PdbAtom;
-import bio.singa.structure.model.pdb.PdbBond;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.Optional;
-import java.util.TreeMap;
+import java.util.*;
+
+import static bio.singa.structure.model.cif.CifConformation.DEFAULT_CONFORMATION_IDENTIFIER;
 
 public class CifLeafSubstructure implements LeafSubstructure {
 
@@ -22,10 +19,7 @@ public class CifLeafSubstructure implements LeafSubstructure {
      */
     private StructuralFamily family;
 
-    /**
-     * The atoms representing the nodes of the atom graph.
-     */
-    private Map<Integer, CifAtom> atoms;
+    private Map<String, CifConformation> conformations;
 
     /**
      * Remembers if this Leaf was an HETATOM entry
@@ -34,37 +28,88 @@ public class CifLeafSubstructure implements LeafSubstructure {
 
     public CifLeafSubstructure(CifLeafIdentifier leafIdentifier) {
         this.leafIdentifier = leafIdentifier;
-        atoms = new TreeMap<>();
+        conformations = new LinkedHashMap<>();
     }
 
     public CifLeafSubstructure(CifLeafSubstructure cifLeafSubstructure) {
-        leafIdentifier = cifLeafSubstructure.leafIdentifier;
+        this(cifLeafSubstructure.leafIdentifier);
         family = cifLeafSubstructure.family;
-        atoms = new TreeMap<>();
-        // copy and add all atoms
-        for (CifAtom atom : cifLeafSubstructure.atoms.values()) {
-            atoms.put(atom.getAtomIdentifier(), atom.getCopy());
-        }
         annotatedAsHetAtom = cifLeafSubstructure.annotatedAsHetAtom;
+        for (Map.Entry<String, CifConformation> entry : cifLeafSubstructure.conformations.entrySet()) {
+            conformations.put(entry.getKey(), entry.getValue().getCopy());
+        }
+    }
+
+    void postProcessConformations() {
+        // this is only called if there are non default conformations present
+        // is there any default conformation ?
+        Optional<CifConformation> defaultConformationOptional = getConformation(DEFAULT_CONFORMATION_IDENTIFIER);
+        if (!defaultConformationOptional.isPresent()) {
+            return;
+        }
+        // otherwise there is a mixture between default and divergent conformations
+        // the approach is to add the default atoms to the divergent conformations,
+        // such that all conformations contain all atoms of the substructure
+        // hence no merging of conformations needs to be don each time a atom is requested
+        // the generally low amount of divergent conformations in structures should cause low memory overhead
+        CifConformation defaultConformation = defaultConformationOptional.get();
+        for (CifConformation cifConformation : conformations.values()) {
+            if (cifConformation.getConformationIdentifier().equals(DEFAULT_CONFORMATION_IDENTIFIER)) {
+                continue;
+            }
+            for (CifAtom atom : defaultConformation.getAllAtoms()) {
+                cifConformation.addAtom(atom);
+            }
+        }
+    }
+
+    public void addAtom(String conformationIdentifier, CifAtom atom) {
+        if (!conformations.containsKey(conformationIdentifier)) {
+            conformations.put(conformationIdentifier, new CifConformation(conformationIdentifier));
+        }
+        conformations.get(conformationIdentifier).addAtom(atom);
     }
 
     public void addAtom(CifAtom atom) {
-        atoms.put(atom.getAtomIdentifier(), atom);
+        getFirstConformation().addAtom(atom);
+    }
+
+    public Optional<CifConformation> getConformation(String conformationIdentifier) {
+        return Optional.ofNullable(conformations.get(conformationIdentifier));
+    }
+
+    public CifConformation getFirstConformation() {
+        if (conformations.size() < 1) {
+            throw new IllegalStateException("no conformations of " + leafIdentifier + " available");
+        }
+        if (conformations.size() == 1) {
+            return conformations.values().iterator().next();
+        }
+        return getFirstAlternativeConformation().orElseThrow(() -> new IllegalStateException("no conformations of " + leafIdentifier + " available"));
+    }
+
+    public Optional<CifConformation> getFirstAlternativeConformation() {
+        Iterator<CifConformation> iterator = conformations.values().iterator();
+        CifConformation next = iterator.next();
+        if (next.getConformationIdentifier().equals(DEFAULT_CONFORMATION_IDENTIFIER)) {
+            return Optional.ofNullable(iterator.next());
+        }
+        return Optional.of(next);
     }
 
     @Override
     public Collection<CifAtom> getAllAtoms() {
-        return atoms.values();
+        return getFirstConformation().getAllAtoms();
     }
 
     @Override
     public Optional<CifAtom> getAtom(Integer atomIdentifier) {
-        return Optional.ofNullable(atoms.get(atomIdentifier));
+        return getFirstConformation().getAtom(atomIdentifier);
     }
 
     @Override
     public void removeAtom(Integer atomIdentifier) {
-        atoms.remove(atomIdentifier);
+        getFirstConformation().removeAtom(atomIdentifier);
     }
 
     @Override
@@ -124,6 +169,11 @@ public class CifLeafSubstructure implements LeafSubstructure {
         int result = leafIdentifier != null ? leafIdentifier.hashCode() : 0;
         result = 31 * result + (family != null ? family.hashCode() : 0);
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return flatToString();
     }
 
 }

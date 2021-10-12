@@ -111,7 +111,7 @@ public class CifModel implements Model {
     }
 
     @Override
-    public Integer getModelIdentifier() {
+    public int getModelIdentifier() {
         return identifier;
     }
 
