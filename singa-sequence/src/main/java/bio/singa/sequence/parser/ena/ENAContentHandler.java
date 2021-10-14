@@ -4,6 +4,7 @@ import bio.singa.features.identifiers.ENAAccessionNumber;
 import bio.singa.features.identifiers.UniProtIdentifier;
 import bio.singa.sequence.model.NucleotideSequence;
 import bio.singa.sequence.model.ProteinSequence;
+import bio.singa.sequence.model.interfaces.Sequence;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.Locator;
@@ -31,14 +32,14 @@ public class ENAContentHandler implements ContentHandler {
 
     public NucleotideSequence getNucleotideSequence() {
         final String sequence = geneSequenceBuilder.toString().replaceAll("\\s", "");
-        NucleotideSequence nucleotideSequence = NucleotideSequence.of(sequence);
+        NucleotideSequence nucleotideSequence = new NucleotideSequence(sequence);
         nucleotideSequence.setFeature(enaAccessionNumber);
         return nucleotideSequence;
     }
 
     public ProteinSequence getTranslationSequence() {
         final String translationSequence = translationSequenceBuilder.toString().replaceAll("\\s", "");
-        ProteinSequence proteinSequence = ProteinSequence.of(translationSequence);
+        ProteinSequence proteinSequence = new ProteinSequence(translationSequence);
         if (uniProtIdentifier != null) {
             proteinSequence.setFeature(uniProtIdentifier);
         }

@@ -17,17 +17,17 @@ public class SequenceContainer {
     public static String RNA_TRANSCRIPT = "RNA_TRANSCRIPT";
     public static String TRANSLATION = "TRANSLATION";
 
-    private Map<String, Sequence<?>> container;
+    private final Map<String, Sequence> container;
 
     public SequenceContainer() {
         container = new HashMap<>();
     }
 
-    public void addSequence(String identifyingDescription, Sequence<?> sequence) {
+    public void addSequence(String identifyingDescription, Sequence sequence) {
         container.put(identifyingDescription, sequence);
     }
 
-    public Sequence<?> getSequence(String identifyingDescription) {
+    public Sequence getSequence(String identifyingDescription) {
         return container.get(identifyingDescription);
     }
 

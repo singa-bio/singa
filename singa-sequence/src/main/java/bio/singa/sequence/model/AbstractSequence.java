@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 /**
  * @author fk
  */
-public class AbstractSequence<FamilyType extends StructuralFamily> implements Sequence<FamilyType>, Featureable {
+public class AbstractSequence implements Featureable, Sequence {
 
     protected static final Set<Class<? extends Feature>> availableFeatures = new HashSet<>();
 
@@ -24,23 +24,21 @@ public class AbstractSequence<FamilyType extends StructuralFamily> implements Se
         // add features
     }
 
-    private List<FamilyType> sequence;
+    private String sequence;
 
     protected FeatureContainer features;
 
-    public AbstractSequence(List<FamilyType> sequence) {
+    public AbstractSequence(String sequence) {
         this.sequence = sequence;
         features = new ChemistryFeatureContainer();
     }
 
-    @Override
-    public List<FamilyType> getSequence() {
+    public String getSequence() {
         return sequence;
     }
 
-    @Override
-    public String toString() {
-        return sequence.stream().map(StructuralFamily::getOneLetterCode).collect(Collectors.joining());
+    public void setSequence(String sequence) {
+        this.sequence = sequence;
     }
 
     @Override

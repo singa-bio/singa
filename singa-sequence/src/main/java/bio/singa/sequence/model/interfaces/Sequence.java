@@ -8,21 +8,16 @@ import java.util.stream.Collectors;
 /**
  * @author fk
  */
-public interface Sequence<FamilyType extends StructuralFamily> {
+public interface Sequence {
 
-    List<FamilyType> getSequence();
+    String getSequence();
 
     default int getLength() {
-        return getSequence().size();
+        return getSequence().length();
     }
 
-    default FamilyType getLetter(int position) {
-        return getSequence().get(position);
+    default char getLetter(int position) {
+        return getSequence().charAt(position);
     }
 
-    default String getSequenceAsString() {
-        return getSequence().stream()
-                .map(StructuralFamily::getOneLetterCode)
-                .collect(Collectors.joining(""));
-    }
 }
