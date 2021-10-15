@@ -15,7 +15,7 @@ public class MmcifStructureIterator<SourceType> extends AbstractStructureIterato
 
     @Override
     public Structure next() {
-        return CifConverter.convert((sourceIterator.getContent(currentSource)).as(StandardSchemata.MMCIF));
+        return CifConverter.convert((sourceIterator.getContent(currentSource)).as(StandardSchemata.MMCIF), getLeafSkeletonFactory());
     }
 
 }

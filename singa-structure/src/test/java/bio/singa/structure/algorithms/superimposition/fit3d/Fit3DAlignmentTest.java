@@ -75,7 +75,7 @@ class Fit3DAlignmentTest {
 
     @Test
     void shouldRunFit3DAlignmentBatch() throws IOException {
-        Structure nucleotideTarget = StructureParser.pdb()
+        Structure nucleotideTarget = StructureParser.cif()
                 .pdbIdentifier("2EES")
                 .parse();
         StructuralMotif nucleotideMotif = StructuralMotif.fromLeafIdentifiers(nucleotideTarget,
@@ -409,7 +409,7 @@ class Fit3DAlignmentTest {
     }
 
     @Test
-    void shouldAnnotateIdentifiersInBatch() {
+    void shouldAnnotateIdentifiersInBatchWithMMTF() {
         StructureIterator multiParser = StructureParser.mmtf()
                 .chainList(Paths.get(Resources.getResourceAsFileLocation("chain_list_PF00089.txt")), "\t")
                 .everything();

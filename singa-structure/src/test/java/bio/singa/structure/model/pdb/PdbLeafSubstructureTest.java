@@ -79,7 +79,7 @@ class PdbLeafSubstructureTest {
     @Test
     void getFamily() {
         final StructuralFamily family = leaf620A.getFamily();
-        assertEquals("U", family.getThreeLetterCode());
+        assertEquals("H2U", family.getThreeLetterCode());
     }
 
     @Test

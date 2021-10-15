@@ -1,20 +1,21 @@
 package bio.singa.structure.model.pdb;
 
-import bio.singa.structure.model.families.StructuralFamilies;
-import bio.singa.structure.model.families.StructuralFamily;
-import bio.singa.structure.io.ccd.LigandParserService;
-import bio.singa.structure.io.general.LocalCcdRepository;
+import bio.singa.structure.io.ccd.LeafSkeletonFactory;
 import bio.singa.structure.io.general.StructureParserOptions;
 import bio.singa.structure.io.general.iterators.StructureIterator;
+import bio.singa.structure.model.families.StructuralFamilies;
+import bio.singa.structure.model.families.StructuralFamily;
 import bio.singa.structure.model.general.LeafSkeleton;
+import bio.singa.structure.model.interfaces.LigandType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
-import static bio.singa.structure.model.general.LeafSkeleton.AssignedFamily.MODIFIED_AMINO_ACID;
-import static bio.singa.structure.model.general.LeafSkeleton.AssignedFamily.MODIFIED_NUCLEOTIDE;
 import static bio.singa.structure.model.pdb.PdbLeafIdentifier.*;
 
 public class PdbLeafSubstructureBuilder {
@@ -82,7 +83,6 @@ public class PdbLeafSubstructureBuilder {
         private boolean isInConsecutivePart;
 
         private StructuralFamily family;
-        private boolean isModified;
         private String name;
 
         private PdbLeafIdentifier identifier;
@@ -96,15 +96,12 @@ public class PdbLeafSubstructureBuilder {
         private Map<String, PdbAtom> atomMap;
 
         private final StructureParserOptions options;
-        private final LocalCcdRepository cifRepository;
-        private final Map<String, LeafSkeleton> leafSkeletons;
+        private final LeafSkeletonFactory leafSkeletonFactory;
         private LeafSkeleton leafSkeleton;
-
 
         public GeneralLeafSubstructureBuilder(StructureIterator iterator) {
             options = iterator.getOptions();
-            leafSkeletons = iterator.getSkeletons();
-            cifRepository = iterator.getLocalCIFRepository();
+            leafSkeletonFactory = iterator.getLeafSkeletonFactory();
         }
 
         @Override
@@ -147,40 +144,9 @@ public class PdbLeafSubstructureBuilder {
         }
 
         private void tryLigand(String threeLetterCode) {
-            // check option
-            if (options.isRetrievingLigandInformation()) {
-                // check cache
-                if (!leafSkeletons.containsKey(threeLetterCode)) {
-                    // check local repo
-                    if (cifRepository != null) {
-                        // use local
-                        leafSkeleton = LigandParserService.parseLeafSkeleton(threeLetterCode, cifRepository);
-                    } else {
-                        // use online
-                        leafSkeleton = LigandParserService.parseLeafSkeleton(threeLetterCode);
-                    }
-                    // cache
-                    leafSkeletons.put(threeLetterCode, leafSkeleton);
-                } else {
-                    // get from cache
-                    leafSkeleton = leafSkeletons.get(threeLetterCode);
-                }
-            }
-            // skeleton available
-            if (leafSkeleton != null && isInConsecutivePart) {
-                // determine modifications
-                if (leafSkeleton.getAssignedFamily().equals(MODIFIED_AMINO_ACID)) {
-                    family = StructuralFamilies.AminoAcids.getOrUnknown(leafSkeleton.getParent());
-                    isModified = true;
-                    return;
-                } else if (leafSkeleton.getAssignedFamily().equals(MODIFIED_NUCLEOTIDE)) {
-                    family = StructuralFamilies.Nucleotides.getOrUnknown(leafSkeleton.getParent());
-                    isModified = true;
-                    return;
-                }
-            }
+            leafSkeleton = leafSkeletonFactory.getLeafSkeleton(threeLetterCode);
             // use default
-            family = new StructuralFamily("?", threeLetterCode);
+            family = leafSkeleton.getStructuralFamily();
         }
 
         @Override
@@ -265,10 +231,10 @@ public class PdbLeafSubstructureBuilder {
             // check whether atom names are distinct
             if (atomMap != null) {
                 // atom names are unique
-                if (StructuralFamilies.AminoAcids.isAminoAcid(family)) {
+                if (isAminoAcid()) {
                     PdbAminoAcid aminoAcid = new PdbAminoAcid(identifier, family);
                     atomSet.forEach(aminoAcid::addAtom);
-                    if (!isModified) {
+                    if (leafSkeleton == null || leafSkeleton.getParent().isEmpty()) {
                         PdbLeafSubstructureFactory.connectAminoAcid(aminoAcid, atomMap);
                     } else {
                         aminoAcid.setDivergingThreeLetterCode(name);
@@ -277,10 +243,10 @@ public class PdbLeafSubstructureBuilder {
                         }
                     }
                     return aminoAcid;
-                } else if (StructuralFamilies.Nucleotides.isNucleotide(family)) {
+                } else if (isNucleotide()) {
                     PdbNucleotide nucleotide = new PdbNucleotide(identifier, family);
                     atomSet.forEach(nucleotide::addAtom);
-                    if (!isModified) {
+                    if (leafSkeleton == null || leafSkeleton.getParent().isEmpty()) {
                         PdbLeafSubstructureFactory.connectNucleotide(nucleotide, atomMap);
                     } else {
                         nucleotide.setDivergingThreeLetterCode(name);
@@ -303,11 +269,11 @@ public class PdbLeafSubstructureBuilder {
             } else {
                 // at least one duplicated atom name
                 // connections need to be assigned via CONECT records
-                if (StructuralFamilies.AminoAcids.isAminoAcid(family)) {
+                if (isAminoAcid()) {
                     PdbAminoAcid aminoAcid = new PdbAminoAcid(identifier, family);
                     atomSet.forEach(aminoAcid::addAtom);
                     return aminoAcid;
-                } else if (StructuralFamilies.Nucleotides.isNucleotide(family)) {
+                } else if (isNucleotide() ) {
                     PdbNucleotide nucleotide = new PdbNucleotide(identifier, family);
                     atomSet.forEach(nucleotide::addAtom);
                     return nucleotide;
@@ -320,6 +286,14 @@ public class PdbLeafSubstructureBuilder {
                     return ligand;
                 }
             }
+        }
+
+        private boolean isNucleotide() {
+            return StructuralFamilies.Nucleotides.isNucleotide(family) || (leafSkeleton != null && leafSkeleton.getLigandType().equals(LigandType.NUCLEIC_ACID));
+        }
+
+        private boolean isAminoAcid() {
+            return StructuralFamilies.AminoAcids.isAminoAcid(family) || (leafSkeleton != null && leafSkeleton.getLigandType().equals(LigandType.PROTEIN));
         }
     }
 

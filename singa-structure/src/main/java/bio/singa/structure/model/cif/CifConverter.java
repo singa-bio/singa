@@ -2,9 +2,7 @@ package bio.singa.structure.model.cif;
 
 import bio.singa.chemistry.model.elements.ElementProvider;
 import bio.singa.mathematics.vectors.Vector3D;
-import bio.singa.structure.model.families.StructuralFamilies;
-import bio.singa.structure.model.families.StructuralFamily;
-import bio.singa.structure.model.general.LeafSkeleton;
+import bio.singa.structure.io.ccd.LeafSkeletonFactory;
 import bio.singa.structure.model.pdb.PdbLeafIdentifier;
 import org.rcsb.cif.model.FloatColumn;
 import org.rcsb.cif.model.IntColumn;
@@ -19,9 +17,10 @@ public class CifConverter {
     private boolean createPdbReference;
 
     private final MmCifFile mmcifFile;
-    private Map<String, LeafSkeleton> compoundMap;
     private Map<Integer, CifEntity> entityMap;
     private Map<CifLeafIdentifier, PdbLeafIdentifier> pdbReferenceMap;
+
+    private LeafSkeletonFactory leafSkeletonFactory;
 
     private CifStructure structure;
     private String pdbId;
@@ -30,16 +29,20 @@ public class CifConverter {
         this(mmcifFile, false);
     }
 
+    public CifConverter(MmCifFile mmcifFile, LeafSkeletonFactory leafSkeletonFactory) {
+        this(mmcifFile);
+        this.leafSkeletonFactory = leafSkeletonFactory;
+    }
+
     public CifConverter(MmCifFile mmcifFile, boolean createPdbReference) {
         this.mmcifFile = mmcifFile;
         this.createPdbReference = createPdbReference;
-        compoundMap = new HashMap<>();
         entityMap = new HashMap<>();
         pdbReferenceMap = new HashMap<>();
     }
 
-    public static CifStructure convert(MmCifFile cifFile) {
-        CifConverter cifConverter = new CifConverter(cifFile);
+    public static CifStructure convert(MmCifFile cifFile, LeafSkeletonFactory leafSkeletonFactory) {
+        CifConverter cifConverter = new CifConverter(cifFile, leafSkeletonFactory);
         return cifConverter.convert();
     }
 
@@ -54,9 +57,17 @@ public class CifConverter {
             String method = methodColumn.get(0);
             double resolution;
             if (method.equals("X-RAY DIFFRACTION")) {
-                resolution = data.getReflns().getDResolutionHigh().get(0);
+                if (data.getReflns().isDefined()) {
+                    resolution = data.getReflns().getDResolutionHigh().get(0);
+                } else {
+                    resolution = Double.NaN;
+                }
             } else if (method.equals("")) {
-                resolution = data.getEm3dReconstruction().getResolution().get(0);
+                if (data.getEm3dReconstruction().isDefined()) {
+                    resolution = data.getEm3dReconstruction().getResolution().get(0);
+                } else {
+                    resolution = Double.NaN;
+                }
             } else {
                 resolution = Double.NaN;
             }
@@ -73,7 +84,6 @@ public class CifConverter {
     private CifStructure convert() {
         MmCifBlock data = mmcifFile.getFirstBlock();
         extractMetaData(data);
-        extractCompoundInformation(data);
         extractEntityInformation(data);
         extractAtomInformation(data);
         if (createPdbReference) {
@@ -171,8 +181,9 @@ public class CifConverter {
         for (int row = 0; row < entityColumn.getRowCount(); row++) {
             int entityIdentifier = Integer.parseInt(entityId.get(row));
             CifEntity entity = new CifEntity(entityIdentifier);
-            CifEntityType type = CifEntityType.getTypeForString(entityTypeColumn.get(row))
-                    .orElseThrow(() -> new IllegalArgumentException("unable to determine entity type"));
+            String typeString = entityTypeColumn.get(row);
+            CifEntityType type = CifEntityType.getTypeForString(typeString)
+                    .orElseThrow(() -> new IllegalArgumentException("unable to determine entity type " + typeString));
             entity.setCifEntityType(type);
             entity.setName(entityNameColumn.get(row));
             entityMap.put(entityIdentifier, entity);
@@ -244,50 +255,8 @@ public class CifConverter {
         }
     }
 
-
-    /**
-     * From monomer table build index of what each three letter code is.
-     *
-     * @param data
-     */
-    private void extractCompoundInformation(MmCifBlock data) {
-        ChemComp chemComp = data.getChemComp();
-        StrColumn idColumn = chemComp.getId();
-        StrColumn typeColumn = chemComp.getType();
-        StrColumn nameColumn = chemComp.getName();
-        compoundMap = new HashMap<>();
-        for (int row = 0; row < chemComp.getRowCount(); row++) {
-            String id = idColumn.get(row);
-            LeafSkeleton leafSkeleton = new LeafSkeleton(id);
-            leafSkeleton.setName(nameColumn.get(row));
-            String type = typeColumn.get(row);
-            if (LeafSkeleton.isNucleotide(type)) {
-                if (StructuralFamilies.Nucleotides.isNucleotide(id)) {
-                    leafSkeleton.setAssignedFamily(LeafSkeleton.AssignedFamily.NUCLEOTIDE);
-                    leafSkeleton.setStructuralFamily(StructuralFamilies.Nucleotides.getOrUnknown(leafSkeleton.getThreeLetterCode()));
-                } else {
-                    leafSkeleton.setAssignedFamily(LeafSkeleton.AssignedFamily.MODIFIED_NUCLEOTIDE);
-                    leafSkeleton.setStructuralFamily(StructuralFamilies.Nucleotides.getOrUnknown(leafSkeleton.getParent()));
-                }
-            } else if (LeafSkeleton.isAminoAcid(type)) {
-                if (StructuralFamilies.AminoAcids.isAminoAcid(id)) {
-                    leafSkeleton.setAssignedFamily(LeafSkeleton.AssignedFamily.AMINO_ACID);
-                    leafSkeleton.setStructuralFamily(StructuralFamilies.AminoAcids.getOrUnknown(leafSkeleton.getThreeLetterCode()));
-                } else {
-                    leafSkeleton.setAssignedFamily(LeafSkeleton.AssignedFamily.MODIFIED_AMINO_ACID);
-                    leafSkeleton.setStructuralFamily(StructuralFamilies.AminoAcids.getOrUnknown(leafSkeleton.getParent()));
-                }
-            } else {
-                leafSkeleton.setAssignedFamily(LeafSkeleton.AssignedFamily.LIGAND);
-                leafSkeleton.setStructuralFamily(new StructuralFamily("?", id));
-            }
-            compoundMap.put(id, leafSkeleton);
-        }
-    }
-
-
     private CifLeafSubstructure appendLeafSubstructure(CifChain chain, CifLeafIdentifier cifLeafIdentifier, String threeLetterCode, String leafIsHetAtomString) {
-        CifLeafSubstructure leafSubstructure = CifLeafSubstructureFactory.createLeafSubstructure(compoundMap.get(threeLetterCode), cifLeafIdentifier);
+        CifLeafSubstructure leafSubstructure = CifLeafSubstructureFactory.createLeafSubstructure(leafSkeletonFactory.getLeafSkeleton(threeLetterCode), cifLeafIdentifier);
         leafSubstructure.setAnnotatedAsHetAtom(leafIsHetAtomString.equals("HETATM"));
         chain.addLeafSubstructure(leafSubstructure);
         return leafSubstructure;

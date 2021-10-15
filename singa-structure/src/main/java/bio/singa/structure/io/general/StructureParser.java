@@ -1,5 +1,9 @@
 package bio.singa.structure.io.general;
 
+import bio.singa.structure.io.ccd.LeafSkeletonFactory;
+import bio.singa.structure.io.ccd.LocalCcdParsingBehavior;
+import bio.singa.structure.io.ccd.NoCcdParsingBehavior;
+import bio.singa.structure.io.ccd.RemoteCcdParsingBehavior;
 import bio.singa.structure.model.interfaces.Structure;
 import bio.singa.structure.io.general.iterators.StructureIterator;
 
@@ -10,6 +14,7 @@ import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -280,6 +285,9 @@ public class StructureParser {
         @Override
         public SingleResultStep settings(StructureParserOptions.Setting... settings) {
             iterator.getOptions().applySettings(settings);
+            if (Arrays.asList(settings).contains(StructureParserOptions.Setting.OMIT_LIGAND_INFORMATION)) {
+                iterator.setLeafSkeletonFactory(new LeafSkeletonFactory(new NoCcdParsingBehavior()));
+            }
             return this;
         }
 
@@ -299,7 +307,8 @@ public class StructureParser {
         protected SourceLocation sourceLocation;
 
         protected LocalStructureRepository localStructureRepository;
-        protected LocalCcdRepository localCcdRepository;
+
+        protected LeafSkeletonFactory leafSkeletonFactory;
 
         public SourceSelector(SourceLocation sourceLocation) {
             this.sourceLocation = sourceLocation;
@@ -318,8 +327,8 @@ public class StructureParser {
         }
 
         public void assignRepository(StructureIterator iterator) {
-            if (localCcdRepository != null) {
-               iterator.setLocalCifRepository(localCcdRepository);
+            if (leafSkeletonFactory == null) {
+               iterator.setLeafSkeletonFactory(new LeafSkeletonFactory(new RemoteCcdParsingBehavior()));
             }
         }
 
@@ -392,7 +401,7 @@ public class StructureParser {
 
         @Override
         public LocalSourceStep localCcdRepository(LocalCcdRepository localCcdRepository) {
-            this.localCcdRepository = localCcdRepository;
+            leafSkeletonFactory = new LeafSkeletonFactory(new LocalCcdParsingBehavior(localCcdRepository));
             return this;
         }
 

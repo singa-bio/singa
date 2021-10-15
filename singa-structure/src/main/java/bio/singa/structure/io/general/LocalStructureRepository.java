@@ -18,7 +18,7 @@ public class LocalStructureRepository {
     /**
      * The path to the local pdb.
      */
-    private Path localPdbPath;
+    private final Path localPdbPath;
 
     /**
      * Creates a new reference for a local pdb installation.

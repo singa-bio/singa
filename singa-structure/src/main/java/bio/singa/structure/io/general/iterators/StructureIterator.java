@@ -1,5 +1,6 @@
 package bio.singa.structure.io.general.iterators;
 
+import bio.singa.structure.io.ccd.LeafSkeletonFactory;
 import bio.singa.structure.io.cif.MmcifStructureIterator;
 import bio.singa.structure.io.cif.RemoteMmCifSourceIterator;
 import bio.singa.structure.io.general.*;
@@ -86,9 +87,9 @@ public interface StructureIterator extends Iterator<Structure> {
         return new LocalStructureIterator<>(new LocalSourceIterator<>(paths, IdentityConverter.get(Path.class)));
     }
 
-    LocalCcdRepository getLocalCIFRepository();
+    LeafSkeletonFactory getLeafSkeletonFactory();
 
-    void setLocalCifRepository(LocalCcdRepository localCcdRepository);
+    void setLeafSkeletonFactory(LeafSkeletonFactory localCcdRepository);
 
     StructureParserOptions getOptions();
 
@@ -112,6 +113,6 @@ public interface StructureIterator extends Iterator<Structure> {
 
     String getCurrentSource();
 
-    Map<String, LeafSkeleton> getSkeletons();
+    LeafSkeleton getSkeleton(String threeLetterCode);
 
 }

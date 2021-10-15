@@ -472,7 +472,7 @@ public class PdbStructureParser {
             String propertyType = key.getSecond();
             String content = entry.getValue();
             if (propertyType.equals("INCHI")) {
-                LeafSkeleton leafSkeleton = iterator.getSkeletons().get(threeLetterCode);
+                LeafSkeleton leafSkeleton = iterator.getSkeleton(threeLetterCode);
                 if (leafSkeleton == null) {
                     logger.warn("parsed property for {}, but no suitable leaf was present", threeLetterCode);
                     continue;

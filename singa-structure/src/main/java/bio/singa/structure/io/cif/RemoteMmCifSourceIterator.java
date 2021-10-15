@@ -11,7 +11,7 @@ import java.io.UncheckedIOException;
 import java.nio.file.Path;
 import java.util.List;
 
-public class RemoteMmCifSourceIterator extends AbstractSourceIterator<String, CifFile>  {
+public class RemoteMmCifSourceIterator extends AbstractSourceIterator<String, CifFile> {
 
     private MmcifIdentifierToUrlConverter identifierConverter;
 
@@ -29,9 +29,9 @@ public class RemoteMmCifSourceIterator extends AbstractSourceIterator<String, Ci
     @Override
     public CifFile getContent(String source) {
         try {
-            return  CifIO.readFromURL(identifierConverter.convert(source));
+            return CifIO.readFromURL(identifierConverter.convert(source));
         } catch (IOException e) {
-            throw new UncheckedIOException("unable to read cif file", e);
+            throw new UncheckedIOException("unable to read cif file " + source, e);
         }
     }
 

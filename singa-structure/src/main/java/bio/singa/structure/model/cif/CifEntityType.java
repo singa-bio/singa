@@ -2,13 +2,18 @@ package bio.singa.structure.model.cif;
 
 import java.util.Optional;
 
+/**
+ * https://mmcif.wwpdb.org/dictionaries/mmcif_pdbx_v50.dic/Items/_entity.type.html
+ */
 public enum CifEntityType {
 
+    BRANCHED("branched"),
+    MACROLIDE("macrolide"),
     POLYMER("polymer"),
     NON_POLYMER("non-polymer"),
     WATER("water");
 
-    private String typeString;
+    private final String typeString;
 
     CifEntityType(String typeString) {
         this.typeString = typeString;

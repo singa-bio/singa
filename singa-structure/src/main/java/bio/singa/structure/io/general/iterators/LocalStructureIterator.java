@@ -29,7 +29,7 @@ public class LocalStructureIterator<SourceType> extends AbstractStructureIterato
             List<String> strings = ((List<String>) content);
             return PdbStructureParser.parse(strings, this);
         } else if (content instanceof CifFile) {
-            return CifConverter.convert(((CifFile) content).as(StandardSchemata.MMCIF));
+            return CifConverter.convert(((CifFile) content).as(StandardSchemata.MMCIF), getLeafSkeletonFactory());
         }
         throw new IllegalStateException("unable to read structure from " + content.getClass());
     }

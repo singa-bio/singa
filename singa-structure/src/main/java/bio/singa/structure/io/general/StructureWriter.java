@@ -366,7 +366,12 @@ public class StructureWriter {
 
                         char insertionCode = leafSubstructure.getIdentifier().getInsertionCode();
                         StructuralFamily family = leafSubstructure.getFamily();
-                        char oneLetterCode = family.getOneLetterCode().charAt(0);
+                        char oneLetterCode;
+                        if (!family.getOneLetterCode().isEmpty()) {
+                            oneLetterCode = family.getOneLetterCode().charAt(0);
+                        } else {
+                            oneLetterCode = '?';
+                        }
                         // TODO correct vocabulary has to be found for polymerType
                         // TODO sequenceIndex corresponds to SEQRES number which we do not consider for the moment
                         // TODO secStrucType is an integer and follows the DSSP numenclature, BioJava: DsspType

@@ -47,7 +47,7 @@ public enum ChainTerminatorToken implements PDBToken {
                 .getAtomIdentifier();
         // TER     961      ASP A  62
         return "TER   " +
-                String.format("%5d", atomIdentifier) +
+                String.format("%5d", atomIdentifier + 1) +
                 "      " +
                 RESIDUE_NAME.createTokenString(lastLeafOfChain.getFamily().getThreeLetterCode()) +
                 " " +
