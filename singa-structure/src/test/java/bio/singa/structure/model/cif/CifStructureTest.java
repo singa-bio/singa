@@ -5,11 +5,14 @@ import bio.singa.structure.io.general.StructureParser;
 import bio.singa.structure.model.interfaces.*;
 import bio.singa.structure.model.mmtf.MmtfStructure;
 import bio.singa.structure.model.pdb.PdbLeafIdentifier;
+import bio.singa.structure.model.pdb.PdbStructure;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -223,6 +226,17 @@ class CifStructureTest {
         }
         assertEquals("C8", atom.get().getAtomName());
         assertEquals(new Vector3D(46.506, 18.078, -5.649), atom.get().getPosition());
+    }
+
+    @Test
+    @DisplayName("cif parsing - correctly parse assemblies")
+    void shouldParseAssemblies() {
+        // we want connections but cannot guarantee unique atom names
+        Structure structure = StructureParser.cif()
+                .pdbIdentifier("6dm8")
+                .parse();
+        Map<String, List<String>> assemblies = ((CifStructure) structure).getBiologicalAssemblies();
+        assertEquals(8, assemblies.size());
     }
 
 }

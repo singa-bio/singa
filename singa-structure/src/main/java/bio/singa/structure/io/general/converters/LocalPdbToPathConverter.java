@@ -21,7 +21,7 @@ public class LocalPdbToPathConverter implements ContentConverter<String, Path> {
 
     @Override
     public Path convert(String content) {
-        return localPDB.getPathForPdbIdentifier(content);
+        return localPDB.getPathForStructure(content);
     }
 
 }

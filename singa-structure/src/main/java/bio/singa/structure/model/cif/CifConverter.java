@@ -73,6 +73,19 @@ public class CifConverter {
             }
             structure.setResolution(resolution);
         }
+        PdbxStructAssemblyGen assemblyGen = data.getPdbxStructAssemblyGen();
+        if (assemblyGen.isDefined()) {
+            HashMap<String, List<String>> assemblies = new HashMap<>();
+            StrColumn assemblyIdColumn = assemblyGen.getAssemblyId();
+            StrColumn asymIdListColumn = assemblyGen.getAsymIdList();
+
+            for (int row = 0; row < assemblyGen.getRowCount(); row++) {
+                String assemblyId = assemblyIdColumn.get(row);
+                List<String> assemblyChains = Arrays.asList(asymIdListColumn.get(row).split(","));
+                assemblies.put(assemblyId, assemblyChains);
+            }
+            structure.setBiologicalAssemblies(assemblies);
+        }
 
         // title
         Struct structColumn = data.getStruct();

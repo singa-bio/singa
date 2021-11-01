@@ -36,4 +36,71 @@ public interface LeafIdentifier extends Comparable<LeafIdentifier> {
 
     boolean hasInsertionCode();
 
+    static CifStructureStep cif() {
+        return new CifIdentifierBuilder();
+    }
+
+    interface CifStructureStep {
+
+        CifEntityStep structure(String structureIdentifier);
+
+    }
+
+    interface CifEntityStep {
+
+        CifModelStep entity(int entityIdentifier);
+
+    }
+
+    interface CifModelStep {
+
+        CifChainStep model(int modelIdentifier);
+
+    }
+
+    interface CifChainStep {
+
+        CifSerialStep chain(String chainIdentifier);
+
+    }
+
+    interface CifSerialStep {
+
+        CifLeafIdentifier serial(int serial);
+
+    }
+
+    class CifIdentifierBuilder implements CifStructureStep, CifEntityStep, CifModelStep, CifChainStep, CifSerialStep {
+
+        private String structureIdentifier;
+        private int entityIdentifier;
+        private int modelIdentifier;
+        private String chainIdentifier;
+
+        public CifEntityStep structure(String structureIdentifier) {
+            this.structureIdentifier = structureIdentifier;
+            return this;
+        }
+
+        public CifModelStep entity(int entityIdentifier) {
+            this.entityIdentifier = entityIdentifier;
+            return this;
+        }
+
+        public CifChainStep model(int modelIdentifier) {
+            this.modelIdentifier = modelIdentifier;
+            return this;
+        }
+
+        public CifSerialStep chain(String chainIdentifier) {
+            this.chainIdentifier = chainIdentifier;
+            return this;
+        }
+
+        public CifLeafIdentifier serial(int serialIdentifier) {
+            return new CifLeafIdentifier(structureIdentifier, entityIdentifier, modelIdentifier, chainIdentifier, serialIdentifier);
+        }
+
+    }
+
 }

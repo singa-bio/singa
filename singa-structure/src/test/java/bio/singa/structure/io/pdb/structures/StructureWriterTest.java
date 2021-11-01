@@ -22,7 +22,7 @@ class StructureWriterTest {
     void writeMMTFStructure() throws IOException {
 
         LocalStructureRepository localPDB = new LocalStructureRepository("/tmp/pdb", SourceLocation.OFFLINE_MMTF);
-        Path path = localPDB.getPathForPdbIdentifier("1acj");
+        Path path = localPDB.getPathForStructure("1acj");
 
         PdbStructure structure = (PdbStructure) StructureParser.pdb()
                 .pdbIdentifier("1acj")

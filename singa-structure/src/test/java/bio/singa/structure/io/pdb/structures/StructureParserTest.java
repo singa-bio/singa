@@ -148,7 +148,7 @@ class StructureParserTest {
     @Test
     @DisplayName("pdb parsing - correct local repository resolving handling")
     void shouldRetrievePathOfLocalPDB() {
-        assertTrue(localPdb.getPathForPdbIdentifier("1c0a").endsWith("pdb/data/structures/divided/pdb/c0/pdb1c0a.ent.gz"));
+        assertTrue(localPdb.getPathForStructure("1c0a").endsWith("pdb/data/structures/divided/pdb/c0/pdb1c0a.ent.gz"));
     }
 
     @Test
@@ -282,7 +282,6 @@ class StructureParserTest {
                 .pdbIdentifier("6dm8")
                 .parse();
         Map<String, List<String>> assemblies = ((PdbStructure) structure).getBiologicalAssemblies();
-        structure.getCopy();
         assertEquals(8, assemblies.size());
     }
 

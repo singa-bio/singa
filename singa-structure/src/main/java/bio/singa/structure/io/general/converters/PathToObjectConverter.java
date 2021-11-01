@@ -28,6 +28,14 @@ public class PathToObjectConverter implements ContentConverter<Path, Object> {
     public Object convert(Path content) {
         String fileName = content.getFileName().toString().toLowerCase();
 
+        if (fileName.endsWith(".bcif")) {
+            try {
+                return CifIO.readFromPath(content, CifStaticOptions.BCIF_PLAIN);
+            } catch (IOException e) {
+                throw new UncheckedIOException("unable to read bcif file" + content, e);
+            }
+        }
+
         if (fileName.endsWith(".mmtf.gz")) {
             try {
                 return Files.readAllBytes(content);
@@ -57,14 +65,6 @@ public class PathToObjectConverter implements ContentConverter<Path, Object> {
                 return fetchLines(Files.newInputStream(content));
             } catch (IOException e) {
                 throw new UncheckedIOException("unable to read pdb file" + content, e);
-            }
-        }
-
-        if (fileName.endsWith(".bcif")) {
-            try {
-                return CifIO.readFromPath(content, CifStaticOptions.BCIF_PLAIN);
-            } catch (IOException e) {
-                throw new UncheckedIOException("unable to read bcif file" + content, e);
             }
         }
 

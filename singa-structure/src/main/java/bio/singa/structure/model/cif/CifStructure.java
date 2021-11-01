@@ -16,6 +16,8 @@ public class CifStructure implements Structure {
 
     private final TreeMap<Integer, CifEntity> entities;
 
+    private Map<String, List<String>> biologicalAssemblies;
+
     /**
      * The PDB identifier of the structure.
      */
@@ -32,6 +34,7 @@ public class CifStructure implements Structure {
         this.structureIdentifier = structureIdentifier;
         models = new TreeMap<>();
         entities = new TreeMap<>();
+        biologicalAssemblies = new HashMap<>();
     }
 
     public CifStructure(CifStructure structure) {
@@ -44,6 +47,7 @@ public class CifStructure implements Structure {
         }
         // todo fill in
         entities = new TreeMap<>();
+        biologicalAssemblies = new HashMap<>(structure.biologicalAssemblies);
     }
 
     @Override
@@ -205,6 +209,14 @@ public class CifStructure implements Structure {
 
     public void setResolution(double resolution) {
         this.resolution = resolution;
+    }
+
+    public Map<String, List<String>> getBiologicalAssemblies() {
+        return biologicalAssemblies;
+    }
+
+    public void setBiologicalAssemblies(Map<String, List<String>> biologicalAssemblies) {
+        this.biologicalAssemblies = biologicalAssemblies;
     }
 
     @Override

@@ -49,7 +49,8 @@ public class LocalStructureRepository {
                 localPdbPath = Paths.get(localPdbLocation).resolve(basePathPdb).resolve("pdb");
                 break;
             case OFFLINE_MMCIF:
-                localPdbPath = Paths.get(localPdbLocation).resolve(basePathPdb).resolve("pdb");
+            case OFFLINE_BCIF:
+                localPdbPath = Paths.get(localPdbLocation).resolve(basePathPdb).resolve("mmCIF");
                 break;
             default:
                 throw new IllegalArgumentException("Source location mus be offline.");
@@ -73,16 +74,24 @@ public class LocalStructureRepository {
     /**
      * Returns the full path of a given PDB-ID in respect to the local PDB copy.
      *
-     * @param pdbIdentifier The PDB-ID for which the full path should be retrieved.
+     * @param structureIdentifier The PDB-ID for which the full path should be retrieved.
      * @return The full path of the given PDB-ID.
      */
-    public Path getPathForPdbIdentifier(String pdbIdentifier) {
-        pdbIdentifier = pdbIdentifier.toLowerCase();
-        final Path middleIdentifierPath = localPdbPath.resolve(pdbIdentifier.substring(1, 3));
-        if (sourceLocation == SourceLocation.OFFLINE_PDB) {
-            return middleIdentifierPath.resolve("pdb" + pdbIdentifier + ".ent.gz");
+    public Path getPathForStructure(String structureIdentifier) {
+        structureIdentifier = structureIdentifier.toLowerCase();
+        final Path middleIdentifierPath = localPdbPath.resolve(structureIdentifier.substring(1, 3));
+        switch (sourceLocation) {
+            case OFFLINE_PDB:
+                return middleIdentifierPath.resolve("pdb" + structureIdentifier + ".ent.gz");
+            case OFFLINE_MMTF:
+                return middleIdentifierPath.resolve(structureIdentifier + ".mmtf.gz");
+            case OFFLINE_MMCIF:
+                return middleIdentifierPath.resolve(structureIdentifier + ".cif.gz");
+            case OFFLINE_BCIF:
+                return middleIdentifierPath.resolve(structureIdentifier + ".bcif");
+            default:
+                throw new IllegalStateException("unable to generate file name");
         }
-        return middleIdentifierPath.resolve(pdbIdentifier + ".mmtf.gz");
     }
 
     @Override

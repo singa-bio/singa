@@ -2,6 +2,7 @@ package bio.singa.structure.model.general;
 
 import bio.singa.core.utility.Pair;
 import bio.singa.mathematics.geometry.bodies.Sphere;
+import bio.singa.mathematics.geometry.faces.Circle;
 import bio.singa.mathematics.matrices.LabeledSymmetricMatrix;
 import bio.singa.mathematics.matrices.Matrices;
 import bio.singa.mathematics.matrices.Matrix;
@@ -198,6 +199,46 @@ public class Structures {
                 .map(Atom::getPosition)
                 .collect(Collectors.toList());
         return getClosestDistance(positions1, positions2);
+    }
+
+    public static boolean areCloserThan(AtomContainer firstAtomContainer, AtomContainer secondAtomContainer, double distanceCutoff) {
+        double distanceCutoffSquared = distanceCutoff * distanceCutoff;
+        for (Atom firstAtom : firstAtomContainer.getAllAtoms()) {
+            Vector3D firstPosition = firstAtom.getPosition();
+            double firstX = firstPosition.getX();
+            double firstY = firstPosition.getY();
+            double firstZ = firstPosition.getZ();
+            for (Atom secondAtom : secondAtomContainer.getAllAtoms()) {
+                Vector3D secondPosition = secondAtom.getPosition();
+                double deltaX = firstX - secondPosition.getX();
+                double deltaY = firstY - secondPosition.getY();
+                double deltaZ = firstZ - secondPosition.getZ();
+                double distanceSquared = deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ;
+                if (distanceSquared < distanceCutoffSquared) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public static boolean areCloserThan(Collection<Vector3D> firstPointSet, Collection<Vector3D> secondPointSet, double distanceCutoff) {
+        double distanceCutoffSquared = distanceCutoff * distanceCutoff;
+        for (Vector3D firstPosition : firstPointSet) {
+            double firstX = firstPosition.getX();
+            double firstY = firstPosition.getY();
+            double firstZ = firstPosition.getZ();
+            for (Vector3D secondPosition : secondPointSet) {
+                double deltaX = firstX - secondPosition.getX();
+                double deltaY = firstY - secondPosition.getY();
+                double deltaZ = firstZ - secondPosition.getZ();
+                double distanceSquared = deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ;
+                if (distanceSquared < distanceCutoffSquared) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     public static double getClosestDistance(Collection<? extends AtomContainer> containers1, Collection<? extends AtomContainer> containers2) {
