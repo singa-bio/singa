@@ -1,5 +1,8 @@
 package bio.singa.structure.model.interfaces;
 
+import bio.singa.structure.model.cif.CifLeafIdentifier;
+import bio.singa.structure.model.pdb.PdbLeafIdentifier;
+
 import java.util.Comparator;
 
 public interface LeafIdentifier extends Comparable<LeafIdentifier> {
@@ -10,6 +13,16 @@ public interface LeafIdentifier extends Comparable<LeafIdentifier> {
             .thenComparing(LeafIdentifier::getChainIdentifier)
             .thenComparing(LeafIdentifier::getSerial)
             .thenComparing(LeafIdentifier::getInsertionCode);
+
+    static LeafIdentifier fromString(String leafIdentifierString) {
+        if (leafIdentifierString.startsWith("PDB")) {
+            return PdbLeafIdentifier.fromString(leafIdentifierString);
+        } else if (leafIdentifierString.startsWith("CIF")) {
+            return CifLeafIdentifier.fromString(leafIdentifierString);
+        } else {
+            throw new IllegalArgumentException("Leaf identifiers have to start with PDB of CIF prefix.");
+        }
+    }
 
     String getStructureIdentifier();
 

@@ -7,6 +7,7 @@ import bio.singa.structure.io.ccd.RemoteCcdParsingBehavior;
 import bio.singa.structure.io.general.StructureParser;
 import bio.singa.structure.model.families.StructuralFamilies;
 import bio.singa.structure.model.general.LeafSkeleton;
+import bio.singa.structure.model.interfaces.LeafIdentifier;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.interfaces.Structure;
 import bio.singa.structure.model.pdb.PdbLeafIdentifier;
@@ -73,10 +74,10 @@ class CifFileParserTest {
 
     @Test
     void shouldParseSAHLigand() {
-        Structure structure = StructureParser.pdb()
+        Structure structure = StructureParser.cif()
                 .pdbIdentifier("3cjt")
                 .parse();
-        Optional<? extends LeafSubstructure> substructureOptional = structure.getLeafSubstructure(PdbLeafIdentifier.fromString("3cjt-1-I-259"));
+        Optional<? extends LeafSubstructure> substructureOptional = structure.getLeafSubstructure(LeafIdentifier.fromString("CIF:3cjt-1-5-AA-0"));
         assertTrue(substructureOptional.isPresent());
         assertFalse(StructuralFamilies.Nucleotides.isNucleotide(substructureOptional.get().getFamily()));
         assertFalse(StructuralFamilies.AminoAcids.isAminoAcid(substructureOptional.get().getFamily()));

@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 public class PdbLeafIdentifier extends AbstractLeafIdentifier {
 
+    public static final String PDB_IDENTIFIER_PREFIX = "PDB";
     public static final String DEFAULT_PDB_IDENTIFIER = "0000";
     public static final int DEFAULT_MODEL_IDENTIFIER = 1;
     public static final String DEFAULT_CHAIN_IDENTIFIER = "X";
@@ -19,34 +20,41 @@ public class PdbLeafIdentifier extends AbstractLeafIdentifier {
 
     private final char insertionCode;
 
-    public PdbLeafIdentifier(String pdbIdentifer, int modelIdentifer, String chainIdentifer, int serial, char insertionCode) {
-        super(pdbIdentifer.toLowerCase(), modelIdentifer, chainIdentifer, serial);
+    public PdbLeafIdentifier(String pdbIdentifier, int modelIdentifier, String chainIdentifier, int serial, char insertionCode) {
+        super(pdbIdentifier.toLowerCase(), modelIdentifier, chainIdentifier, serial);
         this.insertionCode = insertionCode;
     }
 
-    public PdbLeafIdentifier(String pdbIdentifer, int modelIdentifer, String chainIdentifer, int serial) {
-        this(pdbIdentifer, modelIdentifer, chainIdentifer, serial, DEFAULT_INSERTION_CODE);
+    public PdbLeafIdentifier(String pdbIdentifier, int modelIdentifier, String chainIdentifier, int serial) {
+        this(pdbIdentifier, modelIdentifier, chainIdentifier, serial, DEFAULT_INSERTION_CODE);
     }
 
     /**
      * Takes an array of leaf identifiers in simple string format (e.g. A-56) and returns {@link PdbLeafIdentifier}s.
      *
-     * @param identifers The identifiers in simple string format.
+     * @param identifiers The identifiers in simple string format.
      * @return A list of {@link PdbLeafIdentifier}s.
      */
-    public static List<PdbLeafIdentifier> of(String... identifers) {
-        return Arrays.stream(identifers).map(PdbLeafIdentifier::fromSimpleString).collect(Collectors.toList());
+    public static List<PdbLeafIdentifier> of(String... identifiers) {
+        return Arrays.stream(identifiers).map(PdbLeafIdentifier::fromSimpleString).collect(Collectors.toList());
     }
 
     /**
-     * Constructs a {@link PdbLeafIdentifier} from its full string specification: PDB-ID, model ID, chain ID, serial
-     * number, and (optionally) insertion code.
+     * Constructs a {@link PdbLeafIdentifier} from its full string specification: structure identifier, model identifier,
+     * chain identifier, serial number, and (optionally) insertion code.
      *
-     * @param string The identifier in string format, e.g. 1ZUH-1-A-62
+     * @param string The identifier in string format, with identifier specific prefix, e.g. PDB:1ZUH-1-A-62
      * @return The {@link PdbLeafIdentifier}.
      */
     public static PdbLeafIdentifier fromString(String string) {
+        if (!string.startsWith("PDB")) {
+            throw new IllegalArgumentException("PDB leaf identifiers must start with the PDB prefix (e.g. PDB:1ZUH-1-A-62) if parsed from raw string.");
+        }
+        string = string.substring(4);
         String[] split = string.split("-");
+        if (split.length < 4 ^ split.length > 5) {
+            throw new IllegalArgumentException("PDB leaf identifiers can only contain 3 or 4 (in case of negative serials) split characters (\"-\").");
+        }
         String pdbIdentifier = split[0];
         int modelIdentifier = Integer.parseInt(split[1]);
         String chainIdentifier = split[2];
@@ -67,7 +75,7 @@ public class PdbLeafIdentifier extends AbstractLeafIdentifier {
     }
 
     /**
-     * Constructs a {@link PdbLeafIdentifier} from the given simple string. Only chain-ID, residue number and optional
+     * Constructs a {@link PdbLeafIdentifier} from the given simple string. Only chain, residue number and optional
      * insertion code is required.
      *
      * @param simpleString The identifier in string format (e.g. A-62 or A-62B).
@@ -101,11 +109,7 @@ public class PdbLeafIdentifier extends AbstractLeafIdentifier {
 
     @Override
     public String toString() {
-        return getStructureIdentifier() + "-" + getModelIdentifier() + "-" + getChainIdentifier() + "-" + getSerial() + (insertionCode != DEFAULT_INSERTION_CODE ? insertionCode : "");
-    }
-
-    public String toSimpleString() {
-        return getChainIdentifier() + "-" + getSerial() + (insertionCode != DEFAULT_INSERTION_CODE ? insertionCode : "");
+        return PDB_IDENTIFIER_PREFIX + ":" + getStructureIdentifier() + "-" + getModelIdentifier() + "-" + getChainIdentifier() + "-" + getSerial() + (insertionCode != DEFAULT_INSERTION_CODE ? insertionCode : "");
     }
 
     @Override
