@@ -80,9 +80,9 @@ class SmilesParserTest {
         String smilesString = "O=[13C](O)[13C@@H]([15NH2])[13CH]([13CH3])[13CH3]";
         MoleculeGraph moleculeGraph = SmilesParser.parse(smilesString);
         // C:1 has 7 neutrons
-        assertEquals(moleculeGraph.getNode(1).getElement().getNeutronNumber(), 7);
+        assertEquals(7, moleculeGraph.getNode(1).getElement().getNeutronNumber());
         // N:4 has 8 neutrons
-        assertEquals(moleculeGraph.getNode(4).getElement().getNeutronNumber(), 8);
+        assertEquals(8, moleculeGraph.getNode(4).getElement().getNeutronNumber());
     }
 
     @Test

@@ -109,7 +109,7 @@ public class Element {
         protonNumber = element.getProtonNumber();
         electronNumber = element.getElectronNumber();
         valenceElectronNumber = element.getValenceElectronNumber();
-        this.neutronNumber = neutronNumber;
+        this.neutronNumber = neutronNumber - protonNumber;
         if (neutronNumber != protonNumber) {
             // TODO determine correctly
             atomicMass = Quantities.getQuantity(neutronNumber, MolarMass.GRAM_PER_MOLE);

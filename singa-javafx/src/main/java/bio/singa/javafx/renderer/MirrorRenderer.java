@@ -7,7 +7,6 @@ import bio.singa.mathematics.matrices.Matrix;
 import bio.singa.mathematics.vectors.Vector;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.mathematics.vectors.Vector3D;
-import bio.singa.structure.model.families.AminoAcidFamily;
 import bio.singa.structure.model.families.StructuralFamilies;
 import bio.singa.structure.model.families.StructuralFamily;
 import bio.singa.structure.model.interfaces.AminoAcid;
@@ -15,6 +14,7 @@ import bio.singa.structure.model.interfaces.Atom;
 import bio.singa.structure.model.interfaces.Structure;
 import bio.singa.structure.model.pdb.PdbAminoAcid;
 import bio.singa.structure.io.general.StructureParser;
+import bio.singa.structure.model.pdb.PdbAtom;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -25,10 +25,7 @@ import javafx.stage.Stage;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static bio.singa.mathematics.vectors.Vectors2D.getDirectionalAngle;
 import static bio.singa.mathematics.vectors.Vectors3D.calculateReflection;
@@ -46,9 +43,9 @@ public class MirrorRenderer extends Application implements Renderer {
         launch();
     }
 
-    public static List<Atom> newmanProjection(List<Atom> atoms, String firstAxisAtom, String secondAxisAtom) {
-        Optional<Atom> firstAxisOptional = atoms.stream().filter(atom -> atom.getAtomName().equals(firstAxisAtom)).findAny();
-        Optional<Atom> secondAxisOptional = atoms.stream().filter(atom -> atom.getAtomName().equals(secondAxisAtom)).findAny();
+    public static List<Atom> newmanProjection(Collection<? extends Atom> atoms, String firstAxisAtom, String secondAxisAtom) {
+        Optional<? extends Atom> firstAxisOptional = atoms.stream().filter(atom -> atom.getAtomName().equals(firstAxisAtom)).findAny();
+        Optional<? extends Atom> secondAxisOptional = atoms.stream().filter(atom -> atom.getAtomName().equals(secondAxisAtom)).findAny();
         List<Atom> projected = new ArrayList<>();
         for (Atom atom : atoms) {
             projected.add(atom.getCopy());
@@ -150,13 +147,13 @@ public class MirrorRenderer extends Application implements Renderer {
                 continue;
             }
 
-            List<Atom> nativeAtoms = nativeAminoAcid.getAllAtoms();
+            Collection<PdbAtom> nativeAtoms = nativeAminoAcid.getAllAtoms();
             List<Atom> projectedNative = newmanProjection(nativeAtoms, "CA", "C");
 
             nativeAtoms.forEach(atom -> atom.setPosition(calculateReflection(atom.getPosition(), mirror)));
             List<Atom> projectedMirror = newmanProjection(nativeAtoms, "CA", "C");
 
-            List<Atom> referenceAtoms = StructuralFamilies.AminoAcids.getPrototype(family).getAllAtoms();
+            Collection<? extends Atom> referenceAtoms = StructuralFamilies.AminoAcids.getPrototype(family).getAllAtoms();
             List<Atom> projectedReference = newmanProjection(referenceAtoms, "CA", "C");
 
             Superimposition<Vector> nativeSuperimposition = alignPyramid(projectedReference, projectedNative, "CA", "C", "CB");

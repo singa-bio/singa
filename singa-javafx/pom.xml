@@ -36,15 +36,15 @@
             <version>0.8.0</version>
         </dependency>
         <dependency>
-            <groupId>org.jfree</groupId>
-            <artifactId>jfreesvg</artifactId>
-            <version>3.3</version>
-        </dependency>
-        <dependency>
             <groupId>bio.singa</groupId>
             <artifactId>singa-structure</artifactId>
             <version>0.8.0</version>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jfree</groupId>
+            <artifactId>jfreesvg</artifactId>
+            <version>3.3</version>
         </dependency>
     </dependencies>
 

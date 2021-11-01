@@ -1,8 +1,7 @@
 package bio.singa.javafx.viewer;
 
 import bio.singa.chemistry.model.elements.Element;
-import bio.singa.structure.model.families.AminoAcidFamily;
-import bio.singa.structure.model.families.NucleotideFamily;
+import bio.singa.structure.model.families.StructuralFamilies;
 import bio.singa.structure.model.families.StructuralFamily;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
@@ -38,9 +37,9 @@ public class MaterialProvider {
     }
 
     public static PhongMaterial getMaterialForType(StructuralFamily structuralFamily) {
-        if (structuralFamily instanceof NucleotideFamily) {
+        if (StructuralFamilies.Nucleotides.isNucleotide(structuralFamily)) {
             return NUCLEOTIDE;
-        } else if (structuralFamily instanceof AminoAcidFamily) {
+        } else if (StructuralFamilies.AminoAcids.isAminoAcid(structuralFamily)) {
             return AMINOACID;
         } else {
             return OTHER_TYPE;

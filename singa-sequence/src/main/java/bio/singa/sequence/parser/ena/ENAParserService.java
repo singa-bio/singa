@@ -15,6 +15,7 @@ import java.io.UncheckedIOException;
 
 /**
  * @author cl
+ * @deprecated ENA does not provide xml files anymore it seems
  */
 public class ENAParserService extends AbstractXMLParser<NucleotideSequence> {
 

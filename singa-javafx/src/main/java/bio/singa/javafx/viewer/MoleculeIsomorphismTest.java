@@ -34,7 +34,7 @@ public class MoleculeIsomorphismTest {
 
         MoleculeGraph phenylAlaninePattern = SmilesParser.parse("C1=CC=C(C=C1)CC(C=O)N");
 
-        Optional<LeafSubstructure> fa5 = structure.getLeafSubstructure(new PdbLeafIdentifier("1jjc", 1, "A", 999));
+        Optional<? extends LeafSubstructure> fa5 = structure.getLeafSubstructure(new PdbLeafIdentifier("1jjc", 1, "A", 999));
         MoleculeGraph fa5Graph = MoleculeGraphs.createMoleculeGraphFromStructure((PdbLeafSubstructure) fa5.get());
 
         MoleculeBond consideredEdge = phenylAlaninePattern.getEdge(7);
