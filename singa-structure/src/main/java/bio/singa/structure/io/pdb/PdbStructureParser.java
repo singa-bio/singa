@@ -348,7 +348,7 @@ public class PdbStructureParser {
                             .atoms(leafNode.getAtoms())
                             .build();
                     if (hetAtoms.contains(leafSubstructure.getIdentifier())) {
-                        leafSubstructure.setAnnotatedAsHetAtom(true);
+                        leafSubstructure.setAnnotatedAsHeteroAtom(true);
                     }
                     chain.addLeafSubstructure(leafSubstructure, isInConsecutivePart);
                 }

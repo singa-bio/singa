@@ -42,6 +42,11 @@ public class MmtfNucleotide extends MmtfLeafSubstructure implements Nucleotide {
     }
 
     @Override
+    public void setAnnotatedAsHeteroAtom(boolean annotatedAsHetAtom) {
+
+    }
+
+    @Override
     public String flatToString() {
         return "Nucleotide (" + getThreeLetterCode() + ") " + getIdentifier();
     }

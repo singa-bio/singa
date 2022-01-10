@@ -124,7 +124,7 @@ public class CifLeafSubstructure implements LeafSubstructure {
                 .findAny();
     }
 
-    public void setAnnotatedAsHetAtom(boolean annotatedAsHetAtom) {
+    public void setAnnotatedAsHeteroAtom(boolean annotatedAsHetAtom) {
         this.annotatedAsHetAtom = annotatedAsHetAtom;
     }
 

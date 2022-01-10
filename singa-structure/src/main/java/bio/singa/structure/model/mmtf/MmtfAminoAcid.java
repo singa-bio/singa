@@ -53,6 +53,11 @@ public class MmtfAminoAcid extends MmtfLeafSubstructure implements AminoAcid {
         return false;
     }
 
+    @Override
+    public void setAnnotatedAsHeteroAtom(boolean annotatedAsHetAtom) {
+
+    }
+
     public MmtfSecondaryStructure getSecondaryStructure() {
         return secondaryStructure;
     }

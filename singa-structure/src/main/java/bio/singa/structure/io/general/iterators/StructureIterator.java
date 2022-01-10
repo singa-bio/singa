@@ -39,7 +39,8 @@ public interface StructureIterator extends Iterator<Structure> {
             }
             case OFFLINE_PDB:
             case OFFLINE_MMCIF:
-            case OFFLINE_MMTF: {
+            case OFFLINE_MMTF:
+            case OFFLINE_BCIF:{
                 return new LocalStructureIterator<>(new LocalSourceIterator<>(strings, LocalPdbToPathConverter.get(localStructureRepository)));
             }
             default:

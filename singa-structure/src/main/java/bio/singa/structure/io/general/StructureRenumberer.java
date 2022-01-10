@@ -16,7 +16,7 @@ public class StructureRenumberer {
 
     public static Structure renumberAtomsConsecutively(Structure structure) {
         StructureRenumberer structureRenumberer = new StructureRenumberer();
-        return structureRenumberer.renumberAtoms(((PdbStructure) structure));
+        return structureRenumberer.renumberAtoms(structure);
     }
 
     /**
@@ -46,7 +46,7 @@ public class StructureRenumberer {
         atomIdentifierMapping = new HashMap<>();
     }
 
-    private PdbStructure renumberAtoms(PdbStructure structure) {
+    private PdbStructure renumberAtoms(Structure structure) {
         logger.debug("Renumbering structure {} consecutively.", structure);
         PdbStructure renumberedStructure = new PdbStructure();
         renumberedStructure.setPdbIdentifier(structure.getStructureIdentifier());
@@ -56,32 +56,42 @@ public class StructureRenumberer {
             renumberedStructure.addModel(renumberedModel);
             // consecutive parts
             for (Chain chain : model.getAllChains()) {
-                PdbChain oakChain = (PdbChain) chain;
                 PdbChain renumberedChain = new PdbChain(chain.getChainIdentifier());
                 renumberedModel.addChain(renumberedChain);
-                for (PdbLeafSubstructure leafSubstructure : oakChain.getConsecutivePart()) {
-                    PdbLeafSubstructure renumberedLeafSubstructure = renumberAtomsInLeafSubstructure(leafSubstructure);
-                    renumberedLeafSubstructure.setAnnotatedAsHetAtom(leafSubstructure.isAnnotatedAsHeteroAtom());
-                    renumberedChain.addLeafSubstructure(renumberedLeafSubstructure, true);
+                if (chain instanceof PdbChain) {
+                    PdbChain pdbChain = (PdbChain) chain;
+                    for (PdbLeafSubstructure leafSubstructure : pdbChain.getConsecutivePart()) {
+                        PdbLeafSubstructure renumberedLeafSubstructure = renumberAtomsInLeafSubstructure(leafSubstructure);
+                        renumberedLeafSubstructure.setAnnotatedAsHeteroAtom(leafSubstructure.isAnnotatedAsHeteroAtom());
+                        renumberedChain.addLeafSubstructure(renumberedLeafSubstructure, true);
+                    }
+                } else {
+                    for (LeafSubstructure leafSubstructure : chain.getAllLeafSubstructures()) {
+                        PdbLeafSubstructure renumberedLeafSubstructure = renumberAtomsInLeafSubstructure(leafSubstructure);
+                        renumberedLeafSubstructure.setAnnotatedAsHeteroAtom(leafSubstructure.isAnnotatedAsHeteroAtom());
+                        renumberedChain.addLeafSubstructure(renumberedLeafSubstructure, true);
+                    }
                 }
                 logger.trace("Keeping identifier {} for terminator token.", nextAtomIdentifier);
                 nextAtomIdentifier++;
             }
             // nonconsecutive parts
             for (Chain chain : model.getAllChains()) {
-                PdbChain oakChain = (PdbChain) chain;
-                PdbChain renumberedChain = (PdbChain) renumberedModel.getChain(chain.getChainIdentifier()).orElseThrow(NoSuchElementException::new);
-                for (PdbLeafSubstructure leafSubstructure : oakChain.getNonConsecutivePart()) {
-                    PdbLeafSubstructure renumberedLeafSubstructure = renumberAtomsInLeafSubstructure(leafSubstructure);
-                    renumberedLeafSubstructure.setAnnotatedAsHetAtom(true);
-                    renumberedChain.addLeafSubstructure(renumberedLeafSubstructure);
+                if (chain instanceof PdbChain) {
+                    PdbChain pdbChain = (PdbChain) chain;
+                    PdbChain renumberedChain = renumberedModel.getChain(chain.getChainIdentifier()).orElseThrow(NoSuchElementException::new);
+                    for (PdbLeafSubstructure leafSubstructure : pdbChain.getNonConsecutivePart()) {
+                        PdbLeafSubstructure renumberedLeafSubstructure = renumberAtomsInLeafSubstructure(leafSubstructure);
+                        renumberedLeafSubstructure.setAnnotatedAsHeteroAtom(true);
+                        renumberedChain.addLeafSubstructure(renumberedLeafSubstructure);
+                    }
                 }
             }
         }
         return renumberLinkEntries(renumberedStructure);
     }
 
-    private PdbLeafSubstructure renumberAtomsInLeafSubstructure(PdbLeafSubstructure leafSubstructure) {
+    private PdbLeafSubstructure renumberAtomsInLeafSubstructure(LeafSubstructure leafSubstructure) {
         PdbLeafSubstructure renumberedLeafSubstructure = createLeafSubstructure(leafSubstructure.getIdentifier(), leafSubstructure.getFamily());
         for (Atom atom : leafSubstructure.getAllAtoms()) {
             PdbAtom renumberedAtom = new PdbAtom(nextAtomIdentifier, atom.getElement(), atom.getAtomName(), atom.getPosition());
@@ -92,11 +102,14 @@ public class StructureRenumberer {
             renumberedLeafSubstructure.addAtom(renumberedAtom);
             nextAtomIdentifier++;
         }
-        for (PdbBond edge : ((PdbLeafSubstructure) leafSubstructure).getBonds()) {
-            PdbBond edgeCopy = edge.getCopy();
-            PdbAtom source = ((PdbAtom) renumberedLeafSubstructure.getAtom(atomIdentifierMapping.get(edge.getSource().getAtomIdentifier())).get());
-            PdbAtom target = ((PdbAtom) renumberedLeafSubstructure.getAtom(atomIdentifierMapping.get(edge.getTarget().getAtomIdentifier())).get());
-            renumberedLeafSubstructure.addBondBetween(edgeCopy, source, target);
+        if (leafSubstructure instanceof PdbLeafSubstructure) {
+            PdbLeafSubstructure pdbLeafSubstructure = (PdbLeafSubstructure) leafSubstructure;
+            for (PdbBond edge : pdbLeafSubstructure.getBonds()) {
+                PdbBond edgeCopy = edge.getCopy();
+                PdbAtom source = renumberedLeafSubstructure.getAtom(atomIdentifierMapping.get(edge.getSource().getAtomIdentifier())).get();
+                PdbAtom target = renumberedLeafSubstructure.getAtom(atomIdentifierMapping.get(edge.getTarget().getAtomIdentifier())).get();
+                renumberedLeafSubstructure.addBondBetween(edgeCopy, source, target);
+            }
         }
         return renumberedLeafSubstructure;
     }
@@ -145,7 +158,7 @@ public class StructureRenumberer {
                             renumberingMap.get(originalIdentifier),
                             originalIdentifier.getInsertionCode());
                     PdbLeafSubstructure renumberedLeafSubstructure = createLeafSubstructure(renumberedIdentifier, leafSubstructure.getFamily());
-                    renumberedLeafSubstructure.setAnnotatedAsHetAtom(leafSubstructure.isAnnotatedAsHeteroAtom());
+                    renumberedLeafSubstructure.setAnnotatedAsHeteroAtom(leafSubstructure.isAnnotatedAsHeteroAtom());
                     renumberedChain.addLeafSubstructure(renumberedLeafSubstructure, true);
                     copyAtomsInLeafSubstructure(leafSubstructure, renumberedLeafSubstructure);
                 }
@@ -156,7 +169,7 @@ public class StructureRenumberer {
                 PdbChain renumberedChain = (PdbChain) renumberedModel.getChain(chain.getChainIdentifier()).orElseThrow(NoSuchElementException::new);
                 for (PdbLeafSubstructure leafSubstructure : oakChain.getNonConsecutivePart()) {
                     PdbLeafSubstructure renumberedLeafSubstructure = createLeafSubstructure(leafSubstructure.getIdentifier(), leafSubstructure.getFamily());
-                    renumberedLeafSubstructure.setAnnotatedAsHetAtom(true);
+                    renumberedLeafSubstructure.setAnnotatedAsHeteroAtom(true);
                     renumberedChain.addLeafSubstructure(renumberedLeafSubstructure);
                     copyAtomsInLeafSubstructure(leafSubstructure, renumberedLeafSubstructure);
                 }

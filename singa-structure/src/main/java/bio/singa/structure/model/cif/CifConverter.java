@@ -24,6 +24,7 @@ public class CifConverter {
 
     private CifStructure structure;
     private String pdbId;
+    private boolean isMutated;
 
     public CifConverter(MmCifFile mmcifFile) {
         this(mmcifFile, false);
@@ -91,6 +92,19 @@ public class CifConverter {
         Struct structColumn = data.getStruct();
         if (structColumn.isDefined()) {
             structure.setTitle(structColumn.getTitle().get(0));
+        }
+
+        // determine mutations
+        // _struct_ref_seq_dif
+        StructRefSeqDif structRefSeqDif = data.getStructRefSeqDif();
+        if (!structRefSeqDif.isDefined()) {
+            return;
+        }
+        StrColumn difDetails = structRefSeqDif.getDetails();
+        for (int row = 0; row < structRefSeqDif.getRowCount(); row++) {
+            if (difDetails.get(row).contains("mutation")) {
+                structure.setMutated(true);
+            }
         }
     }
 
@@ -237,6 +251,7 @@ public class CifConverter {
             }
             pdbReferenceMap.put(cifLeafIdentifier, new PdbLeafIdentifier(pdbId, PdbLeafIdentifier.DEFAULT_MODEL_IDENTIFIER, pdbChain, pdbSerial, pdbInsertionCode));
         }
+
     }
 
     private void extractNonPolymerReferenceInformation(MmCifBlock data) {
@@ -270,7 +285,7 @@ public class CifConverter {
 
     private CifLeafSubstructure appendLeafSubstructure(CifChain chain, CifLeafIdentifier cifLeafIdentifier, String threeLetterCode, String leafIsHetAtomString) {
         CifLeafSubstructure leafSubstructure = CifLeafSubstructureFactory.createLeafSubstructure(leafSkeletonFactory.getLeafSkeleton(threeLetterCode), cifLeafIdentifier);
-        leafSubstructure.setAnnotatedAsHetAtom(leafIsHetAtomString.equals("HETATM"));
+        leafSubstructure.setAnnotatedAsHeteroAtom(leafIsHetAtomString.equals("HETATM"));
         chain.addLeafSubstructure(leafSubstructure);
         return leafSubstructure;
     }

@@ -115,14 +115,13 @@ public enum ConnectionToken implements PDBToken {
 
     public static String assemblePDBLines(PdbLeafSubstructure leafsubstructure) {
         StringBuilder builder = new StringBuilder();
-        for (Atom atom : leafsubstructure.getAllAtoms()) {
-            PdbAtom firstAtom = (PdbAtom) atom;
+        for (PdbAtom atom : leafsubstructure.getAllAtoms()) {
             List<PdbAtom> connectedAtoms = leafsubstructure.getBonds().stream()
                     // determine all bonds where the atom is involved in
-                    .filter(oakBond -> oakBond.getSource().equals(firstAtom) || oakBond.getTarget().equals(firstAtom))
+                    .filter(oakBond -> oakBond.getSource().equals(atom) || oakBond.getTarget().equals(atom))
                     // determine the atoms that are NOT the source atom
                     .map(oakBond -> {
-                        if (oakBond.getSource().equals(firstAtom)) {
+                        if (oakBond.getSource().equals(atom)) {
                             return oakBond.getTarget();
                         } else {
                             return oakBond.getSource();
@@ -130,7 +129,7 @@ public enum ConnectionToken implements PDBToken {
                     }).sorted(Comparator.comparingInt(PdbAtom::getAtomIdentifier))
                     .collect(Collectors.toList());
             if (connectedAtoms.isEmpty()) {
-                // FIXME this will skip entire CONECT atom record generation of a single dangling atom is in the ligand, e.g. terminal OXT for MD-derived peptides
+                // FIXME this will skip entire CONECT atom record generation, if a single dangling atom is in the ligand, e.g. terminal OXT for MD-derived peptides
                 return "";
             }
             if (connectedAtoms.size() > 4) {

@@ -9,6 +9,7 @@ import bio.singa.mathematics.matrices.Matrix;
 import bio.singa.mathematics.metrics.model.VectorMetricProvider;
 import bio.singa.mathematics.vectors.Vector3D;
 import bio.singa.mathematics.vectors.Vectors3D;
+import bio.singa.structure.model.cif.CifLeafSubstructure;
 import bio.singa.structure.model.interfaces.*;
 import bio.singa.structure.model.pdb.*;
 
@@ -176,8 +177,7 @@ public class Structures {
                     newChain = ((PdbChain) optionalChain.get());
                 }
                 // consecutive parts
-                PdbLeafSubstructure newLeafSubstructure = leafSubstructure.getCopy();
-                newLeafSubstructure.setAnnotatedAsHetAtom(leafSubstructure.isAnnotatedAsHeteroAtom());
+                PdbLeafSubstructure newLeafSubstructure = PdbLeafSubstructure.from(leafSubstructure);
                 newChain.addLeafSubstructure(newLeafSubstructure);
             }
         }

@@ -2,6 +2,7 @@ package bio.singa.structure.io.pdb.structures;
 
 
 import bio.singa.core.utility.Resources;
+import bio.singa.structure.io.general.StructureRepresentationFactory;
 import bio.singa.structure.io.pdb.PdbStructureParser;
 import bio.singa.structure.io.general.StructureParser;
 import bio.singa.structure.io.general.StructureRepresentation;
@@ -96,7 +97,7 @@ class StructureRepresentationTest {
         Structure structure = StructureParser.local()
                 .fileLocation(fileLocation)
                 .parse();
-        String pdbRepresentation = StructureRepresentation.composePdbRepresentation(structure);
+        String pdbRepresentation = StructureRepresentationFactory.getPdbStringRepresentation(structure);
         List<String> actualLines = Arrays.asList(pdbRepresentation.split(System.lineSeparator()));
         assertPDBLinesEqual(expectedLines, actualLines);
     }
@@ -117,7 +118,7 @@ class StructureRepresentationTest {
 
                 .fileLocation(fileLocation)
                 .parse();
-        String pdbRepresentation = StructureRepresentation.composePdbRepresentation(structure);
+        String pdbRepresentation = StructureRepresentationFactory.getPdbStringRepresentation(structure);
         List<String> actualLines = Arrays.asList(pdbRepresentation.split(System.lineSeparator()));
 
         assertPDBLinesEqual(expectedLines, actualLines);
@@ -130,7 +131,7 @@ class StructureRepresentationTest {
         Structure structure = StructureParser.local()
                 .fileLocation(fileLocation)
                 .parse();
-        String pdbRepresentation = StructureRepresentation.composePdbRepresentation(structure);
+        String pdbRepresentation = StructureRepresentationFactory.getPdbStringRepresentation(structure);
         List<String> actualLines = Arrays.asList(pdbRepresentation.split(System.lineSeparator()));
         assertPDBLinesEqual(expectedLines, actualLines);
     }
@@ -144,7 +145,7 @@ class StructureRepresentationTest {
                 .fileLocation(fileLocation)
                 .everything()
                 .parse();
-        String pdbRepresentation = StructureRepresentation.composePdbRepresentation(structure);
+        String pdbRepresentation = StructureRepresentationFactory.getPdbStringRepresentation(structure);
         List<String> actualLines = Arrays.asList(pdbRepresentation.split(System.lineSeparator()));
         assertPDBLinesEqual(expectedLines, actualLines);
     }

@@ -1,5 +1,6 @@
 package bio.singa.structure.io.general;
 
+import bio.singa.structure.model.cif.CifStructure;
 import bio.singa.structure.model.families.StructuralFamily;
 import bio.singa.structure.model.interfaces.*;
 import bio.singa.structure.model.mmtf.MmtfAminoAcid;
@@ -189,7 +190,7 @@ public class StructureWriter {
             if (options.isRenumberingSubstructures()) {
                 structure = StructureRenumberer.renumberLeaveSubstructuresWithMap(structure, options.getRenumberingMap());
             }
-            return StructureRepresentation.composePdbRepresentation(structure);
+            return StructureRepresentationFactory.getPdbStringRepresentation(structure);
         }
 
         private void prepareInformationToWrite() {
@@ -202,6 +203,10 @@ public class StructureWriter {
             }
             if (linkEntries != null) {
                 linkEntries.forEach(linkEntry -> ((PdbStructure) structure).addLinkEntry(linkEntry));
+            }
+            if (structure != null && structure instanceof CifStructure) {
+                // renumbering cif structures strictly requires atom renumbering because of chain termination records
+                options.setRenumberingAtoms(true);
             }
         }
 

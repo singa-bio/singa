@@ -3,8 +3,9 @@ package bio.singa.structure.model.cif;
 import bio.singa.structure.model.interfaces.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
-public class CifEntity implements LeafSubstructureContainer, ChainContainer {
+public class CifEntity {
 
     private int entityIdentifier;
 
@@ -12,19 +13,18 @@ public class CifEntity implements LeafSubstructureContainer, ChainContainer {
 
     private CifEntityType cifEntityType;
 
-    private final TreeMap<String, CifChain> chains;
+    private final Set<String> chains;
 
     public CifEntity(int identifier) {
         entityIdentifier = identifier;
-        chains = new TreeMap<>();
+        chains = new HashSet<>();
     }
 
     public CifEntity(CifEntity cifEntity) {
         entityIdentifier = cifEntity.entityIdentifier;
-        chains = new TreeMap<>();
-        for (CifChain chain : cifEntity.chains.values()) {
-            chains.put(chain.getChainIdentifier(), chain.getCopy());
-        }
+        name = cifEntity.getName();
+        cifEntityType = cifEntity.cifEntityType;
+        chains = new HashSet<>(cifEntity.chains);
     }
 
     public int getEntityIdentifier() {
@@ -51,85 +51,24 @@ public class CifEntity implements LeafSubstructureContainer, ChainContainer {
         this.name = name;
     }
 
-    @Override
-    public Optional<CifAtom> getAtom(Integer atomIdentifier) {
-        for (CifChain chain : chains.values()) {
-            final Collection<CifLeafSubstructure> allLeafSubstructures = chain.getAllLeafSubstructures();
-            for (CifLeafSubstructure leafSubstructure : allLeafSubstructures) {
-                final Optional<CifAtom> optionalAtom = leafSubstructure.getAtom(atomIdentifier);
-                if (optionalAtom.isPresent()) {
-                    return optionalAtom;
-                }
-            }
-        }
-        return Optional.empty();
+    public Set<String> getAllChainIdentifiers() {
+        return chains;
     }
 
-    @Override
-    public void removeAtom(Integer atomIdentifier) {
-        for (CifChain chain : chains.values()) {
-            final Collection<CifLeafSubstructure> allLeafSubstructures = chain.getAllLeafSubstructures();
-            for (CifLeafSubstructure leafSubstructure : allLeafSubstructures) {
-                final Optional<CifAtom> optionalAtom = leafSubstructure.getAtom(atomIdentifier);
-                optionalAtom.ifPresent(atom -> leafSubstructure.removeAtom(atomIdentifier));
-            }
-        }
-    }
-
-    @Override
-    public Collection<CifChain> getAllChains() {
-        return chains.values();
+    public Collection<CifChain> getAllRelevantChainsFrom(CifModel model) {
+        return chains.stream()
+                .map(model::getChain)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toList());
     }
 
     public void addChain(CifChain chain) {
-        chains.put(chain.getChainIdentifier(), chain);
+        chains.add(chain.getChainIdentifier());
     }
 
-    @Override
-    public Chain getFirstChain() {
-        return chains.firstEntry().getValue();
-    }
-
-    @Override
-    public Collection<CifLeafSubstructure> getAllLeafSubstructures() {
-        List<CifLeafSubstructure> allLeafSubstructures = new ArrayList<>();
-        for (CifChain chain : chains.values()) {
-            final Collection<CifLeafSubstructure> leafSubstructures = chain.getAllLeafSubstructures();
-            allLeafSubstructures.addAll(leafSubstructures);
-        }
-        return allLeafSubstructures;
-    }
-
-    @Override
-    public Optional<CifLeafSubstructure> getLeafSubstructure(LeafIdentifier leafIdentifier) {
-        for (CifChain chain : chains.values()) {
-            final Optional<CifLeafSubstructure> optionalLeafSubstructure = chain.getLeafSubstructure(leafIdentifier);
-            if (optionalLeafSubstructure.isPresent()) {
-                return optionalLeafSubstructure;
-            }
-        }
-        return Optional.empty();
-    }
-
-    @Override
-    public LeafSubstructure getFirstLeafSubstructure() {
-        return getFirstChain().getFirstLeafSubstructure();
-    }
-
-    @Override
-    public boolean removeLeafSubstructure(LeafIdentifier leafIdentifier) {
-        for (CifChain chain : chains.values()) {
-            final Optional<CifLeafSubstructure> optionalLeafSubstructure = chain.getLeafSubstructure(leafIdentifier);
-            if (optionalLeafSubstructure.isPresent()) {
-                chain.removeLeafSubstructure(optionalLeafSubstructure.get().getIdentifier());
-                return true;
-            }
-        }
-        return false;
-    }
-
-    @Override
     public CifEntity getCopy() {
         return new CifEntity(this);
     }
+
 }

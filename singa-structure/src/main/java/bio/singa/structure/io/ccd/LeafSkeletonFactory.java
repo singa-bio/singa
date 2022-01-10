@@ -9,6 +9,7 @@ import bio.singa.structure.model.interfaces.LigandType;
 import org.rcsb.cif.model.Block;
 import org.rcsb.cif.model.Category;
 import org.rcsb.cif.model.CifFile;
+import org.rcsb.cif.model.Column;
 import org.rcsb.cif.model.text.TextColumn;
 
 import java.util.HashMap;
@@ -29,7 +30,7 @@ public class LeafSkeletonFactory {
         leafSkeletonCache = new HashMap<>();
     }
 
-    public synchronized LeafSkeleton  getLeafSkeleton(String identifier) {
+    public synchronized LeafSkeleton getLeafSkeleton(String identifier) {
         if (leafSkeletonCache.containsKey(identifier)) {
             return leafSkeletonCache.get(identifier);
         }
@@ -84,9 +85,15 @@ public class LeafSkeletonFactory {
         leafSkeleton.setName(name);
 
         Category descriptorCategory = block.getCategory("pdbx_chem_comp_descriptor");
-        TextColumn descriptorIdColumn = ((TextColumn) descriptorCategory.getColumn("type"));
+        if (!descriptorCategory.isDefined()) {
+            return;
+        }
+        Column<?> typeColumn = descriptorCategory.getColumn("type");
+        if (!typeColumn.isDefined()) {
+            return;
+        }
+        TextColumn descriptorIdColumn = ((TextColumn) typeColumn);
         TextColumn descriptorContentColumn = ((TextColumn) descriptorCategory.getColumn("descriptor"));
-
         // inchi
         for (int row = 0; row < descriptorCategory.getRowCount(); row++) {
             if (descriptorIdColumn.get(row).equals("InChI")) {
@@ -95,6 +102,7 @@ public class LeafSkeletonFactory {
                 break;
             }
         }
+
     }
 
     private void extractBondInformation(Block block) {

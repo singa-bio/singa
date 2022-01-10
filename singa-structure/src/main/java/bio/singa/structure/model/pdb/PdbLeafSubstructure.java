@@ -3,6 +3,7 @@ package bio.singa.structure.model.pdb;
 import bio.singa.chemistry.model.CovalentBondType;
 import bio.singa.structure.model.families.StructuralFamily;
 import bio.singa.structure.model.interfaces.Atom;
+import bio.singa.structure.model.interfaces.LeafIdentifier;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 
 import java.util.*;
@@ -90,6 +91,25 @@ public abstract class PdbLeafSubstructure implements LeafSubstructure {
         annotatedAsHetAtom = leafSubstructure.annotatedAsHetAtom;
     }
 
+    public static PdbLeafSubstructure from(LeafSubstructure leafSubstructure) {
+        if (leafSubstructure instanceof PdbLeafSubstructure) {
+            return leafSubstructure.getCopy();
+        } else {
+            LeafIdentifier identifier = leafSubstructure.getIdentifier();
+            PdbLeafIdentifier pdbLeafIdentifier = new PdbLeafIdentifier(identifier.getStructureIdentifier(), identifier.getModelIdentifier(), identifier.getChainIdentifier(), identifier.getSerial());
+            PdbLeafSubstructure pdbLeafSubstructure = PdbLeafSubstructureFactory.createLeafSubstructure(pdbLeafIdentifier, leafSubstructure.getFamily());
+            pdbLeafSubstructure.setAnnotatedAsHeteroAtom(leafSubstructure.isAnnotatedAsHeteroAtom());
+                // copy and add all atoms
+                for (Atom atom : leafSubstructure.getAllAtoms()) {
+                    PdbAtom pdbAtom = new PdbAtom(atom.getAtomIdentifier(), atom.getElement(), atom.getAtomName(), atom.getPosition());
+                    pdbAtom.setBFactor(atom.getBFactor());
+                    pdbLeafSubstructure.addAtom(pdbAtom);
+                }
+                // TODO add bonds
+            return pdbLeafSubstructure;
+        }
+    }
+
     public void setDivergingThreeLetterCode(String divergingThreeLetterCode) {
         this.divergingThreeLetterCode = divergingThreeLetterCode;
     }
@@ -114,7 +134,7 @@ public abstract class PdbLeafSubstructure implements LeafSubstructure {
         return annotatedAsHetAtom;
     }
 
-    public void setAnnotatedAsHetAtom(boolean annotatedAsHetAtom) {
+    public void setAnnotatedAsHeteroAtom(boolean annotatedAsHetAtom) {
         this.annotatedAsHetAtom = annotatedAsHetAtom;
     }
 

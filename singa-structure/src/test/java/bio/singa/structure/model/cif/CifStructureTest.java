@@ -172,8 +172,8 @@ class CifStructureTest {
 
     @Test
     void getNonPolymerEntities() {
-        Collection<CifEntity> nonPolymerEntities = structure7l7y.getAllNonPolymerEntities();
-        assertEquals(4, nonPolymerEntities.size());
+        Collection<CifChain> nonPolymerEntities = structure7l7y.getAllEntitiesFrom(structure7l7y.getFirstModel(), CifEntityType.NON_POLYMER);
+        assertEquals(5, nonPolymerEntities.size());
         Optional<CifLeafSubstructure> udp = nonPolymerEntities.stream()
                 .flatMap(entity -> entity.getAllLeafSubstructures().stream())
                 .filter(leaf -> leaf.getThreeLetterCode().equals("UDP"))
@@ -183,7 +183,7 @@ class CifStructureTest {
 
     @Test
     void useCorrectConformer() {
-        Optional<CifLeafSubstructure> udpOptional = structure7l7y.getAllNonPolymerEntities().stream()
+        Optional<CifLeafSubstructure> udpOptional = structure7l7y.getAllEntitiesFrom(structure7l7y.getFirstModel(), CifEntityType.NON_POLYMER).stream()
                 .flatMap(entity -> entity.getAllLeafSubstructures().stream())
                 .filter(leaf -> leaf.getThreeLetterCode().equals("UDP"))
                 .findAny();
@@ -237,6 +237,16 @@ class CifStructureTest {
                 .parse();
         Map<String, List<String>> assemblies = ((CifStructure) structure).getBiologicalAssemblies();
         assertEquals(8, assemblies.size());
+    }
+
+    @Test
+    void parseMutations() {
+
+        CifStructure structure6p6w = ((CifStructure) StructureParser.cif()
+                .pdbIdentifier("6p6w")
+                .parse());
+        assertTrue(structure6p6w.isMutated());
+        assertFalse(((CifStructure)structure1c0a).isMutated());
     }
 
 }

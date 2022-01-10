@@ -4,6 +4,7 @@ import bio.singa.chemistry.model.CovalentBondType;
 import bio.singa.structure.model.families.StructuralFamilies;
 import bio.singa.structure.model.families.StructuralFamily;
 import bio.singa.structure.io.general.StructureParserOptions;
+import bio.singa.structure.model.interfaces.LeafIdentifier;
 
 import java.util.Map;
 import java.util.Set;
@@ -22,13 +23,14 @@ public class PdbLeafSubstructureFactory {
 
     }
 
-    public static PdbLeafSubstructure createLeafSubstructure(PdbLeafIdentifier leafIdentifier, StructuralFamily family) {
+    public static PdbLeafSubstructure createLeafSubstructure(LeafIdentifier leafIdentifier, StructuralFamily family) {
+        PdbLeafIdentifier pdbLeafIdentifier = new PdbLeafIdentifier(leafIdentifier.getStructureIdentifier(), leafIdentifier.getModelIdentifier(), leafIdentifier.getChainIdentifier(), leafIdentifier.getSerial());
         if (StructuralFamilies.AminoAcids.isAminoAcid(family)) {
-            return new PdbAminoAcid(leafIdentifier, family);
+            return new PdbAminoAcid(pdbLeafIdentifier, family);
         } else if (StructuralFamilies.Nucleotides.isNucleotide(family)) {
-            return new PdbNucleotide(leafIdentifier, family);
+            return new PdbNucleotide(pdbLeafIdentifier, family);
         }
-        return new PdbLigand(leafIdentifier, family);
+        return new PdbLigand(pdbLeafIdentifier, family);
     }
 
     public static PdbLeafSubstructure createLeafSubstructure(PdbLeafIdentifier leafIdentifier, StructuralFamily family, Set<PdbAtom> atoms) {

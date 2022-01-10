@@ -39,6 +39,8 @@ public interface LeafSubstructure extends AtomContainer {
 
     Optional<? extends Atom> getAtomByName(String atomName);
 
+    void setAnnotatedAsHeteroAtom(boolean annotatedAsHetAtom);
+
     boolean isAnnotatedAsHeteroAtom();
 
     /**
@@ -47,6 +49,7 @@ public interface LeafSubstructure extends AtomContainer {
      * @return The three letter code of the chemical compound represented by this leaf substructure.
      */
     String getThreeLetterCode();
+
 
     /**
      * Returns a copy of this {@link LeafSubstructure}.

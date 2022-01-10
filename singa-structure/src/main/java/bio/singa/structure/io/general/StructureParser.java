@@ -322,13 +322,15 @@ public class StructureParser {
             List<String> pdbIdentifiers = Collections.singletonList(pdbIdentifier);
             SingleResultSelector selector = new SingleResultSelector(sourceLocation);
             selector.iterator = StructureIterator.createFromIdentifiers(pdbIdentifiers, sourceLocation, localStructureRepository);
-            assignRepository(selector.iterator);
+            assignLeafSkeletonFactoryTo(selector.iterator);
             return selector;
         }
 
-        public void assignRepository(StructureIterator iterator) {
+        public void assignLeafSkeletonFactoryTo(StructureIterator iterator) {
             if (leafSkeletonFactory == null) {
                iterator.setLeafSkeletonFactory(new LeafSkeletonFactory(new RemoteCcdParsingBehavior()));
+            } else {
+                iterator.setLeafSkeletonFactory(leafSkeletonFactory);
             }
         }
 
@@ -336,7 +338,7 @@ public class StructureParser {
         public MultiResultStep pdbIdentifiers(List<String> pdbIdentifiers) {
             MultiResultSelector selector = new MultiResultSelector(sourceLocation);
             selector.iterator = StructureIterator.createFromIdentifiers(pdbIdentifiers, sourceLocation, localStructureRepository);
-            assignRepository(selector.iterator);
+            assignLeafSkeletonFactoryTo(selector.iterator);
             return selector;
         }
 
@@ -344,7 +346,7 @@ public class StructureParser {
         public SingleResultStep file(File file) {
             SingleResultSelector selector = new SingleResultSelector(sourceLocation);
             selector.iterator = StructureIterator.createFromFiles(Collections.singletonList(file), sourceLocation);
-            assignRepository(selector.iterator);
+            assignLeafSkeletonFactoryTo(selector.iterator);
             return selector;
         }
 
@@ -352,7 +354,7 @@ public class StructureParser {
         public MultiResultStep files(List<File> files) {
             MultiResultSelector selector = new MultiResultSelector(sourceLocation);
             selector.iterator = StructureIterator.createFromFiles(files, sourceLocation);
-            assignRepository(selector.iterator);
+            assignLeafSkeletonFactoryTo(selector.iterator);
             return selector;
         }
 
@@ -360,7 +362,7 @@ public class StructureParser {
         public SingleResultStep path(Path path) {
             SingleResultSelector selector = new SingleResultSelector(sourceLocation);
             selector.iterator = StructureIterator.createFromPaths(Collections.singletonList(path), sourceLocation);
-            assignRepository(selector.iterator);
+            assignLeafSkeletonFactoryTo(selector.iterator);
             return selector;
         }
 
@@ -368,7 +370,7 @@ public class StructureParser {
         public MultiResultStep paths(List<Path> paths) {
             MultiResultSelector selector = new MultiResultSelector(sourceLocation);
             selector.iterator = StructureIterator.createFromPaths(paths, sourceLocation);
-            assignRepository(selector.iterator);
+            assignLeafSkeletonFactoryTo(selector.iterator);
             return selector;
         }
 
@@ -388,7 +390,7 @@ public class StructureParser {
             sourceLocation = SourceLocation.OFFLINE_PDB;
             SingleResultSelector selector = new SingleResultSelector(sourceLocation);
             selector.iterator = StructureIterator.createFromFiles(Collections.singletonList(tempFile), sourceLocation);
-            assignRepository(selector.iterator);
+            assignLeafSkeletonFactoryTo(selector.iterator);
             return selector;
         }
 
@@ -418,7 +420,7 @@ public class StructureParser {
             } else {
                 selector.iterator = StructureIterator.createFromChainList(path, separator, sourceLocation);
             }
-            assignRepository(selector.iterator);
+            assignLeafSkeletonFactoryTo(selector.iterator);
             return selector;
         }
 
@@ -426,7 +428,7 @@ public class StructureParser {
         public MultiResultStep all() {
             MultiResultSelector selector = new MultiResultSelector(sourceLocation);
             selector.iterator = StructureIterator.createFromLocalPdb(localStructureRepository);
-            assignRepository(selector.iterator);
+            assignLeafSkeletonFactoryTo(selector.iterator);
             return selector;
         }
 
@@ -434,7 +436,7 @@ public class StructureParser {
         public MultiResultStep all(int limit) {
             MultiResultSelector selector = new MultiResultSelector(sourceLocation);
             selector.iterator = StructureIterator.createFromLocalPdb(localStructureRepository, limit);
-            assignRepository(selector.iterator);
+            assignLeafSkeletonFactoryTo(selector.iterator);
             return selector;
         }
 
@@ -442,7 +444,7 @@ public class StructureParser {
         public SingleResultStep fileLocation(String location) {
             SingleResultSelector selector = new SingleResultSelector(sourceLocation);
             selector.iterator = StructureIterator.createFromLocations(Collections.singletonList(location));
-            assignRepository(selector.iterator);
+            assignLeafSkeletonFactoryTo(selector.iterator);
             return selector;
         }
 
@@ -450,7 +452,7 @@ public class StructureParser {
         public MultiResultStep fileLocations(List<String> locations) {
             MultiResultSelector selector = new MultiResultSelector(sourceLocation);
             selector.iterator = StructureIterator.createFromLocations(locations);
-            assignRepository(selector.iterator);
+            assignLeafSkeletonFactoryTo(selector.iterator);
             return selector;
         }
 

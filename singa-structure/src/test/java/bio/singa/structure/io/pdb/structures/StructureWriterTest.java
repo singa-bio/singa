@@ -1,17 +1,9 @@
 package bio.singa.structure.io.pdb.structures;
 
-import bio.singa.structure.io.general.LocalStructureRepository;
-import bio.singa.structure.io.general.SourceLocation;
 import bio.singa.structure.io.general.StructureParser;
 import bio.singa.structure.io.general.StructureWriter;
 import bio.singa.structure.model.interfaces.Structure;
-import bio.singa.structure.model.pdb.PdbStructure;
 import org.junit.jupiter.api.Test;
-
-import java.io.IOException;
-import java.nio.file.Path;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author fk
@@ -19,25 +11,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class StructureWriterTest {
 
     @Test
-    void writeMMTFStructure() throws IOException {
-
-        LocalStructureRepository localPDB = new LocalStructureRepository("/tmp/pdb", SourceLocation.OFFLINE_MMTF);
-        Path path = localPDB.getPathForStructure("1acj");
-
-        PdbStructure structure = (PdbStructure) StructureParser.pdb()
-                .pdbIdentifier("1acj")
+    void writeCifToPdb() {
+        Structure structure = StructureParser.cif()
+                .pdbIdentifier("1C0A")
                 .parse();
 
-        StructureWriter.mmtf()
+        String resultingString = StructureWriter.pdb()
                 .structure(structure)
-                .writeToPath(path);
+                .writeToString();
 
-        Structure reparsedStructure = StructureParser.local()
-                .localStructureRepository(localPDB)
-                .pdbIdentifier("1acj")
-                .parse();
-
-        assertEquals(structure.getAllAtoms().size(), reparsedStructure.getAllAtoms().size());
-        assertEquals(structure.getAllLigands().size(),reparsedStructure.getAllLigands().size());
+        System.out.println(resultingString);
     }
 }

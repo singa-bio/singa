@@ -30,6 +30,8 @@ public class CifStructure implements Structure {
 
     private double resolution;
 
+    private boolean isMutated;
+
     public CifStructure(String structureIdentifier) {
         this.structureIdentifier = structureIdentifier;
         models = new TreeMap<>();
@@ -47,6 +49,9 @@ public class CifStructure implements Structure {
         }
         // todo fill in
         entities = new TreeMap<>();
+        for (CifEntity entity : structure.entities.values()) {
+            entities.put(entity.getEntityIdentifier(), entity.getCopy());
+        }
         biologicalAssemblies = new HashMap<>(structure.biologicalAssemblies);
     }
 
@@ -86,10 +91,18 @@ public class CifStructure implements Structure {
         return getFirstModel().getFirstChain();
     }
 
-    public Collection<CifEntity> getAllNonPolymerEntities() {
+    public Collection<CifEntity> getAllEntities() {
+        return entities.values();
+    }
+
+    public Collection<CifChain> getAllEntitiesFrom(CifModel model, CifEntityType entityType) {
         return entities.values().stream()
-                .filter(cifEntity -> cifEntity.getCifEntityType().equals(CifEntityType.NON_POLYMER))
-                .collect(Collectors.toSet());
+                .filter(cifEntity -> cifEntity.getCifEntityType().equals(entityType))
+                .flatMap(cifEntity -> cifEntity.getAllChainIdentifiers().stream())
+                .map(model::getChain)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -147,6 +160,14 @@ public class CifStructure implements Structure {
 
     public void addModel(CifModel model) {
         models.put(model.getModelIdentifier(), model);
+    }
+
+    public boolean isMutated() {
+        return isMutated;
+    }
+
+    public void setMutated(boolean mutated) {
+        isMutated = mutated;
     }
 
     @Override
@@ -220,7 +241,7 @@ public class CifStructure implements Structure {
     }
 
     @Override
-    public Structure getCopy() {
+    public CifStructure getCopy() {
         return new CifStructure(this);
     }
 

@@ -42,6 +42,11 @@ public class MmtfLigand extends MmtfLeafSubstructure implements Ligand {
     }
 
     @Override
+    public void setAnnotatedAsHeteroAtom(boolean annotatedAsHetAtom) {
+
+    }
+
+    @Override
     public Ligand getCopy() {
         return new MmtfLigand(this);
     }
