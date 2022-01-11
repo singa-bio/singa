@@ -12,6 +12,7 @@ import org.rcsb.cif.model.CifFile;
 import org.rcsb.cif.model.Column;
 import org.rcsb.cif.model.text.TextColumn;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -121,4 +122,7 @@ public class LeafSkeletonFactory {
         }
     }
 
+    public Collection<LeafSkeleton> getLeafSkeletons() {
+        return leafSkeletonCache.values();
+    }
 }
