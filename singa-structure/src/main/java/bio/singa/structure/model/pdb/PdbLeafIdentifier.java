@@ -47,10 +47,6 @@ public class PdbLeafIdentifier extends AbstractLeafIdentifier {
      * @return The {@link PdbLeafIdentifier}.
      */
     public static PdbLeafIdentifier fromString(String string) {
-        if (!string.startsWith("PDB")) {
-            throw new IllegalArgumentException("PDB leaf identifiers must start with the PDB prefix (e.g. PDB:1ZUH-1-A-62) if parsed from raw string.");
-        }
-        string = string.substring(4);
         String[] split = string.split("-");
         if (split.length < 4 ^ split.length > 5) {
             throw new IllegalArgumentException("PDB leaf identifiers can only contain 3 or 4 (in case of negative serials) split characters (\"-\").");
@@ -109,7 +105,7 @@ public class PdbLeafIdentifier extends AbstractLeafIdentifier {
 
     @Override
     public String toString() {
-        return PDB_IDENTIFIER_PREFIX + ":" + getStructureIdentifier() + "-" + getModelIdentifier() + "-" + getChainIdentifier() + "-" + getSerial() + (insertionCode != DEFAULT_INSERTION_CODE ? insertionCode : "");
+        return getStructureIdentifier() + "-" + getModelIdentifier() + "-" + getChainIdentifier() + "-" + getSerial() + (insertionCode != DEFAULT_INSERTION_CODE ? insertionCode : "");
     }
 
     @Override

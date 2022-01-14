@@ -9,7 +9,7 @@ class CifLeafIdentifierTest {
 
     @Test
     void fromStringStandard() {
-        String testString = "CIF:1c0a-1-1-A-123";
+        String testString = "1c0a-1-1-A-123";
         CifLeafIdentifier leafIdentifier = CifLeafIdentifier.fromString(testString);
         assertEquals("1c0a", leafIdentifier.getStructureIdentifier());
         assertEquals(1, leafIdentifier.getModelIdentifier());
@@ -18,18 +18,9 @@ class CifLeafIdentifierTest {
         assertEquals(PdbLeafIdentifier.DEFAULT_INSERTION_CODE, leafIdentifier.getInsertionCode());
     }
 
-
-    @Test
-    void fromStringWrongPrefix() {
-        String testString = "PDB:1c0a-1-B-23A";
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            CifLeafIdentifier.fromString(testString);
-        });
-    }
-
     @Test
     void fromStringWrongSize() {
-        String testString = "CIF:1c0a-1-1-B-23-A";
+        String testString = "1c0a-1-1-B-23-A";
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
             CifLeafIdentifier.fromString(testString);
         });

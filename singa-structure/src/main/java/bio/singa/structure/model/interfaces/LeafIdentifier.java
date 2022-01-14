@@ -16,9 +16,9 @@ public interface LeafIdentifier extends Comparable<LeafIdentifier> {
 
     static LeafIdentifier fromString(String leafIdentifierString) {
         if (leafIdentifierString.startsWith("PDB")) {
-            return PdbLeafIdentifier.fromString(leafIdentifierString);
+            return PdbLeafIdentifier.fromString(leafIdentifierString.substring(4));
         } else if (leafIdentifierString.startsWith("CIF")) {
-            return CifLeafIdentifier.fromString(leafIdentifierString);
+            return CifLeafIdentifier.fromString(leafIdentifierString.substring(4));
         } else {
             throw new IllegalArgumentException("Leaf identifiers have to start with PDB of CIF prefix.");
         }

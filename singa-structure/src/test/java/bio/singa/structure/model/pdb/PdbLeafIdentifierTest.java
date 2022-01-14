@@ -8,7 +8,7 @@ class PdbLeafIdentifierTest {
 
     @Test
     void fromStringStandard() {
-        String testString = "PDB:1c0a-1-A-123";
+        String testString = "1c0a-1-A-123";
         PdbLeafIdentifier leafIdentifier = PdbLeafIdentifier.fromString(testString);
         assertEquals("1c0a", leafIdentifier.getStructureIdentifier());
         assertEquals(1, leafIdentifier.getModelIdentifier());
@@ -19,7 +19,7 @@ class PdbLeafIdentifierTest {
 
     @Test
     void fromStringNegativeSerial() {
-        String testString = "PDB:1c0a-1-B--23";
+        String testString = "1c0a-1-B--23";
         PdbLeafIdentifier leafIdentifier = PdbLeafIdentifier.fromString(testString);
         assertEquals("1c0a", leafIdentifier.getStructureIdentifier());
         assertEquals(1, leafIdentifier.getModelIdentifier());
@@ -30,7 +30,7 @@ class PdbLeafIdentifierTest {
 
     @Test
     void fromStringInsertionCode() {
-        String testString = "PDB:1c0a-2-B-23A";
+        String testString = "1c0a-2-B-23A";
         PdbLeafIdentifier leafIdentifier = PdbLeafIdentifier.fromString(testString);
         assertEquals("1c0a", leafIdentifier.getStructureIdentifier());
         assertEquals(2, leafIdentifier.getModelIdentifier());
@@ -48,16 +48,8 @@ class PdbLeafIdentifierTest {
     }
 
     @Test
-    void fromStringWrongPrefix() {
-        String testString = "CIF:1c0a-1-B-23A";
-        assertThrows(IllegalArgumentException.class, () -> {
-            PdbLeafIdentifier.fromString(testString);
-        });
-    }
-
-    @Test
     void fromStringWrongSize() {
-        String testString = "PDB:1c0a-1-1-B-23";
+        String testString = "1c0a-1-1-B-23";
         assertThrows(IllegalArgumentException.class, () -> {
             PdbLeafIdentifier.fromString(testString);
         });

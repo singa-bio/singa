@@ -33,10 +33,6 @@ public class CifLeafIdentifier extends AbstractLeafIdentifier {
      * @return The {@link CifLeafIdentifier}.
      */
     public static CifLeafIdentifier fromString(String string) {
-        if (!string.startsWith("CIF")) {
-            throw new IllegalArgumentException("CIF leaf identifiers must start with the CIF prefix (e.g. CIF:1ZUH-1-1-A-62) if parsed from raw string.");
-        }
-        string = string.substring(4);
         String[] split = string.split("-");
         if (split.length != 5) {
             throw new IllegalArgumentException("PDB leaf identifiers can only contain 4 split characters (\"-\").");
@@ -70,7 +66,7 @@ public class CifLeafIdentifier extends AbstractLeafIdentifier {
 
     @Override
     public String toString() {
-        return CIF_IDENTIFIER_PREFIX + ":" + getStructureIdentifier() + "-" + (entityIdentifier != DEFAULT_ENTITY_IDENTIFIER ? entityIdentifier + "-" : "") + getModelIdentifier() + "-" + getChainIdentifier() + "-" + getSerial();
+        return getStructureIdentifier() + "-" + (entityIdentifier != DEFAULT_ENTITY_IDENTIFIER ? entityIdentifier + "-" : "") + getModelIdentifier() + "-" + getChainIdentifier() + "-" + getSerial();
     }
 
 
