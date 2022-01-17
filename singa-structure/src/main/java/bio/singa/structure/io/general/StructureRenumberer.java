@@ -14,9 +14,11 @@ public class StructureRenumberer {
 
     private static final Logger logger = LoggerFactory.getLogger(StructureRenumberer.class);
 
-    public static Structure renumberAtomsConsecutively(Structure structure) {
+    private static final String CHAIN_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+
+    public static Structure renumberAtomsConsecutively(Structure structure, boolean renumberChain) {
         StructureRenumberer structureRenumberer = new StructureRenumberer();
-        return structureRenumberer.renumberAtoms(structure);
+        return structureRenumberer.renumberAtoms(structure, renumberChain);
     }
 
     /**
@@ -46,7 +48,7 @@ public class StructureRenumberer {
         atomIdentifierMapping = new HashMap<>();
     }
 
-    private PdbStructure renumberAtoms(Structure structure) {
+    private PdbStructure renumberAtoms(Structure structure, boolean renumberChain) {
         logger.debug("Renumbering structure {} consecutively.", structure);
         PdbStructure renumberedStructure = new PdbStructure();
         renumberedStructure.setPdbIdentifier(structure.getStructureIdentifier());
@@ -55,34 +57,46 @@ public class StructureRenumberer {
             PdbModel renumberedModel = new PdbModel(model.getModelIdentifier());
             renumberedStructure.addModel(renumberedModel);
             // consecutive parts
+            int currentChainIndex = 0;
+            Map<String, String> chainAliasMap = new HashMap<>();
             for (Chain chain : model.getAllChains()) {
-                PdbChain renumberedChain = new PdbChain(chain.getChainIdentifier());
+                String chainIdentifier;
+                if (renumberChain) {
+                    chainIdentifier = String.valueOf(CHAIN_ALPHABET.charAt(currentChainIndex));
+                    currentChainIndex++;
+                } else {
+                    chainIdentifier = chain.getChainIdentifier();
+                }
+                // remember which chain was mapped to which id
+                chainAliasMap.put(chain.getChainIdentifier(), chainIdentifier);
+                PdbChain renumberedChain = new PdbChain(chainIdentifier);
                 renumberedModel.addChain(renumberedChain);
                 if (chain instanceof PdbChain) {
                     PdbChain pdbChain = (PdbChain) chain;
                     for (PdbLeafSubstructure leafSubstructure : pdbChain.getConsecutivePart()) {
-                        PdbLeafSubstructure renumberedLeafSubstructure = renumberAtomsInLeafSubstructure(leafSubstructure);
+                        PdbLeafSubstructure renumberedLeafSubstructure = renumberAtomsInLeafSubstructure(chainIdentifier, leafSubstructure);
                         renumberedLeafSubstructure.setAnnotatedAsHeteroAtom(leafSubstructure.isAnnotatedAsHeteroAtom());
                         renumberedChain.addLeafSubstructure(renumberedLeafSubstructure, true);
                     }
                 } else {
                     for (LeafSubstructure leafSubstructure : chain.getAllLeafSubstructures()) {
-                        PdbLeafSubstructure renumberedLeafSubstructure = renumberAtomsInLeafSubstructure(leafSubstructure);
+                        PdbLeafSubstructure renumberedLeafSubstructure = renumberAtomsInLeafSubstructure(chainIdentifier, leafSubstructure);
                         renumberedLeafSubstructure.setAnnotatedAsHeteroAtom(leafSubstructure.isAnnotatedAsHeteroAtom());
                         renumberedChain.addLeafSubstructure(renumberedLeafSubstructure, true);
                     }
                 }
                 logger.trace("Keeping identifier {} for terminator token.", nextAtomIdentifier);
                 nextAtomIdentifier++;
+
             }
             // nonconsecutive parts
             for (Chain chain : model.getAllChains()) {
                 if (chain instanceof PdbChain) {
                     PdbChain pdbChain = (PdbChain) chain;
-                    PdbChain renumberedChain = renumberedModel.getChain(chain.getChainIdentifier()).orElseThrow(NoSuchElementException::new);
+                    PdbChain renumberedChain = renumberedModel.getChain(chainAliasMap.get(chain.getChainIdentifier())).orElseThrow(NoSuchElementException::new);
                     for (PdbLeafSubstructure leafSubstructure : pdbChain.getNonConsecutivePart()) {
-                        PdbLeafSubstructure renumberedLeafSubstructure = renumberAtomsInLeafSubstructure(leafSubstructure);
-                        renumberedLeafSubstructure.setAnnotatedAsHeteroAtom(true);
+                        PdbLeafSubstructure renumberedLeafSubstructure = renumberAtomsInLeafSubstructure(renumberedChain.getChainIdentifier(), leafSubstructure);
+                        renumberedLeafSubstructure.setAnnotatedAsHeteroAtom(leafSubstructure.isAnnotatedAsHeteroAtom());
                         renumberedChain.addLeafSubstructure(renumberedLeafSubstructure);
                     }
                 }
@@ -91,8 +105,10 @@ public class StructureRenumberer {
         return renumberLinkEntries(renumberedStructure);
     }
 
-    private PdbLeafSubstructure renumberAtomsInLeafSubstructure(LeafSubstructure leafSubstructure) {
-        PdbLeafSubstructure renumberedLeafSubstructure = createLeafSubstructure(leafSubstructure.getIdentifier(), leafSubstructure.getFamily());
+    private PdbLeafSubstructure renumberAtomsInLeafSubstructure(String chainIdentifier, LeafSubstructure leafSubstructure) {
+        LeafIdentifier identifier = leafSubstructure.getIdentifier();
+        PdbLeafIdentifier pdbLeafIdentifier = new PdbLeafIdentifier(identifier.getStructureIdentifier(), identifier.getModelIdentifier(), chainIdentifier, identifier.getSerial(), identifier.getInsertionCode());
+        PdbLeafSubstructure renumberedLeafSubstructure = createLeafSubstructure(pdbLeafIdentifier, leafSubstructure.getFamily());
         for (Atom atom : leafSubstructure.getAllAtoms()) {
             PdbAtom renumberedAtom = new PdbAtom(nextAtomIdentifier, atom.getElement(), atom.getAtomName(), atom.getPosition());
             renumberedAtom.setBFactor(atom.getBFactor());

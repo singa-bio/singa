@@ -185,7 +185,7 @@ public class StructureWriter {
         public String writeToString() {
             prepareInformationToWrite();
             if (options.isRenumberingAtoms()) {
-                structure = StructureRenumberer.renumberAtomsConsecutively(structure);
+                structure = StructureRenumberer.renumberAtomsConsecutively(structure, options.isRenumberChains());
             }
             if (options.isRenumberingSubstructures()) {
                 structure = StructureRenumberer.renumberLeaveSubstructuresWithMap(structure, options.getRenumberingMap());

@@ -9,6 +9,7 @@ public class StructureRepresentationOptions {
 
     private boolean renumberAtoms = false;
     private boolean renumberSubstructures = false;
+    private boolean renumberChains = false;
 
     private Map<PdbLeafIdentifier, Integer> renumberingMap;
 
@@ -56,6 +57,14 @@ public class StructureRepresentationOptions {
         this.renumberSubstructures = renumberSubstructures;
     }
 
+    public boolean isRenumberChains() {
+        return renumberChains;
+    }
+
+    public void setRenumberChains(boolean renumberChains) {
+        this.renumberChains = renumberChains;
+    }
+
     public Map<PdbLeafIdentifier, Integer> getRenumberingMap() {
         return renumberingMap;
     }
@@ -84,6 +93,12 @@ public class StructureRepresentationOptions {
             case RETAIN_SUBSTRUCTURE_NUMBERING:
                 options.renumberSubstructures = false;
                 break;
+            case RENUMBER_CHAINS_CONSECUTIVELY:
+                options.renumberChains = true;
+                break;
+            case RETAIN_CHAIN_NUMBERING:
+                options.renumberChains = false;
+                break;
         }
     }
 
@@ -95,8 +110,11 @@ public class StructureRepresentationOptions {
 
         RENUMBER_SUBSTRUCTURES,
 
-        RETAIN_SUBSTRUCTURE_NUMBERING;
+        RETAIN_SUBSTRUCTURE_NUMBERING,
 
+        RENUMBER_CHAINS_CONSECUTIVELY,
+
+        RETAIN_CHAIN_NUMBERING;
 
     }
 
