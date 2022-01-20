@@ -159,12 +159,14 @@ public class AffinityAlignment extends AlignmentMethod {
             // write exemplar
             StructureWriter.pdb()
                     .substructures(entry.getKey().getAllLeafSubstructures())
+                    .defaultSettings()
                     .writeToPath(outputPath.resolve(clusterBaseLocation + "exemplar_" + (clusterCounter + 1) + "_" + entry.getKey() + ".pdb"));
 
             // write cluster members
             for (StructuralMotif structuralMotif : entry.getValue()) {
                 StructureWriter.pdb()
                         .substructures(structuralMotif.getAllLeafSubstructures())
+                        .defaultSettings()
                         .writeToPath(outputPath.resolve(clusterBaseLocation + structuralMotif + ".pdb"));
             }
             clusterCounter++;

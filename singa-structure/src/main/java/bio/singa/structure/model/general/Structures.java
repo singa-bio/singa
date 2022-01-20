@@ -150,7 +150,7 @@ public class Structures {
         return Vectors3D.dihedralAngle(a.getPosition(), b.getPosition(), c.getPosition(), d.getPosition());
     }
 
-    public static PdbStructure toStructure(Collection<LeafSubstructure> leafSubstructures, String pdbIdentifier, String title) {
+    public static PdbStructure toStructure(Collection<? extends LeafSubstructure> leafSubstructures, String pdbIdentifier, String title) {
         PdbStructure renumberedStructure = new PdbStructure();
         renumberedStructure.setPdbIdentifier(pdbIdentifier);
         renumberedStructure.setTitle(title);

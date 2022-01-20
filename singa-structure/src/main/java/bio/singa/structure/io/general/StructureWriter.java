@@ -83,7 +83,7 @@ public class StructureWriter {
 
     }
 
-    public interface OptionsStep extends OutputStep {
+    public interface OptionsStep {
 
         OutputStep renumberSubstructures(Map<PdbLeafIdentifier, Integer> renumberingMap);
 
@@ -94,6 +94,8 @@ public class StructureWriter {
     }
 
     public interface OutputStep {
+
+        Structure getStructure();
 
         String writeToString();
 
@@ -166,30 +168,31 @@ public class StructureWriter {
         public OutputStep renumberSubstructures(Map<PdbLeafIdentifier, Integer> renumberingMap) {
             options.setRenumberingMap(renumberingMap);
             options.setRenumberingSubstructures(true);
+            prepareInformationToWrite();
             return null;
         }
 
         @Override
         public OutputStep settings(StructureRepresentationOptions.Setting... settings) {
             options.applySettings(settings);
+            prepareInformationToWrite();
             return this;
         }
 
         @Override
         public OutputStep defaultSettings() {
             options = StructureRepresentationOptions.defaultSettings();
+            prepareInformationToWrite();
             return this;
         }
 
         @Override
+        public Structure getStructure() {
+            return structure;
+        }
+
+        @Override
         public String writeToString() {
-            prepareInformationToWrite();
-            if (options.isRenumberingAtoms()) {
-                structure = StructureRenumberer.renumberAtomsConsecutively(structure, options.isRenumberChains());
-            }
-            if (options.isRenumberingSubstructures()) {
-                structure = StructureRenumberer.renumberLeaveSubstructuresWithMap(structure, options.getRenumberingMap());
-            }
             return StructureRepresentationFactory.getPdbStringRepresentation(structure);
         }
 
@@ -204,9 +207,16 @@ public class StructureWriter {
             if (linkEntries != null) {
                 linkEntries.forEach(linkEntry -> ((PdbStructure) structure).addLinkEntry(linkEntry));
             }
+            // apply renumbering
             if (structure != null && structure instanceof CifStructure) {
                 // renumbering cif structures strictly requires atom renumbering because of chain termination records
                 options.setRenumberingAtoms(true);
+            }
+            if (options.isRenumberingAtoms()) {
+                structure = StructureRenumberer.renumberAtomsConsecutively(structure, options.isRenumberChains());
+            }
+            if (options.isRenumberingSubstructures()) {
+                structure = StructureRenumberer.renumberLeaveSubstructuresWithMap(structure, options.getRenumberingMap());
             }
         }
 
@@ -266,6 +276,11 @@ public class StructureWriter {
         public OutputStep structure(Structure structure) {
             leafSubstructures = structure.getAllLeafSubstructures();
             return this;
+        }
+
+        @Override
+        public Structure getStructure() {
+            return Structures.toStructure(leafSubstructures, "", "");
         }
 
         @Override

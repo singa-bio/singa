@@ -531,9 +531,11 @@ public class Fit3DSiteAlignment implements Fit3D {
         try {
             StructureWriter.pdb()
                     .substructures(site1.getAllLeafSubstructures())
+                    .defaultSettings()
                     .writeToPath(outputDirectory.resolve(site1FileLocation));
             StructureWriter.pdb()
                     .substructures(mappedSite2)
+                    .defaultSettings()
                     .writeToPath(outputDirectory.resolve(site2FileLocation));
         } catch (IOException e) {
             logger.error("error writing Fit3DSite results", e);

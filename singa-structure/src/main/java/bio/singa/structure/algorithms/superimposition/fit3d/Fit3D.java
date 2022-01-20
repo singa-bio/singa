@@ -72,6 +72,7 @@ public interface Fit3D {
                     try {
                         StructureWriter.pdb()
                                 .substructures(match.getSubstructureSuperimposition().getMappedFullCandidate())
+                                .defaultSettings()
                                 .writeToPath(outputDirectory.resolve(match.getSubstructureSuperimposition().getStringRepresentation() + ".pdb"));
                     } catch (IOException e) {
                         logger.error("could not write match {}", match.getSubstructureSuperimposition().getStringRepresentation(), e);
@@ -92,6 +93,7 @@ public interface Fit3D {
                     try {
                         StructureWriter.pdb()
                                 .substructures(match.getSubstructureSuperimposition().getMappedFullCandidate())
+                                .defaultSettings()
                                 .writeToPath(outputDirectory.resolve(match.getSubstructureSuperimposition().getStringRepresentation() + ".pdb"));
                     } catch (IOException e) {
                         logger.error("could not write match {}", match.getSubstructureSuperimposition().getStringRepresentation(), e);

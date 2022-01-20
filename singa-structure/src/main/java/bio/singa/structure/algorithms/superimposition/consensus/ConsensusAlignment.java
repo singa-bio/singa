@@ -136,6 +136,7 @@ public class ConsensusAlignment extends AlignmentMethod {
             if (currentCluster.getLeafNodes().size() > 1) {
                 StructureWriter.pdb()
                         .substructures(currentCluster.getRoot().getData().getStructuralMotif().getAllLeafSubstructures())
+                        .defaultSettings()
                         .writeToPath(outputPath.resolve(clusterBaseLocation + "consensus_" + (i + 1) + ".pdb"));
             }
             // write leaves
@@ -143,10 +144,12 @@ public class ConsensusAlignment extends AlignmentMethod {
                 if (leafNode.getData().getSuperimposition() != null) {
                     StructureWriter.pdb()
                             .substructures(leafNode.getData().getSuperimposition().getMappedFullCandidate())
+                            .defaultSettings()
                             .writeToPath(outputPath.resolve(clusterBaseLocation + leafNode.getData().toString() + ".pdb"));
                 } else {
                     StructureWriter.pdb()
                             .substructures(leafNode.getData().getStructuralMotif().getAllLeafSubstructures())
+                            .defaultSettings()
                             .writeToPath(outputPath.resolve(clusterBaseLocation + leafNode.getData().toString() + ".pdb"));
                 }
             }
