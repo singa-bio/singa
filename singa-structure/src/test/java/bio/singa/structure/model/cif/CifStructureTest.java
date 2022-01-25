@@ -4,6 +4,7 @@ import bio.singa.core.utility.Pair;
 import bio.singa.mathematics.vectors.Vector3D;
 import bio.singa.structure.io.general.StructureParser;
 import bio.singa.structure.model.interfaces.*;
+import bio.singa.structure.model.mmtf.MmtfStructure;
 import bio.singa.structure.model.pdb.PdbLeafIdentifier;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -259,23 +260,14 @@ class CifStructureTest {
             fail("unable to get leaf with leaf identifier");
         }
         CifAminoAcid leaf = ((CifAminoAcid) optionalLeaf.get());
-        Map<String, Set<CifLeafSubstructure>> modifications = leaf.getModifications();
-        // check name
-        String modification = "N-Glycosylation";
-        assertTrue(modifications.containsKey(modification));
-        // check id
-        Set<CifLeafSubstructure> cifLeafSubstructures = modifications.get(modification);
-        assertEquals(1, cifLeafSubstructures.size());
-        CifLeafSubstructure connectedLeaf = cifLeafSubstructures.iterator().next();
-        CifLeafIdentifier expectedConnectedLeafId = LeafIdentifier.cif()
-                .model(1)
-                .chain("K")
-                .serial(0);
-        assertEquals(expectedConnectedLeafId, connectedLeaf.getIdentifier());
+        // check modification was assigned
+        String modificationChain = leaf.getModifications().get("N-Glycosylation");
+        assertNotNull(modificationChain);
+        assertEquals("K", modificationChain);
         // check connected atoms
-        Pair<CifAtom> connectedAtoms = leaf.getConnectedLeafs().keySet().iterator().next();
-        assertEquals("ND2", connectedAtoms.getFirst().getAtomName());
-        assertEquals("C1", connectedAtoms.getSecond().getAtomName());
+        Pair<String> connectedAtoms = leaf.getConnectedLeafs().keySet().iterator().next();
+        assertEquals("ND2", connectedAtoms.getFirst());
+        assertEquals("C1", connectedAtoms.getSecond());
     }
 
 
@@ -284,23 +276,35 @@ class CifStructureTest {
         // branched sugars ASN A-30
         // branched sugars ASN A-47
         // branched sugars ASN A-119
-        String structureId = "1l8j";
-        Structure structure = StructureParser.cif()
-                .pdbIdentifier(structureId)
+        String structureId1 = "1l8j";
+        Structure structure1 = StructureParser.cif()
+                .pdbIdentifier(structureId1)
                 .parse();
-        // TODO NDG is not correctly handled during branched import
-        // TODO handle import of non sequentially numbered "distinct" branched entities
-        // TODO just subsequently number leafs in branched entities and determine connections with connected leafs
-        System.out.println();
         // mixture of simple and complex modifications: 6rus
         // branched oligosacchride as PTM
         // simple sugars TRP A-56, 59
         // branched sugars THR A-65, 124, 82
         // simple sugars TPR A-112, 115, 118
-
+        String structureId2 = "6rus";
+        Structure structure2 = StructureParser.cif()
+                .pdbIdentifier(structureId2)
+                .parse();
         // sars cov spike: 6xr8
+        String structureId3 = "6xr8";
+        Structure structure3 = StructureParser.cif()
+                .pdbIdentifier(structureId3)
+                .parse();
+    }
 
-
+    @Test
+    void parseMaltose() {
+        String structureId1 = "1anf";
+        Structure structure1 = StructureParser.cif()
+                .pdbIdentifier(structureId1)
+                .parse();
+        CifStructure cifStructure = (CifStructure) structure1;
+        Optional<CifEntity> entity = cifStructure.getEntity(2);
+        System.out.println(entity.get().getName());
     }
 
 

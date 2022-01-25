@@ -25,6 +25,12 @@ public class CifConverter {
     private final Map<Integer, CifEntity> entityMap;
     private final Map<CifLeafIdentifier, PdbLeafIdentifier> pdbReferenceMap;
 
+    /**
+     * Chains of branched entities that are connected to protein polymer structures, making them modifications and part
+     * of the polymer chain.
+     */
+    private Set<String> connectedBranches;
+
     private LeafSkeletonFactory leafSkeletonFactory;
 
     private CifStructure structure;
@@ -46,6 +52,7 @@ public class CifConverter {
         this.createPdbReference = createPdbReference;
         entityMap = new HashMap<>();
         pdbReferenceMap = new HashMap<>();
+        connectedBranches = new HashSet<>();
     }
 
     public static CifStructure convert(MmCifFile cifFile, LeafSkeletonFactory leafSkeletonFactory) {
@@ -124,6 +131,7 @@ public class CifConverter {
             extractNonPolymerReferenceInformation(data);
         }
         extractConnectionInformation(data);
+        postProcessBranchedEntities();
         return structure;
     }
 
@@ -135,8 +143,10 @@ public class CifConverter {
         StrColumn entityIdColumn = atomSite.getLabelEntityId();
         // cif chain
         StrColumn chainColumn = atomSite.getLabelAsymId();
-        // leaf serial
+        // leaf serial (preferred)
         IntColumn leafSerialColumn = atomSite.getLabelSeqId();
+        // auth leaf serial (to distinguish branched monomer leaves)
+        IntColumn authLeafSerialColumn = atomSite.getAuthSeqId();
         // hetatom
         StrColumn groupPdbColumn = atomSite.getGroupPDB();
         // three letter code
@@ -169,6 +179,10 @@ public class CifConverter {
             int entityIdentifier = Integer.parseInt(entityIdColumn.get(row));
             int modelIdentifier = modelColumn.get(row);
 
+            // in case of branched entities use author id to distinguish monomers explicitly
+            if (cifSerial == 0 && entityMap.get(entityIdentifier).getCifEntityType().equals(CifEntityType.BRANCHED)) {
+                cifSerial = authLeafSerialColumn.get(row);
+            }
             CifLeafIdentifier cifLeafIdentifier = new CifLeafIdentifier(pdbId, entityIdentifier, modelIdentifier, chainIdentifier, cifSerial);
             String threeLetterCode = threeLetterCodeColumn.get(row);
             String leafIsHetAtomString = groupPdbColumn.get(row);
@@ -222,6 +236,20 @@ public class CifConverter {
             entity.setName(entityNameColumn.get(row));
             entityMap.put(entityIdentifier, entity);
         }
+
+        // try to get common entity names
+        EntityNameCom entityNameCom = data.getEntityNameCom();
+        if (!entityNameCom.isDefined()) {
+            return;
+        }
+        StrColumn comEntityId = entityNameCom.getEntityId();
+        StrColumn comName = entityNameCom.getName();
+        for (int row = 0; row < entityNameCom.getRowCount(); row++) {
+            int entityIdentifier = Integer.parseInt(comEntityId.get(row));
+            String name = comName.get(row);
+            entityMap.get(entityIdentifier).setName(name);
+        }
+
     }
 
     /**
@@ -300,12 +328,16 @@ public class CifConverter {
         StrColumn ptnr1LabelAsymId = structConn.getPtnr1LabelAsymId();
         // leaf serial first
         IntColumn ptnr1LabelSeqId = structConn.getPtnr1LabelSeqId();
+        // auth leaf serial first
+        IntColumn ptnr1AuthSeqId = structConn.getPtnr1AuthSeqId();
         // atom name first
         StrColumn ptnr1LabelAtomId = structConn.getPtnr1LabelAtomId();
         // chain second
         StrColumn ptnr2LabelAsymId = structConn.getPtnr2LabelAsymId();
         // leaf serial second
         IntColumn ptnr2LabelSeqId = structConn.getPtnr2LabelSeqId();
+        // auth leaf serial first
+        IntColumn ptnr2AuthSeqId = structConn.getPtnr2AuthSeqId();
         // atom name first
         StrColumn ptnr2LabelAtomId = structConn.getPtnr2LabelAtomId();
 
@@ -323,10 +355,17 @@ public class CifConverter {
             }
             String firstChainId = ptnr1LabelAsymId.get(row);
             int firstSerial = ptnr1LabelSeqId.get(row);
+            // in branched case there is some inconsistency with the sequence id
+            if (firstSerial == 0 && structure.getFirstModel().getChain(firstChainId).get().getType().equals(CifEntityType.BRANCHED)) {
+                firstSerial = ptnr1AuthSeqId.get(row);
+            }
             String firstAtomName = ptnr1LabelAtomId.get(row);
-
             String secondChainId = ptnr2LabelAsymId.get(row);
             int secondSerial = ptnr2LabelSeqId.get(row);
+            // in branched case there is some inconsistency with the sequence id
+            if (secondSerial == 0 && structure.getFirstModel().getChain(secondChainId).get().getType().equals(CifEntityType.BRANCHED)) {
+                secondSerial = ptnr2AuthSeqId.get(row);
+            }
             String secondAtomName = ptnr2LabelAtomId.get(row);
 
 
@@ -356,27 +395,41 @@ public class CifConverter {
                     continue;
                 }
                 // assign connection
-                firstLeaf.connect(firstAtom.get(), secondAtom.get(), secondLeaf);
+                firstLeaf.connect(firstAtom.get().getAtomName(), secondAtom.get().getAtomName(), secondLeaf);
                 if (descriptor.isEmpty()) {
                     descriptor = "modificaiton " + modificationCounter.getAndIncrement();
                 }
                 setModification(descriptor, firstLeaf, secondLeaf);
-                setModification(descriptor, secondLeaf, firstLeaf);
             }
         }
     }
 
-    private Set<CifLeafSubstructure> setModification(String descriptor, CifLeafSubstructure aminoAcidLeaf, CifLeafSubstructure nonAminoAcidLeaf) {
-        Set<CifLeafSubstructure> modifications = new HashSet<>();
-        if (aminoAcidLeaf instanceof CifAminoAcid) {
-            CifAminoAcid aminoAcid = (CifAminoAcid) aminoAcidLeaf;
-            modifications.add(nonAminoAcidLeaf);
-            aminoAcid.getModifications().put(descriptor, modifications);
-            nonAminoAcidLeaf.setPartOfPolymer(true);
+    private void setModification(String descriptor, CifLeafSubstructure firstLeaf, CifLeafSubstructure secondLeaf) {
+        if (firstLeaf instanceof CifAminoAcid) {
+            String chainIdentifier = secondLeaf.getIdentifier().getChainIdentifier();
+            connectedBranches.add(chainIdentifier);
+            ((CifAminoAcid) firstLeaf).getModifications().put(descriptor, chainIdentifier);
+        } else if (secondLeaf instanceof CifAminoAcid) {
+            String chainIdentifier = firstLeaf.getIdentifier().getChainIdentifier();
+            connectedBranches.add(chainIdentifier);
+            ((CifAminoAcid) secondLeaf).getModifications().put(descriptor, chainIdentifier);
         }
-        return modifications;
     }
 
+    private void postProcessBranchedEntities() {
+        for (String connectedBranch : connectedBranches) {
+            for (CifModel model : structure.getAllModels()) {
+                Optional<CifChain> optionalChain = model.getChain(connectedBranch);
+                if (!optionalChain.isPresent()) {
+                    continue;
+                }
+                CifChain chain = optionalChain.get();
+                for (CifLeafSubstructure substructure : chain.getAllLeafSubstructures()) {
+                    substructure.setPartOfPolymer(true);
+                }
+            }
+        }
+    }
 
     private CifLeafSubstructure appendLeafSubstructure(CifEntity cifEntity, CifChain chain, CifLeafIdentifier cifLeafIdentifier, String threeLetterCode, String leafIsHetAtomString) {
         CifLeafSubstructure leafSubstructure = CifLeafSubstructureFactory.createLeafSubstructure(leafSkeletonFactory.getLeafSkeleton(threeLetterCode), cifLeafIdentifier);
@@ -388,6 +441,7 @@ public class CifConverter {
 
     private CifChain appendChain(CifEntity entity, CifModel model, String chainIdentifier) {
         CifChain cifChain = new CifChain(chainIdentifier);
+        cifChain.setType(entity.getCifEntityType());
         model.addChain(cifChain);
         entity.addChain(cifChain);
         return cifChain;

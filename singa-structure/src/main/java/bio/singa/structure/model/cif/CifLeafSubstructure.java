@@ -23,7 +23,10 @@ public class CifLeafSubstructure implements LeafSubstructure {
 
     private final Map<String, CifConformation> conformations;
 
-    private final Map<Pair<CifAtom>, LeafSubstructure> connectedLeafs;
+    /**
+     * pair of atom names that link the connected leaves
+     */
+    private final Map<Pair<String>, CifLeafIdentifier> connectedLeafs;
 
     /**
      * Remembers if this leaf was an HETATOM entry
@@ -42,13 +45,14 @@ public class CifLeafSubstructure implements LeafSubstructure {
     }
 
     public CifLeafSubstructure(CifLeafSubstructure cifLeafSubstructure) {
-        // TODO does not copy connected leafs
         this(cifLeafSubstructure.leafIdentifier);
         family = cifLeafSubstructure.family;
         annotatedAsHetAtom = cifLeafSubstructure.annotatedAsHetAtom;
+        isPartOfPolymer = cifLeafSubstructure.isPartOfPolymer;
         for (Map.Entry<String, CifConformation> entry : cifLeafSubstructure.conformations.entrySet()) {
             conformations.put(entry.getKey(), entry.getValue().getCopy());
         }
+        connectedLeafs.putAll(cifLeafSubstructure.connectedLeafs);
     }
 
     void postProcessConformations() {
@@ -108,13 +112,12 @@ public class CifLeafSubstructure implements LeafSubstructure {
         return Optional.of(next);
     }
 
-    public void connect(CifAtom atomOfThisLeaf, CifAtom atomOfOtherLeaf, CifLeafSubstructure otherLeaf) {
-        CommutablePair<CifAtom> atomPair = new CommutablePair<>(atomOfThisLeaf, atomOfOtherLeaf);
-        connectedLeafs.put(atomPair, otherLeaf);
-        otherLeaf.connectedLeafs.put(atomPair, this);
+    public void connect(String atomNameOfThisLeaf, String atomNameOfOtherLeaf, CifLeafSubstructure otherLeaf) {
+        connectedLeafs.put(new CommutablePair<>(atomNameOfThisLeaf, atomNameOfOtherLeaf), otherLeaf.getIdentifier());
+        otherLeaf.connectedLeafs.put(new CommutablePair<>(atomNameOfOtherLeaf, atomNameOfThisLeaf), getIdentifier());
     }
 
-    public Map<Pair<CifAtom>, LeafSubstructure> getConnectedLeafs() {
+    public Map<Pair<String>, CifLeafIdentifier> getConnectedLeafs() {
         return connectedLeafs;
     }
 

@@ -11,9 +11,10 @@ public class CifAminoAcid extends CifLeafSubstructure implements AminoAcid {
     private String divergingThreeLetterCode;
 
     /**
-     * string is "pdbx_role" of _struct_conn
+     * key is "pdbx_role" of _struct_conn
+     * value is chain that is connected
      */
-    private final Map<String, Set<CifLeafSubstructure>> modifications;
+    private final Map<String, String> modifications;
 
     public CifAminoAcid(CifLeafIdentifier leafIdentifier) {
         super(leafIdentifier);
@@ -23,7 +24,7 @@ public class CifAminoAcid extends CifLeafSubstructure implements AminoAcid {
     public CifAminoAcid(CifAminoAcid cifAminoAcid) {
         super(cifAminoAcid);
         divergingThreeLetterCode = cifAminoAcid.divergingThreeLetterCode;
-        modifications = new HashMap<>();
+        modifications = new HashMap<>(cifAminoAcid.modifications);
     }
 
     @Override
@@ -42,7 +43,7 @@ public class CifAminoAcid extends CifLeafSubstructure implements AminoAcid {
         this.divergingThreeLetterCode = divergingThreeLetterCode;
     }
 
-    public Map<String, Set<CifLeafSubstructure>> getModifications() {
+    public Map<String, String> getModifications() {
         return modifications;
     }
 

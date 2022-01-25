@@ -6,6 +6,7 @@ import bio.singa.structure.model.general.StructuralMotifs;
 import bio.singa.structure.model.interfaces.Structure;
 import bio.singa.structure.io.general.StructureParser;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -36,6 +37,7 @@ class StructuralMotifsTest {
     }
 
     @Test
+    @Disabled
     void shouldAssignExchanges() {
         StructuralMotifs.assignComplexExchanges(structuralMotif, ALL_GUTTERIDGE);
         assertTrue(ALL_GUTTERIDGE.containsAll(structuralMotif.getAllAminoAcids()
