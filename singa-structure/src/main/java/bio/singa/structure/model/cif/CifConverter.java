@@ -3,6 +3,7 @@ package bio.singa.structure.model.cif;
 import bio.singa.chemistry.model.elements.ElementProvider;
 import bio.singa.mathematics.vectors.Vector3D;
 import bio.singa.structure.io.ccd.LeafSkeletonFactory;
+import bio.singa.structure.model.interfaces.LeafIdentifier;
 import bio.singa.structure.model.pdb.PdbLeafIdentifier;
 import org.rcsb.cif.model.FloatColumn;
 import org.rcsb.cif.model.IntColumn;
@@ -10,21 +11,26 @@ import org.rcsb.cif.model.StrColumn;
 import org.rcsb.cif.schema.mm.*;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 public class CifConverter {
 
-    private boolean createPdbReference;
+    // TODO could be enum
+    public static final String COVALENT_CONNECTION_TYPE = "covale";
+
+    private final boolean createPdbReference;
 
     private final MmCifFile mmcifFile;
-    private Map<Integer, CifEntity> entityMap;
-    private Map<CifLeafIdentifier, PdbLeafIdentifier> pdbReferenceMap;
+    private final Map<Integer, CifEntity> entityMap;
+    private final Map<CifLeafIdentifier, PdbLeafIdentifier> pdbReferenceMap;
 
     private LeafSkeletonFactory leafSkeletonFactory;
 
     private CifStructure structure;
     private String pdbId;
-    private boolean isMutated;
+
+    private AtomicInteger modificationCounter = new AtomicInteger(0);
 
     public CifConverter(MmCifFile mmcifFile) {
         this(mmcifFile, false);
@@ -117,6 +123,7 @@ public class CifConverter {
             extractPolymerReferenceInformation(data);
             extractNonPolymerReferenceInformation(data);
         }
+        extractConnectionInformation(data);
         return structure;
     }
 
@@ -178,7 +185,7 @@ public class CifConverter {
                     .orElseGet(() -> appendChain(entity, model, chainIdentifier));
 
             CifLeafSubstructure leafSubstructure = chain.getLeafSubstructure(cifLeafIdentifier)
-                    .orElseGet(() -> appendLeafSubstructure(chain, cifLeafIdentifier, threeLetterCode, leafIsHetAtomString));
+                    .orElseGet(() -> appendLeafSubstructure(entity, chain, cifLeafIdentifier, threeLetterCode, leafIsHetAtomString));
 
             CifAtom cifAtom = new CifAtom(atomSerialColumn.get(row));
             cifAtom.setAtomName(atomNameColumn.get(row));
@@ -222,7 +229,7 @@ public class CifConverter {
      * "asym_id" = "mmcif chain" equivalent pdb world "pdb_strand_id"
      * "seq_id" = "mmcif serial" equivalent pdb world "auth_seq_num"
      * there are no insertion codes, pdb insertion codes are "pdb_ins_code"
-     * entity id if new for mmcif "entity_id", information on different / same antities that occur in structures
+     * entity id if new for mmcif "entity_id", information on different / same entities that occur in structures
      *
      * @param data
      */
@@ -283,9 +290,98 @@ public class CifConverter {
         }
     }
 
-    private CifLeafSubstructure appendLeafSubstructure(CifChain chain, CifLeafIdentifier cifLeafIdentifier, String threeLetterCode, String leafIsHetAtomString) {
+    private void extractConnectionInformation(MmCifBlock data) {
+        StructConn structConn = data.getStructConn();
+        // connection type e.g. disulf, covale, ...
+        StrColumn connTypeId = structConn.getConnTypeId();
+        // name for PTMs
+        StrColumn pdbxRole = structConn.getPdbxRole();
+        // chain first
+        StrColumn ptnr1LabelAsymId = structConn.getPtnr1LabelAsymId();
+        // leaf serial first
+        IntColumn ptnr1LabelSeqId = structConn.getPtnr1LabelSeqId();
+        // atom name first
+        StrColumn ptnr1LabelAtomId = structConn.getPtnr1LabelAtomId();
+        // chain second
+        StrColumn ptnr2LabelAsymId = structConn.getPtnr2LabelAsymId();
+        // leaf serial second
+        IntColumn ptnr2LabelSeqId = structConn.getPtnr2LabelSeqId();
+        // atom name first
+        StrColumn ptnr2LabelAtomId = structConn.getPtnr2LabelAtomId();
+
+
+        for (int row = 0; row < structConn.getRowCount(); row++) {
+            String connectionType = connTypeId.get(row);
+            // only for covalent connections
+            // TODO could be expanded to disulfide bonds etc.
+            if (!connectionType.equals(COVALENT_CONNECTION_TYPE)) {
+                continue;
+            }
+            String descriptor = "";
+            if (pdbxRole.isDefined()) {
+                descriptor = pdbxRole.get(row);
+            }
+            String firstChainId = ptnr1LabelAsymId.get(row);
+            int firstSerial = ptnr1LabelSeqId.get(row);
+            String firstAtomName = ptnr1LabelAtomId.get(row);
+
+            String secondChainId = ptnr2LabelAsymId.get(row);
+            int secondSerial = ptnr2LabelSeqId.get(row);
+            String secondAtomName = ptnr2LabelAtomId.get(row);
+
+
+            for (CifModel model : structure.getAllModels()) {
+                // create leaf ids
+                CifLeafIdentifier firstLeafIdentifier = LeafIdentifier.cif()
+                        .model(model.getModelIdentifier())
+                        .chain(firstChainId)
+                        .serial(firstSerial);
+                CifLeafIdentifier secondLeafIdentifier = LeafIdentifier.cif()
+                        .model(model.getModelIdentifier())
+                        .chain(secondChainId)
+                        .serial(secondSerial);
+                // get leafs
+                Optional<CifLeafSubstructure> optionalFirstLeaf = model.getLeafSubstructure(firstLeafIdentifier);
+                Optional<CifLeafSubstructure> optionalSecondLeaf = model.getLeafSubstructure(secondLeafIdentifier);
+                // either leaf not present
+                if (!optionalFirstLeaf.isPresent() || !optionalSecondLeaf.isPresent()) {
+                    continue;
+                }
+                CifLeafSubstructure firstLeaf = optionalFirstLeaf.get();
+                CifLeafSubstructure secondLeaf = optionalSecondLeaf.get();
+                Optional<CifAtom> firstAtom = firstLeaf.getAtomByName(firstAtomName);
+                Optional<CifAtom> secondAtom = secondLeaf.getAtomByName(secondAtomName);
+                // either atom not present
+                if (!firstAtom.isPresent() || !secondAtom.isPresent()) {
+                    continue;
+                }
+                // assign connection
+                firstLeaf.connect(firstAtom.get(), secondAtom.get(), secondLeaf);
+                if (descriptor.isEmpty()) {
+                    descriptor = "modificaiton " + modificationCounter.getAndIncrement();
+                }
+                setModification(descriptor, firstLeaf, secondLeaf);
+                setModification(descriptor, secondLeaf, firstLeaf);
+            }
+        }
+    }
+
+    private Set<CifLeafSubstructure> setModification(String descriptor, CifLeafSubstructure aminoAcidLeaf, CifLeafSubstructure nonAminoAcidLeaf) {
+        Set<CifLeafSubstructure> modifications = new HashSet<>();
+        if (aminoAcidLeaf instanceof CifAminoAcid) {
+            CifAminoAcid aminoAcid = (CifAminoAcid) aminoAcidLeaf;
+            modifications.add(nonAminoAcidLeaf);
+            aminoAcid.getModifications().put(descriptor, modifications);
+            nonAminoAcidLeaf.setPartOfPolymer(true);
+        }
+        return modifications;
+    }
+
+
+    private CifLeafSubstructure appendLeafSubstructure(CifEntity cifEntity, CifChain chain, CifLeafIdentifier cifLeafIdentifier, String threeLetterCode, String leafIsHetAtomString) {
         CifLeafSubstructure leafSubstructure = CifLeafSubstructureFactory.createLeafSubstructure(leafSkeletonFactory.getLeafSkeleton(threeLetterCode), cifLeafIdentifier);
         leafSubstructure.setAnnotatedAsHeteroAtom(leafIsHetAtomString.equals("HETATM"));
+        leafSubstructure.setPartOfPolymer(cifEntity.getCifEntityType().equals(CifEntityType.POLYMER));
         chain.addLeafSubstructure(leafSubstructure);
         return leafSubstructure;
     }

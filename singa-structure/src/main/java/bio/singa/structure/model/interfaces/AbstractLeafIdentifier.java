@@ -39,17 +39,14 @@ public abstract class AbstractLeafIdentifier implements LeafIdentifier {
 
         AbstractLeafIdentifier that = (AbstractLeafIdentifier) o;
 
-        if (modelIdentifier != that.modelIdentifier) return false;
         if (serial != that.serial) return false;
-        if (!Objects.equals(structureIdentifier, that.structureIdentifier))
-            return false;
+        if (modelIdentifier != that.modelIdentifier) return false;
         return Objects.equals(chainIdentifier, that.chainIdentifier);
     }
 
     @Override
     public int hashCode() {
-        int result = structureIdentifier != null ? structureIdentifier.hashCode() : 0;
-        result = 31 * result + modelIdentifier;
+        int result = modelIdentifier;
         result = 31 * result + (chainIdentifier != null ? chainIdentifier.hashCode() : 0);
         result = 31 * result + serial;
         return result;

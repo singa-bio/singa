@@ -1,20 +1,15 @@
 package bio.singa.structure.model.cif;
 
+import bio.singa.core.utility.Pair;
 import bio.singa.mathematics.vectors.Vector3D;
 import bio.singa.structure.io.general.StructureParser;
 import bio.singa.structure.model.interfaces.*;
-import bio.singa.structure.model.mmtf.MmtfStructure;
 import bio.singa.structure.model.pdb.PdbLeafIdentifier;
-import bio.singa.structure.model.pdb.PdbStructure;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -241,12 +236,72 @@ class CifStructureTest {
 
     @Test
     void parseMutations() {
-
         CifStructure structure6p6w = ((CifStructure) StructureParser.cif()
                 .pdbIdentifier("6p6w")
                 .parse());
         assertTrue(structure6p6w.isMutated());
-        assertFalse(((CifStructure)structure1c0a).isMutated());
+        assertFalse(((CifStructure) structure1c0a).isMutated());
     }
+
+    @Test
+    void parseSimpleSubstructreAsModification() {
+        String structureId = "5l9d";
+        Structure structure = StructureParser.cif()
+                .pdbIdentifier(structureId)
+                .parse();
+        // ASN B-26 connected to NAG K-0
+        CifLeafIdentifier leafIdentifier = LeafIdentifier.cif()
+                .model(1)
+                .chain("B")
+                .serial(26);
+        Optional<? extends LeafSubstructure> optionalLeaf = structure.getLeafSubstructure(leafIdentifier);
+        if (!optionalLeaf.isPresent()) {
+            fail("unable to get leaf with leaf identifier");
+        }
+        CifAminoAcid leaf = ((CifAminoAcid) optionalLeaf.get());
+        Map<String, Set<CifLeafSubstructure>> modifications = leaf.getModifications();
+        // check name
+        String modification = "N-Glycosylation";
+        assertTrue(modifications.containsKey(modification));
+        // check id
+        Set<CifLeafSubstructure> cifLeafSubstructures = modifications.get(modification);
+        assertEquals(1, cifLeafSubstructures.size());
+        CifLeafSubstructure connectedLeaf = cifLeafSubstructures.iterator().next();
+        CifLeafIdentifier expectedConnectedLeafId = LeafIdentifier.cif()
+                .model(1)
+                .chain("K")
+                .serial(0);
+        assertEquals(expectedConnectedLeafId, connectedLeaf.getIdentifier());
+        // check connected atoms
+        Pair<CifAtom> connectedAtoms = leaf.getConnectedLeafs().keySet().iterator().next();
+        assertEquals("ND2", connectedAtoms.getFirst().getAtomName());
+        assertEquals("C1", connectedAtoms.getSecond().getAtomName());
+    }
+
+
+    @Test
+    void parseComplexSubstructresAsModification() {
+        // branched sugars ASN A-30
+        // branched sugars ASN A-47
+        // branched sugars ASN A-119
+        String structureId = "1l8j";
+        Structure structure = StructureParser.cif()
+                .pdbIdentifier(structureId)
+                .parse();
+        // TODO NDG is not correctly handled during branched import
+        // TODO handle import of non sequentially numbered "distinct" branched entities
+        // TODO just subsequently number leafs in branched entities and determine connections with connected leafs
+        System.out.println();
+        // mixture of simple and complex modifications: 6rus
+        // branched oligosacchride as PTM
+        // simple sugars TRP A-56, 59
+        // branched sugars THR A-65, 124, 82
+        // simple sugars TPR A-112, 115, 118
+
+        // sars cov spike: 6xr8
+
+
+    }
+
 
 }

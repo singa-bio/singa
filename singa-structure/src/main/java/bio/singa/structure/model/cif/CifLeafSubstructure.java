@@ -1,5 +1,7 @@
 package bio.singa.structure.model.cif;
 
+import bio.singa.core.utility.CommutablePair;
+import bio.singa.core.utility.Pair;
 import bio.singa.structure.model.families.StructuralFamily;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 
@@ -19,19 +21,28 @@ public class CifLeafSubstructure implements LeafSubstructure {
      */
     private StructuralFamily family;
 
-    private Map<String, CifConformation> conformations;
+    private final Map<String, CifConformation> conformations;
+
+    private final Map<Pair<CifAtom>, LeafSubstructure> connectedLeafs;
 
     /**
-     * Remembers if this Leaf was an HETATOM entry
+     * Remembers if this leaf was an HETATOM entry
      */
     private boolean annotatedAsHetAtom;
+
+    /**
+     * Remembers if this leaf is par of a polymer
+     */
+    private boolean isPartOfPolymer;
 
     public CifLeafSubstructure(CifLeafIdentifier leafIdentifier) {
         this.leafIdentifier = leafIdentifier;
         conformations = new LinkedHashMap<>();
+        connectedLeafs = new HashMap<>();
     }
 
     public CifLeafSubstructure(CifLeafSubstructure cifLeafSubstructure) {
+        // TODO does not copy connected leafs
         this(cifLeafSubstructure.leafIdentifier);
         family = cifLeafSubstructure.family;
         annotatedAsHetAtom = cifLeafSubstructure.annotatedAsHetAtom;
@@ -47,7 +58,7 @@ public class CifLeafSubstructure implements LeafSubstructure {
         if (!defaultConformationOptional.isPresent()) {
             return;
         }
-        // otherwise there is a mixture between default and divergent conformations
+        // otherwise, there is a mixture between default and divergent conformations
         // the approach is to add the default atoms to the divergent conformations,
         // such that all conformations contain all atoms of the substructure
         // hence no merging of conformations needs to be don each time a atom is requested
@@ -95,6 +106,24 @@ public class CifLeafSubstructure implements LeafSubstructure {
             return Optional.ofNullable(iterator.next());
         }
         return Optional.of(next);
+    }
+
+    public void connect(CifAtom atomOfThisLeaf, CifAtom atomOfOtherLeaf, CifLeafSubstructure otherLeaf) {
+        CommutablePair<CifAtom> atomPair = new CommutablePair<>(atomOfThisLeaf, atomOfOtherLeaf);
+        connectedLeafs.put(atomPair, otherLeaf);
+        otherLeaf.connectedLeafs.put(atomPair, this);
+    }
+
+    public Map<Pair<CifAtom>, LeafSubstructure> getConnectedLeafs() {
+        return connectedLeafs;
+    }
+
+    public boolean isPartOfPolymer() {
+        return isPartOfPolymer;
+    }
+
+    public void setPartOfPolymer(boolean partOfPolymer) {
+        isPartOfPolymer = partOfPolymer;
     }
 
     @Override

@@ -8,8 +8,7 @@ import java.util.Comparator;
 public interface LeafIdentifier extends Comparable<LeafIdentifier> {
 
     Comparator<LeafIdentifier> LEAF_IDENTIFIER_COMPARATOR = Comparator
-            .comparing(LeafIdentifier::getStructureIdentifier)
-            .thenComparing(LeafIdentifier::getModelIdentifier)
+            .comparing(LeafIdentifier::getModelIdentifier)
             .thenComparing(LeafIdentifier::getChainIdentifier)
             .thenComparing(LeafIdentifier::getSerial)
             .thenComparing(LeafIdentifier::getInsertionCode);
@@ -36,7 +35,7 @@ public interface LeafIdentifier extends Comparable<LeafIdentifier> {
 
     boolean hasInsertionCode();
 
-    static CifStructureStep cif() {
+    static CifModelStep cif() {
         return new CifIdentifierBuilder();
     }
 
@@ -52,7 +51,7 @@ public interface LeafIdentifier extends Comparable<LeafIdentifier> {
 
     }
 
-    interface CifModelStep {
+    interface CifModelStep extends CifStructureStep {
 
         CifChainStep model(int modelIdentifier);
 
@@ -72,8 +71,8 @@ public interface LeafIdentifier extends Comparable<LeafIdentifier> {
 
     class CifIdentifierBuilder implements CifStructureStep, CifEntityStep, CifModelStep, CifChainStep, CifSerialStep {
 
-        private String structureIdentifier;
-        private int entityIdentifier;
+        private String structureIdentifier = PdbLeafIdentifier.DEFAULT_PDB_IDENTIFIER;
+        private int entityIdentifier = CifLeafIdentifier.DEFAULT_ENTITY_IDENTIFIER;
         private int modelIdentifier;
         private String chainIdentifier;
 

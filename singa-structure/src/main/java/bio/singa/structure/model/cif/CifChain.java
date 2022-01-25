@@ -21,6 +21,7 @@ public class CifChain implements Chain {
 
     public CifChain(CifChain cifChain) {
         identifier = cifChain.identifier;
+        legacyIdentifier = cifChain.legacyIdentifier
         leafSubstructures = new TreeMap<>();
         for (CifLeafSubstructure leafSubstructure : cifChain.leafSubstructures.values()) {
             leafSubstructures.put(leafSubstructure.getIdentifier(), leafSubstructure.getCopy());
@@ -82,10 +83,7 @@ public class CifChain implements Chain {
 
     @Override
     public Optional<CifLeafSubstructure> getLeafSubstructure(LeafIdentifier leafIdentifier) {
-        if (leafSubstructures.containsKey(leafIdentifier)) {
-            return Optional.of(leafSubstructures.get(leafIdentifier));
-        }
-        return Optional.empty();
+        return Optional.ofNullable(leafSubstructures.get(leafIdentifier));
     }
 
     @Override
@@ -94,7 +92,7 @@ public class CifChain implements Chain {
     }
 
     @Override
-    public boolean removeLeafSubstructure(LeafIdentifier leafIdentifier) {
+    public boolean removeLeafSubstructure(CifLeafIdentifier leafIdentifier) {
         if (leafSubstructures.containsKey(leafIdentifier)) {
             leafSubstructures.remove(leafIdentifier);
             return true;

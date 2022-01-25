@@ -4,6 +4,7 @@ import bio.singa.structure.model.interfaces.AbstractLeafIdentifier;
 import bio.singa.structure.model.interfaces.LeafIdentifier;
 import bio.singa.structure.model.pdb.PdbLeafIdentifier;
 
+import java.util.Comparator;
 import java.util.Locale;
 
 import static bio.singa.structure.model.pdb.PdbLeafIdentifier.DEFAULT_INSERTION_CODE;
