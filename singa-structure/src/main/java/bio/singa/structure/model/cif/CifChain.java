@@ -11,6 +11,7 @@ public class CifChain implements Chain {
 
     private String identifier;
     private String legacyIdentifier;
+    private String additionalIdentifier;
 
     private CifEntityType type;
 
@@ -25,6 +26,7 @@ public class CifChain implements Chain {
         identifier = cifChain.identifier;
         legacyIdentifier = cifChain.legacyIdentifier;
         type = cifChain.type;
+        additionalIdentifier = cifChain.additionalIdentifier;
         leafSubstructures = new TreeMap<>();
         for (CifLeafSubstructure leafSubstructure : cifChain.leafSubstructures.values()) {
             leafSubstructures.put(leafSubstructure.getIdentifier(), leafSubstructure.getCopy());
@@ -41,6 +43,14 @@ public class CifChain implements Chain {
 
     public void setLegacyIdentifier(String legacyIdentifier) {
         this.legacyIdentifier = legacyIdentifier;
+    }
+
+    public String getAdditionalIdentifier() {
+        return additionalIdentifier;
+    }
+
+    public void setAdditionalIdentifier(String additionalIdentifier) {
+        this.additionalIdentifier = additionalIdentifier;
     }
 
     public CifEntityType getType() {

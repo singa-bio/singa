@@ -290,10 +290,21 @@ class CifStructureTest {
                 .pdbIdentifier(structureId2)
                 .parse();
         // sars cov spike: 6xr8
-        String structureId3 = "6xr8";
+        String structureId3 = "6zp5";
         Structure structure3 = StructureParser.cif()
                 .pdbIdentifier(structureId3)
                 .parse();
+        System.out.println();
+    }
+
+    @Test
+    void parseCloseAtomsAsConncetions() {
+        // 6s0a
+        String structureId = "6s0a";
+        Structure structure = StructureParser.cif()
+                .pdbIdentifier(structureId)
+                .parse();
+        System.out.println();
     }
 
     @Test

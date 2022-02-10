@@ -42,6 +42,8 @@ public class StructureParserOptions {
      */
     private boolean enforceConnection = false;
 
+    private boolean coalesceLigands = true;
+
     /**
      * Create a new Options object using enum constants.
      *
@@ -105,6 +107,12 @@ public class StructureParserOptions {
                 break;
             case ENFORCE_CONNECTIONS:
                 options.setEnforceConnection(true);
+                break;
+            case CIF_COALECE_LIGANDS:
+                options.setCoalesceLigands(true);
+                break;
+            case CIF_SPLIT_LIGANDS:
+                options.setCoalesceLigands(false);
                 break;
         }
     }
@@ -236,6 +244,14 @@ public class StructureParserOptions {
         this.enforceConnection = enforceConnection;
     }
 
+    public boolean isCoalesceLigands() {
+        return coalesceLigands;
+    }
+
+    public void setCoalesceLigands(boolean coalesceLigands) {
+        this.coalesceLigands = coalesceLigands;
+    }
+
     /**
      * Settings that can be passed to the Options.
      */
@@ -309,7 +325,17 @@ public class StructureParserOptions {
         /**
          * Additional connections are parsed from CONECT and LINK records.
          */
-        ENFORCE_CONNECTIONS
+        ENFORCE_CONNECTIONS,
+
+        /**
+         * For CIF-based parsing, parse substructures into one leaf substructure (default).
+         */
+        CIF_COALECE_LIGANDS,
+
+        /**
+         * For CIF-based parsing, parse substructures into separate substructures.
+         */
+        CIF_SPLIT_LIGANDS;
 
     }
 }

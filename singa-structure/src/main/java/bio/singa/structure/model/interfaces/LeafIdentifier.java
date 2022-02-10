@@ -102,4 +102,78 @@ public interface LeafIdentifier extends Comparable<LeafIdentifier> {
 
     }
 
+    static PdbModelStep pdb() {
+        return new PdbIdentifierBuilder();
+    }
+
+    interface PdbStructureStep {
+
+        PdbModelStep structure(String structureIdentifier);
+
+    }
+
+    interface PdbModelStep extends PdbStructureStep {
+
+        PdbChainStep model(int modelIdentifier);
+
+    }
+
+    interface PdbChainStep {
+
+        PdbSerialStep chain(String chainIdentifier);
+
+    }
+
+    interface PdbSerialStep {
+
+        PdbInsertionCodeStep serial(int serial);
+
+    }
+
+    interface PdbInsertionCodeStep {
+
+        PdbLeafIdentifier noInsertionCode();
+
+        PdbLeafIdentifier insertionCode(char insertionCode);
+
+    }
+
+    class PdbIdentifierBuilder implements PdbStructureStep, PdbModelStep, PdbChainStep, PdbSerialStep, PdbInsertionCodeStep {
+
+        private String structureIdentifier = PdbLeafIdentifier.DEFAULT_PDB_IDENTIFIER;
+        private int modelIdentifier;
+        private String chainIdentifier;
+        private int serialIdentifier;
+
+        public PdbModelStep structure(String structureIdentifier) {
+            this.structureIdentifier = structureIdentifier;
+            return this;
+        }
+
+        public PdbChainStep model(int modelIdentifier) {
+            this.modelIdentifier = modelIdentifier;
+            return this;
+        }
+
+        public PdbSerialStep chain(String chainIdentifier) {
+            this.chainIdentifier = chainIdentifier;
+            return this;
+        }
+
+        public PdbInsertionCodeStep serial(int serialIdentifier) {
+            this.serialIdentifier = serialIdentifier;
+            return this;
+        }
+
+        @Override
+        public PdbLeafIdentifier noInsertionCode() {
+            return insertionCode(PdbLeafIdentifier.DEFAULT_INSERTION_CODE);
+        }
+
+        @Override
+        public PdbLeafIdentifier insertionCode(char insertionCode) {
+            return new PdbLeafIdentifier(structureIdentifier, modelIdentifier, chainIdentifier, serialIdentifier, insertionCode);
+        }
+    }
+
 }

@@ -3,6 +3,7 @@ package bio.singa.structure.model.cif;
 import bio.singa.chemistry.model.elements.ElementProvider;
 import bio.singa.mathematics.vectors.Vector3D;
 import bio.singa.structure.io.ccd.LeafSkeletonFactory;
+import bio.singa.structure.io.general.StructureParserOptions;
 import bio.singa.structure.model.interfaces.LeafIdentifier;
 import bio.singa.structure.model.pdb.PdbLeafIdentifier;
 import org.rcsb.cif.model.FloatColumn;
@@ -19,44 +20,48 @@ public class CifConverter {
     // TODO could be enum
     public static final String COVALENT_CONNECTION_TYPE = "covale";
 
-    private final boolean createPdbReference;
+    private boolean coalesceLigands;
 
     private final MmCifFile mmcifFile;
     private final Map<Integer, CifEntity> entityMap;
-    private final Map<CifLeafIdentifier, PdbLeafIdentifier> pdbReferenceMap;
+    private final Map<PdbLeafIdentifier, CifLeafIdentifier> pdbReferenceMap;
+
+    private final Map<String, String> chainInformation;
 
     /**
      * Chains of branched entities that are connected to protein polymer structures, making them modifications and part
      * of the polymer chain.
      */
-    private Set<String> connectedBranches;
+    private final Set<String> connectedBranches;
 
     private LeafSkeletonFactory leafSkeletonFactory;
 
     private CifStructure structure;
     private String pdbId;
 
-    private AtomicInteger modificationCounter = new AtomicInteger(0);
-
-    public CifConverter(MmCifFile mmcifFile) {
-        this(mmcifFile, false);
-    }
+    private final AtomicInteger modificationCounter = new AtomicInteger(0);
 
     public CifConverter(MmCifFile mmcifFile, LeafSkeletonFactory leafSkeletonFactory) {
         this(mmcifFile);
         this.leafSkeletonFactory = leafSkeletonFactory;
     }
 
-    public CifConverter(MmCifFile mmcifFile, boolean createPdbReference) {
+    public CifConverter(MmCifFile mmcifFile) {
         this.mmcifFile = mmcifFile;
-        this.createPdbReference = createPdbReference;
         entityMap = new HashMap<>();
         pdbReferenceMap = new HashMap<>();
         connectedBranches = new HashSet<>();
+        chainInformation = new HashMap<>();
     }
 
     public static CifStructure convert(MmCifFile cifFile, LeafSkeletonFactory leafSkeletonFactory) {
         CifConverter cifConverter = new CifConverter(cifFile, leafSkeletonFactory);
+        return cifConverter.convert();
+    }
+
+    public static CifStructure convert(MmCifFile cifFile, LeafSkeletonFactory leafSkeletonFactory, StructureParserOptions options) {
+        CifConverter cifConverter = new CifConverter(cifFile, leafSkeletonFactory);
+        cifConverter.coalesceLigands = options.isCoalesceLigands();
         return cifConverter.convert();
     }
 
@@ -125,30 +130,54 @@ public class CifConverter {
         MmCifBlock data = mmcifFile.getFirstBlock();
         extractMetaData(data);
         extractEntityInformation(data);
+        extractChainInformation(data);
         extractAtomInformation(data);
-        if (createPdbReference) {
-            extractPolymerReferenceInformation(data);
-            extractNonPolymerReferenceInformation(data);
-        }
         extractConnectionInformation(data);
+        extractCloseContactInformation(data);
         postProcessBranchedEntities();
+
         return structure;
+    }
+
+    private void extractChainInformation(MmCifBlock data) {
+        // also consider bird information
+        PdbxMolecule pdbxMolecule = data.getPdbxMolecule();
+        if (!pdbxMolecule.isDefined()) {
+            return;
+        }
+        StrColumn prdId = pdbxMolecule.getPrdId();
+        StrColumn asymId = pdbxMolecule.getAsymId();
+
+        for (int row = 0; row < pdbxMolecule.getRowCount(); row++) {
+            String id = prdId.get(row);
+            String chain = asymId.get(row);
+            chainInformation.put(chain, id);
+        }
+
     }
 
     private void extractAtomInformation(MmCifBlock data) {
         AtomSite atomSite = data.getAtomSite();
         // model
-        IntColumn modelColumn = atomSite.getPdbxPDBModelNum();
-        // entity id
-        StrColumn entityIdColumn = atomSite.getLabelEntityId();
-        // cif chain
-        StrColumn chainColumn = atomSite.getLabelAsymId();
-        // leaf serial (preferred)
-        IntColumn leafSerialColumn = atomSite.getLabelSeqId();
-        // auth leaf serial (to distinguish branched monomer leaves)
-        IntColumn authLeafSerialColumn = atomSite.getAuthSeqId();
-        // hetatom
+        IntColumn pdbxPDBModelNum = atomSite.getPdbxPDBModelNum();
+        // hetatom or atom
         StrColumn groupPdbColumn = atomSite.getGroupPDB();
+
+        // cif entity id
+        StrColumn labelEntityId = atomSite.getLabelEntityId();
+        // cif chain
+        StrColumn labelAsymId = atomSite.getLabelAsymId();
+        // cif leaf serial (preferred)
+        IntColumn labelSeqId = atomSite.getLabelSeqId();
+
+
+        // auth chain
+        StrColumn authAsymId = atomSite.getAuthAsymId();
+        // auth leaf serial (to distinguish branched monomer leaves)
+        IntColumn authSeqId = atomSite.getAuthSeqId();
+        // insertionCode
+        StrColumn pdbxPDBInsCode = atomSite.getPdbxPDBInsCode();
+
         // three letter code
         StrColumn threeLetterCodeColumn = atomSite.getLabelCompId();
         // alternative conformations
@@ -173,17 +202,34 @@ public class CifConverter {
 
         for (int row = 0; row < atomSite.getRowCount(); row++) {
 
-            // todo could possibly be more efficient by checking if the identifier changed compared to previous id
-            String chainIdentifier = chainColumn.get(row);
-            int cifSerial = leafSerialColumn.get(row);
-            int entityIdentifier = Integer.parseInt(entityIdColumn.get(row));
-            int modelIdentifier = modelColumn.get(row);
+            // TODO could possibly be more efficient by checking if the identifier changed compared to previous id
+            int modelIdentifier = pdbxPDBModelNum.get(row);
+            int cifEntityIdentifier = Integer.parseInt(labelEntityId.get(row));
+            String cifChainIdentifier = labelAsymId.get(row);
+            int cifSerial = labelSeqId.get(row);
+
+            String pdbChainIdentifier = authAsymId.get(row);
+            int pdbSerial = authSeqId.get(row);
+            String insertionCode = pdbxPDBInsCode.get(row);
 
             // in case of branched entities use author id to distinguish monomers explicitly
-            if (cifSerial == 0 && entityMap.get(entityIdentifier).getCifEntityType().equals(CifEntityType.BRANCHED)) {
-                cifSerial = authLeafSerialColumn.get(row);
+            if (cifSerial == 0) {
+                CifEntityType entityType = entityMap.get(cifEntityIdentifier).getCifEntityType();
+                if (entityType.equals(CifEntityType.BRANCHED)) {
+                    cifSerial = pdbSerial;
+                } else if (!coalesceLigands && (entityType.equals(CifEntityType.WATER) || entityType.equals(CifEntityType.NON_POLYMER))) {
+                    cifSerial = pdbSerial;
+                }
             }
-            CifLeafIdentifier cifLeafIdentifier = new CifLeafIdentifier(pdbId, entityIdentifier, modelIdentifier, chainIdentifier, cifSerial);
+
+            CifLeafIdentifier cifLeafIdentifier = new CifLeafIdentifier(pdbId, cifEntityIdentifier, modelIdentifier, cifChainIdentifier, cifSerial);
+            PdbLeafIdentifier pdbLeafIdentifier;
+            if (insertionCode != null && !insertionCode.isEmpty()) {
+                pdbLeafIdentifier = new PdbLeafIdentifier(pdbId, modelIdentifier, pdbChainIdentifier, pdbSerial, insertionCode.charAt(0));
+            } else {
+                pdbLeafIdentifier = new PdbLeafIdentifier(pdbId, modelIdentifier, pdbChainIdentifier, pdbSerial);
+            }
+
             String threeLetterCode = threeLetterCodeColumn.get(row);
             String leafIsHetAtomString = groupPdbColumn.get(row);
             String alternativeConformation = alternativePositionColumn.get(row);
@@ -192,14 +238,14 @@ public class CifConverter {
             CifModel model = structure.getModel(modelIdentifier)
                     .orElseGet(() -> appendModel(modelIdentifier));
 
-            CifEntity entity = structure.getEntity(entityIdentifier)
-                    .orElseGet(() -> appendEntity(entityIdentifier));
+            CifEntity entity = structure.getEntity(cifEntityIdentifier)
+                    .orElseGet(() -> appendEntity(cifEntityIdentifier));
 
-            CifChain chain = model.getChain(chainIdentifier)
-                    .orElseGet(() -> appendChain(entity, model, chainIdentifier));
+            CifChain chain = model.getChain(cifChainIdentifier)
+                    .orElseGet(() -> appendChain(entity, model, cifChainIdentifier));
 
             CifLeafSubstructure leafSubstructure = chain.getLeafSubstructure(cifLeafIdentifier)
-                    .orElseGet(() -> appendLeafSubstructure(entity, chain, cifLeafIdentifier, threeLetterCode, leafIsHetAtomString));
+                    .orElseGet(() -> appendLeafSubstructure(entity, chain, cifLeafIdentifier, pdbLeafIdentifier, threeLetterCode, leafIsHetAtomString));
 
             CifAtom cifAtom = new CifAtom(atomSerialColumn.get(row));
             cifAtom.setAtomName(atomNameColumn.get(row));
@@ -250,72 +296,7 @@ public class CifConverter {
             entityMap.get(entityIdentifier).setName(name);
         }
 
-    }
 
-    /**
-     * process poly
-     * "asym_id" = "mmcif chain" equivalent pdb world "pdb_strand_id"
-     * "seq_id" = "mmcif serial" equivalent pdb world "auth_seq_num"
-     * there are no insertion codes, pdb insertion codes are "pdb_ins_code"
-     * entity id if new for mmcif "entity_id", information on different / same entities that occur in structures
-     *
-     * @param data
-     */
-    private void extractPolymerReferenceInformation(MmCifBlock data) {
-        PdbxPolySeqScheme pdbxPolySeqScheme = data.getPdbxPolySeqScheme();
-        StrColumn asymId = pdbxPolySeqScheme.getAsymId();
-        StrColumn pdbStrandId = pdbxPolySeqScheme.getPdbStrandId();
-        IntColumn seqId = pdbxPolySeqScheme.getSeqId();
-        StrColumn authSeqNum = pdbxPolySeqScheme.getAuthSeqNum();
-        StrColumn pdbInsCode = pdbxPolySeqScheme.getPdbInsCode();
-        StrColumn entityId = pdbxPolySeqScheme.getEntityId();
-        for (int row = 0; row < pdbxPolySeqScheme.getRowCount(); row++) {
-
-            String cifChain = asymId.get(row);
-            int cifSerial = seqId.get(row);
-            int entityIdentifier = Integer.parseInt(entityId.get(row));
-            CifLeafIdentifier cifLeafIdentifier = new CifLeafIdentifier(pdbId, entityIdentifier, PdbLeafIdentifier.DEFAULT_MODEL_IDENTIFIER, cifChain, cifSerial);
-
-            String pdbChain = pdbStrandId.get(row);
-            int pdbSerial = Integer.parseInt(authSeqNum.get(row));
-            char pdbInsertionCode;
-            if (pdbInsCode.get(row) != null && !pdbInsCode.get(row).isEmpty()) {
-                pdbInsertionCode = pdbInsCode.get(row).charAt(0);
-            } else {
-                pdbInsertionCode = PdbLeafIdentifier.DEFAULT_INSERTION_CODE;
-            }
-            pdbReferenceMap.put(cifLeafIdentifier, new PdbLeafIdentifier(pdbId, PdbLeafIdentifier.DEFAULT_MODEL_IDENTIFIER, pdbChain, pdbSerial, pdbInsertionCode));
-        }
-
-    }
-
-    private void extractNonPolymerReferenceInformation(MmCifBlock data) {
-        PdbxNonpolyScheme pdbxNonpolySeqScheme = data.getPdbxNonpolyScheme();
-        StrColumn asymId = pdbxNonpolySeqScheme.getAsymId();
-        StrColumn pdbStrandId = pdbxNonpolySeqScheme.getPdbStrandId();
-        StrColumn ndbSeqNum = pdbxNonpolySeqScheme.getNdbSeqNum();
-        StrColumn authSeqNum = pdbxNonpolySeqScheme.getAuthSeqNum();
-        StrColumn pdbInsCode = pdbxNonpolySeqScheme.getPdbInsCode();
-        StrColumn entityId = pdbxNonpolySeqScheme.getEntityId();
-
-        for (int row = 0; row < pdbxNonpolySeqScheme.getRowCount(); row++) {
-
-            String cifChain = asymId.get(row);
-            int cifSerial = Integer.parseInt(ndbSeqNum.get(row));
-            int entityIdentifier = Integer.parseInt(entityId.get(row));
-            CifLeafIdentifier cifLeafIdentifier = new CifLeafIdentifier(pdbId, entityIdentifier, PdbLeafIdentifier.DEFAULT_MODEL_IDENTIFIER, cifChain, cifSerial);
-
-            String pdbChain = pdbStrandId.get(row);
-            int pdbSerial = Integer.parseInt(authSeqNum.get(row));
-            char pdbInsertionCode;
-            if (pdbInsCode.get(row) != null && !pdbInsCode.get(row).isEmpty()) {
-                pdbInsertionCode = pdbInsCode.get(row).charAt(0);
-            } else {
-                pdbInsertionCode = PdbLeafIdentifier.DEFAULT_INSERTION_CODE;
-            }
-            pdbReferenceMap.put(cifLeafIdentifier, new PdbLeafIdentifier(pdbId, PdbLeafIdentifier.DEFAULT_MODEL_IDENTIFIER, pdbChain, pdbSerial, pdbInsertionCode));
-
-        }
     }
 
     private void extractConnectionInformation(MmCifBlock data) {
@@ -340,7 +321,6 @@ public class CifConverter {
         IntColumn ptnr2AuthSeqId = structConn.getPtnr2AuthSeqId();
         // atom name first
         StrColumn ptnr2LabelAtomId = structConn.getPtnr2LabelAtomId();
-
 
         for (int row = 0; row < structConn.getRowCount(); row++) {
             String connectionType = connTypeId.get(row);
@@ -404,6 +384,107 @@ public class CifConverter {
         }
     }
 
+    private void extractCloseContactInformation(MmCifBlock data) {
+        PdbxValidateCloseContact pdbxValidateCloseContact = data.getPdbxValidateCloseContact();
+        if (!pdbxValidateCloseContact.isDefined()) {
+            return;
+        }
+        // model
+        IntColumn pdbModelNum = pdbxValidateCloseContact.getPDBModelNum();
+
+        // first chain
+        StrColumn authAsymId1 = pdbxValidateCloseContact.getAuthAsymId1();
+        // first serial
+        StrColumn authSeqId1 = pdbxValidateCloseContact.getAuthSeqId1();
+        // first insertionCode
+        StrColumn pdbInsCode1 = pdbxValidateCloseContact.getPDBInsCode1();
+        // first atom name
+        StrColumn authAtomId1 = pdbxValidateCloseContact.getAuthAtomId1();
+
+        // second chain
+        StrColumn authAsymId2 = pdbxValidateCloseContact.getAuthAsymId2();
+        // second serial
+        StrColumn authSeqId2 = pdbxValidateCloseContact.getAuthSeqId2();
+        // second insertionCode
+        StrColumn pdbInsCode2 = pdbxValidateCloseContact.getPDBInsCode2();
+        // second atom name
+        StrColumn authAtomId2 = pdbxValidateCloseContact.getAuthAtomId2();
+
+        for (int row = 0; row < pdbxValidateCloseContact.getRowCount(); row++) {
+            int modelId = pdbModelNum.get(row);
+            String firstChain = authAsymId1.get(row);
+            int firstSerial = Integer.parseInt(authSeqId1.get(row));
+            String firstAtomName = authAtomId1.get(row);
+            char firstInsertionCode;
+            if (!pdbInsCode1.isDefined()) {
+                firstInsertionCode = pdbInsCode1.get(row).charAt(0);
+            } else {
+                firstInsertionCode = PdbLeafIdentifier.DEFAULT_INSERTION_CODE;
+            }
+
+            PdbLeafIdentifier firstPdbLeafIdentifier = LeafIdentifier.pdb()
+                    .structure(pdbId)
+                    .model(PdbLeafIdentifier.DEFAULT_MODEL_IDENTIFIER)
+                    .chain(firstChain)
+                    .serial(firstSerial)
+                    .insertionCode(firstInsertionCode);
+
+            String secondChain = authAsymId2.get(row);
+            int secondSerial = Integer.parseInt(authSeqId2.get(row));
+            String secondAtomName = authAtomId2.get(row);
+            char secondInsertionCode;
+            if (!pdbInsCode2.isDefined()) {
+                secondInsertionCode = pdbInsCode2.get(row).charAt(0);
+            } else {
+                secondInsertionCode = PdbLeafIdentifier.DEFAULT_INSERTION_CODE;
+            }
+
+            PdbLeafIdentifier secondPdbLeafIdentifier = LeafIdentifier.pdb()
+                    .structure(pdbId)
+                    .model(PdbLeafIdentifier.DEFAULT_MODEL_IDENTIFIER)
+                    .chain(secondChain)
+                    .serial(secondSerial)
+                    .insertionCode(secondInsertionCode);
+
+            CifLeafIdentifier firstCifLeafIdentifier = pdbReferenceMap.get(firstPdbLeafIdentifier);
+            if (firstCifLeafIdentifier == null) {
+                continue;
+            }
+            CifLeafIdentifier secondCifLeafIdentifier = pdbReferenceMap.get(secondPdbLeafIdentifier);
+            if (secondCifLeafIdentifier == null) {
+                continue;
+            }
+
+            Optional<CifModel> optionalModel = structure.getModel(modelId);
+            if (!optionalModel.isPresent()) {
+                continue;
+            }
+            CifModel model = optionalModel.get();
+
+            // get leafs
+            Optional<CifLeafSubstructure> optionalFirstLeaf = model.getLeafSubstructure(firstCifLeafIdentifier);
+            Optional<CifLeafSubstructure> optionalSecondLeaf = model.getLeafSubstructure(secondCifLeafIdentifier);
+            // either leaf not present
+            if (!optionalFirstLeaf.isPresent() || !optionalSecondLeaf.isPresent()) {
+                continue;
+            }
+            CifLeafSubstructure firstLeaf = optionalFirstLeaf.get();
+            CifLeafSubstructure secondLeaf = optionalSecondLeaf.get();
+            Optional<CifAtom> firstAtom = firstLeaf.getAtomByName(firstAtomName);
+            Optional<CifAtom> secondAtom = secondLeaf.getAtomByName(secondAtomName);
+            // either atom not present
+            if (!firstAtom.isPresent() || !secondAtom.isPresent()) {
+                continue;
+            }
+            // assign connection
+            firstLeaf.connect(firstAtom.get().getAtomName(), secondAtom.get().getAtomName(), secondLeaf);
+            String descriptor = "unknown modification " + modificationCounter.getAndIncrement();
+            setModification(descriptor, firstLeaf, secondLeaf);
+
+        }
+
+    }
+
     private void setModification(String descriptor, CifLeafSubstructure firstLeaf, CifLeafSubstructure secondLeaf) {
         if (firstLeaf instanceof CifAminoAcid) {
             String chainIdentifier = secondLeaf.getIdentifier().getChainIdentifier();
@@ -431,17 +512,19 @@ public class CifConverter {
         }
     }
 
-    private CifLeafSubstructure appendLeafSubstructure(CifEntity cifEntity, CifChain chain, CifLeafIdentifier cifLeafIdentifier, String threeLetterCode, String leafIsHetAtomString) {
+    private CifLeafSubstructure appendLeafSubstructure(CifEntity cifEntity, CifChain chain, CifLeafIdentifier cifLeafIdentifier, PdbLeafIdentifier pdbLeafIdentifier, String threeLetterCode, String leafIsHetAtomString) {
         CifLeafSubstructure leafSubstructure = CifLeafSubstructureFactory.createLeafSubstructure(leafSkeletonFactory.getLeafSkeleton(threeLetterCode), cifLeafIdentifier);
         leafSubstructure.setAnnotatedAsHeteroAtom(leafIsHetAtomString.equals("HETATM"));
         leafSubstructure.setPartOfPolymer(cifEntity.getCifEntityType().equals(CifEntityType.POLYMER));
         chain.addLeafSubstructure(leafSubstructure);
+        pdbReferenceMap.put(pdbLeafIdentifier, cifLeafIdentifier);
         return leafSubstructure;
     }
 
     private CifChain appendChain(CifEntity entity, CifModel model, String chainIdentifier) {
         CifChain cifChain = new CifChain(chainIdentifier);
         cifChain.setType(entity.getCifEntityType());
+        cifChain.setAdditionalIdentifier(chainInformation.get(chainIdentifier));
         model.addChain(cifChain);
         entity.addChain(cifChain);
         return cifChain;
