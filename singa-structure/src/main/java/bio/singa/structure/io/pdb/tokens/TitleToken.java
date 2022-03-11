@@ -15,6 +15,7 @@ public enum TitleToken implements PDBToken {
     TEXT(Range.of(11, 80));
 
     public static final Pattern RECORD_PATTERN = Pattern.compile("^TITLE.*");
+    private static final String prefix = "TITLE     ";
     private final Range<Integer> columns;
 
     TitleToken(Range<Integer> columns) {

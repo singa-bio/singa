@@ -2,12 +2,11 @@ package bio.singa.structure.io.pdb.structures;
 
 
 import bio.singa.core.utility.Resources;
-import bio.singa.structure.io.general.StructureRepresentationFactory;
+import bio.singa.structure.io.general.*;
 import bio.singa.structure.io.pdb.PdbStructureParser;
-import bio.singa.structure.io.general.StructureParser;
-import bio.singa.structure.io.general.StructureRepresentation;
 import bio.singa.structure.model.interfaces.Structure;
 import bio.singa.structure.io.pdb.tokens.*;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -28,7 +27,6 @@ class StructureRepresentationTest {
     private static String currentActual;
 
     private static void assertPDBLinesEqual(List<String> expectedLines, List<String> actualLines) {
-//        assertEquals(expectedLines.size(), actualLines.size());
         for (int i = 0; i < expectedLines.size(); i++) {
             currentActual = actualLines.get(i);
             currentExpected = expectedLines.get(i);
@@ -97,7 +95,10 @@ class StructureRepresentationTest {
         Structure structure = StructureParser.local()
                 .fileLocation(fileLocation)
                 .parse();
-        String pdbRepresentation = StructureRepresentationFactory.getPdbStringRepresentation(structure);
+        String pdbRepresentation = StructureWriter.pdb()
+                .structure(structure)
+                .settings(StructureRepresentationOptions.Setting.OMIT_ALL_LIGAND_CONNECTIONS)
+                .writeToString();
         List<String> actualLines = Arrays.asList(pdbRepresentation.split(System.lineSeparator()));
         assertPDBLinesEqual(expectedLines, actualLines);
     }
@@ -107,20 +108,13 @@ class StructureRepresentationTest {
         String fileLocation = Resources.getResourceAsFileLocation("1brr_multi_chain.pdb");
         List<String> expectedLines = Files.readAllLines(Paths.get(fileLocation));
         Structure structure = StructureParser.local()
-//        for (int i = 0; i < expectedLines.size(); i++) {
-//            String actual = actualLines.get(i).trim();
-//            String expected = expectedLines.get(i);
-//            if (!expected.equals(actual)) {
-//                System.out.println("actual  : "+ actual);
-//                System.out.println("expected: "+ expected);
-//            }
-//        }
-
                 .fileLocation(fileLocation)
                 .parse();
-        String pdbRepresentation = StructureRepresentationFactory.getPdbStringRepresentation(structure);
+        String pdbRepresentation = StructureWriter.pdb()
+                .structure(structure)
+                .settings(StructureRepresentationOptions.Setting.OMIT_ALL_LIGAND_CONNECTIONS)
+                .writeToString();
         List<String> actualLines = Arrays.asList(pdbRepresentation.split(System.lineSeparator()));
-
         assertPDBLinesEqual(expectedLines, actualLines);
     }
 
@@ -131,7 +125,10 @@ class StructureRepresentationTest {
         Structure structure = StructureParser.local()
                 .fileLocation(fileLocation)
                 .parse();
-        String pdbRepresentation = StructureRepresentationFactory.getPdbStringRepresentation(structure);
+        String pdbRepresentation = StructureWriter.pdb()
+                .structure(structure)
+                .settings(StructureRepresentationOptions.Setting.OMIT_ALL_LIGAND_CONNECTIONS)
+                .writeToString();
         List<String> actualLines = Arrays.asList(pdbRepresentation.split(System.lineSeparator()));
         assertPDBLinesEqual(expectedLines, actualLines);
     }
@@ -143,10 +140,59 @@ class StructureRepresentationTest {
         List<String> expectedLines = Files.readAllLines(Paths.get(fileLocation));
         Structure structure = StructureParser.local()
                 .fileLocation(fileLocation)
+                .settings(StructureParserOptions.Setting.ENFORCE_CONNECTIONS)
                 .everything()
                 .parse();
-        String pdbRepresentation = StructureRepresentationFactory.getPdbStringRepresentation(structure);
+        String pdbRepresentation = StructureWriter.pdb()
+                .structure(structure)
+                .settings(StructureRepresentationOptions.Setting.OMIT_ALL_LIGAND_CONNECTIONS)
+                .writeToString();
         List<String> actualLines = Arrays.asList(pdbRepresentation.split(System.lineSeparator()));
         assertPDBLinesEqual(expectedLines, actualLines);
     }
+
+    @Test
+    void shouldWriteRemark() {
+        Structure structure = StructureParser.pdb()
+                .pdbIdentifier("1c0a")
+                .settings()
+                .everything()
+                .parse();
+        String pdbRepresentation = StructureWriter.pdb()
+                .structure(structure)
+                .settings(StructureRepresentationOptions.Setting.APPEND_REMARK_80)
+                .writeToString();
+        System.out.println(pdbRepresentation);
+    }
+
+    @Test
+    @DisplayName("should parse 1PYH - backbone only structure")
+    void shouldWrite1pyh() {
+        Structure structure = StructureParser.pdb()
+                .pdbIdentifier("1pyh")
+                .settings()
+                .everything()
+                .parse();
+        String pdbRepresentation = StructureWriter.pdb()
+                .structure(structure)
+                .defaultSettings()
+                .writeToString();
+        System.out.println(pdbRepresentation);
+    }
+
+    @Test
+    @DisplayName("should parse 5M5L - C alpha only structure")
+    void shouldWrite5m5l() {
+        Structure structure = StructureParser.pdb()
+                .pdbIdentifier("5m5l")
+                .settings()
+                .everything()
+                .parse();
+        String pdbRepresentation = StructureWriter.pdb()
+                .structure(structure)
+                .defaultSettings()
+                .writeToString();
+        System.out.println(pdbRepresentation);
+    }
+
 }

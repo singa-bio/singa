@@ -1,10 +1,11 @@
-package bio.singa.chemistry.features.databases.uniprot;
+package bio.singa.structure.uniprot;
 
 import bio.singa.chemistry.annotations.Annotation;
 import bio.singa.chemistry.annotations.AnnotationType;
 import bio.singa.chemistry.annotations.taxonomy.Organism;
-import bio.singa.structure.features.variants.SequenceVariant;
-import bio.singa.structure.features.variants.SequenceVariants;
+import bio.singa.chemistry.features.databases.sequencevariants.SequenceVariant;
+import bio.singa.chemistry.features.databases.sequencevariants.SequenceVariants;
+import bio.singa.chemistry.features.databases.uniprot.UniProtParserService;
 import bio.singa.chemistry.model.Protein;
 import bio.singa.core.utility.Range;
 import bio.singa.features.identifiers.ENAAccessionNumber;
@@ -13,8 +14,6 @@ import bio.singa.features.identifiers.UniProtIdentifier;
 import bio.singa.features.identifiers.model.Identifier;
 import bio.singa.features.identifiers.model.IdentifierPatternRegistry;
 import bio.singa.features.model.Evidence;
-import bio.singa.structure.model.families.AminoAcidFamily;
-import bio.singa.structure.model.identifiers.PDBIdentifier;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,6 +21,8 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.Optional;
 
+import static bio.singa.structure.model.families.StructuralFamilies.AminoAcids.GLYCINE;
+import static bio.singa.structure.model.families.StructuralFamilies.AminoAcids.SERINE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -139,14 +140,6 @@ class UniProtParserTest {
         assertEquals("GO:0005524", ((GoTerm) annotations.get(2).getContent()).getContent());
         assertEquals("GO:0003676", ((GoTerm) annotations.get(3).getContent()).getContent());
         assertEquals("GO:0006422", ((GoTerm) annotations.get(4).getContent()).getContent());
-    }
-
-    @Test
-    void parsePdbIdentifier() {
-        List<Annotation> annotations = aars.getAnnotationsOfType(AnnotationType.PDB_IDENTIFIER);
-        assertEquals("1C0A", ((PDBIdentifier) annotations.get(0).getContent()).getContent());
-        assertEquals("1EQR", ((PDBIdentifier) annotations.get(1).getContent()).getContent());
-        assertEquals("1IL2", ((PDBIdentifier) annotations.get(2).getContent()).getContent());
     }
 
     @Test

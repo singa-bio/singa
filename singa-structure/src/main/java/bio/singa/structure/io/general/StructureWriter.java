@@ -24,7 +24,6 @@ import java.util.stream.Collectors;
 
 public class StructureWriter {
 
-    // TODO also add REMARK 80 to be written
     // TODO option for short and long ter records
 
     public static PDBCoverageStep pdb() {
@@ -193,7 +192,7 @@ public class StructureWriter {
 
         @Override
         public String writeToString() {
-            return StructureRepresentationFactory.getPdbStringRepresentation(structure);
+            return StructureRepresentationFactory.getPdbStringRepresentation(structure, options);
         }
 
         private void prepareInformationToWrite() {

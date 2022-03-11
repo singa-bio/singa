@@ -2,6 +2,8 @@ package bio.singa.structure.io.pdb.tokens;
 
 import bio.singa.core.utility.Range;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
 
 /**
@@ -11,6 +13,8 @@ import java.util.regex.Pattern;
  * @author cl
  */
 public interface PDBToken {
+
+    int MAX_LINE_LENGTH = 69;
 
     /**
      * Extracts a value from a pdb line, given a token and line to extract from.
@@ -32,6 +36,30 @@ public interface PDBToken {
                 return "";
             }
         }
+    }
+
+    static List<String> assembleLongLine(String prefix, String content) {
+        List<String> lines = new ArrayList<>();
+        // single line record
+        if (content.length() < MAX_LINE_LENGTH) {
+            lines.add(prefix + content);
+        } else {
+            while (content.length() >= MAX_LINE_LENGTH) {
+                // if possible get last space before 70 char cutoff
+                int endIndex = content.substring(0, MAX_LINE_LENGTH - 1).lastIndexOf(' ');
+                String substring;
+                if (endIndex <= 0) {
+                    substring = content.substring(0, MAX_LINE_LENGTH - 1);
+                } else {
+                    substring = content.substring(0, endIndex);
+                }
+                lines.add(prefix + substring);
+                content = content.substring(substring.length());
+            }
+            // last part
+            lines.add(prefix + content);
+        }
+        return lines;
     }
 
     static String endLine(String content) {

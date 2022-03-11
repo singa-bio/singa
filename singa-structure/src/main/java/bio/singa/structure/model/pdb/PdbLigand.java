@@ -10,16 +10,22 @@ public class PdbLigand extends PdbLeafSubstructure implements Ligand {
 
     private String name;
 
+    private String inchi;
+
     public PdbLigand(PdbLeafIdentifier leafIdentifier, StructuralFamily family) {
         super(leafIdentifier, family);
     }
 
-    public PdbLigand(PdbLigand oakLigand) {
-        super(oakLigand);
+    public PdbLigand(PdbLigand pdbLigand) {
+        super(pdbLigand);
+        name = pdbLigand.name;
+        inchi = pdbLigand.inchi;
     }
 
-    public PdbLigand(PdbLigand oakLigand, PdbLeafIdentifier leafIdentifier) {
-        super(oakLigand, leafIdentifier);
+    public PdbLigand(PdbLigand pdbLigand, PdbLeafIdentifier leafIdentifier) {
+        super(pdbLigand, leafIdentifier);
+        name = pdbLigand.name;
+        inchi = pdbLigand.inchi;;
     }
 
     public String getName() {
@@ -28,6 +34,14 @@ public class PdbLigand extends PdbLeafSubstructure implements Ligand {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getInchi() {
+        return inchi;
+    }
+
+    public void setInchi(String inchi) {
+        this.inchi = inchi;
     }
 
     @Override

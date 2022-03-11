@@ -5,6 +5,7 @@ import bio.singa.mathematics.vectors.Vector3D;
 import bio.singa.structure.io.general.StructureParser;
 import bio.singa.structure.model.interfaces.*;
 import bio.singa.structure.model.mmtf.MmtfStructure;
+import bio.singa.structure.model.molecules.MoleculeGraphs;
 import bio.singa.structure.model.pdb.PdbLeafIdentifier;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -317,6 +318,5 @@ class CifStructureTest {
         Optional<CifEntity> entity = cifStructure.getEntity(2);
         System.out.println(entity.get().getName());
     }
-
 
 }

@@ -11,6 +11,9 @@ public class StructureRepresentationOptions {
     private boolean renumberSubstructures = false;
     private boolean renumberChains = false;
 
+    private boolean addRemark80 = false;
+    private boolean addConnections = true;
+
     private Map<PdbLeafIdentifier, Integer> renumberingMap;
 
     private StructureRepresentationOptions() {
@@ -73,6 +76,22 @@ public class StructureRepresentationOptions {
         this.renumberingMap = renumberingMap;
     }
 
+    public boolean isAddRemark80() {
+        return addRemark80;
+    }
+
+    public void setAddRemark80(boolean addRemark80) {
+        this.addRemark80 = addRemark80;
+    }
+
+    public boolean isAddConnections() {
+        return addConnections;
+    }
+
+    public void setAddConnections(boolean addConnections) {
+        this.addConnections = addConnections;
+    }
+
     /**
      * Sets the any option.
      *
@@ -99,6 +118,18 @@ public class StructureRepresentationOptions {
             case RETAIN_CHAIN_NUMBERING:
                 options.renumberChains = false;
                 break;
+            case APPEND_REMARK_80:
+                options.addRemark80 = true;
+                break;
+            case OMIT_REMARK_80:
+                options.addRemark80 = false;
+                break;
+            case APPEND_ALL_LIGAND_CONNECTIONS:
+                options.addConnections = true;
+                break;
+            case OMIT_ALL_LIGAND_CONNECTIONS:
+                options.addConnections = false;
+                break;
         }
     }
 
@@ -114,7 +145,15 @@ public class StructureRepresentationOptions {
 
         RENUMBER_CHAINS_CONSECUTIVELY,
 
-        RETAIN_CHAIN_NUMBERING;
+        RETAIN_CHAIN_NUMBERING,
+
+        APPEND_REMARK_80,
+
+        OMIT_REMARK_80,
+
+        APPEND_ALL_LIGAND_CONNECTIONS,
+
+        OMIT_ALL_LIGAND_CONNECTIONS
 
     }
 

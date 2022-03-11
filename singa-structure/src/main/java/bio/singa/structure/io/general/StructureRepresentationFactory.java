@@ -4,22 +4,25 @@ import bio.singa.structure.io.pdb.tokens.*;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.interfaces.Model;
 import bio.singa.structure.model.interfaces.Structure;
-import bio.singa.structure.model.pdb.PdbLeafIdentifier;
-import bio.singa.structure.model.pdb.PdbLigand;
-import bio.singa.structure.model.pdb.PdbLinkEntry;
-import bio.singa.structure.model.pdb.PdbStructure;
+import bio.singa.structure.model.pdb.*;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class StructureRepresentationFactory {
 
+    private StructureRepresentationOptions options;
+    private Structure structure;
 
-    public StructureRepresentationFactory() {
+    public StructureRepresentationFactory(StructureRepresentationOptions options) {
+        this.options = options;
     }
 
-    public static String getPdbStringRepresentation(Structure structure) {
-        StructureRepresentationFactory factory = new StructureRepresentationFactory();
+    public static String getPdbStringRepresentation(Structure structure, StructureRepresentationOptions options) {
+        StructureRepresentationFactory factory = new StructureRepresentationFactory(options);
         return factory.composePdbRepresentation(structure);
     }
 
@@ -30,6 +33,7 @@ public class StructureRepresentationFactory {
      * @return The string representing the structure in pdb format.
      */
     public String composePdbRepresentation(Structure structure) {
+        this.structure = structure;
         StringBuilder sb = new StringBuilder();
         // add preamble
         sb.append(getPreamble(structure.getStructureIdentifier(), structure.getTitle(), determineLinkEntries(structure)));
@@ -116,20 +120,37 @@ public class StructureRepresentationFactory {
      */
     private String getPreamble(String pdbIdentifier, String title, List<PdbLinkEntry> linkEntries) {
         StringBuilder sb = new StringBuilder();
+        // header
         if (pdbIdentifier != null && !pdbIdentifier.equals(PdbLeafIdentifier.DEFAULT_PDB_IDENTIFIER)) {
             sb.append(HeaderToken.assemblePDBLine(pdbIdentifier));
             sb.append(System.lineSeparator());
         }
+        // title
         if (title != null && !title.isEmpty()) {
             for (String titleLine : TitleToken.assemblePDBLines(title)) {
                 sb.append(titleLine);
                 sb.append(System.lineSeparator());
             }
         }
+        // remarks
+        if (options.isAddRemark80()) {
+            structure.getAllLigands().stream()
+                    .map(PdbLigand.class::cast)
+                    .filter(distinctByKey(PdbLeafSubstructure::getFamily))
+                    .map(ligand -> Remark80Token.assemblePDBLines(ligand.getThreeLetterCode(), ligand.getInchi()))
+                    .forEach(sb::append);
+            sb.append("REMARK  80").append(System.lineSeparator());
+        }
+        // links
         for (PdbLinkEntry linkEntry : linkEntries) {
             sb.append(LinkToken.assemblePDBLine(linkEntry));
         }
         return sb.toString();
+    }
+
+    public static <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
+        Map<Object, Boolean> seen = new ConcurrentHashMap<>();
+        return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
     }
 
     /**
@@ -138,11 +159,14 @@ public class StructureRepresentationFactory {
      * @return The closing lines.
      */
     private String getPostamble(Collection<? extends LeafSubstructure> leafSubstructures) {
-        String connectRecords = leafSubstructures.stream()
-                .filter(leafSubstructure -> leafSubstructure.getClass().equals(PdbLigand.class))
-                .map(PdbLigand.class::cast)
-                .map(ConnectionToken::assemblePDBLines)
-                .collect(Collectors.joining());
+        String connectRecords = "";
+        if (options.isAddConnections()) {
+            connectRecords = leafSubstructures.stream()
+                    .filter(leafSubstructure -> leafSubstructure.getClass().equals(PdbLigand.class))
+                    .map(PdbLigand.class::cast)
+                    .map(ConnectionToken::assemblePDBLines)
+                    .collect(Collectors.joining());
+        }
         return connectRecords + "END" + System.lineSeparator() + System.lineSeparator();
     }
 

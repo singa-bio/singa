@@ -335,7 +335,7 @@ public class StructureParserOptions {
         /**
          * For CIF-based parsing, parse substructures into separate substructures.
          */
-        CIF_SPLIT_LIGANDS;
+        CIF_SPLIT_LIGANDS,
 
     }
 }

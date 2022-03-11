@@ -263,6 +263,7 @@ public class PdbLeafSubstructureBuilder {
                             leafSkeleton.connect(ligand, atomMap);
                         }
                         ligand.setName(leafSkeleton.getName());
+                        ligand.setInchi(leafSkeleton.getInchi());
                     }
                     return ligand;
                 }
@@ -282,6 +283,7 @@ public class PdbLeafSubstructureBuilder {
                     atomSet.forEach(ligand::addAtom);
                     if (leafSkeleton != null) {
                         ligand.setName(leafSkeleton.getName());
+                        ligand.setInchi(leafSkeleton.getInchi());
                     }
                     return ligand;
                 }
