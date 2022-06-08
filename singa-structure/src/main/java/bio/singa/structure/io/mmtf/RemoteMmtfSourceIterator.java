@@ -1,9 +1,11 @@
 package bio.singa.structure.io.mmtf;
 
+import bio.singa.core.utility.Pair;
 import bio.singa.structure.io.general.converters.PdbIdentifierToMmtfBytesConverter;
 import bio.singa.structure.io.general.sources.AbstractSourceIterator;
 
 import java.nio.file.Path;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -16,6 +18,12 @@ public class RemoteMmtfSourceIterator extends AbstractSourceIterator<String, byt
     public RemoteMmtfSourceIterator(List<String> sources) {
         super(sources);
         converter = PdbIdentifierToMmtfBytesConverter.get();
+    }
+
+    public RemoteMmtfSourceIterator(Collection<Pair<String>> sources) {
+        super();
+        converter = PdbIdentifierToMmtfBytesConverter.get();
+        prepareChains(this, sources);
     }
 
     public RemoteMmtfSourceIterator(Path chainList, String separator) {

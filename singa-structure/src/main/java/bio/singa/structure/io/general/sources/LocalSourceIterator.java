@@ -1,5 +1,6 @@
 package bio.singa.structure.io.general.sources;
 
+import bio.singa.core.utility.Pair;
 import bio.singa.structure.io.general.converters.ContentConverter;
 import bio.singa.structure.io.general.converters.IdentityConverter;
 import bio.singa.structure.io.general.converters.PathToObjectConverter;
@@ -10,6 +11,7 @@ import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -37,6 +39,12 @@ public class LocalSourceIterator<SourceContent> extends AbstractSourceIterator<S
     public static LocalSourceIterator<String> fromChainList(Path chainList, String separator, ContentConverter<String, Path> converter) {
         LocalSourceIterator<String> localIterator = new LocalSourceIterator<>(converter);
         prepareChains(localIterator, chainList, separator);
+        return localIterator;
+    }
+
+    public static LocalSourceIterator<String> fromChainList(Collection<Pair<String>> chainList, ContentConverter<String, Path> converter) {
+        LocalSourceIterator<String> localIterator = new LocalSourceIterator<>(converter);
+        prepareChains(localIterator, chainList);
         return localIterator;
     }
 

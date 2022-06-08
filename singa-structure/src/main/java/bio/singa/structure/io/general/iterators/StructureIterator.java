@@ -1,5 +1,6 @@
 package bio.singa.structure.io.general.iterators;
 
+import bio.singa.core.utility.Pair;
 import bio.singa.structure.io.ccd.LeafSkeletonFactory;
 import bio.singa.structure.io.cif.MmcifStructureIterator;
 import bio.singa.structure.io.cif.RemoteMmCifSourceIterator;
@@ -17,6 +18,7 @@ import bio.singa.structure.model.general.LeafSkeleton;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -64,12 +66,30 @@ public interface StructureIterator extends Iterator<Structure> {
                 return new PdbStructureIterator<>(new RemotePdbSourceIterator(chainList, separator));
             }
         }
+        throw new StructureParserException("unable to create parser for " + chainList + " and source "+ sourceLocation);
+    }
 
+    static StructureIterator createFromChainList(Collection<Pair<String>> chainList, SourceLocation sourceLocation)  {
+        switch (sourceLocation) {
+            case ONLINE_MMTF: {
+                return new MmtfStructureIterator<>(new RemoteMmtfSourceIterator(chainList));
+            }
+            case ONLINE_MMCIF: {
+                return new MmcifStructureIterator<>(new RemoteMmCifSourceIterator(chainList));
+            }
+            case ONLINE_PDB: {
+                return new PdbStructureIterator<>(new RemotePdbSourceIterator(chainList));
+            }
+        }
         throw new StructureParserException("unable to create parser for " + chainList + " and source "+ sourceLocation);
     }
 
     static StructureIterator createFromChainList(Path chainList, String separator, LocalStructureRepository localPdb) {
         return new LocalStructureIterator<>(LocalSourceIterator.fromChainList(chainList, separator, LocalPdbToPathConverter.get(localPdb)));
+    }
+
+    static StructureIterator createFromChainList(Collection<Pair<String>> chainList, LocalStructureRepository localPdb) {
+        return new LocalStructureIterator<>(LocalSourceIterator.fromChainList(chainList, LocalPdbToPathConverter.get(localPdb)));
     }
 
     static StructureIterator createFromLocalPdb(LocalStructureRepository localPdb) {

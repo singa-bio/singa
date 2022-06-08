@@ -6,6 +6,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -53,13 +54,16 @@ public abstract class AbstractSourceIterator<SourceContent, ContentType> impleme
 
     public static void prepareChains(SourceIterator<String, ?> iterator, Path chainList, String separator) {
         try {
-            List<Pair<String>> pairs = readMappingFile(chainList, separator);
-            for (Pair<String> pair : pairs) {
-                iterator.getSources().add(pair.getFirst());
-                iterator.getChains().add(pair.getSecond());
-            }
+            prepareChains(iterator, readMappingFile(chainList, separator));
         } catch (IOException e) {
-            throw new UncheckedIOException("Unable to read mapping file "+chainList, e);
+            throw new UncheckedIOException("Unable to read mapping file " + chainList, e);
+        }
+    }
+
+    public static void prepareChains(SourceIterator<String, ?> iterator, Collection<Pair<String>> chainList) {
+        for (Pair<String> pair : chainList) {
+            iterator.getSources().add(pair.getFirst());
+            iterator.getChains().add(pair.getSecond());
         }
     }
 
@@ -70,7 +74,7 @@ public abstract class AbstractSourceIterator<SourceContent, ContentType> impleme
 
     @Override
     public String getChain() {
-        return chains.get(cursor-1);
+        return chains.get(cursor - 1);
     }
 
     public void setChains(List<String> chains) {

@@ -1,5 +1,6 @@
 package bio.singa.structure.io.general;
 
+import bio.singa.core.utility.Pair;
 import bio.singa.structure.io.ccd.LeafSkeletonFactory;
 import bio.singa.structure.io.ccd.LocalCcdParsingBehavior;
 import bio.singa.structure.io.ccd.NoCcdParsingBehavior;
@@ -14,10 +15,7 @@ import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * Parses structures in pdb format.
@@ -97,6 +95,8 @@ public class StructureParser {
          * @return The MultiParser.
          */
         MultiResultStep chainList(Path path, String separator);
+
+        MultiResultStep chainList(Collection<Pair<String>> structureChainPairs);
 
     }
 
@@ -419,6 +419,18 @@ public class StructureParser {
                 selector.iterator = StructureIterator.createFromChainList(path, separator, localStructureRepository);
             } else {
                 selector.iterator = StructureIterator.createFromChainList(path, separator, sourceLocation);
+            }
+            assignLeafSkeletonFactoryTo(selector.iterator);
+            return selector;
+        }
+
+        @Override
+        public MultiResultStep chainList(Collection<Pair<String>> structureChainPairs) {
+            MultiResultSelector selector = new MultiResultSelector(sourceLocation);
+            if (localStructureRepository != null) {
+                selector.iterator = StructureIterator.createFromChainList(structureChainPairs, localStructureRepository);
+            } else {
+                selector.iterator = StructureIterator.createFromChainList(structureChainPairs, sourceLocation);
             }
             assignLeafSkeletonFactoryTo(selector.iterator);
             return selector;
