@@ -18,15 +18,95 @@ import bio.singa.structure.model.general.LeafSkeleton;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author cl
  */
 public interface StructureIterator extends Iterator<Structure> {
+
+    class EmptyStructureIterator implements StructureIterator {
+
+        @Override
+        public LeafSkeletonFactory getLeafSkeletonFactory() {
+            return null;
+        }
+
+        @Override
+        public void setLeafSkeletonFactory(LeafSkeletonFactory localCcdRepository) {
+
+        }
+
+        @Override
+        public StructureParserOptions getOptions() {
+            return null;
+        }
+
+        @Override
+        public void setOptions(StructureParserOptions options) {
+
+        }
+
+        @Override
+        public void prepareNext() {
+
+        }
+
+        @Override
+        public boolean hasChain() {
+            return false;
+        }
+
+        @Override
+        public int getNumberOfQueuedStructures() {
+            return 0;
+        }
+
+        @Override
+        public int getNumberOfProcessedStructures() {
+            return 0;
+        }
+
+        @Override
+        public int getNumberOfRemainingStructures() {
+            return 0;
+        }
+
+        @Override
+        public List<Structure> parse() {
+            return Collections.emptyList();
+        }
+
+        @Override
+        public String getCurrentPdbIdentifier() {
+            return null;
+        }
+
+        @Override
+        public String getCurrentChainIdentifier() {
+            return null;
+        }
+
+        @Override
+        public String getCurrentSource() {
+            return null;
+        }
+
+        @Override
+        public LeafSkeleton getSkeleton(String threeLetterCode) {
+            return null;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return false;
+        }
+
+        @Override
+        public Structure next() {
+            throw new IllegalStateException("The iterator contains no sources to iterate.");
+        }
+    }
 
     static StructureIterator createFromIdentifiers(List<String> strings, SourceLocation sourceLocation, LocalStructureRepository localStructureRepository) {
         switch (sourceLocation) {
