@@ -1,8 +1,8 @@
 package bio.singa.structure.model.mmtf;
 
-import bio.singa.mathematics.vectors.Vector3D;
 import bio.singa.chemistry.model.elements.Element;
 import bio.singa.chemistry.model.elements.ElementProvider;
+import bio.singa.mathematics.vectors.Vector3D;
 import bio.singa.structure.model.interfaces.Atom;
 import org.apache.commons.lang.NotImplementedException;
 import org.rcsb.mmtf.api.StructureDataInterface;
@@ -36,6 +36,11 @@ public class MmtfAtom implements Atom {
     private final int internalAtomIndex;
 
     /**
+     * The cached atom name, will not be persisted.
+     */
+    private String cachedAtomName;
+
+    /**
      * The cached position of the atom.
      */
     private Vector3D cachedPosition;
@@ -61,6 +66,7 @@ public class MmtfAtom implements Atom {
         internalAtomIndex = mmtfAtom.internalAtomIndex;
         groupPositionIndex = mmtfAtom.groupPositionIndex;
         cachedPosition = mmtfAtom.cachedPosition;
+        cachedAtomName = mmtfAtom.cachedAtomName;
     }
 
     @Override
@@ -71,7 +77,15 @@ public class MmtfAtom implements Atom {
     @Override
     public String getAtomName() {
         // get relevant string for this group type
+        if (cachedAtomName != null) {
+            return cachedAtomName;
+        }
         return data.getGroupAtomNames(data.getGroupTypeIndices()[internalGroupIndex])[groupPositionIndex];
+    }
+
+    @Override
+    public void setAtomName(String atomName) {
+        cachedAtomName = atomName;
     }
 
     @Override

@@ -1,6 +1,7 @@
 package bio.singa.structure.model.pdb;
 
 import bio.singa.core.utility.Pair;
+import bio.singa.core.utility.Resources;
 import bio.singa.mathematics.matrices.LabeledSymmetricMatrix;
 import bio.singa.mathematics.matrices.Matrices;
 import bio.singa.mathematics.vectors.Vector3D;
@@ -91,8 +92,22 @@ class StructuresTest {
         Optional<Map.Entry<UniqueAtomIdentifier, PdbAtom>> atomByCoordinate = structure.getAtomByCoordinate(atomCoordinate, 0.1);
         if (atomByCoordinate.isPresent()) {
             Atom atom = atomByCoordinate.get().getValue();
-            assertEquals(5293, (int)atom.getAtomIdentifier());
+            assertEquals(5293, (int) atom.getAtomIdentifier());
         }
     }
 
+    @Test
+    void shouldFixAtomNames() {
+        PdbStructure structure = (PdbStructure) StructureParser.local()
+                .fileLocation(Resources.getResourceAsFileLocation("ambiguous_atom_names.pdb"))
+                .parse();
+        LeafSubstructure firstLeafSubstructure = structure.getFirstLeafSubstructure();
+        assertEquals(Set.of("C", "N"), firstLeafSubstructure.getAllAtoms().stream()
+                .map(Atom::getAtomName)
+                .collect(Collectors.toSet()));
+        Structures.fixAtomNames(firstLeafSubstructure);
+        assertEquals(Set.of("N1", "N2", "C1", "C2", "C3", "C4"), firstLeafSubstructure.getAllAtoms().stream()
+                .map(Atom::getAtomName)
+                .collect(Collectors.toSet()));
+    }
 }

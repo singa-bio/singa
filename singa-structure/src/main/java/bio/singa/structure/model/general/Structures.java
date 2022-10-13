@@ -1,22 +1,19 @@
 package bio.singa.structure.model.general;
 
+import bio.singa.chemistry.model.elements.Element;
 import bio.singa.core.utility.Pair;
 import bio.singa.mathematics.geometry.bodies.Sphere;
-import bio.singa.mathematics.geometry.faces.Circle;
 import bio.singa.mathematics.matrices.LabeledSymmetricMatrix;
 import bio.singa.mathematics.matrices.Matrices;
 import bio.singa.mathematics.matrices.Matrix;
 import bio.singa.mathematics.metrics.model.VectorMetricProvider;
 import bio.singa.mathematics.vectors.Vector3D;
 import bio.singa.mathematics.vectors.Vectors3D;
-import bio.singa.structure.model.cif.CifLeafSubstructure;
 import bio.singa.structure.model.interfaces.*;
 import bio.singa.structure.model.pdb.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static bio.singa.structure.model.pdb.PdbLeafSubstructureFactory.createLeafSubstructure;
 
 /**
  * Methods to use for structures...
@@ -283,4 +280,16 @@ public class Structures {
         return map;
     }
 
+    /**
+     * Fixes atom naming of the given {@link LeafSubstructure} by numbering each element consecutively to avoid duplicate atom names.
+     *
+     * @param leafSubstructure The {@link LeafSubstructure} to be fixed.
+     */
+    public static void fixAtomNames(LeafSubstructure leafSubstructure) {
+        Map<Element, Integer> elementCounter = new HashMap<>();
+        for (Atom ligandAtom : leafSubstructure.getAllAtoms()) {
+            int elementCount = elementCounter.merge(ligandAtom.getElement(), 1, Integer::sum);
+            ligandAtom.setAtomName(ligandAtom.getAtomName() + elementCount);
+        }
+    }
 }

@@ -46,6 +46,13 @@ class MmtfAtomTest {
     }
 
     @Test
+    void setAtomName(){
+        atom412.setAtomName("N3");
+        assertEquals("N3", atom412.getAtomName());
+        atom412.setAtomName("N2");
+    }
+
+    @Test
     void getPosition() {
         assertEquals(new Vector3D(62.20399856567383, -8.505999565124512, 22.573999404907227), atom412.getPosition());
         assertEquals(new Vector3D(70.31099700927734, 35.60300064086914, -10.967000007629395), atom5444.getPosition());
