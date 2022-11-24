@@ -16,6 +16,8 @@ public class CifLeafSubstructure implements LeafSubstructure {
      */
     private CifLeafIdentifier leafIdentifier;
 
+    private String inchi;
+
     /**
      * The structural family of this entity
      */
@@ -47,6 +49,7 @@ public class CifLeafSubstructure implements LeafSubstructure {
     public CifLeafSubstructure(CifLeafSubstructure cifLeafSubstructure) {
         this(cifLeafSubstructure.leafIdentifier);
         family = cifLeafSubstructure.family;
+        inchi = cifLeafSubstructure.inchi;
         annotatedAsHetAtom = cifLeafSubstructure.annotatedAsHetAtom;
         isPartOfPolymer = cifLeafSubstructure.isPartOfPolymer;
         for (Map.Entry<String, CifConformation> entry : cifLeafSubstructure.conformations.entrySet()) {
@@ -182,6 +185,14 @@ public class CifLeafSubstructure implements LeafSubstructure {
 
     public void setFamily(StructuralFamily family) {
         this.family = family;
+    }
+
+    public String getInchi() {
+        return inchi;
+    }
+
+    public void setInchi(String inchi) {
+        this.inchi = inchi;
     }
 
     @Override

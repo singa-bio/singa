@@ -1,6 +1,7 @@
 package bio.singa.structure.io.general.sources;
 
 import bio.singa.core.utility.Pair;
+import bio.singa.structure.io.general.SourceLocation;
 import bio.singa.structure.io.general.converters.ContentConverter;
 import bio.singa.structure.io.general.converters.IdentityConverter;
 import bio.singa.structure.io.general.converters.PathToObjectConverter;
@@ -12,6 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -48,18 +50,19 @@ public class LocalSourceIterator<SourceContent> extends AbstractSourceIterator<S
         return localIterator;
     }
 
-    public static LocalSourceIterator<Path> fromLocalPdb(LocalStructureRepository localPdb, int limit) {
+    public static LocalSourceIterator<Path> fromLocalPdb(LocalStructureRepository localPdb, int limit, boolean shuffle) {
         List<Path> paths = new ArrayList<>();
         Path localPdbPath = localPdb.getLocalPdbPath();
-        boolean check = limit != -1;
+        SourceLocation sourceLocation = localPdb.getSourceLocation();
+        boolean checkForLimit = limit != -1;
         try (Stream<Path> splitDirectories = Files.list(localPdbPath)) {
             for (Path splitDirectory : splitDirectories.collect(Collectors.toList())) {
                 try (Stream<Path> files = Files.walk(splitDirectory)) {
                     for (Path path : files.collect(Collectors.toList())) {
                         String fileName = path.getFileName().toString().toLowerCase();
                         // skip non relevant files
-                        if (fileName.endsWith(".mmtf.gz") || fileName.endsWith(".ent.gz")) {
-                            if (check) {
+                        if (hasExpectedEnding(sourceLocation, fileName)) {
+                            if (checkForLimit && !shuffle) {
                                 if (paths.size() >= limit) {
                                     return new LocalSourceIterator<>(paths, IdentityConverter.get(Path.class));
                                 }
@@ -71,10 +74,31 @@ public class LocalSourceIterator<SourceContent> extends AbstractSourceIterator<S
                     throw new UncheckedIOException("unable to read files from " + splitDirectory, e);
                 }
             }
+            if (shuffle) {
+                Collections.shuffle(paths);
+                if (checkForLimit) {
+                    limit = Math.min(limit, paths.size());
+                    paths = paths.subList(0, limit - 1);
+                }
+            }
             return new LocalSourceIterator<>(paths, IdentityConverter.get(Path.class));
         } catch (IOException e) {
             throw new UncheckedIOException("unable to read files from " + localPdbPath, e);
         }
+    }
+
+    private static boolean hasExpectedEnding(SourceLocation sourceLocation, String fileName) {
+        switch (sourceLocation) {
+            case OFFLINE_PDB:
+                return fileName.endsWith(".ent.gz");
+            case OFFLINE_MMTF:
+                return fileName.endsWith(".mmtf.gz");
+            case OFFLINE_MMCIF:
+                return fileName.endsWith(".cif.gz");
+            case OFFLINE_BCIF:
+                return fileName.endsWith(".bcif");
+        }
+        return false;
     }
 
     @Override

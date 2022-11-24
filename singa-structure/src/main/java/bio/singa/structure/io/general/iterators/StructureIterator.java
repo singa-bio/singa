@@ -173,11 +173,15 @@ public interface StructureIterator extends Iterator<Structure> {
     }
 
     static StructureIterator createFromLocalPdb(LocalStructureRepository localPdb) {
-        return new LocalStructureIterator<>(LocalSourceIterator.fromLocalPdb(localPdb, -1));
+        return createFromLocalPdb(localPdb, -1, false);
     }
 
     static StructureIterator createFromLocalPdb(LocalStructureRepository localPdb, int limit) {
-        return new LocalStructureIterator<>(LocalSourceIterator.fromLocalPdb(localPdb, limit));
+        return createFromLocalPdb(localPdb, limit, false);
+    }
+
+    static StructureIterator createFromLocalPdb(LocalStructureRepository localPdb, int limit, boolean shuffle) {
+        return new LocalStructureIterator<>(LocalSourceIterator.fromLocalPdb(localPdb, limit, shuffle));
     }
 
     static StructureIterator createFromFiles(List<File> files, SourceLocation sourceLocation) {

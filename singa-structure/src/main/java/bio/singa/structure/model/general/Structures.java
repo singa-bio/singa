@@ -285,11 +285,17 @@ public class Structures {
      *
      * @param leafSubstructure The {@link LeafSubstructure} to be fixed.
      */
-    public static void fixAtomNames(LeafSubstructure leafSubstructure) {
+    public static void fixAtomNames(LeafSubstructure leafSubstructure, boolean useElementNames) {
         Map<Element, Integer> elementCounter = new HashMap<>();
         for (Atom ligandAtom : leafSubstructure.getAllAtoms()) {
             int elementCount = elementCounter.merge(ligandAtom.getElement(), 1, Integer::sum);
-            ligandAtom.setAtomName(ligandAtom.getAtomName() + elementCount);
+            String name;
+            if (useElementNames) {
+                name = ligandAtom.getElement().getSymbol().toUpperCase();
+            } else {
+                name = ligandAtom.getAtomName();
+            }
+            ligandAtom.setAtomName(name + elementCount);
         }
     }
 }

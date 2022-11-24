@@ -152,6 +152,17 @@ public class StructureParser {
         MultiResultStep all(int limit);
 
         /**
+         * Parses the given number (limit) of structures from the supplied local pdb. Sampling set to true indexes all
+         * files and selects the given number of structures randomly.
+         *
+         * @param limit The number of structures to consider.
+         * @param sample Randomly selects structures from the whole pdb, if true. If false, the first x structures are
+         * parsed.
+         * @return
+         */
+        MultiResultStep all(int limit, boolean sample);
+
+        /**
          * The location of a file as a sting.
          *
          * @param location The location.
@@ -328,7 +339,7 @@ public class StructureParser {
 
         public void assignLeafSkeletonFactoryTo(StructureIterator iterator) {
             if (leafSkeletonFactory == null) {
-               iterator.setLeafSkeletonFactory(new LeafSkeletonFactory(new RemoteCcdParsingBehavior()));
+                iterator.setLeafSkeletonFactory(new LeafSkeletonFactory(new RemoteCcdParsingBehavior()));
             } else {
                 iterator.setLeafSkeletonFactory(leafSkeletonFactory);
             }
@@ -453,6 +464,14 @@ public class StructureParser {
         }
 
         @Override
+        public MultiResultStep all(int limit, boolean shuffle) {
+            MultiResultSelector selector = new MultiResultSelector(sourceLocation);
+            selector.iterator = StructureIterator.createFromLocalPdb(localStructureRepository, limit, shuffle);
+            assignLeafSkeletonFactoryTo(selector.iterator);
+            return selector;
+        }
+
+        @Override
         public SingleResultStep fileLocation(String location) {
             SingleResultSelector selector = new SingleResultSelector(sourceLocation);
             selector.iterator = StructureIterator.createFromLocations(Collections.singletonList(location));
@@ -467,7 +486,6 @@ public class StructureParser {
             assignLeafSkeletonFactoryTo(selector.iterator);
             return selector;
         }
-
 
 
     }

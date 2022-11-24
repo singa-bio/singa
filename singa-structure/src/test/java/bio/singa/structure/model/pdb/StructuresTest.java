@@ -105,7 +105,7 @@ class StructuresTest {
         assertEquals(Set.of("C", "N"), firstLeafSubstructure.getAllAtoms().stream()
                 .map(Atom::getAtomName)
                 .collect(Collectors.toSet()));
-        Structures.fixAtomNames(firstLeafSubstructure);
+        Structures.fixAtomNames(firstLeafSubstructure, false);
         assertEquals(Set.of("N1", "N2", "C1", "C2", "C3", "C4"), firstLeafSubstructure.getAllAtoms().stream()
                 .map(Atom::getAtomName)
                 .collect(Collectors.toSet()));
