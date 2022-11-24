@@ -1,7 +1,7 @@
 package bio.singa.structure.model.pdb;
 
-import bio.singa.mathematics.vectors.Vector3D;
 import bio.singa.chemistry.model.elements.Element;
+import bio.singa.mathematics.vectors.Vector3D;
 import bio.singa.structure.model.interfaces.Atom;
 
 import java.util.HashSet;
@@ -21,17 +21,14 @@ public class PdbAtom implements Atom {
      * The element.
      */
     private final Element element;
-
-    /**
-     * The AtomName as String
-     */
-    private final String atomName;
-
     /**
      * References of the neighboring atoms.
      */
     private final Set<PdbAtom> neighbours;
-
+    /**
+     * The AtomName as String
+     */
+    private String atomName;
     /**
      * The position.
      */
@@ -111,6 +108,11 @@ public class PdbAtom implements Atom {
     @Override
     public String getAtomName() {
         return atomName;
+    }
+
+    @Override
+    public void setAtomName(String atomName) {
+        this.atomName = atomName;
     }
 
     public void addNeighbour(PdbAtom node) {

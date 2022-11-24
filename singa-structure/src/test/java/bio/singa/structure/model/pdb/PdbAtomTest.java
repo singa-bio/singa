@@ -1,10 +1,9 @@
 package bio.singa.structure.model.pdb;
 
-import bio.singa.mathematics.vectors.Vector3D;
 import bio.singa.chemistry.model.elements.ElementProvider;
-import bio.singa.structure.model.interfaces.Atom;
-import bio.singa.structure.model.interfaces.Structure;
+import bio.singa.mathematics.vectors.Vector3D;
 import bio.singa.structure.io.general.StructureParser;
+import bio.singa.structure.model.interfaces.Atom;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -44,6 +43,13 @@ class PdbAtomTest {
     void getAtomName() {
         assertEquals("N2", atom412.getAtomName());
         assertEquals("N", atom5444.getAtomName());
+    }
+
+    @Test
+    void setAtomName() {
+        atom412.setAtomName("N3");
+        assertEquals("N3", atom412.getAtomName());
+        atom412.setAtomName("N2");
     }
 
     @Test

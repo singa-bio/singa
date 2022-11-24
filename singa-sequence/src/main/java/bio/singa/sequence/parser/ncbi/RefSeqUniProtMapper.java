@@ -27,6 +27,7 @@ public class RefSeqUniProtMapper extends AbstractUniProtIdentifierMappingParser<
     private static final String MAP_URL = "https://www.uniprot.org/uploadlists/?";
     private RefSeqIdentifier refSeqIdentifier;
 
+    @Deprecated
     public RefSeqUniProtMapper(RefSeqIdentifier refSeqIdentifier) {
         this.refSeqIdentifier = refSeqIdentifier;
         setResource(MAP_URL);

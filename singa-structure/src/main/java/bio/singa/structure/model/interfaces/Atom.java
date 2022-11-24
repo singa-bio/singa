@@ -53,6 +53,11 @@ public interface Atom {
      */
     String getAtomName();
 
+    /**
+     * Sets the name of the atom.
+     */
+    void setAtomName(String atomName);
+
     Atom getCopy();
 
     /**

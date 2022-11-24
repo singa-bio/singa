@@ -43,6 +43,13 @@ class CifAtomTest {
     }
 
     @Test
+    void setAtomName() {
+        atom412.setAtomName("N3");
+        assertEquals("N3", atom412.getAtomName());
+        atom412.setAtomName("N2");
+    }
+
+    @Test
     void getPosition() {
         assertEquals(new Vector3D(62.204, -8.506, 22.574), atom412.getPosition());
         assertEquals(new Vector3D(70.311, 35.603, -10.967), atom5444.getPosition());
