@@ -128,6 +128,7 @@ public class PdbLeafSubstructureBuilder {
         private boolean tryAminoAcid(String threeLetterCode) {
             Optional<StructuralFamily> aminoAcidFamilyOptional = StructuralFamilies.AminoAcids.get(threeLetterCode);
             if (aminoAcidFamilyOptional.isPresent()) {
+                leafSkeleton = leafSkeletonFactory.getLeafSkeleton(threeLetterCode);
                 family = aminoAcidFamilyOptional.get();
                 return true;
             }
@@ -137,6 +138,7 @@ public class PdbLeafSubstructureBuilder {
         private boolean tryNucleotide(String threeLetterCode) {
             Optional<StructuralFamily> nucleotideFamilyOptional = StructuralFamilies.Nucleotides.get(threeLetterCode);
             if (nucleotideFamilyOptional.isPresent()) {
+                leafSkeleton = leafSkeletonFactory.getLeafSkeleton(threeLetterCode);
                 family = nucleotideFamilyOptional.get();
                 return true;
             }
@@ -234,10 +236,12 @@ public class PdbLeafSubstructureBuilder {
                 if (isAminoAcid()) {
                     PdbAminoAcid aminoAcid = new PdbAminoAcid(identifier, family);
                     atomSet.forEach(aminoAcid::addAtom);
-                    if (leafSkeleton == null || leafSkeleton.getParent().isEmpty()) {
+                    if (leafSkeleton == null) {
                         PdbLeafSubstructureFactory.connectAminoAcid(aminoAcid, atomMap);
                     } else {
-                        aminoAcid.setDivergingThreeLetterCode(name);
+                        if (!StructuralFamilies.AminoAcids.isAminoAcid(name)) {
+                            aminoAcid.setDivergingThreeLetterCode(name);
+                        }
                         if (leafSkeleton != null && leafSkeleton.hasBonds()) {
                             leafSkeleton.connect(aminoAcid, atomMap);
                         }
@@ -246,9 +250,12 @@ public class PdbLeafSubstructureBuilder {
                 } else if (isNucleotide()) {
                     PdbNucleotide nucleotide = new PdbNucleotide(identifier, family);
                     atomSet.forEach(nucleotide::addAtom);
-                    if (leafSkeleton == null || leafSkeleton.getParent().isEmpty()) {
+                    if (leafSkeleton == null) {
                         PdbLeafSubstructureFactory.connectNucleotide(nucleotide, atomMap);
                     } else {
+                        if (!StructuralFamilies.Nucleotides.isNucleotide(name)) {
+                            nucleotide.setDivergingThreeLetterCode(name);
+                        }
                         nucleotide.setDivergingThreeLetterCode(name);
                         if (leafSkeleton != null && leafSkeleton.hasBonds()) {
                             leafSkeleton.connect(nucleotide, atomMap);

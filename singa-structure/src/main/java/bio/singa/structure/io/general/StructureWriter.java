@@ -211,6 +211,10 @@ public class StructureWriter {
                 // renumbering cif structures strictly requires atom renumbering because of chain termination records
                 options.setRenumberingAtoms(true);
             }
+            if (options.isRenumberingAtoms() && options.isRenumberingSubstructures() && options.isRenumberChains()) {
+                structure = StructureRenumberer.renumberEverything(structure);
+                return;
+            }
             if (options.isRenumberingAtoms()) {
                 structure = StructureRenumberer.renumberAtomsConsecutively(structure, options.isRenumberChains());
             }

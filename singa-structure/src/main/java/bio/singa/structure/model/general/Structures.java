@@ -12,6 +12,7 @@ import bio.singa.mathematics.vectors.Vectors3D;
 import bio.singa.structure.model.interfaces.*;
 import bio.singa.structure.model.pdb.*;
 
+import java.sql.Array;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -298,4 +299,72 @@ public class Structures {
             ligandAtom.setAtomName(name + elementCount);
         }
     }
+
+    /**
+     * Splits leafs based on atom numbering in case that multiple different atom groups were assigned to the same leaf. For
+     * example this can happen with pdb files that have more than many atoms and run out of valid leaf identifiers.
+     * The chain in question should be reduced beforehand if it is intended to be written to pdb afterwards.
+     * The leafs are being renumbers in this method.
+     */
+    public static void reSplitAndNumberLeafs(PdbChain chain) {
+        List<PdbLeafSubstructure> originalLeaves = chain.getAllLeafSubstructures().stream()
+                .sorted(Comparator.comparing(PdbLeafSubstructure::getIdentifier))
+                .collect(Collectors.toList());
+        List<PdbLeafSubstructure> renumberedLeaves = new ArrayList<>();
+        int newId = 1;
+        for (PdbLeafSubstructure sortedLeaf : originalLeaves) {
+            // sort the atoms
+            List<PdbAtom> sortedAtoms = sortedLeaf.getAllAtoms().stream()
+                    .sorted(Comparator.comparing(PdbAtom::getAtomIdentifier))
+                    .collect(Collectors.toList());
+            // iterate
+            Deque<PdbAtom> currentAtoms = new ArrayDeque<>();
+            for (PdbAtom currentAtom : sortedAtoms) {
+                if (currentAtoms.isEmpty()) {
+                    currentAtoms.addFirst(currentAtom);
+                    continue;
+                }
+                Atom lastAtom = currentAtoms.peek();
+                if (lastAtom.getAtomIdentifier() + 1 != currentAtom.getAtomIdentifier()) {
+                    PdbLeafIdentifier identifier = new PdbLeafIdentifier(sortedLeaf.getIdentifier().getStructureIdentifier(),
+                            sortedLeaf.getIdentifier().getModelIdentifier(),
+                            sortedLeaf.getIdentifier().getChainIdentifier(),
+                            newId);
+                    PdbLeafSubstructure leafSubstructure = PdbLeafSubstructureFactory.createLeafSubstructure(identifier, sortedLeaf.getFamily(), new HashSet<>(currentAtoms));
+                    leafSubstructure.setAnnotatedAsHeteroAtom(true);
+                    renumberedLeaves.add(leafSubstructure);
+                    newId++;
+                    currentAtoms.clear();
+                }
+                currentAtoms.addFirst(currentAtom);
+            }
+        }
+
+        originalLeaves.forEach(chain::removeLeafSubstructure);
+        renumberedLeaves.forEach(chain::addLeafSubstructure);
+
+    }
+
+
+    public static void renumberLeafsInPlace(PdbChain chain) {
+        List<PdbLeafSubstructure> originalLeaves = chain.getAllLeafSubstructures().stream()
+                .sorted(Comparator.comparing(PdbLeafSubstructure::getIdentifier))
+                .collect(Collectors.toList());
+        List<PdbLeafSubstructure> renumberedLeaves = new ArrayList<>();
+        int newId = 1;
+        for (PdbLeafSubstructure sortedLeaf : originalLeaves) {
+            PdbLeafIdentifier identifier = new PdbLeafIdentifier(sortedLeaf.getIdentifier().getStructureIdentifier(),
+                    sortedLeaf.getIdentifier().getModelIdentifier(),
+                    sortedLeaf.getIdentifier().getChainIdentifier(),
+                    newId);
+            // TODO needs better copy mechanisms, some attributes are dropped
+            PdbLeafSubstructure leafSubstructure = PdbLeafSubstructureFactory.createLeafSubstructure(identifier, sortedLeaf.getFamily(), new HashSet<>(sortedLeaf.getAllAtoms()));
+            leafSubstructure.setAnnotatedAsHeteroAtom(true);
+            renumberedLeaves.add(leafSubstructure);
+            newId++;
+        }
+        originalLeaves.forEach(chain::removeLeafSubstructure);
+        renumberedLeaves.forEach(chain::addLeafSubstructure);
+    }
+
 }
