@@ -40,7 +40,7 @@ class Fit3DAlignmentTest {
 
     @BeforeEach
     void initialize() {
-        target = StructureParser.cif()
+        target = StructureParser.pdb() // TODO should this work with cif?
                 .pdbIdentifier("1GL0")
                 .parse();
         Structure motifContainingStructure = StructureParser.local()
@@ -107,7 +107,7 @@ class Fit3DAlignmentTest {
                 .everything()
                 .parse();
         StructuralMotif queryMotif = StructuralMotif.fromLeafIdentifiers(target,
-                PdbLeafIdentifier.of("B-57", "B-102", "C-195"));
+                PdbLeafIdentifier.of("B-42", "B-87", "C-47"));
         Fit3D fit3d = Fit3DBuilder.create()
                 .query(queryMotif)
                 .target(target.getFirstModel())
@@ -217,7 +217,10 @@ class Fit3DAlignmentTest {
                 .everything()
                 .parse();
         StructuralMotif queryMotif = StructuralMotif.fromLeafIdentifiers(target,
-                PdbLeafIdentifier.of("B-57", "B-102", "C-195"));
+                PdbLeafIdentifier.of("B-42", "B-87", "C-47"));
+                // TODO expected that this now needs label identifiers?
+                // TODO should be CifLeafIdentifier?
+                // TODO should there be CifLeafIdentifier.of()?
         Fit3D fit3d = Fit3DBuilder.create()
                 .query(queryMotif)
                 .target(target.getFirstModel())
