@@ -42,10 +42,10 @@ class CifStructureTest {
                 .pdbIdentifier("1dlf")
                 .everything().parse();
         final Structure oakStructure = StructureParser.pdb().pdbIdentifier("1dlf").parse();
-        final LeafIdentifier leafIdentifier = new PdbLeafIdentifier("1dlf", 1, "H", 70);
-
-        LeafSubstructure cifLeaf = structure.getLeafSubstructure(leafIdentifier).get();
-        LeafSubstructure pdbLeaf = oakStructure.getLeafSubstructure(leafIdentifier).get();
+        final LeafIdentifier cifIdentifier = new CifLeafIdentifier("1dlf", 1, "B", 73);
+        final LeafIdentifier pdbIdentifier = new PdbLeafIdentifier("1dlf", 1, "H", 70);
+        LeafSubstructure cifLeaf = structure.getLeafSubstructure(cifIdentifier).get();
+        LeafSubstructure pdbLeaf = oakStructure.getLeafSubstructure(pdbIdentifier).get();
         cifLeaf.getAllAtoms();
         assertEquals(pdbLeaf.getAllAtoms().size(), cifLeaf.getAllAtoms().size());
 
