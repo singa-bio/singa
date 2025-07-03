@@ -76,7 +76,7 @@ class Fit3DAlignmentTest {
 
     @Test
     @Disabled
-    // unable to create motif from cif file currently
+    // unable to create motif from cif file currently -- TODO this should work with adjusted identifiers
     void shouldRunFit3DAlignmentBatch() throws IOException {
         Structure nucleotideTarget = StructureParser.cif()
                 .pdbIdentifier("2EES")
