@@ -13,7 +13,6 @@ public enum AnnotationType {
     ORGANISM("Organism"),
     GO_TERM("GO"),
     PDB_IDENTIFIER("PDB"),
-    PDB_RANGE("PDB Range (WARNING: as defined by UniProt, use UniProtResidueMapParser to correct mapping)"),
     ADDITIONAL_IDENTIFIER("Additional Identifier");
 
     private final String outputString;

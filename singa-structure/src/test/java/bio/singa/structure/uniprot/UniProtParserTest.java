@@ -7,7 +7,6 @@ import bio.singa.chemistry.features.databases.sequencevariants.SequenceVariant;
 import bio.singa.chemistry.features.databases.sequencevariants.SequenceVariants;
 import bio.singa.chemistry.features.databases.uniprot.UniProtParserService;
 import bio.singa.chemistry.model.Protein;
-import bio.singa.core.utility.Range;
 import bio.singa.features.identifiers.ENAAccessionNumber;
 import bio.singa.features.identifiers.GoTerm;
 import bio.singa.features.identifiers.UniProtIdentifier;
@@ -35,7 +34,6 @@ class UniProtParserTest {
     private static Protein aars;
     private static Protein transthyretin;
     private static Protein aarsByName;
-    private static Protein sirt;
 
     @BeforeAll
     static void initialize() {
@@ -43,7 +41,6 @@ class UniProtParserTest {
         aars = UniProtParserService.parse("P21889");
         transthyretin = UniProtParserService.parse("P02766");
         aarsByName = UniProtParserService.parse("SYD_ECOLI");
-        sirt = UniProtParserService.parse("Q96EB6");
     }
 
     @Test
@@ -108,14 +105,14 @@ class UniProtParserTest {
         SequenceVariants sequenceVariants = transthyretin.getFeature(SequenceVariants.class);
         SequenceVariant sequenceVariant = sequenceVariants.getContent().iterator().next();
         assertEquals("VAR_007546", sequenceVariant.getIdentifier());
-        assertEquals("Common polymorphism; dbSNP:rs1800458.", sequenceVariant.getDescription());
+        assertEquals("In dbSNP:rs1800458.", sequenceVariant.getDescription());
         Evidence expected = new Evidence(Evidence.SourceType.LITERATURE);
-        expected.setIdentifier("Ota2004");
-        expected.setDescription("DOI: 10.1038/ng1285");
+        expected.setIdentifier("Mita1986");
+        expected.setDescription("DOI: 10.1093/oxfordjournals.jbchem.a121826");
         assertEquals(expected, sequenceVariant.getEvidences().iterator().next());
         assertEquals(26, sequenceVariant.getLocation());
-        assertEquals(GLYCINE, sequenceVariant.getOriginal());
-        assertEquals(SERINE, sequenceVariant.getVariation());
+        assertEquals(GLYCINE.getOneLetterCode(), sequenceVariant.getOriginal());
+        assertEquals(SERINE.getOneLetterCode(), sequenceVariant.getVariation());
     }
 
     @Test
@@ -140,16 +137,5 @@ class UniProtParserTest {
         assertEquals("GO:0005524", ((GoTerm) annotations.get(2).getContent()).getContent());
         assertEquals("GO:0003676", ((GoTerm) annotations.get(3).getContent()).getContent());
         assertEquals("GO:0006422", ((GoTerm) annotations.get(4).getContent()).getContent());
-    }
-
-    @Test
-    void parseUniProtRange() {
-        List<Annotation> annotations = sirt.getAnnotationsOfType(AnnotationType.PDB_RANGE);
-        // simple format: A/B=241-516
-        assertEquals("4i5i-1-A-241", ((Range<?>) annotations.get(16).getContent()).getLowerBound().toString());
-        assertEquals("4i5i-1-A-516", ((Range<?>) annotations.get(16).getContent()).getUpperBound().toString());
-        // concatenated format A=234-510, B=641-663
-        assertEquals("4kxq-1-A-234", ((Range<?>) annotations.get(18).getContent()).getLowerBound().toString());
-        assertEquals("4kxq-1-A-510", ((Range<?>) annotations.get(18).getContent()).getUpperBound().toString());
     }
 }
