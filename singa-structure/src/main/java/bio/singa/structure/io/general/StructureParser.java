@@ -42,21 +42,12 @@ public class StructureParser {
         return new SourceSelector(SourceLocation.ONLINE_PDB);
     }
 
-    /**
-     * Structures will be pulled online.
-     *
-     * @return Source selection
-     */
-    public static IdentifierStep mmtf() {
-        return new SourceSelector(SourceLocation.ONLINE_MMTF);
-    }
-
     public static IdentifierStep cif() {
         return new SourceSelector(SourceLocation.ONLINE_MMCIF);
     }
 
     /**
-     * After selecting the source, the identifer(s) to parse can be chosen.
+     * After selecting the source, the identifier(s) to parse can be chosen.
      */
     public interface IdentifierStep {
 
@@ -310,7 +301,7 @@ public class StructureParser {
     }
 
     /**
-     * Remembers the choices during the the stepwise building process.
+     * Remembers the choices during the stepwise building process.
      */
     static class SourceSelector implements LocalSourceStep, IdentifierStep {
 

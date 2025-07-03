@@ -1,16 +1,11 @@
 package bio.singa.structure.io.general;
 
 import bio.singa.structure.model.cif.CifStructure;
-import bio.singa.structure.model.families.StructuralFamily;
 import bio.singa.structure.model.interfaces.*;
-import bio.singa.structure.model.mmtf.MmtfAminoAcid;
 import bio.singa.structure.model.pdb.PdbLinkEntry;
 import bio.singa.structure.model.pdb.PdbStructure;
 import bio.singa.structure.model.pdb.PdbLeafIdentifier;
 import bio.singa.structure.model.general.Structures;
-import org.rcsb.mmtf.dataholders.MmtfStructure;
-import org.rcsb.mmtf.encoder.AdapterToStructureData;
-import org.rcsb.mmtf.encoder.WriterUtils;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -34,9 +29,7 @@ public class StructureWriter {
         return new XYZRepresentationBuilder();
     }
 
-    public static MMTFCoverageStep mmtf() {
-        return new MMTFRepresentationBuilder();
-    }
+    // TODO CIF/BCIF writing
 
     private StructureWriter() {
 
@@ -66,12 +59,6 @@ public class StructureWriter {
 
     }
 
-    public interface MMTFCoverageStep {
-
-        MMTFOutputStep structure(Structure structure);
-
-    }
-
     public interface PDBSubstructureStep extends OptionsStep {
 
         PDBSubstructureStep title(String title);
@@ -97,12 +84,6 @@ public class StructureWriter {
         Structure getStructure();
 
         String writeToString();
-
-        void writeToPath(Path path) throws IOException;
-
-    }
-
-    public interface MMTFOutputStep {
 
         void writeToPath(Path path) throws IOException;
 
@@ -319,108 +300,6 @@ public class StructureWriter {
                     throw new UncheckedIOException("unable to create directory to write structure", e);
                 }
             }
-        }
-
-    }
-
-    static class MMTFRepresentationBuilder implements MMTFCoverageStep, MMTFOutputStep {
-
-        private Structure structure;
-        private Path destination;
-
-        @Override
-        public MMTFOutputStep structure(Structure structure) {
-            this.structure = structure;
-            return this;
-        }
-
-        @Override
-        public void writeToPath(Path destination) throws IOException {
-            this.destination = destination;
-            prepareTarget();
-            WriterUtils.writeDataToFile(prepareMmtfStructure(), destination);
-        }
-
-        private void prepareTarget() {
-            if (destination != null) {
-                try {
-                    Files.createDirectories(destination.getParent());
-                } catch (IOException e) {
-                    throw new UncheckedIOException("unable to create directory to write structure", e);
-                }
-            }
-        }
-
-        private AdapterToStructureData prepareMmtfStructure() {
-            AdapterToStructureData structureAdapterInterface = new AdapterToStructureData();
-            // init structure
-            structureAdapterInterface.initStructure(
-                    0,
-                    structure.getAllAtoms().size(),
-                    structure.getAllLeafSubstructures().size(),
-                    structure.getAllChains().size(),
-                    structure.getAllModels().size(),
-                    structure.getStructureIdentifier().toLowerCase());
-            structureAdapterInterface.setMmtfProducer("SiNGA");
-
-            // TODO currently we do not consider header information
-            // add header information
-            structureAdapterInterface.setHeaderInfo(
-                    0.0F,
-                    0.0F,
-                    ((float) structure.getResolution()),
-                    structure.getTitle(),
-                    "yyyy/mm/dd",
-                    "yyyy/mm/dd",
-                    new String[]{"xtal"});
-
-            // handle all models
-            Collection<? extends Model> allModels = structure.getAllModels();
-            for (Model model : allModels) {
-                Collection<? extends Chain> allChains = model.getAllChains();
-                structureAdapterInterface.setModelInfo(model.getModelIdentifier() - 1, allChains.size());
-                // handle all chains
-                for (Chain chain : allChains) {
-                    Collection<? extends LeafSubstructure> leafSubstructures = chain.getAllLeafSubstructures();
-                    // TODO here we presumably need a mapping between "real" chain names and internal IDs as first argument
-                    structureAdapterInterface.setChainInfo(chain.getChainIdentifier(), chain.getChainIdentifier(), leafSubstructures.size());
-                    for (LeafSubstructure leafSubstructure : leafSubstructures) {
-                        Collection<? extends Atom> atoms = leafSubstructure.getAllAtoms();
-
-                        char insertionCode = leafSubstructure.getIdentifier().getInsertionCode();
-                        StructuralFamily family = leafSubstructure.getFamily();
-                        char oneLetterCode;
-                        if (!family.getOneLetterCode().isEmpty()) {
-                            oneLetterCode = family.getOneLetterCode().charAt(0);
-                        } else {
-                            oneLetterCode = '?';
-                        }
-                        // TODO correct vocabulary has to be found for polymerType
-                        // TODO sequenceIndex corresponds to SEQRES number which we do not consider for the moment
-                        // TODO secStrucType is an integer and follows the DSSP numenclature, BioJava: DsspType
-                        structureAdapterInterface.setGroupInfo(
-                                leafSubstructure.getThreeLetterCode(),
-                                leafSubstructure.getIdentifier().getSerial(),
-                                insertionCode,
-                                "L-peptide linking",
-                                leafSubstructure.getAllAtoms().size(),
-                                0,
-                                oneLetterCode,
-                                leafSubstructure.getIdentifier().getSerial(),
-                                leafSubstructure instanceof MmtfAminoAcid ? ((MmtfAminoAcid) leafSubstructure).getSecondaryStructure().getMmtfCode() : -1);
-                        for (Atom atom : atoms) {
-                            // TODO currently alternate location, and occupancy are ignored
-                            structureAdapterInterface.setAtomInfo(atom.getAtomName(), atom.getAtomIdentifier(), MmtfStructure.UNAVAILABLE_CHAR_VALUE,
-                                    ((float) atom.getPosition().getX()), ((float) atom.getPosition().getY()), ((float) atom.getPosition().getZ()),
-                                    1.0F, ((float) atom.getBFactor()), atom.getElement().getSymbol().toUpperCase(), atom.getElement().getCharge());
-                            // TODO here we should add bonds
-                            // structureAdapterInterface.setGroupBond();
-                        }
-                    }
-                }
-            }
-            structureAdapterInterface.finalizeStructure();
-            return structureAdapterInterface;
         }
 
     }

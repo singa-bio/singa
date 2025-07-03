@@ -40,7 +40,7 @@ class Fit3DAlignmentTest {
 
     @BeforeEach
     void initialize() {
-        target = StructureParser.mmtf()
+        target = StructureParser.cif()
                 .pdbIdentifier("1GL0")
                 .parse();
         Structure motifContainingStructure = StructureParser.local()
@@ -100,8 +100,8 @@ class Fit3DAlignmentTest {
 
 
     @Test
-    void shouldRunFit3DAlignmentWithMMTF() {
-        Structure target = StructureParser.mmtf()
+    void shouldRunFit3DAlignmentWithBCIF() {
+        Structure target = StructureParser.cif()
                 // Structure target = StructureParser.pdb()
                 .pdbIdentifier("4CHA")
                 .everything()
@@ -170,8 +170,8 @@ class Fit3DAlignmentTest {
 
 
     @Test
-    void shouldRunFit3DAlignmentAndExchangesWithMMTF() {
-        Structure target = StructureParser.mmtf()
+    void shouldRunFit3DAlignmentAndExchangesWithBCIF() {
+        Structure target = StructureParser.cif()
                 .pdbIdentifier("2mnr")
                 .everything()
                 .parse();
@@ -211,8 +211,8 @@ class Fit3DAlignmentTest {
     }
 
     @Test
-    void shouldFindInterMolecularMatchesWithMMTF() {
-        Structure target = StructureParser.mmtf()
+    void shouldFindInterMolecularMatchesWithBCIF() {
+        Structure target = StructureParser.cif()
                 .pdbIdentifier("4CHA")
                 .everything()
                 .parse();
@@ -412,8 +412,8 @@ class Fit3DAlignmentTest {
     }
 
     @Test
-    void shouldAnnotateIdentifiersInBatchWithMMTF() {
-        StructureIterator multiParser = StructureParser.mmtf()
+    void shouldAnnotateIdentifiersInBatchWithBCIF() {
+        StructureIterator multiParser = StructureParser.cif()
                 .chainList(Paths.get(Resources.getResourceAsFileLocation("chain_list_PF00089.txt")), "\t")
                 .everything();
         Fit3D fit3d = Fit3DBuilder.create()

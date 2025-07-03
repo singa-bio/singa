@@ -90,13 +90,11 @@ public class LocalSourceIterator<SourceContent> extends AbstractSourceIterator<S
     private static boolean hasExpectedEnding(SourceLocation sourceLocation, String fileName) {
         switch (sourceLocation) {
             case OFFLINE_PDB:
-                return fileName.endsWith(".ent.gz");
-            case OFFLINE_MMTF:
-                return fileName.endsWith(".mmtf.gz");
+                return fileName.endsWith(".ent.gz"); // TODO still the case? should support .pdb.gz?
             case OFFLINE_MMCIF:
                 return fileName.endsWith(".cif.gz");
             case OFFLINE_BCIF:
-                return fileName.endsWith(".bcif");
+                return fileName.endsWith(".bcif.gz"); // TODO side effects?
         }
         return false;
     }

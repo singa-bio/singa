@@ -31,12 +31,12 @@ import static org.junit.jupiter.api.Assertions.*;
 class StructureParserTest {
 
     private static LocalStructureRepository localPdb;
-    private static LocalStructureRepository localMmtf;
+    private static LocalStructureRepository localBcif;
 
     @BeforeAll
     static void parseUncomplicatedStructure() {
         localPdb = new LocalStructureRepository(Resources.getResourceAsFileLocation("pdb"), SourceLocation.OFFLINE_PDB);
-        localMmtf = new LocalStructureRepository(Resources.getResourceAsFileLocation("pdb"), SourceLocation.OFFLINE_MMTF);
+        localBcif = new LocalStructureRepository(Resources.getResourceAsFileLocation("pdb"), SourceLocation.OFFLINE_BCIF);
     }
 
     @Test
@@ -115,10 +115,10 @@ class StructureParserTest {
     }
 
     @Test
-    @DisplayName("mmtf parsing - correct local mmtf resolving")
-    void shouldParseFromLocalMMTF() {
+    @DisplayName("bcif parsing - correct local bcif resolving")
+    void shouldParseFromLocalBCIF() {
         Structure structure = StructureParser.local()
-                .localStructureRepository(localMmtf)
+                .localStructureRepository(localBcif)
                 .pdbIdentifier("1c0a")
                 .parse();
         assertNotNull(structure);
@@ -194,9 +194,9 @@ class StructureParserTest {
 
     @Test
     @DisplayName("pdb parsing - correct parsing of multiple structures")
-    void shouldParseMultipleMMTFStructures() {
+    void shouldParseMultipleBCIFStructures() {
         // all have the ligand SO4
-        List<Structure> structures = StructureParser.mmtf()
+        List<Structure> structures = StructureParser.cif()
                 .pdbIdentifiers(Arrays.asList("5F3P", "5G5T", "5J6Q", "5MAT"))
                 .parse();
         assertEquals(4, structures.size());

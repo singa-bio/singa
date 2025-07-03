@@ -36,14 +36,6 @@ public class PathToObjectConverter implements ContentConverter<Path, Object> {
             }
         }
 
-        if (fileName.endsWith(".mmtf.gz")) {
-            try {
-                return Files.readAllBytes(content);
-            } catch (IOException e) {
-                throw new UncheckedIOException("unable to read mmtf " + content, e);
-            }
-        }
-
         if (fileName.endsWith(".ent.gz")) {
             try {
                 return fetchLines(readPacked(content));
@@ -72,7 +64,7 @@ public class PathToObjectConverter implements ContentConverter<Path, Object> {
             try {
                 return CifIO.readFromPath(content, CifStaticOptions.BCIF_GZIPPED);
             } catch (IOException e) {
-                throw new UncheckedIOException("unable to read bcif file" + content, e);
+                throw new UncheckedIOException("unable to read packed bcif file" + content, e);
             }
         }
 
@@ -80,7 +72,7 @@ public class PathToObjectConverter implements ContentConverter<Path, Object> {
             try {
                 return CifIO.readFromPath(content, CifStaticOptions.CIF_PLAIN);
             } catch (IOException e) {
-                throw new UncheckedIOException("unable to read bcif file" + content, e);
+                throw new UncheckedIOException("unable to read cif file" + content, e);
             }
         }
 
@@ -88,7 +80,7 @@ public class PathToObjectConverter implements ContentConverter<Path, Object> {
             try {
                 return CifIO.readFromPath(content, CifStaticOptions.CIF_GZIPPED);
             } catch (IOException e) {
-                throw new UncheckedIOException("unable to read bcif file" + content, e);
+                throw new UncheckedIOException("unable to read packed cif file" + content, e);
             }
         }
 

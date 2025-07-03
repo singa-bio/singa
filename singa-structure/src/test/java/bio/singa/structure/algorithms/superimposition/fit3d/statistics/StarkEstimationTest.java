@@ -42,7 +42,7 @@ class StarkEstimationTest {
     @Test
     void shouldCalculatePvalues() {
         StarkEstimation starkEstimation = new StarkEstimation();
-        StructureIterator multiParser = StructureParser.mmtf()
+        StructureIterator multiParser = StructureParser.cif()
                 .chainList(Paths.get(Resources.getResourceAsFileLocation("nrpdb_BLAST_10e80_100.txt")), "_")
                 .everything();
         multiParser.setOptions(structureParserOptions);
@@ -56,7 +56,7 @@ class StarkEstimationTest {
         assertTrue(fit3dBatch.getMatches().stream()
                 .anyMatch(match -> match.getPvalue() != 0.0));
         assertTrue(fit3dBatch.getMatches().stream()
-                .anyMatch(match -> match.getPvalue() != Double.NaN));
+                .anyMatch(match -> !Double.isNaN(match.getPvalue())));
     }
 
 }

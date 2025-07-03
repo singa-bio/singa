@@ -4,8 +4,6 @@ import bio.singa.core.utility.Pair;
 import bio.singa.mathematics.vectors.Vector3D;
 import bio.singa.structure.io.general.StructureParser;
 import bio.singa.structure.model.interfaces.*;
-import bio.singa.structure.model.mmtf.MmtfStructure;
-import bio.singa.structure.model.molecules.MoleculeGraphs;
 import bio.singa.structure.model.pdb.PdbLeafIdentifier;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -40,16 +38,16 @@ class CifStructureTest {
 
     @Test
     void shouldIgnoreAlternativePosition() {
-        final Structure mmtfStructure = StructureParser.mmtf()
+        final Structure structure = StructureParser.cif()
                 .pdbIdentifier("1dlf")
                 .everything().parse();
         final Structure oakStructure = StructureParser.pdb().pdbIdentifier("1dlf").parse();
         final LeafIdentifier leafIdentifier = new PdbLeafIdentifier("1dlf", 1, "H", 70);
 
-        LeafSubstructure mmtfLeaf = mmtfStructure.getLeafSubstructure(leafIdentifier).get();
-        LeafSubstructure oakLeaf = oakStructure.getLeafSubstructure(leafIdentifier).get();
-        mmtfLeaf.getAllAtoms();
-        assertEquals(oakLeaf.getAllAtoms().size(), mmtfLeaf.getAllAtoms().size());
+        LeafSubstructure cifLeaf = structure.getLeafSubstructure(leafIdentifier).get();
+        LeafSubstructure pdbLeaf = oakStructure.getLeafSubstructure(leafIdentifier).get();
+        cifLeaf.getAllAtoms();
+        assertEquals(pdbLeaf.getAllAtoms().size(), cifLeaf.getAllAtoms().size());
 
     }
 
