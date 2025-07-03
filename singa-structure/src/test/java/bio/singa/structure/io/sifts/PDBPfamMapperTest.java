@@ -12,6 +12,7 @@ class PDBPfamMapperTest {
     @Test
     void shouldMapChainsToPfam() {
         Map<String, PfamIdentifier> map = PDBPfamMapper.map("1c0a");
-        assertEquals("PF02938", map.get("A").getContent());
+        // TODO there can be any number of Pfams per chain, 1c0a.A has 3: PF02938, PF00152, PF01336 (https://www.rcsb.org/annotations/1C0A#pfam)
+        assertEquals("PF00152", map.get("A").getContent());
     }
 }
