@@ -146,8 +146,10 @@ class SubstructureSuperimposerTest {
         Structure second = StructureParser.cif()
                 .pdbIdentifier("1cn4")
                 .parse();
-        List<PdbLeafIdentifier> secondIdentifiers = PdbLeafIdentifier.of("A-58", "A-59");
-        StructuralMotif secondMotif = StructuralMotif.fromLeafIdentifiers(second, secondIdentifiers);
+        // TODO better way to support identifiers that work in all formats?
+        List<PdbLeafIdentifier> secondCifIdentifiers = PdbLeafIdentifier.of("A-61", "A-62");
+        List<PdbLeafIdentifier> secondPdbIdentifiers = PdbLeafIdentifier.of("A-58", "A-59");
+        StructuralMotif secondMotif = StructuralMotif.fromLeafIdentifiers(second, secondCifIdentifiers);
 
         SubstructureSuperimposition bcifSuperimposition = SubstructureSuperimposer.calculateSubstructureSuperimposition(firstMotif, secondMotif, StructuralEntityFilter.AtomFilter.isArbitrary());
 
@@ -159,7 +161,7 @@ class SubstructureSuperimposerTest {
         second = StructureParser.pdb()
                 .pdbIdentifier("1cn4")
                 .parse();
-        secondMotif = StructuralMotif.fromLeafIdentifiers(second, secondIdentifiers);
+        secondMotif = StructuralMotif.fromLeafIdentifiers(second, secondPdbIdentifiers);
 
         SubstructureSuperimposition pdbSuperimposition = SubstructureSuperimposer.calculateSubstructureSuperimposition(firstMotif, secondMotif, StructuralEntityFilter.AtomFilter.isArbitrary());
 
