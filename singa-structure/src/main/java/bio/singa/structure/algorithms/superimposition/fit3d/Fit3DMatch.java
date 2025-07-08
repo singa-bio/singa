@@ -2,7 +2,6 @@ package bio.singa.structure.algorithms.superimposition.fit3d;
 
 
 import bio.singa.features.identifiers.ECNumber;
-import bio.singa.features.identifiers.PfamIdentifier;
 import bio.singa.features.identifiers.UniProtIdentifier;
 import bio.singa.structure.algorithms.superimposition.SubstructureSuperimposition;
 import bio.singa.structure.model.general.StructuralMotif;
@@ -19,7 +18,7 @@ import java.util.stream.Collectors;
  */
 public class Fit3DMatch implements Comparable<Fit3DMatch> {
 
-    public static final String CSV_HEADER = "match,rmsd,p-value,title,UniProt,Pfam,EC\n";
+    public static final String CSV_HEADER = "match,rmsd,p-value,title,UniProt,EC\n";
 
     private final SubstructureSuperimposition substructureSuperimposition;
     private final double rmsd;
@@ -27,7 +26,6 @@ public class Fit3DMatch implements Comparable<Fit3DMatch> {
     private StructuralMotif candidateMotif;
     private StructuralMotif.Type matchType;
     private Map<String, UniProtIdentifier> uniProtIdentifiers;
-    private Map<String, PfamIdentifier> pfamIdentifiers;
     private Map<String, ECNumber> ecNumbers;
     private String alignedSequence;
     private String structureTitle;
@@ -81,14 +79,6 @@ public class Fit3DMatch implements Comparable<Fit3DMatch> {
         this.uniProtIdentifiers = uniProtIdentifiers;
     }
 
-    public Optional<Map<String, PfamIdentifier>> getPfamIdentifiers() {
-        return Optional.ofNullable(pfamIdentifiers);
-    }
-
-    void setPfamIdentifiers(Map<String, PfamIdentifier> pfamIdentifiers) {
-        this.pfamIdentifiers = pfamIdentifiers;
-    }
-
     public Optional<Map<String, ECNumber>> getEcNumbers() {
         return Optional.ofNullable(ecNumbers);
     }
@@ -138,9 +128,6 @@ public class Fit3DMatch implements Comparable<Fit3DMatch> {
         stringJoiner.add(String.valueOf(pvalue));
         stringJoiner.add(((structureTitle != null) ? "\"" + structureTitle.replaceAll("\"", "") + "\"" : "n/a"));
         stringJoiner.add(((uniProtIdentifiers != null) ? uniProtIdentifiers.entrySet().stream()
-                .map(entry -> entry.getKey() + ":" + entry.getValue())
-                .collect(Collectors.joining(",", "[", "]")) : "n/a"));
-        stringJoiner.add(((pfamIdentifiers != null) ? pfamIdentifiers.entrySet().stream()
                 .map(entry -> entry.getKey() + ":" + entry.getValue())
                 .collect(Collectors.joining(",", "[", "]")) : "n/a"));
         stringJoiner.add(((ecNumbers != null) ? ecNumbers.entrySet().stream()

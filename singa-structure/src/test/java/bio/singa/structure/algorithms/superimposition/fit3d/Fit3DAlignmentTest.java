@@ -388,16 +388,8 @@ class Fit3DAlignmentTest {
                 .target(target.getFirstChain())
                 .atomFilter(StructuralEntityFilter.AtomFilter.isArbitrary())
                 .mapUniProtIdentifiers()
-                .mapPfamIdentifiers()
                 .mapECNumbers()
                 .run();
-        assertTrue(fit3d.getMatches().stream()
-                .map(Fit3DMatch::getPfamIdentifiers)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .map(Map::values)
-                .flatMap(Collection::stream)
-                .anyMatch(pfamIdentifier -> pfamIdentifier.getContent().equals("PF00089")));
         assertTrue(fit3d.getMatches().stream()
                 .map(Fit3DMatch::getUniProtIdentifiers)
                 .filter(Optional::isPresent)
@@ -425,16 +417,8 @@ class Fit3DAlignmentTest {
                 .maximalParallelism()
                 .atomFilter(StructuralEntityFilter.AtomFilter.isArbitrary())
                 .mapUniProtIdentifiers()
-                .mapPfamIdentifiers()
                 .mapECNumbers()
                 .run();
-        assertTrue(fit3d.getMatches().stream()
-                .map(Fit3DMatch::getPfamIdentifiers)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .map(Map::values)
-                .flatMap(Collection::stream)
-                .anyMatch(pfamIdentifier -> pfamIdentifier.getContent().equals("PF00089")));
         assertTrue(fit3d.getMatches().stream()
                 .map(Fit3DMatch::getUniProtIdentifiers)
                 .filter(Optional::isPresent)

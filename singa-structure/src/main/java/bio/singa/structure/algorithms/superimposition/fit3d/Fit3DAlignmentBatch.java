@@ -42,7 +42,6 @@ public class Fit3DAlignmentBatch implements Fit3D {
     private final boolean skipBackboneTargets;
     private final StatisticalModel statisticalModel;
     private final boolean mapUniprotIdentifiers;
-    private final boolean mapPfamIdentifiers;
     private final boolean mapEcNumbers;
     private final boolean filterEnvironments;
     private final double filterThreshold;
@@ -61,7 +60,6 @@ public class Fit3DAlignmentBatch implements Fit3D {
         distanceTolerance = builder.distanceTolerance;
         statisticalModel = builder.statisticalModel;
         mapUniprotIdentifiers = builder.mapUniprotIdentifiers;
-        mapPfamIdentifiers = builder.mapPfamIdentifiers;
         mapEcNumbers = builder.mapEcNumbers;
         filterEnvironments = builder.filterEnvironments;
         filterThreshold = builder.filterThreshold;
@@ -176,9 +174,6 @@ public class Fit3DAlignmentBatch implements Fit3D {
 
                     if (mapUniprotIdentifiers) {
                         parameterStep.mapUniProtIdentifiers();
-                    }
-                    if (mapPfamIdentifiers) {
-                        parameterStep.mapPfamIdentifiers();
                     }
                     if (mapEcNumbers) {
                         parameterStep.mapECNumbers();
