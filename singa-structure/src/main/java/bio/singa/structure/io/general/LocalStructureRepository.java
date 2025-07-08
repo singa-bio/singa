@@ -83,7 +83,7 @@ public class LocalStructureRepository {
             case OFFLINE_MMCIF:
                 return middleIdentifierPath.resolve(structureIdentifier + ".cif.gz");
             case OFFLINE_BCIF:
-                return middleIdentifierPath.resolve(structureIdentifier + ".bcif.gz");
+                return middleIdentifierPath.resolve(structureIdentifier + ".bcif");
             default:
                 throw new IllegalStateException("unable to generate file name");
         }
