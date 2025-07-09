@@ -1,6 +1,7 @@
 package bio.singa.structure.io.general;
 
 import bio.singa.structure.io.pdb.tokens.*;
+import bio.singa.structure.model.interfaces.LeafIdentifier;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.interfaces.Model;
 import bio.singa.structure.model.interfaces.Structure;
@@ -121,7 +122,7 @@ public class StructureRepresentationFactory {
     private String getPreamble(String pdbIdentifier, String title, List<PdbLinkEntry> linkEntries) {
         StringBuilder sb = new StringBuilder();
         // header
-        if (pdbIdentifier != null && !pdbIdentifier.equals(PdbLeafIdentifier.DEFAULT_PDB_IDENTIFIER)) {
+        if (pdbIdentifier != null && !pdbIdentifier.equals(LeafIdentifier.DEFAULT_PDB_IDENTIFIER)) {
             sb.append(HeaderToken.assemblePDBLine(pdbIdentifier));
             sb.append(System.lineSeparator());
         }

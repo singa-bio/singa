@@ -3,6 +3,7 @@ package bio.singa.structure.model.pdb;
 import bio.singa.chemistry.model.elements.ElementProvider;
 import bio.singa.mathematics.vectors.Vector3D;
 import bio.singa.structure.model.families.StructuralFamily;
+import bio.singa.structure.model.general.AuthLeafIdentifier;
 import bio.singa.structure.model.general.UniqueAtomIdentifier;
 import bio.singa.structure.model.interfaces.*;
 
@@ -63,7 +64,7 @@ public class PdbStructure implements Structure {
 
     public void setPdbIdentifier(String pdbIdentifier) {
         if (pdbIdentifier.isEmpty()) {
-            pdbIdentifier = PdbLeafIdentifier.DEFAULT_PDB_IDENTIFIER;
+            pdbIdentifier = LeafIdentifier.DEFAULT_PDB_IDENTIFIER;
         }
         this.pdbIdentifier = pdbIdentifier.toLowerCase();
     }

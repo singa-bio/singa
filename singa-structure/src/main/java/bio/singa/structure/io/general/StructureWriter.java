@@ -4,7 +4,7 @@ import bio.singa.structure.model.cif.CifStructure;
 import bio.singa.structure.model.interfaces.*;
 import bio.singa.structure.model.pdb.PdbLinkEntry;
 import bio.singa.structure.model.pdb.PdbStructure;
-import bio.singa.structure.model.pdb.PdbLeafIdentifier;
+import bio.singa.structure.model.general.AuthLeafIdentifier;
 import bio.singa.structure.model.general.Structures;
 
 import java.io.IOException;
@@ -71,7 +71,7 @@ public class StructureWriter {
 
     public interface OptionsStep {
 
-        OutputStep renumberSubstructures(Map<PdbLeafIdentifier, Integer> renumberingMap);
+        OutputStep renumberSubstructures(Map<AuthLeafIdentifier, Integer> renumberingMap);
 
         OutputStep settings(StructureRepresentationOptions.Setting... settings);
 
@@ -145,7 +145,7 @@ public class StructureWriter {
         }
 
         @Override
-        public OutputStep renumberSubstructures(Map<PdbLeafIdentifier, Integer> renumberingMap) {
+        public OutputStep renumberSubstructures(Map<AuthLeafIdentifier, Integer> renumberingMap) {
             options.setRenumberingMap(renumberingMap);
             options.setRenumberingSubstructures(true);
             prepareInformationToWrite();

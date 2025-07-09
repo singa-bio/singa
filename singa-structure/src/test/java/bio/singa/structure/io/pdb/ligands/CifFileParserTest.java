@@ -10,7 +10,6 @@ import bio.singa.structure.model.general.LeafSkeleton;
 import bio.singa.structure.model.interfaces.LeafIdentifier;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.interfaces.Structure;
-import bio.singa.structure.model.pdb.PdbLeafIdentifier;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 

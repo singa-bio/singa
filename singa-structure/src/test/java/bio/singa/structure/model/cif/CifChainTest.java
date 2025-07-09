@@ -2,11 +2,11 @@ package bio.singa.structure.model.cif;
 
 import bio.singa.mathematics.vectors.Vector3D;
 import bio.singa.structure.io.general.StructureParser;
+import bio.singa.structure.model.general.LabelLeafIdentifier;
 import bio.singa.structure.model.interfaces.Atom;
 import bio.singa.structure.model.interfaces.Chain;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.interfaces.Structure;
-import bio.singa.structure.model.pdb.PdbLeafIdentifier;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -46,7 +46,7 @@ class CifChainTest {
 
     @Test
     void getLeafSubstructure() {
-        Optional<? extends LeafSubstructure> optionalLeafSubstructure = firstChain.getLeafSubstructure(new CifLeafIdentifier("2n5e", 1, "A", 10));
+        Optional<? extends LeafSubstructure> optionalLeafSubstructure = firstChain.getLeafSubstructure(new LabelLeafIdentifier("2n5e", 1, "A", 10));
         if (!optionalLeafSubstructure.isPresent()) {
             fail("Optional leaf substructure was empty.");
         }
@@ -62,7 +62,7 @@ class CifChainTest {
         // ATOM   4357  N   LEU B 174      -7.551  -8.393 -46.127  1.00  0.00           N
         // ...
         // ATOM   4375 HD23 LEU B 174      -3.489  -6.082 -46.198  1.00  0.00           H
-        final CifLeafIdentifier leafIdentifier = new CifLeafIdentifier("2n5e", 1, "B", 98);
+        final LabelLeafIdentifier leafIdentifier = new LabelLeafIdentifier("2n5e", 1, "B", 98);
         Optional<? extends LeafSubstructure> optionalLeafSubstructure = chainToModify.getLeafSubstructure(leafIdentifier);
         if (!optionalLeafSubstructure.isPresent()) {
             fail("Optional leaf substructure was empty.");
@@ -117,7 +117,7 @@ class CifChainTest {
         final Chain chainCopy = chainToModify.getCopy();
         assertEquals(chainCopy, chainToModify);
         assertNotSame(chainCopy, chainToModify);
-        final CifLeafIdentifier leafIdentifier = new CifLeafIdentifier("2n5e", 1, "B", 128);
+        final LabelLeafIdentifier leafIdentifier = new LabelLeafIdentifier("2n5e", 1, "B", 128);
         // remove a leaf from the copy
         boolean wasRemoved = chainCopy.removeLeafSubstructure(leafIdentifier);
         assertTrue(wasRemoved);

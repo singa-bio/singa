@@ -12,7 +12,6 @@ import bio.singa.mathematics.vectors.Vectors3D;
 import bio.singa.structure.model.interfaces.*;
 import bio.singa.structure.model.pdb.*;
 
-import java.sql.Array;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -326,7 +325,7 @@ public class Structures {
                 }
                 Atom lastAtom = currentAtoms.peek();
                 if (lastAtom.getAtomIdentifier() + 1 != currentAtom.getAtomIdentifier()) {
-                    PdbLeafIdentifier identifier = new PdbLeafIdentifier(sortedLeaf.getIdentifier().getStructureIdentifier(),
+                    AuthLeafIdentifier identifier = new AuthLeafIdentifier(sortedLeaf.getIdentifier().getStructureIdentifier(),
                             sortedLeaf.getIdentifier().getModelIdentifier(),
                             sortedLeaf.getIdentifier().getChainIdentifier(),
                             newId);
@@ -353,7 +352,7 @@ public class Structures {
         List<PdbLeafSubstructure> renumberedLeaves = new ArrayList<>();
         int newId = 1;
         for (PdbLeafSubstructure sortedLeaf : originalLeaves) {
-            PdbLeafIdentifier identifier = new PdbLeafIdentifier(sortedLeaf.getIdentifier().getStructureIdentifier(),
+            AuthLeafIdentifier identifier = new AuthLeafIdentifier(sortedLeaf.getIdentifier().getStructureIdentifier(),
                     sortedLeaf.getIdentifier().getModelIdentifier(),
                     sortedLeaf.getIdentifier().getChainIdentifier(),
                     newId);

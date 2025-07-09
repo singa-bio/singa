@@ -2,6 +2,7 @@ package bio.singa.structure.model.cif;
 
 import bio.singa.structure.model.interfaces.Chain;
 import bio.singa.structure.model.interfaces.LeafIdentifier;
+import bio.singa.structure.model.general.AuthLeafIdentifier;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -15,7 +16,7 @@ public class CifChain implements Chain {
 
     private CifEntityType type;
 
-    private final TreeMap<CifLeafIdentifier, CifLeafSubstructure> leafSubstructures;
+    private final TreeMap<AuthLeafIdentifier, CifLeafSubstructure> leafSubstructures;
 
     public CifChain(String chainIdentifier) {
         identifier = chainIdentifier;

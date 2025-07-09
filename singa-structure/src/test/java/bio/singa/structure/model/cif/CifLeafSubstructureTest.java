@@ -2,6 +2,7 @@ package bio.singa.structure.model.cif;
 
 import bio.singa.mathematics.vectors.Vector3D;
 import bio.singa.structure.io.general.StructureParser;
+import bio.singa.structure.model.general.LabelLeafIdentifier;
 import bio.singa.structure.model.interfaces.Atom;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.interfaces.Structure;
@@ -28,15 +29,15 @@ class CifLeafSubstructureTest {
         structure1c0a = StructureParser.cif()
                 .pdbIdentifier("1c0a")
                 .everything().parse();
-        leaf162 = structure1c0a.getLeafSubstructure(new CifLeafIdentifier("1c0a", 1,"B", 162)).get();
-        leaf21 = structure1c0a.getLeafSubstructure(new CifLeafIdentifier("1c0a",  1,"A", 21)).get();
-        leafToModify = structure1c0a.getLeafSubstructure(new CifLeafIdentifier("1c0a",  1,"B", 163)).get();
+        leaf162 = structure1c0a.getLeafSubstructure(new LabelLeafIdentifier("1c0a", 1,"B", 162)).get();
+        leaf21 = structure1c0a.getLeafSubstructure(new LabelLeafIdentifier("1c0a",  1,"A", 21)).get();
+        leafToModify = structure1c0a.getLeafSubstructure(new LabelLeafIdentifier("1c0a",  1,"B", 163)).get();
     }
 
     @Test
     void getIdentifier() {
-        assertEquals(new CifLeafIdentifier("1c0a", 2, 1, "B", 162), leaf162.getIdentifier());
-        assertEquals(new CifLeafIdentifier("1c0a", 1,1, "A", 21), leaf21.getIdentifier());
+        assertEquals(new LabelLeafIdentifier("1c0a", 1, "B", 162), leaf162.getIdentifier());
+        assertEquals(new LabelLeafIdentifier("1c0a", 1, "A", 21), leaf21.getIdentifier());
     }
 
     @Test

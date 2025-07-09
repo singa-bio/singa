@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static bio.singa.structure.model.pdb.PdbLeafIdentifier.DEFAULT_INSERTION_CODE;
+import static bio.singa.structure.model.general.AuthLeafIdentifier.DEFAULT_INSERTION_CODE;
 
 public enum SequenceAdviceToken implements PDBToken {
 

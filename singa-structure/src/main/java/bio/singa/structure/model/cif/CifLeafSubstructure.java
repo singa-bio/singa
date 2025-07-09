@@ -4,6 +4,7 @@ import bio.singa.core.utility.CommutablePair;
 import bio.singa.core.utility.Pair;
 import bio.singa.structure.model.families.StructuralFamily;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
+import bio.singa.structure.model.general.AuthLeafIdentifier;
 
 import java.util.*;
 
@@ -14,7 +15,7 @@ public class CifLeafSubstructure implements LeafSubstructure {
     /**
      * The unique leaf identifer;
      */
-    private CifLeafIdentifier leafIdentifier;
+    private AuthLeafIdentifier leafIdentifier;
 
     private String inchi;
 
@@ -28,7 +29,7 @@ public class CifLeafSubstructure implements LeafSubstructure {
     /**
      * pair of atom names that link the connected leaves
      */
-    private final Map<Pair<String>, CifLeafIdentifier> connectedLeafs;
+    private final Map<Pair<String>, AuthLeafIdentifier> connectedLeafs;
 
     /**
      * Remembers if this leaf was an HETATOM entry
@@ -40,7 +41,7 @@ public class CifLeafSubstructure implements LeafSubstructure {
      */
     private boolean isPartOfPolymer;
 
-    public CifLeafSubstructure(CifLeafIdentifier leafIdentifier) {
+    public CifLeafSubstructure(AuthLeafIdentifier leafIdentifier) {
         this.leafIdentifier = leafIdentifier;
         conformations = new LinkedHashMap<>();
         connectedLeafs = new HashMap<>();
@@ -120,7 +121,7 @@ public class CifLeafSubstructure implements LeafSubstructure {
         otherLeaf.connectedLeafs.put(new CommutablePair<>(atomNameOfOtherLeaf, atomNameOfThisLeaf), getIdentifier());
     }
 
-    public Map<Pair<String>, CifLeafIdentifier> getConnectedLeafs() {
+    public Map<Pair<String>, AuthLeafIdentifier> getConnectedLeafs() {
         return connectedLeafs;
     }
 
@@ -148,7 +149,7 @@ public class CifLeafSubstructure implements LeafSubstructure {
     }
 
     @Override
-    public CifLeafIdentifier getIdentifier() {
+    public AuthLeafIdentifier getIdentifier() {
         return leafIdentifier;
     }
 

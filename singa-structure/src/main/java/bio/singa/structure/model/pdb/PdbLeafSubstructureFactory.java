@@ -4,6 +4,7 @@ import bio.singa.chemistry.model.CovalentBondType;
 import bio.singa.structure.model.families.StructuralFamilies;
 import bio.singa.structure.model.families.StructuralFamily;
 import bio.singa.structure.io.general.StructureParserOptions;
+import bio.singa.structure.model.general.AuthLeafIdentifier;
 import bio.singa.structure.model.interfaces.LeafIdentifier;
 
 import java.util.Map;
@@ -24,16 +25,16 @@ public class PdbLeafSubstructureFactory {
     }
 
     public static PdbLeafSubstructure createLeafSubstructure(LeafIdentifier leafIdentifier, StructuralFamily family) {
-        PdbLeafIdentifier pdbLeafIdentifier = new PdbLeafIdentifier(leafIdentifier.getStructureIdentifier(), leafIdentifier.getModelIdentifier(), leafIdentifier.getChainIdentifier(), leafIdentifier.getSerial());
+        AuthLeafIdentifier authLeafIdentifier = new AuthLeafIdentifier(leafIdentifier.getStructureIdentifier(), leafIdentifier.getModelIdentifier(), leafIdentifier.getChainIdentifier(), leafIdentifier.getSerial());
         if (StructuralFamilies.AminoAcids.isAminoAcid(family)) {
-            return new PdbAminoAcid(pdbLeafIdentifier, family);
+            return new PdbAminoAcid(authLeafIdentifier, family);
         } else if (StructuralFamilies.Nucleotides.isNucleotide(family)) {
-            return new PdbNucleotide(pdbLeafIdentifier, family);
+            return new PdbNucleotide(authLeafIdentifier, family);
         }
-        return new PdbLigand(pdbLeafIdentifier, family);
+        return new PdbLigand(authLeafIdentifier, family);
     }
 
-    public static PdbLeafSubstructure createLeafSubstructure(PdbLeafIdentifier leafIdentifier, StructuralFamily family, Set<PdbAtom> atoms) {
+    public static PdbLeafSubstructure createLeafSubstructure(AuthLeafIdentifier leafIdentifier, StructuralFamily family, Set<PdbAtom> atoms) {
         PdbLeafSubstructure leafSubstructure = createLeafSubstructure(leafIdentifier, family);
         atoms.forEach(leafSubstructure::addAtom);
         return leafSubstructure;

@@ -6,7 +6,7 @@ import bio.singa.structure.algorithms.superimposition.fit3d.Fit3DBuilder;
 import bio.singa.structure.model.interfaces.Structure;
 import bio.singa.structure.model.general.StructuralEntityFilter;
 import bio.singa.structure.model.general.StructuralMotif;
-import bio.singa.structure.model.pdb.PdbLeafIdentifier;
+import bio.singa.structure.model.general.AuthLeafIdentifier;
 import bio.singa.structure.io.general.StructureParser;
 import bio.singa.structure.io.general.iterators.StructureIterator;
 import org.junit.jupiter.api.BeforeAll;
@@ -31,7 +31,7 @@ class FofanovEstimationTest {
                 .fileLocation(Resources.getResourceAsFileLocation("1GL0_HDS_intra_E-H57_E-D102_E-S195.pdb"))
                 .parse();
         queryMotif = StructuralMotif.fromLeafIdentifiers(motifContainingStructure,
-                PdbLeafIdentifier.of("E-57", "E-102", "E-195"));
+                AuthLeafIdentifier.of("E-57", "E-102", "E-195"));
     }
 
     @Test

@@ -14,7 +14,7 @@ import bio.singa.structure.model.interfaces.Ligand;
 import bio.singa.structure.model.pdb.PdbAtom;
 import bio.singa.structure.model.pdb.PdbBond;
 import bio.singa.structure.model.pdb.PdbLigand;
-import bio.singa.structure.model.pdb.PdbLeafIdentifier;
+import bio.singa.structure.model.general.AuthLeafIdentifier;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -139,7 +139,7 @@ public class MolParser {
     public Ligand parseNextAsLigand() {
         parseNextStructure();
         // create structure;
-        PdbLigand ligand = new PdbLigand(PdbLeafIdentifier.DEFAULT_LEAF_IDENTIFIER, new StructuralFamily("?", "UNK"));
+        PdbLigand ligand = new PdbLigand(AuthLeafIdentifier.DEFAULT_LEAF_IDENTIFIER, new StructuralFamily("?", "UNK"));
         atoms.forEach(ligand::addAtom);
         int bondCounter = 0;
         for (Map.Entry<Pair<Integer>, CovalentBondType> bond : bonds.entrySet()) {

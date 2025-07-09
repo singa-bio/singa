@@ -6,6 +6,7 @@ import bio.singa.structure.io.general.iterators.StructureIterator;
 import bio.singa.structure.model.families.StructuralFamilies;
 import bio.singa.structure.model.families.StructuralFamily;
 import bio.singa.structure.model.general.LeafSkeleton;
+import bio.singa.structure.model.general.AuthLeafIdentifier;
 import bio.singa.structure.model.interfaces.LigandType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +17,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static bio.singa.structure.model.pdb.PdbLeafIdentifier.*;
+import static bio.singa.structure.model.general.AuthLeafIdentifier.*;
 
 public class PdbLeafSubstructureBuilder {
 
@@ -40,7 +41,7 @@ public class PdbLeafSubstructureBuilder {
 
     public interface IdentifierStep {
 
-        AtomStep identifier(PdbLeafIdentifier identifier);
+        AtomStep identifier(AuthLeafIdentifier identifier);
 
         IdentifierModelStep pdb(String pdbIdentifier);
 
@@ -85,7 +86,7 @@ public class PdbLeafSubstructureBuilder {
         private StructuralFamily family;
         private String name;
 
-        private PdbLeafIdentifier identifier;
+        private AuthLeafIdentifier identifier;
         private String pdbIdentifier = DEFAULT_PDB_IDENTIFIER;
         private int model = DEFAULT_MODEL_IDENTIFIER;
         private String chain = DEFAULT_CHAIN_IDENTIFIER;
@@ -152,7 +153,7 @@ public class PdbLeafSubstructureBuilder {
         }
 
         @Override
-        public AtomStep identifier(PdbLeafIdentifier identifier) {
+        public AtomStep identifier(AuthLeafIdentifier identifier) {
             this.identifier = identifier;
             return this;
         }
@@ -195,7 +196,7 @@ public class PdbLeafSubstructureBuilder {
         }
 
         private void createIdentifier() {
-            identifier = new PdbLeafIdentifier(pdbIdentifier, model, chain, serial, insertionCode);
+            identifier = new AuthLeafIdentifier(pdbIdentifier, model, chain, serial, insertionCode);
         }
 
         @Override

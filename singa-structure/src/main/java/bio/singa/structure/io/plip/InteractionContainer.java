@@ -2,6 +2,7 @@ package bio.singa.structure.io.plip;
 
 import bio.singa.mathematics.vectors.Vector3D;
 import bio.singa.structure.model.families.StructuralFamilies;
+import bio.singa.structure.model.general.AuthLeafIdentifier;
 import bio.singa.structure.model.general.UniqueAtomIdentifier;
 import bio.singa.structure.model.pdb.*;
 import bio.singa.structure.model.interfaces.*;
@@ -352,7 +353,7 @@ public class InteractionContainer {
         if (sourceEntry.isPresent()) {
             // use the atom identifier to remap leaf
             UniqueAtomIdentifier atomIdentifer = sourceEntry.get().getKey();
-            LeafIdentifier leafIdentifier = new PdbLeafIdentifier(atomIdentifer.getLeafIdentifier().getStructureIdentifier(), atomIdentifer.getLeafIdentifier().getModelIdentifier(),
+            LeafIdentifier leafIdentifier = new AuthLeafIdentifier(atomIdentifer.getLeafIdentifier().getStructureIdentifier(), atomIdentifer.getLeafIdentifier().getModelIdentifier(),
                     atomIdentifer.getLeafIdentifier().getChainIdentifier(), atomIdentifer.getLeafIdentifier().getSerial(), atomIdentifer.getLeafIdentifier().getInsertionCode());
             logger.debug("Fixed to leaf identifier {}.", leafIdentifier);
             interaction.setSource(leafIdentifier);
@@ -367,7 +368,7 @@ public class InteractionContainer {
         if (targetEntry.isPresent()) {
             // use the atom identifier to remap leaf
             UniqueAtomIdentifier atomIdentifer = targetEntry.get().getKey();
-            LeafIdentifier leafIdentifier = new PdbLeafIdentifier(atomIdentifer.getLeafIdentifier().getStructureIdentifier(), atomIdentifer.getLeafIdentifier().getModelIdentifier(),
+            LeafIdentifier leafIdentifier = new AuthLeafIdentifier(atomIdentifer.getLeafIdentifier().getStructureIdentifier(), atomIdentifer.getLeafIdentifier().getModelIdentifier(),
                     atomIdentifer.getLeafIdentifier().getChainIdentifier(), atomIdentifer.getLeafIdentifier().getSerial(), atomIdentifer.getLeafIdentifier().getInsertionCode());
             logger.debug("Fixed to leaf identifier {}.", leafIdentifier);
             interaction.setTarget(leafIdentifier);

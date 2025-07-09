@@ -3,8 +3,9 @@ package bio.singa.structure.model.cif;
 import bio.singa.core.utility.Pair;
 import bio.singa.mathematics.vectors.Vector3D;
 import bio.singa.structure.io.general.StructureParser;
+import bio.singa.structure.model.general.LabelLeafIdentifier;
 import bio.singa.structure.model.interfaces.*;
-import bio.singa.structure.model.pdb.PdbLeafIdentifier;
+import bio.singa.structure.model.general.AuthLeafIdentifier;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -42,8 +43,8 @@ class CifStructureTest {
                 .pdbIdentifier("1dlf")
                 .everything().parse();
         final Structure oakStructure = StructureParser.pdb().pdbIdentifier("1dlf").parse();
-        final LeafIdentifier cifIdentifier = new CifLeafIdentifier("1dlf", 1, "B", 73);
-        final LeafIdentifier pdbIdentifier = new PdbLeafIdentifier("1dlf", 1, "H", 70);
+        final LeafIdentifier cifIdentifier = new LabelLeafIdentifier("1dlf", 1, "B", 73);
+        final LeafIdentifier pdbIdentifier = new AuthLeafIdentifier("1dlf", 1, "H", 70);
         LeafSubstructure cifLeaf = structure.getLeafSubstructure(cifIdentifier).get();
         LeafSubstructure pdbLeaf = oakStructure.getLeafSubstructure(pdbIdentifier).get();
         cifLeaf.getAllAtoms();
@@ -113,7 +114,7 @@ class CifStructureTest {
 
     @Test
     void getLeafSubstructure() {
-        Optional<? extends LeafSubstructure> leafSubstructure = structure2n5e.getLeafSubstructure(new CifLeafIdentifier("2n5e", 5, "A", 10));
+        Optional<? extends LeafSubstructure> leafSubstructure = structure2n5e.getLeafSubstructure(new LabelLeafIdentifier("2n5e", 5, "A", 10));
         if (!leafSubstructure.isPresent()) {
             fail("Optional leaf substructure was empty.");
         }
@@ -131,7 +132,7 @@ class CifStructureTest {
 
     @Test
     void getAminoAcid() {
-        final Optional<AminoAcid> aminoAcid = structure1c0a.getAminoAcid(new CifLeafIdentifier("1c0a", 1, "B", 58));
+        final Optional<AminoAcid> aminoAcid = structure1c0a.getAminoAcid(new LabelLeafIdentifier("1c0a", 1, "B", 58));
         if (!aminoAcid.isPresent()) {
             fail("Optional leaf substructure was empty.");
         }
@@ -149,7 +150,7 @@ class CifStructureTest {
 
     @Test
     void getNucleotide() {
-        final Optional<Nucleotide> nucleotide = structure1c0a.getNucleotide(new CifLeafIdentifier("1c0a", 1, "A", 10));
+        final Optional<Nucleotide> nucleotide = structure1c0a.getNucleotide(new LabelLeafIdentifier("1c0a", 1, "A", 10));
         if (!nucleotide.isPresent()) {
             fail("Optional leaf substructure was empty.");
         }
@@ -197,7 +198,7 @@ class CifStructureTest {
 
     @Test
     void getLigand() {
-        final Optional<Ligand> nucleotide = structure1c0a.getLigand(new CifLeafIdentifier("1c0a", 1, "D", 0));
+        final Optional<Ligand> nucleotide = structure1c0a.getLigand(new LabelLeafIdentifier("1c0a", 1, "D", 0));
         if (!nucleotide.isPresent()) {
             fail("Optional leaf substructure was empty.");
         }
@@ -250,7 +251,7 @@ class CifStructureTest {
                 .pdbIdentifier(structureId)
                 .parse();
         // ASN B-26 connected to NAG K-0
-        CifLeafIdentifier leafIdentifier = LeafIdentifier.cif()
+        LabelLeafIdentifier leafIdentifier = LeafIdentifier.label()
                 .model(1)
                 .chain("B")
                 .serial(26);

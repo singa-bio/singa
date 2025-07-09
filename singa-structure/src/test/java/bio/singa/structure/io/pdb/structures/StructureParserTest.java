@@ -11,7 +11,7 @@ import bio.singa.structure.model.interfaces.Structure;
 import bio.singa.structure.model.pdb.PdbAminoAcid;
 import bio.singa.structure.model.pdb.PdbLigand;
 import bio.singa.structure.model.pdb.PdbStructure;
-import bio.singa.structure.model.pdb.PdbLeafIdentifier;
+import bio.singa.structure.model.general.AuthLeafIdentifier;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -97,7 +97,7 @@ class StructureParserTest {
                 .pdbIdentifier("6bb4")
                 .everything()
                 .parse();
-        PdbLeafIdentifier leafIdentifier = PdbLeafIdentifier.fromString("6bb4-1-I-82c");
+        AuthLeafIdentifier leafIdentifier = AuthLeafIdentifier.fromString("6bb4-1-I-82c");
         List<LeafSubstructure> leavesWithInsertionCode = structure.getAllLeafSubstructures().stream()
                 .filter(leafSubstructure -> leafSubstructure.getIdentifier().equals(leafIdentifier))
                 .collect(Collectors.toList());
@@ -264,7 +264,7 @@ class StructureParserTest {
         Structure structure = StructureParser.pdb()
                 .pdbIdentifier("6sl6")
                 .parse();
-        Optional<AminoAcid> aminoAcidOptional = structure.getAminoAcid(PdbLeafIdentifier.fromString("6sl6-1-A-138"));
+        Optional<AminoAcid> aminoAcidOptional = structure.getAminoAcid(AuthLeafIdentifier.fromString("6sl6-1-A-138"));
         if (aminoAcidOptional.isPresent()) {
             PdbAminoAcid aminoAcid = ((PdbAminoAcid) aminoAcidOptional.get());
             assertTrue(aminoAcid.isMutated());

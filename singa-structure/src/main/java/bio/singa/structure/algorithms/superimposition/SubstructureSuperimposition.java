@@ -7,14 +7,14 @@ import bio.singa.mathematics.vectors.Vector3D;
 import bio.singa.structure.model.interfaces.AtomContainer;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.interfaces.LeafSubstructureContainer;
-import bio.singa.structure.model.pdb.PdbLeafIdentifier;
+import bio.singa.structure.model.general.AuthLeafIdentifier;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static bio.singa.structure.model.pdb.PdbLeafIdentifier.DEFAULT_INSERTION_CODE;
+import static bio.singa.structure.model.general.AuthLeafIdentifier.DEFAULT_INSERTION_CODE;
 
 
 /**
@@ -59,7 +59,7 @@ public class SubstructureSuperimposition implements Superimposition<LeafSubstruc
     /**
      * Returns a string representation of the {@link SubstructureSuperimposition}, that is:
      * <pre>[RMSD]_[PDB-ID of mapped candidates]_[candidate residues]...</pre>
-     * The ordering of {@link PdbLeafIdentifier}s corresponds to the actual found optimal alignment to the reference.
+     * The ordering of {@link AuthLeafIdentifier}s corresponds to the actual found optimal alignment to the reference.
      * TODO move this to interface, as other superimpositions should also get a string representation.
      *
      * @return The full string representation of this {@link SubstructureSuperimposition}.

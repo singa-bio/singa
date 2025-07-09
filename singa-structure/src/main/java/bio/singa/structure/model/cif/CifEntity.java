@@ -1,7 +1,5 @@
 package bio.singa.structure.model.cif;
 
-import bio.singa.structure.model.interfaces.*;
-
 import java.util.*;
 import java.util.stream.Collectors;
 

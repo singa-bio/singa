@@ -1,9 +1,10 @@
 package bio.singa.structure.algorithms.superimposition.affinity;
 
 import bio.singa.core.utility.Resources;
+import bio.singa.structure.model.interfaces.LeafIdentifier;
 import bio.singa.structure.model.interfaces.Structure;
 import bio.singa.structure.model.pdb.PdbAminoAcid;
-import bio.singa.structure.model.pdb.PdbLeafIdentifier;
+import bio.singa.structure.model.general.AuthLeafIdentifier;
 import bio.singa.structure.model.general.StructuralMotif;
 import bio.singa.structure.io.general.StructureParser;
 import bio.singa.structure.io.general.StructureParserOptions;
@@ -55,7 +56,7 @@ class AffinityAlignmentTest {
 
     @Test
     void shouldFailWithInputOfDifferentSize() {
-        input.get(0).addLeafSubstructure(new PdbAminoAcid(new PdbLeafIdentifier(PdbLeafIdentifier.DEFAULT_PDB_IDENTIFIER, PdbLeafIdentifier.DEFAULT_MODEL_IDENTIFIER, PdbLeafIdentifier.DEFAULT_CHAIN_IDENTIFIER, 0), ALANINE));
+        input.get(0).addLeafSubstructure(new PdbAminoAcid(new AuthLeafIdentifier(LeafIdentifier.DEFAULT_PDB_IDENTIFIER, AuthLeafIdentifier.DEFAULT_MODEL_IDENTIFIER, AuthLeafIdentifier.DEFAULT_CHAIN_IDENTIFIER, 0), ALANINE));
         assertThrows(IllegalArgumentException.class,
                 () -> AffinityAlignment.create()
                         .inputStructuralMotifs(input)

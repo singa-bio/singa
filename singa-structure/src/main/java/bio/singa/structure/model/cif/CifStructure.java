@@ -1,8 +1,8 @@
 package bio.singa.structure.model.cif;
 
+import bio.singa.structure.model.general.AuthLeafIdentifier;
 import bio.singa.structure.model.general.UniqueAtomIdentifier;
 import bio.singa.structure.model.interfaces.*;
-import bio.singa.structure.model.pdb.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -144,7 +144,7 @@ public class CifStructure implements Structure {
 
     public void setPdbIdentifier(String pdbIdentifier) {
         if (pdbIdentifier.isEmpty()) {
-            pdbIdentifier = PdbLeafIdentifier.DEFAULT_PDB_IDENTIFIER;
+            pdbIdentifier = LeafIdentifier.DEFAULT_PDB_IDENTIFIER;
         }
         structureIdentifier = pdbIdentifier;
     }

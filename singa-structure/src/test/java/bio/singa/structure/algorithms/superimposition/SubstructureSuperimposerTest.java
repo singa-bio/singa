@@ -9,7 +9,7 @@ import bio.singa.structure.model.interfaces.AminoAcid;
 import bio.singa.structure.model.interfaces.Chain;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.interfaces.Structure;
-import bio.singa.structure.model.pdb.PdbLeafIdentifier;
+import bio.singa.structure.model.general.AuthLeafIdentifier;
 import bio.singa.structure.model.general.StructuralEntityFilter;
 import bio.singa.structure.model.general.StructuralMotif;
 import bio.singa.structure.io.general.StructureParser;
@@ -140,15 +140,15 @@ class SubstructureSuperimposerTest {
         Structure first = StructureParser.cif()
                 .pdbIdentifier("1cd9")
                 .parse();
-        List<PdbLeafIdentifier> firstIdentifiers = PdbLeafIdentifier.of("C-68", "C-70");
+        List<AuthLeafIdentifier> firstIdentifiers = AuthLeafIdentifier.of("C-68", "C-70");
         StructuralMotif firstMotif = StructuralMotif.fromLeafIdentifiers(first, firstIdentifiers);
 
         Structure second = StructureParser.cif()
                 .pdbIdentifier("1cn4")
                 .parse();
         // TODO better way to support identifiers that work in all formats?
-        List<PdbLeafIdentifier> secondCifIdentifiers = PdbLeafIdentifier.of("A-61", "A-62");
-        List<PdbLeafIdentifier> secondPdbIdentifiers = PdbLeafIdentifier.of("A-58", "A-59");
+        List<AuthLeafIdentifier> secondCifIdentifiers = AuthLeafIdentifier.of("A-61", "A-62");
+        List<AuthLeafIdentifier> secondPdbIdentifiers = AuthLeafIdentifier.of("A-58", "A-59");
         StructuralMotif secondMotif = StructuralMotif.fromLeafIdentifiers(second, secondCifIdentifiers);
 
         SubstructureSuperimposition bcifSuperimposition = SubstructureSuperimposer.calculateSubstructureSuperimposition(firstMotif, secondMotif, StructuralEntityFilter.AtomFilter.isArbitrary());

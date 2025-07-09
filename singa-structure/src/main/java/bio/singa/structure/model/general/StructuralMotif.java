@@ -4,7 +4,6 @@ import bio.singa.structure.model.families.StructuralFamilies;
 import bio.singa.structure.model.families.StructuralFamilies.Matchers;
 import bio.singa.structure.model.families.StructuralFamily;
 import bio.singa.structure.model.interfaces.*;
-import bio.singa.structure.model.pdb.PdbLeafIdentifier;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -64,10 +63,10 @@ public class StructuralMotif implements LeafSubstructureContainer {
      * StructuralMotif}.
      * @return A new {@link StructuralMotif}.
      */
-    public static StructuralMotif fromLeafIdentifiers(Structure structure, List<PdbLeafIdentifier> leafIdentifiers) {
+    public static StructuralMotif fromLeafIdentifiers(Structure structure, List<AuthLeafIdentifier> leafIdentifiers) {
         List<LeafSubstructure> leafSubstructures = new ArrayList<>();
-        for (PdbLeafIdentifier leafIdentifier : leafIdentifiers) {
-            leafIdentifier = new PdbLeafIdentifier(structure.getStructureIdentifier(), leafIdentifier.getModelIdentifier(), leafIdentifier.getChainIdentifier(), leafIdentifier.getSerial(), leafIdentifier.getInsertionCode());
+        for (AuthLeafIdentifier leafIdentifier : leafIdentifiers) {
+            leafIdentifier = new AuthLeafIdentifier(structure.getStructureIdentifier(), leafIdentifier.getModelIdentifier(), leafIdentifier.getChainIdentifier(), leafIdentifier.getSerial(), leafIdentifier.getInsertionCode());
             final Optional<? extends LeafSubstructure> leafSubstructure = structure.getLeafSubstructure(leafIdentifier);
             if (leafSubstructure.isPresent()) {
                 leafSubstructures.add(leafSubstructure.get());

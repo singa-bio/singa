@@ -1,6 +1,7 @@
 package bio.singa.structure.model.pdb;
 
 import bio.singa.mathematics.vectors.Vector3D;
+import bio.singa.structure.model.general.AuthLeafIdentifier;
 import bio.singa.structure.model.interfaces.*;
 import bio.singa.structure.io.general.StructureParser;
 import org.junit.jupiter.api.BeforeAll;
@@ -66,7 +67,7 @@ class PdbModelTest {
 
     @Test
     void getLeafSubstructure() {
-        Optional<PdbLeafSubstructure> leafSubstructure = firstModel.getLeafSubstructure(new PdbLeafIdentifier("2n5e", 1, "B", 64));
+        Optional<PdbLeafSubstructure> leafSubstructure = firstModel.getLeafSubstructure(new AuthLeafIdentifier("2n5e", 1, "B", 64));
         if (!leafSubstructure.isPresent()) {
             fail("Optional leaf substructure was empty.");
         }
@@ -89,7 +90,7 @@ class PdbModelTest {
     @Test
     void removeLeafSubstructure() {
         final int expected = modelToModify.getNumberOfLeafSubstructures() - 1;
-        final boolean response = modelToModify.removeLeafSubstructure(new PdbLeafIdentifier("2n5e", 3, "B", 64));
+        final boolean response = modelToModify.removeLeafSubstructure(new AuthLeafIdentifier("2n5e", 3, "B", 64));
         if (!response) {
             fail("Response was false but should be true if any leaf substructure was removed.");
         }

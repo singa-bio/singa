@@ -5,6 +5,7 @@ import bio.singa.core.utility.Resources;
 import bio.singa.mathematics.matrices.LabeledSymmetricMatrix;
 import bio.singa.mathematics.matrices.Matrices;
 import bio.singa.mathematics.vectors.Vector3D;
+import bio.singa.structure.model.general.AuthLeafIdentifier;
 import bio.singa.structure.model.general.Structures;
 import bio.singa.structure.model.general.UniqueAtomIdentifier;
 import bio.singa.structure.model.interfaces.*;
@@ -72,8 +73,8 @@ class StructuresTest {
         PdbStructure structure = ((PdbStructure) StructureParser.pdb()
                 .pdbIdentifier("1szi")
                 .parse());
-        PdbLeafIdentifier leafIdentifier = new PdbLeafIdentifier("1szi", 1, "A", 206);
-        Map<PdbLeafIdentifier, Integer> renumberingMap = new TreeMap<>();
+        AuthLeafIdentifier leafIdentifier = new AuthLeafIdentifier("1szi", 1, "A", 206);
+        Map<AuthLeafIdentifier, Integer> renumberingMap = new TreeMap<>();
         renumberingMap.put(leafIdentifier, 202);
         Structure renumberStructure = StructureRenumberer.renumberLeaveSubstructuresWithMap(structure, renumberingMap);
         StructureSelector.selectFrom(renumberStructure)

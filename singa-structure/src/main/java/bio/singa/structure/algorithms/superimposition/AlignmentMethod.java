@@ -6,14 +6,11 @@ import bio.singa.structure.algorithms.superimposition.fit3d.representations.Repr
 import bio.singa.structure.algorithms.superimposition.fit3d.representations.RepresentationSchemeFactory;
 import bio.singa.structure.algorithms.superimposition.fit3d.representations.RepresentationSchemeType;
 import bio.singa.structure.model.families.StructuralFamily;
-import bio.singa.structure.model.interfaces.Atom;
-import bio.singa.structure.model.interfaces.AtomContainer;
-import bio.singa.structure.model.interfaces.LeafSubstructure;
-import bio.singa.structure.model.interfaces.LeafSubstructureContainer;
+import bio.singa.structure.model.interfaces.*;
 import bio.singa.structure.model.pdb.PdbLeafSubstructureFactory;
 import bio.singa.structure.model.pdb.PdbAtom;
 import bio.singa.structure.model.pdb.PdbLeafSubstructure;
-import bio.singa.structure.model.pdb.PdbLeafIdentifier;
+import bio.singa.structure.model.general.AuthLeafIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -174,7 +171,7 @@ public class AlignmentMethod {
             }
 
             // create new atom container
-            PdbLeafSubstructure leafSubstructure = PdbLeafSubstructureFactory.createLeafSubstructure(new PdbLeafIdentifier(PdbLeafIdentifier.DEFAULT_PDB_IDENTIFIER, PdbLeafIdentifier.DEFAULT_MODEL_IDENTIFIER, PdbLeafIdentifier.DEFAULT_CHAIN_IDENTIFIER, leafCounter), family);
+            PdbLeafSubstructure leafSubstructure = PdbLeafSubstructureFactory.createLeafSubstructure(new AuthLeafIdentifier(LeafIdentifier.DEFAULT_PDB_IDENTIFIER, AuthLeafIdentifier.DEFAULT_MODEL_IDENTIFIER, AuthLeafIdentifier.DEFAULT_CHAIN_IDENTIFIER, leafCounter), family);
             averagedAtoms.forEach(leafSubstructure::addAtom);
             consensusLeaveSubstructures.add(leafSubstructure);
             leafCounter++;

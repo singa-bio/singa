@@ -1,6 +1,6 @@
 package bio.singa.structure.io.general;
 
-import bio.singa.structure.model.pdb.PdbLeafIdentifier;
+import bio.singa.structure.model.general.AuthLeafIdentifier;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,7 +14,7 @@ public class StructureRepresentationOptions {
     private boolean addRemark80 = false;
     private boolean addConnections = true;
 
-    private Map<PdbLeafIdentifier, Integer> renumberingMap;
+    private Map<AuthLeafIdentifier, Integer> renumberingMap;
 
     private StructureRepresentationOptions() {
         renumberingMap = new HashMap<>();
@@ -68,11 +68,11 @@ public class StructureRepresentationOptions {
         this.renumberChains = renumberChains;
     }
 
-    public Map<PdbLeafIdentifier, Integer> getRenumberingMap() {
+    public Map<AuthLeafIdentifier, Integer> getRenumberingMap() {
         return renumberingMap;
     }
 
-    public void setRenumberingMap(Map<PdbLeafIdentifier, Integer> renumberingMap) {
+    public void setRenumberingMap(Map<AuthLeafIdentifier, Integer> renumberingMap) {
         this.renumberingMap = renumberingMap;
     }
 

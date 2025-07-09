@@ -1,6 +1,7 @@
 package bio.singa.structure.model.pdb;
 
 import bio.singa.structure.model.families.StructuralFamily;
+import bio.singa.structure.model.general.AuthLeafIdentifier;
 import bio.singa.structure.model.interfaces.Nucleotide;
 
 /**
@@ -11,11 +12,11 @@ public class PdbNucleotide extends PdbLeafSubstructure implements Nucleotide {
     private boolean mutation;
     private StructuralFamily wildTypeNucleotide;
 
-    public PdbNucleotide(PdbLeafIdentifier leafIdentifier, StructuralFamily family) {
+    public PdbNucleotide(AuthLeafIdentifier leafIdentifier, StructuralFamily family) {
         super(leafIdentifier, family);
     }
 
-    public PdbNucleotide(PdbLeafIdentifier identifer, StructuralFamily nucleotideFamily, String threeLetterCode) {
+    public PdbNucleotide(AuthLeafIdentifier identifer, StructuralFamily nucleotideFamily, String threeLetterCode) {
         super(identifer, nucleotideFamily, threeLetterCode);
     }
 

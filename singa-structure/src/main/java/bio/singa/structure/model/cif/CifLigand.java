@@ -1,12 +1,13 @@
 package bio.singa.structure.model.cif;
 
 import bio.singa.structure.model.interfaces.Ligand;
+import bio.singa.structure.model.general.AuthLeafIdentifier;
 
 public class CifLigand extends CifLeafSubstructure implements Ligand {
 
     private String name;
 
-    public CifLigand(CifLeafIdentifier leafIdentifier) {
+    public CifLigand(AuthLeafIdentifier leafIdentifier) {
         super(leafIdentifier);
     }
 
