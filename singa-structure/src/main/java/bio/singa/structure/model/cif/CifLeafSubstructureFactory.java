@@ -1,11 +1,12 @@
 package bio.singa.structure.model.cif;
 
+import bio.singa.structure.model.general.LabelLeafIdentifier;
 import bio.singa.structure.model.general.LeafSkeleton;
 import bio.singa.structure.model.general.AuthLeafIdentifier;
 
 public class CifLeafSubstructureFactory {
 
-    public static CifLeafSubstructure createLeafSubstructure(LeafSkeleton skeleton, AuthLeafIdentifier identifier) {
+    public static CifLeafSubstructure createLeafSubstructure(LeafSkeleton skeleton, LabelLeafIdentifier identifier) {
         switch (skeleton.getLigandType()) {
             case PROTEIN:
                 CifAminoAcid aminoAcid = new CifAminoAcid(identifier);

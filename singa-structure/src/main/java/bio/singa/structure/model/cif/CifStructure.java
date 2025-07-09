@@ -1,5 +1,7 @@
 package bio.singa.structure.model.cif;
 
+import bio.singa.structure.model.general.AuthLeafIdentifier;
+import bio.singa.structure.model.general.LabelLeafIdentifier;
 import bio.singa.structure.model.general.UniqueAtomIdentifier;
 import bio.singa.structure.model.interfaces.*;
 
@@ -30,12 +32,14 @@ public class CifStructure implements Structure {
     private double resolution;
 
     private boolean isMutated;
+    private Map<AuthLeafIdentifier, LabelLeafIdentifier> authMapping;
 
     public CifStructure(String structureIdentifier) {
         this.structureIdentifier = structureIdentifier;
         models = new TreeMap<>();
         entities = new TreeMap<>();
         biologicalAssemblies = new HashMap<>();
+        authMapping = new HashMap<>();
     }
 
     public CifStructure(CifStructure structure) {
@@ -52,6 +56,7 @@ public class CifStructure implements Structure {
             entities.put(entity.getEntityIdentifier(), entity.getCopy());
         }
         biologicalAssemblies = new HashMap<>(structure.biologicalAssemblies);
+        authMapping = new HashMap<>(structure.authMapping);
     }
 
     @Override
@@ -115,6 +120,13 @@ public class CifStructure implements Structure {
 
     @Override
     public Optional<CifLeafSubstructure> getLeafSubstructure(LeafIdentifier leafIdentifier) {
+        if (leafIdentifier instanceof AuthLeafIdentifier) {
+            if (!authMapping.containsKey(leafIdentifier)) {
+                throw new NoSuchElementException("cannot get leaf substructure for auth leaf identifier: " + leafIdentifier);
+            }
+            return getLeafSubstructure(authMapping.get(leafIdentifier));
+        }
+
         final Optional<CifChain> chainOptional = getChain(leafIdentifier.getModelIdentifier(), leafIdentifier.getChainIdentifier());
         return chainOptional.flatMap(chain -> chain.getLeafSubstructure(leafIdentifier));
     }

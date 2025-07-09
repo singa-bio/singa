@@ -79,21 +79,21 @@ class CifFileParserTest {
                 .pdbIdentifier("3cjt")
                 .parse();
 
-        LeafIdentifier authIdentifier = LeafIdentifier.fromString("AUTH:3cjt-1-AA-256");
-        assertInstanceOf(AuthLeafIdentifier.class,  authIdentifier);
-        assertEquals("AA", authIdentifier.getChainIdentifier());
-        assertEquals(256, authIdentifier.getSerial());
-        LeafSubstructure authSubstructure = structure.getLeafSubstructure(authIdentifier).orElseThrow(() -> new RuntimeException("failed to select " + authIdentifier));
-        assertFalse(StructuralFamilies.Nucleotides.isNucleotide(authSubstructure.getFamily()));
-        assertFalse(StructuralFamilies.AminoAcids.isAminoAcid(authSubstructure.getFamily()));
-
-        LeafIdentifier labelIdentifier = LeafIdentifier.fromString("LABEL:3cjt-1-E-0");
+        LeafIdentifier labelIdentifier = LeafIdentifier.fromString("LABEL:3cjt-1-AA-0");
         assertInstanceOf(LabelLeafIdentifier.class,  labelIdentifier);
-        assertEquals("E", labelIdentifier.getChainIdentifier());
+        assertEquals("AA", labelIdentifier.getChainIdentifier());
         assertEquals(0, labelIdentifier.getSerial());
         LeafSubstructure labelSubstructure = structure.getLeafSubstructure(labelIdentifier).orElseThrow(() -> new RuntimeException("failed to select " + labelIdentifier));
         assertFalse(StructuralFamilies.Nucleotides.isNucleotide(labelSubstructure.getFamily()));
         assertFalse(StructuralFamilies.AminoAcids.isAminoAcid(labelSubstructure.getFamily()));
+
+        LeafIdentifier authIdentifier = LeafIdentifier.fromString("AUTH:3cjt-1-E-256");
+        assertInstanceOf(AuthLeafIdentifier.class,  authIdentifier);
+        assertEquals("E", authIdentifier.getChainIdentifier());
+        assertEquals(256, authIdentifier.getSerial());
+        LeafSubstructure authSubstructure = structure.getLeafSubstructure(authIdentifier).orElseThrow(() -> new RuntimeException("failed to select " + authIdentifier));
+        assertFalse(StructuralFamilies.Nucleotides.isNucleotide(authSubstructure.getFamily()));
+        assertFalse(StructuralFamilies.AminoAcids.isAminoAcid(authSubstructure.getFamily()));
     }
 
 }

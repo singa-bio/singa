@@ -41,7 +41,7 @@ class Fit3DAlignmentTest {
 
     @BeforeEach
     void initialize() {
-        target = StructureParser.pdb() // TODO should this work with cif?
+        target = StructureParser.cif()
                 .pdbIdentifier("1GL0")
                 .parse();
         Structure motifContainingStructure = StructureParser.local()

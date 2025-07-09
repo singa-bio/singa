@@ -1,13 +1,13 @@
 package bio.singa.structure.model.cif;
 
+import bio.singa.structure.model.general.LabelLeafIdentifier;
 import bio.singa.structure.model.interfaces.Nucleotide;
-import bio.singa.structure.model.general.AuthLeafIdentifier;
 
 public class CifNucleotide extends CifLeafSubstructure implements Nucleotide {
 
     private String divergingThreeLetterCode;
 
-    public CifNucleotide(AuthLeafIdentifier leafIdentifier) {
+    public CifNucleotide(LabelLeafIdentifier leafIdentifier) {
         super(leafIdentifier);
     }
 

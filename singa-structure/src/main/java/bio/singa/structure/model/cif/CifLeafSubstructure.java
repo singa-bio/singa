@@ -3,8 +3,8 @@ package bio.singa.structure.model.cif;
 import bio.singa.core.utility.CommutablePair;
 import bio.singa.core.utility.Pair;
 import bio.singa.structure.model.families.StructuralFamily;
+import bio.singa.structure.model.general.LabelLeafIdentifier;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
-import bio.singa.structure.model.general.AuthLeafIdentifier;
 
 import java.util.*;
 
@@ -15,7 +15,7 @@ public class CifLeafSubstructure implements LeafSubstructure {
     /**
      * The unique leaf identifer;
      */
-    private AuthLeafIdentifier leafIdentifier;
+    private LabelLeafIdentifier leafIdentifier;
 
     private String inchi;
 
@@ -29,7 +29,7 @@ public class CifLeafSubstructure implements LeafSubstructure {
     /**
      * pair of atom names that link the connected leaves
      */
-    private final Map<Pair<String>, AuthLeafIdentifier> connectedLeafs;
+    private final Map<Pair<String>, LabelLeafIdentifier> connectedLeafs;
 
     /**
      * Remembers if this leaf was an HETATOM entry
@@ -41,7 +41,7 @@ public class CifLeafSubstructure implements LeafSubstructure {
      */
     private boolean isPartOfPolymer;
 
-    public CifLeafSubstructure(AuthLeafIdentifier leafIdentifier) {
+    public CifLeafSubstructure(LabelLeafIdentifier leafIdentifier) {
         this.leafIdentifier = leafIdentifier;
         conformations = new LinkedHashMap<>();
         connectedLeafs = new HashMap<>();
@@ -121,7 +121,7 @@ public class CifLeafSubstructure implements LeafSubstructure {
         otherLeaf.connectedLeafs.put(new CommutablePair<>(atomNameOfOtherLeaf, atomNameOfThisLeaf), getIdentifier());
     }
 
-    public Map<Pair<String>, AuthLeafIdentifier> getConnectedLeafs() {
+    public Map<Pair<String>, LabelLeafIdentifier> getConnectedLeafs() {
         return connectedLeafs;
     }
 
@@ -149,7 +149,7 @@ public class CifLeafSubstructure implements LeafSubstructure {
     }
 
     @Override
-    public AuthLeafIdentifier getIdentifier() {
+    public LabelLeafIdentifier getIdentifier() {
         return leafIdentifier;
     }
 
