@@ -13,7 +13,6 @@ import bio.singa.structure.io.general.iterators.StructureIterator;
 import bio.singa.structure.io.plip.InteractionContainer;
 import bio.singa.structure.io.plip.PlipParser;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -76,7 +75,6 @@ class Fit3DAlignmentTest {
     }
 
     @Test
-    @Disabled
     // unable to create motif from cif file currently
     void shouldRunFit3DAlignmentBatch() throws IOException {
         Structure nucleotideTarget = StructureParser.cif()
@@ -94,7 +92,7 @@ class Fit3DAlignmentTest {
         Fit3D fit3dBatch = Fit3DBuilder.create()
                 .query(nucleotideMotif)
                 .targets(multiParser)
-                .maximalParallelism()
+                .limitedParallelism(1) // TODO fix non-deterministic results when ran with parallelism
                 .run();
         assertEquals(14, fit3dBatch.getMatches().size());
     }

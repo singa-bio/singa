@@ -514,7 +514,7 @@ public class CifConverter {
     }
 
     private CifLeafSubstructure appendLeafSubstructure(CifEntity cifEntity, CifChain chain, LabelLeafIdentifier labelLeafIdentifier, AuthLeafIdentifier authLeafIdentifier, String threeLetterCode, String leafIsHetAtomString) {
-        CifLeafSubstructure leafSubstructure = CifLeafSubstructureFactory.createLeafSubstructure(leafSkeletonFactory.getLeafSkeleton(threeLetterCode), labelLeafIdentifier);
+        CifLeafSubstructure leafSubstructure = CifLeafSubstructureFactory.createLeafSubstructure(leafSkeletonFactory.getLeafSkeleton(threeLetterCode), labelLeafIdentifier, authLeafIdentifier);
         leafSubstructure.setAnnotatedAsHeteroAtom(leafIsHetAtomString.equals("HETATM"));
         leafSubstructure.setPartOfPolymer(cifEntity.getCifEntityType().equals(CifEntityType.POLYMER));
         chain.addLeafSubstructure(leafSubstructure);

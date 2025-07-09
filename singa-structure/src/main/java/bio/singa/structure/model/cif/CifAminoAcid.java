@@ -17,8 +17,8 @@ public class CifAminoAcid extends CifLeafSubstructure implements AminoAcid {
      */
     private final Map<String, String> modifications;
 
-    public CifAminoAcid(LabelLeafIdentifier leafIdentifier) {
-        super(leafIdentifier);
+    public CifAminoAcid(LabelLeafIdentifier leafIdentifier, AuthLeafIdentifier authLeafIdentifier) {
+        super(leafIdentifier, authLeafIdentifier);
         modifications = new HashMap<>();
     }
 

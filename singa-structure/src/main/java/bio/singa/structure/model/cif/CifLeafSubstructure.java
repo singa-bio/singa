@@ -17,6 +17,11 @@ public class CifLeafSubstructure implements LeafSubstructure {
      * The unique leaf identifer;
      */
     private LabelLeafIdentifier leafIdentifier;
+    /**
+     * Let this substructure track its author-assigned identifier too, which can be useful for downstream software and
+     * compatibility with the legacy PDB format.
+     */
+    private AuthLeafIdentifier authLeafIdentifier;
 
     private String inchi;
 
@@ -42,14 +47,15 @@ public class CifLeafSubstructure implements LeafSubstructure {
      */
     private boolean isPartOfPolymer;
 
-    public CifLeafSubstructure(LabelLeafIdentifier leafIdentifier) {
+    public CifLeafSubstructure(LabelLeafIdentifier leafIdentifier, AuthLeafIdentifier authLeafIdentifier) {
         this.leafIdentifier = leafIdentifier;
+        this.authLeafIdentifier = authLeafIdentifier;
         conformations = new LinkedHashMap<>();
         connectedLeafs = new HashMap<>();
     }
 
     public CifLeafSubstructure(CifLeafSubstructure cifLeafSubstructure) {
-        this(cifLeafSubstructure.leafIdentifier);
+        this(cifLeafSubstructure.leafIdentifier, cifLeafSubstructure.authLeafIdentifier);
         family = cifLeafSubstructure.family;
         inchi = cifLeafSubstructure.inchi;
         annotatedAsHetAtom = cifLeafSubstructure.annotatedAsHetAtom;
@@ -161,7 +167,7 @@ public class CifLeafSubstructure implements LeafSubstructure {
 
     @Override
     public AuthLeafIdentifier getAuthIdentifier() {
-        return null;
+        return authLeafIdentifier;
     }
 
     @Override
