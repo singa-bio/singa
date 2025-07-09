@@ -128,7 +128,7 @@ public class CifStructure implements Structure {
     public Optional<CifLeafSubstructure> getLeafSubstructure(LeafIdentifier leafIdentifier) {
         if (leafIdentifier instanceof AuthLeafIdentifier) {
             if (!authMapping.containsKey(leafIdentifier)) {
-                throw new NoSuchElementException("cannot get leaf substructure for auth leaf identifier: " + leafIdentifier);
+                throw new NoSuchElementException("can't resolve label leaf identifier for auth leaf identifier: " + leafIdentifier + " -- are you sure this leaf substructure exists?");
             }
             return getLeafSubstructure(authMapping.get(leafIdentifier));
         }
