@@ -17,9 +17,9 @@ public interface LeafIdentifier extends Comparable<LeafIdentifier> {
 
     static LeafIdentifier fromString(String leafIdentifierString) {
         if (leafIdentifierString.startsWith(AuthLeafIdentifier.AUTH_IDENTIFIER_PREFIX)) {
-            return AuthLeafIdentifier.fromString(leafIdentifierString.substring(4));
+            return AuthLeafIdentifier.fromString(leafIdentifierString.substring(AuthLeafIdentifier.AUTH_IDENTIFIER_PREFIX.length() + 1));
         } else if (leafIdentifierString.startsWith(LabelLeafIdentifier.LABEL_IDENTIFIER_PREFIX)) {
-            return LabelLeafIdentifier.fromString(leafIdentifierString.substring(4));
+            return LabelLeafIdentifier.fromString(leafIdentifierString.substring(LabelLeafIdentifier.LABEL_IDENTIFIER_PREFIX.length() + 1));
         } else {
             throw new IllegalArgumentException("Leaf identifiers have to start with " + AuthLeafIdentifier.AUTH_IDENTIFIER_PREFIX + " or " + LabelLeafIdentifier.LABEL_IDENTIFIER_PREFIX + " prefix.");
         }

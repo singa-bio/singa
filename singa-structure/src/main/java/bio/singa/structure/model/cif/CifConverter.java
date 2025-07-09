@@ -245,7 +245,7 @@ public class CifConverter {
             CifChain chain = model.getChain(cifChainIdentifier)
                     .orElseGet(() -> appendChain(entity, model, cifChainIdentifier));
 
-            CifLeafSubstructure leafSubstructure = chain.getLeafSubstructure(labelLeafIdentifier)
+            CifLeafSubstructure leafSubstructure = chain.getLeafSubstructure(authLeafIdentifier)
                     .orElseGet(() -> appendLeafSubstructure(entity, chain, labelLeafIdentifier, authLeafIdentifier, threeLetterCode, leafIsHetAtomString));
 
             CifAtom cifAtom = new CifAtom(atomSerialColumn.get(row));

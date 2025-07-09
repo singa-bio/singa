@@ -6,6 +6,8 @@ import bio.singa.structure.io.ccd.LeafSkeletonFactory;
 import bio.singa.structure.io.ccd.RemoteCcdParsingBehavior;
 import bio.singa.structure.io.general.StructureParser;
 import bio.singa.structure.model.families.StructuralFamilies;
+import bio.singa.structure.model.general.AuthLeafIdentifier;
+import bio.singa.structure.model.general.LabelLeafIdentifier;
 import bio.singa.structure.model.general.LeafSkeleton;
 import bio.singa.structure.model.interfaces.LeafIdentifier;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
@@ -76,10 +78,22 @@ class CifFileParserTest {
         Structure structure = StructureParser.cif()
                 .pdbIdentifier("3cjt")
                 .parse();
-        Optional<? extends LeafSubstructure> substructureOptional = structure.getLeafSubstructure(LeafIdentifier.fromString("CIF:3cjt-1-5-AA-0"));
-        assertTrue(substructureOptional.isPresent());
-        assertFalse(StructuralFamilies.Nucleotides.isNucleotide(substructureOptional.get().getFamily()));
-        assertFalse(StructuralFamilies.AminoAcids.isAminoAcid(substructureOptional.get().getFamily()));
+
+        LeafIdentifier authIdentifier = LeafIdentifier.fromString("AUTH:3cjt-1-AA-256");
+        assertInstanceOf(AuthLeafIdentifier.class,  authIdentifier);
+        assertEquals("AA", authIdentifier.getChainIdentifier());
+        assertEquals(256, authIdentifier.getSerial());
+        LeafSubstructure authSubstructure = structure.getLeafSubstructure(authIdentifier).orElseThrow(() -> new RuntimeException("failed to select " + authIdentifier));
+        assertFalse(StructuralFamilies.Nucleotides.isNucleotide(authSubstructure.getFamily()));
+        assertFalse(StructuralFamilies.AminoAcids.isAminoAcid(authSubstructure.getFamily()));
+
+        LeafIdentifier labelIdentifier = LeafIdentifier.fromString("LABEL:3cjt-1-E-0");
+        assertInstanceOf(LabelLeafIdentifier.class,  labelIdentifier);
+        assertEquals("E", labelIdentifier.getChainIdentifier());
+        assertEquals(0, labelIdentifier.getSerial());
+        LeafSubstructure labelSubstructure = structure.getLeafSubstructure(labelIdentifier).orElseThrow(() -> new RuntimeException("failed to select " + labelIdentifier));
+        assertFalse(StructuralFamilies.Nucleotides.isNucleotide(labelSubstructure.getFamily()));
+        assertFalse(StructuralFamilies.AminoAcids.isAminoAcid(labelSubstructure.getFamily()));
     }
 
 }

@@ -7,6 +7,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Addresses a {@link bio.singa.structure.model.interfaces.LeafSubstructure} using author-assigned identifiers. This
+ * style is the default identifier and supported by all macromolecular file formats.
+ */
 public class AuthLeafIdentifier extends AbstractLeafIdentifier {
 
     public static final String AUTH_IDENTIFIER_PREFIX = "AUTH";

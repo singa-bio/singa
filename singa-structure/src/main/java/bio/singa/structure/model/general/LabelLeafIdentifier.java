@@ -3,14 +3,33 @@ package bio.singa.structure.model.general;
 import bio.singa.structure.model.interfaces.AbstractLeafIdentifier;
 import bio.singa.structure.model.interfaces.LeafIdentifier;
 
-import static bio.singa.structure.model.general.AuthLeafIdentifier.DEFAULT_INSERTION_CODE;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
+import static bio.singa.structure.model.general.AuthLeafIdentifier.DEFAULT_INSERTION_CODE;
+import static bio.singa.structure.model.general.AuthLeafIdentifier.DEFAULT_MODEL_IDENTIFIER;
+
+/**
+ * Addresses a {@link bio.singa.structure.model.interfaces.LeafSubstructure} using programmatically assigned label
+ * identifiers. This style is only supported by the mmCIF file format.
+ */
 public class LabelLeafIdentifier extends AbstractLeafIdentifier {
 
     public static final String LABEL_IDENTIFIER_PREFIX = "LABEL";
 
     public LabelLeafIdentifier(String structureIdentifier, int modelIdentifier, String chainIdentifier, int serial) {
         super(structureIdentifier.toLowerCase(), modelIdentifier, chainIdentifier, serial);
+    }
+
+    /**
+     * Takes an array of leaf identifiers in simple string format (e.g. A-56) and returns {@link LabelLeafIdentifier}s.
+     *
+     * @param identifiers The identifiers in simple string format.
+     * @return A list of {@link LabelLeafIdentifier}s.
+     */
+    public static List<LabelLeafIdentifier> of(String... identifiers) {
+        return Arrays.stream(identifiers).map(LabelLeafIdentifier::fromSimpleString).collect(Collectors.toList());
     }
 
     /**
@@ -30,6 +49,20 @@ public class LabelLeafIdentifier extends AbstractLeafIdentifier {
         String chainIdentifier = split[2];
         int serial = Integer.parseInt(split[3]);
         return new LabelLeafIdentifier(pdbIdentifier, modelIdentifier, chainIdentifier, serial);
+    }
+
+    /**
+     * Constructs a {@link LabelLeafIdentifier} from the given simple string. Only chain and residue number are
+     * required.
+     *
+     * @param simpleString The identifier in string format (e.g. A-62 or A-62B).
+     * @return The {@link LabelLeafIdentifier}.
+     */
+    public static LabelLeafIdentifier fromSimpleString(String simpleString) {
+        String[] split = simpleString.split("-");
+        String chainPart = split[0];
+        String serialPart = split[1];
+        return new LabelLeafIdentifier(DEFAULT_PDB_IDENTIFIER, DEFAULT_MODEL_IDENTIFIER, chainPart, Integer.parseInt(serialPart));
     }
 
     @Override

@@ -1,6 +1,5 @@
 package bio.singa.structure.model.cif;
 
-import bio.singa.structure.model.general.AuthLeafIdentifier;
 import bio.singa.structure.model.general.UniqueAtomIdentifier;
 import bio.singa.structure.model.interfaces.*;
 
