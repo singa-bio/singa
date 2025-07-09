@@ -17,6 +17,8 @@ public class CifStructure implements Structure {
 
     private final TreeMap<Integer, CifEntity> entities;
 
+    private final Map<AuthLeafIdentifier, LabelLeafIdentifier> authMapping;
+
     private Map<String, List<String>> biologicalAssemblies;
 
     /**
@@ -32,14 +34,18 @@ public class CifStructure implements Structure {
     private double resolution;
 
     private boolean isMutated;
-    private Map<AuthLeafIdentifier, LabelLeafIdentifier> authMapping;
 
-    public CifStructure(String structureIdentifier) {
+    /**
+     * Constructs a structure from CIF data.
+     * @param structureIdentifier the entry identifier
+     * @param authMapping a map tracking the mapping of {@link AuthLeafIdentifier} to {@link LabelLeafIdentifier}
+     */
+    public CifStructure(String structureIdentifier, Map<AuthLeafIdentifier, LabelLeafIdentifier> authMapping) {
         this.structureIdentifier = structureIdentifier;
         models = new TreeMap<>();
         entities = new TreeMap<>();
         biologicalAssemblies = new HashMap<>();
-        authMapping = new HashMap<>();
+        this.authMapping = authMapping;
     }
 
     public CifStructure(CifStructure structure) {

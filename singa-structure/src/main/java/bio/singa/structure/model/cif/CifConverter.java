@@ -25,7 +25,7 @@ public class CifConverter {
 
     private final MmCifFile mmcifFile;
     private final Map<Integer, CifEntity> entityMap;
-    private final Map<AuthLeafIdentifier, LabelLeafIdentifier> pdbReferenceMap;
+    private final Map<AuthLeafIdentifier, LabelLeafIdentifier> authMapping;
 
     private final Map<String, String> chainInformation;
 
@@ -50,7 +50,7 @@ public class CifConverter {
     public CifConverter(MmCifFile mmcifFile) {
         this.mmcifFile = mmcifFile;
         entityMap = new HashMap<>();
-        pdbReferenceMap = new HashMap<>();
+        authMapping = new HashMap<>();
         connectedBranches = new HashSet<>();
         chainInformation = new HashMap<>();
     }
@@ -69,7 +69,7 @@ public class CifConverter {
     private void extractMetaData(MmCifBlock data) {
         // structure id
         pdbId = data.getEntry().getId().get(0);
-        structure = new CifStructure(pdbId);
+        structure = new CifStructure(pdbId, authMapping);
 
         // resolution
         StrColumn methodColumn = data.getExptl().getMethod();
@@ -447,11 +447,11 @@ public class CifConverter {
                     .serial(secondSerial)
                     .insertionCode(secondInsertionCode);
 
-            LabelLeafIdentifier firstCifLeafIdentifier = pdbReferenceMap.get(firstAuthLeafIdentifier);
+            LabelLeafIdentifier firstCifLeafIdentifier = authMapping.get(firstAuthLeafIdentifier);
             if (firstCifLeafIdentifier == null) {
                 continue;
             }
-            LabelLeafIdentifier secondCifLeafIdentifier = pdbReferenceMap.get(secondAuthLeafIdentifier);
+            LabelLeafIdentifier secondCifLeafIdentifier = authMapping.get(secondAuthLeafIdentifier);
             if (secondCifLeafIdentifier == null) {
                 continue;
             }
@@ -518,7 +518,7 @@ public class CifConverter {
         leafSubstructure.setAnnotatedAsHeteroAtom(leafIsHetAtomString.equals("HETATM"));
         leafSubstructure.setPartOfPolymer(cifEntity.getCifEntityType().equals(CifEntityType.POLYMER));
         chain.addLeafSubstructure(leafSubstructure);
-        pdbReferenceMap.put(authLeafIdentifier, labelLeafIdentifier);
+        authMapping.put(authLeafIdentifier, labelLeafIdentifier);
         return leafSubstructure;
     }
 
