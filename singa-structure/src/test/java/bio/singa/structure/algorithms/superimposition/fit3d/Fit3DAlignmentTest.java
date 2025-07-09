@@ -77,7 +77,7 @@ class Fit3DAlignmentTest {
 
     @Test
     @Disabled
-    // unable to create motif from cif file currently -- TODO this should work with adjusted identifiers
+    // unable to create motif from cif file currently
     void shouldRunFit3DAlignmentBatch() throws IOException {
         Structure nucleotideTarget = StructureParser.cif()
                 .pdbIdentifier("2EES")
@@ -108,7 +108,7 @@ class Fit3DAlignmentTest {
                 .everything()
                 .parse();
         StructuralMotif queryMotif = StructuralMotif.fromLeafIdentifiers(target,
-                AuthLeafIdentifier.of("B-42", "B-87", "C-47"));
+                AuthLeafIdentifier.of("B-57", "B-102", "C-195"));
         Fit3D fit3d = Fit3DBuilder.create()
                 .query(queryMotif)
                 .target(target.getFirstModel())
@@ -218,10 +218,7 @@ class Fit3DAlignmentTest {
                 .everything()
                 .parse();
         StructuralMotif queryMotif = StructuralMotif.fromLeafIdentifiers(target,
-                AuthLeafIdentifier.of("B-42", "B-87", "C-47"));
-                // TODO expected that this now needs label identifiers?
-                // TODO should be CifLeafIdentifier?
-                // TODO should there be CifLeafIdentifier.of()?
+                AuthLeafIdentifier.of("B-57", "B-102", "C-195"));
         Fit3D fit3d = Fit3DBuilder.create()
                 .query(queryMotif)
                 .target(target.getFirstModel())
