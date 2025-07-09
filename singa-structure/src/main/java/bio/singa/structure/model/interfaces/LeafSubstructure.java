@@ -3,6 +3,8 @@ package bio.singa.structure.model.interfaces;
 import bio.singa.mathematics.vectors.Vector3D;
 import bio.singa.mathematics.vectors.Vectors3D;
 import bio.singa.structure.model.families.StructuralFamily;
+import bio.singa.structure.model.general.AuthLeafIdentifier;
+import bio.singa.structure.model.general.LabelLeafIdentifier;
 
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -16,13 +18,17 @@ import java.util.stream.Collectors;
 public interface LeafSubstructure extends AtomContainer {
 
     /**
-     * Returns the complete leaf identifier. The leaf identifier consists of the PDB identifer, the model identifier,
-     * the chain identifier, the serial of the leaf substructure and optionally an insertion code.
+     * Returns the complete leaf identifier. This identifier may be assigned by authors or determined programmatically.
+     * Use {@link #getAuthIdentifier} or {@link #getLabelIdentifier} to control this behavior.
      *
      * @return The leaf identifier.
      * @see LeafIdentifier
      */
     LeafIdentifier getIdentifier();
+
+    LabelLeafIdentifier getLabelIdentifier();
+
+    AuthLeafIdentifier getAuthIdentifier();
 
     /**
      * Returns the {@link StructuralFamily} of this entity.

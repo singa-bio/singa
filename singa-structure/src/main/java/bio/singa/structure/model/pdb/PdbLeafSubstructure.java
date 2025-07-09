@@ -3,6 +3,7 @@ package bio.singa.structure.model.pdb;
 import bio.singa.chemistry.model.CovalentBondType;
 import bio.singa.structure.model.families.StructuralFamily;
 import bio.singa.structure.model.general.AuthLeafIdentifier;
+import bio.singa.structure.model.general.LabelLeafIdentifier;
 import bio.singa.structure.model.interfaces.Atom;
 import bio.singa.structure.model.interfaces.LeafIdentifier;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
@@ -117,6 +118,16 @@ public abstract class PdbLeafSubstructure implements LeafSubstructure {
 
     @Override
     public AuthLeafIdentifier getIdentifier() {
+        return leafIdentifier;
+    }
+
+    @Override
+    public LabelLeafIdentifier getLabelIdentifier() {
+        throw new UnsupportedOperationException("Structures parsed from the legacy PDB format don't support label identifiers");
+    }
+
+    @Override
+    public AuthLeafIdentifier getAuthIdentifier() {
         return leafIdentifier;
     }
 

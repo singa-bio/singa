@@ -179,7 +179,7 @@ public class Fit3DAlignment implements Fit3D {
                     .forEach(match -> {
                         String pdbIdentifier = match.getSubstructureSuperimposition().getCandidate().get(0).getIdentifier().getStructureIdentifier();
                         List<String> chainIdentifiers = match.getSubstructureSuperimposition().getCandidate().stream()
-                                .map(leafSubstructure -> leafSubstructure.getIdentifier().getChainIdentifier())
+                                .map(leafSubstructure -> leafSubstructure.getAuthIdentifier().getChainIdentifier())
                                 .distinct()
                                 .collect(Collectors.toList());
                         Map<String, UniProtIdentifier> uniProtIdentifiers;

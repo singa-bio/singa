@@ -3,6 +3,7 @@ package bio.singa.structure.model.cif;
 import bio.singa.core.utility.CommutablePair;
 import bio.singa.core.utility.Pair;
 import bio.singa.structure.model.families.StructuralFamily;
+import bio.singa.structure.model.general.AuthLeafIdentifier;
 import bio.singa.structure.model.general.LabelLeafIdentifier;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 
@@ -151,6 +152,16 @@ public class CifLeafSubstructure implements LeafSubstructure {
     @Override
     public LabelLeafIdentifier getIdentifier() {
         return leafIdentifier;
+    }
+
+    @Override
+    public LabelLeafIdentifier getLabelIdentifier() {
+        return leafIdentifier;
+    }
+
+    @Override
+    public AuthLeafIdentifier getAuthIdentifier() {
+        return null;
     }
 
     @Override
