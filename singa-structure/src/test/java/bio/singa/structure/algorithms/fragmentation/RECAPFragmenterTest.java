@@ -3,7 +3,6 @@ package bio.singa.structure.algorithms.fragmentation;
 import bio.singa.chemistry.features.smiles.SmilesParser;
 import bio.singa.chemistry.model.MoleculeGraph;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
