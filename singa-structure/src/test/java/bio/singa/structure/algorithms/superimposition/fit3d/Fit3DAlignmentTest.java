@@ -92,7 +92,7 @@ class Fit3DAlignmentTest {
         Fit3D fit3dBatch = Fit3DBuilder.create()
                 .query(nucleotideMotif)
                 .targets(multiParser)
-                .limitedParallelism(1) // TODO fix non-deterministic results when ran with parallelism
+                .maximalParallelism()
                 .run();
         assertEquals(14, fit3dBatch.getMatches().size());
     }

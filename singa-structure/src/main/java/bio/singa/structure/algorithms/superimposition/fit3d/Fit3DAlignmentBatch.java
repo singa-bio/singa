@@ -75,8 +75,10 @@ public class Fit3DAlignmentBatch implements Fit3D {
 
         // create the exact number of jobs
         List<Fit3DCalculator> jobs = new ArrayList<>();
-        for (int i = 0; i < multiParser.getNumberOfQueuedStructures(); i++) {
-            jobs.add(new Fit3DCalculator());
+        // can't work with StructureIterator in parallel -- prepare structures ahead of time
+        while (multiParser.hasNext()) {
+            multiParser.prepareNext();
+            jobs.add(new Fit3DCalculator(multiParser.next()));
         }
 
         try {
@@ -130,72 +132,72 @@ public class Fit3DAlignmentBatch implements Fit3D {
      * Internal class for parallel calculation of {@link Fit3DAlignment}s.
      */
     private class Fit3DCalculator implements Callable<List<Fit3DMatch>> {
+        private final Structure structure;
+
+        Fit3DCalculator(Structure structure) {
+            this.structure = structure;
+        }
 
         @Override
         public List<Fit3DMatch> call() {
             // FIXME here we are dealing only with the first model
             Fit3D fit3d;
-            if (multiParser.hasNext()) {
-                Structure structure = null;
-                try {
-                    multiParser.prepareNext();
-                    structure = multiParser.next();
-                    if (skipAlphaCarbonTargets && Structures.isAlphaCarbonStructure(structure)) {
-                        logger.debug("ignored alpha carbon only structure {}", structure);
-                        return null;
-                    }
-                    if (skipBackboneTargets && Structures.isBackboneStructure(structure)) {
-                        logger.debug("ignored backbone only structure {}", structure);
-                        return null;
-                    }
-                    Model target = structure.getFirstModel();
-                    logger.debug("computing Fit3D alignment against {}", target);
-                    // create Fit3DAlignment and decide between AtomFilter or RepresentationScheme
-                    Fit3DBuilder.ParameterStep parameterStep;
-                    if (representationScheme == null) {
-                        parameterStep = Fit3DBuilder.create()
-                                .query(queryMotif)
-                                .target(target)
-                                .atomFilter(atomFilter)
-                                .rmsdCutoff(rmsdCutoff)
-                                .distanceTolerance(distanceTolerance);
-                    } else {
-                        parameterStep = Fit3DBuilder.create()
-                                .query(queryMotif)
-                                .target(target)
-                                .representationScheme(representationScheme.getType())
-                                .rmsdCutoff(rmsdCutoff)
-                                .distanceTolerance(distanceTolerance);
-                    }
+            try {
+                if (skipAlphaCarbonTargets && Structures.isAlphaCarbonStructure(structure)) {
+                    logger.debug("ignored alpha carbon only structure {}", structure);
+                    return null;
+                }
+                if (skipBackboneTargets && Structures.isBackboneStructure(structure)) {
+                    logger.debug("ignored backbone only structure {}", structure);
+                    return null;
+                }
+                Model target = structure.getFirstModel();
+                logger.info("computing Fit3D alignment against {}", target);
+                // create Fit3DAlignment and decide between AtomFilter or RepresentationScheme
+                Fit3DBuilder.ParameterStep parameterStep;
+                if (representationScheme == null) {
+                    parameterStep = Fit3DBuilder.create()
+                            .query(queryMotif)
+                            .target(target)
+                            .atomFilter(atomFilter)
+                            .rmsdCutoff(rmsdCutoff)
+                            .distanceTolerance(distanceTolerance);
+                } else {
+                    parameterStep = Fit3DBuilder.create()
+                            .query(queryMotif)
+                            .target(target)
+                            .representationScheme(representationScheme.getType())
+                            .rmsdCutoff(rmsdCutoff)
+                            .distanceTolerance(distanceTolerance);
+                }
 
-                    if (statisticalModel != null) {
-                        parameterStep.statisticalModel(statisticalModel);
-                    }
+                if (statisticalModel != null) {
+                    parameterStep.statisticalModel(statisticalModel);
+                }
 
-                    if (mapUniprotIdentifiers) {
-                        parameterStep.mapUniProtIdentifiers();
-                    }
-                    if (mapEcNumbers) {
-                        parameterStep.mapECNumbers();
-                    }
-                    if (filterEnvironments) {
-                        parameterStep.filterEnvironments(filterThreshold);
-                    }
-                    fit3d = parameterStep.run();
+                if (mapUniprotIdentifiers) {
+                    parameterStep.mapUniProtIdentifiers();
+                }
+                if (mapEcNumbers) {
+                    parameterStep.mapECNumbers();
+                }
+                if (filterEnvironments) {
+                    parameterStep.filterEnvironments(filterThreshold);
+                }
+                fit3d = parameterStep.run();
 
-                    List<Fit3DMatch> matches = fit3d.getMatches();
-                    for (Fit3DMatch match : matches) {
-                        match.setStructureTitle(structure.getTitle());
-                    }
+                List<Fit3DMatch> matches = fit3d.getMatches();
+                for (Fit3DMatch match : matches) {
+                    match.setStructureTitle(structure.getTitle());
+                }
 
-                    return matches;
+                return matches;
 //                } catch (Fit3DException | StructureParserException | SubstructureSuperimpositionException | UncheckedIOException e) {
-                } catch (Exception e) {
-                    if (structure != null) {
-                        logger.warn("failed to run Fit3D against structure {}", structure, e);
-                    } else {
-                        logger.warn("failed to run Fit3D", e);
-                    }
+            } catch (Exception e) {
+                if (structure != null) {
+                    logger.warn("failed to run Fit3D against structure {}", structure, e);
+                } else {
+                    logger.warn("failed to run Fit3D", e);
                 }
             }
             return null;
