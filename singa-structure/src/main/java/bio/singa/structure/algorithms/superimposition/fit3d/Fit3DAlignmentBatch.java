@@ -152,7 +152,7 @@ public class Fit3DAlignmentBatch implements Fit3D {
                     return null;
                 }
                 Model target = structure.getFirstModel();
-                logger.info("computing Fit3D alignment against {}", target);
+                logger.debug("computing Fit3D alignment against {}", target);
                 // create Fit3DAlignment and decide between AtomFilter or RepresentationScheme
                 Fit3DBuilder.ParameterStep parameterStep;
                 if (representationScheme == null) {
