@@ -1,6 +1,7 @@
 package bio.singa.structure.model.pdb;
 
 import bio.singa.mathematics.vectors.Vector3D;
+import bio.singa.structure.model.general.AuthLeafIdentifier;
 import bio.singa.structure.model.general.UniqueAtomIdentifier;
 import bio.singa.structure.model.interfaces.*;
 import bio.singa.structure.io.general.StructureParser;
@@ -110,7 +111,7 @@ class PdbStructureTest {
 
     @Test
     void getLeafSubstructure() {
-        Optional<PdbLeafSubstructure> leafSubstructure = structure2n5e.getLeafSubstructure(new PdbLeafIdentifier("2n5e", 5, "A", 64));
+        Optional<PdbLeafSubstructure> leafSubstructure = structure2n5e.getLeafSubstructure(new AuthLeafIdentifier("2n5e", 5, "A", 64));
         if (!leafSubstructure.isPresent()) {
             fail("Optional leaf substructure was empty.");
         }
@@ -122,7 +123,7 @@ class PdbStructureTest {
 
     @Test
     void removeLeafSubstructure() {
-        LeafIdentifier leafIdentifier = new PdbLeafIdentifier("1BRR", 1, "A", 176);
+        LeafIdentifier leafIdentifier = new AuthLeafIdentifier("1BRR", 1, "A", 176);
         Optional<PdbLeafSubstructure> leafSubstructureOptional = structureToModify.getLeafSubstructure(leafIdentifier);
         leafSubstructureOptional.ifPresent(leafSubstructure -> {
             structureToModify.removeLeafSubstructure(leafIdentifier);
@@ -139,7 +140,7 @@ class PdbStructureTest {
 
     @Test
     void getAminoAcid() {
-        final Optional<AminoAcid> aminoAcid = structure1c0a.getAminoAcid(new PdbLeafIdentifier("1c0a", 1, "A", 98));
+        final Optional<AminoAcid> aminoAcid = structure1c0a.getAminoAcid(new AuthLeafIdentifier("1c0a", 1, "A", 98));
         if (!aminoAcid.isPresent()) {
             fail("Optional leaf substructure was empty.");
         }
@@ -158,7 +159,7 @@ class PdbStructureTest {
 
     @Test
     void getNucleotide() {
-        final Optional<Nucleotide> nucleotide = structure1c0a.getNucleotide(new PdbLeafIdentifier("1c0a", 1, "B", 617));
+        final Optional<Nucleotide> nucleotide = structure1c0a.getNucleotide(new AuthLeafIdentifier("1c0a", 1, "B", 617));
         if (!nucleotide.isPresent()) {
             fail("Optional leaf substructure was empty.");
         }
@@ -176,7 +177,7 @@ class PdbStructureTest {
 
     @Test
     void getLigand() {
-        final Optional<Ligand> nucleotide = structure1c0a.getLigand(new PdbLeafIdentifier("1c0a", 1, "A", 831));
+        final Optional<Ligand> nucleotide = structure1c0a.getLigand(new AuthLeafIdentifier("1c0a", 1, "A", 831));
         if (!nucleotide.isPresent()) {
             fail("Optional leaf substructure was empty.");
         }

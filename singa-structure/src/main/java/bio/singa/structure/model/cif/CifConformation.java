@@ -1,6 +1,5 @@
 package bio.singa.structure.model.cif;
 
-import bio.singa.structure.model.interfaces.Atom;
 import bio.singa.structure.model.interfaces.AtomContainer;
 
 import java.util.Collection;

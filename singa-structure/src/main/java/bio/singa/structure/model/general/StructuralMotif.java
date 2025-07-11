@@ -4,7 +4,6 @@ import bio.singa.structure.model.families.StructuralFamilies;
 import bio.singa.structure.model.families.StructuralFamilies.Matchers;
 import bio.singa.structure.model.families.StructuralFamily;
 import bio.singa.structure.model.interfaces.*;
-import bio.singa.structure.model.pdb.PdbLeafIdentifier;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -64,10 +63,10 @@ public class StructuralMotif implements LeafSubstructureContainer {
      * StructuralMotif}.
      * @return A new {@link StructuralMotif}.
      */
-    public static StructuralMotif fromLeafIdentifiers(Structure structure, List<PdbLeafIdentifier> leafIdentifiers) {
+    public static StructuralMotif fromLeafIdentifiers(Structure structure, List<AuthLeafIdentifier> leafIdentifiers) {
         List<LeafSubstructure> leafSubstructures = new ArrayList<>();
-        for (PdbLeafIdentifier leafIdentifier : leafIdentifiers) {
-            leafIdentifier = new PdbLeafIdentifier(structure.getStructureIdentifier(), leafIdentifier.getModelIdentifier(), leafIdentifier.getChainIdentifier(), leafIdentifier.getSerial(), leafIdentifier.getInsertionCode());
+        for (AuthLeafIdentifier leafIdentifier : leafIdentifiers) {
+            leafIdentifier = new AuthLeafIdentifier(structure.getStructureIdentifier(), leafIdentifier.getModelIdentifier(), leafIdentifier.getChainIdentifier(), leafIdentifier.getSerial(), leafIdentifier.getInsertionCode());
             final Optional<? extends LeafSubstructure> leafSubstructure = structure.getLeafSubstructure(leafIdentifier);
             if (leafSubstructure.isPresent()) {
                 leafSubstructures.add(leafSubstructure.get());
@@ -91,7 +90,7 @@ public class StructuralMotif implements LeafSubstructureContainer {
     private static String generateMotifIdentifier(Collection<? extends LeafSubstructure> substructures) {
         String pdbIdentifier = substructures.iterator().next().getIdentifier().getStructureIdentifier();
         return substructures.stream()
-                .map(leafSubstructure -> leafSubstructure.getIdentifier().toString())
+                .map(leafSubstructure -> leafSubstructure.getAuthIdentifier().toString())
                 .collect(Collectors.joining("_", pdbIdentifier + "_", ""));
     }
 
@@ -122,7 +121,7 @@ public class StructuralMotif implements LeafSubstructureContainer {
 
 
     public void addLeafSubstructure(LeafSubstructure leafSubstructure) {
-        leafSubstructures.put(leafSubstructure.getIdentifier(), leafSubstructure);
+        leafSubstructures.put(leafSubstructure.getAuthIdentifier(), leafSubstructure);
     }
 
 
@@ -161,16 +160,16 @@ public class StructuralMotif implements LeafSubstructureContainer {
         if (StructuralFamilies.AminoAcids.isAminoAcid(structuralFamily)) {
             LeafSubstructure leafSubstructure = leafSubstructures.values().stream()
                     .filter(StructuralEntityFilter.LeafFilter.isAminoAcid())
-                    .filter(aminoAcid -> aminoAcid.getIdentifier().getChainIdentifier().equals(leafIdentifier.getChainIdentifier()))
-                    .filter(aminoAcid -> aminoAcid.getIdentifier().getSerial() == leafIdentifier.getSerial())
+                    .filter(aminoAcid -> aminoAcid.getAuthIdentifier().getChainIdentifier().equals(leafIdentifier.getChainIdentifier()))
+                    .filter(aminoAcid -> aminoAcid.getAuthIdentifier().getSerial() == leafIdentifier.getSerial())
                     .findFirst()
                     .orElseThrow(NoSuchElementException::new);
             addExchangeableFamily(leafSubstructure, structuralFamily);
         } else if (StructuralFamilies.Nucleotides.isNucleotide(structuralFamily)) {
             LeafSubstructure leafSubstructure = leafSubstructures.values().stream()
                     .filter(StructuralEntityFilter.LeafFilter.isNucleotide())
-                    .filter(aminoAcid -> aminoAcid.getIdentifier().getChainIdentifier().equals(leafIdentifier.getChainIdentifier()))
-                    .filter(aminoAcid -> aminoAcid.getIdentifier().getSerial() == leafIdentifier.getSerial())
+                    .filter(aminoAcid -> aminoAcid.getAuthIdentifier().getChainIdentifier().equals(leafIdentifier.getChainIdentifier()))
+                    .filter(aminoAcid -> aminoAcid.getAuthIdentifier().getSerial() == leafIdentifier.getSerial())
                     .findFirst()
                     .orElseThrow(NoSuchElementException::new);
 
@@ -257,7 +256,7 @@ public class StructuralMotif implements LeafSubstructureContainer {
 
         public static Type determine(StructuralMotif structuralMotif) {
             return structuralMotif.getAllLeafSubstructures().stream()
-                    .map(leafSubstructure -> leafSubstructure.getIdentifier().getChainIdentifier())
+                    .map(leafSubstructure -> leafSubstructure.getAuthIdentifier().getChainIdentifier())
                     .distinct()
                     .count() == 1 ? INTRA : INTER;
         }

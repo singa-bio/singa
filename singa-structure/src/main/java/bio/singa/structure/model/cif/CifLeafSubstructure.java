@@ -3,6 +3,8 @@ package bio.singa.structure.model.cif;
 import bio.singa.core.utility.CommutablePair;
 import bio.singa.core.utility.Pair;
 import bio.singa.structure.model.families.StructuralFamily;
+import bio.singa.structure.model.general.AuthLeafIdentifier;
+import bio.singa.structure.model.general.LabelLeafIdentifier;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 
 import java.util.*;
@@ -14,7 +16,12 @@ public class CifLeafSubstructure implements LeafSubstructure {
     /**
      * The unique leaf identifer;
      */
-    private CifLeafIdentifier leafIdentifier;
+    private LabelLeafIdentifier leafIdentifier;
+    /**
+     * Let this substructure track its author-assigned identifier too, which can be useful for downstream software and
+     * compatibility with the legacy PDB format.
+     */
+    private AuthLeafIdentifier authLeafIdentifier;
 
     private String inchi;
 
@@ -28,7 +35,7 @@ public class CifLeafSubstructure implements LeafSubstructure {
     /**
      * pair of atom names that link the connected leaves
      */
-    private final Map<Pair<String>, CifLeafIdentifier> connectedLeafs;
+    private final Map<Pair<String>, LabelLeafIdentifier> connectedLeafs;
 
     /**
      * Remembers if this leaf was an HETATOM entry
@@ -40,14 +47,15 @@ public class CifLeafSubstructure implements LeafSubstructure {
      */
     private boolean isPartOfPolymer;
 
-    public CifLeafSubstructure(CifLeafIdentifier leafIdentifier) {
+    public CifLeafSubstructure(LabelLeafIdentifier leafIdentifier, AuthLeafIdentifier authLeafIdentifier) {
         this.leafIdentifier = leafIdentifier;
+        this.authLeafIdentifier = authLeafIdentifier;
         conformations = new LinkedHashMap<>();
         connectedLeafs = new HashMap<>();
     }
 
     public CifLeafSubstructure(CifLeafSubstructure cifLeafSubstructure) {
-        this(cifLeafSubstructure.leafIdentifier);
+        this(cifLeafSubstructure.leafIdentifier, cifLeafSubstructure.authLeafIdentifier);
         family = cifLeafSubstructure.family;
         inchi = cifLeafSubstructure.inchi;
         annotatedAsHetAtom = cifLeafSubstructure.annotatedAsHetAtom;
@@ -120,7 +128,7 @@ public class CifLeafSubstructure implements LeafSubstructure {
         otherLeaf.connectedLeafs.put(new CommutablePair<>(atomNameOfOtherLeaf, atomNameOfThisLeaf), getIdentifier());
     }
 
-    public Map<Pair<String>, CifLeafIdentifier> getConnectedLeafs() {
+    public Map<Pair<String>, LabelLeafIdentifier> getConnectedLeafs() {
         return connectedLeafs;
     }
 
@@ -148,8 +156,18 @@ public class CifLeafSubstructure implements LeafSubstructure {
     }
 
     @Override
-    public CifLeafIdentifier getIdentifier() {
+    public LabelLeafIdentifier getIdentifier() {
         return leafIdentifier;
+    }
+
+    @Override
+    public LabelLeafIdentifier getLabelIdentifier() {
+        return leafIdentifier;
+    }
+
+    @Override
+    public AuthLeafIdentifier getAuthIdentifier() {
+        return authLeafIdentifier;
     }
 
     @Override

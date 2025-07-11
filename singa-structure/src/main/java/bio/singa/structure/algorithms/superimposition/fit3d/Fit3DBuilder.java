@@ -1,7 +1,6 @@
 package bio.singa.structure.algorithms.superimposition.fit3d;
 
 import bio.singa.features.identifiers.ECNumber;
-import bio.singa.features.identifiers.PfamIdentifier;
 import bio.singa.features.identifiers.UniProtIdentifier;
 import bio.singa.structure.algorithms.superimposition.SubstructureSuperimpositionException;
 import bio.singa.structure.algorithms.superimposition.fit3d.representations.RepresentationScheme;
@@ -261,13 +260,6 @@ public class Fit3DBuilder {
         ParameterStep mapUniProtIdentifiers();
 
         /**
-         * Enables mapping of each chain of a {@link Fit3DMatch} to a {@link PfamIdentifier} using the SIFTS project.
-         *
-         * @return The {@link ParameterStep} that can be used to define optional parameters.
-         */
-        ParameterStep mapPfamIdentifiers();
-
-        /**
          * Enables mapping of each chain of a {@link Fit3DMatch} to an {@link ECNumber} using the SIFTS project.
          *
          * @return The {@link ParameterStep} that can be used to define optional parameters.
@@ -306,7 +298,6 @@ public class Fit3DBuilder {
         boolean skipBackboneTargets;
         StatisticalModel statisticalModel;
         boolean mapUniprotIdentifiers;
-        boolean mapPfamIdentifiers;
         boolean mapEcNumbers;
         boolean filterEnvironments;
 
@@ -421,12 +412,6 @@ public class Fit3DBuilder {
         @Override
         public ParameterStep mapUniProtIdentifiers() {
             mapUniprotIdentifiers = true;
-            return this;
-        }
-
-        @Override
-        public ParameterStep mapPfamIdentifiers() {
-            mapPfamIdentifiers = true;
             return this;
         }
 

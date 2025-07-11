@@ -2,6 +2,8 @@ package bio.singa.structure.model.pdb;
 
 import bio.singa.chemistry.model.CovalentBondType;
 import bio.singa.structure.model.families.StructuralFamily;
+import bio.singa.structure.model.general.AuthLeafIdentifier;
+import bio.singa.structure.model.general.LabelLeafIdentifier;
 import bio.singa.structure.model.interfaces.Atom;
 import bio.singa.structure.model.interfaces.LeafIdentifier;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
@@ -16,7 +18,7 @@ public abstract class PdbLeafSubstructure implements LeafSubstructure {
     /**
      * The unique leaf identifer;
      */
-    private final PdbLeafIdentifier leafIdentifier;
+    private final AuthLeafIdentifier leafIdentifier;
 
     /**
      * The structural family of this entity
@@ -45,7 +47,7 @@ public abstract class PdbLeafSubstructure implements LeafSubstructure {
      */
     private boolean annotatedAsHetAtom;
 
-    public PdbLeafSubstructure(PdbLeafIdentifier leafIdentifier, StructuralFamily family) {
+    public PdbLeafSubstructure(AuthLeafIdentifier leafIdentifier, StructuralFamily family) {
         this.leafIdentifier = leafIdentifier;
         divergingThreeLetterCode = "";
         this.family = family;
@@ -53,7 +55,7 @@ public abstract class PdbLeafSubstructure implements LeafSubstructure {
         bonds = new HashMap<>();
     }
 
-    public PdbLeafSubstructure(PdbLeafIdentifier identifer, StructuralFamily aminoAcidFamily, String threeLetterCode) {
+    public PdbLeafSubstructure(AuthLeafIdentifier identifer, StructuralFamily aminoAcidFamily, String threeLetterCode) {
         leafIdentifier = identifer;
         family = aminoAcidFamily;
         divergingThreeLetterCode = threeLetterCode;
@@ -74,7 +76,7 @@ public abstract class PdbLeafSubstructure implements LeafSubstructure {
         this(leafSubstructure, leafSubstructure.leafIdentifier);
     }
 
-    public PdbLeafSubstructure(PdbLeafSubstructure leafSubstructure, PdbLeafIdentifier leafIdentifier) {
+    public PdbLeafSubstructure(PdbLeafSubstructure leafSubstructure, AuthLeafIdentifier leafIdentifier) {
         // initialize variables
         this(leafIdentifier, leafSubstructure.family, leafSubstructure.divergingThreeLetterCode);
         // copy and add all atoms
@@ -96,8 +98,8 @@ public abstract class PdbLeafSubstructure implements LeafSubstructure {
             return leafSubstructure.getCopy();
         } else {
             LeafIdentifier identifier = leafSubstructure.getIdentifier();
-            PdbLeafIdentifier pdbLeafIdentifier = new PdbLeafIdentifier(identifier.getStructureIdentifier(), identifier.getModelIdentifier(), identifier.getChainIdentifier(), identifier.getSerial());
-            PdbLeafSubstructure pdbLeafSubstructure = PdbLeafSubstructureFactory.createLeafSubstructure(pdbLeafIdentifier, leafSubstructure.getFamily());
+            AuthLeafIdentifier authLeafIdentifier = new AuthLeafIdentifier(identifier.getStructureIdentifier(), identifier.getModelIdentifier(), identifier.getChainIdentifier(), identifier.getSerial());
+            PdbLeafSubstructure pdbLeafSubstructure = PdbLeafSubstructureFactory.createLeafSubstructure(authLeafIdentifier, leafSubstructure.getFamily());
             pdbLeafSubstructure.setAnnotatedAsHeteroAtom(leafSubstructure.isAnnotatedAsHeteroAtom());
                 // copy and add all atoms
                 for (Atom atom : leafSubstructure.getAllAtoms()) {
@@ -115,7 +117,17 @@ public abstract class PdbLeafSubstructure implements LeafSubstructure {
     }
 
     @Override
-    public PdbLeafIdentifier getIdentifier() {
+    public AuthLeafIdentifier getIdentifier() {
+        return leafIdentifier;
+    }
+
+    @Override
+    public LabelLeafIdentifier getLabelIdentifier() {
+        throw new UnsupportedOperationException("Structures parsed from the legacy PDB format don't support label identifiers");
+    }
+
+    @Override
+    public AuthLeafIdentifier getAuthIdentifier() {
         return leafIdentifier;
     }
 

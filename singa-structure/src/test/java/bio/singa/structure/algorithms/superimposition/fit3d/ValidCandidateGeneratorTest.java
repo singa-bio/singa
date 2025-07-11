@@ -2,7 +2,7 @@ package bio.singa.structure.algorithms.superimposition.fit3d;
 
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.interfaces.Structure;
-import bio.singa.structure.model.pdb.PdbLeafIdentifier;
+import bio.singa.structure.model.general.AuthLeafIdentifier;
 import bio.singa.structure.model.general.StructuralMotif;
 import bio.singa.structure.io.general.StructureParser;
 import org.junit.jupiter.api.Test;
@@ -25,16 +25,16 @@ class ValidCandidateGeneratorTest {
                 .pdbIdentifier("1a0j")
                 .parse();
 
-        StructuralMotif queryMotif = StructuralMotif.fromLeafIdentifiers(structure, PdbLeafIdentifier.of(
+        StructuralMotif queryMotif = StructuralMotif.fromLeafIdentifiers(structure, AuthLeafIdentifier.of(
                 "A-57",
                 "A-102",
                 "A-195"));
 
-        queryMotif.addExchangeableFamily(PdbLeafIdentifier.fromSimpleString("A-57"), METHIONINE);
-        queryMotif.addExchangeableFamily(PdbLeafIdentifier.fromSimpleString("A-57"), VALINE);
-        queryMotif.addExchangeableFamily(PdbLeafIdentifier.fromSimpleString("A-102"), VALINE);
+        queryMotif.addExchangeableFamily(AuthLeafIdentifier.fromSimpleString("A-57"), METHIONINE);
+        queryMotif.addExchangeableFamily(AuthLeafIdentifier.fromSimpleString("A-57"), VALINE);
+        queryMotif.addExchangeableFamily(AuthLeafIdentifier.fromSimpleString("A-102"), VALINE);
 
-        List<LeafSubstructure> environment = StructuralMotif.fromLeafIdentifiers(structure, PdbLeafIdentifier.of(
+        List<LeafSubstructure> environment = StructuralMotif.fromLeafIdentifiers(structure, AuthLeafIdentifier.of(
                 "A-104",
                 "A-138",
                 "A-139",

@@ -6,16 +6,16 @@ import bio.singa.structure.io.ccd.LeafSkeletonFactory;
 import bio.singa.structure.io.ccd.RemoteCcdParsingBehavior;
 import bio.singa.structure.io.general.StructureParser;
 import bio.singa.structure.model.families.StructuralFamilies;
+import bio.singa.structure.model.general.AuthLeafIdentifier;
+import bio.singa.structure.model.general.LabelLeafIdentifier;
 import bio.singa.structure.model.general.LeafSkeleton;
 import bio.singa.structure.model.interfaces.LeafIdentifier;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.interfaces.Structure;
-import bio.singa.structure.model.pdb.PdbLeafIdentifier;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -77,10 +77,22 @@ class CifFileParserTest {
         Structure structure = StructureParser.cif()
                 .pdbIdentifier("3cjt")
                 .parse();
-        Optional<? extends LeafSubstructure> substructureOptional = structure.getLeafSubstructure(LeafIdentifier.fromString("CIF:3cjt-1-5-AA-0"));
-        assertTrue(substructureOptional.isPresent());
-        assertFalse(StructuralFamilies.Nucleotides.isNucleotide(substructureOptional.get().getFamily()));
-        assertFalse(StructuralFamilies.AminoAcids.isAminoAcid(substructureOptional.get().getFamily()));
+
+        LeafIdentifier labelIdentifier = LeafIdentifier.fromString("LABEL:3cjt-1-AA-0");
+        assertInstanceOf(LabelLeafIdentifier.class,  labelIdentifier);
+        assertEquals("AA", labelIdentifier.getChainIdentifier());
+        assertEquals(0, labelIdentifier.getSerial());
+        LeafSubstructure labelSubstructure = structure.getLeafSubstructure(labelIdentifier).orElseThrow(() -> new RuntimeException("failed to select " + labelIdentifier));
+        assertFalse(StructuralFamilies.Nucleotides.isNucleotide(labelSubstructure.getFamily()));
+        assertFalse(StructuralFamilies.AminoAcids.isAminoAcid(labelSubstructure.getFamily()));
+
+        LeafIdentifier authIdentifier = LeafIdentifier.fromString("AUTH:3cjt-1-E-256");
+        assertInstanceOf(AuthLeafIdentifier.class,  authIdentifier);
+        assertEquals("E", authIdentifier.getChainIdentifier());
+        assertEquals(256, authIdentifier.getSerial());
+        LeafSubstructure authSubstructure = structure.getLeafSubstructure(authIdentifier).orElseThrow(() -> new RuntimeException("failed to select " + authIdentifier));
+        assertFalse(StructuralFamilies.Nucleotides.isNucleotide(authSubstructure.getFamily()));
+        assertFalse(StructuralFamilies.AminoAcids.isAminoAcid(authSubstructure.getFamily()));
     }
 
 }

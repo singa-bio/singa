@@ -7,7 +7,7 @@ import java.net.URL;
 
 public class MmcifIdentifierToUrlConverter implements ContentConverter<String, URL> {
 
-    String BCIF_FETCH_URL = "https://models.rcsb.org/%s.bcif";
+    String BCIF_FETCH_URL = "https://models.rcsb.org/%s.bcif.gz";
 
     private static final MmcifIdentifierToUrlConverter instance = new MmcifIdentifierToUrlConverter();
 

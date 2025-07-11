@@ -1,8 +1,6 @@
 package bio.singa.structure.io.cif;
 
 import bio.singa.core.utility.Pair;
-import bio.singa.structure.io.general.converters.PdbIdentifierToUrlConverter;
-import bio.singa.structure.io.general.converters.UrlToLinesConverter;
 import bio.singa.structure.io.general.sources.AbstractSourceIterator;
 import org.rcsb.cif.CifIO;
 import org.rcsb.cif.model.CifFile;

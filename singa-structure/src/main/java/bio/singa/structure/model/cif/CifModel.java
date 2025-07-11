@@ -1,10 +1,6 @@
 package bio.singa.structure.model.cif;
 
 import bio.singa.structure.model.interfaces.*;
-import bio.singa.structure.model.pdb.PdbAtom;
-import bio.singa.structure.model.pdb.PdbChain;
-import bio.singa.structure.model.pdb.PdbLeafSubstructure;
-import bio.singa.structure.model.pdb.PdbModel;
 
 import java.util.*;
 

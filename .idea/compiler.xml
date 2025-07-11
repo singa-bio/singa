@@ -18,16 +18,5 @@
         <module name="singa-simulation" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="singa-all" target="1.8" />
-      <module name="singa-chemistry" target="1.8" />
-      <module name="singa-core" target="1.8" />
-      <module name="singa-features" target="1.8" />
-      <module name="singa-javafx" target="1.8" />
-      <module name="singa-mathematics" target="1.8" />
-      <module name="singa-sequence" target="1.8" />
-      <module name="singa-simulation" target="1.8" />
-      <module name="singa-structure" target="9" />
-    </bytecodeTargetLevel>
   </component>
 </project>

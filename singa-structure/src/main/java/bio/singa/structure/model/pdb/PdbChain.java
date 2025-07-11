@@ -1,5 +1,6 @@
 package bio.singa.structure.model.pdb;
 
+import bio.singa.structure.model.general.AuthLeafIdentifier;
 import bio.singa.structure.model.interfaces.*;
 
 import java.util.*;
@@ -12,9 +13,9 @@ public class PdbChain implements Chain {
 
     private final String identifier;
 
-    private final TreeMap<PdbLeafIdentifier, PdbLeafSubstructure> leafSubstructures;
+    private final TreeMap<AuthLeafIdentifier, PdbLeafSubstructure> leafSubstructures;
 
-    private final Set<PdbLeafIdentifier> consecutiveIdentifiers;
+    private final Set<AuthLeafIdentifier> consecutiveIdentifiers;
 
     public PdbChain(String chainIdentifier) {
         identifier = chainIdentifier;
@@ -172,9 +173,9 @@ public class PdbChain implements Chain {
         return consecutivePart;
     }
 
-    public PdbLeafIdentifier getNextLeafIdentifier() {
-        PdbLeafIdentifier lastLeafIdentifier = leafSubstructures.lastEntry().getKey();
-        return new PdbLeafIdentifier(lastLeafIdentifier.getStructureIdentifier(), lastLeafIdentifier.getModelIdentifier(),
+    public AuthLeafIdentifier getNextLeafIdentifier() {
+        AuthLeafIdentifier lastLeafIdentifier = leafSubstructures.lastEntry().getKey();
+        return new AuthLeafIdentifier(lastLeafIdentifier.getStructureIdentifier(), lastLeafIdentifier.getModelIdentifier(),
                 lastLeafIdentifier.getChainIdentifier(), lastLeafIdentifier.getSerial() + 1);
     }
 

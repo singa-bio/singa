@@ -22,7 +22,6 @@ public class IdentifierPatternRegistry {
         addPattern(ENAAccessionNumber.class, ENAAccessionNumber.PATTERN);
         addPattern(InChIKey.class, InChIKey.PATTERN);
         addPattern(NCBITaxonomyIdentifier.class, NCBITaxonomyIdentifier.PATTERN);
-        addPattern(PfamIdentifier.class, PfamIdentifier.PATTERN);
         addPattern(PubChemIdentifier.class, PubChemIdentifier.PATTERN);
         addPattern(SimpleStringIdentifier.class, SimpleStringIdentifier.PATTERN);
         addPattern(UniProtIdentifier.class, UniProtIdentifier.PATTERN);

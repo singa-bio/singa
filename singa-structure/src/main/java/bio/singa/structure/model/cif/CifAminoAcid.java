@@ -1,10 +1,11 @@
 package bio.singa.structure.model.cif;
 
+import bio.singa.structure.model.general.LabelLeafIdentifier;
 import bio.singa.structure.model.interfaces.AminoAcid;
+import bio.singa.structure.model.general.AuthLeafIdentifier;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 public class CifAminoAcid extends CifLeafSubstructure implements AminoAcid {
 
@@ -16,8 +17,8 @@ public class CifAminoAcid extends CifLeafSubstructure implements AminoAcid {
      */
     private final Map<String, String> modifications;
 
-    public CifAminoAcid(CifLeafIdentifier leafIdentifier) {
-        super(leafIdentifier);
+    public CifAminoAcid(LabelLeafIdentifier leafIdentifier, AuthLeafIdentifier authLeafIdentifier) {
+        super(leafIdentifier, authLeafIdentifier);
         modifications = new HashMap<>();
     }
 

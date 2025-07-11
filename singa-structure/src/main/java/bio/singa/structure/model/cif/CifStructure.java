@@ -1,8 +1,9 @@
 package bio.singa.structure.model.cif;
 
+import bio.singa.structure.model.general.AuthLeafIdentifier;
+import bio.singa.structure.model.general.LabelLeafIdentifier;
 import bio.singa.structure.model.general.UniqueAtomIdentifier;
 import bio.singa.structure.model.interfaces.*;
-import bio.singa.structure.model.pdb.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -15,6 +16,8 @@ public class CifStructure implements Structure {
     private final TreeMap<Integer, CifModel> models;
 
     private final TreeMap<Integer, CifEntity> entities;
+
+    private final Map<AuthLeafIdentifier, LabelLeafIdentifier> authMapping;
 
     private Map<String, List<String>> biologicalAssemblies;
 
@@ -32,11 +35,17 @@ public class CifStructure implements Structure {
 
     private boolean isMutated;
 
-    public CifStructure(String structureIdentifier) {
+    /**
+     * Constructs a structure from CIF data.
+     * @param structureIdentifier the entry identifier
+     * @param authMapping a map tracking the mapping of {@link AuthLeafIdentifier} to {@link LabelLeafIdentifier}
+     */
+    public CifStructure(String structureIdentifier, Map<AuthLeafIdentifier, LabelLeafIdentifier> authMapping) {
         this.structureIdentifier = structureIdentifier;
         models = new TreeMap<>();
         entities = new TreeMap<>();
         biologicalAssemblies = new HashMap<>();
+        this.authMapping = authMapping;
     }
 
     public CifStructure(CifStructure structure) {
@@ -53,6 +62,7 @@ public class CifStructure implements Structure {
             entities.put(entity.getEntityIdentifier(), entity.getCopy());
         }
         biologicalAssemblies = new HashMap<>(structure.biologicalAssemblies);
+        authMapping = new HashMap<>(structure.authMapping);
     }
 
     @Override
@@ -116,6 +126,13 @@ public class CifStructure implements Structure {
 
     @Override
     public Optional<CifLeafSubstructure> getLeafSubstructure(LeafIdentifier leafIdentifier) {
+        if (leafIdentifier instanceof AuthLeafIdentifier) {
+            if (!authMapping.containsKey(leafIdentifier)) {
+                throw new NoSuchElementException("can't resolve label leaf identifier for auth leaf identifier: " + leafIdentifier + " -- are you sure this leaf substructure exists?");
+            }
+            return getLeafSubstructure(authMapping.get(leafIdentifier));
+        }
+
         final Optional<CifChain> chainOptional = getChain(leafIdentifier.getModelIdentifier(), leafIdentifier.getChainIdentifier());
         return chainOptional.flatMap(chain -> chain.getLeafSubstructure(leafIdentifier));
     }
@@ -144,7 +161,7 @@ public class CifStructure implements Structure {
 
     public void setPdbIdentifier(String pdbIdentifier) {
         if (pdbIdentifier.isEmpty()) {
-            pdbIdentifier = PdbLeafIdentifier.DEFAULT_PDB_IDENTIFIER;
+            pdbIdentifier = LeafIdentifier.DEFAULT_PDB_IDENTIFIER;
         }
         structureIdentifier = pdbIdentifier;
     }

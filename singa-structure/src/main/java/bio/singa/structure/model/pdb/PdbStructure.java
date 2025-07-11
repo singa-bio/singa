@@ -3,6 +3,7 @@ package bio.singa.structure.model.pdb;
 import bio.singa.chemistry.model.elements.ElementProvider;
 import bio.singa.mathematics.vectors.Vector3D;
 import bio.singa.structure.model.families.StructuralFamily;
+import bio.singa.structure.model.general.LabelLeafIdentifier;
 import bio.singa.structure.model.general.UniqueAtomIdentifier;
 import bio.singa.structure.model.interfaces.*;
 
@@ -63,7 +64,7 @@ public class PdbStructure implements Structure {
 
     public void setPdbIdentifier(String pdbIdentifier) {
         if (pdbIdentifier.isEmpty()) {
-            pdbIdentifier = PdbLeafIdentifier.DEFAULT_PDB_IDENTIFIER;
+            pdbIdentifier = LeafIdentifier.DEFAULT_PDB_IDENTIFIER;
         }
         this.pdbIdentifier = pdbIdentifier.toLowerCase();
     }
@@ -140,6 +141,10 @@ public class PdbStructure implements Structure {
 
     @Override
     public Optional<PdbLeafSubstructure> getLeafSubstructure(LeafIdentifier leafIdentifier) {
+        if (leafIdentifier instanceof LabelLeafIdentifier) {
+            throw new UnsupportedOperationException("Cannot get leaf substructure from label identifier when working with legacy PDB files");
+        }
+
         final Optional<PdbChain> chainOptional = getChain(leafIdentifier.getModelIdentifier(), leafIdentifier.getChainIdentifier());
         return chainOptional.flatMap(chain -> chain.getLeafSubstructure(leafIdentifier));
     }

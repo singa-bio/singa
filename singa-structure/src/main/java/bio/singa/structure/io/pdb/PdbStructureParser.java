@@ -4,7 +4,7 @@ import bio.singa.core.utility.DoubleMatcher;
 import bio.singa.core.utility.Pair;
 import bio.singa.structure.io.general.StructureParserException;
 import bio.singa.structure.model.general.LeafSkeleton;
-import bio.singa.structure.model.pdb.PdbLeafIdentifier;
+import bio.singa.structure.model.general.AuthLeafIdentifier;
 import bio.singa.structure.model.general.UniqueAtomIdentifier;
 import bio.singa.structure.model.interfaces.Structure;
 import bio.singa.structure.model.pdb.*;
@@ -17,7 +17,7 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.regex.Matcher;
 
-import static bio.singa.structure.model.pdb.PdbLeafIdentifier.*;
+import static bio.singa.structure.model.general.AuthLeafIdentifier.*;
 
 /**
  * The actual processing of pdb files. This class collects all required information form the a list of lines from a pdb
@@ -42,15 +42,15 @@ public class PdbStructureParser {
     /**
      * A cache of all leafs and their three letter codes.
      */
-    private final Map<PdbLeafIdentifier, String> leafCodes;
+    private final Map<AuthLeafIdentifier, String> leafCodes;
     /**
      * Remembers all leafs that have been parsed from HETATM entries.
      */
-    private final Set<PdbLeafIdentifier> hetAtoms;
+    private final Set<AuthLeafIdentifier> hetAtoms;
     /**
      * Remembers all leafs the were part of the consecutive part of the chain.
      */
-    private final Set<PdbLeafIdentifier> notInConsecutiveChain;
+    private final Set<AuthLeafIdentifier> notInConsecutiveChain;
     /**
      * Chains that have already been terminated by a terminate record.
      */
@@ -335,7 +335,7 @@ public class PdbStructureParser {
                 logger.trace("Collecting leafs for chain {}", chainNode.getIdentifier());
                 PdbChain chain = new PdbChain(chainNode.getIdentifier());
                 for (PdbContentTreeNode leafNode : chainNode.getNodesFromLevel(PdbContentTreeNode.StructureLevel.LEAF)) {
-                    PdbLeafIdentifier leafIdentifier = new PdbLeafIdentifier(currentPDB,
+                    AuthLeafIdentifier leafIdentifier = new AuthLeafIdentifier(currentPDB,
                             model.getModelIdentifier(),
                             chain.getChainIdentifier(),
                             Integer.parseInt(leafNode.getIdentifier()),
@@ -418,7 +418,7 @@ public class PdbStructureParser {
                 }
                 UniqueAtomIdentifier identifier = createUniqueAtomIdentifier(currentLine);
                 atoms.put(identifier, AtomToken.assembleAtom(currentLine));
-                PdbLeafIdentifier leafIdentifier = new PdbLeafIdentifier(identifier.getLeafIdentifier().getStructureIdentifier(),
+                AuthLeafIdentifier leafIdentifier = new AuthLeafIdentifier(identifier.getLeafIdentifier().getStructureIdentifier(),
                         identifier.getLeafIdentifier().getModelIdentifier(), identifier.getLeafIdentifier().getChainIdentifier(),
                         identifier.getLeafIdentifier().getSerial(), identifier.getLeafIdentifier().getInsertionCode());
                 currentChain = leafIdentifier.getChainIdentifier();

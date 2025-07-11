@@ -12,9 +12,6 @@ public interface Atom {
 
     /**
      * Returns the atom identifier, an integer greater or equal to 1. The identifier of the atom is not unique.
-     * Depending on the structure format you are reading there might be different atom identifiers for the same pdb
-     * structure. This means, if you have parse the pdb file of a pdb structure or the MMTF file of the same structure,
-     * you cannot rely on the identity of atoms in both structures.
      *
      * @return The atom identifier.
      */

@@ -91,8 +91,6 @@ public class LocalSourceIterator<SourceContent> extends AbstractSourceIterator<S
         switch (sourceLocation) {
             case OFFLINE_PDB:
                 return fileName.endsWith(".ent.gz");
-            case OFFLINE_MMTF:
-                return fileName.endsWith(".mmtf.gz");
             case OFFLINE_MMCIF:
                 return fileName.endsWith(".cif.gz");
             case OFFLINE_BCIF:

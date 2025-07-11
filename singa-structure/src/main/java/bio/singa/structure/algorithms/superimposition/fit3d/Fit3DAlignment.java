@@ -2,7 +2,6 @@ package bio.singa.structure.algorithms.superimposition.fit3d;
 
 import bio.singa.core.utility.Pair;
 import bio.singa.features.identifiers.ECNumber;
-import bio.singa.features.identifiers.PfamIdentifier;
 import bio.singa.features.identifiers.UniProtIdentifier;
 import bio.singa.mathematics.matrices.LabeledSymmetricMatrix;
 import bio.singa.mathematics.matrices.Matrices;
@@ -20,7 +19,6 @@ import bio.singa.structure.model.interfaces.LeafSubstructureContainer;
 import bio.singa.structure.model.interfaces.Structure;
 import bio.singa.structure.model.general.StructuralMotif;
 import bio.singa.structure.io.sifts.PDBEnzymeMapper;
-import bio.singa.structure.io.sifts.PDBPfamMapper;
 import bio.singa.structure.io.sifts.PDBUniProtMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +46,6 @@ public class Fit3DAlignment implements Fit3D {
     private final double rmsdCutoff;
     private final Predicate<Atom> atomFilter;
     private final boolean mapEcNumbers;
-    private final boolean mapPfamIdentifiers;
     private final boolean mapUniProtIdentifiers;
     private final boolean filterEnvironments;
     private final double squaredFilterThreshold;
@@ -73,7 +70,6 @@ public class Fit3DAlignment implements Fit3D {
         representationScheme = builder.representationScheme;
         statisticalModel = builder.statisticalModel;
         mapUniProtIdentifiers = builder.mapUniprotIdentifiers;
-        mapPfamIdentifiers = builder.mapPfamIdentifiers;
         mapEcNumbers = builder.mapEcNumbers;
         filterEnvironments = builder.filterEnvironments;
 
@@ -175,15 +171,15 @@ public class Fit3DAlignment implements Fit3D {
      * Maps diverse identifiers if specified.
      */
     private void mapIdentifiers() {
-        if (mapUniProtIdentifiers || mapPfamIdentifiers || mapEcNumbers) {
-            logger.debug("mapping identifiers for matches: UniProt: {}, Pfam: {}, EC: {}", mapUniProtIdentifiers, mapPfamIdentifiers, mapEcNumbers);
+        if (mapUniProtIdentifiers || mapEcNumbers) {
+            logger.debug("mapping identifiers for matches: UniProt: {}, EC: {}", mapUniProtIdentifiers, mapEcNumbers);
             matches.stream()
                     // filter hollow matches which are used for p-value calculation
                     .filter(match -> match.getSubstructureSuperimposition() != null)
                     .forEach(match -> {
                         String pdbIdentifier = match.getSubstructureSuperimposition().getCandidate().get(0).getIdentifier().getStructureIdentifier();
                         List<String> chainIdentifiers = match.getSubstructureSuperimposition().getCandidate().stream()
-                                .map(leafSubstructure -> leafSubstructure.getIdentifier().getChainIdentifier())
+                                .map(leafSubstructure -> leafSubstructure.getAuthIdentifier().getChainIdentifier())
                                 .distinct()
                                 .collect(Collectors.toList());
                         Map<String, UniProtIdentifier> uniProtIdentifiers;
@@ -192,13 +188,6 @@ public class Fit3DAlignment implements Fit3D {
                             uniProtIdentifiers.keySet().retainAll(chainIdentifiers);
                             if (!uniProtIdentifiers.isEmpty()) {
                                 match.setUniProtIdentifiers(uniProtIdentifiers);
-                            }
-                        }
-                        if (mapPfamIdentifiers) {
-                            Map<String, PfamIdentifier> pfamIdentifiers = PDBPfamMapper.map(pdbIdentifier);
-                            pfamIdentifiers.keySet().retainAll(chainIdentifiers);
-                            if (!pfamIdentifiers.isEmpty()) {
-                                match.setPfamIdentifiers(pfamIdentifiers);
                             }
                         }
                         if (mapEcNumbers) {

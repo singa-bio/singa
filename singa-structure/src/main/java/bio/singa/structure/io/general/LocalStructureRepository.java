@@ -24,7 +24,7 @@ public class LocalStructureRepository {
      * Creates a new reference for a local pdb installation.
      *
      * @param localPdbLocation The location of the local PDB installation.
-     * @param sourceLocation The type of file used (either {@link SourceLocation#OFFLINE_MMTF} or {@link
+     * @param sourceLocation The type of file used (either {@link SourceLocation#OFFLINE_BCIF} or {@link
      * SourceLocation#OFFLINE_PDB}).
      */
     public LocalStructureRepository(String localPdbLocation, SourceLocation sourceLocation) {
@@ -35,16 +35,13 @@ public class LocalStructureRepository {
      * Creates a new reference for a local pdb installation.
      *
      * @param localPdbLocation The location of the local PDB installation.
-     * @param sourceLocation The type of file used (either {@link SourceLocation#OFFLINE_MMTF} or {@link
+     * @param sourceLocation The type of file used (either {@link SourceLocation#OFFLINE_BCIF} or {@link
      * SourceLocation#OFFLINE_PDB}).
      * @param basePathPdb The base PDB path if different from data/structures/divided/
      */
     public LocalStructureRepository(String localPdbLocation, SourceLocation sourceLocation, Path basePathPdb) {
         this.sourceLocation = sourceLocation;
         switch (sourceLocation) {
-            case OFFLINE_MMTF:
-                localPdbPath = Paths.get(localPdbLocation).resolve(basePathPdb).resolve("mmtf");
-                break;
             case OFFLINE_PDB:
                 localPdbPath = Paths.get(localPdbLocation).resolve(basePathPdb).resolve("pdb");
                 break;
@@ -83,8 +80,6 @@ public class LocalStructureRepository {
         switch (sourceLocation) {
             case OFFLINE_PDB:
                 return middleIdentifierPath.resolve("pdb" + structureIdentifier + ".ent.gz");
-            case OFFLINE_MMTF:
-                return middleIdentifierPath.resolve(structureIdentifier + ".mmtf.gz");
             case OFFLINE_MMCIF:
                 return middleIdentifierPath.resolve(structureIdentifier + ".cif.gz");
             case OFFLINE_BCIF:

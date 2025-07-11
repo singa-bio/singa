@@ -1,7 +1,6 @@
 package bio.singa.structure.model.general;
 
 import bio.singa.structure.model.interfaces.LeafIdentifier;
-import bio.singa.structure.model.pdb.PdbLeafIdentifier;
 
 import java.util.Comparator;
 import java.util.Objects;
@@ -15,7 +14,7 @@ public class UniqueAtomIdentifier implements Comparable<UniqueAtomIdentifier> {
     private final int atomSerial;
 
     public UniqueAtomIdentifier(String pdbIdentifer, int modelIdentifier, String chainIdentifier, int leafSerial, char leafInsertionCode, int atomSerial) {
-        this(new PdbLeafIdentifier(pdbIdentifer, modelIdentifier, chainIdentifier, leafSerial, leafInsertionCode), atomSerial);
+        this(new AuthLeafIdentifier(pdbIdentifer, modelIdentifier, chainIdentifier, leafSerial, leafInsertionCode), atomSerial);
     }
 
     public UniqueAtomIdentifier(LeafIdentifier leafIdentifier, int atomSerial) {
@@ -51,7 +50,7 @@ public class UniqueAtomIdentifier implements Comparable<UniqueAtomIdentifier> {
 
     public static UniqueAtomIdentifier fromString(String stringIdentifier) {
         int endIndex = stringIdentifier.lastIndexOf("-");
-        PdbLeafIdentifier leafIdentifier = PdbLeafIdentifier.fromString(stringIdentifier.substring(0, endIndex));
+        AuthLeafIdentifier leafIdentifier = AuthLeafIdentifier.fromString(stringIdentifier.substring(0, endIndex));
         return new UniqueAtomIdentifier(leafIdentifier, Integer.parseInt(stringIdentifier.substring(endIndex + 1)));
     }
 

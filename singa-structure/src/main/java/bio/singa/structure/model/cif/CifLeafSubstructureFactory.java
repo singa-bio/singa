@@ -1,13 +1,15 @@
 package bio.singa.structure.model.cif;
 
+import bio.singa.structure.model.general.LabelLeafIdentifier;
 import bio.singa.structure.model.general.LeafSkeleton;
+import bio.singa.structure.model.general.AuthLeafIdentifier;
 
 public class CifLeafSubstructureFactory {
 
-    public static CifLeafSubstructure createLeafSubstructure(LeafSkeleton skeleton, CifLeafIdentifier identifier) {
+    public static CifLeafSubstructure createLeafSubstructure(LeafSkeleton skeleton, LabelLeafIdentifier identifier, AuthLeafIdentifier authLeafIdentifier) {
         switch (skeleton.getLigandType()) {
             case PROTEIN:
-                CifAminoAcid aminoAcid = new CifAminoAcid(identifier);
+                CifAminoAcid aminoAcid = new CifAminoAcid(identifier, authLeafIdentifier);
                 aminoAcid.setFamily(skeleton.getStructuralFamily());
                 aminoAcid.setInchi(skeleton.getInchi());
                 if (!skeleton.getStructuralFamily().getThreeLetterCode().equals(skeleton.getThreeLetterCode())) {
@@ -15,7 +17,7 @@ public class CifLeafSubstructureFactory {
                 }
                 return aminoAcid;
             case NUCLEIC_ACID:
-                CifNucleotide nucleotide = new CifNucleotide(identifier);
+                CifNucleotide nucleotide = new CifNucleotide(identifier, authLeafIdentifier);
                 nucleotide.setFamily(skeleton.getStructuralFamily());
                 nucleotide.setInchi(skeleton.getInchi());
                 if (!skeleton.getStructuralFamily().getThreeLetterCode().equals(skeleton.getThreeLetterCode())) {
@@ -23,7 +25,7 @@ public class CifLeafSubstructureFactory {
                 }
                 return nucleotide;
             default: {
-                CifLigand ligand = new CifLigand(identifier);
+                CifLigand ligand = new CifLigand(identifier, authLeafIdentifier);
                 ligand.setInchi(skeleton.getInchi());
                 ligand.setFamily(skeleton.getStructuralFamily());
                 ligand.setName(skeleton.getName());

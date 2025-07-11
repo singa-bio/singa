@@ -3,7 +3,6 @@ package bio.singa.chemistry.model;
 import bio.singa.chemistry.annotations.Annotation;
 import bio.singa.chemistry.annotations.AnnotationType;
 import bio.singa.chemistry.annotations.taxonomy.Organism;
-import bio.singa.core.utility.Range;
 import bio.singa.features.identifiers.GoTerm;
 import bio.singa.features.identifiers.PDBIdentifier;
 import bio.singa.features.model.Feature;

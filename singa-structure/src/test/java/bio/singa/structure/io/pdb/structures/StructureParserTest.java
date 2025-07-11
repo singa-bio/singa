@@ -11,7 +11,7 @@ import bio.singa.structure.model.interfaces.Structure;
 import bio.singa.structure.model.pdb.PdbAminoAcid;
 import bio.singa.structure.model.pdb.PdbLigand;
 import bio.singa.structure.model.pdb.PdbStructure;
-import bio.singa.structure.model.pdb.PdbLeafIdentifier;
+import bio.singa.structure.model.general.AuthLeafIdentifier;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -31,12 +31,12 @@ import static org.junit.jupiter.api.Assertions.*;
 class StructureParserTest {
 
     private static LocalStructureRepository localPdb;
-    private static LocalStructureRepository localMmtf;
+    private static LocalStructureRepository localBcif;
 
     @BeforeAll
     static void parseUncomplicatedStructure() {
         localPdb = new LocalStructureRepository(Resources.getResourceAsFileLocation("pdb"), SourceLocation.OFFLINE_PDB);
-        localMmtf = new LocalStructureRepository(Resources.getResourceAsFileLocation("pdb"), SourceLocation.OFFLINE_MMTF);
+        localBcif = new LocalStructureRepository(Resources.getResourceAsFileLocation("pdb"), SourceLocation.OFFLINE_BCIF);
     }
 
     @Test
@@ -97,7 +97,7 @@ class StructureParserTest {
                 .pdbIdentifier("6bb4")
                 .everything()
                 .parse();
-        PdbLeafIdentifier leafIdentifier = PdbLeafIdentifier.fromString("6bb4-1-I-82c");
+        AuthLeafIdentifier leafIdentifier = AuthLeafIdentifier.fromString("6bb4-1-I-82c");
         List<LeafSubstructure> leavesWithInsertionCode = structure.getAllLeafSubstructures().stream()
                 .filter(leafSubstructure -> leafSubstructure.getIdentifier().equals(leafIdentifier))
                 .collect(Collectors.toList());
@@ -115,10 +115,10 @@ class StructureParserTest {
     }
 
     @Test
-    @DisplayName("mmtf parsing - correct local mmtf resolving")
-    void shouldParseFromLocalMMTF() {
+    @DisplayName("bcif parsing - correct local bcif resolving")
+    void shouldParseFromLocalBCIF() {
         Structure structure = StructureParser.local()
-                .localStructureRepository(localMmtf)
+                .localStructureRepository(localBcif)
                 .pdbIdentifier("1c0a")
                 .parse();
         assertNotNull(structure);
@@ -194,9 +194,9 @@ class StructureParserTest {
 
     @Test
     @DisplayName("pdb parsing - correct parsing of multiple structures")
-    void shouldParseMultipleMMTFStructures() {
+    void shouldParseMultipleBCIFStructures() {
         // all have the ligand SO4
-        List<Structure> structures = StructureParser.mmtf()
+        List<Structure> structures = StructureParser.cif()
                 .pdbIdentifiers(Arrays.asList("5F3P", "5G5T", "5J6Q", "5MAT"))
                 .parse();
         assertEquals(4, structures.size());
@@ -264,7 +264,7 @@ class StructureParserTest {
         Structure structure = StructureParser.pdb()
                 .pdbIdentifier("6sl6")
                 .parse();
-        Optional<AminoAcid> aminoAcidOptional = structure.getAminoAcid(PdbLeafIdentifier.fromString("6sl6-1-A-138"));
+        Optional<AminoAcid> aminoAcidOptional = structure.getAminoAcid(AuthLeafIdentifier.fromString("6sl6-1-A-138"));
         if (aminoAcidOptional.isPresent()) {
             PdbAminoAcid aminoAcid = ((PdbAminoAcid) aminoAcidOptional.get());
             assertTrue(aminoAcid.isMutated());

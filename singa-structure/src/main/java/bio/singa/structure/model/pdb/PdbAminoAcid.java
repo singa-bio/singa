@@ -3,6 +3,7 @@ package bio.singa.structure.model.pdb;
 import bio.singa.mathematics.vectors.Vector3D;
 import bio.singa.structure.model.families.AtomName;
 import bio.singa.structure.model.families.StructuralFamily;
+import bio.singa.structure.model.general.AuthLeafIdentifier;
 import bio.singa.structure.model.interfaces.AminoAcid;
 import bio.singa.structure.model.interfaces.Atom;
 
@@ -16,11 +17,11 @@ public class PdbAminoAcid extends PdbLeafSubstructure implements AminoAcid {
     private boolean mutation;
     private StructuralFamily wildTypeResidue;
 
-    public PdbAminoAcid(PdbLeafIdentifier leafIdentifier, StructuralFamily family) {
+    public PdbAminoAcid(AuthLeafIdentifier leafIdentifier, StructuralFamily family) {
         super(leafIdentifier, family);
     }
 
-    public PdbAminoAcid(PdbLeafIdentifier identifer, StructuralFamily aminoAcidFamily, String threeLetterCode) {
+    public PdbAminoAcid(AuthLeafIdentifier identifer, StructuralFamily aminoAcidFamily, String threeLetterCode) {
         super(identifer, aminoAcidFamily, threeLetterCode);
     }
 

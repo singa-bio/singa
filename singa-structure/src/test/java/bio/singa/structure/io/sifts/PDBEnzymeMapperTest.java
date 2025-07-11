@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class PDBEnzymeMapperTest {
 
     @Test
-    void shouldMapChainsToPfam() {
+    void shouldMapChainsToEC() {
         Map<String, ECNumber> map = PDBEnzymeMapper.map("1c0a");
         assertEquals("6.1.1.12", map.get("A").getContent());
     }

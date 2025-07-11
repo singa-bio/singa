@@ -1,8 +1,8 @@
 package bio.singa.structure.model.cif;
 
 import bio.singa.structure.io.general.StructureParser;
+import bio.singa.structure.model.general.LabelLeafIdentifier;
 import bio.singa.structure.model.interfaces.*;
-import bio.singa.structure.model.pdb.PdbLeafIdentifier;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -67,7 +67,7 @@ class CifModelTest {
 
     @Test
     void getLeafSubstructure() {
-        Optional<? extends LeafSubstructure> leafSubstructure = firstModel.getLeafSubstructure(new CifLeafIdentifier("2n5e", 1, "B", 10));
+        Optional<? extends LeafSubstructure> leafSubstructure = firstModel.getLeafSubstructure(new LabelLeafIdentifier("2n5e", 1, "B", 10));
         if (!leafSubstructure.isPresent()) {
             fail("Optional leaf substructure was empty.");
         }

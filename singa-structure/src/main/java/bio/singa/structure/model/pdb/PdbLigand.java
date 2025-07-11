@@ -1,6 +1,7 @@
 package bio.singa.structure.model.pdb;
 
 import bio.singa.structure.model.families.StructuralFamily;
+import bio.singa.structure.model.general.AuthLeafIdentifier;
 import bio.singa.structure.model.interfaces.Ligand;
 
 /**
@@ -12,7 +13,7 @@ public class PdbLigand extends PdbLeafSubstructure implements Ligand {
 
     private String inchi;
 
-    public PdbLigand(PdbLeafIdentifier leafIdentifier, StructuralFamily family) {
+    public PdbLigand(AuthLeafIdentifier leafIdentifier, StructuralFamily family) {
         super(leafIdentifier, family);
     }
 
@@ -22,7 +23,7 @@ public class PdbLigand extends PdbLeafSubstructure implements Ligand {
         inchi = pdbLigand.inchi;
     }
 
-    public PdbLigand(PdbLigand pdbLigand, PdbLeafIdentifier leafIdentifier) {
+    public PdbLigand(PdbLigand pdbLigand, AuthLeafIdentifier leafIdentifier) {
         super(pdbLigand, leafIdentifier);
         name = pdbLigand.name;
         inchi = pdbLigand.inchi;;

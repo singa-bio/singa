@@ -30,7 +30,7 @@ public class DisconnectedSubgraphFinder<NodeType extends Node<NodeType, VectorTy
 
     private DisconnectedSubgraphFinder(GraphType graph) {
         queue = new ArrayDeque<>();
-        unprocessedNodes = new HashSet<>(graph.getNodes());
+        unprocessedNodes = new LinkedHashSet<>(graph.getNodes());
         nodesOfSubgraphs = new ArrayList<>();
         edgesOfSubgraphs = new ArrayList<>();
         this.graph = graph;

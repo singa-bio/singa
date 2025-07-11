@@ -10,9 +10,7 @@ import bio.singa.structure.io.general.converters.FileToPathConverter;
 import bio.singa.structure.io.general.converters.IdentityConverter;
 import bio.singa.structure.io.general.converters.LocalPdbToPathConverter;
 import bio.singa.structure.io.general.sources.LocalSourceIterator;
-import bio.singa.structure.io.mmtf.RemoteMmtfSourceIterator;
 import bio.singa.structure.io.pdb.RemotePdbSourceIterator;
-import bio.singa.structure.io.mmtf.MmtfStructureIterator;
 import bio.singa.structure.model.interfaces.Structure;
 import bio.singa.structure.model.general.LeafSkeleton;
 
@@ -110,9 +108,6 @@ public interface StructureIterator extends Iterator<Structure> {
 
     static StructureIterator createFromIdentifiers(List<String> strings, SourceLocation sourceLocation, LocalStructureRepository localStructureRepository) {
         switch (sourceLocation) {
-            case ONLINE_MMTF: {
-                return new MmtfStructureIterator<>(new RemoteMmtfSourceIterator(strings));
-            }
             case ONLINE_PDB: {
                 return new PdbStructureIterator<>(new RemotePdbSourceIterator(strings));
             }
@@ -121,8 +116,7 @@ public interface StructureIterator extends Iterator<Structure> {
             }
             case OFFLINE_PDB:
             case OFFLINE_MMCIF:
-            case OFFLINE_MMTF:
-            case OFFLINE_BCIF:{
+            case OFFLINE_BCIF: {
                 return new LocalStructureIterator<>(new LocalSourceIterator<>(strings, LocalPdbToPathConverter.get(localStructureRepository)));
             }
             default:
@@ -136,9 +130,6 @@ public interface StructureIterator extends Iterator<Structure> {
 
     static StructureIterator createFromChainList(Path chainList, String separator, SourceLocation sourceLocation)  {
         switch (sourceLocation) {
-            case ONLINE_MMTF: {
-                return new MmtfStructureIterator<>(new RemoteMmtfSourceIterator(chainList, separator));
-            }
             case ONLINE_MMCIF: {
                 return new MmcifStructureIterator<>(new RemoteMmCifSourceIterator(chainList, separator));
             }
@@ -151,9 +142,6 @@ public interface StructureIterator extends Iterator<Structure> {
 
     static StructureIterator createFromChainList(Collection<Pair<String>> chainList, SourceLocation sourceLocation)  {
         switch (sourceLocation) {
-            case ONLINE_MMTF: {
-                return new MmtfStructureIterator<>(new RemoteMmtfSourceIterator(chainList));
-            }
             case ONLINE_MMCIF: {
                 return new MmcifStructureIterator<>(new RemoteMmCifSourceIterator(chainList));
             }

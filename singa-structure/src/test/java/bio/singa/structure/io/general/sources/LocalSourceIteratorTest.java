@@ -5,17 +5,18 @@ import bio.singa.features.identifiers.PDBIdentifier;
 import bio.singa.structure.io.general.converters.FileLocationToPathConverter;
 import bio.singa.structure.io.general.converters.IdentityConverter;
 import bio.singa.structure.io.general.converters.LocalPdbToPathConverter;
-import bio.singa.structure.model.mmtf.MmtfStructure;
 import bio.singa.structure.io.general.LocalStructureRepository;
 import bio.singa.structure.io.general.SourceLocation;
 import bio.singa.structure.io.pdb.tokens.HeaderToken;
 import org.junit.jupiter.api.Test;
+import org.rcsb.cif.model.CifFile;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -36,7 +37,7 @@ class LocalSourceIteratorTest {
             String nextFileLocation = onlinePdbIterator.next();
             String nextPdbIdentifier = PDBIdentifier.extractLast(nextFileLocation);
             Object content = onlinePdbIterator.getContent(nextFileLocation);
-            assertTrue(content instanceof List);
+            assertInstanceOf(List.class, content);
             List<String> strings = (List<String>) content;
             String pdbIdentifier = HeaderToken.ID_CODE.extract(strings.iterator().next());
             assertTrue(pdbIdentifier.equalsIgnoreCase(nextPdbIdentifier));
@@ -57,7 +58,7 @@ class LocalSourceIteratorTest {
             Path nextFileLocation = onlinePdbIterator.next();
             String nextPdbIdentifier = PDBIdentifier.extractLast(nextFileLocation.getFileName().toString());
             Object content = onlinePdbIterator.getContent(nextFileLocation);
-            assertTrue(content instanceof List);
+            assertInstanceOf(List.class, content);
             List<String> strings = (List<String>) content;
             String pdbIdentifier = HeaderToken.ID_CODE.extract(strings.iterator().next());
             assertTrue(pdbIdentifier.equalsIgnoreCase(nextPdbIdentifier));
@@ -76,7 +77,7 @@ class LocalSourceIteratorTest {
         while (onlinePdbIterator.hasNext()) {
             String nextPdbIdentifier = onlinePdbIterator.next();
             Object content = onlinePdbIterator.getContent(nextPdbIdentifier);
-            assertTrue(content instanceof List);
+            assertInstanceOf(List.class, content);
             List<String> strings = (List<String>) content;
             String pdbIdentifier = HeaderToken.ID_CODE.extract(strings.iterator().next());
             assertTrue(pdbIdentifier.equalsIgnoreCase(nextPdbIdentifier));
@@ -94,7 +95,7 @@ class LocalSourceIteratorTest {
             assertTrue(PDBIdentifier.PATTERN.matcher(nextPdbIdentifier).matches());
             assertTrue(iterator.hasChain());
             Object content = iterator.getContent(nextPdbIdentifier);
-            assertTrue(content instanceof List);
+            assertInstanceOf(List.class, content);
             List<String> strings = (List<String>) content;
             String pdbIdentifier = HeaderToken.ID_CODE.extract(strings.iterator().next());
             assertTrue(pdbIdentifier.equalsIgnoreCase(nextPdbIdentifier));
@@ -102,41 +103,39 @@ class LocalSourceIteratorTest {
     }
 
     @Test
-    void shouldIterateLocalMmtfFilesWithPath() {
+    void shouldIterateLocalBciFilesWithPath() {
 
-        LocalStructureRepository localPDB = new LocalStructureRepository(Resources.getResourceAsFileLocation("pdb/"), SourceLocation.OFFLINE_MMTF);
+        LocalStructureRepository localPDB = new LocalStructureRepository(Resources.getResourceAsFileLocation("pdb/"), SourceLocation.OFFLINE_BCIF);
         List<String> sources = new ArrayList<>();
         sources.add("1c0a");
 
-        LocalSourceIterator<String> onlineMmtfIterator = new LocalSourceIterator<>(sources, LocalPdbToPathConverter.get(localPDB));
-        while (onlineMmtfIterator.hasNext()) {
-            String nextPdbIdentifier = onlineMmtfIterator.next();
+        LocalSourceIterator<String> localBcifIterator = new LocalSourceIterator<>(sources, LocalPdbToPathConverter.get(localPDB));
+        while (localBcifIterator.hasNext()) {
+            String nextPdbIdentifier = localBcifIterator.next();
             assertTrue(PDBIdentifier.PATTERN.matcher(nextPdbIdentifier).matches());
-            Object content = onlineMmtfIterator.getContent(nextPdbIdentifier);
-            assertTrue(content instanceof byte[]);
-            byte[] bytes = (byte[]) content;
-            MmtfStructure mmtfStructure = new MmtfStructure(bytes, false);
-            String pdbIdentifier = mmtfStructure.getStructureIdentifier();
-            assertTrue(pdbIdentifier.equalsIgnoreCase(nextPdbIdentifier));
+            Object content = localBcifIterator.getContent(nextPdbIdentifier);
+            assertInstanceOf(CifFile.class, content);
+            CifFile cifFile = (CifFile) content;
+            String identifier = cifFile.getBlocks().get(0).getBlockHeader();
+            assertTrue(identifier.equalsIgnoreCase(nextPdbIdentifier));
         }
 
     }
 
     @Test
-    void shouldIterateOnlineMmtfWithChainList() {
-        LocalStructureRepository localPDB = new LocalStructureRepository(Resources.getResourceAsFileLocation("pdb/"), SourceLocation.OFFLINE_MMTF);
+    void shouldIterateOnlineBcifWithChainList() {
+        LocalStructureRepository localPDB = new LocalStructureRepository(Resources.getResourceAsFileLocation("pdb/"), SourceLocation.OFFLINE_BCIF);
         String resourceAsFileLocation = Resources.getResourceAsFileLocation("chain_list.txt");
-        LocalSourceIterator<String> onlineMmtfIterator = LocalSourceIterator.fromChainList(Paths.get(resourceAsFileLocation), ":", LocalPdbToPathConverter.get(localPDB));
-        while (onlineMmtfIterator.hasNext()) {
-            String nextPdbIdentifier = onlineMmtfIterator.next();
+        LocalSourceIterator<String> onlineBcifIterator = LocalSourceIterator.fromChainList(Paths.get(resourceAsFileLocation), ":", LocalPdbToPathConverter.get(localPDB));
+        while (onlineBcifIterator.hasNext()) {
+            String nextPdbIdentifier = onlineBcifIterator.next();
             assertTrue(PDBIdentifier.PATTERN.matcher(nextPdbIdentifier).matches());
-            assertTrue(onlineMmtfIterator.hasChain());
-            Object content = onlineMmtfIterator.getContent(nextPdbIdentifier);
-            assertTrue(content instanceof byte[]);
-            byte[] bytes = (byte[]) content;
-            MmtfStructure mmtfStructure = new MmtfStructure(bytes, false);
-            String pdbIdentifier = mmtfStructure.getStructureIdentifier();
-            assertTrue(pdbIdentifier.equalsIgnoreCase(nextPdbIdentifier));
+            assertTrue(onlineBcifIterator.hasChain());
+            Object content = onlineBcifIterator.getContent(nextPdbIdentifier);
+            assertInstanceOf(CifFile.class, content);
+            CifFile cifFile = (CifFile) content;
+            String identifier = cifFile.getBlocks().get(0).getBlockHeader();
+            assertTrue(identifier.equalsIgnoreCase(nextPdbIdentifier));
         }
     }
 

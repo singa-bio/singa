@@ -9,7 +9,7 @@ import bio.singa.structure.model.interfaces.AminoAcid;
 import bio.singa.structure.model.interfaces.Chain;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.interfaces.Structure;
-import bio.singa.structure.model.pdb.PdbLeafIdentifier;
+import bio.singa.structure.model.general.AuthLeafIdentifier;
 import bio.singa.structure.model.general.StructuralEntityFilter;
 import bio.singa.structure.model.general.StructuralMotif;
 import bio.singa.structure.io.general.StructureParser;
@@ -136,20 +136,20 @@ class SubstructureSuperimposerTest {
     }
 
     @Test
-    void shouldCorrectlyAlignWithMMTF() {
-        Structure first = StructureParser.mmtf()
+    void shouldCorrectlyAlignWithBCIF() {
+        Structure first = StructureParser.cif()
                 .pdbIdentifier("1cd9")
                 .parse();
-        List<PdbLeafIdentifier> firstIdentifiers = PdbLeafIdentifier.of("C-68", "C-70");
+        List<AuthLeafIdentifier> firstIdentifiers = AuthLeafIdentifier.of("C-68", "C-70");
         StructuralMotif firstMotif = StructuralMotif.fromLeafIdentifiers(first, firstIdentifiers);
 
-        Structure second = StructureParser.mmtf()
+        Structure second = StructureParser.cif()
                 .pdbIdentifier("1cn4")
                 .parse();
-        List<PdbLeafIdentifier> secondIdentifiers = PdbLeafIdentifier.of("A-58", "A-59");
+        List<AuthLeafIdentifier> secondIdentifiers = AuthLeafIdentifier.of("A-58", "A-59");
         StructuralMotif secondMotif = StructuralMotif.fromLeafIdentifiers(second, secondIdentifiers);
 
-        SubstructureSuperimposition mmtfSuperimposition = SubstructureSuperimposer.calculateSubstructureSuperimposition(firstMotif, secondMotif, StructuralEntityFilter.AtomFilter.isArbitrary());
+        SubstructureSuperimposition bcifSuperimposition = SubstructureSuperimposer.calculateSubstructureSuperimposition(firstMotif, secondMotif, StructuralEntityFilter.AtomFilter.isArbitrary());
 
         first = StructureParser.pdb()
                 .pdbIdentifier("1cd9")
@@ -163,6 +163,6 @@ class SubstructureSuperimposerTest {
 
         SubstructureSuperimposition pdbSuperimposition = SubstructureSuperimposer.calculateSubstructureSuperimposition(firstMotif, secondMotif, StructuralEntityFilter.AtomFilter.isArbitrary());
 
-        assertEquals(mmtfSuperimposition.getRmsd(), pdbSuperimposition.getRmsd(), 1E-6);
+        assertEquals(bcifSuperimposition.getRmsd(), pdbSuperimposition.getRmsd(), 1E-6);
     }
 }

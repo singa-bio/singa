@@ -4,8 +4,9 @@ import bio.singa.chemistry.model.elements.ElementProvider;
 import bio.singa.mathematics.vectors.Vector3D;
 import bio.singa.structure.io.ccd.LeafSkeletonFactory;
 import bio.singa.structure.io.general.StructureParserOptions;
+import bio.singa.structure.model.general.LabelLeafIdentifier;
 import bio.singa.structure.model.interfaces.LeafIdentifier;
-import bio.singa.structure.model.pdb.PdbLeafIdentifier;
+import bio.singa.structure.model.general.AuthLeafIdentifier;
 import org.rcsb.cif.model.FloatColumn;
 import org.rcsb.cif.model.IntColumn;
 import org.rcsb.cif.model.StrColumn;
@@ -24,7 +25,7 @@ public class CifConverter {
 
     private final MmCifFile mmcifFile;
     private final Map<Integer, CifEntity> entityMap;
-    private final Map<PdbLeafIdentifier, CifLeafIdentifier> pdbReferenceMap;
+    private final Map<AuthLeafIdentifier, LabelLeafIdentifier> authMapping;
 
     private final Map<String, String> chainInformation;
 
@@ -49,7 +50,7 @@ public class CifConverter {
     public CifConverter(MmCifFile mmcifFile) {
         this.mmcifFile = mmcifFile;
         entityMap = new HashMap<>();
-        pdbReferenceMap = new HashMap<>();
+        authMapping = new HashMap<>();
         connectedBranches = new HashSet<>();
         chainInformation = new HashMap<>();
     }
@@ -68,7 +69,7 @@ public class CifConverter {
     private void extractMetaData(MmCifBlock data) {
         // structure id
         pdbId = data.getEntry().getId().get(0);
-        structure = new CifStructure(pdbId);
+        structure = new CifStructure(pdbId, authMapping);
 
         // resolution
         StrColumn methodColumn = data.getExptl().getMethod();
@@ -204,30 +205,30 @@ public class CifConverter {
 
             // TODO could possibly be more efficient by checking if the identifier changed compared to previous id
             int modelIdentifier = pdbxPDBModelNum.get(row);
-            int cifEntityIdentifier = Integer.parseInt(labelEntityId.get(row));
-            String cifChainIdentifier = labelAsymId.get(row);
+            int labelEntityIdentifier = Integer.parseInt(labelEntityId.get(row));
+            String labelChainIdentifier = labelAsymId.get(row);
             int cifSerial = labelSeqId.get(row);
 
-            String pdbChainIdentifier = authAsymId.get(row);
-            int pdbSerial = authSeqId.get(row);
+            String authChainIdentifier = authAsymId.get(row);
+            int authSerial = authSeqId.get(row);
             String insertionCode = pdbxPDBInsCode.get(row);
 
             // in case of branched entities use author id to distinguish monomers explicitly
             if (cifSerial == 0) {
-                CifEntityType entityType = entityMap.get(cifEntityIdentifier).getCifEntityType();
+                CifEntityType entityType = entityMap.get(labelEntityIdentifier).getCifEntityType();
                 if (entityType.equals(CifEntityType.BRANCHED)) {
-                    cifSerial = pdbSerial;
+                    cifSerial = authSerial;
                 } else if (!coalesceLigands && (entityType.equals(CifEntityType.WATER) || entityType.equals(CifEntityType.NON_POLYMER))) {
-                    cifSerial = pdbSerial;
+                    cifSerial = authSerial;
                 }
             }
 
-            CifLeafIdentifier cifLeafIdentifier = new CifLeafIdentifier(pdbId, cifEntityIdentifier, modelIdentifier, cifChainIdentifier, cifSerial);
-            PdbLeafIdentifier pdbLeafIdentifier;
+            LabelLeafIdentifier labelLeafIdentifier = new LabelLeafIdentifier(pdbId, modelIdentifier, labelChainIdentifier, cifSerial);
+            AuthLeafIdentifier authLeafIdentifier;
             if (insertionCode != null && !insertionCode.isEmpty()) {
-                pdbLeafIdentifier = new PdbLeafIdentifier(pdbId, modelIdentifier, pdbChainIdentifier, pdbSerial, insertionCode.charAt(0));
+                authLeafIdentifier = new AuthLeafIdentifier(pdbId, modelIdentifier, authChainIdentifier, authSerial, insertionCode.charAt(0));
             } else {
-                pdbLeafIdentifier = new PdbLeafIdentifier(pdbId, modelIdentifier, pdbChainIdentifier, pdbSerial);
+                authLeafIdentifier = new AuthLeafIdentifier(pdbId, modelIdentifier, authChainIdentifier, authSerial);
             }
 
             String threeLetterCode = threeLetterCodeColumn.get(row);
@@ -238,14 +239,14 @@ public class CifConverter {
             CifModel model = structure.getModel(modelIdentifier)
                     .orElseGet(() -> appendModel(modelIdentifier));
 
-            CifEntity entity = structure.getEntity(cifEntityIdentifier)
-                    .orElseGet(() -> appendEntity(cifEntityIdentifier));
+            CifEntity entity = structure.getEntity(labelEntityIdentifier)
+                    .orElseGet(() -> appendEntity(labelEntityIdentifier));
 
-            CifChain chain = model.getChain(cifChainIdentifier)
-                    .orElseGet(() -> appendChain(entity, model, cifChainIdentifier));
+            CifChain chain = model.getChain(labelChainIdentifier)
+                    .orElseGet(() -> appendChain(entity, model, labelChainIdentifier));
 
-            CifLeafSubstructure leafSubstructure = chain.getLeafSubstructure(cifLeafIdentifier)
-                    .orElseGet(() -> appendLeafSubstructure(entity, chain, cifLeafIdentifier, pdbLeafIdentifier, threeLetterCode, leafIsHetAtomString));
+            CifLeafSubstructure leafSubstructure = chain.getLeafSubstructure(labelLeafIdentifier)
+                    .orElseGet(() -> appendLeafSubstructure(entity, chain, labelLeafIdentifier, authLeafIdentifier, threeLetterCode, leafIsHetAtomString));
 
             CifAtom cifAtom = new CifAtom(atomSerialColumn.get(row));
             cifAtom.setAtomName(atomNameColumn.get(row));
@@ -351,11 +352,11 @@ public class CifConverter {
 
             for (CifModel model : structure.getAllModels()) {
                 // create leaf ids
-                CifLeafIdentifier firstLeafIdentifier = LeafIdentifier.cif()
+                LabelLeafIdentifier firstLeafIdentifier = LeafIdentifier.label()
                         .model(model.getModelIdentifier())
                         .chain(firstChainId)
                         .serial(firstSerial);
-                CifLeafIdentifier secondLeafIdentifier = LeafIdentifier.cif()
+                LabelLeafIdentifier secondLeafIdentifier = LeafIdentifier.label()
                         .model(model.getModelIdentifier())
                         .chain(secondChainId)
                         .serial(secondSerial);
@@ -419,12 +420,12 @@ public class CifConverter {
             if (!pdbInsCode1.isDefined()) {
                 firstInsertionCode = pdbInsCode1.get(row).charAt(0);
             } else {
-                firstInsertionCode = PdbLeafIdentifier.DEFAULT_INSERTION_CODE;
+                firstInsertionCode = AuthLeafIdentifier.DEFAULT_INSERTION_CODE;
             }
 
-            PdbLeafIdentifier firstPdbLeafIdentifier = LeafIdentifier.pdb()
+            AuthLeafIdentifier firstAuthLeafIdentifier = LeafIdentifier.auth()
                     .structure(pdbId)
-                    .model(PdbLeafIdentifier.DEFAULT_MODEL_IDENTIFIER)
+                    .model(AuthLeafIdentifier.DEFAULT_MODEL_IDENTIFIER)
                     .chain(firstChain)
                     .serial(firstSerial)
                     .insertionCode(firstInsertionCode);
@@ -436,21 +437,21 @@ public class CifConverter {
             if (!pdbInsCode2.isDefined()) {
                 secondInsertionCode = pdbInsCode2.get(row).charAt(0);
             } else {
-                secondInsertionCode = PdbLeafIdentifier.DEFAULT_INSERTION_CODE;
+                secondInsertionCode = AuthLeafIdentifier.DEFAULT_INSERTION_CODE;
             }
 
-            PdbLeafIdentifier secondPdbLeafIdentifier = LeafIdentifier.pdb()
+            AuthLeafIdentifier secondAuthLeafIdentifier = LeafIdentifier.auth()
                     .structure(pdbId)
-                    .model(PdbLeafIdentifier.DEFAULT_MODEL_IDENTIFIER)
+                    .model(AuthLeafIdentifier.DEFAULT_MODEL_IDENTIFIER)
                     .chain(secondChain)
                     .serial(secondSerial)
                     .insertionCode(secondInsertionCode);
 
-            CifLeafIdentifier firstCifLeafIdentifier = pdbReferenceMap.get(firstPdbLeafIdentifier);
+            LabelLeafIdentifier firstCifLeafIdentifier = authMapping.get(firstAuthLeafIdentifier);
             if (firstCifLeafIdentifier == null) {
                 continue;
             }
-            CifLeafIdentifier secondCifLeafIdentifier = pdbReferenceMap.get(secondPdbLeafIdentifier);
+            LabelLeafIdentifier secondCifLeafIdentifier = authMapping.get(secondAuthLeafIdentifier);
             if (secondCifLeafIdentifier == null) {
                 continue;
             }
@@ -512,12 +513,12 @@ public class CifConverter {
         }
     }
 
-    private CifLeafSubstructure appendLeafSubstructure(CifEntity cifEntity, CifChain chain, CifLeafIdentifier cifLeafIdentifier, PdbLeafIdentifier pdbLeafIdentifier, String threeLetterCode, String leafIsHetAtomString) {
-        CifLeafSubstructure leafSubstructure = CifLeafSubstructureFactory.createLeafSubstructure(leafSkeletonFactory.getLeafSkeleton(threeLetterCode), cifLeafIdentifier);
+    private CifLeafSubstructure appendLeafSubstructure(CifEntity cifEntity, CifChain chain, LabelLeafIdentifier labelLeafIdentifier, AuthLeafIdentifier authLeafIdentifier, String threeLetterCode, String leafIsHetAtomString) {
+        CifLeafSubstructure leafSubstructure = CifLeafSubstructureFactory.createLeafSubstructure(leafSkeletonFactory.getLeafSkeleton(threeLetterCode), labelLeafIdentifier, authLeafIdentifier);
         leafSubstructure.setAnnotatedAsHeteroAtom(leafIsHetAtomString.equals("HETATM"));
         leafSubstructure.setPartOfPolymer(cifEntity.getCifEntityType().equals(CifEntityType.POLYMER));
         chain.addLeafSubstructure(leafSubstructure);
-        pdbReferenceMap.put(pdbLeafIdentifier, cifLeafIdentifier);
+        authMapping.put(authLeafIdentifier, labelLeafIdentifier);
         return leafSubstructure;
     }
 

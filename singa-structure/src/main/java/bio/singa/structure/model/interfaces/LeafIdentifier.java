@@ -1,11 +1,13 @@
 package bio.singa.structure.model.interfaces;
 
-import bio.singa.structure.model.cif.CifLeafIdentifier;
-import bio.singa.structure.model.pdb.PdbLeafIdentifier;
+import bio.singa.structure.model.general.LabelLeafIdentifier;
+import bio.singa.structure.model.general.AuthLeafIdentifier;
 
 import java.util.Comparator;
 
 public interface LeafIdentifier extends Comparable<LeafIdentifier> {
+
+    String DEFAULT_PDB_IDENTIFIER = "0000";
 
     Comparator<LeafIdentifier> LEAF_IDENTIFIER_COMPARATOR = Comparator
             .comparing(LeafIdentifier::getModelIdentifier)
@@ -14,12 +16,12 @@ public interface LeafIdentifier extends Comparable<LeafIdentifier> {
             .thenComparing(LeafIdentifier::getInsertionCode);
 
     static LeafIdentifier fromString(String leafIdentifierString) {
-        if (leafIdentifierString.startsWith("PDB")) {
-            return PdbLeafIdentifier.fromString(leafIdentifierString.substring(4));
-        } else if (leafIdentifierString.startsWith("CIF")) {
-            return CifLeafIdentifier.fromString(leafIdentifierString.substring(4));
+        if (leafIdentifierString.startsWith(AuthLeafIdentifier.AUTH_IDENTIFIER_PREFIX)) {
+            return AuthLeafIdentifier.fromString(leafIdentifierString.substring(AuthLeafIdentifier.AUTH_IDENTIFIER_PREFIX.length() + 1));
+        } else if (leafIdentifierString.startsWith(LabelLeafIdentifier.LABEL_IDENTIFIER_PREFIX)) {
+            return LabelLeafIdentifier.fromString(leafIdentifierString.substring(LabelLeafIdentifier.LABEL_IDENTIFIER_PREFIX.length() + 1));
         } else {
-            throw new IllegalArgumentException("Leaf identifiers have to start with PDB of CIF prefix.");
+            throw new IllegalArgumentException("Leaf identifiers have to start with " + AuthLeafIdentifier.AUTH_IDENTIFIER_PREFIX + " or " + LabelLeafIdentifier.LABEL_IDENTIFIER_PREFIX + " prefix.");
         }
     }
 
@@ -35,144 +37,132 @@ public interface LeafIdentifier extends Comparable<LeafIdentifier> {
 
     boolean hasInsertionCode();
 
-    static CifModelStep cif() {
-        return new CifIdentifierBuilder();
+    static LabelModelStep label() {
+        return new LabelIdentifierBuilder();
     }
 
-    interface CifStructureStep {
+    interface LabelStructureStep {
 
-        CifEntityStep structure(String structureIdentifier);
-
-    }
-
-    interface CifEntityStep {
-
-        CifModelStep entity(int entityIdentifier);
+        LabelModelStep structure(String structureIdentifier);
 
     }
 
-    interface CifModelStep extends CifStructureStep {
+    interface LabelModelStep extends LabelStructureStep {
 
-        CifChainStep model(int modelIdentifier);
-
-    }
-
-    interface CifChainStep {
-
-        CifSerialStep chain(String chainIdentifier);
+        LabelChainStep model(int modelIdentifier);
 
     }
 
-    interface CifSerialStep {
+    interface LabelChainStep {
 
-        CifLeafIdentifier serial(int serial);
+        LabelSerialStep chain(String chainIdentifier);
 
     }
 
-    class CifIdentifierBuilder implements CifStructureStep, CifEntityStep, CifModelStep, CifChainStep, CifSerialStep {
+    interface LabelSerialStep {
 
-        private String structureIdentifier = PdbLeafIdentifier.DEFAULT_PDB_IDENTIFIER;
-        private int entityIdentifier = CifLeafIdentifier.DEFAULT_ENTITY_IDENTIFIER;
+        LabelLeafIdentifier serial(int serial);
+
+    }
+
+    class LabelIdentifierBuilder implements LabelStructureStep, LabelModelStep, LabelChainStep, LabelSerialStep {
+
+        private String structureIdentifier = DEFAULT_PDB_IDENTIFIER;
         private int modelIdentifier;
         private String chainIdentifier;
 
-        public CifEntityStep structure(String structureIdentifier) {
+        public LabelModelStep structure(String structureIdentifier) {
             this.structureIdentifier = structureIdentifier;
             return this;
         }
 
-        public CifModelStep entity(int entityIdentifier) {
-            this.entityIdentifier = entityIdentifier;
-            return this;
-        }
-
-        public CifChainStep model(int modelIdentifier) {
+        public LabelChainStep model(int modelIdentifier) {
             this.modelIdentifier = modelIdentifier;
             return this;
         }
 
-        public CifSerialStep chain(String chainIdentifier) {
+        public LabelSerialStep chain(String chainIdentifier) {
             this.chainIdentifier = chainIdentifier;
             return this;
         }
 
-        public CifLeafIdentifier serial(int serialIdentifier) {
-            return new CifLeafIdentifier(structureIdentifier, entityIdentifier, modelIdentifier, chainIdentifier, serialIdentifier);
+        public LabelLeafIdentifier serial(int serialIdentifier) {
+            return new LabelLeafIdentifier(structureIdentifier, modelIdentifier, chainIdentifier, serialIdentifier);
         }
 
     }
 
-    static PdbModelStep pdb() {
-        return new PdbIdentifierBuilder();
+    static AuthModelStep auth() {
+        return new AuthIdentifierBuilder();
     }
 
-    interface PdbStructureStep {
+    interface AuthStructureStep {
 
-        PdbModelStep structure(String structureIdentifier);
-
-    }
-
-    interface PdbModelStep extends PdbStructureStep {
-
-        PdbChainStep model(int modelIdentifier);
+        AuthModelStep structure(String structureIdentifier);
 
     }
 
-    interface PdbChainStep {
+    interface AuthModelStep extends AuthStructureStep {
 
-        PdbSerialStep chain(String chainIdentifier);
-
-    }
-
-    interface PdbSerialStep {
-
-        PdbInsertionCodeStep serial(int serial);
+        AuthChainStep model(int modelIdentifier);
 
     }
 
-    interface PdbInsertionCodeStep {
+    interface AuthChainStep {
 
-        PdbLeafIdentifier noInsertionCode();
-
-        PdbLeafIdentifier insertionCode(char insertionCode);
+        AuthSerialStep chain(String chainIdentifier);
 
     }
 
-    class PdbIdentifierBuilder implements PdbStructureStep, PdbModelStep, PdbChainStep, PdbSerialStep, PdbInsertionCodeStep {
+    interface AuthSerialStep {
 
-        private String structureIdentifier = PdbLeafIdentifier.DEFAULT_PDB_IDENTIFIER;
+        AuthInsertionCodeStep serial(int serial);
+
+    }
+
+    interface AuthInsertionCodeStep {
+
+        AuthLeafIdentifier noInsertionCode();
+
+        AuthLeafIdentifier insertionCode(char insertionCode);
+
+    }
+
+    class AuthIdentifierBuilder implements AuthStructureStep, AuthModelStep, AuthChainStep, AuthSerialStep, AuthInsertionCodeStep {
+
+        private String structureIdentifier = DEFAULT_PDB_IDENTIFIER;
         private int modelIdentifier;
         private String chainIdentifier;
         private int serialIdentifier;
 
-        public PdbModelStep structure(String structureIdentifier) {
+        public AuthModelStep structure(String structureIdentifier) {
             this.structureIdentifier = structureIdentifier;
             return this;
         }
 
-        public PdbChainStep model(int modelIdentifier) {
+        public AuthChainStep model(int modelIdentifier) {
             this.modelIdentifier = modelIdentifier;
             return this;
         }
 
-        public PdbSerialStep chain(String chainIdentifier) {
+        public AuthSerialStep chain(String chainIdentifier) {
             this.chainIdentifier = chainIdentifier;
             return this;
         }
 
-        public PdbInsertionCodeStep serial(int serialIdentifier) {
+        public AuthInsertionCodeStep serial(int serialIdentifier) {
             this.serialIdentifier = serialIdentifier;
             return this;
         }
 
         @Override
-        public PdbLeafIdentifier noInsertionCode() {
-            return insertionCode(PdbLeafIdentifier.DEFAULT_INSERTION_CODE);
+        public AuthLeafIdentifier noInsertionCode() {
+            return insertionCode(AuthLeafIdentifier.DEFAULT_INSERTION_CODE);
         }
 
         @Override
-        public PdbLeafIdentifier insertionCode(char insertionCode) {
-            return new PdbLeafIdentifier(structureIdentifier, modelIdentifier, chainIdentifier, serialIdentifier, insertionCode);
+        public AuthLeafIdentifier insertionCode(char insertionCode) {
+            return new AuthLeafIdentifier(structureIdentifier, modelIdentifier, chainIdentifier, serialIdentifier, insertionCode);
         }
     }
 

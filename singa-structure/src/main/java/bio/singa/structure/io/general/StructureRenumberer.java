@@ -1,5 +1,6 @@
 package bio.singa.structure.io.general;
 
+import bio.singa.structure.model.general.AuthLeafIdentifier;
 import bio.singa.structure.model.general.UniqueAtomIdentifier;
 import bio.singa.structure.model.interfaces.*;
 import bio.singa.structure.model.pdb.*;
@@ -32,7 +33,7 @@ public class StructureRenumberer {
      * serial as values.
      * @return A copy of the structure, renumbered according to the given map.
      */
-    public static Structure renumberLeaveSubstructuresWithMap(Structure structure, Map<PdbLeafIdentifier, Integer> renumberingMap) {
+    public static Structure renumberLeaveSubstructuresWithMap(Structure structure, Map<AuthLeafIdentifier, Integer> renumberingMap) {
         StructureRenumberer structureRenumberer = new StructureRenumberer();
         return structureRenumberer.renumberLeafSubstructures(((PdbStructure) structure), renumberingMap);
 
@@ -96,7 +97,7 @@ public class StructureRenumberer {
                 for (LeafSubstructure leafSubstructure : chain.getAllLeafSubstructures()) {
 
                     LeafIdentifier originalIdentifier = leafSubstructure.getIdentifier();
-                    PdbLeafIdentifier renumberedIdentifier = new PdbLeafIdentifier(
+                    AuthLeafIdentifier renumberedIdentifier = new AuthLeafIdentifier(
                             originalIdentifier.getStructureIdentifier(),
                             originalIdentifier.getModelIdentifier(),
                             renumberedChainIdentifier,
@@ -184,12 +185,12 @@ public class StructureRenumberer {
 
     private PdbLeafSubstructure renumberAtomsInLeafSubstructure(String chainIdentifier, LeafSubstructure leafSubstructure) {
         LeafIdentifier identifier = leafSubstructure.getIdentifier();
-        PdbLeafIdentifier pdbLeafIdentifier = new PdbLeafIdentifier(identifier.getStructureIdentifier(), identifier.getModelIdentifier(), chainIdentifier, identifier.getSerial(), identifier.getInsertionCode());
-        return renumberAtomsInLeafSubstructure(leafSubstructure, pdbLeafIdentifier);
+        AuthLeafIdentifier authLeafIdentifier = new AuthLeafIdentifier(identifier.getStructureIdentifier(), identifier.getModelIdentifier(), chainIdentifier, identifier.getSerial(), identifier.getInsertionCode());
+        return renumberAtomsInLeafSubstructure(leafSubstructure, authLeafIdentifier);
     }
 
-    private PdbLeafSubstructure renumberAtomsInLeafSubstructure(LeafSubstructure leafSubstructure, PdbLeafIdentifier pdbLeafIdentifier) {
-        PdbLeafSubstructure renumberedLeafSubstructure = createLeafSubstructure(pdbLeafIdentifier, leafSubstructure.getFamily());
+    private PdbLeafSubstructure renumberAtomsInLeafSubstructure(LeafSubstructure leafSubstructure, AuthLeafIdentifier authLeafIdentifier) {
+        PdbLeafSubstructure renumberedLeafSubstructure = createLeafSubstructure(authLeafIdentifier, leafSubstructure.getFamily());
         for (Atom atom : leafSubstructure.getAllAtoms()) {
             PdbAtom renumberedAtom = new PdbAtom(nextAtomIdentifier, atom.getElement(), atom.getAtomName(), atom.getPosition());
             renumberedAtom.setBFactor(atom.getBFactor());
@@ -234,7 +235,7 @@ public class StructureRenumberer {
         return structure;
     }
 
-    private PdbStructure renumberLeafSubstructures(PdbStructure structure, Map<PdbLeafIdentifier, Integer> renumberingMap) {
+    private PdbStructure renumberLeafSubstructures(PdbStructure structure, Map<AuthLeafIdentifier, Integer> renumberingMap) {
         PdbStructure renumberedStructure = new PdbStructure();
         renumberedStructure.setPdbIdentifier(structure.getStructureIdentifier());
         for (Model model : structure.getAllModels()) {
@@ -246,12 +247,12 @@ public class StructureRenumberer {
                 PdbChain renumberedChain = new PdbChain(chain.getChainIdentifier());
                 renumberedModel.addChain(renumberedChain);
                 for (LeafSubstructure leafSubstructure : pdbChain.getConsecutivePart()) {
-                    PdbLeafIdentifier originalIdentifier = ((PdbLeafIdentifier) leafSubstructure.getIdentifier());
+                    AuthLeafIdentifier originalIdentifier = ((AuthLeafIdentifier) leafSubstructure.getIdentifier());
                     // skip leaves not specified in the renumbering map
                     if (!renumberingMap.containsKey(originalIdentifier)) {
                         continue;
                     }
-                    PdbLeafIdentifier renumberedIdentifier = new PdbLeafIdentifier(
+                    AuthLeafIdentifier renumberedIdentifier = new AuthLeafIdentifier(
                             originalIdentifier.getStructureIdentifier(),
                             originalIdentifier.getModelIdentifier(),
                             originalIdentifier.getChainIdentifier(),

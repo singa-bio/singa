@@ -13,7 +13,7 @@ import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.interfaces.Structure;
 import bio.singa.structure.model.molecules.MoleculeGraphs;
 import bio.singa.structure.model.pdb.PdbLeafSubstructure;
-import bio.singa.structure.model.pdb.PdbLeafIdentifier;
+import bio.singa.structure.model.general.AuthLeafIdentifier;
 import bio.singa.structure.io.general.StructureParser;
 import javafx.application.Application;
 import javafx.scene.paint.Color;
@@ -34,7 +34,7 @@ public class MoleculeIsomorphismTest {
 
         MoleculeGraph phenylAlaninePattern = SmilesParser.parse("C1=CC=C(C=C1)CC(C=O)N");
 
-        Optional<? extends LeafSubstructure> fa5 = structure.getLeafSubstructure(new PdbLeafIdentifier("1jjc", 1, "A", 999));
+        Optional<? extends LeafSubstructure> fa5 = structure.getLeafSubstructure(new AuthLeafIdentifier("1jjc", 1, "A", 999));
         MoleculeGraph fa5Graph = MoleculeGraphs.createMoleculeGraphFromStructure((PdbLeafSubstructure) fa5.get());
 
         MoleculeBond consideredEdge = phenylAlaninePattern.getEdge(7);
