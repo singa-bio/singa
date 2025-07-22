@@ -2,6 +2,8 @@ package bio.singa.structure.model.general;
 
 import bio.singa.chemistry.model.CovalentBondType;
 import bio.singa.core.utility.Pair;
+import bio.singa.structure.model.cif.CifAtom;
+import bio.singa.structure.model.cif.CifLeafSubstructure;
 import bio.singa.structure.model.families.StructuralFamilies;
 import bio.singa.structure.model.families.StructuralFamily;
 import bio.singa.structure.model.interfaces.AminoAcid;
@@ -106,5 +108,10 @@ public class LeafSkeleton {
         }
     }
 
-
+    public void connect(CifLeafSubstructure substructure) {
+        for (Map.Entry<Pair<String>, CovalentBondType> bond : bonds.entrySet()) {
+            substructure.addBondBetween(substructure.getAtomByName(bond.getKey().getFirst()).orElse(null),
+                    substructure.getAtomByName(bond.getKey().getSecond()).orElse(null));
+        }
+    }
 }

@@ -5,6 +5,8 @@ import bio.singa.core.utility.Pair;
 import bio.singa.structure.io.ccd.LeafSkeletonFactory;
 import bio.singa.structure.io.ccd.RemoteCcdParsingBehavior;
 import bio.singa.structure.io.general.StructureParser;
+import bio.singa.structure.io.general.StructureParserOptions;
+import bio.singa.structure.model.cif.CifStructure;
 import bio.singa.structure.model.families.StructuralFamilies;
 import bio.singa.structure.model.general.AuthLeafIdentifier;
 import bio.singa.structure.model.general.LabelLeafIdentifier;
@@ -12,9 +14,11 @@ import bio.singa.structure.model.general.LeafSkeleton;
 import bio.singa.structure.model.interfaces.LeafIdentifier;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.interfaces.Structure;
+import bio.singa.structure.model.pdb.PdbLinkEntry;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -55,7 +59,7 @@ class CifFileParserTest {
         LeafSkeleton fad = leafSkeletonFactory.getLeafSkeleton("FAD");
         assertEquals("FLAVIN-ADENINE DINUCLEOTIDE", fad.getName());
         assertEquals("InChI=1S/C27H33N9O15P2/c1-10-3-12-13(4-11(10)2)35(24-18(32-12)25(42)34-27(43)33-24)5-14(37)19(39)15(38)6-48-52(44,45)51-53(46,47)49-7-16-20(40)21(41)26(50-16)36-9-31-17-22(28)29-8-30-23(17)36/h3-4,8-9,14-16,19-21,26,37-41H,5-7H2,1-2H3,(H,44,45)(H,46,47)(H2,28,29,30)(H,34,42,43)/t14-,15+,16+,19-,20+,21+,26+/m0/s1", fad.getInchi());
-        assertEquals(fad.getBonds().size(), 91);
+        assertEquals(91, fad.getBonds().size());
         // "
         LeafSkeleton lop = leafSkeletonFactory.getLeafSkeleton("LOP");
         assertEquals("(1R)-2-{[(R)-(2-AMINOETHOXY)(HYDROXY)PHOSPHORYL]OXY}-1-[(DODECANOYLOXY)METHYL]ETHYL (9Z)-OCTADEC-9-ENOATE", lop.getName());
@@ -67,7 +71,7 @@ class CifFileParserTest {
     }
 
     @Test
-    void shouldParseNamesCorretly() {
+    void shouldParseNamesCorrectly() {
         LeafSkeleton fiveMu = leafSkeletonFactory.getLeafSkeleton("5MU");
         assertEquals("5-METHYLURIDINE 5'-MONOPHOSPHATE", fiveMu.getName());
     }
@@ -95,4 +99,14 @@ class CifFileParserTest {
         assertFalse(StructuralFamilies.AminoAcids.isAminoAcid(authSubstructure.getFamily()));
     }
 
+    /**
+     * Covers info similar to CONECT records. Therefor, we parse struct_conn and chem_comp_bond.
+     */
+    @Test
+    void shouldParseInterMoleculeConnections() {
+        CifStructure structure = (CifStructure) StructureParser.cif().pdbIdentifier("5oj9").settings(StructureParserOptions.Setting.ENFORCE_CONNECTIONS).parse();
+
+        List<PdbLinkEntry> links = structure.getLinkEntries();
+        assertEquals(4, links.size(), "link (struct_conn) count should match mmCIF file content");
+    }
 }

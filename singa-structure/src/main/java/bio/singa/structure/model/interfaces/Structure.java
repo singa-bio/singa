@@ -2,8 +2,10 @@ package bio.singa.structure.model.interfaces;
 
 import bio.singa.features.identifiers.PDBIdentifier;
 import bio.singa.structure.model.general.UniqueAtomIdentifier;
+import bio.singa.structure.model.pdb.PdbLinkEntry;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -95,4 +97,9 @@ public interface Structure extends LeafSubstructureContainer, ChainContainer {
         return getStructureIdentifier();
     }
 
+    /**
+     * Information on inter-molecule interactions, of either non-covalent or covalent nature.
+     * @return a collection link entries
+     */
+    List<PdbLinkEntry> getLinkEntries();
 }

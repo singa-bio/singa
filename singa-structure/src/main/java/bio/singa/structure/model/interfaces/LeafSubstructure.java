@@ -6,6 +6,7 @@ import bio.singa.structure.model.families.StructuralFamily;
 import bio.singa.structure.model.general.AuthLeafIdentifier;
 import bio.singa.structure.model.general.LabelLeafIdentifier;
 
+import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -44,6 +45,8 @@ public interface LeafSubstructure extends AtomContainer {
     }
 
     Optional<? extends Atom> getAtomByName(String atomName);
+
+    Collection<? extends Bond<?>> getBonds();
 
     void setAnnotatedAsHeteroAtom(boolean annotatedAsHetAtom);
 

@@ -1,5 +1,8 @@
 package bio.singa.structure.io.general;
 
+import bio.singa.structure.model.cif.CifBond;
+import bio.singa.structure.model.cif.CifChain;
+import bio.singa.structure.model.cif.CifLeafSubstructure;
 import bio.singa.structure.model.general.AuthLeafIdentifier;
 import bio.singa.structure.model.general.UniqueAtomIdentifier;
 import bio.singa.structure.model.interfaces.*;
@@ -146,12 +149,18 @@ public class StructureRenumberer {
                         currentChainIndex++;
                     }
                 } else {
-                    chainIdentifier = chain.getChainIdentifier();
+                    // ensure PDB/auth-style naming
+                    chainIdentifier = chain instanceof CifChain ? ((CifChain) chain).getLegacyIdentifier() : chain.getChainIdentifier();
                 }
                 // remember which chain was mapped to which id
                 chainAliasMap.put(chain.getChainIdentifier(), chainIdentifier);
-                PdbChain renumberedChain = new PdbChain(chainIdentifier);
-                renumberedModel.addChain(renumberedChain);
+                PdbChain renumberedChain; // 'merge' chains is multiple label_asym_id map to the same auth_asym_id
+                if (renumberedModel.getAllChainIdentifiers().contains(chainIdentifier)) {
+                    renumberedChain = renumberedModel.getChain(chainIdentifier).get();
+                } else {
+                    renumberedChain = new PdbChain(chainIdentifier);
+                    renumberedModel.addChain(renumberedChain);
+                }
                 if (chain instanceof PdbChain) {
                     PdbChain pdbChain = (PdbChain) chain;
                     for (PdbLeafSubstructure leafSubstructure : pdbChain.getConsecutivePart()) {
@@ -177,14 +186,14 @@ public class StructureRenumberer {
                         PdbLeafSubstructure renumberedLeafSubstructure = renumberAtomsInLeafSubstructure(renumberedChain.getChainIdentifier(), leafSubstructure);
                         renumberedChain.addLeafSubstructure(renumberedLeafSubstructure);
                     }
-                }
+                } // TODO cif support needed?
             }
         }
         return renumberLinkEntries(renumberedStructure);
     }
 
     private PdbLeafSubstructure renumberAtomsInLeafSubstructure(String chainIdentifier, LeafSubstructure leafSubstructure) {
-        LeafIdentifier identifier = leafSubstructure.getIdentifier();
+        LeafIdentifier identifier = leafSubstructure.getAuthIdentifier();
         AuthLeafIdentifier authLeafIdentifier = new AuthLeafIdentifier(identifier.getStructureIdentifier(), identifier.getModelIdentifier(), chainIdentifier, identifier.getSerial(), identifier.getInsertionCode());
         return renumberAtomsInLeafSubstructure(leafSubstructure, authLeafIdentifier);
     }
@@ -203,10 +212,30 @@ public class StructureRenumberer {
         if (leafSubstructure instanceof PdbLeafSubstructure) {
             PdbLeafSubstructure pdbLeafSubstructure = (PdbLeafSubstructure) leafSubstructure;
             for (PdbBond edge : pdbLeafSubstructure.getBonds()) {
+                Integer i1 = atomIdentifierMapping.get(edge.getSource().getAtomIdentifier());
+                if (i1 == null) continue;
+                Integer i2 = atomIdentifierMapping.get(edge.getTarget().getAtomIdentifier());
+                if (i2 == null) continue;
+                Optional<PdbAtom> atom1 = renumberedLeafSubstructure.getAtom(i1);
+                Optional<PdbAtom> atom2 = renumberedLeafSubstructure.getAtom(i2);
+                if (!atom1.isPresent() || !atom2.isPresent()) continue;
+
                 PdbBond edgeCopy = edge.getCopy();
-                PdbAtom source = renumberedLeafSubstructure.getAtom(atomIdentifierMapping.get(edge.getSource().getAtomIdentifier())).get();
-                PdbAtom target = renumberedLeafSubstructure.getAtom(atomIdentifierMapping.get(edge.getTarget().getAtomIdentifier())).get();
-                renumberedLeafSubstructure.addBondBetween(edgeCopy, source, target);
+                renumberedLeafSubstructure.addBondBetween(edgeCopy, atom1.get(), atom2.get());
+            }
+        } else if (leafSubstructure instanceof CifLeafSubstructure) {
+            CifLeafSubstructure cifLeafSubstructure = (CifLeafSubstructure) leafSubstructure;
+            for (CifBond edge : cifLeafSubstructure.getBonds()) {
+                Integer i1 = atomIdentifierMapping.get(edge.getSource().getAtomIdentifier());
+                if (i1 == null) continue;
+                Integer i2 = atomIdentifierMapping.get(edge.getTarget().getAtomIdentifier());
+                if (i2 == null) continue;
+                Optional<PdbAtom> atom1 = renumberedLeafSubstructure.getAtom(i1);
+                Optional<PdbAtom> atom2 = renumberedLeafSubstructure.getAtom(i2);
+                if (!atom1.isPresent() || !atom2.isPresent()) continue;
+
+                PdbBond edgeCopy = new PdbBond(edge.getIdentifier(), edge.getBondType());
+                renumberedLeafSubstructure.addBondBetween(edgeCopy, atom1.get(), atom2.get());
             }
         }
         renumberedLeafSubstructure.setAnnotatedAsHeteroAtom(leafSubstructure.isAnnotatedAsHeteroAtom());

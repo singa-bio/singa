@@ -1,11 +1,9 @@
 package bio.singa.structure.model.cif;
 
+import bio.singa.chemistry.model.CovalentBondType;
 import bio.singa.structure.model.interfaces.AtomContainer;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.Optional;
-import java.util.TreeMap;
+import java.util.*;
 
 public class CifConformation implements AtomContainer {
 
@@ -18,8 +16,19 @@ public class CifConformation implements AtomContainer {
      */
     private Map<Integer, CifAtom> atoms;
 
+    /**
+     * The bonds representing the edges of the atom graph.
+     */
+    private Map<Integer, CifBond> bonds;
+
+    /**
+     * A iterating variable to add a new edge.
+     */
+    private int nextEdgeIdentifier = 0;
+
     public CifConformation(String conformationIdentifier) {
         atoms = new TreeMap<>();
+        bonds = new HashMap<>();
         this.conformationIdentifier = conformationIdentifier;
     }
 
@@ -28,6 +37,13 @@ public class CifConformation implements AtomContainer {
         // copy and add all atoms
         for (CifAtom atom : cifConformation.atoms.values()) {
             atoms.put(atom.getAtomIdentifier(), atom.getCopy());
+        }
+        // copy and add all bonds
+        for (CifBond bond : cifConformation.bonds.values()) {
+            CifBond edgeCopy = bond.getCopy();
+            CifAtom sourceCopy = atoms.get(bond.getSource().getAtomIdentifier());
+            CifAtom targetCopy = atoms.get(bond.getTarget().getAtomIdentifier());
+            addBondBetween(edgeCopy, sourceCopy, targetCopy);
         }
     }
 
@@ -57,6 +73,53 @@ public class CifConformation implements AtomContainer {
     @Override
     public void removeAtom(Integer atomIdentifier) {
         atoms.remove(atomIdentifier);
+    }
+
+    public Collection<CifBond> getBonds() {
+        return bonds.values();
+    }
+
+    /**
+     * Adds a bond connecting to the given atoms. The order of the given atoms does not matter, but is retained. The
+     * bond type can be specified beforehand and the pdbIdentifier of the edge is used as the identifier in the leaf.
+     *
+     * @param edge The edge to be added.
+     * @param source The source atom.
+     * @param target The target atom.
+     * @return The identifier of the added edge.
+     */
+    public int addBondBetween(CifBond edge, CifAtom source, CifAtom target) {
+        if (source == null || target == null || hasBond(source, target)) {
+            return -1;
+        }
+        edge.setSource(source);
+        edge.setTarget(target);
+        bonds.put(edge.getIdentifier(), edge);
+        // source.addNeighbour(target);
+        // target.addNeighbour(source);
+        return edge.getIdentifier();
+    }
+
+    public int addBondBetween(CifAtom source, CifAtom target) {
+        return addBondBetween(source, target, CovalentBondType.SINGLE_BOND);
+    }
+
+    public int addBondBetween(CifAtom source, CifAtom target, CovalentBondType bondType) {
+        if (source == null || target == null || hasBond(source, target)) {
+            return -1;
+        }
+        CifBond bond = new CifBond(nextEdgeIdentifier++, bondType);
+        bond.setSource(source);
+        bond.setTarget(target);
+        bonds.put(bond.getIdentifier(), bond);
+        // source.addNeighbour(target);
+        // target.addNeighbour(source);
+        return bond.getIdentifier();
+    }
+
+    public boolean hasBond(CifAtom firstAtom, CifAtom secondAtom) {
+        return bonds.values().stream()
+                .anyMatch(edge -> edge.connectsAtom(firstAtom) && edge.connectsAtom(secondAtom));
     }
 
     public CifConformation getCopy() {

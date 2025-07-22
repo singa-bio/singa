@@ -1,5 +1,6 @@
 package bio.singa.structure.model.cif;
 
+import bio.singa.chemistry.model.CovalentBondType;
 import bio.singa.core.utility.CommutablePair;
 import bio.singa.core.utility.Pair;
 import bio.singa.structure.model.families.StructuralFamily;
@@ -126,6 +127,13 @@ public class CifLeafSubstructure implements LeafSubstructure {
     public void connect(String atomNameOfThisLeaf, String atomNameOfOtherLeaf, CifLeafSubstructure otherLeaf) {
         connectedLeafs.put(new CommutablePair<>(atomNameOfThisLeaf, atomNameOfOtherLeaf), otherLeaf.getIdentifier());
         otherLeaf.connectedLeafs.put(new CommutablePair<>(atomNameOfOtherLeaf, atomNameOfThisLeaf), getIdentifier());
+
+        // TODO is this too redundant? should everything be handled as bonds? are connectedLeafs ever used?
+        CifAtom firstAtom = getAtomByName(atomNameOfThisLeaf).get();
+        CifAtom secondAtom = otherLeaf.getAtomByName(atomNameOfOtherLeaf).get();
+        if (!getFirstConformation().hasBond(firstAtom, secondAtom)) {
+            getFirstConformation().addBondBetween(firstAtom, secondAtom);
+        }
     }
 
     public Map<Pair<String>, LabelLeafIdentifier> getConnectedLeafs() {
@@ -143,6 +151,28 @@ public class CifLeafSubstructure implements LeafSubstructure {
     @Override
     public Collection<CifAtom> getAllAtoms() {
         return getFirstConformation().getAllAtoms();
+    }
+
+    @Override
+    public Collection<CifBond> getBonds() {
+        // bond behavior is implemented at conformation level, we always delegate
+        return getFirstConformation().getBonds();
+    }
+
+    public int addBondBetween(CifBond edge, CifAtom source, CifAtom target) {
+        return getFirstConformation().addBondBetween(edge, source, target);
+    }
+
+    public int addBondBetween(CifAtom source, CifAtom target) {
+        return addBondBetween(source, target, CovalentBondType.SINGLE_BOND);
+    }
+
+    public int addBondBetween(CifAtom source, CifAtom target, CovalentBondType bondType) {
+        return getFirstConformation().addBondBetween(source, target, bondType);
+    }
+
+    public boolean hasBond(CifAtom firstAtom, CifAtom secondAtom) {
+        return getFirstConformation().hasBond(firstAtom, secondAtom);
     }
 
     @Override

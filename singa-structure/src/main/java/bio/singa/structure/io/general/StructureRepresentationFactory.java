@@ -163,8 +163,9 @@ public class StructureRepresentationFactory {
         String connectRecords = "";
         if (options.isAddConnections()) {
             connectRecords = leafSubstructures.stream()
-                    .filter(leafSubstructure -> leafSubstructure.getClass().equals(PdbLigand.class))
-                    .map(PdbLigand.class::cast)
+                    .filter(PdbLeafSubstructure.class::isInstance)
+                    .map(PdbLeafSubstructure.class::cast)
+                    .filter(PdbLeafSubstructure::isAnnotatedAsHeteroAtom)
                     .map(ConnectionToken::assemblePDBLines)
                     .collect(Collectors.joining());
         }

@@ -31,7 +31,7 @@ public class PdbStructure implements Structure {
 
     private int lastAddedAtomIdentifier;
 
-    private List<PdbLinkEntry> linkEntries;
+    private final List<PdbLinkEntry> linkEntries;
 
     private Map<String, List<String>> biologicalAssemblies;
 
@@ -254,6 +254,7 @@ public class PdbStructure implements Structure {
         linkEntries.add(linkEntry);
     }
 
+    @Override
     public List<PdbLinkEntry> getLinkEntries() {
         return linkEntries;
     }

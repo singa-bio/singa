@@ -55,8 +55,8 @@ public abstract class PdbLeafSubstructure implements LeafSubstructure {
         bonds = new HashMap<>();
     }
 
-    public PdbLeafSubstructure(AuthLeafIdentifier identifer, StructuralFamily aminoAcidFamily, String threeLetterCode) {
-        leafIdentifier = identifer;
+    public PdbLeafSubstructure(AuthLeafIdentifier identifier, StructuralFamily aminoAcidFamily, String threeLetterCode) {
+        leafIdentifier = identifier;
         family = aminoAcidFamily;
         divergingThreeLetterCode = threeLetterCode;
         atoms = new TreeMap<>();
@@ -198,16 +198,16 @@ public abstract class PdbLeafSubstructure implements LeafSubstructure {
     }
 
     /**
-     * Adds a bond connecting the the given atoms. The order of the given atoms does not matter, but is retained. The
-     * bond type can be specified beforehand and the pdbIdentifier of the edge is used as the identifer in the leaf.
+     * Adds a bond connecting to the given atoms. The order of the given atoms does not matter, but is retained. The
+     * bond type can be specified beforehand and the pdbIdentifier of the edge is used as the identifier in the leaf.
      *
      * @param edge The edge to be added.
      * @param source The source atom.
      * @param target The target atom.
-     * @return The identifer of the added edge.
+     * @return The identifier of the added edge.
      */
     public int addBondBetween(PdbBond edge, PdbAtom source, PdbAtom target) {
-        if (source == null || target == null) {
+        if (source == null || target == null || hasBond(source, target)) { // TODO needed?
             return -1;
         }
         edge.setSource(source);
@@ -223,7 +223,7 @@ public abstract class PdbLeafSubstructure implements LeafSubstructure {
     }
 
     public int addBondBetween(PdbAtom source, PdbAtom target, CovalentBondType bondType) {
-        if (source == null || target == null) {
+        if (source == null || target == null || hasBond(source, target)) { // TODO needed?
             return -1;
         }
         PdbBond bond = new PdbBond(nextEdgeIdentifier++, bondType);
