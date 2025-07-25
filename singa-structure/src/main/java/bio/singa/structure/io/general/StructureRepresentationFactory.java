@@ -1,6 +1,7 @@
 package bio.singa.structure.io.general;
 
 import bio.singa.structure.io.pdb.tokens.*;
+import bio.singa.structure.model.general.LinkEntry;
 import bio.singa.structure.model.interfaces.LeafIdentifier;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.interfaces.Model;
@@ -64,7 +65,7 @@ public class StructureRepresentationFactory {
         return sb.toString();
     }
 
-    private List<PdbLinkEntry> determineLinkEntries(Structure structure) {
+    private List<LinkEntry> determineLinkEntries(Structure structure) {
         if (structure instanceof PdbStructure) {
             return ((PdbStructure) structure).getLinkEntries();
         }
@@ -119,7 +120,7 @@ public class StructureRepresentationFactory {
      *
      * @return The title and header line for this structure.
      */
-    private String getPreamble(String pdbIdentifier, String title, List<PdbLinkEntry> linkEntries) {
+    private String getPreamble(String pdbIdentifier, String title, List<LinkEntry> linkEntries) {
         StringBuilder sb = new StringBuilder();
         // header
         if (pdbIdentifier != null && !pdbIdentifier.equals(LeafIdentifier.DEFAULT_PDB_IDENTIFIER)) {
@@ -143,7 +144,7 @@ public class StructureRepresentationFactory {
             sb.append("REMARK  80").append(System.lineSeparator());
         }
         // links
-        for (PdbLinkEntry linkEntry : linkEntries) {
+        for (LinkEntry linkEntry : linkEntries) {
             sb.append(LinkToken.assemblePDBLine(linkEntry));
         }
         return sb.toString();

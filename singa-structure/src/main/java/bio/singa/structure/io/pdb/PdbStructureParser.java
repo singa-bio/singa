@@ -5,6 +5,7 @@ import bio.singa.core.utility.Pair;
 import bio.singa.structure.io.general.StructureParserException;
 import bio.singa.structure.model.general.LeafSkeleton;
 import bio.singa.structure.model.general.AuthLeafIdentifier;
+import bio.singa.structure.model.general.LinkEntry;
 import bio.singa.structure.model.general.UniqueAtomIdentifier;
 import bio.singa.structure.model.interfaces.Structure;
 import bio.singa.structure.model.pdb.*;
@@ -358,8 +359,7 @@ public class PdbStructureParser {
         }
         // connect backbone
         if (iterator.getOptions().isCreatingEdges()) {
-            structure.getAllChains().stream()
-                    .map(PdbChain.class::cast).forEach(PdbChain::connectChainBackbone);
+            structure.getAllChains().forEach(PdbChain::connectChainBackbone);
         }
         // process link entries
         if (iterator.getOptions().enforceConnection()) {
@@ -381,7 +381,7 @@ public class PdbStructureParser {
      */
     private void annotateLinks(PdbStructure structure) {
         for (String linkLine : linkLines) {
-            PdbLinkEntry linkEntry = LinkToken.assembleLinkEntry(structure, linkLine);
+            LinkEntry linkEntry = LinkToken.assembleLinkEntry(structure, linkLine);
             if (linkEntry != null) {
                 structure.addLinkEntry(linkEntry);
             }

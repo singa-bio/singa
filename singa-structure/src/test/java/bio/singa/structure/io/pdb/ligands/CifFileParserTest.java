@@ -14,7 +14,7 @@ import bio.singa.structure.model.general.LeafSkeleton;
 import bio.singa.structure.model.interfaces.LeafIdentifier;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.interfaces.Structure;
-import bio.singa.structure.model.pdb.PdbLinkEntry;
+import bio.singa.structure.model.general.LinkEntry;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -106,7 +106,7 @@ class CifFileParserTest {
     void shouldParseInterMoleculeConnections() {
         CifStructure structure = (CifStructure) StructureParser.cif().pdbIdentifier("5oj9").settings(StructureParserOptions.Setting.ENFORCE_CONNECTIONS).parse();
 
-        List<PdbLinkEntry> links = structure.getLinkEntries();
+        List<LinkEntry> links = structure.getLinkEntries();
         assertEquals(4, links.size(), "link (struct_conn) count should match mmCIF file content");
     }
 }

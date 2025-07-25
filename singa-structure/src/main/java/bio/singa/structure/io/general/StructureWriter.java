@@ -2,7 +2,7 @@ package bio.singa.structure.io.general;
 
 import bio.singa.structure.model.cif.CifStructure;
 import bio.singa.structure.model.interfaces.*;
-import bio.singa.structure.model.pdb.PdbLinkEntry;
+import bio.singa.structure.model.general.LinkEntry;
 import bio.singa.structure.model.pdb.PdbStructure;
 import bio.singa.structure.model.general.AuthLeafIdentifier;
 import bio.singa.structure.model.general.Structures;
@@ -65,7 +65,7 @@ public class StructureWriter {
 
         PDBSubstructureStep pdbIdentifier(String pdbIdentifier);
 
-        PDBSubstructureStep links(Collection<PdbLinkEntry> linkEntries);
+        PDBSubstructureStep links(Collection<LinkEntry> linkEntries);
 
     }
 
@@ -95,7 +95,7 @@ public class StructureWriter {
         private List<LeafSubstructure> leafSubstructures;
         private String title = "";
         private String pdbIdentifier = "";
-        private List<PdbLinkEntry> linkEntries;
+        private List<LinkEntry> linkEntries;
 
         private StructureRepresentationOptions options;
         private Path destination;
@@ -139,7 +139,7 @@ public class StructureWriter {
         }
 
         @Override
-        public PDBSubstructureStep links(Collection<PdbLinkEntry> linkEntries) {
+        public PDBSubstructureStep links(Collection<LinkEntry> linkEntries) {
             this.linkEntries = reduceToRelevantLinks(linkEntries);
             return this;
         }
@@ -221,9 +221,9 @@ public class StructureWriter {
             }
         }
 
-        private List<PdbLinkEntry> reduceToRelevantLinks(Collection<PdbLinkEntry> linkEntries) {
-            ArrayList<PdbLinkEntry> reducedLinkEntries = new ArrayList<>();
-            for (PdbLinkEntry linkEntry : linkEntries) {
+        private List<LinkEntry> reduceToRelevantLinks(Collection<LinkEntry> linkEntries) {
+            ArrayList<LinkEntry> reducedLinkEntries = new ArrayList<>();
+            for (LinkEntry linkEntry : linkEntries) {
                 if (leafSubstructures.contains(linkEntry.getFirstLeafSubstructure()) && leafSubstructures.contains(linkEntry.getSecondLeafSubstructure())) {
                     reducedLinkEntries.add(linkEntry);
                 }

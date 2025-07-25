@@ -4,7 +4,7 @@ import bio.singa.structure.model.general.AuthLeafIdentifier;
 import bio.singa.structure.model.general.LabelLeafIdentifier;
 import bio.singa.structure.model.general.UniqueAtomIdentifier;
 import bio.singa.structure.model.interfaces.*;
-import bio.singa.structure.model.pdb.PdbLinkEntry;
+import bio.singa.structure.model.general.LinkEntry;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -20,7 +20,7 @@ public class CifStructure implements Structure {
 
     private final Map<AuthLeafIdentifier, LabelLeafIdentifier> authMapping;
 
-    private final List<PdbLinkEntry> linkEntries;
+    private final List<LinkEntry> linkEntries;
 
     private Map<String, List<String>> biologicalAssemblies;
 
@@ -254,12 +254,12 @@ public class CifStructure implements Structure {
         this.resolution = resolution;
     }
 
-    public void addLinkEntry(PdbLinkEntry linkEntry) {
+    public void addLinkEntry(LinkEntry linkEntry) {
         linkEntries.add(linkEntry);
     }
 
     @Override
-    public List<PdbLinkEntry> getLinkEntries() {
+    public List<LinkEntry> getLinkEntries() {
         return linkEntries;
     }
 

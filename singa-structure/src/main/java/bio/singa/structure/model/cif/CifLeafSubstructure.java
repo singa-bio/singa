@@ -131,9 +131,7 @@ public class CifLeafSubstructure implements LeafSubstructure {
         // TODO is this too redundant? should everything be handled as bonds? are connectedLeafs ever used?
         CifAtom firstAtom = getAtomByName(atomNameOfThisLeaf).get();
         CifAtom secondAtom = otherLeaf.getAtomByName(atomNameOfOtherLeaf).get();
-        if (!getFirstConformation().hasBond(firstAtom, secondAtom)) {
-            getFirstConformation().addBondBetween(firstAtom, secondAtom);
-        }
+        getFirstConformation().addBondBetween(firstAtom, secondAtom);
     }
 
     public Map<Pair<String>, LabelLeafIdentifier> getConnectedLeafs() {

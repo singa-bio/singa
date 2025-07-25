@@ -207,7 +207,7 @@ public abstract class PdbLeafSubstructure implements LeafSubstructure {
      * @return The identifier of the added edge.
      */
     public int addBondBetween(PdbBond edge, PdbAtom source, PdbAtom target) {
-        if (source == null || target == null || hasBond(source, target)) { // TODO needed?
+        if (source == null || target == null) {
             return -1;
         }
         edge.setSource(source);
@@ -223,7 +223,7 @@ public abstract class PdbLeafSubstructure implements LeafSubstructure {
     }
 
     public int addBondBetween(PdbAtom source, PdbAtom target, CovalentBondType bondType) {
-        if (source == null || target == null || hasBond(source, target)) { // TODO needed?
+        if (source == null || target == null) {
             return -1;
         }
         PdbBond bond = new PdbBond(nextEdgeIdentifier++, bondType);

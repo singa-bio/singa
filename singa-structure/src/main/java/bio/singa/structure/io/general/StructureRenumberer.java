@@ -4,6 +4,7 @@ import bio.singa.structure.model.cif.CifBond;
 import bio.singa.structure.model.cif.CifChain;
 import bio.singa.structure.model.cif.CifLeafSubstructure;
 import bio.singa.structure.model.general.AuthLeafIdentifier;
+import bio.singa.structure.model.general.LinkEntry;
 import bio.singa.structure.model.general.UniqueAtomIdentifier;
 import bio.singa.structure.model.interfaces.*;
 import bio.singa.structure.model.pdb.*;
@@ -186,7 +187,7 @@ public class StructureRenumberer {
                         PdbLeafSubstructure renumberedLeafSubstructure = renumberAtomsInLeafSubstructure(renumberedChain.getChainIdentifier(), leafSubstructure);
                         renumberedChain.addLeafSubstructure(renumberedLeafSubstructure);
                     }
-                } // TODO cif support needed?
+                }
             }
         }
         return renumberLinkEntries(renumberedStructure);
@@ -248,7 +249,7 @@ public class StructureRenumberer {
         if (structure.getLinkEntries() == null) {
             return structure;
         }
-        for (PdbLinkEntry linkEntry : structure.getLinkEntries()) {
+        for (LinkEntry linkEntry : structure.getLinkEntries()) {
             Optional<Map.Entry<UniqueAtomIdentifier, PdbAtom>> firstAtomEntry = structure.getUniqueAtomEntry(atomIdentifierMapping.get(linkEntry.getFirstAtom().getAtomIdentifier()));
             Optional<Map.Entry<UniqueAtomIdentifier, PdbAtom>> secondAtomEntry = structure.getUniqueAtomEntry(atomIdentifierMapping.get(linkEntry.getSecondAtom().getAtomIdentifier()));
             if (firstAtomEntry.isPresent() && secondAtomEntry.isPresent()) {
@@ -258,7 +259,7 @@ public class StructureRenumberer {
                 Atom secondAtom = secondAtomEntry.get().getValue();
                 UniqueAtomIdentifier secondUniqueAtomIdentifier = secondAtomEntry.get().getKey();
                 LeafSubstructure secondLeaf = structure.getLeafSubstructure(secondUniqueAtomIdentifier.getLeafIdentifier()).get();
-                structure.addLinkEntry((new PdbLinkEntry(firstLeaf, firstAtom, secondLeaf, secondAtom)));
+                structure.addLinkEntry((new LinkEntry(firstLeaf, firstAtom, secondLeaf, secondAtom)));
             }
         }
         return structure;

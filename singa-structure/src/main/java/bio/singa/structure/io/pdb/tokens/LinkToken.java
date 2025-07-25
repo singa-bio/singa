@@ -3,7 +3,7 @@ package bio.singa.structure.io.pdb.tokens;
 import bio.singa.core.utility.Range;
 import bio.singa.structure.model.interfaces.Atom;
 import bio.singa.structure.model.pdb.PdbLeafSubstructure;
-import bio.singa.structure.model.pdb.PdbLinkEntry;
+import bio.singa.structure.model.general.LinkEntry;
 import bio.singa.structure.model.pdb.PdbStructure;
 import bio.singa.structure.model.general.AuthLeafIdentifier;
 import org.slf4j.Logger;
@@ -51,7 +51,7 @@ public enum LinkToken implements PDBToken {
         this.justification = justification;
     }
 
-    public static PdbLinkEntry assembleLinkEntry(PdbStructure pdbStructure, String linkLine) {
+    public static LinkEntry assembleLinkEntry(PdbStructure pdbStructure, String linkLine) {
         // process first atom
         String firstAtomName = FIRST_ATOM_NAME.extract(linkLine);
         String firstAtomChainIdentifier = FIRST_ATOM_CHAIN_IDENTIFIER.extract(linkLine);
@@ -82,10 +82,10 @@ public enum LinkToken implements PDBToken {
         if (secondAtom == null) {
             return null;
         }
-        return new PdbLinkEntry(firstLeafSubstructureOptional.get(), firstAtom, secondLeafSubstructureOptional.get(), secondAtom);
+        return new LinkEntry(firstLeafSubstructureOptional.get(), firstAtom, secondLeafSubstructureOptional.get(), secondAtom);
     }
 
-    public static String assemblePDBLine(PdbLinkEntry link) {
+    public static String assemblePDBLine(LinkEntry link) {
         StringBuilder sb = new StringBuilder();
         sb.append(RECORD_TYPE.createTokenString("LINK"))
                 .append("      ")

@@ -1,4 +1,4 @@
-package bio.singa.structure.model.pdb;
+package bio.singa.structure.model.general;
 
 import bio.singa.structure.model.interfaces.Atom;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
@@ -6,14 +6,14 @@ import bio.singa.structure.model.interfaces.LeafSubstructure;
 /**
  * @author cl
  */
-public class PdbLinkEntry {
+public class LinkEntry {
 
     private LeafSubstructure firstLeafSubstructure;
     private Atom firstAtom;
     private LeafSubstructure secondLeafSubstructure;
     private Atom secondAtom;
 
-    public PdbLinkEntry(LeafSubstructure firstLeafSubstructure, Atom firstAtom, LeafSubstructure secondLeafSubstructure, Atom secondAtom) {
+    public LinkEntry(LeafSubstructure firstLeafSubstructure, Atom firstAtom, LeafSubstructure secondLeafSubstructure, Atom secondAtom) {
         this.firstLeafSubstructure = firstLeafSubstructure;
         this.firstAtom = firstAtom;
         this.secondLeafSubstructure = secondLeafSubstructure;

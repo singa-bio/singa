@@ -4,6 +4,7 @@ import bio.singa.chemistry.model.elements.ElementProvider;
 import bio.singa.mathematics.vectors.Vector3D;
 import bio.singa.structure.model.families.StructuralFamily;
 import bio.singa.structure.model.general.LabelLeafIdentifier;
+import bio.singa.structure.model.general.LinkEntry;
 import bio.singa.structure.model.general.UniqueAtomIdentifier;
 import bio.singa.structure.model.interfaces.*;
 
@@ -31,7 +32,7 @@ public class PdbStructure implements Structure {
 
     private int lastAddedAtomIdentifier;
 
-    private final List<PdbLinkEntry> linkEntries;
+    private final List<LinkEntry> linkEntries;
 
     private Map<String, List<String>> biologicalAssemblies;
 
@@ -250,12 +251,12 @@ public class PdbStructure implements Structure {
         }
     }
 
-    public void addLinkEntry(PdbLinkEntry linkEntry) {
+    public void addLinkEntry(LinkEntry linkEntry) {
         linkEntries.add(linkEntry);
     }
 
     @Override
-    public List<PdbLinkEntry> getLinkEntries() {
+    public List<LinkEntry> getLinkEntries() {
         return linkEntries;
     }
 

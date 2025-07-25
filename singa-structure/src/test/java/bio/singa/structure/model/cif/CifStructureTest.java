@@ -3,6 +3,7 @@ package bio.singa.structure.model.cif;
 import bio.singa.core.utility.Pair;
 import bio.singa.mathematics.vectors.Vector3D;
 import bio.singa.structure.io.general.StructureParser;
+import bio.singa.structure.io.general.StructureParserOptions;
 import bio.singa.structure.model.general.LabelLeafIdentifier;
 import bio.singa.structure.model.interfaces.*;
 import bio.singa.structure.model.general.AuthLeafIdentifier;
@@ -249,6 +250,7 @@ class CifStructureTest {
         String structureId = "5l9d";
         Structure structure = StructureParser.cif()
                 .pdbIdentifier(structureId)
+                .settings(StructureParserOptions.Setting.ENFORCE_CONNECTIONS)
                 .parse();
         // ASN B-26 connected to NAG K-0
         LabelLeafIdentifier leafIdentifier = LeafIdentifier.label()
