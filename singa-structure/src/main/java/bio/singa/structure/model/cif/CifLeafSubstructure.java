@@ -1,8 +1,6 @@
 package bio.singa.structure.model.cif;
 
 import bio.singa.chemistry.model.CovalentBondType;
-import bio.singa.core.utility.CommutablePair;
-import bio.singa.core.utility.Pair;
 import bio.singa.structure.model.families.StructuralFamily;
 import bio.singa.structure.model.general.AuthLeafIdentifier;
 import bio.singa.structure.model.general.LabelLeafIdentifier;
@@ -34,11 +32,6 @@ public class CifLeafSubstructure implements LeafSubstructure {
     private final Map<String, CifConformation> conformations;
 
     /**
-     * pair of atom names that link the connected leaves
-     */
-    private final Map<Pair<String>, LabelLeafIdentifier> connectedLeafs;
-
-    /**
      * Remembers if this leaf was an HETATOM entry
      */
     private boolean annotatedAsHetAtom;
@@ -52,7 +45,6 @@ public class CifLeafSubstructure implements LeafSubstructure {
         this.leafIdentifier = leafIdentifier;
         this.authLeafIdentifier = authLeafIdentifier;
         conformations = new LinkedHashMap<>();
-        connectedLeafs = new HashMap<>();
     }
 
     public CifLeafSubstructure(CifLeafSubstructure cifLeafSubstructure) {
@@ -64,7 +56,6 @@ public class CifLeafSubstructure implements LeafSubstructure {
         for (Map.Entry<String, CifConformation> entry : cifLeafSubstructure.conformations.entrySet()) {
             conformations.put(entry.getKey(), entry.getValue().getCopy());
         }
-        connectedLeafs.putAll(cifLeafSubstructure.connectedLeafs);
     }
 
     void postProcessConformations() {
@@ -125,17 +116,9 @@ public class CifLeafSubstructure implements LeafSubstructure {
     }
 
     public void connect(String atomNameOfThisLeaf, String atomNameOfOtherLeaf, CifLeafSubstructure otherLeaf) {
-        connectedLeafs.put(new CommutablePair<>(atomNameOfThisLeaf, atomNameOfOtherLeaf), otherLeaf.getIdentifier());
-        otherLeaf.connectedLeafs.put(new CommutablePair<>(atomNameOfOtherLeaf, atomNameOfThisLeaf), getIdentifier());
-
-        // TODO is this too redundant? should everything be handled as bonds? are connectedLeafs ever used?
         CifAtom firstAtom = getAtomByName(atomNameOfThisLeaf).get();
         CifAtom secondAtom = otherLeaf.getAtomByName(atomNameOfOtherLeaf).get();
         getFirstConformation().addBondBetween(firstAtom, secondAtom);
-    }
-
-    public Map<Pair<String>, LabelLeafIdentifier> getConnectedLeafs() {
-        return connectedLeafs;
     }
 
     public boolean isPartOfPolymer() {

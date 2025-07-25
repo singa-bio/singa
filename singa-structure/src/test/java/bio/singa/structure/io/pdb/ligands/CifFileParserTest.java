@@ -82,10 +82,10 @@ class CifFileParserTest {
                 .pdbIdentifier("3cjt")
                 .parse();
 
-        LeafIdentifier labelIdentifier = LeafIdentifier.fromString("LABEL:3cjt-1-AA-0");
+        LeafIdentifier labelIdentifier = LeafIdentifier.fromString("LABEL:3cjt-1-AA-256");
         assertInstanceOf(LabelLeafIdentifier.class,  labelIdentifier);
         assertEquals("AA", labelIdentifier.getChainIdentifier());
-        assertEquals(0, labelIdentifier.getSerial());
+        assertEquals(256, labelIdentifier.getSerial());
         LeafSubstructure labelSubstructure = structure.getLeafSubstructure(labelIdentifier).orElseThrow(() -> new RuntimeException("failed to select " + labelIdentifier));
         assertFalse(StructuralFamilies.Nucleotides.isNucleotide(labelSubstructure.getFamily()));
         assertFalse(StructuralFamilies.AminoAcids.isAminoAcid(labelSubstructure.getFamily()));
@@ -100,7 +100,7 @@ class CifFileParserTest {
     }
 
     /**
-     * Covers info similar to CONECT records. Therefor, we parse struct_conn and chem_comp_bond.
+     * Covers info similar to CONECT records.
      */
     @Test
     void shouldParseInterMoleculeConnections() {
@@ -108,5 +108,10 @@ class CifFileParserTest {
 
         List<LinkEntry> links = structure.getLinkEntries();
         assertEquals(4, links.size(), "link (struct_conn) count should match mmCIF file content");
+
+        for (LinkEntry link : links) {
+            assertFalse(link.getFirstLeafSubstructure().getBonds().isEmpty());
+            assertFalse(link.getSecondLeafSubstructure().getBonds().isEmpty());
+        }
     }
 }

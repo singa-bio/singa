@@ -97,6 +97,8 @@ public interface Structure extends LeafSubstructureContainer, ChainContainer {
         return getStructureIdentifier();
     }
 
+    void addLinkEntry(LinkEntry linkEntry);
+
     /**
      * Information on inter-molecule interactions, of either non-covalent or covalent nature.
      * @return a collection link entries

@@ -1,7 +1,10 @@
 package bio.singa.structure.model.interfaces;
 
+import bio.singa.chemistry.model.CovalentBondType;
 import bio.singa.mathematics.vectors.Vector3D;
 import bio.singa.mathematics.vectors.Vectors3D;
+import bio.singa.structure.model.cif.CifAtom;
+import bio.singa.structure.model.cif.CifBond;
 import bio.singa.structure.model.families.StructuralFamily;
 import bio.singa.structure.model.general.AuthLeafIdentifier;
 import bio.singa.structure.model.general.LabelLeafIdentifier;

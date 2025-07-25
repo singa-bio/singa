@@ -116,7 +116,7 @@ public class StructureRenumberer {
 
         }
 
-        return renumberLinkEntries(renumberedStructure);
+        return renumberLinkEntries(structure, renumberedStructure);
     }
 
     private static <ChainType extends Chain> int numberOfAminoAcids(ChainType chain) {
@@ -190,7 +190,7 @@ public class StructureRenumberer {
                 }
             }
         }
-        return renumberLinkEntries(renumberedStructure);
+        return renumberLinkEntries(structure, renumberedStructure);
     }
 
     private PdbLeafSubstructure renumberAtomsInLeafSubstructure(String chainIdentifier, LeafSubstructure leafSubstructure) {
@@ -245,21 +245,20 @@ public class StructureRenumberer {
     }
 
 
-    private PdbStructure renumberLinkEntries(PdbStructure structure) {
-        if (structure.getLinkEntries() == null) {
-            return structure;
-        }
-        for (LinkEntry linkEntry : structure.getLinkEntries()) {
+    private PdbStructure renumberLinkEntries(Structure original, PdbStructure structure) {
+        for (LinkEntry linkEntry : original.getLinkEntries()) {
             Optional<Map.Entry<UniqueAtomIdentifier, PdbAtom>> firstAtomEntry = structure.getUniqueAtomEntry(atomIdentifierMapping.get(linkEntry.getFirstAtom().getAtomIdentifier()));
             Optional<Map.Entry<UniqueAtomIdentifier, PdbAtom>> secondAtomEntry = structure.getUniqueAtomEntry(atomIdentifierMapping.get(linkEntry.getSecondAtom().getAtomIdentifier()));
             if (firstAtomEntry.isPresent() && secondAtomEntry.isPresent()) {
-                Atom firstAtom = firstAtomEntry.get().getValue();
+                PdbAtom firstAtom = firstAtomEntry.get().getValue();
                 UniqueAtomIdentifier firstUniqueAtomIdentifier = firstAtomEntry.get().getKey();
-                LeafSubstructure firstLeaf = structure.getLeafSubstructure(firstUniqueAtomIdentifier.getLeafIdentifier()).get();
-                Atom secondAtom = secondAtomEntry.get().getValue();
+                PdbLeafSubstructure firstLeaf = structure.getLeafSubstructure(firstUniqueAtomIdentifier.getLeafIdentifier()).get();
+                PdbAtom secondAtom = secondAtomEntry.get().getValue();
                 UniqueAtomIdentifier secondUniqueAtomIdentifier = secondAtomEntry.get().getKey();
-                LeafSubstructure secondLeaf = structure.getLeafSubstructure(secondUniqueAtomIdentifier.getLeafIdentifier()).get();
+                PdbLeafSubstructure secondLeaf = structure.getLeafSubstructure(secondUniqueAtomIdentifier.getLeafIdentifier()).get();
                 structure.addLinkEntry((new LinkEntry(firstLeaf, firstAtom, secondLeaf, secondAtom)));
+                firstLeaf.addBondBetween(firstAtom, secondAtom);
+                secondLeaf.addBondBetween(secondAtom, firstAtom);
             }
         }
         return structure;
@@ -306,7 +305,7 @@ public class StructureRenumberer {
                 }
             }
         }
-        return renumberLinkEntries(renumberedStructure);
+        return renumberLinkEntries(structure, renumberedStructure);
     }
 
     private void copyAtomsInLeafSubstructure(LeafSubstructure leafSubstructure, PdbLeafSubstructure renumberedLeafSubstructure) {

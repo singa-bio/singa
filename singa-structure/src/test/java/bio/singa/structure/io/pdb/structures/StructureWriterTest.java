@@ -92,7 +92,7 @@ class StructureWriterTest {
         // assert CONECT record behavior
         // note that these are de-duplicate (i.e. no explicit back references for some of the bidirectional connections)
         System.out.println(resultingString);
-        assertEquals(55, resultingString.split(CONECT_RECORD).length);
+        assertEquals(56, resultingString.split(CONECT_RECORD).length);
     }
 
     @Test
@@ -145,5 +145,41 @@ class StructureWriterTest {
         // note that these are de-duplicate (i.e. no explicit back references for some of the bidirectional connections)
         // additionally, the explicit renumbering shifts the content of CONECT records around (without losing information)
         assertEquals(55, resultingString.split(CONECT_RECORD).length);
+    }
+
+    @Test
+    void shouldHonorMetalCoordination() {
+        String pdbIdentifier = "5qrf";
+
+        System.out.println("parsing");
+        Structure pdbStructure = StructureParser.pdb()
+                .pdbIdentifier(pdbIdentifier)
+                .settings(StructureParserOptions.Setting.ENFORCE_CONNECTIONS)
+                .parse();
+        assertEquals(21, pdbStructure.getLinkEntries().size());
+
+        System.out.println("creating renumbered pdb representation");
+        String pdbResultingString = StructureWriter.pdb()
+                .structure(pdbStructure)
+                .settings(APPEND_ALL_LIGAND_CONNECTIONS)
+                .writeToString();
+
+        assertEquals(26, pdbResultingString.split(CONECT_RECORD).length);
+
+        System.out.println("parsing");
+        Structure cifStructure = StructureParser.cif()
+                .pdbIdentifier(pdbIdentifier)
+                .settings(StructureParserOptions.Setting.ENFORCE_CONNECTIONS)
+                .parse();
+        assertEquals(21, cifStructure.getLinkEntries().size());
+
+        System.out.println("creating renumbered pdb representation");
+        String cifResultingString = StructureWriter.pdb()
+                .structure(cifStructure)
+                .settings(APPEND_ALL_LIGAND_CONNECTIONS)
+                .writeToString();
+
+        // same connections, represented slightly differently
+        assertEquals(27, cifResultingString.split(CONECT_RECORD).length);
     }
 }

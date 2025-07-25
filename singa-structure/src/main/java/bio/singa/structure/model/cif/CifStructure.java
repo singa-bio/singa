@@ -254,6 +254,7 @@ public class CifStructure implements Structure {
         this.resolution = resolution;
     }
 
+    @Override
     public void addLinkEntry(LinkEntry linkEntry) {
         linkEntries.add(linkEntry);
     }

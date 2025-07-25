@@ -1,6 +1,5 @@
 package bio.singa.structure.model.cif;
 
-import bio.singa.core.utility.Pair;
 import bio.singa.mathematics.vectors.Vector3D;
 import bio.singa.structure.io.general.StructureParser;
 import bio.singa.structure.io.general.StructureParserOptions;
@@ -12,6 +11,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -35,6 +36,7 @@ class CifStructureTest {
         // only available as cif
         structure7l7y = ((CifStructure) StructureParser.cif()
                 .pdbIdentifier("7l7y")
+                .settings(StructureParserOptions.Setting.CIF_COALECE_LIGANDS) // test below expects water in a single leaf
                 .parse());
     }
 
@@ -199,13 +201,13 @@ class CifStructureTest {
 
     @Test
     void getLigand() {
-        final Optional<Ligand> nucleotide = structure1c0a.getLigand(new LabelLeafIdentifier("1c0a", 1, "D", 0));
+        final Optional<Ligand> nucleotide = structure1c0a.getLigand(new LabelLeafIdentifier("1c0a", 1, "D", 800));
         if (!nucleotide.isPresent()) {
             fail("Optional leaf substructure was empty.");
         }
         final LeafIdentifier identifier = nucleotide.get().getIdentifier();
         assertEquals("D", identifier.getChainIdentifier());
-        assertEquals(0, identifier.getSerial());
+        assertEquals(800, identifier.getSerial());
         assertEquals("AMP", nucleotide.get().getThreeLetterCode());
     }
 
@@ -267,9 +269,14 @@ class CifStructureTest {
         assertNotNull(modificationChain);
         assertEquals("K", modificationChain);
         // check connected atoms
-        Pair<String> connectedAtoms = leaf.getConnectedLeafs().keySet().iterator().next();
-        assertEquals("ND2", connectedAtoms.getFirst());
-        assertEquals("C1", connectedAtoms.getSecond());
+        Set<String> connectedAtoms = leaf.getBonds()
+                .stream()
+                .flatMap(b -> Stream.of(b.getSource(), b.getTarget()))
+                .filter(a -> !leaf.getAllAtoms().contains(a))
+                .map(Atom::getAtomName)
+                .collect(Collectors.toSet());
+        assertTrue(connectedAtoms.contains("N"));
+        assertTrue(connectedAtoms.contains("C1"));
     }
 
 

@@ -11,6 +11,7 @@ import bio.singa.structure.model.general.LinkEntry;
 import org.rcsb.cif.model.FloatColumn;
 import org.rcsb.cif.model.IntColumn;
 import org.rcsb.cif.model.StrColumn;
+import org.rcsb.cif.model.ValueKind;
 import org.rcsb.cif.schema.mm.*;
 
 import java.util.*;
@@ -311,82 +312,35 @@ public class CifConverter {
         if (!enforceConnection) return;
 
         StructConn structConn = data.getStructConn();
-        // connection type e.g. disulf, covale, ...
-        // StrColumn connTypeId = structConn.getConnTypeId();
-        // name for PTMs
-        StrColumn pdbxRole = structConn.getPdbxRole();
-        // chain first
-        StrColumn ptnr1LabelAsymId = structConn.getPtnr1LabelAsymId();
-        // leaf serial first
-        IntColumn ptnr1LabelSeqId = structConn.getPtnr1LabelSeqId();
-        // auth leaf serial first
-        IntColumn ptnr1AuthSeqId = structConn.getPtnr1AuthSeqId();
-        // atom name first
-        StrColumn ptnr1LabelAtomId = structConn.getPtnr1LabelAtomId();
-        // chain second
-        StrColumn ptnr2LabelAsymId = structConn.getPtnr2LabelAsymId();
-        // leaf serial second
-        IntColumn ptnr2LabelSeqId = structConn.getPtnr2LabelSeqId();
-        // auth leaf serial first
-        IntColumn ptnr2AuthSeqId = structConn.getPtnr2AuthSeqId();
-        // atom name first
-        StrColumn ptnr2LabelAtomId = structConn.getPtnr2LabelAtomId();
+        if (!structConn.isDefined()) return;
 
         for (int row = 0; row < structConn.getRowCount(); row++) {
-            String descriptor = "";
-            if (pdbxRole.isDefined()) {
-                descriptor = pdbxRole.get(row);
-            }
-            String firstChainId = ptnr1LabelAsymId.get(row);
-            int firstSerial = ptnr1LabelSeqId.get(row);
-            // in branched case there is some inconsistency with the sequence id
-            if (firstSerial == 0 && structure.getFirstModel().getChain(firstChainId).get().getType().equals(CifEntityType.BRANCHED)) {
-                firstSerial = ptnr1AuthSeqId.get(row);
-            }
-            String firstAtomName = ptnr1LabelAtomId.get(row);
-            String secondChainId = ptnr2LabelAsymId.get(row);
-            int secondSerial = ptnr2LabelSeqId.get(row);
-            // in branched case there is some inconsistency with the sequence id
-            if (secondSerial == 0 && structure.getFirstModel().getChain(secondChainId).get().getType().equals(CifEntityType.BRANCHED)) {
-                secondSerial = ptnr2AuthSeqId.get(row);
-            }
-            String secondAtomName = ptnr2LabelAtomId.get(row);
+            AuthLeafIdentifier firstIdentifier = LeafIdentifier.auth()
+                    .structure(structure.getStructureIdentifier())
+                    .model(1)
+                    .chain(structConn.getPtnr1AuthAsymId().get(row))
+                    .serial(structConn.getPtnr1AuthSeqId().get(row))
+                    .insertionCode(structConn.getPdbxPtnr1PDBInsCode().getValueKind(row) == ValueKind.PRESENT ? structConn.getPdbxPtnr1PDBInsCode().get(row).charAt(0) : AuthLeafIdentifier.DEFAULT_INSERTION_CODE);
+            CifLeafSubstructure firstLeaf = structure.getLeafSubstructure(firstIdentifier).get();
 
+            AuthLeafIdentifier secondIdentifier = LeafIdentifier.auth()
+                    .structure(structure.getStructureIdentifier())
+                    .model(1)
+                    .chain(structConn.getPtnr2AuthAsymId().get(row))
+                    .serial(structConn.getPtnr2AuthSeqId().get(row))
+                    .insertionCode(structConn.getPdbxPtnr2PDBInsCode().getValueKind(row) == ValueKind.PRESENT ? structConn.getPdbxPtnr2PDBInsCode().get(row).charAt(0) : AuthLeafIdentifier.DEFAULT_INSERTION_CODE);
+            CifLeafSubstructure secondLeaf = structure.getLeafSubstructure(secondIdentifier).get();
 
-            for (CifModel model : structure.getAllModels()) {
-                // create leaf ids
-                LabelLeafIdentifier firstLeafIdentifier = LeafIdentifier.label()
-                        .model(model.getModelIdentifier())
-                        .chain(firstChainId)
-                        .serial(firstSerial);
-                LabelLeafIdentifier secondLeafIdentifier = LeafIdentifier.label()
-                        .model(model.getModelIdentifier())
-                        .chain(secondChainId)
-                        .serial(secondSerial);
-                // get leafs
-                Optional<CifLeafSubstructure> optionalFirstLeaf = model.getLeafSubstructure(firstLeafIdentifier);
-                Optional<CifLeafSubstructure> optionalSecondLeaf = model.getLeafSubstructure(secondLeafIdentifier);
-                // either leaf not present
-                if (!optionalFirstLeaf.isPresent() || !optionalSecondLeaf.isPresent()) {
-                    continue;
-                }
-                CifLeafSubstructure firstLeaf = optionalFirstLeaf.get();
-                CifLeafSubstructure secondLeaf = optionalSecondLeaf.get();
-                Optional<CifAtom> firstAtom = firstLeaf.getAtomByName(firstAtomName);
-                Optional<CifAtom> secondAtom = secondLeaf.getAtomByName(secondAtomName);
-                // either atom not present
-                if (!firstAtom.isPresent() || !secondAtom.isPresent()) {
-                    continue;
-                }
-                // assign connection
-                structure.addLinkEntry(new LinkEntry(firstLeaf, firstAtom.get(), secondLeaf, secondAtom.get()));
-                firstLeaf.connect(firstAtom.get().getAtomName(), secondAtom.get().getAtomName(), secondLeaf);
-                secondLeaf.connect(secondAtom.get().getAtomName(), firstAtom.get().getAtomName(), firstLeaf);
-                if (descriptor.isEmpty()) {
-                    descriptor = "modificaiton " + modificationCounter.getAndIncrement();
-                }
-                setModification(descriptor, firstLeaf, secondLeaf);
+            String descriptor = structConn.getPdbxRole().get(row);
+            CifAtom firstAtom = firstLeaf.getAtomByName(structConn.getPtnr1LabelAtomId().get(row)).get();
+            CifAtom secondAtom = secondLeaf.getAtomByName(structConn.getPtnr2LabelAtomId().get(row)).get();
+            structure.addLinkEntry(new LinkEntry(firstLeaf, firstAtom, secondLeaf, secondAtom));
+            firstLeaf.getFirstConformation().addBondBetween(firstAtom, secondAtom);
+            secondLeaf.getFirstConformation().addBondBetween(secondAtom, firstAtom);
+            if (descriptor.isEmpty()) {
+                descriptor = "modification " + modificationCounter.getAndIncrement();
             }
+            setModification(descriptor, firstLeaf, secondLeaf);
         }
     }
 

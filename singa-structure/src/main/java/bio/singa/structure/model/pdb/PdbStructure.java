@@ -251,6 +251,7 @@ public class PdbStructure implements Structure {
         }
     }
 
+    @Override
     public void addLinkEntry(LinkEntry linkEntry) {
         linkEntries.add(linkEntry);
     }

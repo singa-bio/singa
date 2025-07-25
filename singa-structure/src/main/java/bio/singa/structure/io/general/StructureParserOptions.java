@@ -42,7 +42,7 @@ public class StructureParserOptions {
      */
     private boolean enforceConnection = false;
 
-    private boolean coalesceLigands = true;
+    private boolean coalesceLigands = false;
 
     /**
      * Create a new Options object using enum constants.
