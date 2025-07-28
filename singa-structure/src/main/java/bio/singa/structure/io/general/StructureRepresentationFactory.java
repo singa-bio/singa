@@ -7,6 +7,7 @@ import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.interfaces.Model;
 import bio.singa.structure.model.interfaces.Structure;
 import bio.singa.structure.model.pdb.*;
+import uk.ac.ebi.beam.Bond;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -164,9 +165,8 @@ public class StructureRepresentationFactory {
         String connectRecords = "";
         if (options.isAddConnections()) {
             connectRecords = leafSubstructures.stream()
-                    .filter(PdbLeafSubstructure.class::isInstance)
                     .map(PdbLeafSubstructure.class::cast)
-                    .filter(PdbLeafSubstructure::isAnnotatedAsHeteroAtom)
+                    .filter(PdbLeafSubstructure::isAnnotatedAsHeteroAtom) // TODO this omits inter-molecule connections for polymeric components (e.g. disulfide bridges), ideally these would be included
                     .map(ConnectionToken::assemblePDBLines)
                     .collect(Collectors.joining());
         }

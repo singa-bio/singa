@@ -137,7 +137,7 @@ public class StructureRenumberer {
             Map<String, String> chainAliasMap = new HashMap<>();
             // TODO implement setting on how to sort
             List<? extends Chain> chainList = new ArrayList<Chain>(model.getAllChains());
-            chainList.sort(Comparator.comparing(Chain::getNumberOfLeafSubstructures).reversed());
+            // chainList.sort(Comparator.comparing(Chain::getNumberOfLeafSubstructures).reversed());
 
             for (Chain chain : chainList) {
                 String chainIdentifier;

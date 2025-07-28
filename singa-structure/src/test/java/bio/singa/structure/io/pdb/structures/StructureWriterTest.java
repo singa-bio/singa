@@ -25,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class StructureWriterTest {
     private static final String CONECT_RECORD = "CONECT";
+    private static final String LINK_RECORD = "LINK";
 
     @Test
     void writeCifToPdb() {
@@ -164,7 +165,9 @@ class StructureWriterTest {
                 .settings(APPEND_ALL_LIGAND_CONNECTIONS)
                 .writeToString();
 
+        assertNonpolyWaterOrder(pdbResultingString);
         assertEquals(26, pdbResultingString.split(CONECT_RECORD).length);
+        assertEquals(22, pdbResultingString.split(LINK_RECORD).length);
 
         System.out.println("parsing");
         Structure cifStructure = StructureParser.cif()
@@ -179,7 +182,28 @@ class StructureWriterTest {
                 .settings(APPEND_ALL_LIGAND_CONNECTIONS)
                 .writeToString();
 
-        // same connections, represented slightly differently
-        assertEquals(27, cifResultingString.split(CONECT_RECORD).length);
+        assertNonpolyWaterOrder(cifResultingString);
+        assertEquals(27, cifResultingString.split(CONECT_RECORD).length); // same connections, represented slightly differently
+        assertEquals(22, cifResultingString.split(LINK_RECORD).length);
+    }
+
+    private void assertNonpolyWaterOrder(String content) {
+        int atomId = 0;
+        boolean waterLast = false;
+        for (String line : content.split("\n")) {
+            if (!line.startsWith("ATOM") && !line.startsWith("HETATM")) continue;
+
+            int id = Integer.parseInt(line.substring(6, 11).trim());
+            if (id > atomId) {
+                atomId = id;
+            } else {
+                fail("atom " + id + " followed on " + atomId + " -- atom identifiers are expected to strictly monotonically increased with each line");
+            }
+
+            String compId = line.substring(17, 20).trim();
+            waterLast = compId.equals("HOH");
+        }
+
+        assertTrue(waterLast, "water is expected to appear last in the outputted file");
     }
 }
