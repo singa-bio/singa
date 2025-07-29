@@ -108,13 +108,7 @@ public class CifConformation implements AtomContainer {
         if (source == null || target == null || hasBond(source, target)) {
             return -1;
         }
-        CifBond bond = new CifBond(nextEdgeIdentifier++, bondType);
-        bond.setSource(source);
-        bond.setTarget(target);
-        bonds.put(bond.getIdentifier(), bond);
-        // source.addNeighbour(target);
-        // target.addNeighbour(source);
-        return bond.getIdentifier();
+        return addBondBetween(new CifBond(nextEdgeIdentifier++, bondType), source, target);
     }
 
     public boolean hasBond(CifAtom firstAtom, CifAtom secondAtom) {

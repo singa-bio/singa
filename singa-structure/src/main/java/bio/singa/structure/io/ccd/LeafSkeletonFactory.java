@@ -37,8 +37,11 @@ public class LeafSkeletonFactory {
         }
         // create new skeleton
         initializeNewLeafSkeleton(identifier);
-        // get additional information
-        cifFile = ccdParsingBehavior.getCcdInformation(identifier);
+        // special treatment for LIG placeholder replacing 5-character ligands, which lacks CCD info
+        if (!"LIG".equals(identifier)) {
+            // get additional information
+            cifFile = ccdParsingBehavior.getCcdInformation(identifier);
+        }
         // return if no cif file can (should not) be found
         if (cifFile == null) {
             determineStructuralFamilyWithoutAdditionalInformation(identifier);

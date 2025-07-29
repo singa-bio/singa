@@ -111,9 +111,6 @@ public class StructureRenumberer {
                     renumberedChain.addLeafSubstructure(renumberedLeafSubstructure);
                 }
             }
-            logger.trace("Keeping identifier {} for terminator token.", nextAtomIdentifier);
-            nextAtomIdentifier++;
-
         }
 
         return renumberLinkEntries(structure, renumberedStructure);
@@ -135,9 +132,7 @@ public class StructureRenumberer {
             // consecutive parts
             int currentChainIndex = 0;
             Map<String, String> chainAliasMap = new HashMap<>();
-            // TODO implement setting on how to sort
             List<? extends Chain> chainList = new ArrayList<Chain>(model.getAllChains());
-            // chainList.sort(Comparator.comparing(Chain::getNumberOfLeafSubstructures).reversed());
 
             for (Chain chain : chainList) {
                 String chainIdentifier;
@@ -162,20 +157,28 @@ public class StructureRenumberer {
                     renumberedChain = new PdbChain(chainIdentifier);
                     renumberedModel.addChain(renumberedChain);
                 }
+
+                boolean needsTerminateRecord = false;
                 if (chain instanceof PdbChain) {
                     PdbChain pdbChain = (PdbChain) chain;
                     for (PdbLeafSubstructure leafSubstructure : pdbChain.getConsecutivePart()) {
                         PdbLeafSubstructure renumberedLeafSubstructure = renumberAtomsInLeafSubstructure(chainIdentifier, leafSubstructure);
                         renumberedChain.addLeafSubstructure(renumberedLeafSubstructure, true);
+                        needsTerminateRecord = true;
                     }
-                } else {
+                } else if (chain instanceof CifChain) {
                     for (LeafSubstructure leafSubstructure : chain.getAllLeafSubstructures()) {
                         PdbLeafSubstructure renumberedLeafSubstructure = renumberAtomsInLeafSubstructure(chainIdentifier, leafSubstructure);
-                        renumberedChain.addLeafSubstructure(renumberedLeafSubstructure, true);
+                        boolean isCons = ((CifLeafSubstructure) leafSubstructure).isPartOfPolymer();
+                        renumberedChain.addLeafSubstructure(renumberedLeafSubstructure, isCons);
+                        if (isCons) needsTerminateRecord = true;
                     }
                 }
-                logger.trace("Keeping identifier {} for terminator token.", nextAtomIdentifier);
-                nextAtomIdentifier++;
+
+                if (needsTerminateRecord) {
+                    logger.trace("Keeping identifier {} for terminator token.", nextAtomIdentifier);
+                    nextAtomIdentifier++;
+                }
 
             }
             // nonconsecutive parts

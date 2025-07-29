@@ -114,4 +114,12 @@ class CifFileParserTest {
             assertFalse(link.getSecondLeafSubstructure().getBonds().isEmpty());
         }
     }
+
+    @Test
+    void shouldParseStructureWithoutLabelSeqId() {
+        Structure structure = StructureParser.cif().pdbIdentifier("1aga").parse();
+        assertEquals(2, structure.getAllChains().size());
+        // ensure components are split into individual, addressable leafs
+        assertEquals(12, structure.getAllLeafSubstructures().size());
+    }
 }

@@ -3,6 +3,8 @@ package bio.singa.structure.io.pdb.structures;
 import bio.singa.structure.io.general.StructureParser;
 import bio.singa.structure.io.general.StructureParserOptions;
 import bio.singa.structure.io.general.StructureWriter;
+import bio.singa.structure.model.cif.CifLeafSubstructure;
+import bio.singa.structure.model.general.AuthLeafIdentifier;
 import bio.singa.structure.model.general.Structures;
 import bio.singa.structure.model.interfaces.LeafIdentifier;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
@@ -13,9 +15,10 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static bio.singa.structure.io.general.StructureRepresentationOptions.Setting.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -58,7 +61,8 @@ class StructureWriterTest {
 
         System.out.println("writing");
         try {
-            Files.write(Paths.get("/tmp/" + pdbIdentifier + ".pdb"), resultingString.getBytes(StandardCharsets.UTF_8));
+            Path path = Files.createTempFile("singa-integration-structure-writer", pdbIdentifier + ".pdb");
+            Files.write(path, resultingString.getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {
             fail("unable to write structure");
         }
@@ -149,7 +153,7 @@ class StructureWriterTest {
     }
 
     @Test
-    void shouldHonorMetalCoordination() {
+    void shouldHonorMetalCoordination() throws IOException {
         String pdbIdentifier = "5qrf";
 
         System.out.println("parsing");
@@ -159,14 +163,16 @@ class StructureWriterTest {
                 .parse();
         assertEquals(21, pdbStructure.getLinkEntries().size());
 
-        System.out.println("creating renumbered pdb representation");
+        System.out.println("creating pdb representation");
         String pdbResultingString = StructureWriter.pdb()
                 .structure(pdbStructure)
-                .settings(APPEND_ALL_LIGAND_CONNECTIONS)
+                // there are altlocs, renumbered atoms make debugging easier
+                .settings(APPEND_ALL_LIGAND_CONNECTIONS, RENUMBER_ATOMS_CONSECUTIVELY)
                 .writeToString();
+        Files.write(Paths.get("/home/sebastian/pdb.pdb"), pdbResultingString.getBytes());
 
         assertNonpolyWaterOrder(pdbResultingString);
-        assertEquals(26, pdbResultingString.split(CONECT_RECORD).length);
+        assertEquals(27, pdbResultingString.split(CONECT_RECORD).length);
         assertEquals(22, pdbResultingString.split(LINK_RECORD).length);
 
         System.out.println("parsing");
@@ -179,11 +185,12 @@ class StructureWriterTest {
         System.out.println("creating renumbered pdb representation");
         String cifResultingString = StructureWriter.pdb()
                 .structure(cifStructure)
-                .settings(APPEND_ALL_LIGAND_CONNECTIONS)
+                .settings(APPEND_ALL_LIGAND_CONNECTIONS, RENUMBER_ATOMS_CONSECUTIVELY)
                 .writeToString();
 
         assertNonpolyWaterOrder(cifResultingString);
-        assertEquals(27, cifResultingString.split(CONECT_RECORD).length); // same connections, represented slightly differently
+        Files.write(Paths.get("/home/sebastian/cif.pdb"), cifResultingString.getBytes());
+        assertEquals(27, cifResultingString.split(CONECT_RECORD).length);
         assertEquals(22, cifResultingString.split(LINK_RECORD).length);
     }
 
@@ -205,5 +212,68 @@ class StructureWriterTest {
         }
 
         assertTrue(waterLast, "water is expected to appear last in the outputted file");
+    }
+
+    @Test
+    void shouldRenumberAllConectRecords() throws IOException {
+        String pdbIdentifier = "8a10";
+
+        System.out.println("parsing");
+        Structure structure = StructureParser.cif()
+                .pdbIdentifier(pdbIdentifier)
+                .settings(StructureParserOptions.Setting.ENFORCE_CONNECTIONS)
+                .parse();
+
+        structure.getAllLeafSubstructures()
+                .stream()
+                .filter(l -> l.getThreeLetterCode().equals("HOH"))
+                .map(CifLeafSubstructure.class::cast)
+                .forEach(l -> assertFalse(l.isPartOfPolymer(), "water '" + l.getLabelIdentifier() + "' is annotated as polymer"));
+
+        Path tmpPath = Files.createTempFile("singa-integration-structure-writer", pdbIdentifier + ".pdb");
+        List<String> pdbContent = Arrays.stream(StructureWriter.pdb()
+                .structure(structure)
+                .settings(APPEND_ALL_LIGAND_CONNECTIONS)
+                .writeToString()
+                .split("\n"))
+                .collect(Collectors.toList());
+        long originalConectCount = pdbContent.stream().filter(l -> l.startsWith(CONECT_RECORD)).count();
+        assertTrue(pdbContent.stream().noneMatch(l -> l.contains("A1IYK")), "5-character ligands should be renamed");
+        assertEquals(24, originalConectCount);
+        Files.write(tmpPath, pdbContent.stream().collect(Collectors.joining(System.lineSeparator())).getBytes());
+        for (String sout : pdbContent) {
+            System.out.println(sout);
+        }
+
+        Structure reread = StructureParser.local()
+                .path(tmpPath)
+                .settings(StructureParserOptions.Setting.ENFORCE_CONNECTIONS)
+                .parse();
+        AuthLeafIdentifier ligandIdentifier = LeafIdentifier.auth().structure(pdbIdentifier).model(1).chain("A").serial(301).noInsertionCode();
+        pruneEverything(reread, ligandIdentifier);
+        List<String> renumberedContent = Arrays.stream(StructureWriter.pdb()
+                        .structure(reread)
+                        .settings(RENUMBER_ATOMS_CONSECUTIVELY, RENUMBER_CHAINS_CONSECUTIVELY, APPEND_REMARK_80, APPEND_ALL_LIGAND_CONNECTIONS)
+                        .writeToString()
+                        .split("\n"))
+                .collect(Collectors.toList());
+        long renumberedConectCount = renumberedContent.stream().filter(l -> l.startsWith(CONECT_RECORD)).count();
+        assertEquals(originalConectCount, renumberedConectCount);
+    }
+
+    public void pruneEverything(Structure structure, LeafIdentifier leafIdentifier) {
+        Optional<? extends LeafSubstructure> optionalLigand = structure.getLeafSubstructure(leafIdentifier);
+        if (!optionalLigand.isPresent()) {
+            throw new IllegalStateException("The structure does not contain leaf " + leafIdentifier);
+        }
+
+        LeafSubstructure targetLigand = optionalLigand.get();
+        Collection<? extends LeafSubstructure> availableLigands = structure.getAllLeafSubstructures();
+        for (LeafSubstructure ligand : availableLigands) {
+            if (Structures.getClosestDistance(ligand, targetLigand) <= 10.0) {
+                continue;
+            }
+            structure.removeLeafSubstructure(ligand);
+        }
     }
 }

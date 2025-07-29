@@ -109,11 +109,26 @@ public class StructureRepresentationFactory {
         if (!nonConsecutiveLeafs.isEmpty()) {
             nonConsecutiveLeafs.sort(Comparator.comparingInt(nonConsecutiveLeaf -> nonConsecutiveLeaf.getAllAtoms().iterator().next().getAtomIdentifier()));
             return nonConsecutiveLeafs.stream()
+                    .map(this::renameLongLigands)
                     .map(AtomToken::assemblePDBLine)
                     .flatMap(Collection::stream)
                     .collect(Collectors.joining(System.lineSeparator(), "", System.lineSeparator()));
         }
         return "";
+    }
+
+    /**
+     * The maximum length of components is 3 in the PDB format. Some newer ligands may use 5-characters. These are
+     * renamed to a generic "LIG".
+     * @param leaf item to process
+     * @return the same item, potentially with set diverging three-letter-code
+     */
+    private LeafSubstructure renameLongLigands(LeafSubstructure leaf) {
+        PdbLeafSubstructure pdbLeaf = (PdbLeafSubstructure) leaf;
+        if (pdbLeaf.getThreeLetterCode().length() > 3) {
+            pdbLeaf.setDivergingThreeLetterCode("LIG");
+        }
+        return pdbLeaf;
     }
 
     /**

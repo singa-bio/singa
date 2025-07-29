@@ -221,23 +221,19 @@ public class CifConverter {
             int authSerial = authSeqId.get(row);
             String insertionCode = pdbxPDBInsCode.get(row);
 
-            // in case of branched entities use author id to distinguish monomers explicitly
-            if (cifSerial == 0) {
-                CifEntityType entityType = entityMap.get(labelEntityIdentifier).getCifEntityType();
-                if (entityType.equals(CifEntityType.BRANCHED)) {
-                    cifSerial = authSerial;
-                } else if (!coalesceLigands && (entityType.equals(CifEntityType.WATER) || entityType.equals(CifEntityType.NON_POLYMER))) {
-                    cifSerial = authSerial;
-                }
-            }
-
-            LabelLeafIdentifier labelLeafIdentifier = new LabelLeafIdentifier(pdbId, modelIdentifier, labelChainIdentifier, cifSerial);
             AuthLeafIdentifier authLeafIdentifier;
             if (insertionCode != null && !insertionCode.isEmpty()) {
                 authLeafIdentifier = new AuthLeafIdentifier(pdbId, modelIdentifier, authChainIdentifier, authSerial, insertionCode.charAt(0));
             } else {
                 authLeafIdentifier = new AuthLeafIdentifier(pdbId, modelIdentifier, authChainIdentifier, authSerial);
             }
+
+            // no label_seq_id available -- assign auth_seq_id to ensure that leafs are uniquely identified (e.g. for water molecules in one "chain")
+            if (cifSerial == 0) {
+                // if coaleseLigands is requested: move all ligand occurrences into the same leaf
+                cifSerial = coalesceLigands ? 0 : authSerial;
+            }
+            LabelLeafIdentifier labelLeafIdentifier = new LabelLeafIdentifier(pdbId, modelIdentifier, labelChainIdentifier, cifSerial);
 
             String threeLetterCode = threeLetterCodeColumn.get(row);
             String leafIsHetAtomString = groupPdbColumn.get(row);
@@ -315,9 +311,10 @@ public class CifConverter {
         if (!structConn.isDefined()) return;
 
         for (int row = 0; row < structConn.getRowCount(); row++) {
+            structConn.getConnTypeId().get(row);
             AuthLeafIdentifier firstIdentifier = LeafIdentifier.auth()
                     .structure(structure.getStructureIdentifier())
-                    .model(1)
+                    .model(AuthLeafIdentifier.DEFAULT_MODEL_IDENTIFIER)
                     .chain(structConn.getPtnr1AuthAsymId().get(row))
                     .serial(structConn.getPtnr1AuthSeqId().get(row))
                     .insertionCode(structConn.getPdbxPtnr1PDBInsCode().getValueKind(row) == ValueKind.PRESENT ? structConn.getPdbxPtnr1PDBInsCode().get(row).charAt(0) : AuthLeafIdentifier.DEFAULT_INSERTION_CODE);
@@ -325,7 +322,7 @@ public class CifConverter {
 
             AuthLeafIdentifier secondIdentifier = LeafIdentifier.auth()
                     .structure(structure.getStructureIdentifier())
-                    .model(1)
+                    .model(AuthLeafIdentifier.DEFAULT_MODEL_IDENTIFIER)
                     .chain(structConn.getPtnr2AuthAsymId().get(row))
                     .serial(structConn.getPtnr2AuthSeqId().get(row))
                     .insertionCode(structConn.getPdbxPtnr2PDBInsCode().getValueKind(row) == ValueKind.PRESENT ? structConn.getPdbxPtnr2PDBInsCode().get(row).charAt(0) : AuthLeafIdentifier.DEFAULT_INSERTION_CODE);
@@ -450,11 +447,11 @@ public class CifConverter {
     private void setModification(String descriptor, CifLeafSubstructure firstLeaf, CifLeafSubstructure secondLeaf) {
         if (firstLeaf instanceof CifAminoAcid) {
             String chainIdentifier = secondLeaf.getIdentifier().getChainIdentifier();
-            connectedBranches.add(chainIdentifier);
+            // if (covalent) connectedBranches.add(chainIdentifier);
             ((CifAminoAcid) firstLeaf).getModifications().put(descriptor, chainIdentifier);
         } else if (secondLeaf instanceof CifAminoAcid) {
             String chainIdentifier = firstLeaf.getIdentifier().getChainIdentifier();
-            connectedBranches.add(chainIdentifier);
+            // if (covalent) connectedBranches.add(chainIdentifier);
             ((CifAminoAcid) secondLeaf).getModifications().put(descriptor, chainIdentifier);
         }
     }
