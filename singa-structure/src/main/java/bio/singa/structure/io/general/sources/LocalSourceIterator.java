@@ -94,7 +94,8 @@ public class LocalSourceIterator<SourceContent> extends AbstractSourceIterator<S
             case OFFLINE_MMCIF:
                 return fileName.endsWith(".cif.gz");
             case OFFLINE_BCIF:
-                return fileName.endsWith(".bcif");
+                // the consumer handles both .bcif.gz and .bcif the same
+                return fileName.endsWith(".bcif.gz") || fileName.endsWith(".bcif"); // TODO ideally there would be a flag controlling this behavior
         }
         return false;
     }

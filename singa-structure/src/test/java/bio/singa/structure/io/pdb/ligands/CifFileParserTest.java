@@ -6,11 +6,12 @@ import bio.singa.structure.io.ccd.LeafSkeletonFactory;
 import bio.singa.structure.io.ccd.RemoteCcdParsingBehavior;
 import bio.singa.structure.io.general.StructureParser;
 import bio.singa.structure.io.general.StructureParserOptions;
-import bio.singa.structure.model.cif.CifStructure;
+import bio.singa.structure.model.cif.*;
 import bio.singa.structure.model.families.StructuralFamilies;
 import bio.singa.structure.model.general.AuthLeafIdentifier;
 import bio.singa.structure.model.general.LabelLeafIdentifier;
 import bio.singa.structure.model.general.LeafSkeleton;
+import bio.singa.structure.model.interfaces.Chain;
 import bio.singa.structure.model.interfaces.LeafIdentifier;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.interfaces.Structure;
@@ -18,6 +19,7 @@ import bio.singa.structure.model.general.LinkEntry;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -104,7 +106,8 @@ class CifFileParserTest {
      */
     @Test
     void shouldParseInterMoleculeConnections() {
-        CifStructure structure = (CifStructure) StructureParser.cif().pdbIdentifier("5oj9").settings(StructureParserOptions.Setting.ENFORCE_CONNECTIONS).parse();
+        String pdbIdentifier = "5oj9";
+        CifStructure structure = (CifStructure) StructureParser.cif().pdbIdentifier(pdbIdentifier).settings(StructureParserOptions.Setting.ENFORCE_CONNECTIONS).parse();
 
         List<LinkEntry> links = structure.getLinkEntries();
         assertEquals(4, links.size(), "link (struct_conn) count should match mmCIF file content");
@@ -113,6 +116,10 @@ class CifFileParserTest {
             assertFalse(link.getFirstLeafSubstructure().getBonds().isEmpty());
             assertFalse(link.getSecondLeafSubstructure().getBonds().isEmpty());
         }
+
+        // check that InChI gets assigned
+        CifLeafSubstructure hem = structure.getLeafSubstructure(LeafIdentifier.label().structure(pdbIdentifier).model(1).chain("B").serial(201)).get();
+        assertEquals("InChI=1S/C34H34N4O4.Fe/c1-7-21-17(3)25-13-26-19(5)23(9-11-33(39)40)31(37-26)16-32-24(10-12-34(41)42)20(6)28(38-32)15-30-22(8-2)18(4)27(36-30)14-29(21)35-25;/h7-8,13-16H,1-2,9-12H2,3-6H3,(H4,35,36,37,38,39,40,41,42);/q;+2/p-2/b25-13-,26-13-,27-14-,28-15-,29-14-,30-15-,31-16-,32-16-;", hem.getInchi(), "InChI should be assigned to ligands");
     }
 
     @Test
@@ -121,5 +128,45 @@ class CifFileParserTest {
         assertEquals(2, structure.getAllChains().size());
         // ensure components are split into individual, addressable leafs
         assertEquals(12, structure.getAllLeafSubstructures().size());
+    }
+
+    @Test
+    void shouldParseGlycosylation() {
+        // this is an entry with 2 assemblies, multiple chains and various glycosylation sites
+        CifStructure structure = (CifStructure) StructureParser.cif().pdbIdentifier("3sgk").parse();
+
+        assertEquals(5163, structure.getAllAtoms().size());
+        assertEquals(748, structure.getAllLeafSubstructures().size());
+        assertEquals(11, structure.getAllChains().size());
+
+        // assert that all oligo chains are annotated as polymeric
+        Chain d = structure.getChain(1, "D").get();
+        Collection<? extends LeafSubstructure> dl = d.getAllLeafSubstructures();
+        assertEquals(8, dl.size());
+        assertPolymeric(dl, true);
+
+        Chain e = structure.getChain(1, "E").get();
+        Collection<? extends LeafSubstructure> el = e.getAllLeafSubstructures();
+        assertEquals(8, el.size());
+        assertPolymeric(el, true);
+
+        Chain f = structure.getChain(1, "F").get();
+        Collection<? extends LeafSubstructure> fl = f.getAllLeafSubstructures();
+        assertEquals(8, fl.size());
+        assertPolymeric(fl, true);
+
+        Chain g = structure.getChain(1, "G").get();
+        Collection<? extends LeafSubstructure> gl = g.getAllLeafSubstructures();
+        assertEquals(2, gl.size());
+        assertPolymeric(gl, true);
+
+        assertPolymeric(structure.getChain(1, "H").get().getAllLeafSubstructures(), false);
+    }
+
+    private static void assertPolymeric(Collection<? extends LeafSubstructure> leafs, boolean isPolymeric) {
+        boolean failed = leafs.stream()
+                .map(CifLigand.class::cast)
+                .anyMatch(leaf -> leaf.isPartOfPolymer() != isPolymeric);
+        if (failed) fail("leafs in chain '" + leafs.stream().findFirst().get().getLabelIdentifier().getChainIdentifier() + "' should " + (isPolymeric ? "" : "not ") + "be polymeric");
     }
 }

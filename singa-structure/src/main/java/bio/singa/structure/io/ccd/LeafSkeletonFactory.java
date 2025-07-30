@@ -41,6 +41,8 @@ public class LeafSkeletonFactory {
         if (!"LIG".equals(identifier)) {
             // get additional information
             cifFile = ccdParsingBehavior.getCcdInformation(identifier);
+        } else {
+            cifFile = null;
         }
         // return if no cif file can (should not) be found
         if (cifFile == null) {

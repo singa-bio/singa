@@ -20,9 +20,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class CifConverter {
 
-    // TODO could be enum
-    public static final String COVALENT_CONNECTION_TYPE = "covale";
-
     private boolean coalesceLigands;
     private boolean enforceConnection;
     private boolean createEdges;
@@ -32,12 +29,6 @@ public class CifConverter {
     private final Map<AuthLeafIdentifier, LabelLeafIdentifier> authMapping;
 
     private final Map<String, String> chainInformation;
-
-    /**
-     * Chains of branched entities that are connected to protein polymer structures, making them modifications and part
-     * of the polymer chain.
-     */
-    private final Set<String> connectedBranches;
 
     private LeafSkeletonFactory leafSkeletonFactory;
 
@@ -55,7 +46,6 @@ public class CifConverter {
         this.mmcifFile = mmcifFile;
         entityMap = new HashMap<>();
         authMapping = new HashMap<>();
-        connectedBranches = new HashSet<>();
         chainInformation = new HashMap<>();
     }
 
@@ -143,7 +133,7 @@ public class CifConverter {
         extractCloseContactInformation(data);
         postProcessIntraMoleculeBonds();
         postProcessInterMoleculeBonds();
-        postProcessBranchedEntities();
+        postProcessBranchedEntities(data);
 
         return structure;
     }
@@ -447,11 +437,9 @@ public class CifConverter {
     private void setModification(String descriptor, CifLeafSubstructure firstLeaf, CifLeafSubstructure secondLeaf) {
         if (firstLeaf instanceof CifAminoAcid) {
             String chainIdentifier = secondLeaf.getIdentifier().getChainIdentifier();
-            // if (covalent) connectedBranches.add(chainIdentifier);
             ((CifAminoAcid) firstLeaf).getModifications().put(descriptor, chainIdentifier);
         } else if (secondLeaf instanceof CifAminoAcid) {
             String chainIdentifier = firstLeaf.getIdentifier().getChainIdentifier();
-            // if (covalent) connectedBranches.add(chainIdentifier);
             ((CifAminoAcid) secondLeaf).getModifications().put(descriptor, chainIdentifier);
         }
     }
@@ -476,8 +464,12 @@ public class CifConverter {
         structure.getAllChains().forEach(CifChain::connectChainBackbone);
     }
 
-    private void postProcessBranchedEntities() {
-        for (String connectedBranch : connectedBranches) {
+    private void postProcessBranchedEntities(MmCifBlock data) {
+        PdbxBranchScheme pdbxBranchScheme = data.getPdbxBranchScheme();
+        if (!pdbxBranchScheme.isDefined()) return;
+
+        // this category tracks all branched entities
+        pdbxBranchScheme.getAsymId().values().forEach(connectedBranch -> {
             for (CifModel model : structure.getAllModels()) {
                 Optional<CifChain> optionalChain = model.getChain(connectedBranch);
                 if (!optionalChain.isPresent()) {
@@ -488,7 +480,7 @@ public class CifConverter {
                     substructure.setPartOfPolymer(true);
                 }
             }
-        }
+        });
     }
 
     private CifLeafSubstructure appendLeafSubstructure(CifEntity cifEntity, CifChain chain, LabelLeafIdentifier labelLeafIdentifier, AuthLeafIdentifier authLeafIdentifier, String threeLetterCode, String leafIsHetAtomString) {
