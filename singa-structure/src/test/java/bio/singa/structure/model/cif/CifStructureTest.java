@@ -194,8 +194,8 @@ class CifStructureTest {
         assertTrue(conformationA.isPresent());
         Optional<CifConformation> conformationB = udp.getConformation("B");
         assertTrue(conformationB.isPresent());
-        assertEquals(conformationA.get().getAllAtoms().size(), 25);
-        assertEquals(conformationB.get().getAllAtoms().size(), 25);
+        assertEquals(25, conformationA.get().getAllAtoms().size());
+        assertEquals(25, conformationB.get().getAllAtoms().size());
 
     }
 
@@ -254,7 +254,7 @@ class CifStructureTest {
                 .pdbIdentifier(structureId)
                 .settings(StructureParserOptions.Setting.ENFORCE_CONNECTIONS)
                 .parse();
-        // ASN B-26 connected to NAG K-0
+        // ASN B-26 connected to NAG K-302
         LabelLeafIdentifier leafIdentifier = LeafIdentifier.label()
                 .model(1)
                 .chain("B")
@@ -275,8 +275,8 @@ class CifStructureTest {
                 .filter(a -> !leaf.getAllAtoms().contains(a))
                 .map(Atom::getAtomName)
                 .collect(Collectors.toSet());
-        assertTrue(connectedAtoms.contains("N"));
-        assertTrue(connectedAtoms.contains("C1"));
+        assertTrue(connectedAtoms.contains("N"), "should have peptide bond to next amino acid");
+        assertTrue(connectedAtoms.contains("C1"), "should have N-glycosylation to sugar moiety");
     }
 
 
