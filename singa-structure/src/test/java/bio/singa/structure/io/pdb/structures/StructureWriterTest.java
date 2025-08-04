@@ -169,7 +169,6 @@ class StructureWriterTest {
                 // there are altlocs, renumbered atoms make debugging easier
                 .settings(APPEND_ALL_LIGAND_CONNECTIONS, RENUMBER_ATOMS_CONSECUTIVELY)
                 .writeToString();
-        Files.write(Paths.get("/home/sebastian/pdb.pdb"), pdbResultingString.getBytes());
 
         assertNonpolyWaterOrder(pdbResultingString);
         assertEquals(27, pdbResultingString.split(CONECT_RECORD).length);
@@ -189,7 +188,6 @@ class StructureWriterTest {
                 .writeToString();
 
         assertNonpolyWaterOrder(cifResultingString);
-        Files.write(Paths.get("/home/sebastian/cif.pdb"), cifResultingString.getBytes());
         assertEquals(27, cifResultingString.split(CONECT_RECORD).length);
         assertEquals(22, cifResultingString.split(LINK_RECORD).length);
     }
