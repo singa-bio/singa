@@ -19,6 +19,11 @@ public class StructureRepresentationFactory {
 
     private StructureRepresentationOptions options;
     private Structure structure;
+    /**
+     * A reserved three-letter code that will be used to represent 5-character ligands that wouldn't be otherwise
+     * compatible with the PDB format.
+     */
+    public static final String LONG_LIGAND_NAME = "LIG";
 
     public StructureRepresentationFactory(StructureRepresentationOptions options) {
         this.options = options;
@@ -126,7 +131,7 @@ public class StructureRepresentationFactory {
     private LeafSubstructure renameLongLigands(LeafSubstructure leaf) {
         PdbLeafSubstructure pdbLeaf = (PdbLeafSubstructure) leaf;
         if (pdbLeaf.getThreeLetterCode().length() > 3) {
-            pdbLeaf.setDivergingThreeLetterCode("LIG");
+            pdbLeaf.setDivergingThreeLetterCode(LONG_LIGAND_NAME);
         }
         return pdbLeaf;
     }
@@ -152,10 +157,20 @@ public class StructureRepresentationFactory {
         }
         // remarks
         if (options.isAddRemark80()) {
+            // track InChIs
             structure.getAllLigands().stream()
                     .map(PdbLigand.class::cast)
                     .filter(distinctByKey(PdbLeafSubstructure::getFamily))
                     .map(ligand -> Remark80Token.assemblePDBLines(ligand.getThreeLetterCode(), ligand.getInchi()))
+                    .forEach(sb::append);
+
+            // report when 5-character ligand identifiers were renamed
+            structure.getAllLigands()
+                    .stream()
+                    .map(PdbLigand.class::cast)
+                    .filter(distinctByKey(PdbLeafSubstructure::getFamily))
+                    .filter(l -> l.getThreeLetterCode().length() > 3)
+                    .map(Remark80Token::assembleLigandRenameLines)
                     .forEach(sb::append);
             sb.append("REMARK  80").append(System.lineSeparator());
         }
