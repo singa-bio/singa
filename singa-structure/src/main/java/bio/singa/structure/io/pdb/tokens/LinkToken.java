@@ -60,7 +60,7 @@ public enum LinkToken implements PDBToken {
         AuthLeafIdentifier firstAtomLeafIdentifier = getLeafIdentifier(pdbStructure, firstAtomChainIdentifier, firstAtomResidueSerial, firstAtomInsertionCodeString);
         Optional<PdbLeafSubstructure> firstLeafSubstructureOptional = pdbStructure.getLeafSubstructure(firstAtomLeafIdentifier);
         if (!firstLeafSubstructureOptional.isPresent()) {
-            logger.warn("unable to find {} for link creation", firstAtomLeafIdentifier);
+            logger.warn("unable to find leaf {} as source for link creation: '{}'", firstAtomLeafIdentifier, linkLine);
             return null;
         }
         Atom firstAtom = getAtom(pdbStructure, firstAtomName, firstAtomLeafIdentifier);
@@ -75,7 +75,7 @@ public enum LinkToken implements PDBToken {
         AuthLeafIdentifier secondAtomLeafIdentifier = getLeafIdentifier(pdbStructure, secondAtomChainIdentifier, secondAtomResidueSerial, secondAtomInsertionCodeString);
         Optional<PdbLeafSubstructure> secondLeafSubstructureOptional = pdbStructure.getLeafSubstructure(secondAtomLeafIdentifier);
         if (!secondLeafSubstructureOptional.isPresent()) {
-            logger.warn("unable to find {} for link creation", secondAtomLeafIdentifier);
+            logger.warn("unable to find leaf {} as target for link creation: '{}'", secondAtomChainIdentifier, linkLine);
             return null;
         }
         Atom secondAtom = getAtom(pdbStructure, secondAtomName, secondAtomLeafIdentifier);
@@ -116,12 +116,12 @@ public enum LinkToken implements PDBToken {
     private static Atom getAtom(PdbStructure oakStructure, String atomName, AuthLeafIdentifier leafIdentifier) {
         Optional<PdbLeafSubstructure> leafSubstructureOptional = oakStructure.getLeafSubstructure(leafIdentifier);
         if (!leafSubstructureOptional.isPresent()) {
-            logger.warn("unable to find {} for link creation", leafIdentifier);
+            logger.warn("unable to find leaf {} for link creation", leafIdentifier);
             return null;
         }
         Optional<? extends Atom> optionalAtom = leafSubstructureOptional.get().getAtomByName(atomName);
         if (!optionalAtom.isPresent()) {
-            logger.warn("unable to find {} in {} for link creation", atomName, leafIdentifier);
+            logger.warn("unable to find {} in leaf {} for link creation", atomName, leafIdentifier);
             return null;
         }
         return optionalAtom.get();
