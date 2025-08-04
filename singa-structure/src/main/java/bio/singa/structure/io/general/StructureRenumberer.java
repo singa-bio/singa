@@ -250,7 +250,10 @@ public class StructureRenumberer {
 
     private PdbStructure renumberLinkEntries(Structure original, PdbStructure structure) {
         for (LinkEntry linkEntry : original.getLinkEntries()) {
-            Optional<Map.Entry<UniqueAtomIdentifier, PdbAtom>> firstAtomEntry = structure.getUniqueAtomEntry(atomIdentifierMapping.get(linkEntry.getFirstAtom().getAtomIdentifier()));
+            // atoms might not be present while processing a subset of a structure
+            if (!atomIdentifierMapping.containsKey(linkEntry.getFirstAtom().getAtomIdentifier()) || !atomIdentifierMapping.containsKey(linkEntry.getSecondAtom().getAtomIdentifier())) continue;
+
+            Optional<Map.Entry<UniqueAtomIdentifier, PdbAtom>> firstAtomEntry = structure.getUniqueAtomEntry(atomIdentifierMapping.get(linkEntry.getSecondAtom().getAtomIdentifier()));
             Optional<Map.Entry<UniqueAtomIdentifier, PdbAtom>> secondAtomEntry = structure.getUniqueAtomEntry(atomIdentifierMapping.get(linkEntry.getSecondAtom().getAtomIdentifier()));
             if (firstAtomEntry.isPresent() && secondAtomEntry.isPresent()) {
                 PdbAtom firstAtom = firstAtomEntry.get().getValue();
