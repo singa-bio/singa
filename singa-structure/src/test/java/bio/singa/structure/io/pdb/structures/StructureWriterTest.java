@@ -230,14 +230,14 @@ class StructureWriterTest {
         Path tmpPath = Files.createTempFile("singa-integration-structure-writer", pdbIdentifier + ".pdb");
         List<String> pdbContent = Arrays.stream(StructureWriter.pdb()
                 .structure(structure)
-                .settings(APPEND_ALL_LIGAND_CONNECTIONS, APPEND_REMARK_80)
+                .settings(APPEND_ALL_LIGAND_CONNECTIONS)
                 .writeToString()
                 .split("\n"))
                 .collect(Collectors.toList());
         for (String line : pdbContent) System.out.println(line);
         long originalConectCount = pdbContent.stream().filter(l -> l.startsWith(CONECT_RECORD)).count();
-        assertTrue(pdbContent.stream().filter(l -> !l.startsWith("REMARK  80")).noneMatch(l -> l.contains("A1IYK")), "5-character ligands should be renamed (outside of REMARK 80 records)");
-        assertTrue(pdbContent.stream().anyMatch(l -> l.contains("A1IYK has been renamed to LIG")));
+        assertTrue(pdbContent.stream().filter(l -> !l.startsWith("REMARK")).noneMatch(l -> l.contains("A1IYK")), "5-character ligands should be renamed (outside of REMARK records)");
+        assertTrue(pdbContent.stream().anyMatch(l -> l.contains("A1IYK renamed to LIG")));
         assertEquals(24, originalConectCount);
         Files.write(tmpPath, pdbContent.stream().collect(Collectors.joining(System.lineSeparator())).getBytes());
         for (String sout : pdbContent) {

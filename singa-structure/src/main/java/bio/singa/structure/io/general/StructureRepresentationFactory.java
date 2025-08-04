@@ -157,23 +157,26 @@ public class StructureRepresentationFactory {
         }
         // remarks
         if (options.isAddRemark80()) {
-            // track InChIs
             structure.getAllLigands().stream()
                     .map(PdbLigand.class::cast)
                     .filter(distinctByKey(PdbLeafSubstructure::getFamily))
                     .map(ligand -> Remark80Token.assemblePDBLines(ligand.getThreeLetterCode(), ligand.getInchi()))
                     .forEach(sb::append);
+            sb.append("REMARK  80").append(System.lineSeparator());
+        }
 
+        // store original 5-character ligand identifiers if needed
+        if (options.isAddRenamedLigands()) {
             // report when 5-character ligand identifiers were renamed
             structure.getAllLigands()
                     .stream()
                     .map(PdbLigand.class::cast)
                     .filter(distinctByKey(PdbLeafSubstructure::getFamily))
                     .filter(l -> l.getThreeLetterCode().length() > 3)
-                    .map(Remark80Token::assembleLigandRenameLines)
+                    .map(l -> Remark950Token.assemblePDBLines(l.getThreeLetterCode()))
                     .forEach(sb::append);
-            sb.append("REMARK  80").append(System.lineSeparator());
         }
+
         // links
         for (LinkEntry linkEntry : linkEntries) {
             sb.append(LinkToken.assemblePDBLine(linkEntry));

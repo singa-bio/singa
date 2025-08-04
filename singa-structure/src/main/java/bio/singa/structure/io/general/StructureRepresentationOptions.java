@@ -13,6 +13,10 @@ public class StructureRepresentationOptions {
 
     private boolean addRemark80 = false;
     private boolean addConnections = true;
+    /**
+     * Happening when 5-character ligands from mmCIF are renamed for compatibility.
+     */
+    private boolean addRenamedLigands = true;
 
     private Map<AuthLeafIdentifier, Integer> renumberingMap;
 
@@ -92,6 +96,14 @@ public class StructureRepresentationOptions {
         this.addConnections = addConnections;
     }
 
+    public boolean isAddRenamedLigands() {
+        return addRenamedLigands;
+    }
+
+    public void setAddRenamedLigands(boolean addRenamedLigands) {
+        this.addRenamedLigands = addRenamedLigands;
+    }
+
     /**
      * Sets the any option.
      *
@@ -130,6 +142,12 @@ public class StructureRepresentationOptions {
             case OMIT_ALL_LIGAND_CONNECTIONS:
                 options.addConnections = false;
                 break;
+            case APPEND_RENAMED_LIGANDS:
+                options.addRenamedLigands = true;
+                break;
+            case OMIT_RENAMED_LIGANDS:
+                options.addRenamedLigands = false;
+                break;
         }
     }
 
@@ -153,8 +171,18 @@ public class StructureRepresentationOptions {
 
         APPEND_ALL_LIGAND_CONNECTIONS,
 
-        OMIT_ALL_LIGAND_CONNECTIONS
+        OMIT_ALL_LIGAND_CONNECTIONS,
 
+        /**
+         * Write a dedicated REMARK 950 record if a 5-character ligand was renamed to "LIG". This record will hold the
+         * original ligand identifier.
+         */
+        APPEND_RENAMED_LIGANDS,
+
+        /**
+         * Always suppress the REMARK 950 record.
+         */
+        OMIT_RENAMED_LIGANDS,
     }
 
 }
