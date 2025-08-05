@@ -1,9 +1,6 @@
 package bio.singa.structure.io.pdb.tokens;
 
 import bio.singa.core.utility.Range;
-import bio.singa.structure.io.general.StructureRepresentationFactory;
-import bio.singa.structure.model.interfaces.Ligand;
-import bio.singa.structure.model.pdb.PdbLigand;
 
 import java.util.List;
 import java.util.regex.Pattern;
@@ -63,14 +60,6 @@ public enum Remark80Token implements PDBToken {
         sb.append("REMARK  80 ").append("INCHI").append(System.lineSeparator());
         List<String> longLine = PDBToken.assembleLongLine(prefix, inchi);
         longLine.forEach(line -> sb.append(line).append(System.lineSeparator()));
-        return sb.toString();
-    }
-
-    public static String assembleLigandRenameLines(Ligand ligand) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("REMARK  80").append(System.lineSeparator());
-        sb.append("REMARK  80 ").append(ligand.getThreeLetterCode()).append(System.lineSeparator());
-        sb.append("REMARK  80 ").append(ligand.getFamily().getThreeLetterCode()).append(" has been renamed to ").append(StructureRepresentationFactory.LONG_LIGAND_NAME).append(System.lineSeparator());
         return sb.toString();
     }
 
