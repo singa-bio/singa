@@ -1,11 +1,13 @@
 package bio.singa.structure.io.general;
 
 import bio.singa.structure.io.pdb.tokens.*;
+import bio.singa.structure.model.general.LinkEntry;
 import bio.singa.structure.model.interfaces.LeafIdentifier;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.interfaces.Model;
 import bio.singa.structure.model.interfaces.Structure;
 import bio.singa.structure.model.pdb.*;
+import uk.ac.ebi.beam.Bond;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -17,6 +19,11 @@ public class StructureRepresentationFactory {
 
     private StructureRepresentationOptions options;
     private Structure structure;
+    /**
+     * A reserved three-letter code that will be used to represent 5-character ligands that wouldn't be otherwise
+     * compatible with the PDB format.
+     */
+    public static final String LONG_LIGAND_NAME = "LIG";
 
     public StructureRepresentationFactory(StructureRepresentationOptions options) {
         this.options = options;
@@ -64,7 +71,7 @@ public class StructureRepresentationFactory {
         return sb.toString();
     }
 
-    private List<PdbLinkEntry> determineLinkEntries(Structure structure) {
+    private List<LinkEntry> determineLinkEntries(Structure structure) {
         if (structure instanceof PdbStructure) {
             return ((PdbStructure) structure).getLinkEntries();
         }
@@ -107,6 +114,7 @@ public class StructureRepresentationFactory {
         if (!nonConsecutiveLeafs.isEmpty()) {
             nonConsecutiveLeafs.sort(Comparator.comparingInt(nonConsecutiveLeaf -> nonConsecutiveLeaf.getAllAtoms().iterator().next().getAtomIdentifier()));
             return nonConsecutiveLeafs.stream()
+                    .map(this::renameLongLigands)
                     .map(AtomToken::assemblePDBLine)
                     .flatMap(Collection::stream)
                     .collect(Collectors.joining(System.lineSeparator(), "", System.lineSeparator()));
@@ -115,11 +123,25 @@ public class StructureRepresentationFactory {
     }
 
     /**
+     * The maximum length of components is 3 in the PDB format. Some newer ligands may use 5-characters. These are
+     * renamed to a generic "LIG".
+     * @param leaf item to process
+     * @return the same item, potentially with set diverging three-letter-code
+     */
+    private LeafSubstructure renameLongLigands(LeafSubstructure leaf) {
+        PdbLeafSubstructure pdbLeaf = (PdbLeafSubstructure) leaf;
+        if (pdbLeaf.getThreeLetterCode().length() > 3) {
+            pdbLeaf.setDivergingThreeLetterCode(LONG_LIGAND_NAME);
+        }
+        return pdbLeaf;
+    }
+
+    /**
      * The title and header line for this structure.
      *
      * @return The title and header line for this structure.
      */
-    private String getPreamble(String pdbIdentifier, String title, List<PdbLinkEntry> linkEntries) {
+    private String getPreamble(String pdbIdentifier, String title, List<LinkEntry> linkEntries) {
         StringBuilder sb = new StringBuilder();
         // header
         if (pdbIdentifier != null && !pdbIdentifier.equals(LeafIdentifier.DEFAULT_PDB_IDENTIFIER)) {
@@ -142,8 +164,21 @@ public class StructureRepresentationFactory {
                     .forEach(sb::append);
             sb.append("REMARK  80").append(System.lineSeparator());
         }
+
+        // store original 5-character ligand identifiers if needed
+        if (options.isAddRenamedLigands()) {
+            // report when 5-character ligand identifiers were renamed
+            structure.getAllLigands()
+                    .stream()
+                    .map(PdbLigand.class::cast)
+                    .filter(distinctByKey(PdbLeafSubstructure::getFamily))
+                    .filter(l -> l.getThreeLetterCode().length() > 3)
+                    .map(l -> Remark950Token.assemblePDBLines(l.getThreeLetterCode()))
+                    .forEach(sb::append);
+        }
+
         // links
-        for (PdbLinkEntry linkEntry : linkEntries) {
+        for (LinkEntry linkEntry : linkEntries) {
             sb.append(LinkToken.assemblePDBLine(linkEntry));
         }
         return sb.toString();
@@ -163,8 +198,8 @@ public class StructureRepresentationFactory {
         String connectRecords = "";
         if (options.isAddConnections()) {
             connectRecords = leafSubstructures.stream()
-                    .filter(leafSubstructure -> leafSubstructure.getClass().equals(PdbLigand.class))
-                    .map(PdbLigand.class::cast)
+                    .map(PdbLeafSubstructure.class::cast)
+                    .filter(PdbLeafSubstructure::isAnnotatedAsHeteroAtom) // TODO this omits inter-molecule connections for polymeric components (e.g. disulfide bridges), ideally these would be included
                     .map(ConnectionToken::assemblePDBLines)
                     .collect(Collectors.joining());
         }

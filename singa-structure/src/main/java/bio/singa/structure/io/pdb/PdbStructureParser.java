@@ -3,8 +3,11 @@ package bio.singa.structure.io.pdb;
 import bio.singa.core.utility.DoubleMatcher;
 import bio.singa.core.utility.Pair;
 import bio.singa.structure.io.general.StructureParserException;
+import bio.singa.structure.io.general.StructureRepresentationFactory;
+import bio.singa.structure.model.families.StructuralFamily;
 import bio.singa.structure.model.general.LeafSkeleton;
 import bio.singa.structure.model.general.AuthLeafIdentifier;
+import bio.singa.structure.model.general.LinkEntry;
 import bio.singa.structure.model.general.UniqueAtomIdentifier;
 import bio.singa.structure.model.interfaces.Structure;
 import bio.singa.structure.model.pdb.*;
@@ -91,6 +94,8 @@ public class PdbStructureParser {
     private Map<Pair<String>, String> ligandPropertyRemarks;
 
     private double resolution;
+
+    private static final String REMARK950_PROPERTY_NAME = "ORIGINAL_LIGAND_NAME";
 
     /**
      * Creates a new structure collector to extract structural information from pdb lines and reducing information.
@@ -258,6 +263,22 @@ public class PdbStructureParser {
                     assemblies.put(assemblyId, Arrays.asList(chains));
                 }
             }
+            // REMARK 950 (5-character ligand identifiers)
+            if (Remark950Token.REMARK_950.matcher(currentLine).matches() && iterator.getOptions().enforceOriginalLigandNames()) {
+                String[] content = Remark950Token.REMARK_CONTENT.extract(currentLine).split(Remark950Token.SEPARATOR);
+                if (content.length != 2) {
+                    continue;
+                }
+
+                Pair<String> keyPair = new Pair<>(StructureRepresentationFactory.LONG_LIGAND_NAME, REMARK950_PROPERTY_NAME);
+                ligandPropertyRemarks.put(keyPair, content[0]);
+                logger.info("Observed REMARK 950 in '{}': all instances of '{}' will be treated as '{}'", currentPDB, content[1], content[0]);
+
+                // set the 5-character name for the "LIG" leaf skeleton
+                LeafSkeleton leafSkeleton = iterator.getSkeleton(StructureRepresentationFactory.LONG_LIGAND_NAME);
+                StructuralFamily family = new StructuralFamily("", content[0]);
+                leafSkeleton.setStructuralFamily(family);
+            }
             if (AtomToken.RECORD_PATTERN.matcher(currentLine).matches()) {
                 break;
             }
@@ -358,8 +379,7 @@ public class PdbStructureParser {
         }
         // connect backbone
         if (iterator.getOptions().isCreatingEdges()) {
-            structure.getAllChains().stream()
-                    .map(PdbChain.class::cast).forEach(PdbChain::connectChainBackbone);
+            structure.getAllChains().forEach(PdbChain::connectChainBackbone);
         }
         // process link entries
         if (iterator.getOptions().enforceConnection()) {
@@ -381,7 +401,7 @@ public class PdbStructureParser {
      */
     private void annotateLinks(PdbStructure structure) {
         for (String linkLine : linkLines) {
-            PdbLinkEntry linkEntry = LinkToken.assembleLinkEntry(structure, linkLine);
+            LinkEntry linkEntry = LinkToken.assembleLinkEntry(structure, linkLine);
             if (linkEntry != null) {
                 structure.addLinkEntry(linkEntry);
             }
@@ -444,7 +464,7 @@ public class PdbStructureParser {
     private void createContentTree() {
         logger.debug("Creating content tree.");
         contentTree = new PdbContentTreeNode(currentPDB, PdbContentTreeNode.StructureLevel.STRUCTURE);
-        atoms.forEach((identifer, atom) -> contentTree.appendAtom(atom, identifer));
+        atoms.forEach((identifier, atom) -> contentTree.appendAtom(atom, identifier));
         if (atoms.isEmpty()) {
             throw new StructureParserException("Unable to apply the reduction, supplied with the reducer: " + iterator);
         }

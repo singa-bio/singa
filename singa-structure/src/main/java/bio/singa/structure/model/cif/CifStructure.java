@@ -4,6 +4,7 @@ import bio.singa.structure.model.general.AuthLeafIdentifier;
 import bio.singa.structure.model.general.LabelLeafIdentifier;
 import bio.singa.structure.model.general.UniqueAtomIdentifier;
 import bio.singa.structure.model.interfaces.*;
+import bio.singa.structure.model.general.LinkEntry;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -18,6 +19,8 @@ public class CifStructure implements Structure {
     private final TreeMap<Integer, CifEntity> entities;
 
     private final Map<AuthLeafIdentifier, LabelLeafIdentifier> authMapping;
+
+    private final List<LinkEntry> linkEntries;
 
     private Map<String, List<String>> biologicalAssemblies;
 
@@ -44,6 +47,7 @@ public class CifStructure implements Structure {
         this.structureIdentifier = structureIdentifier;
         models = new TreeMap<>();
         entities = new TreeMap<>();
+        linkEntries = new ArrayList<>();
         biologicalAssemblies = new HashMap<>();
         this.authMapping = authMapping;
     }
@@ -61,6 +65,7 @@ public class CifStructure implements Structure {
         for (CifEntity entity : structure.entities.values()) {
             entities.put(entity.getEntityIdentifier(), entity.getCopy());
         }
+        linkEntries = new ArrayList<>(structure.linkEntries);
         biologicalAssemblies = new HashMap<>(structure.biologicalAssemblies);
         authMapping = new HashMap<>(structure.authMapping);
     }
@@ -128,7 +133,7 @@ public class CifStructure implements Structure {
     public Optional<CifLeafSubstructure> getLeafSubstructure(LeafIdentifier leafIdentifier) {
         if (leafIdentifier instanceof AuthLeafIdentifier) {
             if (!authMapping.containsKey(leafIdentifier)) {
-                throw new NoSuchElementException("can't resolve label leaf identifier for auth leaf identifier: " + leafIdentifier + " -- are you sure this leaf substructure exists?");
+                return Optional.empty();
             }
             return getLeafSubstructure(authMapping.get(leafIdentifier));
         }
@@ -247,6 +252,16 @@ public class CifStructure implements Structure {
 
     public void setResolution(double resolution) {
         this.resolution = resolution;
+    }
+
+    @Override
+    public void addLinkEntry(LinkEntry linkEntry) {
+        linkEntries.add(linkEntry);
+    }
+
+    @Override
+    public List<LinkEntry> getLinkEntries() {
+        return linkEntries;
     }
 
     public Map<String, List<String>> getBiologicalAssemblies() {

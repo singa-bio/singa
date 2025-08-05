@@ -1,26 +1,23 @@
-package bio.singa.structure.model.pdb;
+package bio.singa.structure.model.cif;
 
 import bio.singa.chemistry.model.CovalentBondType;
 import bio.singa.structure.model.interfaces.Bond;
 
-/**
- * @author cl
- */
-public class PdbBond implements Bond<PdbAtom> {
+public class CifBond implements Bond<CifAtom> {
 
     private final int identifier;
 
-    protected PdbAtom source;
+    protected CifAtom source;
 
-    protected PdbAtom target;
+    protected CifAtom target;
 
     private CovalentBondType bondType;
 
-    public PdbBond(int identifier) {
+    public CifBond(int identifier) {
         this.identifier = identifier;
     }
 
-    public PdbBond(int identifier, CovalentBondType bondType) {
+    public CifBond(int identifier, CovalentBondType bondType) {
         this(identifier);
         this.bondType = bondType;
     }
@@ -33,7 +30,7 @@ public class PdbBond implements Bond<PdbAtom> {
      *
      * @param bond The bond to copy.
      */
-    public PdbBond(PdbBond bond) {
+    public CifBond(CifBond bond) {
         identifier = bond.identifier;
         bondType = bond.bondType;
     }
@@ -54,33 +51,33 @@ public class PdbBond implements Bond<PdbAtom> {
     }
 
     @Override
-    public PdbAtom getSource() {
+    public CifAtom getSource() {
         return source;
     }
 
     @Override
-    public void setSource(PdbAtom source) {
+    public void setSource(CifAtom source) {
         this.source = source;
     }
 
     @Override
-    public PdbAtom getTarget() {
+    public CifAtom getTarget() {
         return target;
     }
 
     @Override
-    public void setTarget(PdbAtom target) {
+    public void setTarget(CifAtom target) {
         this.target = target;
     }
 
     @Override
-    public boolean connectsAtom(PdbAtom pdbAtom) {
-        return source.equals(pdbAtom) || target.equals(pdbAtom);
+    public boolean connectsAtom(CifAtom atom) {
+        return source.equals(atom) || target.equals(atom);
     }
 
     @Override
-    public PdbBond getCopy() {
-        return new PdbBond(this);
+    public CifBond getCopy() {
+        return new CifBond(this);
     }
 
     @Override
@@ -88,7 +85,7 @@ public class PdbBond implements Bond<PdbAtom> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        PdbBond bond = (PdbBond) o;
+        CifBond bond = (CifBond) o;
         if (identifier != bond.getIdentifier()) return false;
         return bondType == bond.bondType;
     }

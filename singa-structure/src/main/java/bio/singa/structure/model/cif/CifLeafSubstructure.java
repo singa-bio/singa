@@ -1,7 +1,6 @@
 package bio.singa.structure.model.cif;
 
-import bio.singa.core.utility.CommutablePair;
-import bio.singa.core.utility.Pair;
+import bio.singa.chemistry.model.CovalentBondType;
 import bio.singa.structure.model.families.StructuralFamily;
 import bio.singa.structure.model.general.AuthLeafIdentifier;
 import bio.singa.structure.model.general.LabelLeafIdentifier;
@@ -33,11 +32,6 @@ public class CifLeafSubstructure implements LeafSubstructure {
     private final Map<String, CifConformation> conformations;
 
     /**
-     * pair of atom names that link the connected leaves
-     */
-    private final Map<Pair<String>, LabelLeafIdentifier> connectedLeafs;
-
-    /**
      * Remembers if this leaf was an HETATOM entry
      */
     private boolean annotatedAsHetAtom;
@@ -51,7 +45,6 @@ public class CifLeafSubstructure implements LeafSubstructure {
         this.leafIdentifier = leafIdentifier;
         this.authLeafIdentifier = authLeafIdentifier;
         conformations = new LinkedHashMap<>();
-        connectedLeafs = new HashMap<>();
     }
 
     public CifLeafSubstructure(CifLeafSubstructure cifLeafSubstructure) {
@@ -63,7 +56,6 @@ public class CifLeafSubstructure implements LeafSubstructure {
         for (Map.Entry<String, CifConformation> entry : cifLeafSubstructure.conformations.entrySet()) {
             conformations.put(entry.getKey(), entry.getValue().getCopy());
         }
-        connectedLeafs.putAll(cifLeafSubstructure.connectedLeafs);
     }
 
     void postProcessConformations() {
@@ -124,12 +116,9 @@ public class CifLeafSubstructure implements LeafSubstructure {
     }
 
     public void connect(String atomNameOfThisLeaf, String atomNameOfOtherLeaf, CifLeafSubstructure otherLeaf) {
-        connectedLeafs.put(new CommutablePair<>(atomNameOfThisLeaf, atomNameOfOtherLeaf), otherLeaf.getIdentifier());
-        otherLeaf.connectedLeafs.put(new CommutablePair<>(atomNameOfOtherLeaf, atomNameOfThisLeaf), getIdentifier());
-    }
-
-    public Map<Pair<String>, LabelLeafIdentifier> getConnectedLeafs() {
-        return connectedLeafs;
+        CifAtom firstAtom = getAtomByName(atomNameOfThisLeaf).get();
+        CifAtom secondAtom = otherLeaf.getAtomByName(atomNameOfOtherLeaf).get();
+        getFirstConformation().addBondBetween(firstAtom, secondAtom);
     }
 
     public boolean isPartOfPolymer() {
@@ -143,6 +132,28 @@ public class CifLeafSubstructure implements LeafSubstructure {
     @Override
     public Collection<CifAtom> getAllAtoms() {
         return getFirstConformation().getAllAtoms();
+    }
+
+    @Override
+    public Collection<CifBond> getBonds() {
+        // bond behavior is implemented at conformation level, we always delegate
+        return getFirstConformation().getBonds();
+    }
+
+    public int addBondBetween(CifBond edge, CifAtom source, CifAtom target) {
+        return getFirstConformation().addBondBetween(edge, source, target);
+    }
+
+    public int addBondBetween(CifAtom source, CifAtom target) {
+        return addBondBetween(source, target, CovalentBondType.SINGLE_BOND);
+    }
+
+    public int addBondBetween(CifAtom source, CifAtom target, CovalentBondType bondType) {
+        return getFirstConformation().addBondBetween(source, target, bondType);
+    }
+
+    public boolean hasBond(CifAtom firstAtom, CifAtom secondAtom) {
+        return getFirstConformation().hasBond(firstAtom, secondAtom);
     }
 
     @Override

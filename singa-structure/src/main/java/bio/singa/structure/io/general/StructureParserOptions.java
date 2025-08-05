@@ -42,7 +42,12 @@ public class StructureParserOptions {
      */
     private boolean enforceConnection = false;
 
-    private boolean coalesceLigands = true;
+    private boolean coalesceLigands = false;
+
+    /**
+     * Look for REMARK 950 records written by SiNGA and assign their content to all relevant leafs.
+     */
+    private boolean enforceOriginalLigandNames = true;
 
     /**
      * Create a new Options object using enum constants.
@@ -113,6 +118,12 @@ public class StructureParserOptions {
                 break;
             case CIF_SPLIT_LIGANDS:
                 options.setCoalesceLigands(false);
+                break;
+            case ENFORCE_ORIGINAL_LIGAND_NAMES:
+                options.setEnforceOriginalLigandNames(true);
+                break;
+            case DISREGARD_ORIGINAL_LIGAND_NAMES:
+                options.setEnforceOriginalLigandNames(false);
                 break;
         }
     }
@@ -252,6 +263,14 @@ public class StructureParserOptions {
         this.coalesceLigands = coalesceLigands;
     }
 
+    public boolean enforceOriginalLigandNames() {
+        return enforceOriginalLigandNames;
+    }
+
+    public void setEnforceOriginalLigandNames(boolean enforceOriginalLigandNames) {
+        this.enforceOriginalLigandNames = enforceOriginalLigandNames;
+    }
+
     /**
      * Settings that can be passed to the Options.
      */
@@ -337,5 +356,14 @@ public class StructureParserOptions {
          */
         CIF_SPLIT_LIGANDS,
 
+        /**
+         * Parse REMARK 950 and assign 5-character ligand identifiers to the corresponding leafs.
+         */
+        ENFORCE_ORIGINAL_LIGAND_NAMES,
+
+        /**
+         * Ignore any REMARK 950 that may be encountered.
+         */
+        DISREGARD_ORIGINAL_LIGAND_NAMES,
     }
 }

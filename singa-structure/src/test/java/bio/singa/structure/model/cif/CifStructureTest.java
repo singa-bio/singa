@@ -1,8 +1,8 @@
 package bio.singa.structure.model.cif;
 
-import bio.singa.core.utility.Pair;
 import bio.singa.mathematics.vectors.Vector3D;
 import bio.singa.structure.io.general.StructureParser;
+import bio.singa.structure.io.general.StructureParserOptions;
 import bio.singa.structure.model.general.LabelLeafIdentifier;
 import bio.singa.structure.model.interfaces.*;
 import bio.singa.structure.model.general.AuthLeafIdentifier;
@@ -11,6 +11,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -34,6 +36,7 @@ class CifStructureTest {
         // only available as cif
         structure7l7y = ((CifStructure) StructureParser.cif()
                 .pdbIdentifier("7l7y")
+                .settings(StructureParserOptions.Setting.CIF_COALECE_LIGANDS) // test below expects water in a single leaf
                 .parse());
     }
 
@@ -191,20 +194,20 @@ class CifStructureTest {
         assertTrue(conformationA.isPresent());
         Optional<CifConformation> conformationB = udp.getConformation("B");
         assertTrue(conformationB.isPresent());
-        assertEquals(conformationA.get().getAllAtoms().size(), 25);
-        assertEquals(conformationB.get().getAllAtoms().size(), 25);
+        assertEquals(25, conformationA.get().getAllAtoms().size());
+        assertEquals(25, conformationB.get().getAllAtoms().size());
 
     }
 
     @Test
     void getLigand() {
-        final Optional<Ligand> nucleotide = structure1c0a.getLigand(new LabelLeafIdentifier("1c0a", 1, "D", 0));
+        final Optional<Ligand> nucleotide = structure1c0a.getLigand(new LabelLeafIdentifier("1c0a", 1, "D", 800));
         if (!nucleotide.isPresent()) {
             fail("Optional leaf substructure was empty.");
         }
         final LeafIdentifier identifier = nucleotide.get().getIdentifier();
         assertEquals("D", identifier.getChainIdentifier());
-        assertEquals(0, identifier.getSerial());
+        assertEquals(800, identifier.getSerial());
         assertEquals("AMP", nucleotide.get().getThreeLetterCode());
     }
 
@@ -249,8 +252,9 @@ class CifStructureTest {
         String structureId = "5l9d";
         Structure structure = StructureParser.cif()
                 .pdbIdentifier(structureId)
+                .settings(StructureParserOptions.Setting.ENFORCE_CONNECTIONS)
                 .parse();
-        // ASN B-26 connected to NAG K-0
+        // ASN B-26 connected to NAG K-302
         LabelLeafIdentifier leafIdentifier = LeafIdentifier.label()
                 .model(1)
                 .chain("B")
@@ -265,9 +269,14 @@ class CifStructureTest {
         assertNotNull(modificationChain);
         assertEquals("K", modificationChain);
         // check connected atoms
-        Pair<String> connectedAtoms = leaf.getConnectedLeafs().keySet().iterator().next();
-        assertEquals("ND2", connectedAtoms.getFirst());
-        assertEquals("C1", connectedAtoms.getSecond());
+        Set<String> connectedAtoms = leaf.getBonds()
+                .stream()
+                .flatMap(b -> Stream.of(b.getSource(), b.getTarget()))
+                .filter(a -> !leaf.getAllAtoms().contains(a))
+                .map(Atom::getAtomName)
+                .collect(Collectors.toSet());
+        assertTrue(connectedAtoms.contains("N"), "should have peptide bond to next amino acid");
+        assertTrue(connectedAtoms.contains("C1"), "should have N-glycosylation to sugar moiety");
     }
 
 

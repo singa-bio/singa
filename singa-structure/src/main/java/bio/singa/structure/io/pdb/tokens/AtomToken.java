@@ -40,7 +40,7 @@ public enum AtomToken implements PDBToken {
     public static final Pattern RECORD_PATTERN = Pattern.compile("^(ATOM|HETATM).*");
 
     private static final DecimalFormat coordinateFormat = new DecimalFormat("0.000", new DecimalFormatSymbols(Locale.US));
-    private static DecimalFormat temperatureFormat = new DecimalFormat("0.00", new DecimalFormatSymbols(Locale.US));
+    private static final DecimalFormat temperatureFormat = new DecimalFormat("0.00", new DecimalFormatSymbols(Locale.US));
 
     private final Range<Integer> columns;
     private final Justification justification;
@@ -79,17 +79,18 @@ public enum AtomToken implements PDBToken {
             } else {
                 currentLine.append(RECORD_TYPE.createTokenString("HETATM"));
             }
+            AuthLeafIdentifier identifier = leaf.getAuthIdentifier();
             currentLine.append(ATOM_SERIAL.createTokenString(String.valueOf(atom.getAtomIdentifier())))
                     .append(" ")
                     .append(formatAtomName(atom))
                     .append(" ") // ALTERNATE_LOCATION_INDICATOR not yet implemented
                     .append(RESIDUE_NAME.createTokenString(leaf.getThreeLetterCode()))
                     .append(" ")
-                    .append(leaf.getIdentifier().getChainIdentifier())
-                    .append(RESIDUE_SERIAL.createTokenString(String.valueOf(leaf.getIdentifier().getSerial())))
+                    .append(identifier.getChainIdentifier())
+                    .append(RESIDUE_SERIAL.createTokenString(String.valueOf(identifier.getSerial())))
                     .append(RESIDUE_INSERTION.createTokenString(String.valueOf(
-                            leaf.getIdentifier().getInsertionCode() == AuthLeafIdentifier.DEFAULT_INSERTION_CODE
-                                    ? " " : leaf.getIdentifier().getInsertionCode())))
+                            identifier.getInsertionCode() == AuthLeafIdentifier.DEFAULT_INSERTION_CODE
+                                    ? " " : identifier.getInsertionCode())))
                     .append(X_COORDINATE.createTokenString(coordinateFormat.format(atom.getPosition().getX())))
                     .append(Y_COORDINATE.createTokenString(coordinateFormat.format(atom.getPosition().getY())))
                     .append(Z_COORDINATE.createTokenString(coordinateFormat.format(atom.getPosition().getZ())))

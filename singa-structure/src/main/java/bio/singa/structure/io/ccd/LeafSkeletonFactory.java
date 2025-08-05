@@ -2,6 +2,7 @@ package bio.singa.structure.io.ccd;
 
 import bio.singa.chemistry.model.CovalentBondType;
 import bio.singa.core.utility.Pair;
+import bio.singa.structure.io.general.StructureRepresentationFactory;
 import bio.singa.structure.model.families.StructuralFamilies;
 import bio.singa.structure.model.families.StructuralFamily;
 import bio.singa.structure.model.general.LeafSkeleton;
@@ -37,8 +38,13 @@ public class LeafSkeletonFactory {
         }
         // create new skeleton
         initializeNewLeafSkeleton(identifier);
-        // get additional information
-        cifFile = ccdParsingBehavior.getCcdInformation(identifier);
+        // special treatment for LIG placeholder replacing 5-character ligands, which lacks CCD info
+        if (!StructureRepresentationFactory.LONG_LIGAND_NAME.equals(identifier)) {
+            // get additional information
+            cifFile = ccdParsingBehavior.getCcdInformation(identifier);
+        } else {
+            cifFile = null;
+        }
         // return if no cif file can (should not) be found
         if (cifFile == null) {
             determineStructuralFamilyWithoutAdditionalInformation(identifier);

@@ -1,9 +1,7 @@
 package bio.singa.structure.model.cif;
 
 import bio.singa.structure.model.general.LabelLeafIdentifier;
-import bio.singa.structure.model.interfaces.Chain;
-import bio.singa.structure.model.interfaces.LeafIdentifier;
-import bio.singa.structure.model.general.AuthLeafIdentifier;
+import bio.singa.structure.model.interfaces.*;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -139,4 +137,49 @@ public class CifChain implements Chain {
         return identifier != null ? identifier.hashCode() : 0;
     }
 
+    public void connectChainBackbone() {
+        AminoAcid previousAminoAcid = null;
+        for (AminoAcid aminoAcid : getAllAminoAcids()) {
+            if (previousAminoAcid == null) {
+                previousAminoAcid = aminoAcid;
+                continue;
+            }
+            connectPeptideBonds((CifAminoAcid) previousAminoAcid, (CifAminoAcid) aminoAcid);
+            previousAminoAcid = aminoAcid;
+        }
+        Nucleotide previousNucleotide = null;
+        for (Nucleotide nucleotide : getAllNucleotides()) {
+            if (previousNucleotide == null) {
+                previousNucleotide = nucleotide;
+                continue;
+            }
+            connectNucleotideBonds((CifNucleotide) previousNucleotide, (CifNucleotide) nucleotide);
+            previousNucleotide = nucleotide;
+        }
+    }
+
+    /**
+     * Connects two residues, using the Backbone Carbon (C) of the source residue and the Backbone Nitrogen (N) of the
+     * target residue.
+     *
+     * @param source AminoAcid with Backbone Carbon.
+     * @param target AminoAcid with Backbone Nitrogen.
+     */
+    public static void connectPeptideBonds(CifAminoAcid source, CifAminoAcid target) {
+        // creates the peptide backbone
+        Optional<CifAtom> sourceAtomOptional = source.getAtomByName("C");
+        Optional<CifAtom> targetAtomOptional = target.getAtomByName("N");
+        if (sourceAtomOptional.isPresent() && targetAtomOptional.isPresent()) {
+            source.addBondBetween(sourceAtomOptional.get(), targetAtomOptional.get());
+        }
+    }
+
+    public void connectNucleotideBonds(CifNucleotide source, CifNucleotide target) {
+        // creates the peptide backbone
+        Optional<CifAtom> sourceAtomOptional = source.getAtomByName("O3'");
+        Optional<CifAtom> targetAtomOptional = target.getAtomByName("P");
+        if (sourceAtomOptional.isPresent() && targetAtomOptional.isPresent()) {
+            source.addBondBetween(sourceAtomOptional.get(), targetAtomOptional.get());
+        }
+    }
 }
