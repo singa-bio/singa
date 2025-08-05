@@ -215,49 +215,53 @@ class StructureWriterTest {
     void shouldRenumberAllConectRecords() throws IOException {
         String pdbIdentifier = "8a10";
 
-        System.out.println("parsing");
+        System.out.println("parsing original CIF");
         Structure structure = StructureParser.cif()
                 .pdbIdentifier(pdbIdentifier)
                 .settings(StructureParserOptions.Setting.ENFORCE_CONNECTIONS)
                 .parse();
 
+        System.out.println("assert that CIF parsing doesn't label water as polymeric");
         structure.getAllLeafSubstructures()
                 .stream()
                 .filter(l -> l.getThreeLetterCode().equals("HOH"))
                 .map(CifLeafSubstructure.class::cast)
                 .forEach(l -> assertFalse(l.isPartOfPolymer(), "water '" + l.getLabelIdentifier() + "' is annotated as polymer"));
 
+        System.out.println("convert to mmCIF with 5-character ligand name to valid PDB by setting its ligand name to LIG, retain information in a dedicated REMARK 950 entry");
         Path tmpPath = Files.createTempFile("singa-integration-structure-writer", pdbIdentifier + ".pdb");
         List<String> pdbContent = Arrays.stream(StructureWriter.pdb()
                 .structure(structure)
-                .settings(APPEND_ALL_LIGAND_CONNECTIONS)
+                .settings(APPEND_ALL_LIGAND_CONNECTIONS, APPEND_RENAMED_LIGANDS)
                 .writeToString()
                 .split("\n"))
                 .collect(Collectors.toList());
-        for (String line : pdbContent) System.out.println(line);
         long originalConectCount = pdbContent.stream().filter(l -> l.startsWith(CONECT_RECORD)).count();
         assertTrue(pdbContent.stream().filter(l -> !l.startsWith("REMARK")).noneMatch(l -> l.contains("A1IYK")), "5-character ligands should be renamed (outside of REMARK records)");
-        assertTrue(pdbContent.stream().anyMatch(l -> l.contains("A1IYK renamed to LIG")));
-        assertEquals(24, originalConectCount);
+        assertTrue(pdbContent.stream().anyMatch(l -> l.contains("A1IYK renamed to LIG")), "original ligand name was lost");
+        assertEquals(24, originalConectCount, "mismatch in number of CONECT records");
         Files.write(tmpPath, pdbContent.stream().collect(Collectors.joining(System.lineSeparator())).getBytes());
-        for (String sout : pdbContent) {
-            System.out.println(sout);
-        }
 
+        System.out.println("read converted PDB file again, check that bonds and original ligand names are parsed correctly");
         Structure reread = StructureParser.local()
                 .path(tmpPath)
-                .settings(StructureParserOptions.Setting.ENFORCE_CONNECTIONS)
+                .settings(StructureParserOptions.Setting.ENFORCE_CONNECTIONS, StructureParserOptions.Setting.ENFORCE_ORIGINAL_LIGAND_NAMES)
                 .parse();
         AuthLeafIdentifier ligandIdentifier = LeafIdentifier.auth().structure(pdbIdentifier).model(1).chain("A").serial(301).noInsertionCode();
+
+        System.out.println("extract a 10 A environment around the ligand");
         pruneEverything(reread, ligandIdentifier);
+
+        System.out.println("renumber and check that ligand connections are retained");
         List<String> renumberedContent = Arrays.stream(StructureWriter.pdb()
                         .structure(reread)
-                        .settings(RENUMBER_ATOMS_CONSECUTIVELY, RENUMBER_CHAINS_CONSECUTIVELY, APPEND_REMARK_80, APPEND_ALL_LIGAND_CONNECTIONS)
+                        .settings(RENUMBER_ATOMS_CONSECUTIVELY, RENUMBER_CHAINS_CONSECUTIVELY, APPEND_REMARK_80, APPEND_ALL_LIGAND_CONNECTIONS, APPEND_RENAMED_LIGANDS)
                         .writeToString()
                         .split("\n"))
                 .collect(Collectors.toList());
         long renumberedConectCount = renumberedContent.stream().filter(l -> l.startsWith(CONECT_RECORD)).count();
-        assertEquals(originalConectCount, renumberedConectCount);
+        assertEquals(originalConectCount, renumberedConectCount, "mismatch in number of CONECT records");
+        assertEquals("A1IYK", reread.getLeafSubstructure(ligandIdentifier).get().getThreeLetterCode(), "original ligand name wasn't retained");
     }
 
     public void pruneEverything(Structure structure, LeafIdentifier leafIdentifier) {

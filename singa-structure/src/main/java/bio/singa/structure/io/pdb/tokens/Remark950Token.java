@@ -26,7 +26,8 @@ public enum Remark950Token implements PDBToken {
 
     public static final Pattern RECORD_PATTERN = Pattern.compile("^(REMARK).*");
     public static final Pattern REMARK_950 = Pattern.compile("^REMARK 950.*");
-    private static final String prefix = "REMARK 950";
+    private static final String PREFIX = "REMARK 950";
+    public static final String SEPARATOR = " renamed to ";
 
     private final Range<Integer> columns;
 
@@ -50,7 +51,7 @@ public enum Remark950Token implements PDBToken {
         }
         StringBuilder sb = new StringBuilder();
         // REMARK 950 A1IYK renamed to LIG
-        sb.append(prefix).append(" ").append(threeLetterCode).append(" renamed to ").append(StructureRepresentationFactory.LONG_LIGAND_NAME).append(System.lineSeparator());
+        sb.append(PREFIX).append(" ").append(threeLetterCode).append(SEPARATOR).append(StructureRepresentationFactory.LONG_LIGAND_NAME).append(System.lineSeparator());
         return sb.toString();
     }
 }
