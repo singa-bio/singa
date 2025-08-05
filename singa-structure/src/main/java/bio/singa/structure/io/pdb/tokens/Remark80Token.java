@@ -1,6 +1,7 @@
 package bio.singa.structure.io.pdb.tokens;
 
 import bio.singa.core.utility.Range;
+import bio.singa.structure.io.general.StructureRepresentationFactory;
 
 import java.util.List;
 import java.util.regex.Pattern;
@@ -54,6 +55,12 @@ public enum Remark80Token implements PDBToken {
         if (threeLetterCode == null || inchi == null) {
             return "";
         }
+
+        // rename long ligands
+        if (threeLetterCode.length() > 3) {
+            threeLetterCode = StructureRepresentationFactory.LONG_LIGAND_NAME;
+        }
+
         StringBuilder sb = new StringBuilder();
         sb.append("REMARK  80").append(System.lineSeparator());
         sb.append("REMARK  80 ").append(threeLetterCode).append(System.lineSeparator());
