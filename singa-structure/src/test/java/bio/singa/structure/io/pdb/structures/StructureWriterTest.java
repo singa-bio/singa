@@ -152,7 +152,7 @@ class StructureWriterTest {
     }
 
     @Test
-    void shouldHonorMetalCoordination() throws IOException {
+    void shouldHonorMetalCoordination() {
         String pdbIdentifier = "5qrf";
 
         System.out.println("parsing");
@@ -278,5 +278,42 @@ class StructureWriterTest {
             }
             structure.removeLeafSubstructure(ligand);
         }
+    }
+
+    @Test
+    void shouldWriteConectRecordsWithSubstructureRoute() {
+        String pdbIdentifier = "8a10";
+        int expectedRecordCount = 24;
+
+        System.out.println("parsing original CIF");
+        Structure structure = StructureParser.cif()
+                .pdbIdentifier(pdbIdentifier)
+                .settings(StructureParserOptions.Setting.ENFORCE_CONNECTIONS)
+                .parse();
+
+        System.out.println("selecting ligand substructure");
+        LeafSubstructure ligand = structure.getLeafSubstructure(LeafIdentifier.auth().structure(pdbIdentifier).model(1).chain("A").serial(301).noInsertionCode()).get();
+
+        System.out.println("writing ligand substructure");
+        List<String> pdbContent = Arrays.stream(StructureWriter.pdb()
+                        .substructure(ligand)
+                        .settings(APPEND_ALL_LIGAND_CONNECTIONS)
+                        .writeToString()
+                        .split("\n"))
+                .collect(Collectors.toList());
+        pdbContent.forEach(System.out::println);
+        long conectCount = pdbContent.stream().filter(l -> l.startsWith(CONECT_RECORD)).count();
+        assertEquals(expectedRecordCount, conectCount, "mismatch in number of CONECT records");
+
+        System.out.println("writing ligand substructure");
+        List<String> renumberedPdbContent = Arrays.stream(StructureWriter.pdb()
+                        .substructure(ligand)
+                        .settings(APPEND_ALL_LIGAND_CONNECTIONS, RENUMBER_ATOMS_CONSECUTIVELY, RENUMBER_CHAINS_CONSECUTIVELY)
+                        .writeToString()
+                        .split("\n"))
+                .collect(Collectors.toList());
+        renumberedPdbContent.forEach(System.out::println);
+        long renumberedConectCount = renumberedPdbContent.stream().filter(l -> l.startsWith(CONECT_RECORD)).count();
+        assertEquals(expectedRecordCount, renumberedConectCount, "number of CONECT records should be unchanged even if renumbered");
     }
 }

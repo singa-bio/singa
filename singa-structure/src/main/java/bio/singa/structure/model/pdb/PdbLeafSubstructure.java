@@ -5,6 +5,7 @@ import bio.singa.structure.model.families.StructuralFamily;
 import bio.singa.structure.model.general.AuthLeafIdentifier;
 import bio.singa.structure.model.general.LabelLeafIdentifier;
 import bio.singa.structure.model.interfaces.Atom;
+import bio.singa.structure.model.interfaces.Bond;
 import bio.singa.structure.model.interfaces.LeafIdentifier;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 
@@ -101,13 +102,20 @@ public abstract class PdbLeafSubstructure implements LeafSubstructure {
             AuthLeafIdentifier authLeafIdentifier = new AuthLeafIdentifier(identifier.getStructureIdentifier(), identifier.getModelIdentifier(), identifier.getChainIdentifier(), identifier.getSerial());
             PdbLeafSubstructure pdbLeafSubstructure = PdbLeafSubstructureFactory.createLeafSubstructure(authLeafIdentifier, leafSubstructure.getFamily());
             pdbLeafSubstructure.setAnnotatedAsHeteroAtom(leafSubstructure.isAnnotatedAsHeteroAtom());
-                // copy and add all atoms
-                for (Atom atom : leafSubstructure.getAllAtoms()) {
-                    PdbAtom pdbAtom = new PdbAtom(atom.getAtomIdentifier(), atom.getElement(), atom.getAtomName(), atom.getPosition());
-                    pdbAtom.setBFactor(atom.getBFactor());
-                    pdbLeafSubstructure.addAtom(pdbAtom);
-                }
-                // TODO add bonds
+            // copy and add all atoms
+            for (Atom atom : leafSubstructure.getAllAtoms()) {
+                PdbAtom pdbAtom = new PdbAtom(atom.getAtomIdentifier(), atom.getElement(), atom.getAtomName(), atom.getPosition());
+                pdbAtom.setBFactor(atom.getBFactor());
+                pdbLeafSubstructure.addAtom(pdbAtom);
+            }
+
+            // copy and add all bonds
+            for (Bond<?> bond : leafSubstructure.getBonds()) {
+                PdbBond edge = new PdbBond(bond.getIdentifier(), bond.getBondType());
+                PdbAtom source = pdbLeafSubstructure.atoms.get(bond.getSource().getAtomIdentifier());
+                PdbAtom target = pdbLeafSubstructure.atoms.get(bond.getTarget().getAtomIdentifier());
+                pdbLeafSubstructure.addBondBetween(edge, source, target);
+            }
             return pdbLeafSubstructure;
         }
     }
