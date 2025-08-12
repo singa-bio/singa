@@ -301,7 +301,6 @@ class StructureWriterTest {
                         .writeToString()
                         .split("\n"))
                 .collect(Collectors.toList());
-        pdbContent.forEach(System.out::println);
         long conectCount = pdbContent.stream().filter(l -> l.startsWith(CONECT_RECORD)).count();
         assertEquals(expectedRecordCount, conectCount, "mismatch in number of CONECT records");
 
@@ -312,7 +311,6 @@ class StructureWriterTest {
                         .writeToString()
                         .split("\n"))
                 .collect(Collectors.toList());
-        renumberedPdbContent.forEach(System.out::println);
         long renumberedConectCount = renumberedPdbContent.stream().filter(l -> l.startsWith(CONECT_RECORD)).count();
         assertEquals(expectedRecordCount, renumberedConectCount, "number of CONECT records should be unchanged even if renumbered");
     }
