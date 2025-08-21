@@ -314,4 +314,23 @@ class StructureWriterTest {
         long renumberedConectCount = renumberedPdbContent.stream().filter(l -> l.startsWith(CONECT_RECORD)).count();
         assertEquals(expectedRecordCount, renumberedConectCount, "number of CONECT records should be unchanged even if renumbered");
     }
+
+    @Test
+    void shouldWriteDeuterium() {
+        String pdbIdentifier = "5e5k";
+
+        Structure structure = StructureParser.cif()
+                .pdbIdentifier(pdbIdentifier)
+                .parse();
+
+        List<String> pdbContent = Arrays.stream(StructureWriter.pdb()
+                .structure(structure)
+                .settings(APPEND_ALL_LIGAND_CONNECTIONS)
+                .writeToString()
+                .split("\n"))
+                .collect(Collectors.toList());
+
+        assertTrue(pdbContent.stream().anyMatch(l -> l.endsWith("D  ")), "should write deuterium");
+        assertTrue(pdbContent.stream().noneMatch(l -> l.endsWith("X  ")), "shouldn't write unknown element");
+    }
 }

@@ -315,6 +315,7 @@ public class Element {
 
         Element element = (Element) o;
 
+        if (!symbol.equals(element.symbol)) return false;
         if (protonNumber != element.protonNumber) return false;
         if (electronNumber != element.electronNumber) return false;
         return neutronNumber == element.neutronNumber;
@@ -322,7 +323,8 @@ public class Element {
 
     @Override
     public int hashCode() {
-        int result = protonNumber;
+        int result = symbol.hashCode();
+        result = 31 * result + protonNumber;
         result = 31 * result + electronNumber;
         result = 31 * result + neutronNumber;
         return result;
