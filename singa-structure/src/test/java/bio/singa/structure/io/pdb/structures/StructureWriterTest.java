@@ -346,6 +346,6 @@ class StructureWriterTest {
         for (String line : explicitlyRenumbered) {
             assertTrue(line.length() <= 80, "malformed PDB line with length " + line.length() + ": " + line);
         }
-        assertTrue(explicitlyRenumbered.stream().anyMatch(line -> line.startsWith("REMARK 951")), "expected dedicated REMARK 951 record that tracks residue renumbering");
+        assertFalse(explicitlyRenumbered.stream().anyMatch(line -> line.startsWith("REMARK 951")), "no dedicated REMARK 951 record to be written when renumbering everything");
     }
 }

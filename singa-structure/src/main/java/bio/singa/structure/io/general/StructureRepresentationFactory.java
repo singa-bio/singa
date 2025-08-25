@@ -7,7 +7,6 @@ import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.interfaces.Model;
 import bio.singa.structure.model.interfaces.Structure;
 import bio.singa.structure.model.pdb.*;
-import uk.ac.ebi.beam.Bond;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -44,7 +43,7 @@ public class StructureRepresentationFactory {
         this.structure = structure;
         StringBuilder sb = new StringBuilder();
         // add preamble
-        sb.append(getPreamble(structure.getStructureIdentifier(), structure.getTitle(), determineLinkEntries(structure)));
+        sb.append(getPreamble());
         // get all models
         List<Integer> modelIdentifiers = structure.getAllModels().stream()
                 .map(Model::getModelIdentifier)
@@ -67,13 +66,13 @@ public class StructureRepresentationFactory {
             }
         }
         // add postamble
-        sb.append(getPostamble(structure.getAllLeafSubstructures()));
+        sb.append(getPostamble());
         return sb.toString();
     }
 
     private List<LinkEntry> determineLinkEntries(Structure structure) {
         if (structure instanceof PdbStructure) {
-            return ((PdbStructure) structure).getLinkEntries();
+            return structure.getLinkEntries();
         }
         return Collections.emptyList();
     }
@@ -141,7 +140,10 @@ public class StructureRepresentationFactory {
      *
      * @return The title and header line for this structure.
      */
-    private String getPreamble(String pdbIdentifier, String title, List<LinkEntry> linkEntries) {
+    private String getPreamble() {
+        String pdbIdentifier = structure.getStructureIdentifier();
+        String title = structure.getTitle();
+
         StringBuilder sb = new StringBuilder();
         // header
         if (pdbIdentifier != null && !pdbIdentifier.equals(LeafIdentifier.DEFAULT_PDB_IDENTIFIER)) {
@@ -177,8 +179,13 @@ public class StructureRepresentationFactory {
                     .forEach(sb::append);
         }
 
+        // track original residue numbers of those that have been renumbered
+        if (options.isAddRenumberedLeafs()) {
+            sb.append(Remark951Token.assemblePDBLines(options.getRenumberingMap()));
+        }
+
         // links
-        for (LinkEntry linkEntry : linkEntries) {
+        for (LinkEntry linkEntry : determineLinkEntries(structure)) {
             sb.append(LinkToken.assemblePDBLine(linkEntry));
         }
         return sb.toString();
@@ -194,10 +201,10 @@ public class StructureRepresentationFactory {
      *
      * @return The closing lines.
      */
-    private String getPostamble(Collection<? extends LeafSubstructure> leafSubstructures) {
+    private String getPostamble() {
         String connectRecords = "";
         if (options.isAddConnections()) {
-            connectRecords = leafSubstructures.stream()
+            connectRecords = structure.getAllLeafSubstructures().stream()
                     .map(PdbLeafSubstructure.class::cast)
                     .filter(PdbLeafSubstructure::isAnnotatedAsHeteroAtom) // TODO this omits inter-molecule connections for polymeric components (e.g. disulfide bridges), ideally these would be included
                     .map(ConnectionToken::assemblePDBLines)

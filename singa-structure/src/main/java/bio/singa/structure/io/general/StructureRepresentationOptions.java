@@ -17,6 +17,7 @@ public class StructureRepresentationOptions {
      * Happening when 5-character ligands from mmCIF are renamed for compatibility.
      */
     private boolean addRenamedLigands = true;
+    private boolean addRenumberedLeafs = true;
 
     private Map<AuthLeafIdentifier, Integer> renumberingMap;
 
@@ -104,6 +105,14 @@ public class StructureRepresentationOptions {
         this.addRenamedLigands = addRenamedLigands;
     }
 
+    public boolean isAddRenumberedLeafs() {
+        return addRenumberedLeafs;
+    }
+
+    public void setAddRenumberedLeafs(boolean addRenumberedLeafs) {
+        this.addRenumberedLeafs = addRenumberedLeafs;
+    }
+
     /**
      * Sets the any option.
      *
@@ -148,6 +157,12 @@ public class StructureRepresentationOptions {
             case OMIT_RENAMED_LIGANDS:
                 options.addRenamedLigands = false;
                 break;
+            case APPEND_RENUMBERED_LEAFS:
+                options.addRenumberedLeafs = true;
+                break;
+            case OMIT_RENUMBERED_LEAFS:
+                options.addRenumberedLeafs = false;
+                break;
         }
     }
 
@@ -183,6 +198,17 @@ public class StructureRepresentationOptions {
          * Always suppress the REMARK 950 record.
          */
         OMIT_RENAMED_LIGANDS,
+
+        /**
+         * Write a dedicated REMARK 951 record if residues have been renumbered. This record will hold the original leaf
+         * identifier.
+         */
+        APPEND_RENUMBERED_LEAFS,
+
+        /**
+         * Always suppress the REMARK 951 record.
+         */
+        OMIT_RENUMBERED_LEAFS,
     }
 
 }

@@ -207,14 +207,14 @@ public class StructureWriter {
             }
 
             // check for residue numbers >9999 that can be renumbered (like waters in 5t1s)
-            conditionallyRenumberResidues();
+            conditionallyRequestResiduesRenumbering();
 
             if (options.isRenumberingSubstructures()) {
                 structure = StructureRenumberer.renumberLeaveSubstructuresWithMap(structure, options.getRenumberingMap());
             }
         }
 
-        private void conditionallyRenumberResidues() {
+        private void conditionallyRequestResiduesRenumbering() {
             // nop if explicitly provided
             if (options.isRenumberingSubstructures() && !options.getRenumberingMap().isEmpty()) return;
 
