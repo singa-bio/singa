@@ -8,7 +8,10 @@ import bio.singa.structure.model.interfaces.Atom;
 import bio.singa.structure.model.interfaces.LeafSubstructure;
 import bio.singa.structure.model.pdb.PdbAtom;
 import bio.singa.structure.model.general.AuthLeafIdentifier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.lang.invoke.MethodHandles;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
@@ -37,6 +40,7 @@ public enum AtomToken implements PDBToken {
     ELEMENT_SYMBOL(Range.of(77, 78), Justification.RIGHT),
     ELEMENT_CHARGE(Range.of(79, 80), Justification.LEFT);
 
+    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass().getSimpleName());
     public static final Pattern RECORD_PATTERN = Pattern.compile("^(ATOM|HETATM).*");
 
     private static final DecimalFormat coordinateFormat = new DecimalFormat("0.000", new DecimalFormatSymbols(Locale.US));
@@ -153,6 +157,10 @@ public enum AtomToken implements PDBToken {
 
     private String createTokenString(String content) {
         int totalLength = columns.getUpperBound() - columns.getLowerBound() - content.length();
+        // -1 is fine-ish as this cuts into empty columns
+        if (totalLength < -1) {
+            logger.warn("overflowing {} content: '{}', max length [{}, {}]", this, content, columns.getLowerBound(), columns.getUpperBound());
+        }
         StringBuilder filler = new StringBuilder();
         for (int i = 0; i < totalLength + 1; i++) {
             filler.append(" ");
@@ -162,5 +170,4 @@ public enum AtomToken implements PDBToken {
         }
         return filler + content;
     }
-
 }
