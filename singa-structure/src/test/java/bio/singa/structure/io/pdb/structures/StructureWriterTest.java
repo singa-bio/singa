@@ -335,5 +335,17 @@ class StructureWriterTest {
             assertTrue(line.length() <= 80, "malformed PDB line with length " + line.length() + ": " + line);
         }
         assertTrue(implicitlyRenumbered.stream().anyMatch(line -> line.startsWith("REMARK 951")), "expected dedicated REMARK 951 record that tracks residue renumbering");
+
+        System.out.println("writing structure (by requesting renumbering)");
+        List<String> explicitlyRenumbered = Arrays.stream(StructureWriter.pdb()
+                        .structure(structure)
+                        .settings(RENUMBER_SUBSTRUCTURES, RENUMBER_ATOMS_CONSECUTIVELY, RENUMBER_CHAINS_CONSECUTIVELY) // shortcut that renumbers even without provided residue mapping
+                        .writeToString()
+                        .split("\n"))
+                .collect(Collectors.toList());
+        for (String line : explicitlyRenumbered) {
+            assertTrue(line.length() <= 80, "malformed PDB line with length " + line.length() + ": " + line);
+        }
+        assertTrue(explicitlyRenumbered.stream().anyMatch(line -> line.startsWith("REMARK 951")), "expected dedicated REMARK 951 record that tracks residue renumbering");
     }
 }
