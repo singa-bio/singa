@@ -40,7 +40,7 @@ public enum AtomToken implements PDBToken {
     ELEMENT_SYMBOL(Range.of(77, 78), Justification.RIGHT),
     ELEMENT_CHARGE(Range.of(79, 80), Justification.LEFT);
 
-    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass().getSimpleName());
+    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     public static final Pattern RECORD_PATTERN = Pattern.compile("^(ATOM|HETATM).*");
 
     private static final DecimalFormat coordinateFormat = new DecimalFormat("0.000", new DecimalFormatSymbols(Locale.US));

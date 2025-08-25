@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
  * SiNGA will use this remark to track 5-character residue serials encountered while parsing mmCIF content. This remark
  * provides the original identifier for downstream scripts.
  *
- * this should be compliant with pdb standards as long serials in a chain are don't exceed 9999
+ * this should be compliant with pdb standards as long serials in a chain don't exceed 9999
  *
  * Example
  * REMARK 951
@@ -52,7 +52,7 @@ public enum Remark951Token implements PDBToken {
             return "";
         }
         StringBuilder sb = new StringBuilder();
-        // REMARK 951 A1IYK renamed to LIG
+        // REMARK 951 5t1s-1-D-10001 renamed to 5t1s-1-D-286
         for (Map.Entry<AuthLeafIdentifier, Integer> entry : mapping.entrySet()) {
             String full = entry.getKey().toString();
             int lastDash = full.lastIndexOf('-');
