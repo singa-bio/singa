@@ -314,4 +314,26 @@ class StructureWriterTest {
         long renumberedConectCount = renumberedPdbContent.stream().filter(l -> l.startsWith(CONECT_RECORD)).count();
         assertEquals(expectedRecordCount, renumberedConectCount, "number of CONECT records should be unchanged even if renumbered");
     }
+
+    @Test
+    void shouldWriteValidPdbFileWithLongIdentifiers() {
+        String pdbIdentifier = "5T1S";
+
+        System.out.println("parsing original CIF");
+        Structure structure = StructureParser.cif()
+                .pdbIdentifier(pdbIdentifier)
+                .parse();
+
+        System.out.println("writing structure (with implicit renumbering)");
+        List<String> implicitlyRenumbered = Arrays.stream(StructureWriter.pdb()
+                        .structure(structure)
+                        .settings() // should auto-detect that residue-renumbering is required
+                        .writeToString()
+                        .split("\n"))
+                .collect(Collectors.toList());
+        for (String line : implicitlyRenumbered) {
+            assertTrue(line.length() <= 80, "malformed PDB line with length " + line.length() + ": " + line);
+        }
+        assertTrue(implicitlyRenumbered.stream().anyMatch(line -> line.startsWith("REMARK 951")), "expected dedicated REMARK 951 record that tracks residue renumbering");
+    }
 }
