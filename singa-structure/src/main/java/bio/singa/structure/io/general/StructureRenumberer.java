@@ -30,7 +30,6 @@ public class StructureRenumberer {
     /**
      * Renumbers the {@link LeafSubstructure}s in a given {@link PdbStructure} according to a renumbering map.
      * <b>Warning:</b>The method copies only the parts of the structure which are covered by the renumbering map.
-     * Non-consecutive parts of the structure (ligands, etc.) are not affected and copied to the new structure.
      *
      * @param structure The {@link PdbStructure} to be renumbered.
      * @param renumberingMap The renumbering map, containing as key original {@link LeafIdentifier}s the renumbered
@@ -40,7 +39,6 @@ public class StructureRenumberer {
     public static Structure renumberLeaveSubstructuresWithMap(Structure structure, Map<AuthLeafIdentifier, Integer> renumberingMap) {
         StructureRenumberer structureRenumberer = new StructureRenumberer();
         return structureRenumberer.renumberLeafSubstructures(((PdbStructure) structure), renumberingMap);
-
     }
 
     public static Structure renumberEverything(Structure structure) {
@@ -299,15 +297,31 @@ public class StructureRenumberer {
                     copyAtomsInLeafSubstructure(leafSubstructure, renumberedLeafSubstructure);
                 }
             }
-            // nonconsecutive parts are copied without renumbering
+            // nonconsecutive parts
             for (Chain chain : model.getAllChains()) {
                 PdbChain oakChain = (PdbChain) chain;
                 PdbChain renumberedChain = renumberedModel.getChain(chain.getChainIdentifier()).orElseThrow(NoSuchElementException::new);
                 for (PdbLeafSubstructure leafSubstructure : oakChain.getNonConsecutivePart()) {
-                    PdbLeafSubstructure renumberedLeafSubstructure = createLeafSubstructure(leafSubstructure.getIdentifier(), leafSubstructure.getFamily());
-                    renumberedLeafSubstructure.setAnnotatedAsHeteroAtom(true);
-                    renumberedChain.addLeafSubstructure(renumberedLeafSubstructure);
-                    copyAtomsInLeafSubstructure(leafSubstructure, renumberedLeafSubstructure);
+                    AuthLeafIdentifier originalIdentifier = leafSubstructure.getIdentifier();
+                    // for non-consecutive, we remap or copy everything
+                    if (renumberingMap.containsKey(originalIdentifier)) {
+                        AuthLeafIdentifier renumberedIdentifier = new AuthLeafIdentifier(
+                                originalIdentifier.getStructureIdentifier(),
+                                originalIdentifier.getModelIdentifier(),
+                                originalIdentifier.getChainIdentifier(),
+                                renumberingMap.get(originalIdentifier),
+                                originalIdentifier.getInsertionCode());
+                        PdbLeafSubstructure renumberedLeafSubstructure = createLeafSubstructure(renumberedIdentifier, leafSubstructure.getFamily());
+                        renumberedLeafSubstructure.setAnnotatedAsHeteroAtom(leafSubstructure.isAnnotatedAsHeteroAtom());
+                        renumberedChain.addLeafSubstructure(renumberedLeafSubstructure, false);
+                        copyAtomsInLeafSubstructure(leafSubstructure, renumberedLeafSubstructure);
+                    } else {
+                        //  copied without renumbering
+                        PdbLeafSubstructure renumberedLeafSubstructure = createLeafSubstructure(leafSubstructure.getIdentifier(), leafSubstructure.getFamily());
+                        renumberedLeafSubstructure.setAnnotatedAsHeteroAtom(true);
+                        renumberedChain.addLeafSubstructure(renumberedLeafSubstructure);
+                        copyAtomsInLeafSubstructure(leafSubstructure, renumberedLeafSubstructure);
+                    }
                 }
             }
         }
