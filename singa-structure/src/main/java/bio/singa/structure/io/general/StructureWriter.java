@@ -3,21 +3,27 @@ package bio.singa.structure.io.general;
 import bio.singa.structure.model.cif.CifStructure;
 import bio.singa.structure.model.interfaces.*;
 import bio.singa.structure.model.general.LinkEntry;
-import bio.singa.structure.model.pdb.PdbStructure;
 import bio.singa.structure.model.general.AuthLeafIdentifier;
 import bio.singa.structure.model.general.Structures;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.lang.invoke.MethodHandles;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class StructureWriter {
+
+    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     // TODO option for short and long ter records
 
@@ -185,7 +191,7 @@ public class StructureWriter {
                 structure = Structures.toStructure(leafSubstructures, pdbIdentifier, title);
             }
             if (linkEntries != null) {
-                linkEntries.forEach(linkEntry -> ((PdbStructure) structure).addLinkEntry(linkEntry));
+                linkEntries.forEach(linkEntry -> structure.addLinkEntry(linkEntry));
             }
             // apply renumbering
             if (structure != null && structure instanceof CifStructure) {
@@ -199,8 +205,42 @@ public class StructureWriter {
             if (options.isRenumberingAtoms()) {
                 structure = StructureRenumberer.renumberAtomsConsecutively(structure, options.isRenumberChains());
             }
+
+            // check for residue numbers >9999 that can be renumbered (like waters in 5t1s)
+            conditionallyRequestResiduesRenumbering();
+
             if (options.isRenumberingSubstructures()) {
                 structure = StructureRenumberer.renumberLeaveSubstructuresWithMap(structure, options.getRenumberingMap());
+            }
+        }
+
+        private void conditionallyRequestResiduesRenumbering() {
+            // nop if explicitly provided
+            if (options.isRenumberingSubstructures() && !options.getRenumberingMap().isEmpty()) return;
+
+            Set<String> chainsNeedingRenumber = structure.getAllLeafSubstructures().stream()
+                    .filter(l -> l.getIdentifier().getSerial() > 9999)
+                    .map(l -> l.getAuthIdentifier().getChainIdentifier())
+                    .collect(Collectors.toCollection(LinkedHashSet::new));
+            if (!chainsNeedingRenumber.isEmpty()) {
+                logger.warn("{} has residue serials >9999, trying to renumber leafs in chains {}", structure.getStructureIdentifier(), chainsNeedingRenumber);
+
+                Map<AuthLeafIdentifier, Integer> renumbering = new LinkedHashMap<>();
+                options.setRenumberingSubstructures(true);
+                options.setRenumberingMap(renumbering);
+
+                // track assigned serials within each chain
+                Map<String, AtomicInteger> perChainSerials = chainsNeedingRenumber.stream().collect(Collectors.toMap(Function.identity(), __ -> new AtomicInteger()));
+                for (LeafSubstructure leaf : structure.getAllLeafSubstructures()) {
+                    String chainIdentifier = leaf.getAuthIdentifier().getChainIdentifier();
+                    if (!chainsNeedingRenumber.contains(chainIdentifier)) continue;
+
+                    int serial = perChainSerials.get(chainIdentifier).incrementAndGet();
+                    renumbering.put(leaf.getAuthIdentifier(), serial);
+                    if (serial > 9999) {
+                        throw new IllegalStateException("More than 9999 residues in chain " + chainIdentifier + " -- can't represent in PDB format");
+                    }
+                }
             }
         }
 
