@@ -1,9 +1,6 @@
 package bio.singa.chemistry.model.elements;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 /**
  * This library provides Elements 1 (Hydrogen) to 111 (Roentgenium) with their names, symbols, atomic numbers, and
@@ -128,7 +125,7 @@ public final class ElementProvider {
 
     public static final Element UNKOWN = addElement(new Element("Unkown", "X", 0, 0, "1s0"));
 
-    private final Set<Element> elements = new HashSet<>();
+    private final Set<Element> elements = new LinkedHashSet<>();
 
     private static Element addElement(Element element) {
         INSTANCE.elements.add(element);
